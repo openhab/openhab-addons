@@ -18,10 +18,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,13 +60,14 @@ import com.google.gson.stream.JsonReader;
 @NonNullByDefault
 public class GreeAirDevice {
     private final Logger logger = LoggerFactory.getLogger(GreeAirDevice.class);
-    private final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    private final static Charset UTF8_CHARSET = StandardCharsets.UTF_8;
     private final static HashMap<String, HashMap<String, Integer>> tempRanges = createTempRangeMap();
+    private final static Gson gson = new Gson();
     private boolean isBound = false;
     private InetAddress ipAddress = InetAddress.getLoopbackAddress();
     private int port = 0;
     private String encKey = "";
-    private Optional<GreeScanResponseDTO> mScanResponseGson = Optional.empty();
+    private Optional<GreeScanResponseDTO> scanResponseGson = Optional.empty();
     private Optional<GreeBindResponseDTO> bindResponseGson = Optional.empty();
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
@@ -97,31 +101,31 @@ public class GreeAirDevice {
     }
 
     public String getId() {
-        return mScanResponseGson.isPresent() ? mScanResponseGson.get().packJson.mac : "";
+        return scanResponseGson.isPresent() ? scanResponseGson.get().packJson.mac : "";
     }
 
     public String getName() {
-        return mScanResponseGson.isPresent() ? mScanResponseGson.get().packJson.name : "";
+        return scanResponseGson.isPresent() ? scanResponseGson.get().packJson.name : "";
     }
 
     public String getVendor() {
-        return mScanResponseGson.isPresent()
-                ? mScanResponseGson.get().packJson.brand + " " + mScanResponseGson.get().packJson.vender
+        return scanResponseGson.isPresent()
+                ? scanResponseGson.get().packJson.brand + " " + scanResponseGson.get().packJson.vender
                 : "";
     }
 
     public String getModel() {
-        return mScanResponseGson.isPresent()
-                ? mScanResponseGson.get().packJson.series + " " + mScanResponseGson.get().packJson.model
+        return scanResponseGson.isPresent()
+                ? scanResponseGson.get().packJson.series + " " + scanResponseGson.get().packJson.model
                 : "";
     }
 
     public GreeScanResponseDTO getScanResponseGson() {
-        return mScanResponseGson.get();
+        return scanResponseGson.get();
     }
 
     public void setScanResponseGson(GreeScanResponseDTO gson) {
-        mScanResponseGson = Optional.of(gson);
+        scanResponseGson = Optional.of(gson);
     }
 
     public GreeBindResponseDTO getBindResponseGson() {
@@ -132,11 +136,9 @@ public class GreeAirDevice {
         return statusResponseGson.get();
     }
 
-    public void bindWithDevice(Optional<DatagramSocket> socket) throws GreeException {
-        validateSocket(socket);
+    public void bindWithDevice(DatagramSocket clientSocket) throws GreeException {
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[347];
-        Gson gson = new Gson();
 
         try {
             // Prep the Binding Request pack
@@ -162,7 +164,6 @@ public class GreeAirDevice {
             sendData = bindReqStr.getBytes();
 
             // Now Send the request
-            DatagramSocket clientSocket = socket.get();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
             clientSocket.send(sendPacket);
 
@@ -191,58 +192,35 @@ public class GreeAirDevice {
         }
     }
 
-    private void validateSocket(Optional<DatagramSocket> socket) {
-        if (!socket.isPresent()) {
-            throw new IllegalArgumentException("Socket not initialized!");
-        }
-    }
-
     public void setDevicePower(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound and values are valid
-        if (!getIsBound() || (value < 0 || value > 1)) {
-            throw new GreeException("Device not bound or value out of range!");
-        }
-
-        // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("Pow", value);
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "Pow", value);
     }
 
     public void SetDeviceMode(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
-        if (!getIsBound() || (value < 0 || value > 4)) {
-            throw new GreeException("Device not bound or value out of range!");
+        if ((value < 0 || value > 4)) {
+            throw new GreeException("Device mode out of range!");
         }
-
-        // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("Mod", value);
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "Mod", value);
     }
 
     public void setDeviceSwingUpDown(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
         // Only values 0,1,2,3,4,5,6,10,11 allowed
-        if (!getIsBound() || (value < 0 || value > 11) || (value > 6 && value < 10)) {
-            throw new GreeException("Device not bound or value out of range!");
+        if ((value < 0 || value > 11) || (value > 6 && value < 10)) {
+            throw new GreeException("SwingUpDown value out of range!");
         }
         // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("SwUpDn", value);
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "SwUpDn", value);
     }
 
     public void setDeviceSwingLeftRight(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound and values are valid
         // Only values 0,1,2,3,4,5,6 allowed
-        if (!getIsBound() || (value < 0) || (value > 6)) {
+        if ((value < 0) || (value > 6)) {
             throw new GreeException("Device not bound or value out of range!");
         }
         // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("SwingLfRig", value);
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "SwingLfRig", value);
     }
 
     /**
@@ -271,26 +249,22 @@ public class GreeAirDevice {
 
     public void setDeviceTurbo(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
-        if (!getIsBound() || (value < 0 || value > 1)) {
-            throw new GreeException("Device not bound or value out of range!");
+        if ((value < 0 || value > 1)) {
+            throw new GreeException("Value out of range!");
         }
 
         // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("Tur", value);
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "Tur", value);
     }
 
     public void setQuietMode(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
-        if (!getIsBound() || (value < 0 || value > 2)) {
-            throw new GreeException("Device not bound or value out of range!");
+        if (value < 0 || value > 2) {
+            throw new GreeException("Value out of range!");
         }
 
         // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("Quiet", value);
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "Quiet", value);
     }
 
     public int getDeviceTurbo() {
@@ -298,15 +272,7 @@ public class GreeAirDevice {
     }
 
     public void setDeviceLight(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound and values are valid
-        if (!getIsBound() || (value < 0 || value > 1)) {
-            throw new GreeException("Device not bound or value out of range!");
-        }
-
-        // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("Lig", value);
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "Lig", value);
     }
 
     /**
@@ -415,47 +381,19 @@ public class GreeAirDevice {
         parameters.put("TemUn", CorF);
         parameters.put("SetTem", outVal);
         parameters.put("TemRec", halfStep);
-
         executeCommand(clientSocket, parameters);
     }
 
     public void setDeviceAir(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound
-        if (!getIsBound()) {
-            throw new GreeException("Device is not bound!");
-        }
-
-        // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("Air", value);
-
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "Air", value);
     }
 
     public void setDeviceDry(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound
-        if (!getIsBound()) {
-            throw new GreeException("Device is not bound!");
-        }
-
-        // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("Blo", value);
-
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "Blo", value);
     }
 
     public void setDeviceHealth(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound
-        if (!getIsBound()) {
-            throw new GreeException("Device is not bound!");
-        }
-
-        // Set the values in the HashMap
-        HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("Health", value);
-
-        executeCommand(clientSocket, parameters);
+        setCommandValue(clientSocket, "Health", value);
     }
 
     public void setDevicePwrSaving(DatagramSocket clientSocket, int value) throws GreeException {
@@ -472,7 +410,6 @@ public class GreeAirDevice {
         parameters.put("Tur", 0);
         parameters.put("SwhSlp", 0);
         parameters.put("SlpMod", 0);
-
         executeCommand(clientSocket, parameters);
     }
 
@@ -501,10 +438,10 @@ public class GreeAirDevice {
          * "SvSt": Power Saving
          */
         // Find the valueName in the Returned Status object
-        String columns[] = statusResponseGson.get().packJson.cols;
-        Integer values[] = statusResponseGson.get().packJson.dat;
-        List<String> colList = new ArrayList<>(Arrays.asList(columns));
-        List<Integer> valList = new ArrayList<>(Arrays.asList(values));
+        String[] columns = statusResponseGson.get().packJson.cols;
+        Integer[] values = statusResponseGson.get().packJson.dat;
+        List<String> colList = Arrays.asList(columns);
+        List<Integer> valList = Arrays.asList(values);
         int valueArrayposition = colList.indexOf(valueName);
         if (valueArrayposition == -1) {
             return -1;
@@ -522,8 +459,8 @@ public class GreeAirDevice {
         // Find the valueName in the Current Status object
         String currcolumns[] = statusResponseGson.get().packJson.cols;
         Integer currvalues[] = statusResponseGson.get().packJson.dat;
-        List<String> currcolList = new ArrayList<>(Arrays.asList(currcolumns));
-        List<Integer> currvalList = new ArrayList<>(Arrays.asList(currvalues));
+        List<String> currcolList = Arrays.asList(currcolumns);
+        List<Integer> currvalList = Arrays.asList(currvalues);
         int currvalueArrayposition = currcolList.indexOf(valueName);
         if (currvalueArrayposition == -1) {
             throw new GreeException("Unable to decode device status");
@@ -534,8 +471,8 @@ public class GreeAirDevice {
         // Find the valueName in the Previous Status object
         String prevcolumns[] = prevStatusResponsePackGson.get().cols;
         Integer prevvalues[] = prevStatusResponsePackGson.get().dat;
-        List<String> prevcolList = new ArrayList<>(Arrays.asList(prevcolumns));
-        List<Integer> prevvalList = new ArrayList<>(Arrays.asList(prevvalues));
+        List<String> prevcolList = Arrays.asList(prevcolumns);
+        List<Integer> prevvalList = Arrays.asList(prevvalues);
         int prevvalueArrayposition = prevcolList.indexOf(valueName);
         if (prevvalueArrayposition == -1) {
             throw new GreeException("Unable to get status value");
@@ -547,11 +484,9 @@ public class GreeAirDevice {
         return currvalue != prevvalue;
     }
 
-    protected void executeCommand(DatagramSocket clientSocket, HashMap<String, Integer> parameters)
-            throws GreeException {
+    protected void executeCommand(DatagramSocket clientSocket, Map<String, Integer> parameters) throws GreeException {
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
-        Gson gson = new Gson();
 
         try {
             // Convert the parameter map values to arrays
@@ -603,8 +538,15 @@ public class GreeAirDevice {
         }
     }
 
+    private void setCommandValue(DatagramSocket clientSocket, String command, int value) throws GreeException {
+        // Only allow this to happen if this device has been bound
+        if (!getIsBound()) {
+            throw new GreeException("Device is not bound!");
+        }
+        executeCommand(clientSocket, Collections.singletonMap(command, value));
+    }
+
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
-        Gson gson = new Gson();
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
 
@@ -700,9 +642,9 @@ public class GreeAirDevice {
             throw new IllegalArgumentException("SetTem,TemUn or TemRec is invalid, not performing conversion");
         } else if (CorF == 1) { // convert SetTem to Fahrenheit
             // Find the valueName in the Returned Status object
-            String columns[] = statusResponseGson.get().packJson.cols;
-            Integer values[] = statusResponseGson.get().packJson.dat;
-            List<String> colList = new ArrayList<>(Arrays.asList(columns));
+            String[] columns = statusResponseGson.get().packJson.cols;
+            Integer[] values = statusResponseGson.get().packJson.dat;
+            List<String> colList = Arrays.asList(columns);
             int valueArrayposition = colList.indexOf("SetTem");
             if (valueArrayposition != -1) {
                 // convert Celsius to Fahrenheit,

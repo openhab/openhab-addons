@@ -96,6 +96,4 @@ public class GreeBindingConstants {
     public static final int MAX_SCAN_CYCLES = 3;
 
     public static final int DIGITS_TEMP = 1;
-
-    public static final String CHARSET = "UTF-8";
 }

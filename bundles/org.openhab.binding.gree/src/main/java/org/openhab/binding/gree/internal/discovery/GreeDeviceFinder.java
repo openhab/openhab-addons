@@ -15,17 +15,14 @@ package org.openhab.binding.gree.internal.discovery;
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
 
 /**
  * The GreeDeviceFinder provides functionality for searching for GREE Airconditioners on the network and keeping a list
@@ -52,9 +48,10 @@ import com.google.gson.stream.JsonReader;
 @NonNullByDefault
 public class GreeDeviceFinder {
     private final Logger logger = LoggerFactory.getLogger(GreeDeviceFinder.class);
+    private static final Gson gson = (new GsonBuilder()).create();
 
     protected final InetAddress ipAddress;
-    protected HashMap<String, GreeAirDevice> deviceTable = new HashMap<>();
+    protected Map<String, GreeAirDevice> deviceTable = new HashMap<>();
 
     public GreeDeviceFinder() {
         ipAddress = InetAddress.getLoopbackAddress(); // dummy
@@ -64,8 +61,7 @@ public class GreeDeviceFinder {
         ipAddress = InetAddress.getByName(broadcastAddress);
     }
 
-    public void scan(Optional<DatagramSocket> socket, boolean scanNetwork) throws GreeException {
-        validateSocket(socket);
+    public void scan(DatagramSocket clientSocket, boolean scanNetwork) throws GreeException {
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
 
@@ -73,22 +69,18 @@ public class GreeDeviceFinder {
         GreeScanRequestDTO scanGson = new GreeScanRequestDTO();
         scanGson.t = "scan";
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
         String scanReq = gson.toJson(scanGson);
         sendData = scanReq.getBytes();
 
         logger.trace("Sending scan packet to {}", ipAddress.getHostAddress());
         try {
-            DatagramSocket clientSocket = socket.get();
             clientSocket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, DISCOVERY_TIMEOUT_MS);
             clientSocket.send(sendPacket);
 
             // Loop for respnses from devices until we get a timeout.
-            boolean scanning = true;
             int retries = MAX_SCAN_CYCLES;
-            while (scanning && (retries > 0)) {
+            while ((retries > 0)) {
                 // Receive a response
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 try {
@@ -97,10 +89,8 @@ public class GreeDeviceFinder {
                     int remotePort = receivePacket.getPort();
 
                     // Read the response
-                    String modifiedSentence = new String(receivePacket.getData(), "UTF-8");
-                    StringReader stringReader = new StringReader(modifiedSentence);
-                    GreeScanResponseDTO scanResponseGson = gson.fromJson(new JsonReader(stringReader),
-                            GreeScanResponseDTO.class);
+                    String modifiedSentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
+                    GreeScanResponseDTO scanResponseGson = gson.fromJson(modifiedSentence, GreeScanResponseDTO.class);
 
                     // If there was no pack, ignore the response
                     if (scanResponseGson.pack == null) {
@@ -117,9 +107,7 @@ public class GreeDeviceFinder {
                     logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
 
                     // Create the JSON to hold the response values
-                    stringReader = new StringReader(decryptedMsg);
-                    scanResponseGson.packJson = gson.fromJson(new JsonReader(stringReader),
-                            GreeScanReponsePackDTO.class);
+                    scanResponseGson.packJson = gson.fromJson(decryptedMsg, GreeScanReponsePackDTO.class);
 
                     // Now make sure the device is reported as a Gree device
                     if (scanResponseGson.packJson.brand.equalsIgnoreCase("gree")) {
@@ -134,10 +122,10 @@ public class GreeDeviceFinder {
                         logger.debug("Unit discovered, but brand is not GREE");
                     }
 
-                    scanning = scanNetwork;
+                    if (!scanNetwork) {
+                        break;
+                    }
                 } catch (SocketTimeoutException e) {
-                    // We've received a timeout so lets quit searching for devices
-                    scanning = false;
                     break;
                 } catch (IOException e) {
                     retries--;
@@ -164,30 +152,16 @@ public class GreeDeviceFinder {
     }
 
     public @Nullable GreeAirDevice getDeviceByIPAddress(String ipAddress) {
-        GreeAirDevice returnDevice = null;
-
-        Set<String> keySet = deviceTable.keySet();
-        Iterator<String> iter = keySet.iterator();
-        while (returnDevice == null && iter.hasNext()) {
-            Object thiskey = iter.next();
-            if (deviceTable.containsKey(thiskey)) {
-                GreeAirDevice currDevice = deviceTable.get(thiskey);
-                if (currDevice.getAddress().getHostAddress().equals(ipAddress)) {
-                    returnDevice = currDevice;
-                }
+        for (GreeAirDevice currDevice : deviceTable.values()) {
+            if (currDevice.getAddress().getHostAddress().equals(ipAddress)) {
+                return currDevice;
             }
         }
-
-        return returnDevice;
+        return null;
     }
 
     public int getScannedDeviceCount() {
         return deviceTable.size();
     }
 
-    private void validateSocket(Optional<DatagramSocket> socket) {
-        if (!socket.isPresent()) {
-            throw new IllegalArgumentException("Socket not initialized!");
-        }
-    }
 }

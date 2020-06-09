@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gree.internal;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
@@ -55,9 +55,9 @@ public class GreeCryptoUtil {
             aesCipher.init(Cipher.DECRYPT_MODE, key);
             byte[] bytePlainText = aesCipher.doFinal(imageByte);
 
-            return new String(bytePlainText, "UTF-8");
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException | NoSuchPaddingException | BadPaddingException
-                | InvalidKeyException | IllegalBlockSizeException ex) {
+            return new String(bytePlainText, StandardCharsets.UTF_8);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
+                | IllegalBlockSizeException ex) {
             throw new GreeException("Decryption of recieved data failed", ex);
         }
     }
@@ -70,10 +70,9 @@ public class GreeCryptoUtil {
             byte[] bytePlainText = aesCipher.doFinal(message.getBytes());
 
             Base64.Encoder newencoder = Base64.getEncoder();
-            String encrytpedMessage = new String(newencoder.encode(bytePlainText), "UTF-8");
-            return encrytpedMessage.substring(0, encrytpedMessage.length());
+            return new String(newencoder.encode(bytePlainText), StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
-                | IllegalBlockSizeException | UnsupportedEncodingException ex) {
+                | IllegalBlockSizeException ex) {
             throw new GreeException("Unable to encrypt outbound data", ex);
         }
     }

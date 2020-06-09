@@ -85,20 +85,18 @@ public class GreeHandler extends BaseThingHandler {
         // the framework is then able to reuse the resources from the thing handler initialization.
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
-            initializeThing();
-        });
+        scheduler.execute(this::initializeThing);
     }
 
     private void initializeThing() {
         try {
-            // Create a new Datagram socket with a specified timeout
-            clientSocket = Optional.of(new DatagramSocket());
-            clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
-
+            if (!clientSocket.isPresent()) {
+                clientSocket = Optional.of(new DatagramSocket());
+                clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
+            }
             // Find the GREE device
             deviceFinder = new GreeDeviceFinder(config.ipAddress);
-            deviceFinder.scan(clientSocket, false);
+            deviceFinder.scan(clientSocket.get(), false);
             logger.debug("{} units found matching IP address", deviceFinder.getScannedDeviceCount());
 
             // Now check that this one is amongst the air conditioners that responded.
@@ -106,7 +104,7 @@ public class GreeHandler extends BaseThingHandler {
             if (newDevice != null) {
                 // Ok, our device responded, now let's Bind with it
                 device = newDevice;
-                device.bindWithDevice(clientSocket);
+                device.bindWithDevice(clientSocket.get());
                 if (device.getIsBound()) {
                     updateStatus(ThingStatus.ONLINE);
 
@@ -132,19 +130,14 @@ public class GreeHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             // The thing is updated by the scheduled automatic refresh so do nothing here.
         } else {
-            if (!clientSocket.isPresent()) {
-                logger.warn("Thing not properly initialized, abort command");
-                return;
-            }
-
-            DatagramSocket socket = clientSocket.get();
             logger.debug("Issue command {} to channe {}", command, channelUID.getIdWithoutGroup());
             String channelId = channelUID.getIdWithoutGroup();
             logger.debug("Handle command {} for channel {}, command class {}", command, channelId, command.getClass());
             try {
+                DatagramSocket socket = clientSocket.get();
                 switch (channelId) {
                     case MODE_CHANNEL:
-                        handleModeCommand(command, socket);
+                        handleModeCommand(socket, command);
                         break;
                     case POWER_CHANNEL:
                         device.setDevicePower(socket, getOnOff(command));
@@ -168,7 +161,7 @@ public class GreeHandler extends BaseThingHandler {
                         device.setDeviceWindspeed(socket, getNumber(command));
                         break;
                     case QUIET_CHANNEL:
-                        handleQuietCommand(command, socket);
+                        handleQuietCommand(socket, command);
                         break;
                     case AIR_CHANNEL:
                         device.setDeviceAir(socket, getOnOff(command));
@@ -193,7 +186,7 @@ public class GreeHandler extends BaseThingHandler {
         }
     }
 
-    private void handleModeCommand(Command command, DatagramSocket socket) throws GreeException {
+    private void handleModeCommand(DatagramSocket socket, Command command) throws GreeException {
         int mode = -1;
         String modeStr = "";
         boolean isNumber = false;
@@ -268,7 +261,7 @@ public class GreeHandler extends BaseThingHandler {
         }
     }
 
-    private void handleQuietCommand(Command command, DatagramSocket socket) throws GreeException {
+    private void handleQuietCommand(DatagramSocket socket, Command command) throws GreeException {
         int mode = -1;
         if (command instanceof DecimalType) {
             mode = ((DecimalType) command).intValue();

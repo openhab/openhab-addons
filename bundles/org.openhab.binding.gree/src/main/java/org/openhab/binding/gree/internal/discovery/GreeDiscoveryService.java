@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -86,9 +85,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         // It's very unusual that a new unit gets installed frequently so we run the discovery once when the binding is
         // started, but not frequently
-        scheduler.execute(() -> {
-            startScan();
-        });
+        scheduler.execute(this::startScan);
     }
 
     @Override
@@ -98,9 +95,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        Optional<DatagramSocket> clientSocket = Optional.empty();
-        try {
-            clientSocket = Optional.of(new DatagramSocket());
+        try (DatagramSocket clientSocket = new DatagramSocket()) {
             deviceFinder = new GreeDeviceFinder(broadcastAddress);
             deviceFinder.scan(clientSocket, true);
 
@@ -116,10 +111,6 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Discovery failed: {}", e.toString());
         } catch (RuntimeException e) {
             logger.warn("Discovery failed", e);
-        } finally {
-            if (clientSocket.isPresent()) {
-                clientSocket.get().close();
-            }
         }
     }
 
