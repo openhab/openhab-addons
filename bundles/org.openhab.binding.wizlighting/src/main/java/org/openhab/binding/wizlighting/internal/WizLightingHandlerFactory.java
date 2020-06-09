@@ -45,6 +45,10 @@ public class WizLightingHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public WizLightingHandlerFactory(@Reference WizLightingMediator mediator) {
         this.mediator = mediator;
+
+        logger.info(
+                "\n\n*************************************************\nWiZ Connected Lighting, binding version: {}\n*************************************************\n",
+                CURRENT_BINDING_VERSION);
     }
 
     @Override
