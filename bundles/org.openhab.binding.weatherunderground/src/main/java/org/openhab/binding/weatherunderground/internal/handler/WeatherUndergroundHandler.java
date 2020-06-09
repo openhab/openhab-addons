@@ -32,6 +32,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -178,7 +179,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
 
     private final LocaleProvider localeProvider;
     private final UnitProvider unitProvider;
-    private final ZoneId zoneId;
+    private final TimeZoneProvider timeZoneProvider;
     private final Gson gson;
     private final Map<String, Integer> forecastMap;
 
@@ -189,11 +190,11 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
     private @Nullable WeatherUndergroundBridgeHandler bridgeHandler;
 
     public WeatherUndergroundHandler(Thing thing, LocaleProvider localeProvider, UnitProvider unitProvider,
-            ZoneId zoneId) {
+            TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.localeProvider = localeProvider;
         this.unitProvider = unitProvider;
-        this.zoneId = zoneId;
+        this.timeZoneProvider = timeZoneProvider;
         gson = new Gson();
         forecastMap = initForecastDayMap();
     }
@@ -357,6 +358,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
             case "stationId":
                 return undefOrState(current.getStationId(), new StringType(current.getStationId()));
             case "observationTime":
+                ZoneId zoneId = timeZoneProvider.getTimeZone();
                 return undefOrState(current.getObservationTime(zoneId),
                         new DateTimeType(current.getObservationTime(zoneId)));
             case "conditions":
@@ -431,6 +433,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         String channelTypeId = getChannelTypeId(channelId);
         switch (channelTypeId) {
             case "forecastTime":
+                ZoneId zoneId = timeZoneProvider.getTimeZone();
                 return undefOrState(dayForecast.getForecastTime(zoneId),
                         new DateTimeType(dayForecast.getForecastTime(zoneId)));
             case "conditions":

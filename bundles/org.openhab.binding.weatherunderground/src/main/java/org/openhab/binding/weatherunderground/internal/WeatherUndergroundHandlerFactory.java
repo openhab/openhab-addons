@@ -86,7 +86,7 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_WEATHER)) {
-            return new WeatherUndergroundHandler(thing, localeProvider, unitProvider, timeZoneProvider.getTimeZone());
+            return new WeatherUndergroundHandler(thing, localeProvider, unitProvider, timeZoneProvider);
         }
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
