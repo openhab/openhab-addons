@@ -21,11 +21,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ServicesResponse {
-    private Version Version;
-    private Server Server;
-    private ExtServices ExtServices;
+    private final Version Version;
+    private final Server Server;
+    private final ExtServices ExtServices;
     @SuppressWarnings("unused")
-    private Object Services = new Object();
+    private final Object Services = new Object();
 
     public ServicesResponse(Version version, Server server, ExtServices extServices) {
         this.Version = version;

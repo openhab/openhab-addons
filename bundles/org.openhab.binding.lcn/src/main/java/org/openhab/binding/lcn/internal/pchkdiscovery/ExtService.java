@@ -25,9 +25,9 @@ import com.thoughtworks.xstream.converters.extended.ToAttributedValueConverter;
 @NonNullByDefault
 @XStreamConverter(value = ToAttributedValueConverter.class, strings = { "content" })
 public class ExtService {
-    private int localPort;
+    private final int localPort;
     @SuppressWarnings("unused")
-    private String content = "";
+    private final String content = "";
 
     public ExtService(int localPort) {
         this.localPort = localPort;

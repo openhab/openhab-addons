@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.BufferOverflowException;
@@ -21,10 +22,13 @@ import java.nio.channels.Channel;
 import java.nio.channels.CompletionHandler;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -56,8 +60,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Connection {
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
-    /** Max. lengths of a PCK string including address and line feed. Currently dynamic text (GTDT) */
-    private static final int MAX_PCK_STRING_LENGTH = 34;
     private static final int BROADCAST_MODULE_ID = 3;
     private static final int BROADCAST_SEGMENT_ID = 3;
     private final ConnectionSettings settings;
@@ -67,13 +69,13 @@ public class Connection {
     /** The local segment id. -1 means "unknown". */
     private int localSegId;
     private final ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-    private final ByteBuffer sendBuffer = ByteBuffer.allocate(MAX_PCK_STRING_LENGTH);
+    private final ByteArrayOutputStream sendBuffer = new ByteArrayOutputStream();
     private final Queue<@Nullable SendData> sendQueue = new LinkedBlockingQueue<>();
-    private final Queue<@Nullable PckQueueItem> offlineSendQueue = new LinkedBlockingQueue<>();
-    private final Map<LcnAddr, @Nullable ModInfo> modData = Collections.synchronizedMap(new HashMap<>());
+    private final BlockingQueue<PckQueueItem> offlineSendQueue = new LinkedBlockingQueue<>();
+    private final Map<LcnAddr, ModInfo> modData = Collections.synchronizedMap(new HashMap<>());
     private volatile boolean writeInProgress;
-    private ScheduledExecutorService scheduler;
-    private StateMachine stateMachine;
+    private final ScheduledExecutorService scheduler;
+    private final StateMachine stateMachine;
 
     /**
      * Constructs a clean (disconnected) connection with the given settings.
@@ -99,7 +101,7 @@ public class Connection {
         this.localSegId = -1;
         this.readBuffer.clear();
         this.sendQueue.clear();
-        this.sendBuffer.clear();
+        this.sendBuffer.reset();
     }
 
     /**
@@ -136,9 +138,10 @@ public class Connection {
      * @param code the LCN internal code (-1 = "positive")
      */
     public void onAck(LcnAddrMod addr, int code) {
-        ModInfo info = this.modData.get(addr);
-        if (info != null) {
-            info.onAck(code, this, this.settings.getTimeout(), System.nanoTime());
+        synchronized (modData) {
+            if (modData.containsKey(addr)) {
+                modData.get(addr).onAck(code, this, this.settings.getTimeout(), System.nanoTime());
+            }
         }
     }
 
@@ -146,17 +149,10 @@ public class Connection {
      * Creates and/or returns cached data for the given LCN module.
      *
      * @param addr the module's address
-     * @return the data (never null)
+     * @return the data
      */
     public ModInfo updateModuleData(LcnAddrMod addr) {
-        synchronized (modData) {
-            ModInfo data = this.modData.get(addr);
-            if (data == null) {
-                data = new ModInfo(addr);
-                this.modData.put(addr, data);
-            }
-            return data;
-        }
+        return modData.computeIfAbsent(addr, ModInfo::new);
     }
 
     /**
@@ -232,7 +228,7 @@ public class Connection {
         if (localChannel == null || !isSocketConnected() || writeInProgress) {
             return;
         }
-        sendBuffer.clear();
+        sendBuffer.reset();
         SendData item = sendQueue.poll();
 
         if (item != null) {
@@ -242,46 +238,47 @@ public class Connection {
                 }
 
                 writeInProgress = true;
-                sendBuffer.flip();
-                localChannel.write(sendBuffer, null, new CompletionHandler<@Nullable Integer, @Nullable Void>() {
-                    @Override
-                    public void completed(@Nullable Integer result, @Nullable Void attachment) {
-                        synchronized (Connection.this) {
-                            if (result != sendBuffer.limit()) {
-                                logger.warn("Data loss while writing to channel: {}", settings.getAddress());
-                            } else {
-                                if (logger.isTraceEnabled()) {
-                                    logger.trace("Sent: {}", new String(sendBuffer.array(), 0, sendBuffer.limit()));
+                byte[] data = sendBuffer.toByteArray();
+                localChannel.write(ByteBuffer.wrap(data), null,
+                        new CompletionHandler<@Nullable Integer, @Nullable Void>() {
+                            @Override
+                            public void completed(@Nullable Integer result, @Nullable Void attachment) {
+                                synchronized (Connection.this) {
+                                    if (result != data.length) {
+                                        logger.warn("Data loss while writing to channel: {}", settings.getAddress());
+                                    } else {
+                                        if (logger.isTraceEnabled()) {
+                                            logger.trace("Sent: {}", new String(data, 0, data.length));
+                                        }
+                                    }
+
+                                    writeInProgress = false;
+
+                                    if (sendQueue.size() > 0) {
+                                        /**
+                                         * This could lead to stack overflows, since the CompletionHandler may run in
+                                         * the same Thread as triggerWriteToSocket() is invoked (see
+                                         * {@link AsynchronousChannelGroup}/Threading), but we do not expect as much
+                                         * data in one chunk here, that the stack can be filled in a critical way.
+                                         */
+                                        triggerWriteToSocket();
+                                    }
                                 }
                             }
 
-                            writeInProgress = false;
-
-                            if (sendQueue.size() > 0) {
-                                /**
-                                 * This could lead to stack overflows, since the CompletionHandler may run in the same
-                                 * Thread as triggerWriteToSocket() is invoked (see
-                                 * {@link AsynchronousChannelGroup}/Threading), but we do not expect as much data
-                                 * in one chunk here, that the stack can be filled in a critical way.
-                                 */
-                                triggerWriteToSocket();
+                            @Override
+                            public void failed(@Nullable Throwable exc, @Nullable Void attachment) {
+                                synchronized (Connection.this) {
+                                    if (exc != null) {
+                                        logger.warn("Writing to channel \"{}\" failed: {}", settings.getAddress(),
+                                                exc.getMessage());
+                                    }
+                                    writeInProgress = false;
+                                    stateMachine.handleConnectionFailed(new LcnException("write() failed"));
+                                }
                             }
-                        }
-                    }
-
-                    @Override
-                    public void failed(@Nullable Throwable exc, @Nullable Void attachment) {
-                        synchronized (Connection.this) {
-                            if (exc != null) {
-                                logger.warn("Writing to channel \"{}\" failed: {}", settings.getAddress(),
-                                        exc.getMessage());
-                            }
-                            writeInProgress = false;
-                            stateMachine.handleConnectionFailed(new LcnException("write() failed"));
-                        }
-                    }
-                });
-            } catch (UnsupportedEncodingException | BufferOverflowException e) {
+                        });
+            } catch (BufferOverflowException | IOException e) {
                 logger.warn("Sending failed: {}: {}: {}", item, e.getClass().getSimpleName(), e.getMessage());
             }
         }
@@ -306,7 +303,7 @@ public class Connection {
      */
     void queueDirectly(LcnAddr addr, boolean wantsAck, String pck) {
         try {
-            this.queueDirectly(addr, wantsAck, ByteBuffer.wrap(pck.getBytes(LcnDefs.LCN_ENCODING)));
+            this.queueDirectly(addr, wantsAck, pck.getBytes(LcnDefs.LCN_ENCODING));
         } catch (UnsupportedEncodingException ex) {
             logger.error("Failed to encode PCK command: {}", pck);
         }
@@ -321,7 +318,7 @@ public class Connection {
      * @param wantsAck true to wait for acknowledge on receipt (should be false for group addresses)
      * @param data the pure PCK command (without address header)
      */
-    void queueDirectly(LcnAddr addr, boolean wantsAck, ByteBuffer data) {
+    void queueDirectly(LcnAddr addr, boolean wantsAck, byte[] data) {
         if (!addr.isGroup() && wantsAck) {
             this.updateModuleData((LcnAddrMod) addr).queuePckCommandWithAck(data, this, this.settings.getTimeout(),
                     System.nanoTime());
@@ -350,7 +347,7 @@ public class Connection {
      * @param wantsAck true, if the LCN module shall respond with an Ack on successful processing
      * @param data the pure PCK command (without address header)
      */
-    void queueOffline(LcnAddr addr, boolean wantsAck, ByteBuffer data) {
+    void queueOffline(LcnAddr addr, boolean wantsAck, byte[] data) {
         offlineSendQueue.add(new PckQueueItem(addr, wantsAck, data));
     }
 
@@ -365,7 +362,7 @@ public class Connection {
      */
     public void queue(LcnAddr addr, boolean wantsAck, String pck) {
         try {
-            this.queue(addr, wantsAck, ByteBuffer.wrap(pck.getBytes(LcnDefs.LCN_ENCODING)));
+            this.queue(addr, wantsAck, pck.getBytes(LcnDefs.LCN_ENCODING));
         } catch (UnsupportedEncodingException ex) {
             logger.warn("Failed to encode PCK command: {}", pck);
         }
@@ -380,7 +377,7 @@ public class Connection {
      * @param wantsAck true, if the LCN module shall respond with an Ack on successful processing
      * @param pck the pure PCK command (without address header)
      */
-    public void queue(LcnAddr addr, boolean wantsAck, ByteBuffer pck) {
+    public void queue(LcnAddr addr, boolean wantsAck, byte[] pck) {
         stateMachine.queue(addr, wantsAck, pck);
     }
 
@@ -388,20 +385,16 @@ public class Connection {
      * Process the offline PCK command queue. Does only send recently enqueued PCK commands, the rest is discarded.
      */
     void sendOfflineQueue() {
-        // don't use forEach(), because elements can be added during iteration
-        while (!offlineSendQueue.isEmpty()) {
-            PckQueueItem item = offlineSendQueue.poll();
+        List<PckQueueItem> allItems = new ArrayList<>(offlineSendQueue.size());
+        offlineSendQueue.drainTo(allItems);
 
-            if (item == null) {
-                break;
-            }
-
+        allItems.forEach(item -> {
             // only send messages that were enqueued recently, discard older messages
             long timeout = settings.getTimeout();
             if (item.getEnqueued().isAfter(Instant.now().minus(timeout * 4, ChronoUnit.MILLIS))) {
                 queueDirectly(item.getAddr(), item.isWantsAck(), item.getData());
             }
-        }
+        });
     }
 
     /**
@@ -446,11 +439,7 @@ public class Connection {
      */
     public void updateModInfos() {
         synchronized (modData) {
-            for (ModInfo info : modData.values()) {
-                if (info != null) {
-                    info.update(this, settings.getTimeout(), System.nanoTime());
-                }
-            }
+            modData.values().forEach(i -> i.update(this, settings.getTimeout(), System.nanoTime()));
         }
     }
 
@@ -476,9 +465,9 @@ public class Connection {
     public void sendModuleDiscoveryCommand() {
         try {
             queueAndSend(new SendDataPck(new LcnAddrGrp(BROADCAST_SEGMENT_ID, BROADCAST_MODULE_ID), true,
-                    ByteBuffer.wrap(PckGenerator.nullCommand().getBytes(LcnDefs.LCN_ENCODING))));
+                    PckGenerator.nullCommand().getBytes(LcnDefs.LCN_ENCODING)));
             queueAndSend(new SendDataPck(new LcnAddrGrp(0, BROADCAST_MODULE_ID), true,
-                    ByteBuffer.wrap(PckGenerator.nullCommand().getBytes(LcnDefs.LCN_ENCODING))));
+                    PckGenerator.nullCommand().getBytes(LcnDefs.LCN_ENCODING)));
         } catch (UnsupportedEncodingException e) {
             logger.warn("Could not send discovery request: {}", e.getMessage());
         }

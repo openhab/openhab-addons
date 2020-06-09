@@ -148,7 +148,7 @@
 	</channel-group-type>
 
 	<channel-type id="rollershutter" advanced="true">
-		<item-type>Roller Shutter</item-type>
+		<item-type>Rollershutter</item-type>
 		<label>Roller Shutter</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
@@ -157,16 +157,16 @@
 		<label>Roller Shutter on Relays</label>
 		<channels>
 			<channel typeId="rollershutter" id="1">
-				<label>Roller Shutter on Relay 1-2</label>
+				<label>Shutter 1-2</label>
 			</channel>
 			<channel typeId="rollershutter" id="2">
-				<label>Roller Shutter on Relay 3-4</label>
+				<label>Shutter 3-4</label>
 			</channel>
 			<channel typeId="rollershutter" id="3">
-				<label>Roller Shutter on Relay 5-6</label>
+				<label>Shutter 5-6</label>
 			</channel>
 			<channel typeId="rollershutter" id="4">
-				<label>Roller Shutter on Relay 7-8</label>
+				<label>Shutter 7-8</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -175,7 +175,7 @@
 		<label>Roller Shutter on Dimmer Outputs</label>
 		<channels>
 			<channel typeId="rollershutter" id="1">
-				<label>Roller Shutter on Dimmer Output 1-2</label>
+				<label>Shutter 1-2</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -191,7 +191,6 @@
 				<option value="FLICKER">Flicker</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-group-type id="leds">
@@ -246,7 +245,6 @@
 				<option value="AND">And (fulfilled)</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-group-type id="logics">
@@ -306,7 +304,6 @@
 	<channel-type id="variable" advanced="true">
 		<item-type>Number</item-type>
 		<label>Variable</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<config-description-ref uri="channel-type:lcn:variable"/>
 	</channel-type>
 
@@ -398,7 +395,8 @@
 				<label>Threshold 4</label>
 			</channel>
 			<channel typeId="variable" id="5">
-				<label>Threshold 5 (only before Feb. 2013)</label>
+				<label>Threshold 5</label>
+				<description>Only before Feb. 2013</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -478,7 +476,6 @@
 	<channel-type id="keylock" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Keys Lock State</label>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-group-type id="keyslocktablea">

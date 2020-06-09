@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ExtServices {
-    private ExtService ExtService;
+    private final ExtService ExtService;
 
     public ExtServices(ExtService extService) {
         ExtService = extService;

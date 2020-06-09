@@ -39,7 +39,7 @@ public class DimmerOutputProfile implements StateProfile {
     private final Logger logger = LoggerFactory.getLogger(DimmerOutputProfile.class);
     /** The Profile's UID */
     static final ProfileTypeUID UID = new ProfileTypeUID(LcnBindingConstants.BINDING_ID, "output");
-    private ProfileCallback callback;
+    private final ProfileCallback callback;
     private int rampMs;
     private boolean controlAllOutputs;
     private boolean controlOutputs12;

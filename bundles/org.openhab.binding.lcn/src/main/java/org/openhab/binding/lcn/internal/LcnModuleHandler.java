@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.lcn.internal;
 
-import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -51,17 +49,9 @@ import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.binding.lcn.internal.common.LcnException;
 import org.openhab.binding.lcn.internal.connection.Connection;
 import org.openhab.binding.lcn.internal.connection.ModInfo;
-import org.openhab.binding.lcn.internal.converter.AbstractVariableValueConverter;
-import org.openhab.binding.lcn.internal.converter.AngleConverter;
-import org.openhab.binding.lcn.internal.converter.Co2Converter;
-import org.openhab.binding.lcn.internal.converter.CurrentConverter;
-import org.openhab.binding.lcn.internal.converter.EnergyConverter;
-import org.openhab.binding.lcn.internal.converter.IdentityConverter;
-import org.openhab.binding.lcn.internal.converter.LightConverter;
-import org.openhab.binding.lcn.internal.converter.PowerConverter;
-import org.openhab.binding.lcn.internal.converter.TemperatureConverter;
-import org.openhab.binding.lcn.internal.converter.VoltageConverter;
-import org.openhab.binding.lcn.internal.converter.WindspeedConverter;
+import org.openhab.binding.lcn.internal.converter.Converter;
+import org.openhab.binding.lcn.internal.converter.Converters;
+import org.openhab.binding.lcn.internal.converter.S0Converter;
 import org.openhab.binding.lcn.internal.subhandler.AbstractLcnModuleSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaAckSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaFirmwareSubHandler;
@@ -77,17 +67,24 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
+    private static final Map<String, Converter> CONVERTERS = new HashMap<>();
     private @Nullable LcnAddrMod moduleAddress;
-    private Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers;
-    private List<AbstractLcnModuleSubHandler> metadataSubHandlers;
-    private Map<ChannelUID, @Nullable AbstractVariableValueConverter> converters;
+    private final Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
+    private final List<AbstractLcnModuleSubHandler> metadataSubHandlers = new ArrayList<>();
+    private final Map<ChannelUID, @Nullable Converter> converters = new HashMap<>();
+
+    static {
+        CONVERTERS.put("temperature", Converters.TEMPERATURE);
+        CONVERTERS.put("light", Converters.LIGHT);
+        CONVERTERS.put("co2", Converters.CO2);
+        CONVERTERS.put("current", Converters.CURRENT);
+        CONVERTERS.put("voltage", Converters.VOLTAGE);
+        CONVERTERS.put("angle", Converters.ANGLE);
+        CONVERTERS.put("windspeed", Converters.WINDSPEED);
+    }
 
     public LcnModuleHandler(Thing thing) {
         super(thing);
-
-        subHandlers = Collections.synchronizedMap(new HashMap<>());
-        metadataSubHandlers = Collections.synchronizedList(new LinkedList<>());
-        converters = Collections.synchronizedMap(new HashMap<>());
     }
 
     @Override
@@ -99,10 +96,7 @@ public class LcnModuleHandler extends BaseThingHandler {
             // create sub handlers
             ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
             for (LcnChannelGroup type : LcnChannelGroup.values()) {
-                AbstractLcnModuleSubHandler newHandler = type.getSubHandlerClass()
-                        .getDeclaredConstructor(LcnModuleHandler.class, ModInfo.class).newInstance(this, info);
-
-                subHandlers.put(type, newHandler);
+                subHandlers.put(type, type.createSubHandler(this, info));
             }
 
             // meta sub handlers, which are not assigned to a channel group
@@ -116,32 +110,14 @@ public class LcnModuleHandler extends BaseThingHandler {
 
                 if (unitObject instanceof String) {
                     switch ((String) unitObject) {
-                        case "temperature":
-                            converters.put(channel.getUID(), new TemperatureConverter());
-                            break;
-                        case "light":
-                            converters.put(channel.getUID(), new LightConverter());
-                            break;
-                        case "co2":
-                            converters.put(channel.getUID(), new Co2Converter());
-                            break;
                         case "power":
-                            converters.put(channel.getUID(), new PowerConverter(parameterObject));
-                            break;
                         case "energy":
-                            converters.put(channel.getUID(), new EnergyConverter(parameterObject));
+                            converters.put(channel.getUID(), new S0Converter(parameterObject));
                             break;
-                        case "current":
-                            converters.put(channel.getUID(), new CurrentConverter());
-                            break;
-                        case "voltage":
-                            converters.put(channel.getUID(), new VoltageConverter());
-                            break;
-                        case "angle":
-                            converters.put(channel.getUID(), new AngleConverter());
-                            break;
-                        case "windspeed":
-                            converters.put(channel.getUID(), new WindspeedConverter());
+                        default:
+                            if (CONVERTERS.containsKey(unitObject)) {
+                                converters.put(channel.getUID(), CONVERTERS.get(unitObject));
+                            }
                             break;
                     }
                 }
@@ -149,10 +125,7 @@ public class LcnModuleHandler extends BaseThingHandler {
 
             // module is assumed as online, when the corresponding Bridge (PckGatewayHandler) is online.
             updateStatus(ThingStatus.ONLINE);
-        } catch (LcnException | InstantiationException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            logger.warn("Failed to initialize handler: {}: {}: {}", localModuleAddress, e.getClass().getSimpleName(),
-                    e.getMessage());
+        } catch (LcnException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
@@ -216,8 +189,8 @@ public class LcnModuleHandler extends BaseThingHandler {
     }
 
     @NonNullByDefault({}) // getOrDefault()
-    private AbstractVariableValueConverter getConverter(ChannelUID channelUid) {
-        return converters.getOrDefault(channelUid, IdentityConverter.getInstance());
+    private Converter getConverter(ChannelUID channelUid) {
+        return converters.getOrDefault(channelUid, Converters.IDENTITY);
     }
 
     /**
@@ -244,17 +217,13 @@ public class LcnModuleHandler extends BaseThingHandler {
      */
     @SuppressWarnings("null")
     public void handleStatusMessage(String pck) {
-        synchronized (subHandlers) {
-            for (AbstractLcnModuleSubHandler handler : subHandlers.values()) {
-                if (handler.tryParse(pck)) {
-                    break;
-                }
+        for (AbstractLcnModuleSubHandler handler : subHandlers.values()) {
+            if (handler.tryParse(pck)) {
+                break;
             }
         }
 
-        synchronized (metadataSubHandlers) {
-            metadataSubHandlers.forEach(h -> h.tryParse(pck));
-        }
+        metadataSubHandlers.forEach(h -> h.tryParse(pck));
     }
 
     private Optional<Integer> channelUidToChannelNumber(ChannelUID channelUid, LcnChannelGroup channelGroup)
@@ -300,7 +269,7 @@ public class LcnModuleHandler extends BaseThingHandler {
      * @param command without the address part
      * @throws LcnException when the module address is unknown
      */
-    public void sendPck(ByteBuffer command) throws LcnException {
+    public void sendPck(byte[] command) throws LcnException {
         getPckGatewayHandler().queue(getCommandAddress(), true, command);
     }
 
@@ -327,7 +296,7 @@ public class LcnModuleHandler extends BaseThingHandler {
      */
     public void updateChannel(LcnChannelGroup channelGroup, String channelId, State state) {
         ChannelUID channelUid = createChannelUid(channelGroup, channelId);
-        AbstractVariableValueConverter converter = converters.get(channelUid);
+        Converter converter = converters.get(channelUid);
 
         State convertedState = state;
         if (converter != null) {

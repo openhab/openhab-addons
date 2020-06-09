@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.nio.ByteBuffer;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lcn.internal.common.LcnAddr;
@@ -62,5 +60,5 @@ public interface StateContext {
      * @param wantsAck true, if the module shall respond with an Ack
      * @param data the PCK message
      */
-    void queue(LcnAddr addr, boolean wantsAck, ByteBuffer data);
+    void queue(LcnAddr addr, boolean wantsAck, byte[] data);
 }

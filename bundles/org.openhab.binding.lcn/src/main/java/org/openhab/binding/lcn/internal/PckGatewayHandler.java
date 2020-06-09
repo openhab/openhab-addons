@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -69,12 +68,13 @@ public class PckGatewayHandler extends BaseBridgeHandler {
 
         try {
             OutputPortDimMode dimMode;
-            if (LcnDefs.OutputPortDimMode.NATIVE50.name().equalsIgnoreCase(config.getMode())) {
+            String mode = config.getMode();
+            if (LcnDefs.OutputPortDimMode.NATIVE50.name().equalsIgnoreCase(mode)) {
                 dimMode = LcnDefs.OutputPortDimMode.NATIVE50;
-            } else if (LcnDefs.OutputPortDimMode.NATIVE200.name().equalsIgnoreCase(config.getMode())) {
+            } else if (LcnDefs.OutputPortDimMode.NATIVE200.name().equalsIgnoreCase(mode)) {
                 dimMode = LcnDefs.OutputPortDimMode.NATIVE200;
             } else {
-                throw new LcnException("DimMode " + config.getMode() + " is not supported");
+                throw new LcnException("DimMode " + mode + " is not supported");
             }
 
             ConnectionSettings settings = new ConnectionSettings("0", config.getHostname(), config.getPort(),
@@ -164,12 +164,12 @@ public class PckGatewayHandler extends BaseBridgeHandler {
      * @param wantsAck true, if the module shall send an ACK upon successful processing
      * @param pck the command to send
      */
-    public void queue(LcnAddr addr, boolean wantsAck, ByteBuffer pck) {
+    public void queue(LcnAddr addr, boolean wantsAck, byte[] pck) {
         Connection localConnection = connection;
         if (localConnection != null) {
             localConnection.queue(addr, wantsAck, pck);
         } else {
-            logger.warn("Dropped PCK command of length: {}", pck.capacity());
+            logger.warn("Dropped PCK command of length: {}", pck.length);
         }
     }
 

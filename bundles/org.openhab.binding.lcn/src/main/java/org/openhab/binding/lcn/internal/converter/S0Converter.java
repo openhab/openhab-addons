@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +26,16 @@ import org.slf4j.LoggerFactory;
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-public abstract class AbstractS0Converter extends AbstractVariableValueConverter {
-    private final Logger logger = LoggerFactory.getLogger(AbstractS0Converter.class);
+public class S0Converter extends Converter {
+    private final Logger logger = LoggerFactory.getLogger(S0Converter.class);
     protected double pulsesPerKwh;
 
-    public AbstractS0Converter(@Nullable Object parameter) {
+    public S0Converter(@Nullable Object parameter) {
+        super(SmartHomeUnits.WATT, n -> 0d, h -> 0L);
+
         if (parameter == null) {
             pulsesPerKwh = 1000;
-            logger.info("Pulses per kWh not set. Assuming 1000 imp./kWh.");
+            logger.debug("Pulses per kWh not set. Assuming 1000 imp./kWh.");
         } else if (parameter instanceof BigDecimal) {
             pulsesPerKwh = ((BigDecimal) parameter).doubleValue();
         } else {
@@ -41,8 +44,8 @@ public abstract class AbstractS0Converter extends AbstractVariableValueConverter
     }
 
     @Override
-    public int toNative(double value) {
-        return (int) Math.round(value * pulsesPerKwh / 1000);
+    public long toNative(double value) {
+        return Math.round(value * pulsesPerKwh / 1000);
     }
 
     @Override

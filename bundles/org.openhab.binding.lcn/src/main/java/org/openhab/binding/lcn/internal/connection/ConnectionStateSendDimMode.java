@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +38,7 @@ public class ConnectionStateSendDimMode extends AbstractConnectionState {
     }
 
     @Override
-    public void queue(LcnAddr addr, boolean wantsAck, ByteBuffer data) {
+    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
         connection.queueOffline(addr, wantsAck, data);
     }
 

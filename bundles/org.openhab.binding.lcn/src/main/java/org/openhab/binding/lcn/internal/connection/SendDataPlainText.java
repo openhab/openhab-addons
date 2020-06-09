@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
@@ -50,8 +49,8 @@ class SendDataPlainText extends SendData {
     }
 
     @Override
-    boolean write(ByteBuffer buffer, int localSegId) throws UnsupportedEncodingException, BufferOverflowException {
-        buffer.put((this.text + PckGenerator.TERMINATION).getBytes(LcnDefs.LCN_ENCODING));
+    boolean write(OutputStream buffer, int localSegId) throws IOException {
+        buffer.write((this.text + PckGenerator.TERMINATION).getBytes(LcnDefs.LCN_ENCODING));
         return true;
     }
 

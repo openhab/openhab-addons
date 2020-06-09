@@ -13,7 +13,6 @@
 package org.openhab.binding.lcn.internal.connection;
 
 import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,8 +31,8 @@ public class StateMachine implements StateContext {
     private final Logger logger = LoggerFactory.getLogger(StateMachine.class);
     /** The StateMachine's current state */
     protected volatile AbstractConnectionState state;
-    private Connection connection;
-    private ScheduledExecutorService scheduler;
+    private final Connection connection;
+    private final ScheduledExecutorService scheduler;
 
     public StateMachine(Connection connection, ScheduledExecutorService scheduler) {
         this.connection = connection;
@@ -65,7 +64,7 @@ public class StateMachine implements StateContext {
     }
 
     @Override
-    public void queue(LcnAddr addr, boolean wantsAck, ByteBuffer data) {
+    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
         state.queue(addr, wantsAck, data);
     }
 

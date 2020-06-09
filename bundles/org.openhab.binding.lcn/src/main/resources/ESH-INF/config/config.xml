@@ -96,6 +96,7 @@
 		<parameter name="parameter" type="integer" min="1">
 			<label>Pulses per kWh</label>
 			<description>Only for S0 counters (power or energy)</description>
+			<default>1000</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

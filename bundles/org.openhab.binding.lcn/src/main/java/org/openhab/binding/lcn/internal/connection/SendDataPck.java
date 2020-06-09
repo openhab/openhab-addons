@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.common.LcnAddr;
@@ -37,7 +37,7 @@ class SendDataPck extends SendData {
     private final boolean wantsAck;
 
     /** PCK command (without address header) encoded as bytes. */
-    private final ByteBuffer data;
+    private final byte[] data;
 
     /**
      * Constructor.
@@ -46,7 +46,7 @@ class SendDataPck extends SendData {
      * @param wantsAck true to claim receipt
      * @param data the PCK command encoded as bytes
      */
-    SendDataPck(LcnAddr addr, boolean wantsAck, ByteBuffer data) {
+    SendDataPck(LcnAddr addr, boolean wantsAck, byte[] data) {
         this.addr = addr;
         this.wantsAck = wantsAck;
         this.data = data;
@@ -57,22 +57,21 @@ class SendDataPck extends SendData {
      *
      * @return the PCK command encoded as bytes
      */
-    ByteBuffer getData() {
+    byte[] getData() {
         return this.data;
     }
 
     @Override
-    boolean write(ByteBuffer buffer, int localSegId) throws UnsupportedEncodingException, BufferOverflowException {
-        buffer.put(PckGenerator.generateAddressHeader(this.addr, localSegId == -1 ? 0 : localSegId, this.wantsAck)
+    boolean write(OutputStream buffer, int localSegId) throws BufferOverflowException, IOException {
+        buffer.write(PckGenerator.generateAddressHeader(this.addr, localSegId == -1 ? 0 : localSegId, this.wantsAck)
                 .getBytes(LcnDefs.LCN_ENCODING));
-        data.rewind();
-        buffer.put(this.data);
-        buffer.put(PckGenerator.TERMINATION.getBytes(LcnDefs.LCN_ENCODING));
+        buffer.write(this.data);
+        buffer.write(PckGenerator.TERMINATION.getBytes(LcnDefs.LCN_ENCODING));
         return true;
     }
 
     @Override
     public String toString() {
-        return "Addr: " + addr + ": " + new String(data.array(), 0, data.limit());
+        return "Addr: " + addr + ": " + new String(data, 0, data.length);
     }
 }

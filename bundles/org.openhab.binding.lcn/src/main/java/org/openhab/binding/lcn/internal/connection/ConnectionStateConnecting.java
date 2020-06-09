@@ -15,7 +15,6 @@ package org.openhab.binding.lcn.internal.connection;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.ScheduledExecutorService;
@@ -94,7 +93,7 @@ public class ConnectionStateConnecting extends AbstractConnectionState {
     }
 
     @Override
-    public void queue(LcnAddr addr, boolean wantsAck, ByteBuffer data) {
+    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
         connection.queueOffline(addr, wantsAck, data);
     }
 

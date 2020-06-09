@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
 import org.openhab.binding.lcn.internal.common.LcnException;
-import org.openhab.binding.lcn.internal.common.NullScheduledFuture;
 
 /**
  * This state waits for the status answer of the LCN-PCK gateway after connection establishment, rather the LCN bus is
@@ -31,7 +30,7 @@ import org.openhab.binding.lcn.internal.common.NullScheduledFuture;
  */
 @NonNullByDefault
 public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionState {
-    private ScheduledFuture<?> legacyTimer = NullScheduledFuture.getInstance();
+    private @Nullable ScheduledFuture<?> legacyTimer;
 
     public ConnectionStateWaitForLcnBusConnected(StateContext context, ScheduledExecutorService scheduler) {
         super(context, scheduler);
@@ -42,24 +41,30 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
         // Legacy support for LCN-PCHK 2.2 and earlier:
         // There was no explicit "LCN connected" notification after successful authentication.
         // Only "LCN disconnected" would be reported immediately. That means "LCN connected" used to be the default.
-        addTimer(legacyTimer = scheduler.schedule(() -> {
+        ScheduledFuture<?> localLegacyTimer = legacyTimer = scheduler.schedule(() -> {
             connection.getCallback().onOnline();
             nextState(ConnectionStateSendDimMode.class);
-        }, connection.getSettings().getTimeout(), TimeUnit.MILLISECONDS));
+        }, connection.getSettings().getTimeout(), TimeUnit.MILLISECONDS);
+        addTimer(localLegacyTimer);
     }
 
     @Override
-    public void queue(LcnAddr addr, boolean wantsAck, ByteBuffer data) {
+    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
         connection.queueOffline(addr, wantsAck, data);
     }
 
     @Override
     public void onPckMessageReceived(String data) {
+        ScheduledFuture<?> localLegacyTimer = legacyTimer;
         if (data.equals(LcnDefs.LCNCONNSTATE_DISCONNECTED)) {
-            legacyTimer.cancel(true);
+            if (localLegacyTimer != null) {
+                localLegacyTimer.cancel(true);
+            }
             connection.getCallback().onOffline("LCN bus not connected to LCN-PCHK/PKE");
         } else if (data.equals(LcnDefs.LCNCONNSTATE_CONNECTED)) {
-            legacyTimer.cancel(true);
+            if (localLegacyTimer != null) {
+                localLegacyTimer.cancel(true);
+            }
             connection.getCallback().onOnline();
             nextState(ConnectionStateSendDimMode.class);
         } else if (data.equals(LcnDefs.INSUFFICIENT_LICENSES)) {

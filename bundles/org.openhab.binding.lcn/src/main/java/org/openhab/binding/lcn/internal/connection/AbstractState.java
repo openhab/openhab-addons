@@ -26,8 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public abstract class AbstractState {
-    private List<ScheduledFuture<?>> usedTimers = Collections.synchronizedList(new ArrayList<>());
-    protected StateContext context;
+    private final List<ScheduledFuture<?>> usedTimers = Collections.synchronizedList(new ArrayList<>());
+    protected final StateContext context;
 
     public AbstractState(StateContext context) {
         this.context = context;

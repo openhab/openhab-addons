@@ -90,7 +90,8 @@ public class LcnModuleThresholdSubHandler extends AbstractLcnModuleVariableSubHa
 
         stream.forEach(i -> {
             try {
-                fireUpdateAndReset(matcher, groupSuffix.orElse(i + ""), Variable.thrsIdToVar(registerNumber, i));
+                fireUpdateAndReset(matcher, groupSuffix.orElse(String.valueOf(i)),
+                        Variable.thrsIdToVar(registerNumber, i));
             } catch (LcnException e) {
                 logger.warn("Parse error: {}", e.getMessage());
             }

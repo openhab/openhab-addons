@@ -159,19 +159,16 @@ public class LcnModuleOutputSubHandler extends AbstractLcnModuleSubHandler {
             logger.warn("Unexpected pattern: {}", matcher.pattern());
             return;
         }
-        if (percent < 0 || percent > 100) {
-            logger.warn("Output value out of range: {}", percent);
-            return;
-        }
+
         info.onOutputResponseReceived(outputId);
+
+        percent = Math.min(100, Math.max(0, percent));
 
         PercentType percentType = new PercentType((int) Math.round(percent));
         fireUpdate(LcnChannelGroup.OUTPUT, outputId, percentType);
 
         if (outputId == 3) {
-            synchronized (this) {
-                output4 = percentType;
-            }
+            output4 = percentType;
         }
 
         if (percent > 0) {

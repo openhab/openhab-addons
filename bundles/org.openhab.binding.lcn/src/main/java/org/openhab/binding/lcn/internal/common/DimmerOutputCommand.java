@@ -25,9 +25,9 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 @NonNullByDefault
 public class DimmerOutputCommand extends PercentType {
     private static final long serialVersionUID = 8147502412107723798L;
-    private boolean controlAllOutputs;
-    private boolean controlOutputs12;
-    private int rampMs;
+    private final boolean controlAllOutputs;
+    private final boolean controlOutputs12;
+    private final int rampMs;
 
     public DimmerOutputCommand(BigDecimal value, boolean controlAllOutputs, boolean controlOutputs12, int rampMs) {
         super(value);

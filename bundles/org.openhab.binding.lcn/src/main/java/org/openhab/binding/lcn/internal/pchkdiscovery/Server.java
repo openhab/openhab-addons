@@ -27,16 +27,16 @@ import com.thoughtworks.xstream.converters.extended.ToAttributedValueConverter;
 @XStreamConverter(value = ToAttributedValueConverter.class, strings = { "content" })
 public class Server {
     @XStreamAsAttribute
-    private int requestId;
+    private final int requestId;
     @XStreamAsAttribute
-    private String machineId;
+    private final String machineId;
     @XStreamAsAttribute
-    private String machineName;
+    private final String machineName;
     @XStreamAsAttribute
-    private String osShort;
+    private final String osShort;
     @XStreamAsAttribute
-    private String osLong;
-    private String content;
+    private final String osLong;
+    private final String content;
 
     public Server(int requestId, String machineId, String machineName, String osShort, String osLong, String content) {
         this.requestId = requestId;

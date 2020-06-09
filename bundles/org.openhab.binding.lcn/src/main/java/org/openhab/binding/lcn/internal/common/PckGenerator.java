@@ -310,26 +310,26 @@ public final class PckGenerator {
         if (states.length != 8) {
             throw new LcnException();
         }
-        String ret = "R8";
+        StringBuilder ret = new StringBuilder("R8");
         for (int i = 0; i < 8; ++i) {
             switch (states[i]) {
                 case ON:
-                    ret += "1";
+                    ret.append("1");
                     break;
                 case OFF:
-                    ret += "0";
+                    ret.append("0");
                     break;
                 case TOGGLE:
-                    ret += "U";
+                    ret.append("U");
                     break;
                 case NOCHANGE:
-                    ret += "-";
+                    ret.append("-");
                     break;
                 default:
                     throw new LcnException();
             }
         }
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -502,29 +502,29 @@ public final class PckGenerator {
      * @param cmds the 4 concrete commands to send for the tables (A-D)
      * @param keys the tables' 8 key-states (true means "send")
      * @return the PCK command (without address header) as text
-     * @throws IllegalArgumentException if out of range
+     * @throws LcnException if out of range
      */
     public static String sendKeys(LcnDefs.SendKeyCommand[] cmds, boolean[] keys) throws LcnException {
         if (cmds.length != 4 || keys.length != 8) {
             throw new LcnException();
         }
-        String ret = "TS";
+        StringBuilder ret = new StringBuilder("TS");
         for (int i = 0; i < 4; ++i) {
             switch (cmds[i]) {
                 case HIT:
-                    ret += "K";
+                    ret.append("K");
                     break;
                 case MAKE:
-                    ret += "L";
+                    ret.append("L");
                     break;
                 case BREAK:
-                    ret += "O";
+                    ret.append("O");
                     break;
                 case DONTSEND:
                     // By skipping table D (if it is not used), we use the old command
                     // for table A-C which is compatible with older LCN modules
                     if (i < 3) {
-                        ret += "-";
+                        ret.append("-");
                     }
                     break;
                 default:
@@ -532,9 +532,9 @@ public final class PckGenerator {
             }
         }
         for (int i = 0; i < 8; ++i) {
-            ret += keys[i] ? "1" : "0";
+            ret.append(keys[i] ? "1" : "0");
         }
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -550,58 +550,58 @@ public final class PckGenerator {
     public static String sendKeysHitDefered(int tableId, int time, LcnDefs.TimeUnit timeUnit, boolean[] keys)
             throws LcnException {
         if (tableId < 0 || tableId > 3 || keys.length != 8) {
-            throw new IllegalArgumentException();
+            throw new LcnException();
         }
-        String ret = "TV";
+        StringBuilder ret = new StringBuilder("TV");
         switch (tableId) {
             case 0:
-                ret += "A";
+                ret.append("A");
                 break;
             case 1:
-                ret += "B";
+                ret.append("B");
                 break;
             case 2:
-                ret += "C";
+                ret.append("C");
                 break;
             case 3:
-                ret += "D";
+                ret.append("D");
                 break;
             default:
                 throw new LcnException();
         }
-        ret += String.format("%03d", time);
+        ret.append(String.format("%03d", time));
         switch (timeUnit) {
             case SECONDS:
                 if (time < 1 || time > 60) {
                     throw new LcnException();
                 }
-                ret += "S";
+                ret.append("S");
                 break;
             case MINUTES:
                 if (time < 1 || time > 90) {
                     throw new LcnException();
                 }
-                ret += "M";
+                ret.append("M");
                 break;
             case HOURS:
                 if (time < 1 || time > 50) {
                     throw new LcnException();
                 }
-                ret += "H";
+                ret.append("H");
                 break;
             case DAYS:
                 if (time < 1 || time > 45) {
                     throw new LcnException();
                 }
-                ret += "D";
+                ret.append("D");
                 break;
             default:
                 throw new LcnException();
         }
         for (int i = 0; i < 8; ++i) {
-            ret += keys[i] ? "1" : "0";
+            ret.append(keys[i] ? "1" : "0");
         }
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -626,26 +626,27 @@ public final class PckGenerator {
         if (tableId < 0 || tableId > 3 || states.length != 8) {
             throw new LcnException();
         }
-        String ret = String.format("TX%s", tableId == 0 ? "A" : tableId == 1 ? "B" : tableId == 2 ? "C" : "D");
+        StringBuilder ret = new StringBuilder(
+                String.format("TX%s", tableId == 0 ? "A" : tableId == 1 ? "B" : tableId == 2 ? "C" : "D"));
         for (int i = 0; i < 8; ++i) {
             switch (states[i]) {
                 case ON:
-                    ret += "1";
+                    ret.append("1");
                     break;
                 case OFF:
-                    ret += "0";
+                    ret.append("0");
                     break;
                 case TOGGLE:
-                    ret += "U";
+                    ret.append("U");
                     break;
                 case NOCHANGE:
-                    ret += "-";
+                    ret.append("-");
                     break;
                 default:
                     throw new LcnException();
             }
         }
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -660,41 +661,41 @@ public final class PckGenerator {
      */
     public static String lockKeyTabATemporary(int time, LcnDefs.TimeUnit timeUnit, boolean[] keys) throws LcnException {
         if (keys.length != 8) {
-            throw new IllegalArgumentException();
+            throw new LcnException();
         }
-        String ret = String.format("TXZA%03d", time);
+        StringBuilder ret = new StringBuilder(String.format("TXZA%03d", time));
         switch (timeUnit) {
             case SECONDS:
                 if (time < 1 || time > 60) {
                     throw new LcnException();
                 }
-                ret += "S";
+                ret.append("S");
                 break;
             case MINUTES:
                 if (time < 1 || time > 90) {
                     throw new LcnException();
                 }
-                ret += "M";
+                ret.append("M");
                 break;
             case HOURS:
                 if (time < 1 || time > 50) {
                     throw new LcnException();
                 }
-                ret += "H";
+                ret.append("H");
                 break;
             case DAYS:
                 if (time < 1 || time > 45) {
                     throw new LcnException();
                 }
-                ret += "D";
+                ret.append("D");
                 break;
             default:
                 throw new LcnException();
         }
         for (int i = 0; i < 8; ++i) {
-            ret += keys[i] ? "1" : "0";
+            ret.append(keys[i] ? "1" : "0");
         }
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -721,7 +722,7 @@ public final class PckGenerator {
      * @param regId 0..1
      * @param state the lock state
      * @return the PCK command (without address header) as text
-     * @throws IllegalArgumentException if out of range
+     * @throws LcnException if out of range
      */
     public static String lockRegulator(int regId, boolean state) throws LcnException {
         if (regId < 0 || regId > 1) {
@@ -769,7 +770,7 @@ public final class PckGenerator {
             ret = 9;
         } else {
             ret = (timeMSec / 1000 - 6) / 2 + 10;
-            if (ret >= 250) {
+            if (ret > 250) {
                 ret = 250;
                 LOGGER.warn("Ramp value is too high. Limiting value to 486s.");
             }

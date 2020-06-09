@@ -33,7 +33,7 @@ public class VariableValue {
     private static final String SENSOR_DEFECTIVE_STATE = "DEFECTIVE";
 
     /** The absolute, native LCN value. */
-    private long nativeValue;
+    private final long nativeValue;
 
     /**
      * Constructor with native LCN value.

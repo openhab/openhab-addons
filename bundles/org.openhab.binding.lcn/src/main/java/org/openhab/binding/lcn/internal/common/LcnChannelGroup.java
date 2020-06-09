@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.lcn.internal.common;
 
+import java.util.function.BiFunction;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lcn.internal.LcnModuleHandler;
+import org.openhab.binding.lcn.internal.connection.ModInfo;
 import org.openhab.binding.lcn.internal.subhandler.AbstractLcnModuleSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleBinarySensorSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleCodeSubHandler;
@@ -36,33 +40,34 @@ import org.openhab.binding.lcn.internal.subhandler.LcnModuleVariableSubHandler;
  */
 @NonNullByDefault
 public enum LcnChannelGroup {
-    OUTPUT(4, LcnModuleOutputSubHandler.class),
-    ROLLERSHUTTEROUTPUT(1, LcnModuleRollershutterOutputSubHandler.class),
-    RELAY(8, LcnModuleRelaySubHandler.class),
-    ROLLERSHUTTERRELAY(4, LcnModuleRollershutterRelaySubHandler.class),
-    LED(12, LcnModuleLedSubHandler.class),
-    LOGIC(4, LcnModuleLogicSubHandler.class),
-    BINARYSENSOR(8, LcnModuleBinarySensorSubHandler.class),
-    VARIABLE(12, LcnModuleVariableSubHandler.class),
-    RVARSETPOINT(2, LcnModuleRvarSetpointSubHandler.class),
-    RVARLOCK(2, LcnModuleRvarLockSubHandler.class),
-    THRESHOLDREGISTER1(5, LcnModuleThresholdSubHandler.class),
-    THRESHOLDREGISTER2(4, LcnModuleThresholdSubHandler.class),
-    THRESHOLDREGISTER3(4, LcnModuleThresholdSubHandler.class),
-    THRESHOLDREGISTER4(4, LcnModuleThresholdSubHandler.class),
-    S0INPUT(4, LcnModuleS0CounterSubHandler.class),
-    KEYLOCKTABLEA(8, LcnModuleKeyLockTableSubHandler.class),
-    KEYLOCKTABLEB(8, LcnModuleKeyLockTableSubHandler.class),
-    KEYLOCKTABLEC(8, LcnModuleKeyLockTableSubHandler.class),
-    KEYLOCKTABLED(8, LcnModuleKeyLockTableSubHandler.class),
-    CODE(0, LcnModuleCodeSubHandler.class);
+    OUTPUT(4, LcnModuleOutputSubHandler::new),
+    ROLLERSHUTTEROUTPUT(1, LcnModuleRollershutterOutputSubHandler::new),
+    RELAY(8, LcnModuleRelaySubHandler::new),
+    ROLLERSHUTTERRELAY(4, LcnModuleRollershutterRelaySubHandler::new),
+    LED(12, LcnModuleLedSubHandler::new),
+    LOGIC(4, LcnModuleLogicSubHandler::new),
+    BINARYSENSOR(8, LcnModuleBinarySensorSubHandler::new),
+    VARIABLE(12, LcnModuleVariableSubHandler::new),
+    RVARSETPOINT(2, LcnModuleRvarSetpointSubHandler::new),
+    RVARLOCK(2, LcnModuleRvarLockSubHandler::new),
+    THRESHOLDREGISTER1(5, LcnModuleThresholdSubHandler::new),
+    THRESHOLDREGISTER2(4, LcnModuleThresholdSubHandler::new),
+    THRESHOLDREGISTER3(4, LcnModuleThresholdSubHandler::new),
+    THRESHOLDREGISTER4(4, LcnModuleThresholdSubHandler::new),
+    S0INPUT(4, LcnModuleS0CounterSubHandler::new),
+    KEYLOCKTABLEA(8, LcnModuleKeyLockTableSubHandler::new),
+    KEYLOCKTABLEB(8, LcnModuleKeyLockTableSubHandler::new),
+    KEYLOCKTABLEC(8, LcnModuleKeyLockTableSubHandler::new),
+    KEYLOCKTABLED(8, LcnModuleKeyLockTableSubHandler::new),
+    CODE(0, LcnModuleCodeSubHandler::new);
 
     private int count;
-    private Class<? extends AbstractLcnModuleSubHandler> subHandlerClass;
+    private BiFunction<LcnModuleHandler, ModInfo, ? extends AbstractLcnModuleSubHandler> handlerFactory;
 
-    private LcnChannelGroup(int count, Class<? extends AbstractLcnModuleSubHandler> subHandlerClass) {
+    private LcnChannelGroup(int count,
+            BiFunction<LcnModuleHandler, ModInfo, ? extends AbstractLcnModuleSubHandler> handlerFactory) {
         this.count = count;
-        this.subHandlerClass = subHandlerClass;
+        this.handlerFactory = handlerFactory;
     }
 
     /**
@@ -89,8 +94,8 @@ public enum LcnChannelGroup {
      *
      * @return the sub handler class
      */
-    public Class<? extends AbstractLcnModuleSubHandler> getSubHandlerClass() {
-        return subHandlerClass;
+    public AbstractLcnModuleSubHandler createSubHandler(LcnModuleHandler handler, ModInfo info) {
+        return handlerFactory.apply(handler, info);
     }
 
     /**

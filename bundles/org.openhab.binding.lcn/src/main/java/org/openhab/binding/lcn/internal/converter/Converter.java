@@ -10,23 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-/**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 package org.openhab.binding.lcn.internal.converter;
+
+import java.util.function.Function;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.State;
@@ -40,15 +31,17 @@ import org.slf4j.LoggerFactory;
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-public abstract class AbstractVariableValueConverter {
-    private final Logger logger = LoggerFactory.getLogger(AbstractVariableValueConverter.class);
+public class Converter {
+    private final Logger logger = LoggerFactory.getLogger(Converter.class);
+    private @Nullable final Unit<?> unit;
+    private final Function<Long, Double> toHuman;
+    private final Function<Double, Long> toNative;
 
-    /**
-     * Gets the Profile's Unit.
-     *
-     * @return the Unit
-     */
-    protected abstract Unit<?> getUnitType();
+    public Converter(@Nullable Unit<?> unit, Function<Long, Double> toHuman, Function<Double, Long> toNative) {
+        this.unit = unit;
+        this.toHuman = toHuman;
+        this.toNative = toNative;
+    }
 
     /**
      * Converts the given human readable value into the native LCN value.
@@ -56,7 +49,9 @@ public abstract class AbstractVariableValueConverter {
      * @param humanReadableValue the value to convert
      * @return the native value
      */
-    protected abstract int toNative(double humanReadableValue);
+    protected long toNative(double humanReadableValue) {
+        return toNative.apply(humanReadableValue);
+    }
 
     /**
      * Converts the given native LCN value into a human readable value.
@@ -64,7 +59,9 @@ public abstract class AbstractVariableValueConverter {
      * @param nativeValue the value to convert
      * @return the human readable value
      */
-    protected abstract double toHumanReadable(long nativeValue);
+    protected double toHumanReadable(long nativeValue) {
+        return toHuman.apply(nativeValue);
+    }
 
     /**
      * Converts a human readable value into LCN native value.
@@ -84,12 +81,17 @@ public abstract class AbstractVariableValueConverter {
      * @throws LcnException when the value could not be converted to the base unit
      */
     public DecimalType onCommandFromItem(QuantityType<?> quantityType) throws LcnException {
-        QuantityType<?> quantityInBaseUnit = quantityType.toUnit(getUnitType());
+        Unit<?> localUnit = unit;
+        if (localUnit == null) {
+            return onCommandFromItem(quantityType.doubleValue());
+        }
+
+        QuantityType<?> quantityInBaseUnit = quantityType.toUnit(localUnit);
 
         if (quantityInBaseUnit != null) {
             return onCommandFromItem(quantityInBaseUnit.doubleValue());
         } else {
-            throw new LcnException(quantityType + ": Incompatible unit: " + getUnitType());
+            throw new LcnException(quantityType + ": Incompatible Channel unit configured: " + localUnit);
         }
     }
 
@@ -103,7 +105,10 @@ public abstract class AbstractVariableValueConverter {
         State result = state;
 
         if (state instanceof DecimalType) {
-            result = QuantityType.valueOf(toHumanReadable(((DecimalType) state).longValue()), getUnitType());
+            Unit<?> localUnit = unit;
+            if (localUnit != null) {
+                result = QuantityType.valueOf(toHumanReadable(((DecimalType) state).longValue()), localUnit);
+            }
         } else {
             logger.warn("Unexpected state type: {}", state.getClass().getSimpleName());
         }

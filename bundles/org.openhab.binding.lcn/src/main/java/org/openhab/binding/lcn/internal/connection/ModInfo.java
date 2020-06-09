@@ -13,17 +13,17 @@
 package org.openhab.binding.lcn.internal.connection;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lcn.internal.LcnBindingConstants;
-import org.openhab.binding.lcn.internal.common.LcnAddrMod;
+import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
 import org.openhab.binding.lcn.internal.common.LcnException;
@@ -60,7 +60,7 @@ public class ModInfo {
     private static final int STATUS_REQUEST_DELAY_AFTER_COMMAND_MSEC = 2000;
 
     /** The LCN module's address. */
-    private final LcnAddrMod addr;
+    private final LcnAddr addr;
 
     /** Firmware date of the LCN module. -1 means "unknown". */
     private int firmwareVersion = -1;
@@ -69,7 +69,7 @@ public class ModInfo {
     private final RequestStatus requestFirmwareVersion = new RequestStatus(-1, NUM_TRIES, "Firmware Version");
 
     /** Output-port request status (0..3). */
-    private final ArrayList<RequestStatus> requestStatusOutputs = new ArrayList<>();
+    private final RequestStatus[] requestStatusOutputs = new RequestStatus[LcnChannelGroup.OUTPUT.getCount()];
 
     /** Relays request status (all 8). */
     private final RequestStatus requestStatusRelays = new RequestStatus(MAX_STATUS_EVENTBASED_VALUEAGE_MSEC, NUM_TRIES,
@@ -109,7 +109,7 @@ public class ModInfo {
      * Commands are always without address header.
      * Note that the first one might currently be "in progress".
      */
-    private final LinkedList<@Nullable ByteBuffer> pckCommandsWithAck = new LinkedList<>();
+    private final Queue<byte @Nullable []> pckCommandsWithAck = new ConcurrentLinkedQueue<>();
 
     /** Status data for the currently processed {@link PckCommandWithAck}. */
     private final RequestStatus requestCurrentPckCommandWithAck = new RequestStatus(-1, NUM_TRIES, "Commands with Ack");
@@ -119,11 +119,11 @@ public class ModInfo {
      *
      * @param addr the module's address
      */
-    public ModInfo(LcnAddrMod addr) {
+    public ModInfo(LcnAddr addr) {
         this.addr = addr;
         for (int i = 0; i < LcnChannelGroup.OUTPUT.getCount(); ++i) {
-            this.requestStatusOutputs
-                    .add(new RequestStatus(MAX_STATUS_EVENTBASED_VALUEAGE_MSEC, NUM_TRIES, "Output " + (i + 1)));
+            requestStatusOutputs[i] = new RequestStatus(MAX_STATUS_EVENTBASED_VALUEAGE_MSEC, NUM_TRIES,
+                    "Output " + (i + 1));
         }
 
         for (Variable var : Variable.values()) {
@@ -161,7 +161,7 @@ public class ModInfo {
      * @param timeoutMSec the time to wait for a response before retrying a request
      * @param currTime the current time stamp
      */
-    public void queuePckCommandWithAck(ByteBuffer data, Connection conn, long timeoutMSec, long currTime) {
+    public void queuePckCommandWithAck(byte[] data, Connection conn, long timeoutMSec, long currTime) {
         this.pckCommandsWithAck.add(data);
         // Try to process the new acknowledged command. Will do nothing if another one is still in progress.
         this.tryProcessNextCommandWithAck(conn, timeoutMSec, currTime);
@@ -176,7 +176,7 @@ public class ModInfo {
      */
     public void onAck(int code, Connection conn, long timeoutMSec, long currTime) {
         if (this.requestCurrentPckCommandWithAck.isActive()) { // Check if we wait for an ack.
-            this.pckCommandsWithAck.pollFirst();
+            this.pckCommandsWithAck.poll();
             this.requestCurrentPckCommandWithAck.reset();
             // Try to process next acknowledged command
             this.tryProcessNextCommandWithAck(conn, timeoutMSec, currTime);
@@ -195,13 +195,13 @@ public class ModInfo {
     private boolean tryProcessNextCommandWithAck(Connection conn, long timeoutMSec, long currTime) {
         // Use the chance to remove a failed command first
         if (this.requestCurrentPckCommandWithAck.isFailed(timeoutMSec, currTime)) {
-            ByteBuffer failedCommand = this.pckCommandsWithAck.pollFirst();
+            byte[] failedCommand = this.pckCommandsWithAck.poll();
             this.requestCurrentPckCommandWithAck.reset();
 
             if (failedCommand != null) {
                 try {
                     logger.warn("{}: Module did not respond to command: {}", addr,
-                            new String(failedCommand.array(), LcnDefs.LCN_ENCODING));
+                            new String(failedCommand, LcnDefs.LCN_ENCODING));
                 } catch (UnsupportedEncodingException e) {
                     // ignore
                 }
@@ -211,7 +211,7 @@ public class ModInfo {
         if (!this.pckCommandsWithAck.isEmpty() && !this.requestCurrentPckCommandWithAck.isActive()) {
             this.requestCurrentPckCommandWithAck.nextRequestIn(0, currTime);
         }
-        ByteBuffer command = this.pckCommandsWithAck.peekFirst();
+        byte[] command = this.pckCommandsWithAck.peek();
         if (command == null) {
             return false;
         }
@@ -222,8 +222,8 @@ public class ModInfo {
             }
         } catch (LcnException e) {
             try {
-                logger.warn("{}: Could not send command: {}: {}", addr,
-                        new String(command.array(), LcnDefs.LCN_ENCODING), e.getMessage());
+                logger.warn("{}: Could not send command: {}: {}", addr, new String(command, LcnDefs.LCN_ENCODING),
+                        e.getMessage());
             } catch (UnsupportedEncodingException e1) {
                 // ignore
             }
@@ -253,6 +253,17 @@ public class ModInfo {
         return firmwareVersion >= LcnBindingConstants.FIRMWARE_2013;
     }
 
+    private boolean update(Connection conn, long timeoutMSec, long currTime, RequestStatus requestStatus, String pck)
+            throws LcnException {
+        RequestStatus r;
+        if ((r = requestStatus).shouldSendNextRequest(timeoutMSec, currTime)) {
+            conn.queue(this.addr, false, pck);
+            r.onRequestSent(currTime);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Keeps the request logic active.
      * Must be called periodically.
@@ -264,32 +275,23 @@ public class ModInfo {
     void update(Connection conn, long timeoutMSec, long currTime) {
         RequestStatus r;
         try {
-            // Firmware request
-            if ((r = this.requestFirmwareVersion).shouldSendNextRequest(timeoutMSec, currTime)) {
-                conn.queue(this.addr, false, PckGenerator.requestSn());
-                r.onRequestSent(currTime);
+            if (update(conn, timeoutMSec, currTime, requestFirmwareVersion, PckGenerator.requestSn())) {
                 return;
             }
-            // Output-port requests
-            for (int i = 0; i < 4; ++i) {
-                if ((r = this.requestStatusOutputs.get(i)).shouldSendNextRequest(timeoutMSec, currTime)) {
-                    conn.queue(this.addr, false, PckGenerator.requestOutputStatus(i));
-                    r.onRequestSent(currTime);
+
+            for (int i = 0; i < LcnChannelGroup.OUTPUT.getCount(); ++i) {
+                if (update(conn, timeoutMSec, currTime, requestStatusOutputs[i], PckGenerator.requestOutputStatus(i))) {
                     return;
                 }
             }
-            // Relays request
-            if ((r = this.requestStatusRelays).shouldSendNextRequest(timeoutMSec, currTime)) {
-                conn.queue(this.addr, false, PckGenerator.requestRelaysStatus());
-                r.onRequestSent(currTime);
+
+            if (update(conn, timeoutMSec, currTime, requestStatusRelays, PckGenerator.requestRelaysStatus())) {
                 return;
             }
-            // Binary-sensors request
-            if ((r = this.requestStatusBinSensors).shouldSendNextRequest(timeoutMSec, currTime)) {
-                conn.queue(this.addr, false, PckGenerator.requestBinSensorsStatus());
-                r.onRequestSent(currTime);
+            if (update(conn, timeoutMSec, currTime, requestStatusBinSensors, PckGenerator.requestBinSensorsStatus())) {
                 return;
             }
+
             // Variable requests
             if (this.firmwareVersion != -1) { // Firmware version is required
                 // Use the chance to remove a failed "typeless variable" request
@@ -320,18 +322,16 @@ public class ModInfo {
                     }
                 }
             }
-            // LEDs and logic-operations request
-            if ((r = this.requestStatusLedsAndLogicOps).shouldSendNextRequest(timeoutMSec, currTime)) {
-                conn.queue(this.addr, false, PckGenerator.requestLedsAndLogicOpsStatus());
-                r.onRequestSent(currTime);
+
+            if (update(conn, timeoutMSec, currTime, requestStatusLedsAndLogicOps,
+                    PckGenerator.requestLedsAndLogicOpsStatus())) {
                 return;
             }
-            // Key-locks request
-            if ((r = this.requestStatusLockedKeys).shouldSendNextRequest(timeoutMSec, currTime)) {
-                conn.queue(this.addr, false, PckGenerator.requestKeyLocksStatus());
-                r.onRequestSent(currTime);
+
+            if (update(conn, timeoutMSec, currTime, requestStatusLockedKeys, PckGenerator.requestKeyLocksStatus())) {
                 return;
             }
+
             // Try to send next acknowledged command. Will also detect failed ones.
             this.tryProcessNextCommandWithAck(conn, timeoutMSec, currTime);
         } catch (LcnException e) {
@@ -389,7 +389,7 @@ public class ModInfo {
      * Requests the current value of all dimmer outputs.
      */
     public void refreshAllOutputs() {
-        requestStatusOutputs.forEach(RequestStatus::refresh);
+        Arrays.stream(requestStatusOutputs).forEach(RequestStatus::refresh);
     }
 
     /**
@@ -398,7 +398,7 @@ public class ModInfo {
      * @param number 0..3
      */
     public void refreshOutput(int number) {
-        requestStatusOutputs.get(number).refresh();
+        requestStatusOutputs[number].refresh();
     }
 
     /**
@@ -458,7 +458,7 @@ public class ModInfo {
      * @param outputId 0..3
      */
     public void onOutputResponseReceived(int outputId) {
-        requestStatusOutputs.get(outputId).onResponseReceived();
+        requestStatusOutputs[outputId].onResponseReceived();
     }
 
     /**

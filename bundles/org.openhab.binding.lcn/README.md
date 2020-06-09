@@ -15,9 +15,6 @@ Bus members are inter-connected via a free wire in the standard NYM cable. Wirel
 This binding uses TCP/IP to access the LCN bus via the software LCN-PCHK (Windows/Linux) or the DIN rail device LCN-PKE.
 **This means 1 unused LCN-PCHK license or a LCN-PKE is required**
 
-It is recommended to configure *Thing*s in [Paper UI](https://www.openhab.org/docs/configuration/paperui.html) and *Item*s in text files.
-*Channel*s and *Link*s are configured automatically, then.
-
 ## LCN Overview
 
 LCN modules and their connecting peripherals are explained in the following.
@@ -124,6 +121,16 @@ No known features/changes that need special handling were added until now (2020)
 Modules with older and newer firmware should work, too.
 The module hardware types (e.g. LCN-SH, LCN-HU, LCN-UPP, ...) are compatible to each other and can therefore be handled all in the same way.
 
+Thing ID: `module`
+
+| Name        | Description                                                    | Type    | Required |
+|-------------|----------------------------------------------------------------|---------|----------|
+| `moduleId`  | The module ID, configured in LCN-PRO                           | Integer | Yes      |
+| `segmentId` | The segment ID the module is in (0 if no segments are present) | Integer | Yes      |
+
+openHAB's discovery function can be used to add LCN modules automatically.
+See [Discover LCN Modules](#discover-lcn-modules).
+
 ### Thing: LCN PCK Gateway
 
 PCK is the protocol spoken over TCP/IP with a PCK gateway to communicate with the LCN bus.
@@ -136,6 +143,26 @@ Several PCK gateways can be added to openHAB to control multiple LCN busses in d
 The minimum recommended version is LCN-PCHK 2.8 (older versions will also work, but lack some functionality).
 Visit [https://www.lcn.eu](https://www.lcn.eu) for updates.
 
+Thing ID: `pckGateway`
+
+| Name        | Description                                                                                                | Type    | Required |
+|-------------|------------------------------------------------------------------------------------------------------------|---------|----------|
+| `hostname`  | Hostname or IP address of the LCN-PCHK gateway                                                             | String  | Yes      |
+| `port`      | TCP port of the LCN-PCHK gateway (default:4114)                                                            | Integer | Yes      |
+| `username`  | Username configured within LCN-PCHK Monitor                                                                | String  | Yes      |
+| `password`  | Password configured within LCN-PCHK Monitor                                                                | String  | Yes      |
+| `mode`      | Dimmer resolution: `native50` or `native200` See below.                                                    | String  | Yes      |
+| `timeoutMs` | Period after which an LCN command is resent, when no acknowledge has been received (in ms) (default: 3500) | Integer | Yes      |
+
+> **IMPORTANT:** You need to configure the dimmer output resolution. This setting is valid for the **whole** LCN bus.<br />
+The setting is either 0-50 steps or 0-200 steps.
+It **has to be the same** as in the parameterizing software **LCN-PRO** under Options/Settings/Expert Settings.
+See the following screenshot.
+
+![LCN-PRO screenshot, showing the 50 or 200 steps for the dimmer outputs](doc/LCN-PRO_output_steps.png)
+
+When using a wrong dimmer output setting, dimming the outputs will result in unintended behavior.
+
 ### Thing: LCN Group
 
 LCN modules can be assigned to groups with the programming software *LCN-PRO*.
@@ -145,14 +172,22 @@ To send commands to an LCN group, the group needs to be added to openHAB as a *T
 One LCN module within the group is used to represent the status of the whole group.
 For example, when a Dimmer Output is controlled via a LCN group *Thing*, openHAB will always visualize the state of the Dimmer Output of the chosen module. The states of the other modules in the group are ignored for visualization.
 
+Thing ID: `group`
+
+| Name        | Description                                                                                                                                  | Type    | Required |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|
+| `groupId`   | The group number, configured in LCN-PRO                                                                                                      | Integer | Yes      |
+| `moduleId`  | The module ID of any module in the group. The state of this module is used for visualization of the group as representative for all modules. | Integer | Yes      |
+| `segmentId` | The segment ID of all modules in this group (0 if no segments are present)                                                                   | Integer | Yes      |
+
+The `groupId` must match the previously configured group number in the programming software *LCN-PRO*.
+
 ## Discovery
 
 ### Discover LCN Modules
 
-Basic data of LCN modules can be read out automatically by openHAB.
-Click on one of the check marks to add the LCN modules to openHAB:
-
-![Paper UI screenshot, showing the discovery result for LCN modules](doc/module_discovery.png)
+Basic data of LCN modules can be read out by openHAB.
+To do so, simply start openHAB's discovery.
 
 If not all LCN modules get listed on the first run, click on the refresh button to start another scan.
 
@@ -168,9 +203,6 @@ Unfortunately, *LCN-PCHK* listens only on the first network interface of the com
 If your PCK gateway has multiple network interfaces, *LCN-PCHK* may listen on the wrong interface and fails to respond to the discovery request.
 
 Discovery has successfully been tested with LCN-PCHK 3.2.2 running on a Raspberry Pi with Raspbian and openHAB running on Windows 10.
-See the following screenshot:
-
-![Paper UI screenshot, showing the discovery result for PCK gateways](doc/pck_discovery.png)
 
 If discovery fails, you can add a PCK gateway manually. See [Thing: PCK Gateway](#thing-lcn-pck-gateway).
 
@@ -179,42 +211,9 @@ See [Thing: PCK Gateway](#thing-lcn-pck-gateway).
 
 When adding a PCK gateway by discovery, the new *Thing*'s UID is the MAC address of the device, running the PCK gateway.
 
-## Thing Configuration
-
-### Configure LCN-PCHK/-PKE Connection
-
-Click on the plus symbol under Configuration/Things in Paper UI. Select "Add manually".
-When adding a PCK gateway manually, the *hostname/IP address*, *port* and *username* and *password* need to be configured.
-
-> **IMPORTANT:** You need to configure the dimmer output resolution. This setting is valid for the **whole** LCN bus.<br />
-The setting is either 0-50 steps or 0-200 steps.
-It **has to be the same** as in the parameterizing software **LCN-PRO** under Options/Settings/Expert Settings.
-See the following screenshot.
-
-![LCN-PRO screenshot, showing the 50 or 200 steps for the dimmer outputs](doc/LCN-PRO_output_steps.png)
-
-When using a wrong dimmer output setting, dimming the outputs will result in unintended behavior.
-
-### Add LCN Module Manually
-
-Click on the plus symbol under Configuration/Things in Paper UI. Select "Add manually". 
-Now you can configure the *module ID* and the *segment ID* (0 if no segments are used).
-After confirming, the new module should show up under Configuration/Things.
-
-openHAB's discovery function can be used to add LCN modules automatically.
-See [Discover LCN Modules](#discover-lcn-modules).
-
-### Add LCN Group
-
-Click on the plus symbol under Configuration/Things in Paper UI. Select "Add manually".
-Now you can configure the *group number*, as previously configured in the programming software *LCN-PRO*.
-If you use segments, you need to configure the segment ID of the modules within the group. Enter 0, if you have no segments.
-Lastly, you have to configure the *module ID* of any module within the group.
-This module will be used for visualization, as representative for all modules within the group.
-
 ## Supported LCN Features and openHAB Channels
 
-The following table lists all features of LCN and their mappings to openHAB *Channel*s.
+The following table lists all features of LCN and their mappings to openHAB Channels. These Channels are available for the *Things* LCN module (`module`) and LCN group (`group`). The PCK gateway (`pckGateway`) has no Channels.
 
 Although, there are many **Not implemented** entries, the vast majority of LCN features can be used with openHAB:<br />
 If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende Taste") can be used to hit a module's key virtually and execute an arbitrary command.
@@ -277,9 +276,7 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 
 **For some *Channel*s a unit should be configured for visualization.** By default the native LCN value is used.
 
-
-
-![Screenshot, showing the Channel configuration](doc/unit.png)
+S0 counter Channels need to be the pulses per kWh configured. If the value is left blank, a default value of 1000 pulses/kWh is set.
 
 ### Transponder
 

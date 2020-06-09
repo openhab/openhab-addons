@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.lcn.internal.common.LcnAddrMod;
-import org.openhab.binding.lcn.internal.common.NullScheduledFuture;
 import org.openhab.binding.lcn.internal.connection.Connection;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaAckSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaFirmwareSubHandler;
@@ -69,14 +69,13 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(LcnBindingConstants.THING_TYPE_MODULE).collect(Collectors.toSet()));
     private @Nullable PckGatewayHandler bridgeHandler;
-    private Map<LcnAddrMod, Map<Integer, String>> moduleNames = Collections.synchronizedMap(new HashMap<>());
-    private Map<LcnAddrMod, DiscoveryResultBuilder> discoveryResultBuilders = Collections
-            .synchronizedMap(new HashMap<>());
-    private List<LcnAddrMod> successfullyDiscovered = new LinkedList<>();
-    private Queue<@Nullable LcnAddrMod> serialNumberRequestQueue = new ConcurrentLinkedQueue<>();
-    private Queue<@Nullable LcnAddrMod> moduleNameRequestQueue = new ConcurrentLinkedQueue<>();
-    private volatile ScheduledFuture<?> queueProcessor = NullScheduledFuture.getInstance();
-    private ScheduledFuture<?> builderTask = NullScheduledFuture.getInstance();
+    private final Map<LcnAddrMod, @Nullable Map<Integer, String>> moduleNames = new HashMap<>();
+    private final Map<LcnAddrMod, DiscoveryResultBuilder> discoveryResultBuilders = new ConcurrentHashMap<>();
+    private final List<LcnAddrMod> successfullyDiscovered = new LinkedList<>();
+    private final Queue<@Nullable LcnAddrMod> serialNumberRequestQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<@Nullable LcnAddrMod> moduleNameRequestQueue = new ConcurrentLinkedQueue<>();
+    private @Nullable volatile ScheduledFuture<?> queueProcessor;
+    private @Nullable ScheduledFuture<?> builderTask;
 
     public LcnModuleDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SEC, false);
@@ -100,7 +99,6 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
         stopScan();
     }
 
-    @SuppressWarnings({ "unused", "null" })
     @Override
     protected void startScan() {
         synchronized (this) {
@@ -110,8 +108,9 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                 return;
             }
 
-            if (localBridgeHandler.getConnection() == null) {
-                builderTask.cancel(true);
+            ScheduledFuture<?> localBuilderTask = builderTask;
+            if (localBridgeHandler.getConnection() == null && localBuilderTask != null) {
+                localBuilderTask.cancel(true);
             }
 
             localBridgeHandler.registerPckListener(data -> {
@@ -141,8 +140,8 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                                 rescheduleQueueProcessor(); // delay request of serial until all modules finished ACKing
                             }
 
-                            if (!moduleNames.containsKey(addr)
-                                    || moduleNames.get(addr).size() != MODULE_NAME_PART_COUNT) {
+                            Map<Integer, String> localNameParts = moduleNames.get(addr);
+                            if (localNameParts == null || localNameParts.size() != MODULE_NAME_PART_COUNT) {
                                 moduleNameRequestQueue.add(addr);
                                 rescheduleQueueProcessor(); // delay request of names until all modules finished ACKing
                             }
@@ -184,21 +183,25 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
 
             builderTask = scheduler.scheduleWithFixedDelay(() -> {
                 synchronized (LcnModuleDiscoveryService.this) {
-                    discoveryResultBuilders.entrySet().stream().filter(e -> moduleNames.containsKey(e.getKey()))
-                            .filter(e -> moduleNames.get(e.getKey()).size() == MODULE_NAME_PART_COUNT)
-                            .filter(e -> !successfullyDiscovered.contains(e.getKey())).forEach(e -> {
-                                StringBuilder thingName = new StringBuilder();
-                                if (e.getKey().getSegmentId() != 0) {
-                                    thingName.append("Segment " + e.getKey().getSegmentId() + " ");
-                                }
+                    discoveryResultBuilders.entrySet().stream().filter(e -> {
+                        Map<Integer, String> localNameParts = moduleNames.get(e.getKey());
+                        return localNameParts != null && localNameParts.size() == MODULE_NAME_PART_COUNT;
+                    }).filter(e -> !successfullyDiscovered.contains(e.getKey())).forEach(e -> {
+                        StringBuilder thingName = new StringBuilder();
+                        if (e.getKey().getSegmentId() != 0) {
+                            thingName.append("Segment " + e.getKey().getSegmentId() + " ");
+                        }
 
-                                thingName.append("Module " + e.getKey().getModuleId() + ": ");
-                                thingName.append(moduleNames.get(e.getKey()).get(0));
-                                thingName.append(moduleNames.get(e.getKey()).get(1));
+                        thingName.append("Module " + e.getKey().getModuleId() + ": ");
+                        Map<Integer, String> localNameParts = moduleNames.get(e.getKey());
+                        if (localNameParts != null) {
+                            thingName.append(localNameParts.get(0));
+                            thingName.append(localNameParts.get(1));
 
-                                thingDiscovered(e.getValue().withLabel(thingName.toString()).build());
-                                successfullyDiscovered.add(e.getKey());
-                            });
+                            thingDiscovered(e.getValue().withLabel(thingName.toString()).build());
+                            successfullyDiscovered.add(e.getKey());
+                        }
+                    });
                 }
             }, 500, 500, TimeUnit.MILLISECONDS);
 
@@ -208,7 +211,10 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
 
     private synchronized void rescheduleQueueProcessor() {
         // delay serial number and module name requests to not clog the bus
-        queueProcessor.cancel(true);
+        ScheduledFuture<?> localQueueProcessor = queueProcessor;
+        if (localQueueProcessor != null) {
+            localQueueProcessor.cancel(true);
+        }
         queueProcessor = scheduler.scheduleWithFixedDelay(() -> {
             PckGatewayHandler localBridgeHandler = bridgeHandler;
             if (localBridgeHandler != null) {
@@ -232,8 +238,14 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public synchronized void stopScan() {
-        builderTask.cancel(true);
-        queueProcessor.cancel(true);
+        ScheduledFuture<?> localBuilderTask = builderTask;
+        if (localBuilderTask != null) {
+            localBuilderTask.cancel(true);
+        }
+        ScheduledFuture<?> localQueueProcessor = queueProcessor;
+        if (localQueueProcessor != null) {
+            localQueueProcessor.cancel(true);
+        }
         PckGatewayHandler localBridgeHandler = bridgeHandler;
         if (localBridgeHandler != null) {
             localBridgeHandler.removeAllPckListeners();

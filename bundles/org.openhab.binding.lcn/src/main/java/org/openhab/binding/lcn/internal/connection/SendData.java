@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -35,7 +36,8 @@ public abstract class SendData {
      * @return true if everything was set-up correctly and data was written
      * @throws UnsupportedEncodingException if text could not be encoded for LCN-PCHK
      * @throws BufferOverflowException if target buffer has not enough space left (buffer will not be altered)
+     * @throws IOException if an I/O error occurs
      */
-    abstract boolean write(ByteBuffer buffer, int localSegId)
-            throws UnsupportedEncodingException, BufferOverflowException;
+    abstract boolean write(OutputStream buffer, int localSegId)
+            throws UnsupportedEncodingException, BufferOverflowException, IOException;
 }

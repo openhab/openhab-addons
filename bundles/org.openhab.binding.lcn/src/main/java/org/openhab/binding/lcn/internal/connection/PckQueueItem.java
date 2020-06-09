@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.nio.ByteBuffer;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,12 +24,12 @@ import org.openhab.binding.lcn.internal.common.LcnAddr;
  */
 @NonNullByDefault
 public class PckQueueItem {
-    private Instant enqueued;
-    private LcnAddr addr;
-    private boolean wantsAck;
-    private ByteBuffer data;
+    private final Instant enqueued;
+    private final LcnAddr addr;
+    private final boolean wantsAck;
+    private final byte[] data;
 
-    public PckQueueItem(LcnAddr addr, boolean wantsAck, ByteBuffer data) {
+    public PckQueueItem(LcnAddr addr, boolean wantsAck, byte[] data) {
         this.enqueued = Instant.now();
         this.addr = addr;
         this.wantsAck = wantsAck;
@@ -66,10 +65,10 @@ public class PckQueueItem {
 
     /**
      * Gets the raw PCK message to be sent.
-     * 
+     *
      * @return message as ByteBuffer
      */
-    public ByteBuffer getData() {
+    public byte[] getData() {
         return data;
     }
 }

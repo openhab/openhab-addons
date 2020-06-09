@@ -43,7 +43,7 @@ public class RequestStatus {
 
     /** Number of retries left until the request is marked as failed. */
     private volatile int numRetriesLeft;
-    private String label;
+    private final String label;
 
     /**
      * Constructor.

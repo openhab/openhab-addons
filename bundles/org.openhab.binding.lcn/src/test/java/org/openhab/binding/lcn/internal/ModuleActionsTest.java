@@ -37,9 +37,9 @@ import org.openhab.binding.lcn.internal.common.LcnException;
 @NonNullByDefault
 public class ModuleActionsTest {
     private LcnModuleActions a = new LcnModuleActions();
-    private LcnModuleHandler handler = mock(LcnModuleHandler.class);
+    private final LcnModuleHandler handler = mock(LcnModuleHandler.class);
     @Captor
-    private @NonNullByDefault({}) ArgumentCaptor<ByteBuffer> byteBufferCaptor;
+    private @NonNullByDefault({}) ArgumentCaptor<byte[]> byteBufferCaptor;
 
     @Before
     public void setUp() {
@@ -48,10 +48,8 @@ public class ModuleActionsTest {
         a.setThingHandler(handler);
     }
 
-    private ByteBuffer stringToByteBuffer(String string) throws UnsupportedEncodingException {
-        ByteBuffer bb = ByteBuffer.wrap(string.getBytes(LcnDefs.LCN_ENCODING));
-        bb.position(bb.capacity());
-        return bb;
+    private byte[] stringToByteBuffer(String string) throws UnsupportedEncodingException {
+        return string.getBytes(LcnDefs.LCN_ENCODING);
     }
 
     @Test
@@ -130,8 +128,17 @@ public class ModuleActionsTest {
 
         verify(handler, times(2)).sendPck(byteBufferCaptor.capture());
 
-        assertThat(byteBufferCaptor.getAllValues(),
-                contains(stringToByteBuffer("GTDT41Test 123 ö\303"), stringToByteBuffer("GTDT42\244üß\0\0\0\0\0\0")));
+        String string1 = "GTDT41Test 123 ö";
+        ByteBuffer chunk1 = ByteBuffer.allocate(stringToByteBuffer(string1).length + 1);
+        chunk1.put(stringToByteBuffer(string1));
+        chunk1.put((byte) -61); // first byte of ä
+
+        ByteBuffer chunk2 = ByteBuffer.allocate(18);
+        chunk2.put(stringToByteBuffer("GTDT42"));
+        chunk2.put((byte) -92); // second byte of ä
+        chunk2.put(stringToByteBuffer("üß\0\0\0\0\0\0"));
+
+        assertThat(byteBufferCaptor.getAllValues(), contains(chunk1.array(), chunk2.array()));
     }
 
     @Test

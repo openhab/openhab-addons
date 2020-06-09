@@ -13,7 +13,6 @@
 package org.openhab.binding.lcn.internal.connection;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.Channel;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -29,9 +28,9 @@ import org.openhab.binding.lcn.internal.common.LcnDefs;
 @NonNullByDefault
 public abstract class AbstractConnectionState extends AbstractState {
     /** The PCK gateway's Connection */
-    protected Connection connection;
+    protected final Connection connection;
     /** An openHAB scheduler */
-    protected ScheduledExecutorService scheduler;
+    protected final ScheduledExecutorService scheduler;
 
     public AbstractConnectionState(StateContext context, ScheduledExecutorService scheduler) {
         super(context);
@@ -55,7 +54,7 @@ public abstract class AbstractConnectionState extends AbstractState {
      * @param wantsAck true, if the module shall respond with an Ack upon successful processing
      * @param data the PCK message to be sent
      */
-    public abstract void queue(LcnAddr addr, boolean wantsAck, ByteBuffer data);
+    public abstract void queue(LcnAddr addr, boolean wantsAck, byte[] data);
 
     /**
      * Shuts the Connection down finally. A shut-down connection cannot re-used.

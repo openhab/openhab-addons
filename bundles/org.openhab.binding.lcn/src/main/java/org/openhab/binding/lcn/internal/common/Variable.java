@@ -65,10 +65,10 @@ public enum Variable {
     S0INPUT3(2, Type.S0INPUT, LcnChannelGroup.S0INPUT),
     S0INPUT4(3, Type.S0INPUT, LcnChannelGroup.S0INPUT); // LCN-BU4L
 
-    private int number;
+    private final int number;
     private Optional<Integer> thresholdNumber = Optional.empty();
-    private Type type;
-    private LcnChannelGroup channelGroup;
+    private final Type type;
+    private final LcnChannelGroup channelGroup;
 
     /**
      * Defines the origin of an LCN variable.
@@ -193,7 +193,7 @@ public enum Variable {
     private static Variable getVariableFromNumberAndType(int varId, Type type, Predicate<Variable> filter)
             throws LcnException {
         return Stream.of(values()).filter(v -> v.type == type).filter(v -> v.number == varId).filter(filter).findAny()
-                .orElseThrow(() -> new LcnException());
+                .orElseThrow(LcnException::new);
     }
 
     /**

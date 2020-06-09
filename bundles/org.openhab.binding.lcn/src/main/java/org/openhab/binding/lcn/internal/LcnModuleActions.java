@@ -13,6 +13,8 @@
 package org.openhab.binding.lcn.internal;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -145,42 +147,46 @@ public class LcnModuleActions implements ThingActions {
                 command.put(PckGenerator.dynTextHeader(row - 1, part++).getBytes(LcnDefs.LCN_ENCODING));
                 command.put(chunk);
 
-                getHandler().sendPck(command);
+                getHandler().sendPck(command.array());
             }
         } catch (UnsupportedEncodingException | IllegalArgumentException | LcnException e) {
             logger.warn("Could not send dynamic text: {}", e.getMessage());
         }
     }
 
+    private static LcnModuleActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(LcnModuleActions.class.getName())) {
+            if (actions instanceof LcnModuleActions) {
+                return (LcnModuleActions) actions;
+            } else {
+                return (LcnModuleActions) Proxy.newProxyInstance(LcnModuleActions.class.getClassLoader(),
+                        new Class[] { LcnModuleActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
+    }
+
     /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void hitKey(@Nullable ThingActions actions, @Nullable String table, int key,
             @Nullable String action) {
-        if (actions instanceof LcnModuleActions) {
-            ((LcnModuleActions) actions).hitKey(table, key, action);
-        } else {
-            throw new IllegalArgumentException(
-                    "Instance is not a " + LcnModuleActions.class.getSimpleName() + " class.");
-        }
+        invokeMethodOf(actions).hitKey(table, key, action);
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void flickerOutput(@Nullable ThingActions actions, int output, int depth, int ramp, int count) {
-        if (actions instanceof LcnModuleActions) {
-            ((LcnModuleActions) actions).flickerOutput(output, depth, ramp, count);
-        } else {
-            throw new IllegalArgumentException(
-                    "Instance is not a " + LcnModuleActions.class.getSimpleName() + " class.");
-        }
+        invokeMethodOf(actions).flickerOutput(output, depth, ramp, count);
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void sendDynamicText(@Nullable ThingActions actions, int row, @Nullable String text) {
-        if (actions instanceof LcnModuleActions) {
-            ((LcnModuleActions) actions).sendDynamicText(row, text);
-        } else {
-            throw new IllegalArgumentException(
-                    "Instance is not a " + LcnModuleActions.class.getSimpleName() + " class.");
-        }
+        invokeMethodOf(actions).sendDynamicText(row, text);
     }
 
     private LcnModuleHandler getHandler() throws LcnException {

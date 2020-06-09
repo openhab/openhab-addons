@@ -24,9 +24,9 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 @NonNullByDefault
 public class Version {
     @XStreamAsAttribute
-    private int major;
+    private final int major;
     @XStreamAsAttribute
-    private int minor;
+    private final int minor;
 
     public Version(int major, int minor) {
         this.major = major;

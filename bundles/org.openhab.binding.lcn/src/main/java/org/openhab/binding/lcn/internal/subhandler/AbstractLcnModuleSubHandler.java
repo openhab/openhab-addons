@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractLcnModuleSubHandler.class);
-    protected LcnModuleHandler handler;
-    protected ModInfo info;
+    protected final LcnModuleHandler handler;
+    protected final ModInfo info;
 
     public AbstractLcnModuleSubHandler(LcnModuleHandler handler, ModInfo info) {
         this.handler = handler;
@@ -109,7 +109,7 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
     }
 
     private void unsupportedCommand(Command command) {
-        logger.warn("Unsupported command: {}", command.getClass().getSimpleName());
+        logger.warn("Unsupported command: {}: {}", getClass().getSimpleName(), command.getClass().getSimpleName());
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
      */
     public boolean tryParse(String pck) {
         Optional<Matcher> firstSuccessfulMatcher = getPckStatusMessagePatterns().stream().map(p -> p.matcher(pck))
-                .filter(m -> m.matches()).filter(m -> handler.isMyAddress(m.group("segId"), m.group("modId")))
+                .filter(Matcher::matches).filter(m -> handler.isMyAddress(m.group("segId"), m.group("modId")))
                 .findAny();
 
         firstSuccessfulMatcher.ifPresent(matcher -> {
