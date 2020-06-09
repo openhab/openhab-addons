@@ -15,9 +15,9 @@ package org.openhab.binding.powermax.internal.handler;
 import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -56,13 +56,13 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
     private static final int X10_NR_MIN = 1;
     private static final int X10_NR_MAX = 16;
 
-    private final ZoneId zoneId;
+    private final TimeZoneProvider timeZoneProvider;
 
     private PowermaxBridgeHandler bridgeHandler;
 
-    public PowermaxThingHandler(Thing thing, ZoneId zoneId) {
+    public PowermaxThingHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.zoneId = zoneId;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -184,7 +184,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 updateState(TRIPPED, state.isSensorTripped(num) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
             } else if (channel.equals(LAST_TRIP) && (state.getSensorLastTripped(num) != null)) {
                 ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(state.getSensorLastTripped(num)),
-                        zoneId);
+                        timeZoneProvider.getTimeZone());
                 updateState(LAST_TRIP, new DateTimeType(zoned));
             } else if (channel.equals(BYPASSED) && (state.isSensorBypassed(num) != null)) {
                 updateState(BYPASSED, state.isSensorBypassed(num) ? OnOffType.ON : OnOffType.OFF);
