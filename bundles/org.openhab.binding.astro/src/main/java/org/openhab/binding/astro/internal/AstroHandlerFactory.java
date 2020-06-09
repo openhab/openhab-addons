@@ -53,9 +53,10 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
     private final CronScheduler scheduler;
 
     @Activate
-    public AstroHandlerFactory(final @Reference CronScheduler scheduler, final @Reference TimeZoneProvider timeZone) {
+    public AstroHandlerFactory(final @Reference CronScheduler scheduler,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.scheduler = scheduler;
-        PropertyUtils.setTimeZone(timeZone);
+        PropertyUtils.setTimeZoneProvider(timeZoneProvider);
     }
 
     @Override
