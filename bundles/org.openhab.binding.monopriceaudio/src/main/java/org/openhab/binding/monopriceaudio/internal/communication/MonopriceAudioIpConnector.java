@@ -37,7 +37,7 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioIpConnector.class);
 
     private @Nullable String address;
-    private @Nullable Integer port;
+    private int port;
 
     private @Nullable Socket clientSocket;
 
@@ -47,7 +47,7 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
      * @param address the IP address of the serial over IP device
      * @param port the TCP port to be used
      */
-    public MonopriceAudioIpConnector(@Nullable String address, @Nullable Integer port) {
+    public MonopriceAudioIpConnector(@Nullable String address, int port) {
         this.address = address;
         this.port = port;
     }
