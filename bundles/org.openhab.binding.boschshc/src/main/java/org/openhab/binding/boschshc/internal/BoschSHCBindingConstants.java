@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link BoschSHCBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link BoschSHCBindingConstants} class defines common constants, which
+ * are used across the whole binding.
  *
  * @author Stefan Kästle - Initial contribution
  */
@@ -33,6 +33,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_TWINGUARD = new ThingTypeUID(BINDING_ID, "twinguard");
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT = new ThingTypeUID(BINDING_ID, "window-contact");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
+    public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
@@ -49,5 +50,5 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_COMBINED_RATING = "combined-rating";
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_LATEST_MOTION = "latest-motion";
-
+    public static final String CHANNEL_LEVEL = "level";
 }
