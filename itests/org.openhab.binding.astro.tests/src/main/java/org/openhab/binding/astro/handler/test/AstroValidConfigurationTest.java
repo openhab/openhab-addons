@@ -48,7 +48,7 @@ public class AstroValidConfigurationTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, INTERVAL_DEFAULT_VALUE);
-        assertThingStatus(thingConfiguration, ThingStatus.ONLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.ONLINE, ThingStatusDetail.NONE);
     }
 
     @Test
@@ -56,49 +56,49 @@ public class AstroValidConfigurationTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, INTERVAL_DEFAULT_VALUE);
-        assertThingStatus(thingConfiguration, ThingStatus.ONLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.ONLINE, ThingStatusDetail.NONE);
     }
 
     @Test
     public void testIfGeolocationForASunThingIsNull_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, null);
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
     public void testIfGeolocationForAMoonThingIsNull_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, null);
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
     public void testIfTheLatitudeForASunThingIsNull_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, NULL_LATITUDE);
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
     public void testIfTheLatitudeForAMoonThingIsNull_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, NULL_LATITUDE);
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
     public void testIfTheLongitudeForASunThingIsNull_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, NULL_LONGITUDE);
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
     public void testIfTheLongitudeForAMoonThingIsNull_theThingStatusBecomesOFFLINE() {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, NULL_LONGITUDE);
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class AstroValidConfigurationTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, new Integer(0));
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class AstroValidConfigurationTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, new Integer(0));
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class AstroValidConfigurationTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, new Integer(86401));
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Test
@@ -130,10 +130,11 @@ public class AstroValidConfigurationTest {
         Configuration thingConfiguration = new Configuration();
         thingConfiguration.put(GEOLOCATION_PROPERTY, GEOLOCATION_VALUE);
         thingConfiguration.put(INTERVAL_PROPERTY, new Integer(86401));
-        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE);
+        assertThingStatus(thingConfiguration, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
-    private void assertThingStatus(Configuration configuration, ThingStatus expectedStatus) {
+    private void assertThingStatus(Configuration configuration, ThingStatus expectedStatus,
+            ThingStatusDetail expectedStatusDetail) {
         ThingUID thingUID = new ThingUID(THING_TYPE_SUN, TEST_SUN_THING_ID);
 
         Thing thing = mock(Thing.class);
@@ -147,7 +148,7 @@ public class AstroValidConfigurationTest {
 
         sunHandler.initialize();
 
-        ThingStatusInfo expectedThingStatus = new ThingStatusInfo(expectedStatus, ThingStatusDetail.NONE, null);
+        ThingStatusInfo expectedThingStatus = new ThingStatusInfo(expectedStatus, expectedStatusDetail, null);
         verify(callback, times(1)).statusUpdated(thing, expectedThingStatus);
     }
 }
