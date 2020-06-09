@@ -16,6 +16,7 @@ import static org.eclipse.smarthome.core.audio.AudioFormat.*;
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +40,6 @@ import org.eclipse.smarthome.core.audio.FixedLengthAudioStream;
 import org.eclipse.smarthome.core.audio.URLAudioStream;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioFormatException;
 import org.eclipse.smarthome.core.audio.UnsupportedAudioStreamException;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -105,9 +105,8 @@ public class PlayerHandler extends HostHandler implements AudioSink {
     private String baseAddress = "";
     private @NonNullByDefault({}) PlayerConfiguration configuration;
 
-    public PlayerHandler(Thing thing, TimeZoneProvider timeZoneProvider, AudioHTTPServer audioHTTPServer,
-            @Nullable String callbackUrl) {
-        super(thing, timeZoneProvider);
+    public PlayerHandler(Thing thing, ZoneId zoneId, AudioHTTPServer audioHTTPServer, @Nullable String callbackUrl) {
+        super(thing, zoneId);
         this.audioHTTPServer = audioHTTPServer;
         this.callbackUrl = callbackUrl;
     }

@@ -14,12 +14,12 @@ package org.openhab.binding.freebox.internal.handler;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.freebox.internal.action.HostActions;
@@ -43,8 +43,8 @@ public class HostHandler extends APIConsumerHandler {
     private @NonNullByDefault({}) HostConfiguration config;
     protected String ipAddress = "";
 
-    public HostHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public HostHandler(Thing thing, ZoneId zoneId) {
+        super(thing, zoneId);
     }
 
     @Override

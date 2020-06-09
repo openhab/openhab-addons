@@ -14,8 +14,9 @@ package org.openhab.binding.freebox.internal.handler;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
+import java.time.ZoneId;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -39,8 +40,8 @@ public class VirtualMachineHandler extends HostHandler {
     private final Logger logger = LoggerFactory.getLogger(VirtualMachineHandler.class);
     private @NonNullByDefault({}) String vmId;
 
-    public VirtualMachineHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public VirtualMachineHandler(Thing thing, ZoneId zoneId) {
+        super(thing, zoneId);
     }
 
     @Override

@@ -14,12 +14,12 @@ package org.openhab.binding.freebox.internal.handler;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -27,8 +27,8 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.freebox.internal.api.APIRequests;
 import org.openhab.binding.freebox.internal.api.FreeboxException;
 import org.openhab.binding.freebox.internal.api.model.CallEntry;
-import org.openhab.binding.freebox.internal.api.model.PhoneStatus;
 import org.openhab.binding.freebox.internal.api.model.CallEntry.CallType;
+import org.openhab.binding.freebox.internal.api.model.PhoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +46,8 @@ public class PhoneHandler extends APIConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(PhoneHandler.class);
     private Long lastCallTimestamp;
 
-    public PhoneHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
-        super(thing, timeZoneProvider);
+    public PhoneHandler(Thing thing, ZoneId zoneId) {
+        super(thing, zoneId);
         lastCallTimestamp = thing.getProperties().containsKey(LAST_CALL_TIMESTAMP)
                 ? Long.parseLong(thing.getProperties().get(LAST_CALL_TIMESTAMP)) - 1
                 : 0L;

@@ -14,6 +14,7 @@ package org.openhab.binding.freebox.internal;
 
 import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
+import java.time.ZoneId;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,7 +62,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
-    private final TimeZoneProvider timeZoneProvider;
+    private final ZoneId zoneId;
     private @Nullable String callbackUrl;
     private final Map<ThingUID, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
@@ -72,7 +73,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
-        this.timeZoneProvider = timeZoneProvider;
+        this.zoneId = timeZoneProvider.getTimeZone();
         setCallbackUrl(componentContext.getProperties().get(CALLBACK_URL));
     }
 
@@ -95,18 +96,18 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_DELTA)) {
             return new DeltaHandler((Bridge) thing);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PLAYER)) {
-            PlayerHandler handler = new PlayerHandler(thing, timeZoneProvider, audioHTTPServer, callbackUrl);
+            PlayerHandler handler = new PlayerHandler(thing, zoneId, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), handler, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID(), reg);
             return handler;
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_HOST)) {
-            return new HostHandler(thing, timeZoneProvider);
+            return new HostHandler(thing, zoneId);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PHONE)) {
-            return new PhoneHandler(thing, timeZoneProvider);
+            return new PhoneHandler(thing, zoneId);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_VM)) {
-            return new VirtualMachineHandler(thing, timeZoneProvider);
+            return new VirtualMachineHandler(thing, zoneId);
         }
         return null;
     }

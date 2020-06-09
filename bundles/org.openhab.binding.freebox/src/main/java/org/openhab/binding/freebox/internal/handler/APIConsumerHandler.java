@@ -13,6 +13,7 @@
 package org.openhab.binding.freebox.internal.handler;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -52,13 +52,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class APIConsumerHandler extends BaseThingHandler {
     final Logger logger = LoggerFactory.getLogger(APIConsumerHandler.class);
-    private final TimeZoneProvider timeZoneProvider;
+    private final ZoneId zoneId;
     private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
     protected @NonNullByDefault({}) ServerHandler bridgeHandler;
 
-    public APIConsumerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public APIConsumerHandler(Thing thing, ZoneId zoneId) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
+        this.zoneId = zoneId;
     }
 
     protected Map<String, String> discoverAttributes() throws FreeboxException {
@@ -168,7 +168,7 @@ public abstract class APIConsumerHandler extends BaseThingHandler {
 
     protected ZonedDateTime convertTimestamp(long timestamp) {
         Instant i = Instant.ofEpochSecond(timestamp);
-        return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
+        return ZonedDateTime.ofInstant(i, zoneId);
     }
 
     protected void updateChannelDateTimeState(String group, String channel, long timestamp) {
