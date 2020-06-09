@@ -22,7 +22,6 @@ import javax.measure.quantity.Power;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -40,7 +39,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
-import org.openhab.binding.bluetooth.internal.RoamingBluetoothAdapter;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 
@@ -120,8 +118,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     protected List<Channel> createDynamicChannels() {
         List<Channel> channels = new ArrayList<>();
         channels.add(buildChannel(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, "Number:Power"));
-        channels.add(buildChannel(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, "DateTime"));
-        if (adapter instanceof RoamingBluetoothAdapter) {
+        if (device instanceof DelegateBluetoothDevice) {
             channels.add(buildChannel(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER, "String"));
             channels.add(buildChannel(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER_LOCATION, "String"));
         }
@@ -148,9 +145,6 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
             switch (channelUID.getId()) {
                 case BluetoothBindingConstants.CHANNEL_TYPE_RSSI:
                     updateRSSI();
-                    break;
-                case BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME:
-                    updateLastActivityTime();
                     break;
                 case BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER:
                     updateAdapter();
@@ -182,27 +176,15 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         }
     }
 
-    /**
-     * Updates the LastActivityTime channel
-     */
-    protected void updateLastActivityTime() {
-        ZonedDateTime activityTime = this.lastActivityTime;
-        if (activityTime != null) {
-            updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, new DateTimeType(activityTime));
-        } else {
-            updateState(BluetoothBindingConstants.CHANNEL_TYPE_LAST_ACTIVITY_TIME, UnDefType.NULL);
-        }
-    }
-
     protected void updateAdapter() {
-        if (device != null && adapter instanceof RoamingBluetoothAdapter) {
+        if (device != null) {
             BluetoothAdapter adapter = device.getAdapter();
             updateState(BluetoothBindingConstants.CHANNEL_TYPE_ADAPTER, new StringType(adapter.getUID().getId()));
         }
     }
 
     protected void updateAdapterLocation() {
-        if (device != null && adapter instanceof RoamingBluetoothAdapter) {
+        if (device != null) {
             BluetoothAdapter adapter = device.getAdapter();
             String location = adapter.getLocation();
             if (location != null || StringUtils.isBlank(location)) {
@@ -229,7 +211,6 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
 
     private void onActivity() {
         this.lastActivityTime = ZonedDateTime.now();
-        updateLastActivityTime();
     }
 
     @Override

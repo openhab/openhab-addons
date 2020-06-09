@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.internal;
+package org.openhab.binding.bluetooth.roaming.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,12 +34,13 @@ import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 
 /**
- * The {@link RoamingBluetoothBridgeHandler} handles roaming device instances
+ * The {@link RoamingBridgeHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
  *
  * @author Connor Petty - Initial contribution
  */
 @NonNullByDefault
-public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
+public class RoamingBridgeHandler extends BaseBridgeHandler
         implements RoamingBluetoothAdapter, BluetoothDiscoveryListener {
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
@@ -53,7 +54,7 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
     // Our BT address
     private @NonNullByDefault({}) BluetoothAddress adapterAddress;
 
-    public RoamingBluetoothBridgeHandler(Bridge bridge) {
+    public RoamingBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
@@ -95,7 +96,7 @@ public class RoamingBluetoothBridgeHandler extends BaseBridgeHandler
             return false;
         }
         Object discovery = getConfig().get(BluetoothBindingConstants.CONFIGURATION_DISCOVERY);
-        if (discovery != null && discovery.toString().equalsIgnoreCase(Boolean.FALSE.toString())) {
+        if (discovery != null && discovery.toString().equalsIgnoreCase("false")) {
             return false;
         }
         return true;

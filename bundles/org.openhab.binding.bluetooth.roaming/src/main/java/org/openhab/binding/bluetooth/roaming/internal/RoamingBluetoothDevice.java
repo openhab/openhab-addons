@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.internal;
+package org.openhab.binding.bluetooth.roaming.internal;
 
 import java.util.Collection;
 import java.util.List;
@@ -47,7 +47,7 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
 
     private final AtomicReference<@Nullable BluetoothDevice> currentDelegateRef = new AtomicReference<>();
 
-    protected RoamingBluetoothDevice(RoamingBluetoothBridgeHandler roamingAdapter, BluetoothAddress address) {
+    protected RoamingBluetoothDevice(RoamingBridgeHandler roamingAdapter, BluetoothAddress address) {
         super(roamingAdapter, address);
     }
 

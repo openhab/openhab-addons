@@ -13,12 +13,14 @@
 package org.openhab.binding.bluetooth.discovery;
 
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.bluetooth.BluetoothAdapter;
 
 /**
  * A {@link BluetoothDiscoveryParticipant} that is registered as a service is picked up by the BluetoothDiscoveryService
@@ -71,4 +73,10 @@ public interface BluetoothDiscoveryParticipant {
     public default boolean requiresConnection(BluetoothDiscoveryDevice device) {
         return false;
     }
+
+    public default void publishAdditionalResults(DiscoveryResult result,
+            BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
+        // do nothing by default
+    }
+
 }

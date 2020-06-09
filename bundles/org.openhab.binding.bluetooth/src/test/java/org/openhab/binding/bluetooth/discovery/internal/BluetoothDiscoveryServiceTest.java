@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -49,7 +50,6 @@ import org.openhab.binding.bluetooth.MockBluetoothDevice;
 import org.openhab.binding.bluetooth.TestUtils;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
-import org.openhab.binding.bluetooth.internal.MockRoamingBluetoothAdapter;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -455,8 +455,9 @@ public class BluetoothDiscoveryServiceTest {
 
     @Test
     public void roamingDiscoveryTest() {
-        MockRoamingBluetoothAdapter roamingAdapter = new MockRoamingBluetoothAdapter();
-        discoveryService.setRoamingBluetoothAdapter(roamingAdapter);
+        RoamingDiscoveryParticipant roamingParticipant = new RoamingDiscoveryParticipant();
+        MockBluetoothAdapter roamingAdapter = roamingParticipant.roamingAdapter;
+        discoveryService.addBluetoothDiscoveryParticipant(roamingParticipant);
 
         BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
         BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
@@ -480,8 +481,9 @@ public class BluetoothDiscoveryServiceTest {
 
     @Test
     public void roamingDiscoveryRetractionTest() {
-        MockRoamingBluetoothAdapter roamingAdapter = new MockRoamingBluetoothAdapter();
-        discoveryService.setRoamingBluetoothAdapter(roamingAdapter);
+        RoamingDiscoveryParticipant roamingParticipant = new RoamingDiscoveryParticipant();
+        MockBluetoothAdapter roamingAdapter = roamingParticipant.roamingAdapter;
+        discoveryService.addBluetoothDiscoveryParticipant(roamingParticipant);
 
         MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
         MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
@@ -503,6 +505,33 @@ public class BluetoothDiscoveryServiceTest {
         Assert.assertThat(result2.getBridgeIds().get(0),
                 anyOf(is(mockAdapter1.getUID().getId()), is(roamingAdapter.getUID().getId())));
         Assert.assertEquals(result1.getId(), result2.getId());
+    }
+
+    private class RoamingDiscoveryParticipant implements BluetoothDiscoveryParticipant {
+
+        private MockBluetoothAdapter roamingAdapter = new MockBluetoothAdapter();
+
+        @Override
+        public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
+            return null;
+        }
+
+        @Override
+        public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
+            return null;
+        }
+
+        @Override
+        public void publishAdditionalResults(DiscoveryResult result,
+                BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
+            publisher.accept(roamingAdapter, result);
+        }
+
     }
 
     private class MockDiscoveryParticipant implements BluetoothDiscoveryParticipant {

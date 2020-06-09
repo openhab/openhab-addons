@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.internal;
+package org.openhab.binding.bluetooth.roaming.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothAdapter;

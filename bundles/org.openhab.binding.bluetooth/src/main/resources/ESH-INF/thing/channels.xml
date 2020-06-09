@@ -11,13 +11,6 @@
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
-	
-	<channel-type id="last-activity" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>Last Activity</label>
-		<description>Date and time of the last activity</description>
-		<state readOnly="true"/>
-	</channel-type>
 
 	<channel-type id="adapter-uid">
 		<item-type>String</item-type>
