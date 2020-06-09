@@ -32,15 +32,19 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "radiothermostat")
 @NonNullByDefault
 public class RadioThermostatThingActions implements ThingActions {
-
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatThingActions.class);
 
     private @Nullable RadioThermostatHandler handler;
 
+    @SuppressWarnings("null")
     @RuleAction(label = "sendRawCommand", description = "Action that sends raw command to the thermostat")
     public void sendRawCommand(@ActionInput(name = "sendRawCommand") @Nullable String rawCommand) {
-        handler.handleRawCommand(rawCommand);
-        logger.debug("sendRawCommand called with raw command: {}", rawCommand);
+        if (handler != null && rawCommand != null) {
+            handler.handleRawCommand(rawCommand);
+            logger.debug("sendRawCommand called with raw command: {}", rawCommand);
+        } else {
+            logger.debug("sendRawCommand called with null command, ignoring");
+        }
     }
 
     public static void sendRawCommand(@Nullable ThingActions actions, @Nullable String rawCommand)

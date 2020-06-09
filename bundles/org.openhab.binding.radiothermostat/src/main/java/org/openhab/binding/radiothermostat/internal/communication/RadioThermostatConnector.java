@@ -47,12 +47,15 @@ public class RadioThermostatConnector {
     private static final String URL = "http://%hostName%/%resource%";
 
     private final HttpClient httpClient;
-    private final @Nullable String hostName;
-
     private final List<RadioThermostatEventListener> listeners = new CopyOnWriteArrayList<>();
 
-    public RadioThermostatConnector(HttpClient httpClient, @Nullable String hostName) {
+    private @Nullable String hostName;
+
+    public RadioThermostatConnector(HttpClient httpClient) {
         this.httpClient = httpClient;
+    }
+
+    public void setThermostatHostName(@Nullable String hostName) {
         this.hostName = hostName;
     }
 
@@ -86,7 +89,7 @@ public class RadioThermostatConnector {
         httpClient.newRequest(urlStr).method(GET).timeout(20, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @Override
             public void onComplete(@Nullable Result result) {
-                if (!result.isFailed()) {
+                if (result != null && !result.isFailed()) {
                     String response = getContentAsString();
                     logger.debug("thermostatResponse = {}", response);
                     dispatchKeyValue(resource, response);
@@ -121,7 +124,7 @@ public class RadioThermostatConnector {
         String postJson = cmdJson != null ? cmdJson : "{\"" + cmdKey + "\":" + cmdVal + "}";
         String urlStr = buildRequestURL(DEFAULT_RESOURCE);
 
-        String output = null;
+        String output = "";
 
         try {
             Request request = httpClient.POST(urlStr);

@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class RadioThermostatConfiguration {
-
     public @Nullable String hostName;
     public @Nullable Integer refresh;
     public @Nullable Integer logRefresh;

@@ -56,8 +56,8 @@ import org.openhab.binding.radiothermostat.internal.communication.RadioThermosta
 import org.openhab.binding.radiothermostat.internal.communication.RadioThermostatEventListener;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatHumidityDTO;
-import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatRuntimeDTO;
+import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,29 +80,29 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatHandler.class);
 
-    private final HttpClient httpClient;
     private final Gson gson;
+    private final RadioThermostatConnector connector;
     private final RadioThermostatDTO rthermData = new RadioThermostatDTO();
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> logRefreshJob;
 
-    private @Nullable RadioThermostatConnector connector;
     private @Nullable RadioThermostatConfiguration config;
 
     public RadioThermostatHandler(Thing thing,
             @Nullable RadioThermostatStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.httpClient = httpClient;
         gson = new Gson();
+        connector = new RadioThermostatConnector(httpClient);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("Initializing RadioThermostat handler.");
         this.config = getConfigAs(RadioThermostatConfiguration.class);
-        connector = new RadioThermostatConnector(httpClient, config.hostName);
+        connector.setThermostatHostName(config.hostName);
         connector.addEventListener(this);
 
         // populate fan mode options based on thermostat model
@@ -132,6 +132,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     /**
      * Start the job to periodically update data from the thermostat
      */
+    @SuppressWarnings("null")
     private void startAutomaticRefresh() {
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
@@ -147,6 +148,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     /**
      * Start the job to periodically update humidity and runtime date from the thermostat
      */
+    @SuppressWarnings("null")
     private void startAutomaticLogRefresh() {
         if (logRefreshJob == null || logRefreshJob.isCancelled()) {
             Runnable runnable = () -> {
@@ -167,16 +169,17 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void dispose() {
         logger.debug("Disposing the RadioThermostat handler.");
         connector.removeEventListener(this);
 
-        if (refreshJob != null && !refreshJob.isCancelled()) {
+        if (refreshJob != null) {
             refreshJob.cancel(true);
             refreshJob = null;
         }
-        if (logRefreshJob != null && !logRefreshJob.isCancelled()) {
+        if (logRefreshJob != null) {
             logRefreshJob.cancel(true);
             logRefreshJob = null;
         }
@@ -196,7 +199,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             if (cmdStr != null) {
                 try {
                     // parse out an Integer from the string
-                    // ie '70.5 F' becomes 70, also handles negative numbers 
+                    // ie '70.5 F' becomes 70, also handles negative numbers
                     cmdInt = NumberFormat.getInstance().parse(cmdStr).intValue();
                 } catch (ParseException e) {
                     logger.debug("Command: {} -> Not an integer", cmdStr);
