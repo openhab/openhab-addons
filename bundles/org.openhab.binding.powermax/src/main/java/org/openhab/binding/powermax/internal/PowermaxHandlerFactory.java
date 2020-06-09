@@ -93,7 +93,7 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(handler);
             return handler;
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new PowermaxThingHandler(thing, timeZoneProvider.getTimeZone());
+            return new PowermaxThingHandler(thing, timeZoneProvider);
         }
 
         return null;
