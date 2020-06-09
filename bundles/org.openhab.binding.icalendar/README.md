@@ -59,7 +59,7 @@ If it is `END` then the command will be executed at the end of the calendar even
 A calendar event may contain multiple `BEGIN` or `END` tags.
 If an event contains both `BEGIN` and `END` tags, the item is (say) to be turned `ON` at the beginning of an event and turned `OFF` again at the end of the event.
 
-The `Item_Name` field must be the name of an Item.
+The `Item_Name` field must be the name of an item.
 
 The `New_State_Value` is the state value that will be sent to the item.
 It must be a value which is compatible with the item type.
