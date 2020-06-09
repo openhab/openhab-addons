@@ -124,7 +124,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(handler);
             return handler;
         } else if (FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            FreeboxThingHandler handler = new FreeboxThingHandler(thing, timeZoneProvider.getTimeZone());
+            FreeboxThingHandler handler = new FreeboxThingHandler(thing, timeZoneProvider);
             if (FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY.equals(thingTypeUID)) {
                 registerAudioSink(handler);
             }
