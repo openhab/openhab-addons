@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -77,8 +78,8 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     private @Nullable OpenWeatherMapJsonHourlyForecastData hourlyForecastData;
     private @Nullable OpenWeatherMapJsonDailyForecastData dailyForecastData;
 
-    public OpenWeatherMapWeatherAndForecastHandler(Thing thing) {
-        super(thing);
+    public OpenWeatherMapWeatherAndForecastHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
