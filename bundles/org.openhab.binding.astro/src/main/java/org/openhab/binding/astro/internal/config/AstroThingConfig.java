@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.astro.internal.config;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -68,15 +64,8 @@ public class AstroThingConfig {
 
     @Override
     public String toString() {
-        TimeZone tz = TimeZone.getDefault();
-        StringBuilder tzInfo = new StringBuilder();
-        tzInfo.append(tz.getID());
-        tzInfo.append(" (").append(tz.getDisplayName(false, TimeZone.SHORT)).append(" ")
-                .append(new SimpleDateFormat("Z").format(Calendar.getInstance().getTime()));
-        tzInfo.append(")");
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("thing", thingUid)
                 .append("geolocation", geolocation).append("altitude", altitude).append("interval", interval)
-                .append("systemTimezone", tzInfo.toString())
-                .append("daylightSavings", Calendar.getInstance().get(Calendar.DST_OFFSET) != 0).toString();
+                .toString();
     }
 }
