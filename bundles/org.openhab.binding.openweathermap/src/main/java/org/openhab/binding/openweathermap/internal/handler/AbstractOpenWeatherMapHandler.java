@@ -15,7 +15,6 @@ package org.openhab.binding.openweathermap.internal.handler;
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +27,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
@@ -72,11 +72,14 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_WEATHER_AND_FORECAST, THING_TYPE_UVINDEX).collect(Collectors.toSet()));
 
+    private final TimeZoneProvider timeZoneProvider;
+
     // keeps track of the parsed location
     protected @Nullable PointType location;
 
-    public AbstractOpenWeatherMapHandler(Thing thing) {
+    public AbstractOpenWeatherMapHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -176,8 +179,8 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
 
     protected State getDateTimeTypeState(@Nullable Integer value) {
         return (value == null) ? UnDefType.UNDEF
-                : new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochSecond(value.longValue()), ZoneId.systemDefault()));
+                : new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(value.longValue()),
+                        timeZoneProvider.getTimeZone()));
     }
 
     protected State getDecimalTypeState(@Nullable Double value) {
