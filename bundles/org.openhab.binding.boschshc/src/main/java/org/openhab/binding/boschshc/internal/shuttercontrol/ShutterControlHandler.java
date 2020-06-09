@@ -1,0 +1,98 @@
+package org.openhab.binding.boschshc.internal.shuttercontrol;
+
+import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.BoschSHCHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
+
+public class ShutterControlHandler extends BoschSHCHandler {
+    private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
+
+    public ShutterControlHandler(Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            ShutterControlState state = this.getDeviceState();
+            this.updateState(state);
+        } else if (command instanceof UpDownType) {
+            // Set full close/open as target state
+            UpDownType upDownType = (UpDownType) command;
+            ShutterControlState state = new ShutterControlState();
+            if (upDownType == UpDownType.UP) {
+                state.level = 1;
+            } else if (upDownType == UpDownType.DOWN) {
+                state.level = 0;
+            } else {
+                return;
+            }
+            this.setDeviceState(state);
+        } else if (command instanceof StopMoveType) {
+            // Set current state as target state
+            ShutterControlState state = this.getDeviceState();
+            this.setDeviceState(state);
+        }
+    }
+
+    @Override
+    public void processUpdate(String id, @NonNull JsonElement state) {
+        logger.debug("Shutter Control: received update: {} {}", id, state);
+        try {
+            Gson gson = new Gson();
+            updateState(gson.fromJson(state, ShutterControlState.class));
+        } catch (JsonSyntaxException e) {
+            logger.warn("Received unknown update in Shutter Control: {}", state);
+        }
+    }
+
+    private BoschSHCBridgeHandler getBridgeHandler() {
+        Bridge bridge = this.getBridge();
+        if (bridge == null) {
+            return null;
+        }
+        return (BoschSHCBridgeHandler) bridge.getHandler();
+    }
+
+    private ShutterControlState getDeviceState() {
+        BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+        if (bridgeHandler == null) {
+            return null;
+        }
+        return bridgeHandler.refreshState(getThing(), "ShutterControl", ShutterControlState.class);
+    }
+
+    private void setDeviceState(ShutterControlState state) {
+        BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
+        String deviceId = this.getBoschID();
+        if (deviceId == null) {
+            return;
+        }
+        bridgeHandler.putState(deviceId, "ShutterControl", state);
+    }
+
+    private void updateState(ShutterControlState state) {
+        // Convert level to open ratio
+        int openPercentage = new Double((1 - state.level) * 100).intValue();
+        updateState(CHANNEL_LEVEL, new PercentType(openPercentage));
+    }
+}
