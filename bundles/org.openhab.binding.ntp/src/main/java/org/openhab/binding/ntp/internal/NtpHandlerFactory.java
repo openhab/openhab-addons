@@ -55,7 +55,7 @@ public class NtpHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_NTP.equals(thingTypeUID)) {
-            return new NtpHandler(thing, timeZoneProvider.getTimeZone());
+            return new NtpHandler(thing, timeZoneProvider);
         }
 
         return null;

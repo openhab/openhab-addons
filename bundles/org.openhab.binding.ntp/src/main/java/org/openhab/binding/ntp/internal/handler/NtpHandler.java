@@ -29,6 +29,7 @@ import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -69,6 +70,8 @@ public class NtpHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NtpHandler.class);
 
+    private final TimeZoneProvider timeZoneProvider;
+
     /** for publish purposes */
     private DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(DATE_PATTERN_WITH_TZ);
 
@@ -76,7 +79,6 @@ public class NtpHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    private ZoneId defaultTimeZoneId;
     private ZoneId timeZoneId;
 
     /** NTP refresh counter */
@@ -84,10 +86,10 @@ public class NtpHandler extends BaseThingHandler {
     /** NTP system time delta */
     private long timeOffset;
 
-    public NtpHandler(final Thing thing, final ZoneId timeZoneId) {
+    public NtpHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.defaultTimeZoneId = timeZoneId;
-        this.timeZoneId = defaultTimeZoneId;
+        this.timeZoneProvider = timeZoneProvider;
+        this.timeZoneId = timeZoneProvider.getTimeZone();
     }
 
     @Override
@@ -112,12 +114,12 @@ public class NtpHandler extends BaseThingHandler {
             try {
                 timeZoneId = ZoneId.of(configuration.timeZone);
             } catch (DateTimeException e) {
-                timeZoneId = defaultTimeZoneId;
+                timeZoneId = timeZoneProvider.getTimeZone();
                 logger.debug("{} using default timezone '{}', because configuration setting '{}' is invalid: {}",
                         getThing().getUID(), timeZoneId, PROPERTY_TIMEZONE, e.getMessage());
             }
         } else {
-            timeZoneId = defaultTimeZoneId;
+            timeZoneId = timeZoneProvider.getTimeZone();
             logger.debug("{} using default timezone '{}', because configuration setting '{}' is null.",
                     getThing().getUID(), timeZoneId, PROPERTY_TIMEZONE);
         }
