@@ -79,7 +79,7 @@ public class NtpHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    private ZoneId timeZoneId;
+    private @Nullable ZoneId timeZoneId;
 
     /** NTP refresh counter */
     private int refreshNtpCount = 0;
@@ -89,7 +89,6 @@ public class NtpHandler extends BaseThingHandler {
     public NtpHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
-        this.timeZoneId = timeZoneProvider.getTimeZone();
     }
 
     @Override
@@ -114,15 +113,16 @@ public class NtpHandler extends BaseThingHandler {
             try {
                 timeZoneId = ZoneId.of(configuration.timeZone);
             } catch (DateTimeException e) {
-                timeZoneId = timeZoneProvider.getTimeZone();
+                timeZoneId = null;
                 logger.debug("{} using default timezone '{}', because configuration setting '{}' is invalid: {}",
-                        getThing().getUID(), timeZoneId, PROPERTY_TIMEZONE, e.getMessage());
+                        getThing().getUID(), timeZoneProvider.getTimeZone(), PROPERTY_TIMEZONE, e.getMessage());
             }
         } else {
-            timeZoneId = timeZoneProvider.getTimeZone();
+            timeZoneId = null;
             logger.debug("{} using default timezone '{}', because configuration setting '{}' is null.",
-                    getThing().getUID(), timeZoneId, PROPERTY_TIMEZONE);
+                    getThing().getUID(), timeZoneProvider.getTimeZone(), PROPERTY_TIMEZONE);
         }
+        ZoneId zoneId = timeZoneId != null ? timeZoneId : timeZoneProvider.getTimeZone();
 
         Channel stringChannel = getThing().getChannel(CHANNEL_STRING);
         if (stringChannel != null) {
@@ -144,12 +144,12 @@ public class NtpHandler extends BaseThingHandler {
         } else {
             logger.debug("Missing channel: '{}'", CHANNEL_STRING);
         }
-        dateTimeFormat.withZone(timeZoneId);
+        dateTimeFormat.withZone(zoneId);
 
         logger.debug(
                 "Initialized NTP handler '{}' with configuration: host '{}', port {}, refresh interval {}, refresh frequency {}, timezone {}.",
                 getThing().getUID(), configuration.hostname, configuration.serverPort, configuration.refreshInterval,
-                configuration.refreshNtp, timeZoneId);
+                configuration.refreshNtp, zoneId);
 
         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
@@ -183,8 +183,10 @@ public class NtpHandler extends BaseThingHandler {
             refreshNtpCount--;
         }
 
-        ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(networkTimeInMillis), timeZoneId);
+        ZoneId zoneId = timeZoneId != null ? timeZoneId : timeZoneProvider.getTimeZone();
+        ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(networkTimeInMillis), zoneId);
         updateState(CHANNEL_DATE_TIME, new DateTimeType(zoned));
+        dateTimeFormat.withZone(zoneId);
         updateState(CHANNEL_STRING, new StringType(dateTimeFormat.format(zoned)));
     }
 
@@ -206,7 +208,8 @@ public class NtpHandler extends BaseThingHandler {
             timeInfo.computeDetails();
 
             long serverMillis = timeInfo.getReturnTime() + timeInfo.getOffset();
-            ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(serverMillis), timeZoneId);
+            ZoneId zoneId = timeZoneId != null ? timeZoneId : timeZoneProvider.getTimeZone();
+            ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(serverMillis), zoneId);
             logger.debug("{} Got time update from host '{}': {}.", getThing().getUID(), hostname,
                     zoned.format(DATE_FORMATTER_WITH_TZ));
             updateStatus(ThingStatus.ONLINE);
