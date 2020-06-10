@@ -63,6 +63,9 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(LcnModuleDiscoveryService.class);
     private static final Pattern NAME_PATTERN = Pattern
             .compile("=M(?<segId>\\d{3})(?<modId>\\d{3}).N(?<part>[1-2]{1})(?<name>.*)");
+    private static final String SEGMENT_ID = "segmentId";
+    private static final String MODULE_ID = "moduleId";
+    private static final String SERIAL_NUMBER = "serialNumber";
     private static final int MODULE_NAME_PART_COUNT = 2;
     private static final int DISCOVERY_TIMEOUT_SEC = 90;
     private static final int ACK_TIMEOUT_MS = 1000;
@@ -148,16 +151,19 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                         } else if (matcher.pattern() == LcnModuleMetaFirmwareSubHandler.PATTERN) {
                             // Received a firmware version info frame
 
-                            Map<String, Object> properties = new HashMap<>(5);
-                            properties.put("segmentId", addr.getSegmentId());
-                            properties.put("moduleId", addr.getModuleId());
-
                             ThingUID bridgeUid = localBridgeHandler.getThing().getUID();
-                            String thingId = matcher.group("sn");
-                            ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_MODULE, bridgeUid, thingId);
+                            String serialNumber = matcher.group("sn");
+                            ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_MODULE, bridgeUid,
+                                    serialNumber);
+
+                            Map<String, Object> properties = new HashMap<>(3);
+                            properties.put(SEGMENT_ID, addr.getSegmentId());
+                            properties.put(MODULE_ID, addr.getModuleId());
+                            properties.put(SERIAL_NUMBER, serialNumber);
 
                             DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
-                                    .withProperties(properties).withBridge(bridgeUid);
+                                    .withProperties(properties).withRepresentationProperty(SERIAL_NUMBER)
+                                    .withBridge(bridgeUid);
 
                             discoveryResultBuilders.put(addr, discoveryResult);
                         } else if (matcher.pattern() == NAME_PATTERN) {

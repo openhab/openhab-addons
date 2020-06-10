@@ -57,6 +57,9 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.lcn")
 public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(LcnPchkDiscoveryService.class);
+    private static final String HOSTNAME = "hostname";
+    private static final String PORT = "port";
+    private static final String MAC_ADDRESS = "macAddress";
     private static final String PCHK_DISCOVERY_MULTICAST_ADDRESS = "234.5.6.7";
     private static final int PCHK_DISCOVERY_PORT = 4220;
     private static final int INTERFACE_TIMEOUT_SEC = 2;
@@ -120,15 +123,17 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
 
                             ServicesResponse deserialized = xmlToServiceResponse(response);
 
-                            Map<String, Object> properties = new HashMap<>();
-                            properties.put("hostname", addr.getHostAddress());
-                            properties.put("port", deserialized.getExtServices().getExtService().getLocalPort());
+                            String macAddress = deserialized.getServer().getMachineId().replace(":", "");
+                            ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_PCK_GATEWAY, macAddress);
 
-                            String thingId = deserialized.getServer().getMachineId().replace(":", "");
-                            ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_PCK_GATEWAY, thingId);
+                            Map<String, Object> properties = new HashMap<>(3);
+                            properties.put(HOSTNAME, addr.getHostAddress());
+                            properties.put(PORT, deserialized.getExtServices().getExtService().getLocalPort());
+                            properties.put(MAC_ADDRESS, macAddress);
 
                             DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
-                                    .withProperties(properties).withLabel(deserialized.getServer().getContent() + " ("
+                                    .withProperties(properties).withRepresentationProperty(MAC_ADDRESS)
+                                    .withLabel(deserialized.getServer().getContent() + " ("
                                             + deserialized.getServer().getMachineName() + ")");
 
                             thingDiscovered(discoveryResult.build());
