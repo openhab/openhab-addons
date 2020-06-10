@@ -111,7 +111,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private Object sequenceLock = new Object();
 
     // build a Map with a MonopriceAudioZoneDTO for each zone (1-18)
-    private static final Map<String, MonopriceAudioZoneDTO> zoneDataMap = MonopriceAudioZone.VALID_ZONES.stream()
+    private static final Map<String, MonopriceAudioZoneDTO> ZONE_DATA_MAP = MonopriceAudioZone.VALID_ZONES.stream()
             .collect(Collectors.toMap(s -> s, s -> new MonopriceAudioZoneDTO()));
 
     public MonopriceAudioHandler(Thing thing, MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider,
@@ -253,10 +253,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     case CHANNEL_TYPE_POWER:
                         if (command instanceof OnOffType && command == OnOffType.ON) {
                             connector.sendCommand(zone, MonopriceAudioCommand.POWER_ON);
-                            zoneDataMap.get(zone.getZoneId()).setPower(ON);
+                            ZONE_DATA_MAP.get(zone.getZoneId()).setPower(ON);
                         } else if (command instanceof OnOffType && command == OnOffType.OFF) {
                             connector.sendCommand(zone, MonopriceAudioCommand.POWER_OFF);
-                            zoneDataMap.get(zone.getZoneId()).setPower(OFF);
+                            ZONE_DATA_MAP.get(zone.getZoneId()).setPower(OFF);
                         }
                         break;
                     case CHANNEL_TYPE_SOURCE:
@@ -265,7 +265,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             if (value >= ONE && value <= MAX_SRC) {
                                 logger.debug("Got source command {} zone {}", value, zone);
                                 connector.sendCommand(zone, MonopriceAudioCommand.SOURCE, value);
-                                zoneDataMap.get(zone.getZoneId()).setSource(String.format("%02d", value));
+                                ZONE_DATA_MAP.get(zone.getZoneId()).setSource(String.format("%02d", value));
                             }
                         }
                         break;
@@ -276,16 +276,16 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                     + MIN_VOLUME;
                             logger.debug("Got volume command {} zone {}", value, zone);
                             connector.sendCommand(zone, MonopriceAudioCommand.VOLUME, value);
-                            zoneDataMap.get(zone.getZoneId()).setVolume(String.format("%02d", value));
+                            ZONE_DATA_MAP.get(zone.getZoneId()).setVolume(String.format("%02d", value));
                         }
                         break;
                     case CHANNEL_TYPE_MUTE:
                         if (command instanceof OnOffType && command == OnOffType.ON) {
                             connector.sendCommand(zone, MonopriceAudioCommand.MUTE_ON);
-                            zoneDataMap.get(zone.getZoneId()).setMute(ON);
+                            ZONE_DATA_MAP.get(zone.getZoneId()).setMute(ON);
                         } else if (command instanceof OnOffType && command == OnOffType.OFF) {
                             connector.sendCommand(zone, MonopriceAudioCommand.MUTE_OFF);
-                            zoneDataMap.get(zone.getZoneId()).setMute(OFF);
+                            ZONE_DATA_MAP.get(zone.getZoneId()).setMute(OFF);
                         }
                         break;
                     case CHANNEL_TYPE_TREBLE:
@@ -294,7 +294,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             if (value >= MIN_TONE && value <= MAX_TONE) {
                                 logger.debug("Got treble command {} zone {}", value, zone);
                                 connector.sendCommand(zone, MonopriceAudioCommand.TREBLE, value + TONE_OFFSET);
-                                zoneDataMap.get(zone.getZoneId()).setTreble(String.format("%02d", value + TONE_OFFSET));
+                                ZONE_DATA_MAP.get(zone.getZoneId())
+                                        .setTreble(String.format("%02d", value + TONE_OFFSET));
                             }
                         }
                         break;
@@ -304,7 +305,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             if (value >= MIN_TONE && value <= MAX_TONE) {
                                 logger.debug("Got bass command {} zone {}", value, zone);
                                 connector.sendCommand(zone, MonopriceAudioCommand.BASS, value + TONE_OFFSET);
-                                zoneDataMap.get(zone.getZoneId()).setBass(String.format("%02d", value + TONE_OFFSET));
+                                ZONE_DATA_MAP.get(zone.getZoneId()).setBass(String.format("%02d", value + TONE_OFFSET));
                             }
                         }
                         break;
@@ -314,7 +315,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                             if (value >= MIN_BALANCE && value <= MAX_BALANCE) {
                                 logger.debug("Got balance command {} zone {}", value, zone);
                                 connector.sendCommand(zone, MonopriceAudioCommand.BALANCE, value + BALANCE_OFFSET);
-                                zoneDataMap.get(zone.getZoneId())
+                                ZONE_DATA_MAP.get(zone.getZoneId())
                                         .setBalance(String.format("%02d", value + BALANCE_OFFSET));
                             }
                         }
@@ -322,10 +323,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     case CHANNEL_TYPE_DND:
                         if (command instanceof OnOffType && command == OnOffType.ON) {
                             connector.sendCommand(zone, MonopriceAudioCommand.DND_ON);
-                            zoneDataMap.get(zone.getZoneId()).setDnd(ON);
+                            ZONE_DATA_MAP.get(zone.getZoneId()).setDnd(ON);
                         } else if (command instanceof OnOffType && command == OnOffType.OFF) {
                             connector.sendCommand(zone, MonopriceAudioCommand.DND_OFF);
-                            zoneDataMap.get(zone.getZoneId()).setDnd(OFF);
+                            ZONE_DATA_MAP.get(zone.getZoneId()).setDnd(OFF);
                         }
                         break;
                     case CHANNEL_TYPE_ALLON:
@@ -492,7 +493,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
                     if (MonopriceAudioZone.VALID_ZONES.contains(zoneId)) {
                         MonopriceAudioZone targetZone = MonopriceAudioZone.valueOf(ZONE + zoneId);
-                        processZoneUpdate(targetZone, zoneDataMap.get(zoneId), updateData);
+                        processZoneUpdate(targetZone, ZONE_DATA_MAP.get(zoneId), updateData);
                     } else {
                         logger.warn("invalid event: {} for key: {}", evt.getValue(), key);
                     }
@@ -513,11 +514,12 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         logger.debug("Schedule reconnect job");
         cancelReconnectJob();
         reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
-            if (!connector.isConnected()) {
-                logger.debug("Trying to reconnect...");
-                closeConnection();
-                String error = null;
-                synchronized (sequenceLock) {
+            synchronized (sequenceLock) {
+                if (!connector.isConnected()) {
+                    logger.debug("Trying to reconnect...");
+                    closeConnection();
+                    String error = null;
+
                     if (openConnection()) {
                         try {
                             long prevUpdateTime = lastPollingUpdate;
