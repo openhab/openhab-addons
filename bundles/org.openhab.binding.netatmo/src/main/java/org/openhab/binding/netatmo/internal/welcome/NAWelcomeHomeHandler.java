@@ -15,27 +15,24 @@ package org.openhab.binding.netatmo.internal.welcome;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.util.Calendar;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNull;
+import io.swagger.client.model.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
+import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.swagger.client.model.NAWelcomeEvent;
-import io.swagger.client.model.NAWelcomeHome;
-import io.swagger.client.model.NAWelcomeHomeData;
-import io.swagger.client.model.NAWelcomeSnapshot;
 
 /**
  * {@link NAWelcomeHomeHandler} is the class used to handle the Welcome Home Data
@@ -44,21 +41,23 @@ import io.swagger.client.model.NAWelcomeSnapshot;
  * @author Ing. Peter Weiss - Welcome camera implementation
  *
  */
+@NonNullByDefault
 public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
-    private Logger logger = LoggerFactory.getLogger(NAWelcomeHomeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NAWelcomeHomeHandler.class);
 
     private int iPersons = -1;
     private int iUnknowns = -1;
-    private NAWelcomeEvent lastEvent;
-    private Integer dataTimeStamp;
+    private Optional<NAWelcomeEvent> lastEvent = Optional.empty();
+    private boolean isNewLastEvent;
+    private @Nullable Integer dataTimeStamp;
 
-    public NAWelcomeHomeHandler(@NonNull Thing thing) {
+    public NAWelcomeHomeHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    protected NAWelcomeHome updateReadings() {
-        NAWelcomeHome result = null;
+    protected @Nullable NAWelcomeHome updateReadings() {
+        @Nullable NAWelcomeHome result = null;
         NAWelcomeHomeData homeDataBody = getBridgeHandler().getWelcomeDataBody(getId());
         if (homeDataBody != null) {
             // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this
@@ -83,11 +82,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     }
                 });
 
-                result.getEvents().forEach(event -> {
-                    if (lastEvent == null || lastEvent.getTime() < event.getTime()) {
-                        lastEvent = event;
-                    }
-                });
+                Optional<NAWelcomeEvent> previousLastEvent = lastEvent;
+                lastEvent = result.getEvents().stream().min(Comparator.comparingInt(NAWelcomeEvent::getTime));
+                isNewLastEvent = previousLastEvent.isPresent() && !previousLastEvent.equals(lastEvent);
             }
         }
         return result;
@@ -97,56 +94,46 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     protected State getNAThingProperty(String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_HOME_CITY:
-                return device != null ? toStringType(device.getPlace().getCity()) : UnDefType.UNDEF;
+                return getPlaceInfo(NAWelcomePlace::getCity);
             case CHANNEL_WELCOME_HOME_COUNTRY:
-                return device != null ? toStringType(device.getPlace().getCountry()) : UnDefType.UNDEF;
+                return getPlaceInfo(NAWelcomePlace::getCountry);
             case CHANNEL_WELCOME_HOME_TIMEZONE:
-                return device != null ? toStringType(device.getPlace().getTimezone()) : UnDefType.UNDEF;
+                return getPlaceInfo(NAWelcomePlace::getTimezone);
             case CHANNEL_WELCOME_HOME_PERSONCOUNT:
                 return iPersons != -1 ? new DecimalType(iPersons) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_HOME_UNKNOWNCOUNT:
                 return iUnknowns != -1 ? new DecimalType(iUnknowns) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_TYPE:
-                return lastEvent != null ? toStringType(lastEvent.getType()) : UnDefType.UNDEF;
+                return lastEvent.map(e -> toStringType(e.getType())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_TIME:
-                return lastEvent != null ? toDateTimeType(lastEvent.getTime()) : UnDefType.UNDEF;
+                return lastEvent.map(e -> toDateTimeType(e.getTime())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_CAMERAID:
-                if (lastEvent != null) {
+                if (lastEvent.isPresent()) {
                     Optional<AbstractNetatmoThingHandler> camera = getBridgeHandler()
-                            .findNAThing(lastEvent.getCameraId());
+                            .findNAThing(lastEvent.get().getCameraId());
                     return camera.map(c -> toStringType(c.getThing().getLabel())).orElse(UnDefType.UNDEF);
                 } else {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_PERSONID:
-                if (lastEvent != null) {
+                if (lastEvent.isPresent()) {
                     Optional<AbstractNetatmoThingHandler> person = getBridgeHandler()
-                            .findNAThing(lastEvent.getPersonId());
+                            .findNAThing(lastEvent.get().getPersonId());
                     return person.map(p -> toStringType(p.getThing().getLabel())).orElse(UnDefType.UNDEF);
                 } else {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
-                if (lastEvent != null) {
-                    String url = getSnapshotURL(lastEvent.getSnapshot());
-                    return url != null ? HttpUtil.downloadImage(url) : UnDefType.UNDEF;
-                } else {
-                    return UnDefType.UNDEF;
-                }
+                return findSnapshotURL().map(url -> (State)HttpUtil.downloadImage(url)).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_SNAPSHOT_URL:
-                if (lastEvent != null) {
-                    String snapshotURL = getSnapshotURL(lastEvent.getSnapshot());
-                    return toStringType(snapshotURL);
-                } else {
-                    return UnDefType.UNDEF;
-                }
+                return findSnapshotURL().map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_VIDEO_URL:
-                if (lastEvent != null && lastEvent.getVideoId() != null) {
-                    String cameraId = lastEvent.getCameraId();
+                if (lastEvent.isPresent() && lastEvent.get().getVideoId() != null) {
+                    String cameraId = lastEvent.get().getCameraId();
                     Optional<AbstractNetatmoThingHandler> thing = getBridgeHandler().findNAThing(cameraId);
                     if (thing.isPresent()) {
                         NAWelcomeCameraHandler eventCamera = (NAWelcomeCameraHandler) thing.get();
-                        String streamUrl = eventCamera.getStreamURL(lastEvent.getVideoId());
+                        String streamUrl = eventCamera.getStreamURL(lastEvent.get().getVideoId());
                         if (streamUrl != null) {
                             return new StringType(streamUrl);
                         }
@@ -154,18 +141,62 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 }
                 return UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_VIDEOSTATUS:
-                return lastEvent != null ? toStringType(lastEvent.getVideoStatus()) : UnDefType.UNDEF;
+                return lastEvent.map(e -> toStringType(e.getVideoStatus())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_ISARRIVAL:
-                return lastEvent != null ? lastEvent.getIsArrival() != null ? OnOffType.ON : OnOffType.OFF
-                        : UnDefType.UNDEF;
+                return lastEvent.map(e -> toOnOffType(e.getIsArrival())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_MESSAGE:
-                return lastEvent != null && lastEvent.getMessage() != null
-                        ? new StringType(lastEvent.getMessage().replace("<b>", "").replace("</b>", ""))
-                        : UnDefType.UNDEF;
+                return findEventMessage().map(
+                        m -> (State)new StringType(m.replace("<b>", "").replace("</b>", ""))
+                ).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
-                return lastEvent != null ? toDecimalType(lastEvent.getSubType()) : UnDefType.UNDEF;
+                return lastEvent.map(e -> toDecimalType(e.getSubType())).orElse(UnDefType.UNDEF);
         }
         return super.getNAThingProperty(channelId);
+    }
+
+    @Override
+    protected void triggerChannelIfRequired(String channelId) {
+        if (isNewLastEvent) {
+            if (CHANNEL_CAMERA_EVENT.equals(channelId)) {
+                findDetectedObjectTypes(lastEvent).forEach(detectedType -> triggerChannel(channelId, detectedType));
+            }
+        }
+        super.triggerChannelIfRequired(channelId);
+    }
+
+    private static Set<String> findDetectedObjectTypes(Optional<NAWelcomeEvent> eventOptional) {
+        Set<String> detectedObjectTypes = new TreeSet<>();
+        if (!eventOptional.isPresent()) {
+            return detectedObjectTypes;
+        }
+
+        NAWelcomeEvent event = eventOptional.get();
+
+        if (event.getPersonId() != null) {
+            detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
+        }
+
+        if (NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.toString().equals(event.getType())) {
+            detectedObjectTypes.add(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.name());
+        }
+
+        event.getEventList().forEach(subEvent -> {
+            String detectedObjectType = subEvent.getType().name();
+            detectedObjectTypes.add(detectedObjectType);
+        });
+        return detectedObjectTypes;
+    }
+
+    private Optional<String> findEventMessage() {
+        if (lastEvent.isPresent()) {
+            @Nullable String message = lastEvent.get().getMessage();
+            if (message != null) {
+                return Optional.of(message);
+            }
+
+            return findFirstSubEvent(lastEvent).map(NAWelcomeSubEvent::getMessage);
+        }
+        return Optional.empty();
     }
 
     /**
@@ -173,20 +204,35 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      *
      * @return Url of the picture or null
      */
-    protected String getSnapshotURL(NAWelcomeSnapshot snapshot) {
-        String result = null;
+    protected Optional<String> findSnapshotURL() {
+        if (lastEvent.isPresent()) {
+            @Nullable NAWelcomeSnapshot snapshot = lastEvent.get().getSnapshot();
+            if (snapshot == null) {
+                snapshot = findFirstSubEvent(lastEvent).map(NAWelcomeSubEvent::getSnapshot).orElse(null);
+            }
 
-        if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
-            result = WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
-                    + WELCOME_PICTURE_KEY + "=" + snapshot.getKey();
-        } else {
-            logger.debug("Unable to build snapshot url for Home : {}", getId());
+            if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {
+                return Optional.of(WELCOME_PICTURE_URL + "?" + WELCOME_PICTURE_IMAGEID + "=" + snapshot.getId() + "&"
+                        + WELCOME_PICTURE_KEY + "=" + snapshot.getKey());
+            } else {
+                logger.debug("Unable to build snapshot url for Home : {}", getId());
+            }
         }
-        return result;
+        return Optional.empty();
     }
 
     @Override
     protected @Nullable Integer getDataTimestamp() {
         return dataTimeStamp;
+    }
+
+    private State getPlaceInfo(Function<NAWelcomePlace, String> infoGetFunction) {
+        return Optional.ofNullable(device).map(
+                d -> toStringType(infoGetFunction.apply(d.getPlace()))
+        ).orElse(UnDefType.UNDEF);
+    }
+
+    private static Optional<NAWelcomeSubEvent> findFirstSubEvent(Optional<NAWelcomeEvent> event) {
+        return event.map(NAWelcomeEvent::getEventList).flatMap(subEvents -> subEvents.stream().findFirst());
     }
 }

@@ -76,7 +76,7 @@ rule "Turn off all lights with separator and reply"
 when
     Channel "xmppclient:xmppBridge:xmpp:xmpp_command" triggered
 then
-    var actionName = receivedEvent.getEvent().split("#")
+    var actionName = receivedEvent.getEvent().split("##")
     if(actionName.get(1).toLowerCase() == "turn off lights") {
         Group_Light_Home_All.sendCommand(OFF)
 

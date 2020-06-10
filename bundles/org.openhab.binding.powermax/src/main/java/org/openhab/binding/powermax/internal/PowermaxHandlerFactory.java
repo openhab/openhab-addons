@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -48,13 +49,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.powermax")
 public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final SerialPortManager serialPortManager;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
-    public PowermaxHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+    public PowermaxHandlerFactory(final @Reference SerialPortManager serialPortManager,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.serialPortManager = serialPortManager;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -89,7 +93,7 @@ public class PowermaxHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(handler);
             return handler;
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new PowermaxThingHandler(thing);
+            return new PowermaxThingHandler(thing, timeZoneProvider);
         }
 
         return null;

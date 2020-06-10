@@ -12,14 +12,14 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -218,15 +218,18 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     private <T extends Quantity<T>> double convertAndRound(double value, Unit<T> from, Unit<T> to) {
-      double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
-      return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
+        double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
+        return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
-    protected double convertToCelsius(double degrees){
-      return convertAndRound(degrees, getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
+    protected double convertToCelsius(double degrees) {
+        return convertAndRound(degrees,
+                getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
     }
 
-    protected double convertFromCelsius(double degrees){
-      return convertAndRound(degrees, getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT, ImperialUnits.FAHRENHEIT);
+    protected double convertFromCelsius(double degrees) {
+        return convertAndRound(degrees,
+                getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT,
+                ImperialUnits.FAHRENHEIT);
     }
 }

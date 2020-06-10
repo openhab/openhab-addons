@@ -72,10 +72,8 @@ public class AstroStateTest {
 
     @Test
     public void testParametrized() {
-        PropertyUtils.unsetTimeZone();
-
         // Anonymous implementation of the service to adapt the time zone to the tested longitude and latitude
-        PropertyUtils.setTimeZone(new TimeZoneProvider() {
+        PropertyUtils.setTimeZoneProvider(new TimeZoneProvider() {
             @Override
             public ZoneId getTimeZone() {
                 return ZONE_ID;

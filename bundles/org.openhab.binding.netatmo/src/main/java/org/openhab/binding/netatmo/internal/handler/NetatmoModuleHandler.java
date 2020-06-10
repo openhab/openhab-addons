@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -71,7 +72,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         try {
             if (channelId.equalsIgnoreCase(CHANNEL_LAST_MESSAGE) && module != null) {
                 Method getLastMessage = module.getClass().getMethod("getLastMessage");

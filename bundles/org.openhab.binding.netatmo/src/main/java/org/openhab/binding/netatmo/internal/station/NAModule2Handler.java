@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.station;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
@@ -40,7 +41,7 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
             if (dashboardData != null) {
