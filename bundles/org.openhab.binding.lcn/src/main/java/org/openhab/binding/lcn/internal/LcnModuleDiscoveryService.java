@@ -98,8 +98,8 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
-        super.deactivate();
         stopScan();
+        super.deactivate();
     }
 
     @Override

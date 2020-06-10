@@ -50,8 +50,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(PckGatewayHandler.class);
     private @Nullable Connection connection;
     private Optional<Consumer<String>> pckListener = Optional.empty();
-    @Nullable
-    private PckGatewayConfiguration config;
+    private @Nullable PckGatewayConfiguration config;
 
     public PckGatewayHandler(Bridge bridge) {
         super(bridge);
