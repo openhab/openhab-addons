@@ -14,10 +14,10 @@ package org.openhab.binding.lcn.internal.connection;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -83,12 +83,12 @@ public class ModInfo {
      * Variables request status.
      * Lazy initialization: Will be filled once the firmware version is known.
      */
-    private final Map<Variable, RequestStatus> requestStatusVars = new TreeMap<>();
+    private final Map<Variable, @Nullable RequestStatus> requestStatusVars = new HashMap<>();
 
     /**
      * Caches the values of the variables, needed for changing the values.
      */
-    private final Map<Variable, VariableValue> variableValue = new TreeMap<>();
+    private final Map<Variable, VariableValue> variableValue = new HashMap<>();
 
     /** LEDs and logic-operations request status (all 12+4). */
     private final RequestStatus requestStatusLedsAndLogicOps = new RequestStatus(MAX_STATUS_POLLED_VALUEAGE_MSEC,
@@ -295,15 +295,16 @@ public class ModInfo {
             // Variable requests
             if (this.firmwareVersion != -1) { // Firmware version is required
                 // Use the chance to remove a failed "typeless variable" request
-                if (this.lastRequestedVarWithoutTypeInResponse != Variable.UNKNOWN) {
-                    if (this.requestStatusVars.get(this.lastRequestedVarWithoutTypeInResponse).isTimeout(timeoutMSec,
-                            currTime)) {
-                        this.lastRequestedVarWithoutTypeInResponse = Variable.UNKNOWN;
+                if (lastRequestedVarWithoutTypeInResponse != Variable.UNKNOWN) {
+                    RequestStatus requestStatus = requestStatusVars.get(lastRequestedVarWithoutTypeInResponse);
+                    if (requestStatus != null && requestStatus.isTimeout(timeoutMSec, currTime)) {
+                        lastRequestedVarWithoutTypeInResponse = Variable.UNKNOWN;
                     }
                 }
                 // Variables
-                for (Map.Entry<Variable, RequestStatus> kv : this.requestStatusVars.entrySet()) {
-                    if ((r = kv.getValue()).shouldSendNextRequest(timeoutMSec, currTime)) {
+                for (Map.Entry<Variable, @Nullable RequestStatus> kv : this.requestStatusVars.entrySet()) {
+                    r = kv.getValue();
+                    if (r != null && r.shouldSendNextRequest(timeoutMSec, currTime)) {
                         // Detect if we can send immediately or if we have to wait for a "typeless" request first
                         boolean hasTypeInResponse = kv.getKey().hasTypeInResponse(this.firmwareVersion);
                         if (hasTypeInResponse || this.lastRequestedVarWithoutTypeInResponse == Variable.UNKNOWN) {
@@ -359,8 +360,12 @@ public class ModInfo {
         requestFirmwareVersion.onResponseReceived();
 
         // increase poll interval, if the LCN module sends status updates of a variable event-based
-        requestStatusVars.entrySet().stream().filter(e -> e.getKey().isEventBased(firmwareVersion))
-                .forEach(e -> e.getValue().setMaxAgeMSec(MAX_STATUS_EVENTBASED_VALUEAGE_MSEC));
+        requestStatusVars.entrySet().stream().filter(e -> e.getKey().isEventBased(firmwareVersion)).forEach(e -> {
+            RequestStatus value = e.getValue();
+            if (value != null) {
+                value.setMaxAgeMSec(MAX_STATUS_EVENTBASED_VALUEAGE_MSEC);
+            }
+        });
     }
 
     /**
@@ -421,7 +426,10 @@ public class ModInfo {
      * @param variable the variable to request
      */
     public void refreshVariable(Variable variable) {
-        requestStatusVars.get(variable).refresh();
+        RequestStatus requestStatus = requestStatusVars.get(variable);
+        if (requestStatus != null) {
+            requestStatus.refresh();
+        }
     }
 
     /**
@@ -481,7 +489,10 @@ public class ModInfo {
      * @param variable the received variable type
      */
     public void onVariableResponseReceived(Variable variable) {
-        requestStatusVars.get(variable).onResponseReceived();
+        RequestStatus requestStatus = requestStatusVars.get(variable);
+        if (requestStatus != null) {
+            requestStatus.onResponseReceived();
+        }
     }
 
     /**
