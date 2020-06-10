@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smhi.internal;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,4 +68,6 @@ public class SmhiBindingConstants {
     public static final String APPROVED_TIME_URL = BASE_URL + "/api/category/pmp3g/version/2/approvedtime.json";
     public static final String POINT_FORECAST_URL = BASE_URL
             + "/api/category/pmp3g/version/2/geotype/point/lon/%.6f/lat/%.6f/data.json";
+
+    public static final BigDecimal OCTAS_TO_PERCENT = BigDecimal.valueOf(0.08);
 }

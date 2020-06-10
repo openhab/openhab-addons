@@ -30,6 +30,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -208,28 +212,56 @@ public class SmhiHandler extends BaseThingHandler {
 
     private void updateChannel(Channel channel, @Nullable BigDecimal value) {
         String id = channel.getUID().getIdWithoutGroup();
+        State newState = UnDefType.NULL;
+
         if (value != null) {
             switch (id) {
-                case HIGH_CLOUD_COVER:
-                case MEDIUM_CLOUD_COVER:
-                case LOW_CLOUD_COVER:
-                case TOTAL_CLOUD_COVER:
-                    updateState(channel.getUID(), new DecimalType(value.doubleValue() / 8 * 100));
+                case PRESSURE:
+                    newState = new QuantityType<>(value, MetricPrefix.HECTO(SIUnits.PASCAL));
+                    break;
+                case TEMPERATURE:
+                    newState = new QuantityType<>(value, SIUnits.CELSIUS);
+                    break;
+                case VISIBILITY:
+                    newState = new QuantityType<>(value, MetricPrefix.KILO(SIUnits.METRE));
+                    break;
+                case WIND_DIRECTION:
+                    newState = new QuantityType<>(value, SmartHomeUnits.DEGREE_ANGLE);
+                    break;
+                case WIND_SPEED:
+                case GUST:
+                    newState = new QuantityType<>(value, SmartHomeUnits.METRE_PER_SECOND);
+                    break;
+                case RELATIVE_HUMIDITY:
+                case THUNDER_PROBABILITY:
+                    newState = new QuantityType<>(value, SmartHomeUnits.PERCENT);
                     break;
                 case PERCENT_FROZEN:
                     // Smhi returns -9 for spp if there's no precipitation, convert to UNDEF
                     if (value.intValue() == -9) {
-                        updateState(channel.getUID(), UnDefType.UNDEF);
+                        newState = UnDefType.UNDEF;
                     } else {
-                        updateState(channel.getUID(), new DecimalType(value));
+                        newState = new QuantityType<>(value, SmartHomeUnits.PERCENT);
                     }
                     break;
+                case HIGH_CLOUD_COVER:
+                case MEDIUM_CLOUD_COVER:
+                case LOW_CLOUD_COVER:
+                case TOTAL_CLOUD_COVER:
+                    newState = new QuantityType<>(value.divide(OCTAS_TO_PERCENT), SmartHomeUnits.PERCENT);
+                    break;
+                case PRECIPITATION_MAX:
+                case PRECIPITATION_MEAN:
+                case PRECIPITATION_MEDIAN:
+                case PRECIPITATION_MIN:
+                    newState = new QuantityType<>(value, SmartHomeUnits.MILLIMETRE_PER_HOUR);
+                    break;
                 default:
-                    updateState(channel.getUID(), new DecimalType(value));
+                    newState = new DecimalType(value);
             }
-        } else {
-            updateState(channel.getUID(), UnDefType.NULL);
         }
+
+        updateState(channel.getUID(), newState);
     }
 
     /**
