@@ -42,6 +42,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,7 @@ public class SmhiHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             synchronized (this) {
                 Future<?> localRef = instantUpdate;
-                if (localRef == null || localRef.isDone() || localRef.isCancelled()) {
+                if (localRef == null || localRef.isDone()) {
                     instantUpdate = scheduler.schedule(this::getUpdatedForecast, 5, TimeUnit.SECONDS);
                 } else {
                     logger.debug("Already waiting for scheduled refresh");
@@ -116,7 +117,7 @@ public class SmhiHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         synchronized (this) {
             Future<?> localRef = instantUpdate;
-            if (localRef == null || localRef.isDone() || localRef.isCancelled()) {
+            if (localRef == null || localRef.isDone()) {
                 instantUpdate = scheduler.schedule(this::getUpdatedForecast, 5, TimeUnit.SECONDS);
             } else {
                 logger.debug("Already waiting for scheduled refresh");
@@ -191,7 +192,7 @@ public class SmhiHandler extends BaseThingHandler {
             Forecast forecast = timeSeries.getForecast(currentDay, 24 * i + 12);
 
             if (forecast == null) {
-                logger.info("No forecast yet for {}", currentDay.plusHours(24 * i + 12));
+                logger.debug("No forecast yet for {}", currentDay.plusHours(24 * i + 12));
                 channels.forEach(c -> {
                     updateState(c.getUID(), UnDefType.NULL);
                 });
@@ -281,9 +282,10 @@ public class SmhiHandler extends BaseThingHandler {
      */
     private boolean isForecastUpdated() {
         ZonedDateTime referenceTime;
-        if (connection != null) {
+        SmhiConnector apiConnection = connection;
+        if (apiConnection != null) {
             try {
-                referenceTime = connection.getReferenceTime();
+                referenceTime = apiConnection.getReferenceTime();
             } catch (SmhiException e) {
                 return false;
             }
@@ -299,9 +301,10 @@ public class SmhiHandler extends BaseThingHandler {
     private void getUpdatedForecast() {
         TimeSeries forecast;
         ZonedDateTime referenceTime;
-        if (connection != null) {
+        SmhiConnector apiConnection = connection;
+        if (apiConnection != null) {
             try {
-                forecast = connection.getForecast(config.latitude, config.longitude);
+                forecast = apiConnection.getForecast(config.latitude, config.longitude);
             } catch (SmhiException e) {
                 logger.warn("Failed to get new forecast: {}", e.getCause().getMessage());
                 return;

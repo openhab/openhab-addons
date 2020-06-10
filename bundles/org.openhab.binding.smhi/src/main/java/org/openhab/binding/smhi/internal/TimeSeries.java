@@ -30,8 +30,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class TimeSeries implements Iterable<Forecast> {
 
-    private ZonedDateTime referenceTime;
-    private List<Forecast> forecasts;
+    private final ZonedDateTime referenceTime;
+    private final List<Forecast> forecasts;
 
     public TimeSeries(ZonedDateTime referenceTime, List<Forecast> forecasts) {
         this.referenceTime = referenceTime;
@@ -63,10 +63,7 @@ public class TimeSeries implements Iterable<Forecast> {
             throw new IllegalArgumentException("Offset must be at least 0");
         }
 
-        Iterator<Forecast> iterator = forecasts.iterator();
-
-        while (iterator.hasNext()) {
-            Forecast forecast = iterator.next();
+        for (Forecast forecast : forecasts) {
             if (forecast.getValidTime().compareTo(startTime.plusHours(hourOffset)) >= 0) {
                 return forecast;
             }

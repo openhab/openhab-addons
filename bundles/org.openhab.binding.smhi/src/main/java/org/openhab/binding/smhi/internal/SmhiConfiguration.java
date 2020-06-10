@@ -14,6 +14,7 @@ package org.openhab.binding.smhi.internal;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Anders Alfredsson - Initial contribution
  */
+@NonNullByDefault
 public class SmhiConfiguration {
     public double latitude;
     public double longitude;
