@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -46,12 +47,13 @@ public class NtpDiscovery extends AbstractDiscoveryService {
 
     @Activate
     public NtpDiscovery(final @Reference LocaleProvider localeProvider,
-            final @Reference TranslationProvider i18nProvider, final @Reference TimeZoneProvider timeZoneProvider)
-            throws IllegalArgumentException {
+            final @Reference TranslationProvider i18nProvider, final @Reference TimeZoneProvider timeZoneProvider,
+            @Nullable Map<String, @Nullable Object> configProperties) throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 2);
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;
         this.timeZoneProvider = timeZoneProvider;
+        activate(configProperties);
     }
 
     @Override
