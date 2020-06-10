@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.lcn.internal.common;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class LcnDefs {
     /** Text encoding used by LCN-PCHK. */
-    public static final String LCN_ENCODING = "UTF-8";
+    public static final Charset LCN_ENCODING = StandardCharsets.UTF_8;
     /** Number of thresholds registers of an LCN module */
     public static final int THRESHOLD_REGISTER_COUNT = 4;
     /** Number of key tables of an LCN module. */

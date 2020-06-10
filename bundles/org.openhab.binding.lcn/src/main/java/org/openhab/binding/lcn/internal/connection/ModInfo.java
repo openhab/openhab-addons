@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -199,12 +198,8 @@ public class ModInfo {
             this.requestCurrentPckCommandWithAck.reset();
 
             if (failedCommand != null) {
-                try {
-                    logger.warn("{}: Module did not respond to command: {}", addr,
-                            new String(failedCommand, LcnDefs.LCN_ENCODING));
-                } catch (UnsupportedEncodingException e) {
-                    // ignore
-                }
+                logger.warn("{}: Module did not respond to command: {}", addr,
+                        new String(failedCommand, LcnDefs.LCN_ENCODING));
             }
         }
         // Peek new command
@@ -221,12 +216,8 @@ public class ModInfo {
                 this.requestCurrentPckCommandWithAck.onRequestSent(currTime);
             }
         } catch (LcnException e) {
-            try {
-                logger.warn("{}: Could not send command: {}: {}", addr, new String(command, LcnDefs.LCN_ENCODING),
-                        e.getMessage());
-            } catch (UnsupportedEncodingException e1) {
-                // ignore
-            }
+            logger.warn("{}: Could not send command: {}: {}", addr, new String(command, LcnDefs.LCN_ENCODING),
+                    e.getMessage());
         }
         return true;
     }

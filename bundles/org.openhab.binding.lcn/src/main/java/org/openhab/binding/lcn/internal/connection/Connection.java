@@ -14,7 +14,6 @@ package org.openhab.binding.lcn.internal.connection;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -172,34 +171,28 @@ public class Connection {
                             String msg = "Connection was closed by foreign host.";
                             stateMachine.handleConnectionFailed(new LcnException(msg));
                         } else {
-                            try {
-                                // read data chunks from socket and separate frames
-                                readBuffer.flip();
-                                int aPos = readBuffer.position(); // 0
-                                String s = new String(readBuffer.array(), aPos, transmittedByteCount,
-                                        LcnDefs.LCN_ENCODING);
-                                int pos1 = 0, pos2 = s.indexOf(PckGenerator.TERMINATION, pos1);
-                                while (pos2 != -1) {
-                                    String data = s.substring(pos1, pos2);
-                                    if (logger.isTraceEnabled()) {
-                                        logger.trace("Received: '{}'", data);
-                                    }
-                                    scheduler.submit(() -> {
-                                        stateMachine.onInputReceived(data);
-                                        callback.onPckMessageReceived(data);
-                                    });
-                                    // Seek position in input array
-                                    aPos += s.substring(pos1, pos2 + 1).getBytes(LcnDefs.LCN_ENCODING).length;
-                                    // Next input
-                                    pos1 = pos2 + 1;
-                                    pos2 = s.indexOf(PckGenerator.TERMINATION, pos1);
+                            // read data chunks from socket and separate frames
+                            readBuffer.flip();
+                            int aPos = readBuffer.position(); // 0
+                            String s = new String(readBuffer.array(), aPos, transmittedByteCount, LcnDefs.LCN_ENCODING);
+                            int pos1 = 0, pos2 = s.indexOf(PckGenerator.TERMINATION, pos1);
+                            while (pos2 != -1) {
+                                String data = s.substring(pos1, pos2);
+                                if (logger.isTraceEnabled()) {
+                                    logger.trace("Received: '{}'", data);
                                 }
-                                readBuffer.limit(readBuffer.capacity());
-                                readBuffer.position(transmittedByteCount - aPos); // Keeps fragments for the next call
-                            } catch (UnsupportedEncodingException ex) {
-                                logger.warn("Unable to decode input from channel \"{}\": {}", settings.getId(),
-                                        ex.getMessage());
+                                scheduler.submit(() -> {
+                                    stateMachine.onInputReceived(data);
+                                    callback.onPckMessageReceived(data);
+                                });
+                                // Seek position in input array
+                                aPos += s.substring(pos1, pos2 + 1).getBytes(LcnDefs.LCN_ENCODING).length;
+                                // Next input
+                                pos1 = pos2 + 1;
+                                pos2 = s.indexOf(PckGenerator.TERMINATION, pos1);
                             }
+                            readBuffer.limit(readBuffer.capacity());
+                            readBuffer.position(transmittedByteCount - aPos); // Keeps fragments for the next call
 
                             if (isSocketConnected()) {
                                 readAndProcess();
@@ -302,11 +295,7 @@ public class Connection {
      * @param pck the pure PCK command (without address header)
      */
     void queueDirectly(LcnAddr addr, boolean wantsAck, String pck) {
-        try {
-            this.queueDirectly(addr, wantsAck, pck.getBytes(LcnDefs.LCN_ENCODING));
-        } catch (UnsupportedEncodingException ex) {
-            logger.error("Failed to encode PCK command: {}", pck);
-        }
+        this.queueDirectly(addr, wantsAck, pck.getBytes(LcnDefs.LCN_ENCODING));
     }
 
     /**
@@ -361,11 +350,7 @@ public class Connection {
      * @param pck the pure PCK command (without address header)
      */
     public void queue(LcnAddr addr, boolean wantsAck, String pck) {
-        try {
-            this.queue(addr, wantsAck, pck.getBytes(LcnDefs.LCN_ENCODING));
-        } catch (UnsupportedEncodingException ex) {
-            logger.warn("Failed to encode PCK command: {}", pck);
-        }
+        this.queue(addr, wantsAck, pck.getBytes(LcnDefs.LCN_ENCODING));
     }
 
     /**
@@ -463,14 +448,10 @@ public class Connection {
      * Sends a broadcast to all LCN modules with a reuqest to respond with an Ack.
      */
     public void sendModuleDiscoveryCommand() {
-        try {
-            queueAndSend(new SendDataPck(new LcnAddrGrp(BROADCAST_SEGMENT_ID, BROADCAST_MODULE_ID), true,
-                    PckGenerator.nullCommand().getBytes(LcnDefs.LCN_ENCODING)));
-            queueAndSend(new SendDataPck(new LcnAddrGrp(0, BROADCAST_MODULE_ID), true,
-                    PckGenerator.nullCommand().getBytes(LcnDefs.LCN_ENCODING)));
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Could not send discovery request: {}", e.getMessage());
-        }
+        queueAndSend(new SendDataPck(new LcnAddrGrp(BROADCAST_SEGMENT_ID, BROADCAST_MODULE_ID), true,
+                PckGenerator.nullCommand().getBytes(LcnDefs.LCN_ENCODING)));
+        queueAndSend(new SendDataPck(new LcnAddrGrp(0, BROADCAST_MODULE_ID), true,
+                PckGenerator.nullCommand().getBytes(LcnDefs.LCN_ENCODING)));
     }
 
     /**

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
@@ -152,7 +151,7 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
 
                 getHandler().sendPck(command.array());
             }
-        } catch (UnsupportedEncodingException | IllegalArgumentException | LcnException e) {
+        } catch (IllegalArgumentException | LcnException e) {
             logger.warn("Could not send dynamic text: {}", e.getMessage());
         }
     }

@@ -17,7 +17,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,26 +47,26 @@ public class ModuleActionsTest {
         a.setThingHandler(handler);
     }
 
-    private byte[] stringToByteBuffer(String string) throws UnsupportedEncodingException {
+    private byte[] stringToByteBuffer(String string) {
         return string.getBytes(LcnDefs.LCN_ENCODING);
     }
 
     @Test
-    public void testSendDynamicText1CharRow1() throws LcnException, UnsupportedEncodingException {
+    public void testSendDynamicText1CharRow1() throws LcnException {
         a.sendDynamicText(1, "a");
 
         verify(handler).sendPck(stringToByteBuffer("GTDT11a\0\0\0\0\0\0\0\0\0\0\0"));
     }
 
     @Test
-    public void testSendDynamicText1ChunkRow1() throws LcnException, UnsupportedEncodingException {
+    public void testSendDynamicText1ChunkRow1() throws LcnException {
         a.sendDynamicText(1, "abcdfghijklm");
 
         verify(handler).sendPck(stringToByteBuffer("GTDT11abcdfghijklm"));
     }
 
     @Test
-    public void testSendDynamicText1Chunk1CharRow1() throws LcnException, UnsupportedEncodingException {
+    public void testSendDynamicText1Chunk1CharRow1() throws LcnException {
         a.sendDynamicText(1, "abcdfghijklmn");
 
         verify(handler, times(2)).sendPck(byteBufferCaptor.capture());
@@ -77,7 +76,7 @@ public class ModuleActionsTest {
     }
 
     @Test
-    public void testSendDynamicText5ChunksRow1() throws LcnException, UnsupportedEncodingException {
+    public void testSendDynamicText5ChunksRow1() throws LcnException {
         a.sendDynamicText(1, "abcdfghijklmnopqrstuvwxyzabcdfghijklmnopqrstuvwxyzabcdfghijk");
 
         verify(handler, times(5)).sendPck(byteBufferCaptor.capture());
@@ -89,7 +88,7 @@ public class ModuleActionsTest {
     }
 
     @Test
-    public void testSendDynamicText5Chunks1CharRow1Truncated() throws LcnException, UnsupportedEncodingException {
+    public void testSendDynamicText5Chunks1CharRow1Truncated() throws LcnException {
         a.sendDynamicText(1, "abcdfghijklmnopqrstuvwxyzabcdfghijklmnopqrstuvwxyzabcdfghijkl");
 
         verify(handler, times(5)).sendPck(byteBufferCaptor.capture());
@@ -101,7 +100,7 @@ public class ModuleActionsTest {
     }
 
     @Test
-    public void testSendDynamicText5Chunks1UmlautRow1Truncated() throws LcnException, UnsupportedEncodingException {
+    public void testSendDynamicText5Chunks1UmlautRow1Truncated() throws LcnException {
         a.sendDynamicText(1, "äcdfghijklmnopqrstuvwxyzabcdfghijklmnopqrstuvwxyzabcdfghijkl");
 
         verify(handler, times(5)).sendPck(byteBufferCaptor.capture());
@@ -113,7 +112,7 @@ public class ModuleActionsTest {
     }
 
     @Test
-    public void testSendDynamicTextRow4() throws LcnException, UnsupportedEncodingException {
+    public void testSendDynamicTextRow4() throws LcnException {
         a.sendDynamicText(4, "abcdfghijklmn");
 
         verify(handler, times(2)).sendPck(byteBufferCaptor.capture());
@@ -123,7 +122,7 @@ public class ModuleActionsTest {
     }
 
     @Test
-    public void testSendDynamicTextSplitInCharacter() throws LcnException, UnsupportedEncodingException {
+    public void testSendDynamicTextSplitInCharacter() throws LcnException {
         a.sendDynamicText(4, "Test 123 öäüß");
 
         verify(handler, times(2)).sendPck(byteBufferCaptor.capture());

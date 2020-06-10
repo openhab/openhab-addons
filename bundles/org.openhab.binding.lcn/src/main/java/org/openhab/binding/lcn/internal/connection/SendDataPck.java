@@ -72,6 +72,6 @@ class SendDataPck extends SendData {
 
     @Override
     public String toString() {
-        return "Addr: " + addr + ": " + new String(data, 0, data.length);
+        return "Addr: " + addr + ": " + new String(data, 0, data.length, LcnDefs.LCN_ENCODING);
     }
 }
