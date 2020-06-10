@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
 import org.openhab.binding.lcn.internal.common.LcnException;
 
@@ -46,11 +45,6 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
             nextState(ConnectionStateSendDimMode.class);
         }, connection.getSettings().getTimeout(), TimeUnit.MILLISECONDS);
         addTimer(localLegacyTimer);
-    }
-
-    @Override
-    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
-        connection.queueOffline(addr, wantsAck, data);
     }
 
     @Override

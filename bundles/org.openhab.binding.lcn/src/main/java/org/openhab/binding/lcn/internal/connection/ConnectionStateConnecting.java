@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.LcnException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,11 +89,6 @@ public class ConnectionStateConnecting extends AbstractConnectionState {
         }
         connection.getCallback().onOffline(message);
         context.handleConnectionFailed(e);
-    }
-
-    @Override
-    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
-        connection.queueOffline(addr, wantsAck, data);
     }
 
     @Override

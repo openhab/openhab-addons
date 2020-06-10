@@ -15,7 +15,6 @@ package org.openhab.binding.lcn.internal.connection;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lcn.internal.common.LcnAddr;
 
 /**
  * This is the starting state of the {@link Connection} {@link StateMachine}.
@@ -31,11 +30,6 @@ public class ConnectionStateInit extends AbstractConnectionState {
     @Override
     public void startWorking() {
         nextState(ConnectionStateConnecting.class);
-    }
-
-    @Override
-    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
-        connection.queueOffline(addr, wantsAck, data);
     }
 
     @Override

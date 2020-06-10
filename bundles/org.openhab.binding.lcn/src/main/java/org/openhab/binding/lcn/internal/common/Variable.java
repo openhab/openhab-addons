@@ -66,7 +66,7 @@ public enum Variable {
     S0INPUT4(3, Type.S0INPUT, LcnChannelGroup.S0INPUT); // LCN-BU4L
 
     private final int number;
-    private Optional<Integer> thresholdNumber = Optional.empty();
+    private final Optional<Integer> thresholdNumber;
     private final Type type;
     private final LcnChannelGroup channelGroup;
 
@@ -82,14 +82,18 @@ public enum Variable {
     }
 
     Variable(int number, Type type, LcnChannelGroup channelGroup) {
-        this.number = number;
-        this.type = type;
-        this.channelGroup = channelGroup;
+        this(number, Optional.empty(), type, channelGroup);
     }
 
     Variable(int number, int thresholdNumber, Type type, LcnChannelGroup channelGroup) {
-        this(number, type, channelGroup);
-        this.thresholdNumber = Optional.of(thresholdNumber);
+        this(number, Optional.of(thresholdNumber), type, channelGroup);
+    }
+
+    Variable(int number, Optional<Integer> thresholdNumber, Type type, LcnChannelGroup channelGroup) {
+        this.number = number;
+        this.type = type;
+        this.channelGroup = channelGroup;
+        this.thresholdNumber = thresholdNumber;
     }
 
     /**

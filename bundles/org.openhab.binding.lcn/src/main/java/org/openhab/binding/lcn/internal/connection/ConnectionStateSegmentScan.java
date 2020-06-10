@@ -18,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.LcnAddrGrp;
 import org.openhab.binding.lcn.internal.common.LcnException;
 import org.openhab.binding.lcn.internal.common.PckGenerator;
@@ -64,11 +63,6 @@ public class ConnectionStateSegmentScan extends AbstractConnectionState {
             logger.debug("No segment couplers detected");
             nextState(ConnectionStateConnected.class);
         }
-    }
-
-    @Override
-    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
-        connection.queueOffline(addr, wantsAck, data);
     }
 
     @Override

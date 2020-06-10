@@ -54,7 +54,9 @@ public abstract class AbstractConnectionState extends AbstractState {
      * @param wantsAck true, if the module shall respond with an Ack upon successful processing
      * @param data the PCK message to be sent
      */
-    public abstract void queue(LcnAddr addr, boolean wantsAck, byte[] data);
+    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
+        connection.queueOffline(addr, wantsAck, data);
+    }
 
     /**
      * Shuts the Connection down finally. A shut-down connection cannot re-used.

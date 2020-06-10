@@ -16,7 +16,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.LcnException;
 
 /**
@@ -46,10 +45,5 @@ public abstract class AbstractConnectionStateSendCredentials extends AbstractCon
                 () -> context.handleConnectionFailed(
                         new LcnException("Network timeout in state " + getClass().getSimpleName())),
                 connection.getSettings().getTimeout(), TimeUnit.MILLISECONDS));
-    }
-
-    @Override
-    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
-        connection.queueOffline(addr, wantsAck, data);
     }
 }

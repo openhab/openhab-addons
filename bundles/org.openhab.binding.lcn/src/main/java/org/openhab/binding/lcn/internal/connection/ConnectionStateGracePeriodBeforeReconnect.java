@@ -16,7 +16,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lcn.internal.common.LcnAddr;
 
 /**
  * This state is active when the connection failed. A grace period is enforced to prevent fast cycling through the
@@ -38,11 +37,6 @@ public class ConnectionStateGracePeriodBeforeReconnect extends AbstractConnectio
 
         addTimer(scheduler.schedule(() -> nextState(ConnectionStateConnecting.class), RECONNECT_GRACE_PERIOD_SEC,
                 TimeUnit.SECONDS));
-    }
-
-    @Override
-    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
-        connection.queueOffline(addr, wantsAck, data);
     }
 
     @Override

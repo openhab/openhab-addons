@@ -50,6 +50,8 @@ public class PckGatewayHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(PckGatewayHandler.class);
     private @Nullable Connection connection;
     private Optional<Consumer<String>> pckListener = Optional.empty();
+    @Nullable
+    private PckGatewayConfiguration config;
 
     public PckGatewayHandler(Bridge bridge) {
         super(bridge);
@@ -62,13 +64,13 @@ public class PckGatewayHandler extends BaseBridgeHandler {
 
     @Override
     public synchronized void initialize() {
-        PckGatewayConfiguration config = getConfigAs(PckGatewayConfiguration.class);
+        PckGatewayConfiguration localConfig = config = getConfigAs(PckGatewayConfiguration.class);
 
-        String errorMessage = "Could not connect to LCN-PCHK/PKE: " + config.getHostname() + ": ";
+        String errorMessage = "Could not connect to LCN-PCHK/PKE: " + localConfig.getHostname() + ": ";
 
         try {
             OutputPortDimMode dimMode;
-            String mode = config.getMode();
+            String mode = localConfig.getMode();
             if (LcnDefs.OutputPortDimMode.NATIVE50.name().equalsIgnoreCase(mode)) {
                 dimMode = LcnDefs.OutputPortDimMode.NATIVE50;
             } else if (LcnDefs.OutputPortDimMode.NATIVE200.name().equalsIgnoreCase(mode)) {
@@ -77,9 +79,9 @@ public class PckGatewayHandler extends BaseBridgeHandler {
                 throw new LcnException("DimMode " + mode + " is not supported");
             }
 
-            ConnectionSettings settings = new ConnectionSettings("0", config.getHostname(), config.getPort(),
-                    config.getUsername(), config.getPassword(), dimMode, LcnDefs.OutputPortStatusMode.PERCENT,
-                    config.getTimeoutMs());
+            ConnectionSettings settings = new ConnectionSettings("0", localConfig.getHostname(), localConfig.getPort(),
+                    localConfig.getUsername(), localConfig.getPassword(), dimMode, LcnDefs.OutputPortStatusMode.PERCENT,
+                    localConfig.getTimeoutMs());
 
             connection = new Connection(settings, scheduler, new ConnectionCallback() {
                 @Override
@@ -296,6 +298,7 @@ public class PckGatewayHandler extends BaseBridgeHandler {
      * @return the timeout in ms
      */
     public long getTimeoutMs() {
-        return getConfigAs(PckGatewayConfiguration.class).getTimeoutMs();
+        PckGatewayConfiguration localConfig = config;
+        return localConfig != null ? localConfig.getTimeoutMs() : 3500;
     }
 }

@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "lcn")
 @NonNullByDefault
-public class LcnModuleActions implements ThingActions {
+public class LcnModuleActions implements ThingActions, ILcnModuleActions {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleActions.class);
     private static final int DYN_TEXT_CHUNK_COUNT = 5;
     private static final int DYN_TEXT_HEADER_LENGTH = 6;
@@ -58,6 +58,7 @@ public class LcnModuleActions implements ThingActions {
         return moduleHandler;
     }
 
+    @Override
     @RuleAction(label = "LCN Hit Key", description = "Sends a \"hit key\" command to an LCN module")
     public void hitKey(
             @ActionInput(name = "table", required = true, type = "java.lang.String", label = "Table", description = "The key table (A-D)") @Nullable String table,
@@ -104,6 +105,7 @@ public class LcnModuleActions implements ThingActions {
         }
     }
 
+    @Override
     @RuleAction(label = "LCN Flicker Output", description = "Let a dimmer output flicker for a given count of flashes")
     public void flickerOutput(
             @ActionInput(name = "output", type = "java.lang.Integer", required = true, label = "Output", description = "The output number (1-4)") int output,
@@ -117,6 +119,7 @@ public class LcnModuleActions implements ThingActions {
         }
     }
 
+    @Override
     @RuleAction(label = "LCN Dynamic Text", description = "Send custom text to an LCN-GTxD display")
     public void sendDynamicText(
             @ActionInput(name = "row", type = "java.lang.Integer", required = true, label = "Row", description = "Display the text on the LCN-GTxD in the given row number (1-4)") int row,
@@ -154,16 +157,16 @@ public class LcnModuleActions implements ThingActions {
         }
     }
 
-    private static LcnModuleActions invokeMethodOf(@Nullable ThingActions actions) {
+    private static ILcnModuleActions invokeMethodOf(@Nullable ThingActions actions) {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
         if (actions.getClass().getName().equals(LcnModuleActions.class.getName())) {
             if (actions instanceof LcnModuleActions) {
-                return (LcnModuleActions) actions;
+                return (ILcnModuleActions) actions;
             } else {
-                return (LcnModuleActions) Proxy.newProxyInstance(LcnModuleActions.class.getClassLoader(),
-                        new Class[] { LcnModuleActions.class }, (Object proxy, Method method, Object[] args) -> {
+                return (ILcnModuleActions) Proxy.newProxyInstance(ILcnModuleActions.class.getClassLoader(),
+                        new Class[] { ILcnModuleActions.class }, (Object proxy, Method method, Object[] args) -> {
                             Method m = actions.getClass().getDeclaredMethod(method.getName(),
                                     method.getParameterTypes());
                             return m.invoke(actions, args);

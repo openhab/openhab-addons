@@ -15,7 +15,6 @@ package org.openhab.binding.lcn.internal.connection;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.PckGenerator;
 
 /**
@@ -35,11 +34,6 @@ public class ConnectionStateSendDimMode extends AbstractConnectionState {
                 connection.getSettings().getStatusMode()));
 
         nextState(ConnectionStateSegmentScan.class);
-    }
-
-    @Override
-    public void queue(LcnAddr addr, boolean wantsAck, byte[] data) {
-        connection.queueOffline(addr, wantsAck, data);
     }
 
     @Override
