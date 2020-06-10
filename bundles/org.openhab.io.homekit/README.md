@@ -391,12 +391,12 @@ String          security_current_state     "Security Current State"             
 String          security_target_state      "Security Target State"              (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 
 Group  			gCooller    				"Cooler Group"       				 	                {homekit="HeaterCooler"}
-Switch          cooler_active 				"Cooler Active" 				    (gCooller) 		    {homekit="ActiveStatus"}
-Number 			cooler_current_temp     	"Cooler Current Temp [%.1f C]"  	(gCooller)  	    {homekit="CurrentTemperature"}
-String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooller) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}          
-String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooller)          {homekit="TargetHeaterCoolerState"}  
-Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooller)  	{homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
-Number 			cooler_hea_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooller)  	{homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
+Switch          cooler_active 				"Cooler Active" 				    (gCooler) 		    {homekit="ActiveStatus"}
+Number 			cooler_current_temp     	"Cooler Current Temp [%.1f C]"  	(gCooler)  	        {homekit="CurrentTemperature"}
+String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}          
+String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           {homekit="TargetHeaterCoolerState"}  
+Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
+Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
 
 ## Usage of dimmer modes

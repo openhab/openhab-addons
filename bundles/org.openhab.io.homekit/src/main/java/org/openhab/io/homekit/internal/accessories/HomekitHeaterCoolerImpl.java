@@ -15,7 +15,7 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_HEATER_COOLER_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_HEATER_COOLER_STATE;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -53,7 +53,8 @@ import io.github.hapjava.services.impl.HeaterCoolerService;
 public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implements HeaterCoolerAccessory {
     private final Logger logger = LoggerFactory.getLogger(HomekitHeaterCoolerImpl.class);
     private final BooleanItemReader activeReader;
-    private final HashMap<CurrentHeaterCoolerStateEnum, String> currentStateMapping = new HashMap() {
+    private final EnumMap<CurrentHeaterCoolerStateEnum, String> currentStateMapping = new EnumMap(
+            CurrentHeaterCoolerStateEnum.class) {
         {
             put(CurrentHeaterCoolerStateEnum.INACTIVE, "INACTIVE");
             put(CurrentHeaterCoolerStateEnum.IDLE, "IDLE");
@@ -62,7 +63,8 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
 
         }
     };
-    private final HashMap<TargetHeaterCoolerStateEnum, String> targetStateMapping = new HashMap() {
+    private final EnumMap<TargetHeaterCoolerStateEnum, String> targetStateMapping = new EnumMap(
+            TargetHeaterCoolerStateEnum.class) {
         {
             put(TargetHeaterCoolerStateEnum.AUTO, "AUTO");
             put(TargetHeaterCoolerStateEnum.HEAT, "HEAT");
