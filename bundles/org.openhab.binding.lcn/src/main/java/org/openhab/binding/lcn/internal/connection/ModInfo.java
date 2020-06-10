@@ -255,10 +255,9 @@ public class ModInfo {
 
     private boolean update(Connection conn, long timeoutMSec, long currTime, RequestStatus requestStatus, String pck)
             throws LcnException {
-        RequestStatus r;
-        if ((r = requestStatus).shouldSendNextRequest(timeoutMSec, currTime)) {
+        if (requestStatus.shouldSendNextRequest(timeoutMSec, currTime)) {
             conn.queue(this.addr, false, pck);
-            r.onRequestSent(currTime);
+            requestStatus.onRequestSent(currTime);
             return true;
         }
         return false;
@@ -273,7 +272,6 @@ public class ModInfo {
      * @param currTime the current time stamp
      */
     void update(Connection conn, long timeoutMSec, long currTime) {
-        RequestStatus r;
         try {
             if (update(conn, timeoutMSec, currTime, requestFirmwareVersion, PckGenerator.requestSn())) {
                 return;
@@ -303,21 +301,21 @@ public class ModInfo {
                 }
                 // Variables
                 for (Map.Entry<Variable, @Nullable RequestStatus> kv : this.requestStatusVars.entrySet()) {
-                    r = kv.getValue();
-                    if (r != null && r.shouldSendNextRequest(timeoutMSec, currTime)) {
+                    RequestStatus requestStatus = kv.getValue();
+                    if (requestStatus != null && requestStatus.shouldSendNextRequest(timeoutMSec, currTime)) {
                         // Detect if we can send immediately or if we have to wait for a "typeless" request first
                         boolean hasTypeInResponse = kv.getKey().hasTypeInResponse(this.firmwareVersion);
                         if (hasTypeInResponse || this.lastRequestedVarWithoutTypeInResponse == Variable.UNKNOWN) {
                             try {
                                 conn.queue(this.addr, false,
                                         PckGenerator.requestVarStatus(kv.getKey(), this.firmwareVersion));
-                                r.onRequestSent(currTime);
+                                requestStatus.onRequestSent(currTime);
                                 if (!hasTypeInResponse) {
                                     this.lastRequestedVarWithoutTypeInResponse = kv.getKey();
                                 }
                                 return;
                             } catch (LcnException ex) {
-                                r.reset();
+                                requestStatus.reset();
                             }
                         }
                     }
