@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface KaleidescapeMessageEventListener extends EventListener {
-
     /**
      * Event handler method for incoming Kaleidescape message events
      *

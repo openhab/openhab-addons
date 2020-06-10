@@ -32,15 +32,19 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "kaleidescape")
 @NonNullByDefault
 public class KaleidescapeThingActions implements ThingActions {
-
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeThingActions.class);
 
     private @Nullable KaleidescapeHandler handler;
 
+    @SuppressWarnings("null")
     @RuleAction(label = "sendKCommand", description = "Action that sends raw command to the kaleidescape zone")
     public void sendKCommand(@ActionInput(name = "sendKCommand") @Nullable String kCommand) {
-        handler.handleRawCommand(kCommand);
-        logger.debug("sendKCommand called with command: {}", kCommand);
+        if (handler != null && kCommand != null) {
+            handler.handleRawCommand(kCommand);
+            logger.debug("sendKCommand called with command: {}", kCommand);
+        } else {
+            logger.debug("sendKCommand called with null command, ignoring");
+        }
     }
 
     public static void sendKCommand(@Nullable ThingActions actions, @Nullable String kCommand)

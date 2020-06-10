@@ -32,7 +32,6 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -57,8 +56,6 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_PLAYER_ZONE));
 
-    private @Nullable ExecutorService discoverySearchPool;
-
     @Activate
     public KaleidescapeDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_DEFAULT_TIMEOUT_RATE, DISCOVERY_DEFAULT_AUTO_DISCOVER);
@@ -76,7 +73,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
         try {
             List<String> ipList = getIpAddressScanList();
 
-            discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE);
+            ExecutorService discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE);
 
             for (String ip : ipList) {
                 discoverySearchPool.execute(new KaleidescapeDiscoveryJob(this, ip));

@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public enum KaleidescapeMessageHandler {
-
     UI_STATE {
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
@@ -97,7 +96,8 @@ public enum KaleidescapeMessageHandler {
 
             // example: 0:0:00:00000:00000:000:00000:00000
             // mode, speed, title_num, title_length, title_loc, chapter_num, chapter_length, chapter_loc
-            final Pattern p = Pattern.compile("^(\\d{1}):(\\d{1}):(\\d{2}):(\\d{5}):(\\d{5}):(\\d{3}):(\\d{5}):(\\d{5})$");
+            final Pattern p = Pattern
+                    .compile("^(\\d{1}):(\\d{1}):(\\d{2}):(\\d{5}):(\\d{5}):(\\d{3}):(\\d{5}):(\\d{5})$");
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
@@ -221,7 +221,7 @@ public enum KaleidescapeMessageHandler {
 
             // per API reference rev 3.3.1, ASPECT_RATIO message should not be used
             // the first element of SCREEN_MASK now provides this info
-            if (message != null & !message.equals("")) {
+            if (!message.equals("")) {
                 String[] msgSplit = message.split(":", 2);
                 handler.updateChannel(KaleidescapeBindingConstants.ASPECT_RATIO,
                         new StringType(KaleidescapeStatusCodes.ASPECT_RATIO.get(msgSplit[0])));
@@ -418,7 +418,8 @@ public enum KaleidescapeMessageHandler {
                                 }
                             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                                 logger.debug("Error updating Cover Art Image channel for url: {}", value);
-                                handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART, UnDefType.NULL);
+                                handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART,
+                                        UnDefType.NULL);
                             }
                         } else {
                             handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART, UnDefType.NULL);

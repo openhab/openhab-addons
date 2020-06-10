@@ -22,12 +22,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class KaleidescapeThingConfiguration {
-
     public @Nullable String componentType;
     public @NonNullByDefault({}) String serialPort;
     public @Nullable String host;
     public @Nullable Integer port;
     public @Nullable Integer updatePeriod;
     public boolean volumeEnabled;
-    public @Nullable Integer initialVolume;
+    public Integer initialVolume = 0;
 }

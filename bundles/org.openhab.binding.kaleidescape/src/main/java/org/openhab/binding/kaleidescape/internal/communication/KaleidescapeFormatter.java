@@ -22,19 +22,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KaleidescapeFormatter {
-
     public static String formatString(String input) {
-        if (input != null && !input.equals("")) {
+        if (!input.equals("")) {
             // convert || back to :
             input = input.replace("||", ":");
 
             // fix escaped :
             input = input.replace("\\:", ":");
 
-            // fix escaped / 
+            // fix escaped /
             input = input.replace("\\/", "/");
 
-            // convert \r into comma space 
+            // convert \r into comma space
             input = input.replace("\\r", ", ");
 
             // convert \d146 from review text into apostrophe
@@ -44,7 +43,7 @@ public class KaleidescapeFormatter {
             input = input.replace("\\d148", "\"");
 
             // fix the encoding for k mangled extended ascii characters (chars coming in as \dnnn)
-            // example: Nöel comes in as N\d246el
+
             input = input.replaceAll("(?i)\\\\d([0-9]{3})", "\\&#$1;"); // first convert to html escaped codes
             // then convert with unescapeHtml, not sure how to do this without the Apache libraries :(
             return StringEscapeUtils.unescapeHtml(input);

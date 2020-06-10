@@ -26,8 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class KaleidescapeBindingConstants {
-
-    private static final String BINDING_ID = "kaleidescape";
+    public static final String BINDING_ID = "kaleidescape";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLAYER_ZONE = new ThingTypeUID(BINDING_ID, "player");

@@ -43,7 +43,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.kaleidescape", service = ThingHandlerFactory.class)
 public class KaleidescapeHandlerFactory extends BaseThingHandlerFactory {
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_PLAYER_ZONE).collect(Collectors.toSet()));
 

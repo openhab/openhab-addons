@@ -50,6 +50,7 @@ import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeThingActions;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeConnector;
+import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeDefaultConnector;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeIpConnector;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeMessageEvent;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeMessageEventListener;
@@ -88,7 +89,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private SerialPortManager serialPortManager;
 
-    protected @Nullable KaleidescapeConnector connector;
+    protected KaleidescapeConnector connector = new KaleidescapeDefaultConnector();
 
     private long lastPollingUpdate = System.currentTimeMillis();
 
@@ -96,9 +97,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     protected final HttpClient httpClient;
 
-    /**
-     * Constructor
-     */
     public KaleidescapeHandler(Thing thing, SerialPortManager serialPortManager, HttpClient httpClient) {
         super(thing);
         this.serialPortManager = serialPortManager;
@@ -113,6 +111,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         this.updateState(DETAIL + channelUID, state);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         this.config = getConfigAs(KaleidescapeThingConfiguration.class);
@@ -139,10 +138,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         // check if volume is enabled, if not remove the volume & mute channels
         if (config.volumeEnabled) {
             this.volumeEnabled = true;
-            if (config.initialVolume != null) {
-                this.volume = config.initialVolume;
-                this.updateState(KaleidescapeBindingConstants.VOLUME, new PercentType(BigDecimal.valueOf(this.volume)));
-            }
+            this.volume = config.initialVolume;
+            this.updateState(KaleidescapeBindingConstants.VOLUME, new PercentType(BigDecimal.valueOf(this.volume)));
         } else {
             channels.removeIf(c -> (c.getUID().getId().equals(VOLUME)));
             channels.removeIf(c -> (c.getUID().getId().equals(MUTE)));
@@ -192,9 +189,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         cancelReconnectJob();
         cancelPollingJob();
         closeConnection();
-        super.dispose();
     }
-
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
@@ -202,10 +197,12 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     }
 
     public void handleRawCommand(@Nullable String command) {
-        try {
-            connector.sendCommand(command);
-        } catch (KaleidescapeException e) {
-            logger.warn("K Command: {} failed", command);
+        synchronized (sequenceLock) {
+            try {
+                connector.sendCommand(command);
+            } catch (KaleidescapeException e) {
+                logger.warn("K Command: {} failed", command);
+            }
         }
     }
 
@@ -217,14 +214,14 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             logger.debug("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
             return;
         }
-
-        if (!connector.isConnected()) {
-            logger.debug("Command {} from channel {} is ignored: connection not established", command, channel);
-            return;
-        }
-
-        boolean success = true;
         synchronized (sequenceLock) {
+            if (!connector.isConnected()) {
+                logger.debug("Command {} from channel {} is ignored: connection not established", command, channel);
+                return;
+            }
+
+            boolean success = true;
+
             try {
                 switch (channel) {
                     case POWER:
@@ -305,7 +302,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
      * Close the connection with the Kaleidescape component
      */
     private synchronized void closeConnection() {
-        if (connector != null && connector.isConnected()) {
+        if (connector.isConnected()) {
             connector.close();
             connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
@@ -342,16 +339,17 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     /**
      * Schedule the reconnection job
      */
+    @SuppressWarnings("null")
     private void scheduleReconnectJob() {
         logger.debug("Schedule reconnect job");
         cancelReconnectJob();
         reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
-            if (!connector.isConnected()) {
-                logger.debug("Trying to reconnect...");
-                closeConnection();
-                String error = null;
-                if (openConnection()) {
-                    synchronized (sequenceLock) {
+            synchronized (sequenceLock) {
+                if (!connector.isConnected()) {
+                    logger.debug("Trying to reconnect...");
+                    closeConnection();
+                    String error = null;
+                    if (openConnection()) {
                         try {
                             long prevUpdateTime = lastPollingUpdate;
 
@@ -405,15 +403,15 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                             logger.debug("{}: {}", error, e.getMessage());
                             closeConnection();
                         }
+                    } else {
+                        error = "Reconnection failed";
                     }
-                } else {
-                    error = "Reconnection failed";
-                }
-                if (error != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
-                } else {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
-                    lastPollingUpdate = System.currentTimeMillis();
+                    if (error != null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                    } else {
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
+                        lastPollingUpdate = System.currentTimeMillis();
+                    }
                 }
             }
         }, 1, RECON_POLLING_INTERVAL, TimeUnit.SECONDS);
@@ -438,10 +436,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         cancelPollingJob();
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-            if (connector.isConnected()) {
-                logger.debug("Polling the component for updated status...");
-
-                synchronized (sequenceLock) {
+            synchronized (sequenceLock) {
+                if (connector.isConnected()) {
+                    logger.debug("Polling the component for updated status...");
                     try {
                         connector.ping();
 

@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.kaleidescape.internal.communication;
 
-import java.io.InterruptedIOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +42,7 @@ public class KaleidescapeReaderThread extends Thread {
      * @param connector the object that should handle the received message
      */
     public KaleidescapeReaderThread(KaleidescapeConnector connector) {
+        super(KaleidescapeBindingConstants.BINDING_ID);
         this.connector = connector;
     }
 
@@ -74,9 +75,6 @@ public class KaleidescapeReaderThread extends Thread {
                     }
                 }
             }
-        } catch (InterruptedIOException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Interrupted via InterruptedIOException");
         } catch (KaleidescapeException e) {
             logger.debug("Reading failed: {}", e.getMessage(), e);
         }

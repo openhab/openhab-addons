@@ -14,7 +14,6 @@ package org.openhab.binding.kaleidescape.internal.communication;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -142,7 +141,7 @@ public abstract class KaleidescapeConnector {
      *             occurs.
      * @throws InterruptedIOException - if the thread was interrupted during the reading of the input stream
      */
-    protected int readInput(byte[] dataBuffer) throws KaleidescapeException, InterruptedIOException {
+    protected int readInput(byte[] dataBuffer) throws KaleidescapeException {
         InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new KaleidescapeException("readInput failed: input stream is null");
@@ -150,7 +149,6 @@ public abstract class KaleidescapeConnector {
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
-            logger.debug("readInput failed: {}", e.getMessage());
             throw new KaleidescapeException("readInput failed: " + e.getMessage());
         }
     }
@@ -173,7 +171,6 @@ public abstract class KaleidescapeConnector {
      */
     public void sendCommand(@Nullable String cmd) throws KaleidescapeException {
         String messageStr = BEGIN_CMD + cmd + END_CMD;
-
         byte[] message;
 
         message = messageStr.getBytes(StandardCharsets.US_ASCII);
@@ -190,7 +187,6 @@ public abstract class KaleidescapeConnector {
             logger.debug("Send command \"{}\" failed: {}", messageStr, e.getMessage());
             throw new KaleidescapeException("Send command \"" + cmd + "\" failed: " + e.getMessage());
         }
-        logger.debug("Send command \"{}\" succeeded", messageStr);
     }
 
     /**

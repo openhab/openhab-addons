@@ -16,7 +16,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class KaleidescapeIpConnector extends KaleidescapeConnector {
-
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeIpConnector.class);
 
     private @Nullable String address;
@@ -48,7 +46,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
      * @param address the IP address of the Kaleidescape component
      * @param port the TCP port to be used
      */
-    public KaleidescapeIpConnector(@Nullable String address, @Nullable Integer port) {
+    public KaleidescapeIpConnector(@Nullable String address, int port) {
         this.address = address;
         this.port = port;
     }
@@ -110,7 +108,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
      * @throws InterruptedIOException - if the thread was interrupted during the reading of the input stream
      */
     @Override
-    protected int readInput(byte[] dataBuffer) throws KaleidescapeException, InterruptedIOException {
+    protected int readInput(byte[] dataBuffer) throws KaleidescapeException {
         InputStream dataIn = this.dataIn;
         if (dataIn == null) {
             throw new KaleidescapeException("readInput failed: input stream is null");

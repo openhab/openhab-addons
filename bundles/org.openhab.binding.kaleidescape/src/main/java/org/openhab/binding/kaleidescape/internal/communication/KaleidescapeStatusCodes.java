@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KaleidescapeStatusCodes {
-
     public static final String UNUSED = "unused";
     public static final String UNKNOWN = "unknown";
     public static final String RESERVED = "reserved";
@@ -74,7 +73,7 @@ public class KaleidescapeStatusCodes {
     }
 
     public static final Map<String, String> VIDEO_MODE = new HashMap<>();
-    
+
     static {
         VIDEO_MODE.put("00", "No output");
         VIDEO_MODE.put("01", "480i60 4:3");
