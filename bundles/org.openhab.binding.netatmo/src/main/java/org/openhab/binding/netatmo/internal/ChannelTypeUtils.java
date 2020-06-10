@@ -21,6 +21,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -39,13 +40,20 @@ import org.eclipse.smarthome.core.types.UnDefType;
 @NonNullByDefault
 public class ChannelTypeUtils {
 
+    private static @Nullable TimeZoneProvider timeZoneProvider;
+
+    public static void setTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
+        ChannelTypeUtils.timeZoneProvider = timeZoneProvider;
+    }
+
     public static State toStringType(@Nullable String value) {
         return (value == null) ? UnDefType.NULL : new StringType(value);
     }
 
     public static ZonedDateTime toZonedDateTime(Integer netatmoTS) {
         Instant i = Instant.ofEpochSecond(netatmoTS);
-        return ZonedDateTime.ofInstant(i, ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(i,
+                timeZoneProvider != null ? timeZoneProvider.getTimeZone() : ZoneId.systemDefault());
     }
 
     public static State toDateTimeType(@Nullable Float netatmoTS) {
