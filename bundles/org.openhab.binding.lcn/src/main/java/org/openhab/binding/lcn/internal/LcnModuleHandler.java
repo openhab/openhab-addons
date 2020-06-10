@@ -156,29 +156,29 @@ public class LcnModuleHandler extends BaseThingHandler {
                 number.ifPresent(n -> subHandler.handleRefresh(channelGroup, n));
                 subHandler.handleRefresh(channelUid.getIdWithoutGroup());
             } else if (command instanceof OnOffType) {
-                subHandler.handleCommandOnOff(castCommand(command), channelGroup, number.get());
+                subHandler.handleCommandOnOff((OnOffType) command, channelGroup, number.get());
             } else if (command instanceof DimmerOutputCommand) {
-                subHandler.handleCommandDimmerOutput(castCommand(command), number.get());
+                subHandler.handleCommandDimmerOutput((DimmerOutputCommand) command, number.get());
             } else if (command instanceof PercentType && number.isPresent()) {
-                subHandler.handleCommandPercent(castCommand(command), channelGroup, number.get());
+                subHandler.handleCommandPercent((PercentType) command, channelGroup, number.get());
             } else if (command instanceof HSBType) {
-                subHandler.handleCommandHsb(castCommand(command), channelUid.getIdWithoutGroup());
+                subHandler.handleCommandHsb((HSBType) command, channelUid.getIdWithoutGroup());
             } else if (command instanceof PercentType) {
-                subHandler.handleCommandPercent(castCommand(command), channelGroup, channelUid.getIdWithoutGroup());
+                subHandler.handleCommandPercent((PercentType) command, channelGroup, channelUid.getIdWithoutGroup());
             } else if (command instanceof StringType) {
-                subHandler.handleCommandString(castCommand(command), number.get());
+                subHandler.handleCommandString((StringType) command, number.get());
             } else if (command instanceof DecimalType) {
-                DecimalType decimalType = castCommand(command);
+                DecimalType decimalType = (DecimalType) command;
                 DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
             } else if (command instanceof QuantityType) {
-                QuantityType<?> quantityType = castCommand(command);
+                QuantityType<?> quantityType = (QuantityType<?>) command;
                 DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
             } else if (command instanceof UpDownType) {
-                subHandler.handleCommandUpDown(castCommand(command), channelGroup, number.get());
+                subHandler.handleCommandUpDown((UpDownType) command, channelGroup, number.get());
             } else if (command instanceof StopMoveType) {
-                subHandler.handleCommandStopMove(castCommand(command), channelGroup, number.get());
+                subHandler.handleCommandStopMove((StopMoveType) command, channelGroup, number.get());
             } else {
                 throw new LcnException("Unsupported command type");
             }
@@ -191,23 +191,6 @@ public class LcnModuleHandler extends BaseThingHandler {
     @NonNullByDefault({}) // getOrDefault()
     private Converter getConverter(ChannelUID channelUid) {
         return converters.getOrDefault(channelUid, Converters.IDENTITY);
-    }
-
-    /**
-     * Convenience method to cast a command.
-     *
-     * @param <T> the concrete type to be casted to
-     * @param command the command to be casted
-     * @return the concrete command
-     * @throws LcnException when the command cannot be casted
-     */
-    @SuppressWarnings("unchecked")
-    private <T extends Command> T castCommand(Command command) throws LcnException {
-        try {
-            return (T) command;
-        } catch (ClassCastException e) {
-            throw new LcnException("Unexpected command type");
-        }
     }
 
     /**
