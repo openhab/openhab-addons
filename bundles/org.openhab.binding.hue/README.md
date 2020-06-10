@@ -300,7 +300,7 @@ Number   MotionSensorBatteryLevel { channel="hue:0107:1:motion-sensor:battery_le
 Switch   MotionSensorLowBattery   { channel="hue:0107:1:motion-sensor:battery_low" }
 
 // Temperature Sensor
-Number:Temperature TemperatureSensorTemperature { channel="hue:0302:temperature-sensor:temperature" }
+Number:Temperature TemperatureSensorTemperature { channel="hue:0302:1:temperature-sensor:temperature" }
 ```
 
 Note: The bridge ID is in this example **1** but can be different in each system.
