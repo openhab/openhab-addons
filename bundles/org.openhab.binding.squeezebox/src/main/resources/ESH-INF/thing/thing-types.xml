@@ -83,8 +83,7 @@
 			<channel id="ircode" typeId="ircode"/>
 			<channel id="numberPlaylistTracks" typeId="numberPlaylistTracks"/>
 			<channel id="playFavorite" typeId="playFavorite"/>
-			<channel id="like" typeId="like"/>
-			<channel id="unlike" typeId="unlike"/>
+			<channel id="rate" typeId="rate"/>
 		</channels>
 
 		<properties>
@@ -300,14 +299,9 @@
 		<description>Number of playlist tracks</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
-	<channel-type id="like" advanced="true">
+	<channel-type id="rate" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Like Song</label>
-		<description>Likes the current song (if the service supports it)</description>
-	</channel-type>
-	<channel-type id="unlike" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Unlike Song</label>
-		<description>Unlikes the current song (if the service supports it)</description>
+		<label>Like or Unlike Song</label>
+		<description>Likes or unlikes the current song (if the service supports it)</description>
 	</channel-type>
 </thing:thing-descriptions>

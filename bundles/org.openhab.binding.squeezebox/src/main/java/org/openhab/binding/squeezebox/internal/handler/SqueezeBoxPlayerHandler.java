@@ -300,14 +300,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             case CHANNEL_FAVORITES_PLAY:
                 squeezeBoxServerHandler.playFavorite(mac, command.toString());
                 break;
-            case CHANNEL_LIKE:
-                if (likeCommand != null && command.equals(OnOffType.ON)) {
-                    squeezeBoxServerHandler.like(mac, likeCommand);
-                }
-                break;
-            case CHANNEL_UNLIKE:
-                if (unlikeCommand != null && command.equals(OnOffType.ON)) {
-                    squeezeBoxServerHandler.unlike(mac, unlikeCommand);
+            case CHANNEL_RATE:
+                if (command.equals(OnOffType.ON)) {
+                    squeezeBoxServerHandler.rate(mac, likeCommand);
+                } else if (command.equals(OnOffType.OFF)) {
+                    squeezeBoxServerHandler.rate(mac, unlikeCommand);
                 }
                 break;
             default:

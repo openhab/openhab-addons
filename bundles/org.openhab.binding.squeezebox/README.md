@@ -114,8 +114,7 @@ All devices support some of the following channels:
 | ircode                  | String    | Received IR code                                                                       |
 | numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |
 | playFavorite            | String    | ID of Favorite to play (channel's state options contains available favorites)          |
-| like                    | Switch    | "Like" the currently playing song (if supported by the streaming service)              |
-| unlike                  | Switch    | "Unlike" the currently playing song (if supported by the streaming service)            |
+| rate                    | Switch    | "Like" or "unlike" the currently playing song (if supported by the streaming service)  |
 
 ## Playing Favorites
 
@@ -198,6 +197,14 @@ then
     playSound("squeezebox:squeezeboxplayer:5919BEA2-764B-4590-BC70-D74DCC15491B:20cfbf221510", "doorbell.mp3", new PercentType(45))
 end
 ```
+
+## Rating Songs
+
+Some streaming services, such as Pandora and Slacker, all songs to be rated.
+When playing from these streaming services, sending commands to the `rate` channel can be used to *like* or *unlike* the currently playing song.
+Sending the ON command will *like* the song.
+Sending the OFF command will *unlike* the song.
+If the streaming service doesn't support rating, sending commands to the `rate` channel has no effect.
 
 ### Known Issues
 

@@ -294,12 +294,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         sendCommand(mac + " favorites playlist play item_id:" + favorite);
     }
 
-    public void like(String mac, String command) {
-        sendCommand(mac + " " + command);
-    }
-
-    public void unlike(String mac, String command) {
-        sendCommand(mac + " " + command);
+    public void rate(String mac, String rateCommand) {
+        if (rateCommand != null) {
+            sendCommand(mac + " " + rateCommand);
+        }
     }
 
     /**
@@ -1024,9 +1022,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         private void scheduleRequestFavorites() {
             // Delay the execution to give the player thing handlers a chance to initialize
-            scheduler.schedule(() -> {
-                requestFavorites();
-            }, 3L, TimeUnit.SECONDS);
+            scheduler.schedule(SqueezeBoxServerHandler.this::requestFavorites, 3L, TimeUnit.SECONDS);
         }
 
         private void updateCustomButtons(final String mac) {
