@@ -12,20 +12,17 @@
  */
 package org.openhab.binding.luftdateninfo.internal.handler;
 
-import static org.openhab.binding.luftdateninfo.internal.LuftdatenInfoBindingConstants.PM25_CHANNEL;
+import static org.openhab.binding.luftdateninfo.internal.LuftdatenInfoBindingConstants.*;
+import static org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler.*;
+
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.luftdateninfo.internal.LuftdatenInfoConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 
 /**
  * The {@link NoiseHandler} is responsible for handling commands, which are
@@ -34,71 +31,65 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class NoiseHandler extends BaseThingHandler {
-
-    private static final Logger logger = LoggerFactory.getLogger(NoiseHandler.class);
-
-    private @Nullable LuftdatenInfoConfiguration config;
+public class NoiseHandler extends BaseSensorHandler {
+    protected @Nullable DecimalType noiseEQCache;
+    protected @Nullable DecimalType noiseMinCache;
+    protected @Nullable DecimalType noiseMaxCache;
 
     public NoiseHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("handleCommand: Channel: {}, Command: {}", channelUID.getId(), command.toString());
-        System.out.println("handleCommand: " + config.sensorid + " Channel: " + channelUID.getId() + ", Command: "
-                + command.toString());
-        if (PM25_CHANNEL.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                updateState(channelUID, new DecimalType(1));
-                // TODO: handle data refresh
+    public int updateChannels() {
+        String response = HTTPHandler.getResponse(config.sensorid);
+        if (response != null) {
+            List<SensorDataValue> valueList = HTTPHandler.getValues(response);
+            if (valueList != null) {
+                if (HTTPHandler.isNoise(valueList)) {
+
+                    Iterator<SensorDataValue> iter = valueList.iterator();
+                    while (iter.hasNext()) {
+                        SensorDataValue v = iter.next();
+                        if (v.getValue_type().equals(NOISE_EQ)) {
+                            noiseEQCache = new DecimalType(v.getValue());
+                            updateState(NOISE_EQ_CHANNEL, noiseEQCache);
+                        } else if (v.getValue_type().equals(NOISE_MIN)) {
+                            noiseMinCache = new DecimalType(v.getValue());
+                            updateState(NOISE_MIN_CHANNEL, noiseMinCache);
+                        } else if (v.getValue_type().equals(NOISE_MAX)) {
+                            noiseMaxCache = new DecimalType(v.getValue());
+                            updateState(NOISE_MAX_CHANNEL, noiseMaxCache);
+                        }
+                    }
+                    return UPDATE_OK;
+                } else {
+                    return UPDATE_VALUE_ERROR;
+                }
+            } else {
+                return UPDATE_VALUE_EMPTY;
             }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        } else {
+            return UPDATE_CONNECTION_ERROR;
         }
     }
 
     @Override
-    public void initialize() {
-        // logger.debug("Start initializing!");
-        config = getConfigAs(LuftdatenInfoConfiguration.class);
-        System.out.println("Init: " + config.sensorid);
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
-
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
-
-        // logger.debug("Finished initializing!");
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    protected void updateFromCache() {
+        if (noiseEQCache != null) {
+            updateState(NOISE_EQ_CHANNEL, noiseEQCache);
+        } else {
+            logger.debug("No cached values for Noise EQ available");
+        }
+        if (noiseMinCache != null) {
+            updateState(NOISE_MIN_CHANNEL, noiseMinCache);
+        } else {
+            logger.debug("No cached values for Noise Min available");
+        }
+        if (noiseMaxCache != null) {
+            updateState(NOISE_MAX_CHANNEL, noiseMaxCache);
+        } else {
+            logger.debug("No cached values for Noise Max available");
+        }
     }
 }
