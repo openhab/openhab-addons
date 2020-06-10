@@ -31,7 +31,7 @@ public class FullGroup extends Group {
 
     private State action;
     private List<String> lights;
-    private State state; // Will not be set by hue API
+    private State groupState; // Will not be set by hue API
 
     FullGroup() {
     }
@@ -61,6 +61,10 @@ public class FullGroup extends Group {
      * @return current state
      */
     public State getState() {
-        return state;
+        return groupState;
+    }
+
+    public void setState(State state) {
+        this.groupState = state;
     }
 }

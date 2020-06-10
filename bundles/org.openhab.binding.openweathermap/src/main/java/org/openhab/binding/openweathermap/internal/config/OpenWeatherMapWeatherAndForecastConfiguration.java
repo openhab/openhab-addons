@@ -23,23 +23,6 @@ import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeather
  */
 @NonNullByDefault
 public class OpenWeatherMapWeatherAndForecastConfiguration extends OpenWeatherMapLocationConfiguration {
-
-    private int forecastHours;
-    private int forecastDays;
-
-    public int getForecastHours() {
-        return forecastHours;
-    }
-
-    public void setForecastHours(int forecastHours) {
-        this.forecastHours = forecastHours;
-    }
-
-    public int getForecastDays() {
-        return forecastDays;
-    }
-
-    public void setForecastDays(int forecastDays) {
-        this.forecastDays = forecastDays;
-    }
+    public int forecastHours;
+    public int forecastDays;
 }

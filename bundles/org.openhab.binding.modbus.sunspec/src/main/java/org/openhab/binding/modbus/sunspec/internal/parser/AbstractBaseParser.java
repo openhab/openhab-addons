@@ -85,7 +85,7 @@ public class AbstractBaseParser {
      * @return the parsed value or empty if the field is not implemented
      */
     protected Optional<Long> extractOptionalAcc32(ModbusRegisterArray raw, int index) {
-        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.UINT32).map(DecimalType::longValue)
+        return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT32).map(DecimalType::longValue)
                 .filter(value -> value != 0);
     }
 
@@ -121,6 +121,6 @@ public class AbstractBaseParser {
      * @return the parsed value or 1 if the field is not implemented
      */
     protected Short extractSunSSF(ModbusRegisterArray raw, int index) {
-        return extractOptionalSunSSF(raw, index).orElse((short) 1);
+        return extractOptionalSunSSF(raw, index).orElse((short) 0);
     }
 }

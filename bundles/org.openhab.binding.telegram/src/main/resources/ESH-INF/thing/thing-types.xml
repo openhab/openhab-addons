@@ -10,6 +10,7 @@
 
 		<channels>
 			<channel id="lastMessageText" typeId="lastMessageText"/>
+			<channel id="lastMessageURL" typeId="lastMessageURL"/>
 			<channel id="lastMessageDate" typeId="lastMessageDate"/>
 			<channel id="lastMessageName" typeId="lastMessageName"/>
 			<channel id="lastMessageUsername" typeId="lastMessageUsername"/>
@@ -24,7 +25,7 @@
 			</parameter>
 			<parameter name="chatIds" type="text" required="true" multiple="true">
 				<label>Chat Id(s)</label>
-				<description>Enter your chat id(s). Only messages from this id(s) will be send to openHAB.</description>
+				<description>One or more chat id(s). Access modifiers ("&lt;" for inbound only, "&gt;" for outbound only) can be used as prefix (optional).</description>
 			</parameter>
 			<parameter name="parseMode" type="text" required="false">
 				<label>Parse Mode</label>
@@ -61,6 +62,13 @@
 		<item-type>String</item-type>
 		<label>Last Message Text</label>
 		<description>Contains the latest message text as a string</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastMessageURL">
+		<item-type>String</item-type>
+		<label>Last Message URL</label>
+		<description>Contains the URL of the latest message</description>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -43,6 +43,7 @@ import org.openhab.io.homekit.internal.HomekitAccessoryType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitException;
+import org.openhab.io.homekit.internal.HomekitOHItemProxy;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -185,7 +186,7 @@ public class HomekitAccessoryFactory {
                         .getConstructor(HomekitTaggedItem.class, List.class, HomekitAccessoryUpdater.class,
                                 HomekitSettings.class)
                         .newInstance(taggedItem, requiredCharacteristics, updater, settings);
-                addOptionalCharacteristics(accessoryImpl, metadataRegistry);
+                addOptionalCharacteristics(taggedItem, accessoryImpl, metadataRegistry);
                 return accessoryImpl;
             } else {
                 logger.warn("Unsupported HomeKit type: {}", accessoryType);
@@ -291,8 +292,12 @@ public class HomekitAccessoryFactory {
     }
 
     /**
-     * add mandatory HomeKit items for a given main item to a list of characteristics
-     * 
+     * add mandatory HomeKit items for a given main item to a list of characteristics.
+     * Main item is use only to determine, which characteristics are mandatory.
+     * The characteristics are added to item.
+     * e.g. mainItem could be a group tagged as "thermostat" and item could be item linked to the group and marked as
+     * TargetTemperature
+     *
      * @param mainItem main item
      * @param characteristics list of characteristics
      * @param item current item
@@ -301,41 +306,66 @@ public class HomekitAccessoryFactory {
     @SuppressWarnings("null")
     private static void addMandatoryCharacteristics(HomekitTaggedItem mainItem, List<HomekitTaggedItem> characteristics,
             Item item, MetadataRegistry metadataRegistry) {
+        // get list of mandatory characteristics
         HomekitCharacteristicType[] mandatoryCharacteristics = MANDATORY_CHARACTERISTICS
                 .get(mainItem.getAccessoryType());
+        if ((mandatoryCharacteristics == null) || (mandatoryCharacteristics.length == 0)) {
+            // no mandatory characteristics linked to accessory type of mainItem. we are done
+            return;
+        }
+        // check whether we adding characteristic to the main item, and if yes, use existing item proxy.
+        // if we adding no to the main item (typical for groups), create new proxy item.
+        final HomekitOHItemProxy itemProxy = mainItem.getItem().equals(item) ? mainItem.getProxyItem()
+                : new HomekitOHItemProxy(item);
+        // an item can have several tags, e.g. "ActiveStatus, InUse". we iterate here over all his tags
         for (Entry<HomekitAccessoryType, HomekitCharacteristicType> accessory : getAccessoryTypes(item,
                 metadataRegistry)) {
-            if (isRootAccessory(accessory) && (mandatoryCharacteristics != null)) {
+            // if the item has only accessory tag, e.g. TemperatureSensor,
+            // the we will link all mandatory characteristic to this item,
+            // e.g. we will link CurrentTemperature in case of TemperatureSensor.
+            if (isRootAccessory(accessory)) {
                 Arrays.stream(mandatoryCharacteristics)
-                        .forEach(c -> characteristics.add(new HomekitTaggedItem(item, accessory.getKey(), c,
+                        .forEach(c -> characteristics.add(new HomekitTaggedItem(itemProxy, accessory.getKey(), c,
                                 mainItem.isGroup() ? (GroupItem) mainItem.getItem() : null,
                                 HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
             } else {
-                if (isMandatoryCharacteristic(mainItem.getAccessoryType(), legacyCheck(accessory.getValue())))
-                    characteristics
-                            .add(new HomekitTaggedItem(item, accessory.getKey(), legacyCheck(accessory.getValue()),
-                                    mainItem.isGroup() ? (GroupItem) mainItem.getItem() : null,
-                                    HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry)));
+                // item has characteristic tag on it, so, adding it as that characteristic.
+
+                // check whether it is a legacy characteristic, i.e. old tag was used, and replaced by a new one
+                final HomekitCharacteristicType characteristic = legacyCheck(accessory.getValue());
+
+                // check whether it is a mandatory characteristic. optional will be added later by another method.
+                if (isMandatoryCharacteristic(mainItem.getAccessoryType(), characteristic)) {
+                    characteristics.add(new HomekitTaggedItem(itemProxy, accessory.getKey(), characteristic,
+                            mainItem.isGroup() ? (GroupItem) mainItem.getItem() : null,
+                            HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry)));
+                }
             }
         }
     }
 
     /**
      * add optional characteristic for given accessory.
-     * 
+     *
+     * @param taggedItem main item
      * @param accessory accessory
      * @param metadataRegistry metadata registry
      */
-    private static void addOptionalCharacteristics(AbstractHomekitAccessoryImpl accessory,
-            MetadataRegistry metadataRegistry) {
+    private static void addOptionalCharacteristics(final HomekitTaggedItem taggedItem,
+            AbstractHomekitAccessoryImpl accessory, MetadataRegistry metadataRegistry) {
         Map<HomekitCharacteristicType, GenericItem> characteristics = getOptionalCharacteristics(
                 accessory.getRootAccessory(), metadataRegistry);
         Service service = accessory.getPrimaryService();
-
+        HashMap<String, HomekitOHItemProxy> proxyItems = new HashMap<>();
+        proxyItems.put(taggedItem.getItem().getUID(), taggedItem.getProxyItem());
+        // an accessory can have multiple optional characteristics. iterate over them.
         characteristics.forEach((type, item) -> {
             try {
                 logger.trace("adding optional characteristic: {} for item {}", type, item.getName());
-                final HomekitTaggedItem optionalItem = new HomekitTaggedItem(item,
+                // check whether a proxyItem already exists, if not create one.
+                final HomekitOHItemProxy proxyItem = proxyItems.computeIfAbsent(item.getUID(),
+                        k -> new HomekitOHItemProxy(item));
+                final HomekitTaggedItem optionalItem = new HomekitTaggedItem(proxyItem,
                         accessory.getRootAccessory().getAccessoryType(), type,
                         accessory.getRootAccessory().getRootDeviceGroupItem(),
                         getItemConfiguration(item, metadataRegistry));

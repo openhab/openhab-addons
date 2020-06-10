@@ -17,6 +17,7 @@
 			<channel id="color_temperature" typeId="color_temperature"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="color" typeId="color"/>
+			<channel id="alert" typeId="alert"/>
 		</channels>
 
 		<representation-property>groupId</representation-property>

@@ -14,6 +14,10 @@
 
 		<channels>
 			<channel id="state" typeId="panelState"/>
+			<channel id="inputVoltage" typeId="voltage"/>
+			<channel id="boardVoltage" typeId="voltage"/>
+			<channel id="batteryVoltage" typeId="voltage"/>
+			<channel id="panelTime" typeId="panelTime"/>
 		</channels>
 		<properties>
 			<property name="serialNumber"/>
@@ -59,6 +63,18 @@
 		<label>Boot Loader Version</label>
 		<description>Boot loader version</description>
 		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage</description>
+		<state readOnly="true" pattern="%f %unit%"/>
+	</channel-type>
+	<channel-type id="panelTime">
+		<item-type>DateTime</item-type>
+		<label>Date</label>
+		<description>The current date and time on the panel</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

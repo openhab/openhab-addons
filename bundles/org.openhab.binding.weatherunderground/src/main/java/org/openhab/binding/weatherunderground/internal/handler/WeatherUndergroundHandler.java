@@ -16,6 +16,7 @@ import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -31,6 +32,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -85,7 +87,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
     private static final Set<String> USUAL_FEATURES = Stream.of(FEATURE_CONDITIONS, FEATURE_FORECAST10DAY)
             .collect(Collectors.toSet());
 
-    private static final Map<String, String> LANG_ISO_TO_WU_CODES = new HashMap<>();
+    private static final Map<String, @Nullable String> LANG_ISO_TO_WU_CODES = new HashMap<>();
     // Codes from https://www.wunderground.com/weather/api/d/docs?d=language-support
     static {
         LANG_ISO_TO_WU_CODES.put("AF", "AF");
@@ -169,7 +171,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         // Yiddish - transliterated => JI
         LANG_ISO_TO_WU_CODES.put("YI", "YI");
     }
-    private static final Map<String, String> LANG_COUNTRY_TO_WU_CODES = new HashMap<>();
+    private static final Map<String, @Nullable String> LANG_COUNTRY_TO_WU_CODES = new HashMap<>();
     static {
         LANG_COUNTRY_TO_WU_CODES.put("en-GB", "LI"); // British English
         LANG_COUNTRY_TO_WU_CODES.put("fr-CA", "FC"); // French Canadian
@@ -177,19 +179,22 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
 
     private final LocaleProvider localeProvider;
     private final UnitProvider unitProvider;
+    private final TimeZoneProvider timeZoneProvider;
     private final Gson gson;
     private final Map<String, Integer> forecastMap;
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
-    @Nullable
-    private WeatherUndergroundJsonData weatherData;
-    @Nullable
-    private WeatherUndergroundBridgeHandler bridgeHandler;
 
-    public WeatherUndergroundHandler(Thing thing, LocaleProvider localeProvider, UnitProvider unitProvider) {
+    private @Nullable ScheduledFuture<?> refreshJob;
+
+    private @Nullable WeatherUndergroundJsonData weatherData;
+
+    private @Nullable WeatherUndergroundBridgeHandler bridgeHandler;
+
+    public WeatherUndergroundHandler(Thing thing, LocaleProvider localeProvider, UnitProvider unitProvider,
+            TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.localeProvider = localeProvider;
         this.unitProvider = unitProvider;
+        this.timeZoneProvider = timeZoneProvider;
         gson = new Gson();
         forecastMap = initForecastDayMap();
     }
@@ -270,7 +275,8 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
      * Start the job refreshing the weather data
      */
     private void startAutomaticRefresh() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> job = refreshJob;
+        if (job == null || job.isCancelled()) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -298,10 +304,11 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing WeatherUnderground handler.");
 
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        refreshJob = null;
     }
 
     @Override
@@ -322,11 +329,12 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
     private void updateChannel(String channelId) {
         if (isLinked(channelId)) {
             State state = null;
-            if (weatherData != null) {
+            WeatherUndergroundJsonData data = weatherData;
+            if (data != null) {
                 if (channelId.startsWith("current")) {
-                    state = updateCurrentObservationChannel(channelId, weatherData.getCurrent());
+                    state = updateCurrentObservationChannel(channelId, data.getCurrent());
                 } else if (channelId.startsWith("forecast")) {
-                    state = updateForecastChannel(channelId, weatherData.getForecast());
+                    state = updateForecastChannel(channelId, data.getForecast());
                 }
             }
 
@@ -350,7 +358,9 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
             case "stationId":
                 return undefOrState(current.getStationId(), new StringType(current.getStationId()));
             case "observationTime":
-                return undefOrState(current.getObservationTime(), new DateTimeType(current.getObservationTime()));
+                ZoneId zoneId = timeZoneProvider.getTimeZone();
+                return undefOrState(current.getObservationTime(zoneId),
+                        new DateTimeType(current.getObservationTime(zoneId)));
             case "conditions":
                 return undefOrState(current.getConditions(), new StringType(current.getConditions()));
             case "temperature":
@@ -423,7 +433,9 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         String channelTypeId = getChannelTypeId(channelId);
         switch (channelTypeId) {
             case "forecastTime":
-                return undefOrState(dayForecast.getForecastTime(), new DateTimeType(dayForecast.getForecastTime()));
+                ZoneId zoneId = timeZoneProvider.getTimeZone();
+                return undefOrState(dayForecast.getForecastTime(zoneId),
+                        new DateTimeType(dayForecast.getForecastTime(zoneId)));
             case "conditions":
                 return undefOrState(dayForecast.getConditions(), new StringType(dayForecast.getConditions()));
             case "minTemperature":

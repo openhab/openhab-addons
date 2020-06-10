@@ -171,7 +171,7 @@ A full list of supported accessory types can be found in the table *below*.
 |                      |                             | TamperedStatus               | Switch, Contact          | accessory tampered status. A status of "ON"/"OPEN" indicates that the accessory has been tampered with. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                                                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | accessory battery status. A value of "ON"/"OPEN" indicate that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level thats above the low threshold.                                                                                        |
 | TemperatureSensor    |                             |                              |                          | Temperature sensor                                                                                                                                                                                                                                                                                        |
-|                      | CurrentTemperature          |                              | Number                   | current temperature                                                                                                                                                                                                                                                                                       |
+|                      | CurrentTemperature          |                              | Number                   | current temperature. supported configuration: minValue, maxValue, step.                                                                                                                                                                                                                                                                                      |
 |                      |                             | Name                         | String                   | Name of the sensor                                                                                                                                                                                                                                                                                        |
 |                      |                             | ActiveStatus                 | Switch, Contact          | accessory current working status. A value of "ON"/"OPEN" indicate that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
 |                      |                             | FaultStatus                  | Switch, Contact          | accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.                                                                                      |
@@ -218,7 +218,7 @@ A full list of supported accessory types can be found in the table *below*.
 |                      |                             | Name                         | String                   | Name of the light                                                                                                                                                                                                                                                                                         |
 |                      |                             | Hue                          | Dimmer, Color            | Hue                                                                                                                                                                                                                                                                                                       |
 |                      |                             | Saturation                   | Dimmer, Color            | Saturation in % (1-100)                                                                                                                                                                                                                                                                                   |
-|                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100)                                                                                                                                                                                                                                                                                   |
+|                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                                  |
 |                      |                             | ColorTemperature             | Number                   | Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
 | Fan                  |                             |                              |                          | Fan                                                                                                                                                                                                                                                                                                       |
 |                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicate that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
@@ -229,8 +229,8 @@ A full list of supported accessory types can be found in the table *below*.
 |                      |                             | SwingMode                    | Number,SwitchItem        | swing mode.  values: 0/OFF=SWING DISABLED, 1/ON=SWING ENABLED                                                                                                                                                                                                                                             |
 |                      |                             | LockControl                  | Number,SwitchItem        | status of physical control lock.  values: 0/OFF=CONTROL LOCK DISABLED, 1/ON=CONTROL LOCK ENABLED                                                                                                                                                                                                          |
 | Thermostat           |                             |                              |                          | A thermostat requires all mandatory characteristics defined below                                                                                                                                                                                                                                         |
-|                      | CurrentTemperature          |                              | Number                   | current temperature                                                                                                                                                                                                                                                                                       |
-|                      | TargetTemperature           |                              | Number                   | target temperature                                                                                                                                                                                                                                                                                        |
+|                      | CurrentTemperature          |                              | Number                   | current temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                                       |
+|                      | TargetTemperature           |                              | Number                   | target temperature. supported configuration: minValue, maxValue, step                                                                                                                                                                                                                                                                                          |
 |                      | CurrentHeatingCoolingMode   |                              | String                   | Current heating cooling mode (OFF, AUTO, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                             |
 |                      | TargetHeatingCoolingMode    |                              | String                   | Target heating cooling mode (OFF, AUTO, HEAT, COOL). for mapping see homekit settings above.                                                                                                                                                                                                              |
 | Lock                 |                             |                              |                          | A Lock Mechanism                                                                                                                                                                                                                                                                                          |
@@ -295,6 +295,7 @@ Switch          legacy_motionsensor_single        "Legacy Motion Sensor"        
 Switch          legacy_occupancy_single           "Legacy Occupanncy Sensor"                                   [ "OccupancySensor" ]
 Switch          legacy_smoke_single               "Legacy Smoke Sensor"                                        [ "SmokeSensor" ]
 Number          legacy_humidity_single            "Legacy Humidity Sensor"                                     [ "CurrentHumidity" ]
+Number          legacy_temperature_sensor		  "Temperature Sensor"		                                   ["TemperatureSensor"]
 
 Switch          legacy_lock                       "Legacy Lock single"                                         [ "Lock" ]
 
@@ -332,14 +333,16 @@ Switch          leaksensor_single          "Leak Sensor single"                 
 Switch          lock                       "Lock single"                                             {homekit="Lock"}
 Switch          valve_single               "Valve single"                                            {homekit="Valve" [homekitValveType="Shower"]}
 
+Number 			temperature_sensor 	"Temperature Sensor [%.1f C]"  			                         {homekit="TemperatureSensor" [minValue=10.5, maxValue=27] }
+
 Group           gValve                     "Valve Group"                                             {homekit="Valve"  [homekitValveType="Irrigation"]}
 Switch          valve_active               "Valve active"                       (gValve)             {homekit="Valve.ActiveStatus, Valve.InUseStatus"}
 Number          valve_duration             "Valve duration"                     (gValve)             {homekit="Valve.Duration"}
 Number          valve_remaining_duration   "Valve remaining duration"           (gValve)             {homekit="Valve.RemainingDuration"}
 
 Group           gThermostat                "Thermostat"                                              {homekit="Thermostat"}
-Number          thermostat_current_temp    "Thermostat Current Temp [%.1f C]"   (gThermostat)        {homekit="Thermostat.CurrentTemperature"}
-Number          thermostat_target_temp     "Thermostat Target Temp[%.1f C]"     (gThermostat)        {homekit="Thermostat.TargetTemperature"}  
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f C]"   (gThermostat)        {homekit="Thermostat.CurrentTemperature" [minValue=0, maxValue=40]}
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f C]"     (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}  
 String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}          
 String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}           
 
@@ -377,6 +380,36 @@ String          security_current_state     "Security Current State"             
 String          security_target_state      "Security Target State"              (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 ```
 
+## Usage of dimmer modes
+
+The way HomeKit handles dimmer devices can be different to the actual dimmers' way of working.
+HomeKit home app sends following commands/update:
+
+- On brightness change home app sends "ON" event along with target brightness, e.g. "Brightness = 50%" + "State = ON". 
+- On "ON" event home app sends "ON" along with brightness 100%, i.e. "Brightness = 100%" + "State = ON"
+- On "OFF" event home app sends "OFF" without brightness information. 
+
+However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change. 
+In order to support different devices HomeKit binding can filter some events. Which events should be filtered is defined via dimmerMode configuration. 
+
+```xtend
+Dimmer dimmer_light	"Dimmer Light" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
+```
+
+Following modes are supported:
+
+- "normal" - no filtering. The commands will be sent to device as received from HomeKit. This is default mode.
+- "filterOn" - ON events are filtered out. only OFF events and brightness information are sent
+- "filterBrightness100" - only Brightness=100% is filtered out. everything else sent unchanged. This allows custom logic for soft launch in devices.
+- "filterOnExceptBrightness100"  - ON events are filtered out in all cases except of brightness = 100%.
+ 
+ Examples:
+ 
+ ```xtend
+ Dimmer dimmer_light_1	"Dimmer Light 1" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
+ Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
+ Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
+ ```
 
 ## Usage of valve timer
 

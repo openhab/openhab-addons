@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.sonos.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SonosMetaData} is a datastructure to the metadata
  * of audio in the Sonos ecosystem
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class SonosMetaData {
 
     private final String id;

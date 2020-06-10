@@ -22,6 +22,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -39,6 +40,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.neohub", service = ThingHandlerFactory.class)
 public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
 
@@ -114,6 +116,7 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
     /*
      * destroy the discovery service
      */
+    @SuppressWarnings("null")
     private synchronized void destroyDiscoveryService(NeoHubHandler handler) {
         // fetch the respective thing's service registration from our list
         ServiceRegistration<?> serviceReg = discoServices.remove(handler.getThing().getUID());

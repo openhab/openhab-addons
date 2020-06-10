@@ -31,6 +31,7 @@ public class TelegramBindingConstants {
 
     // List of all Channel ids
     public static final String LASTMESSAGETEXT = "lastMessageText";
+    public static final String LASTMESSAGEURL = "lastMessageURL";
     public static final String LASTMESSAGEDATE = "lastMessageDate";
     public static final String LASTMESSAGENAME = "lastMessageName";
     public static final String LASTMESSAGEUSERNAME = "lastMessageUsername";

@@ -18,16 +18,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NeoHubDebouncer} determines if change events should be forwarded
  * to a channel
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class NeoHubDebouncer {
 
     private final Map<String, DebounceDelay> channels = new HashMap<>();
 
+    @SuppressWarnings("null")
+    @NonNullByDefault
     static class DebounceDelay {
 
         private long expireTime;
@@ -38,7 +43,7 @@ public class NeoHubDebouncer {
             }
         }
 
-        public Boolean timeExpired() {
+        public boolean timeExpired() {
             return (expireTime < new Date().getTime());
         }
     }
@@ -50,7 +55,8 @@ public class NeoHubDebouncer {
         channels.put(channelId, new DebounceDelay(true));
     }
 
-    public Boolean timeExpired(String channelId) {
+    @SuppressWarnings("null")
+    public boolean timeExpired(String channelId) {
         return (channels.containsKey(channelId) ? channels.get(channelId).timeExpired() : true);
     }
 }

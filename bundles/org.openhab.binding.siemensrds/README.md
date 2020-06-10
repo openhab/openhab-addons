@@ -1,8 +1,8 @@
 # Siemens RDS Binding
 
-The Siemens RDS binding provides the infrastructure for connecting openHAB to the Siemens Climatix IC cloud server and integrate connected Siemens RDS Smart thermostats onto the openHAB bus.
+The Siemens RDS binding provides the infrastructure for connecting openHAB to the Siemens Climatix IC cloud server and integrate connected [Siemens RDS Smart thermostats](https://new.siemens.com/global/en/products/buildings/hvac/room-thermostats/smart-thermostat.html) onto the openHAB bus.
 
-See the Siemens web-site for product details: https://new.siemens.com/global/en/products/buildings/hvac/room-thermostats/smart-thermostat.html
+![Siemens RDS](doc/rds110-family.jpg)
 
 ## Supported Things
 
@@ -56,7 +56,7 @@ The RDS Smart Thermostat supports several channels as shown below.
 | roomTemperature          | Number:Temperature | Actual Room Temperature                                                     |
 | targetTemperature        | Number:Temperature | Target temperature setting for the room                                     |
 | thermostatOutputState    | String             | The output state of the thermostat (Heating, Off, Cooling)                  |
-| roomHumidity	           | Number             | Actual Room Humidity                                                        |
+| roomHumidity	           | Number:Dimensionless| Actual Room Humidity                                                       |
 | roomAirQuality           | String             | Actual Room Air Quality (Poor..Good)                                        |
 | outsideTemperature       | Number:Temperature | Actual Outside temperature                                                  |
 | energySavingsLevel       | String             | Energy saving level (Green Leaf score) (Poor..Excellent)                    |
@@ -90,7 +90,7 @@ Bridge siemensrds:climatixic:mybridgename "Climatix IC Account" [ userEmail="ema
 Number:Temperature Upstairs_RoomTemperature "Room Temperature" { channel="siemensrds:rds:mybridgename:myupstairs:roomTemperature" }
 Number:Temperature Upstairs_TargetTemperature "Target Temperature" { channel="siemensrds:rds:mybridgename:myupstairs:targetTemperature" }
 String Upstairs_ThermostatOutputState "Thermostat Output State" { channel="siemensrds:rds:mybridgename:myupstairs:thermostatOutputState" }
-Number Upstairs_RoomHumidity "Room Humidity"	{ channel="siemensrds:rds:mybridgename:myupstairs:roomHumidity" }
+Number:Dimensionless Upstairs_RoomHumidity "Room Humidity"	{ channel="siemensrds:rds:mybridgename:myupstairs:roomHumidity" }
 String Upstairs_RoomAirQuality "Room Air Quality" { channel="siemensrds:rds:mybridgename:myupstairs:roomAirQuality" }
 Number:Temperature Upstairs_OutsideTemperature "Outside Temperature" { channel="siemensrds:rds:mybridgename:myupstairs:outsideTemperature" }
 String Upstairs_EnergySavingsLevel "Energy Savings Level" { channel="siemensrds:rds:mybridgename:myupstairs:energySavingsLevel" }
