@@ -94,7 +94,7 @@ public class DimmerOutputProfile implements StateProfile {
             logger.warn("Unsupported type: {}", command.toFullString());
             return;
         }
-        callback.sendUpdate(new DimmerOutputCommand(value, controlAllOutputs, controlOutputs12, rampMs));
+        callback.handleCommand(new DimmerOutputCommand(value, controlAllOutputs, controlOutputs12, rampMs));
     }
 
     @Override
