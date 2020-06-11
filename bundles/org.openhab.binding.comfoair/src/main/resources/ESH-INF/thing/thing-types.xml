@@ -27,6 +27,7 @@
 			<channel-group id="inputs" typeId="inputs" />
 			<channel-group id="analog" typeId="analog" />
 			<channel-group id="error" typeId="error" />
+			<channel-group id="reset" typeId="reset" />
 		</channel-groups>
 
 		<config-description>
@@ -51,21 +52,10 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="ccease">
-		<label>CC Ease Functions</label>
-		<channels>
-			<channel id="fanLevel" typeId="fan_evel" />
-			<channel id="targetTemperature" typeId="target_temperature" />
-			<channel id="filterError" typeId="filter_error" />
-			<channel id="errorMessage" typeId="error_message" />
-			<channel id="filterReset" typeId="filter_reset" />
-			<channel id="errorReset" typeId="error_reset" />
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="ventilation">
 		<label>Ventilation Values</label>
 		<channels>
+			<channel id="fanLevel" typeId="fan_evel" />
 			<channel id="fanOut0" typeId="fan_out_0" />
 			<channel id="fanOut1" typeId="fan_out_1" />
 			<channel id="fanOut2" typeId="fan_out_2" />
@@ -84,6 +74,7 @@
 	<channel-group-type id="temperatures">
 		<label>Temperature Values</label>
 		<channels>
+			<channel id="targetTemperature" typeId="target_temperature" />
 			<channel id="outdoorTemperatureIn" typeId="outdoor_temperature_in" />
 			<channel id="outdoorTemperatureOut" typeId="outdoor_temperature_out" />
 			<channel id="indoorTemperatureIn" typeId="indoor_temperature_in" />
@@ -280,12 +271,15 @@
 			<channel id="RFMin" typeId="RF_min" />
 			<channel id="RFMax" typeId="RF_max" />
 			<channel id="RFValue" typeId="RF_value" />
+			<channel id="analogMode" typeId="analog_mode" />
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="error">
+	<channel-group-type id="errors">
 		<label>Error States</label>
 		<channels>
+			<channel id="filterError" typeId="filter_error" />
+			<channel id="errorMessage" typeId="error_message" />
 			<channel id="errorACurrent" typeId="errorA_current" />
 			<channel id="errorECurrent" typeId="errorE_current" />
 			<channel id="errorALast" typeId="errorA_last" />
@@ -302,6 +296,14 @@
 			<channel id="errorAHighLast" typeId="errorA_high_last" />
 			<channel id="errorAHighPrelast" typeId="errorA_high_prelast" />
 			<channel id="errorAHighPrePrelast" typeId="errorA_high_pre_prelast" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="resets">
+		<label>Reset</label>
+		<channels>
+			<channel id="filterReset" typeId="filter_reset" />
+			<channel id="errorReset" typeId="error_reset" />
 		</channels>
 	</channel-group-type>
 
@@ -1428,6 +1430,19 @@
 		<description>Target setting for RF input</description>
 		<category>Number</category>
 		<state min="0" max="100" step="1" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="analog_mode" advanced="true">
+		<item-type>Number</item-type>
+		<label>Analog Mode</label>
+		<description>Priority of control</description>
+		<category>Number</category>
+		<state readOnly="false">
+			<options>
+				<option value="0">Analog inputs</option>
+				<option value="1">Schedule</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="errorA_current">
