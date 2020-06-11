@@ -11,6 +11,6 @@
 
   <artifactId>org.openhab.binding.freemobilesms</artifactId>
 
-  <name>FreeMobileSms Binding</name>
+  <name>openHAB Add-ons :: Bundles :: FreeMobileSms Binding</name>
 
 </project>
