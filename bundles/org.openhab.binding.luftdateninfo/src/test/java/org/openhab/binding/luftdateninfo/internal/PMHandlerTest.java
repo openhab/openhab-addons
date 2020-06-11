@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.junit.Test;
 import org.openhab.binding.luftdateninfo.internal.mock.PMHandlerExtension;
 import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
+import org.openhab.binding.luftdateninfo.internal.util.FileReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,5 +90,73 @@ public class PMHandlerTest {
          * real int for comparison instead of BaseHandler constants - in case of change test needs to be adapted
          */
         assertEquals("Handler Configuration status", 3, pmHandler.getConfigStatus());
+    }
+
+    @Test
+    public void testValidUpdate() {
+        ThingMock t = new ThingMock();
+
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        // String sensorid taken from thing-types.xml
+        properties.put("sensorid", "12345");
+        t.setConfiguration(properties);
+
+        PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        String pmJson = FileReader.readFileInString("src/test/resources/pm-result.json");
+        if (pmJson != null) {
+            int result = pmHandler.updateChannels(pmJson);
+            assertEquals("Valid update", 0, result);
+            assertEquals("PM25", new DecimalType("2.87"), pmHandler.getPM25Cache());
+            assertEquals("PM100", new DecimalType("5.15"), pmHandler.getPM100Cache());
+        } else {
+            assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testInvalidUpdate() {
+        ThingMock t = new ThingMock();
+
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        // String sensorid taken from thing-types.xml
+        properties.put("sensorid", "12345");
+        t.setConfiguration(properties);
+
+        PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        String pmJson = FileReader.readFileInString("src/test/resources/noise-result.json");
+        if (pmJson != null) {
+            int result = pmHandler.updateChannels(pmJson);
+            assertEquals("Valid update", 2, result);
+        } else {
+            assertTrue(false);
+        }
+    }
+
+    @Test
+    public void testEmptyUpdate() {
+        ThingMock t = new ThingMock();
+
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        // String sensorid taken from thing-types.xml
+        properties.put("sensorid", "12345");
+        t.setConfiguration(properties);
+
+        PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        int result = pmHandler.updateChannels("[]");
+        assertEquals("Valid update", 3, result);
+    }
+
+    @Test
+    public void testNullUpdate() {
+        ThingMock t = new ThingMock();
+
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        // String sensorid taken from thing-types.xml
+        properties.put("sensorid", "12345");
+        t.setConfiguration(properties);
+
+        PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        int result = pmHandler.updateChannels(null);
+        assertEquals("Valid update", 1, result);
     }
 }

@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.luftdateninfo.internal.handler.ConditionsHandler;
+import org.openhab.binding.luftdateninfo.internal.handler.ConditionHandler;
 import org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler;
 import org.openhab.binding.luftdateninfo.internal.handler.NoiseHandler;
 import org.openhab.binding.luftdateninfo.internal.handler.PMHandler;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.luftdateninfo", service = ThingHandlerFactory.class)
 public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
-    protected static final Logger logger = LoggerFactory.getLogger(LuftdatenInfoHandlerFactory.class);
+    protected final Logger logger = LoggerFactory.getLogger(LuftdatenInfoHandlerFactory.class);
 
     @Activate
     public LuftdatenInfoHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
@@ -63,7 +63,7 @@ public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
         if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_PARTICULATE)) {
             return new PMHandler(thing);
         } else if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_CONDITIONS)) {
-            return new ConditionsHandler(thing);
+            return new ConditionHandler(thing);
         } else if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_NOISE)) {
             return new NoiseHandler(thing);
         }

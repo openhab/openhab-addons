@@ -78,15 +78,14 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
             config = getConfigAs(LuftdatenInfoConfiguration.class);
             configStatus = checkConfig(config);
             if (configStatus == CONFIG_OK) {
-                updateStatus = updateChannels();
+                update();
                 if (updateStatus == UPDATE_OK) {
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Start refresh job at interval {} min.", refreshInterval);
                     if (refreshJob != null) {
                         refreshJob.cancel(true);
                     }
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateChannels, 0, refreshInterval,
-                            TimeUnit.MINUTES);
+                    refreshJob = scheduler.scheduleWithFixedDelay(this::update, 0, refreshInterval, TimeUnit.MINUTES);
                 } else {
                     switch (updateStatus) {
                         case UPDATE_CONNECTION_ERROR:
@@ -128,17 +127,15 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
      */
     private int checkConfig(@Nullable LuftdatenInfoConfiguration c) {
         if (c != null) {
-            if (c.sensorid != null) {
-                try {
-                    Integer.parseInt(c.sensorid);
-                    return CONFIG_OK;
-                } catch (NumberFormatException t) {
-                    return CONFIG_SENSOR_NUMBER;
-                }
-            } else {
-                return CONFIG_SENSOR_IS_NULL;
+            try {
+                Integer.parseInt(c.sensorid);
+                return CONFIG_OK;
+            } catch (NumberFormatException t) {
+                return CONFIG_SENSOR_NUMBER;
             }
-        } else {
+        } else
+
+        {
             return CONFIG_IS_NULL;
         }
     }
@@ -147,7 +144,12 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         return lifecycleStatus;
     }
 
-    protected abstract int updateChannels();
+    protected void update() {
+        String response = HTTPHandler.getResponse(config.sensorid);
+        updateStatus = updateChannels(response);
+    }
+
+    protected abstract int updateChannels(@Nullable String json);
 
     protected abstract void updateFromCache();
 }
