@@ -10,4 +10,12 @@ public class ShutterControlState {
      * Current open ratio of shutter (0.0 [closed] to 1.0 [open])
      */
     public double level;
+
+    public ShutterControlState() {
+        this.level = 0.0;
+    }
+
+    public ShutterControlState(double level) {
+        this.level = level;
+    }
 }
