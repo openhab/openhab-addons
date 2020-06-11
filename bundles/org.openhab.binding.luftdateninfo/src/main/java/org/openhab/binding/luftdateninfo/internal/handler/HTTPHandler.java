@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorData;
@@ -36,7 +37,7 @@ import com.google.gson.Gson;
 public class HTTPHandler {
     private static final Logger logger = LoggerFactory.getLogger(HTTPHandler.class);
     private static String sensorUrl = "http://data.sensor.community/airrohr/v1/sensor/";
-    private static HttpClient commonHttpClient;
+    private static @Nullable HttpClient commonHttpClient;
 
     public final static String P1 = "P1";
     public final static String P2 = "P2";
@@ -55,6 +56,10 @@ public class HTTPHandler {
     }
 
     public static String getResponse(String sensorId) {
+        if (commonHttpClient == null) {
+            logger.warn("HTTP Client not initialized");
+            return null;
+        }
         String url = sensorUrl + sensorId + "/";
         try {
             ContentResponse contentResponse = commonHttpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).send();

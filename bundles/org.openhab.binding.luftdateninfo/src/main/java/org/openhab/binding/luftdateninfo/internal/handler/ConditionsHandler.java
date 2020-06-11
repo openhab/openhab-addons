@@ -51,7 +51,6 @@ public class ConditionsHandler extends BaseSensorHandler {
             List<SensorDataValue> valueList = HTTPHandler.getValues(response);
             if (valueList != null) {
                 if (HTTPHandler.isCondition(valueList)) {
-
                     Iterator<SensorDataValue> iter = valueList.iterator();
                     while (iter.hasNext()) {
                         SensorDataValue v = iter.next();
