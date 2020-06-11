@@ -15,7 +15,7 @@
 		<config-description>
 			<parameter name="sensorid" type="text" required="true">
 				<label>Sensor ID</label>
-				<description>Sensor ID to be for query</description>
+				<description>Sensor ID</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -33,8 +33,8 @@
 
 		<config-description>
 			<parameter name="sensorid" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>Sensor ID to be for query</description>
+                <label>Sensor ID</label>
+                <description>Sensor ID</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -49,12 +49,12 @@
 			<channel id="noise-max" typeId="noise-max-channel" />
 		</channels>
 
-		<config-description>
-			<parameter name="sensorid" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>Sensor ID to be for query</description>
-			</parameter>
-		</config-description>
+        <config-description>
+            <parameter name="sensorid" type="text" required="true">
+                <label>Sensor ID</label>
+                <description>Sensor ID</description>
+            </parameter>
+        </config-description>
 	</thing-type>
 
 	<channel-type id="pm25-channel">
@@ -87,9 +87,19 @@
 		<label>Pressure sea level</label>
 		<description>Pressure at sea level from the selected Sensor ID</description>
 	</channel-type>
-	<channel-type id="noise-channel">
+	<channel-type id="noise-eq-channel">
 		<item-type>Number</item-type>
-		<label>Noise</label>
-		<description>Noise from the selected Sensor ID</description>
+		<label>Noise EQ</label>
+		<description>Average noise level from the selected Sensor ID</description>
+	</channel-type>
+	<channel-type id="noise-min-channel">
+		<item-type>Number</item-type>
+		<label>Min Noise</label>
+		<description>Minimum noise level (last 2,5 minutes) from the selected Sensor ID</description>
+	</channel-type>
+	<channel-type id="noise-max-channel">
+		<item-type>Number</item-type>
+		<label>Max Noise</label>
+		<description>Maximum noise level (last 2,5 minutes) from the selected Sensor ID</description>
 	</channel-type>
 </thing:thing-descriptions>

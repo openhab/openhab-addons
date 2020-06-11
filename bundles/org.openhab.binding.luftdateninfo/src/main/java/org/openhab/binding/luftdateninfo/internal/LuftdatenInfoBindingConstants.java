@@ -34,7 +34,7 @@ public class LuftdatenInfoBindingConstants {
     // List of all Channel ids
     public static final String PM25_CHANNEL = "pm25";
     public static final String PM100_CHANNEL = "pm100";
-    public static final String TEMPERATURE_CHANNEL = "temperate";
+    public static final String TEMPERATURE_CHANNEL = "temperature";
     public static final String HUMIDITY_CHANNEL = "humidity";
     public static final String PRESSURE_CHANNEL = "pressure";
     public static final String PRESSURE_SEA_CHANNEL = "pressure-sea";
