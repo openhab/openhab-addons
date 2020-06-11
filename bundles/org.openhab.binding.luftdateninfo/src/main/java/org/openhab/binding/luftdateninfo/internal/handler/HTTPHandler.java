@@ -56,7 +56,7 @@ public class HTTPHandler {
         commonHttpClient = httpClient;
     }
 
-    public static String getResponse(String sensorId) {
+    public static @Nullable String getResponse(String sensorId) {
         if (commonHttpClient == null) {
             logger.warn("HTTP Client not initialized");
             return null;
@@ -84,7 +84,7 @@ public class HTTPHandler {
         }
     }
 
-    public static List<SensorDataValue> getValues(String response) {
+    public static @Nullable List<SensorDataValue> getValues(String response) {
         Gson gson = new Gson();
         SensorData[] valueArray = gson.fromJson(response, SensorData[].class);
         if (valueArray.length > 0) {

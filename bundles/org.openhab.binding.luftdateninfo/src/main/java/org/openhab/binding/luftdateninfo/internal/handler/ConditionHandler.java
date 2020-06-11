@@ -26,13 +26,13 @@ import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 
 /**
- * The {@link ConditionsHandler} is responsible for handling commands, which are
+ * The {@link ConditionHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ConditionsHandler extends BaseSensorHandler {
+public class ConditionHandler extends BaseSensorHandler {
 
     protected @Nullable DecimalType temperatureCache;
     protected @Nullable DecimalType humidityCache;
@@ -40,15 +40,14 @@ public class ConditionsHandler extends BaseSensorHandler {
     protected @Nullable DecimalType pressureSeaCache;
     protected DecimalType UNDEF = new DecimalType(-1);
 
-    public ConditionsHandler(Thing thing) {
+    public ConditionHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public int updateChannels() {
-        String response = HTTPHandler.getResponse(config.sensorid);
-        if (response != null) {
-            List<SensorDataValue> valueList = HTTPHandler.getValues(response);
+    public int updateChannels(@Nullable String json) {
+        if (json != null) {
+            List<SensorDataValue> valueList = HTTPHandler.getValues(json);
             if (valueList != null) {
                 if (HTTPHandler.isCondition(valueList)) {
                     Iterator<SensorDataValue> iter = valueList.iterator();
