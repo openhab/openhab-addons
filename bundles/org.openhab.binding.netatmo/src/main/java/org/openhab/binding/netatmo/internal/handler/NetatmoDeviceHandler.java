@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -55,8 +56,8 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     protected DEVICE device;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
-    public NetatmoDeviceHandler(Thing thing) {
-        super(thing);
+    public NetatmoDeviceHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -123,7 +124,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     updateProperties(device);
                     Integer dataTimeStamp = getDataTimestamp();
                     if (dataTimeStamp != null) {
-                        refreshStrategy.setDataTimeStamp(dataTimeStamp);
+                        refreshStrategy.setDataTimeStamp(dataTimeStamp, timeZoneProvider.getTimeZone());
                     }
                     radioHelper.ifPresent(helper -> helper.setModule(device));
                     NetatmoBridgeHandler handler = getBridgeHandler();
@@ -156,7 +157,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     if (device != null) {
                         Method getLastStatusStore = device.getClass().getMethod("getLastStatusStore");
                         Integer lastStatusStore = (Integer) getLastStatusStore.invoke(device);
-                        return ChannelTypeUtils.toDateTimeType(lastStatusStore);
+                        return ChannelTypeUtils.toDateTimeType(lastStatusStore, timeZoneProvider.getTimeZone());
                     } else {
                         return UnDefType.UNDEF;
                     }

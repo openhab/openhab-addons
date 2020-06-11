@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.netatmo.internal.camera;
 
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toStringType;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -37,8 +37,8 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
 
-    public CameraHandler(@NonNull Thing thing) {
-        super(thing);
+    public CameraHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
