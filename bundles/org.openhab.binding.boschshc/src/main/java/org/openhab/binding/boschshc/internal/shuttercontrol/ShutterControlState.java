@@ -11,6 +11,11 @@ public class ShutterControlState {
      */
     public double level;
 
+    /**
+     * Current operation state of shutter
+     */
+    public OperationState operationState;
+
     public ShutterControlState() {
         this.level = 0.0;
     }

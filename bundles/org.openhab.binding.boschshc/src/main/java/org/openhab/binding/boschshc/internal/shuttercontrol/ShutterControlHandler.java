@@ -59,14 +59,17 @@ public class ShutterControlHandler extends BoschSHCHandler {
             } else if (upDownType == UpDownType.DOWN) {
                 state.level = 0;
             } else {
+                logger.warn("Received unknown UpDownType command: {}", upDownType);
                 return;
             }
             this.setDeviceState(state);
         } else if (command instanceof StopMoveType) {
-            // Set current state as target state
-            ShutterControlState state = this.getDeviceState();
+            // Set STOPPED operation state
+            ShutterControlState state = new ShutterControlState();
+            state.operationState = OperationState.STOPPED;
             this.setDeviceState(state);
         } else if (command instanceof PercentType) {
+            // Set specific level
             PercentType percentType = (PercentType) command;
             double level = DataConversion.openPercentageToLevel(percentType.doubleValue());
             this.setDeviceState(new ShutterControlState(level));
