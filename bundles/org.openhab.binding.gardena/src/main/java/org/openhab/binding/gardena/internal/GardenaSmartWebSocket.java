@@ -67,6 +67,7 @@ public class GardenaSmartWebSocket {
         webSocketClient = webSocketFactory.createWebSocketClient(String.valueOf(this.getClass().hashCode()));
         webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
         webSocketClient.setStopTimeout(3000);
+        webSocketClient.setMaxIdleTimeout(150000);
         webSocketClient.start();
 
         logger.debug("Connecting to Gardena Webservice");
@@ -86,7 +87,7 @@ public class GardenaSmartWebSocket {
         if (isRunning()) {
             logger.debug("Closing Gardena Webservice client");
             try {
-                session.disconnect();
+                session.close();
             } catch (Exception ex) {
                 // ignore
             } finally {
