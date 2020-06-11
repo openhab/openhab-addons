@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
+import org.openhab.binding.netatmo.internal.presence.NAPresenceCameraHandler;
 import org.openhab.binding.netatmo.internal.station.NAMainHandler;
 import org.openhab.binding.netatmo.internal.station.NAModule1Handler;
 import org.openhab.binding.netatmo.internal.station.NAModule2Handler;
@@ -105,8 +106,10 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NATherm1Handler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
             return new NAWelcomeHomeHandler(thing);
-        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE) || thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
+        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
             return new NAWelcomeCameraHandler(thing);
+        } else if (thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
+            return new NAPresenceCameraHandler(thing);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing);
         } else {
