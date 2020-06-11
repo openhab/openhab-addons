@@ -132,7 +132,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
                 try {
                     Integer.parseInt(c.sensorid);
                     return CONFIG_OK;
-                } catch (Throwable t) {
+                } catch (NumberFormatException t) {
                     return CONFIG_SENSOR_NUMBER;
                 }
             } else {
