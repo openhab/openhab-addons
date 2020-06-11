@@ -4600,6 +4600,34 @@
 		<description>Whether to allow cooling (only valid for operational mode Manual or Add. heat only)</description>
 		<state readOnly="false"></state>
 	</channel-type>
+	<channel-type id="f1x45-47374" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start Temperature Cooling</label>
+		<description>Start temperature for cooling</description>
+		<state min="-200" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-47375" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Heating</label>
+		<description>Stop temperature for heating</description>
+		<state min="-200" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-47376" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Additive</label>
+		<description>Stop temperature for additive</description>
+		<state min="-250" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-47377" advanced="true">
+		<item-type>String</item-type>
+		<label>Outdoor Filter Time</label>
+		<description>Filter time in hours</description>
+		<state min="0" max="48" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
 	<channel-type id="f1x45-47378" advanced="true">
 		<item-type>Number</item-type>
 		<label>Max Diff. Comp.</label>
