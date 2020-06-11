@@ -23,7 +23,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.camera.CameraHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
