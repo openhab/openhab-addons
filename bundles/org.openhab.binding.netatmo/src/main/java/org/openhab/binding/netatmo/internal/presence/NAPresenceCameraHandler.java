@@ -114,11 +114,10 @@ public class NAPresenceCameraHandler extends CameraHandler {
         if(!isLocalCameraURLLoaded) {
             String vpnUrl = getVpnUrl();
             if(vpnUrl != null) {
-                isLocalCameraURLLoaded = true;
-
                 String pingURL = vpnUrl + PING_URL_PATH;
                 Optional<JSONObject> json = executeGETRequestJSON(pingURL);
                 localCameraURL = json.map(j -> j.getString("local_url"));
+                isLocalCameraURLLoaded = true;
             }
         }
         return localCameraURL;
