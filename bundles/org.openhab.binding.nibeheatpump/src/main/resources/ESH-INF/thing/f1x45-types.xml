@@ -4622,7 +4622,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="f1x45-47377" advanced="true">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Outdoor Filter Time</label>
 		<description>Filter time in hours</description>
 		<state min="0" max="48" step="1" pattern="%d h" readOnly="false">
