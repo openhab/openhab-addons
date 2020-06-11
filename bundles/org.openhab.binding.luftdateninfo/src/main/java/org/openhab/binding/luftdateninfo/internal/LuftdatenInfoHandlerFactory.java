@@ -27,6 +27,8 @@ import org.openhab.binding.luftdateninfo.internal.handler.PMHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LuftdatenInfoHandlerFactory} is responsible for creating things and thing
@@ -37,6 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.luftdateninfo", service = ThingHandlerFactory.class)
 public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
+    protected static final Logger logger = LoggerFactory.getLogger(LuftdatenInfoHandlerFactory.class);
 
     @Activate
     public LuftdatenInfoHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
@@ -57,7 +60,6 @@ public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         // one handler for all
-        System.out.println("Request: " + thing.getThingTypeUID());
         if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_PARTICULATE)) {
             return new PMHandler(thing);
         } else if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_CONDITIONS)) {
@@ -65,7 +67,7 @@ public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
         } else if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_NOISE)) {
             return new NoiseHandler(thing);
         }
-        System.out.println("Handler for " + thing.getThingTypeUID() + " not found");
+        logger.info("Handler for {} not found", thing.getThingTypeUID());
         return null;
     }
 }
