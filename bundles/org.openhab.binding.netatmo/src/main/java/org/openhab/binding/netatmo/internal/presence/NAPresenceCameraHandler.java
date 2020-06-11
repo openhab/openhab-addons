@@ -75,21 +75,14 @@ public class NAPresenceCameraHandler extends CameraHandler {
     private State getFloodlightState() {
         Optional<String> localCameraURL = getLocalCameraURL();
         if(localCameraURL.isPresent()) {
-            String floodlightURL = localCameraURL.get() + FLOODLIGHT_GET_URL_PATH;
-            try {
-                String content = HttpUtil.executeUrl("GET", floodlightURL, 5000);
-                if (content != null && !content.isEmpty()) {
-                    JSONObject json = new JSONObject(content);
-                    String mode = json.getString("mode");
-                    if("auto".equals(mode)) {
-                        isAutoMode = true; //TODO don't change a state within a get method...
-                    }
-                    return ChannelTypeUtils.toOnOffType("on".equals(mode));
-                } else {
-                    logger.error("The floodlight state could not get found!");
-                }
-            } catch (IOException | JSONException e) {
-                logger.error("Error on checking floodlight state!", e);
+            String floodlightGetURL = localCameraURL.get() + FLOODLIGHT_GET_URL_PATH;
+
+            Optional<JSONObject> json = executeGETRequestJSON(floodlightGetURL);
+            Optional<String> mode = json.map(j -> j.getString("mode"));
+            if(mode.isPresent()) {
+                isAutoMode = mode.get().equals("auto");
+            } else {
+                logger.error("The floodlight state could not get found!");
             }
         }
         return UnDefType.UNDEF;
@@ -113,11 +106,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
             }
             url.append("%22%7D");
 
-            try {
-                HttpUtil.executeUrl("GET", url.toString(), 5000);
-            } catch (IOException | JSONException e) {
-                logger.error("Error on checking floodlight state!", e);
-            }
+            executeGETRequest(url.toString());
         }
     }
 
@@ -125,21 +114,35 @@ public class NAPresenceCameraHandler extends CameraHandler {
         if(!isLocalCameraURLLoaded) {
             String vpnUrl = getVpnUrl();
             if(vpnUrl != null) {
-                String pingURL = vpnUrl + PING_URL_PATH;
-                try {
-                    String content = HttpUtil.executeUrl("GET", pingURL, 5000);
-                    if (content != null && !content.isEmpty()) {
-                        JSONObject json = new JSONObject(content);
-                        localCameraURL = Optional.of(json.getString("local_url"));
-                    } else {
-                        logger.error("The local camera url could not get found!");
-                    }
-                } catch (IOException | JSONException e) {
-                    logger.error("Error on loading local camera url!", e);
-                }
                 isLocalCameraURLLoaded = true;
+
+                String pingURL = vpnUrl + PING_URL_PATH;
+                Optional<JSONObject> json = executeGETRequestJSON(pingURL);
+                localCameraURL = json.map(j -> j.getString("local_url"));
             }
         }
         return localCameraURL;
+    }
+
+    private Optional<JSONObject> logexecuteGETRequestJSON(String url) {
+        Optional<String> content = executeGETRequest(url);
+        if (content.isPresent()) {
+            return Optional.of(new JSONObject(content.get()));
+        }
+
+        logger.error("The request-result could not get retrieved!");
+        return Optional.empty();
+    }
+
+    private Optional<String> executeGETRequest(String url) {
+        try {
+            String content = HttpUtil.executeUrl("GET", url, 5000);
+            if (content != null && !content.isEmpty()) {
+                return Optional.of(content);
+            }
+        } catch (IOException | JSONException e) {
+            logger.error("Error on loading local camera url!", e);
+        }
+        return Optional.empty();
     }
 }
