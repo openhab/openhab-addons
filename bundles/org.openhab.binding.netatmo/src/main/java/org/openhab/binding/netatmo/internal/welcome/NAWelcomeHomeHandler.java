@@ -15,12 +15,16 @@ package org.openhab.binding.netatmo.internal.welcome;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 
-import io.swagger.client.model.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -33,6 +37,13 @@ import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.swagger.client.model.NAWelcomeEvent;
+import io.swagger.client.model.NAWelcomeHome;
+import io.swagger.client.model.NAWelcomeHomeData;
+import io.swagger.client.model.NAWelcomePlace;
+import io.swagger.client.model.NAWelcomeSnapshot;
+import io.swagger.client.model.NAWelcomeSubEvent;
 
 /**
  * {@link NAWelcomeHomeHandler} is the class used to handle the Welcome Home Data
@@ -51,13 +62,14 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     private boolean isNewLastEvent;
     private @Nullable Integer dataTimeStamp;
 
-    public NAWelcomeHomeHandler(Thing thing) {
-        super(thing);
+    public NAWelcomeHomeHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
     protected @Nullable NAWelcomeHome updateReadings() {
-        @Nullable NAWelcomeHome result = null;
+        @Nullable
+        NAWelcomeHome result = null;
         NAWelcomeHomeData homeDataBody = getBridgeHandler().getWelcomeDataBody(getId());
         if (homeDataBody != null) {
             // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this
@@ -106,7 +118,8 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             case CHANNEL_WELCOME_EVENT_TYPE:
                 return lastEvent.map(e -> toStringType(e.getType())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_TIME:
-                return lastEvent.map(e -> toDateTimeType(e.getTime())).orElse(UnDefType.UNDEF);
+                return lastEvent.map(e -> toDateTimeType(e.getTime(), timeZoneProvider.getTimeZone()))
+                        .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_CAMERAID:
                 if (lastEvent.isPresent()) {
                     Optional<AbstractNetatmoThingHandler> camera = getBridgeHandler()
@@ -124,7 +137,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
-                return findSnapshotURL().map(url -> (State)HttpUtil.downloadImage(url)).orElse(UnDefType.UNDEF);
+                return findSnapshotURL().map(url -> (State) HttpUtil.downloadImage(url)).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_SNAPSHOT_URL:
                 return findSnapshotURL().map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_VIDEO_URL:
@@ -145,9 +158,8 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             case CHANNEL_WELCOME_EVENT_ISARRIVAL:
                 return lastEvent.map(e -> toOnOffType(e.getIsArrival())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_MESSAGE:
-                return findEventMessage().map(
-                        m -> (State)new StringType(m.replace("<b>", "").replace("</b>", ""))
-                ).orElse(UnDefType.UNDEF);
+                return findEventMessage().map(m -> (State) new StringType(m.replace("<b>", "").replace("</b>", "")))
+                        .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
                 return lastEvent.map(e -> toDecimalType(e.getSubType())).orElse(UnDefType.UNDEF);
         }
@@ -189,7 +201,8 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
     private Optional<String> findEventMessage() {
         if (lastEvent.isPresent()) {
-            @Nullable String message = lastEvent.get().getMessage();
+            @Nullable
+            String message = lastEvent.get().getMessage();
             if (message != null) {
                 return Optional.of(message);
             }
@@ -206,7 +219,8 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      */
     protected Optional<String> findSnapshotURL() {
         if (lastEvent.isPresent()) {
-            @Nullable NAWelcomeSnapshot snapshot = lastEvent.get().getSnapshot();
+            @Nullable
+            NAWelcomeSnapshot snapshot = lastEvent.get().getSnapshot();
             if (snapshot == null) {
                 snapshot = findFirstSubEvent(lastEvent).map(NAWelcomeSubEvent::getSnapshot).orElse(null);
             }
@@ -227,9 +241,8 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     private State getPlaceInfo(Function<NAWelcomePlace, String> infoGetFunction) {
-        return Optional.ofNullable(device).map(
-                d -> toStringType(infoGetFunction.apply(d.getPlace()))
-        ).orElse(UnDefType.UNDEF);
+        return Optional.ofNullable(device).map(d -> toStringType(infoGetFunction.apply(d.getPlace())))
+                .orElse(UnDefType.UNDEF);
     }
 
     private static Optional<NAWelcomeSubEvent> findFirstSubEvent(Optional<NAWelcomeEvent> event) {

@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -62,8 +63,9 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
     private final Logger logger = LoggerFactory.getLogger(NATherm1Handler.class);
     private final NATherm1StateDescriptionProvider stateDescriptionProvider;
 
-    public NATherm1Handler(@NonNull Thing thing, NATherm1StateDescriptionProvider stateDescriptionProvider) {
-        super(thing);
+    public NATherm1Handler(@NonNull Thing thing, NATherm1StateDescriptionProvider stateDescriptionProvider,
+            final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -113,7 +115,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
             case CHANNEL_SETPOINT_TEMP:
                 return getCurrentSetpoint();
             case CHANNEL_TIMEUTC:
-                return module != null ? toDateTimeType(module.getMeasured().getTime()) : UnDefType.UNDEF;
+                return module != null ? toDateTimeType(module.getMeasured().getTime(), timeZoneProvider.getTimeZone())
+                        : UnDefType.UNDEF;
             case CHANNEL_SETPOINT_END_TIME: {
                 if (module != null) {
                     NASetpoint setpoint = module.getSetpoint();
@@ -122,7 +125,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                         if (endTime == null) {
                             endTime = getNextProgramTime(module.getThermProgramList());
                         }
-                        return toDateTimeType(endTime);
+                        return toDateTimeType(endTime, timeZoneProvider.getTimeZone());
                     }
                     return UnDefType.NULL;
                 }
