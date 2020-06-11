@@ -83,6 +83,61 @@ public class GreeBindingConstants {
     // UDPPort used to communicate using UDP with GREE Airconditioners. .
     public static final int GREE_PORT = 7000;
 
+    public static final String GREE_CID = "app";
+    public static final String GREE_CMDT_BIND = "bind";
+    public static final String GREE_CMDT_STATUS = "status";
+    public static final String GREE_CMDT_CMD = "cmd";
+    public static final String GREE_CMDT_PACK = "pack";
+
+    /*
+     * Note : Values can be:
+     * "Pow": Power (0 or 1)
+     * "Mod": Mode: Auto: 0, Cool: 1, Dry: 2, Fan: 3, Heat: 4
+     * "SetTem": Requested Temperature
+     * "WdSpd": Fan Speed : Low:1, Medium Low:2, Medium :3, Medium High :4, High :5
+     * "Air": Air Mode Enabled
+     * "Blo": Dry
+     * "Health": Health
+     * "SwhSlp": Sleep
+     * "SlpMod": ???
+     * "Lig": Light On
+     * "SwingLfRig": Swing Left Right
+     * "SwUpDn": Swing Up Down: // Ceiling:0, Upwards : 10, Downwards : 11, Full range : 1
+     * "Quiet": Quiet mode
+     * "Tur": Turbo
+     * "StHt": 0,
+     * "TemUn": Temperature unit, 0 for Celsius, 1 for Fahrenheit
+     * "HeatCoolType"
+     * "TemRec": (0 or 1), Send with SetTem, when TemUn==1, distinguishes between upper and lower integer Fahrenheit
+     * temp
+     * "SvSt": Power Saving
+     */
+    public static final String GREE_PROP_POWER = "Pow";
+    public static final String GREE_PROP_MODE = "Mod";
+    public static final String GREE_PROP_SWINGUPDOWN = "SwUpDn";
+    public static final String GREE_PROP_SWINGLEFTRIGHT = "SwingLfRig";
+    public static final String GREE_PROP_WINDSPEED = "WdSpd";
+    public static final String GREE_PROP_AIR = "Air";
+    public static final String GREE_PROP_DRY = "Blo";
+    public static final String GREE_PROP_TURBO = "Tur";
+    public static final String GREE_PROP_QUIET = "Quiet";
+    public static final String GREE_PROP_NOISE = "NoiseSet";
+    public static final String GREE_PROP_LIGHT = "Lig";
+    public static final String GREE_PROP_HEALTH = "Health";
+    public static final String GREE_PROP_SLEEP = "SwhSlp";
+    public static final String GREE_PROP_SLEEPMODE = "SlpMod";
+    public static final int TEMP_UNIT_CELSIUS = 0;
+    public static final int TEMP_UNIT_FAHRENHEIT = 1;
+    public static final String GREE_PROP_PWR_SAVING = "SvSt";
+    public static final String GREE_PROP_SETTEMP = "SetTem";
+    public static final String GREE_PROP_TEMPUNIT = "TemUn";
+    public static final String GREE_PROP_TEMPREC = "TemRec";
+    public static final String GREE_PROP_HEAT = "StHt";
+    public static final String GREE_PROP_HEATCOOL = "HeatCoolType";
+
+    // parameters.put("SvSt", value);
+    // parameters.put("SwhSlp", 0);
+    // parameters.put("SlpMod", 0);
     /*
      * The timeout for the Datagram socket used to communicate with Gree Airconditioners.
      * This is particularly important when scanning for devices because this will effectively

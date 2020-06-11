@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gree.internal.handler;
 
+import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.DatagramPacket;
@@ -31,16 +33,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.GreeException;
-import org.openhab.binding.gree.internal.gson.GreeBindRequestDTO;
 import org.openhab.binding.gree.internal.gson.GreeBindRequestPackDTO;
 import org.openhab.binding.gree.internal.gson.GreeBindResponseDTO;
 import org.openhab.binding.gree.internal.gson.GreeBindResponsePackDTO;
-import org.openhab.binding.gree.internal.gson.GreeExecCommandDTO;
 import org.openhab.binding.gree.internal.gson.GreeExecResponseDTO;
 import org.openhab.binding.gree.internal.gson.GreeExecResponsePackDTO;
 import org.openhab.binding.gree.internal.gson.GreeExecuteCommandPackDTO;
-import org.openhab.binding.gree.internal.gson.GreeReqStatusDTO;
 import org.openhab.binding.gree.internal.gson.GreeReqStatusPackDTO;
+import org.openhab.binding.gree.internal.gson.GreeRequestDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanResponseDTO;
 import org.openhab.binding.gree.internal.gson.GreeStatusResponseDTO;
 import org.openhab.binding.gree.internal.gson.GreeStatusResponsePackDTO;
@@ -72,70 +72,6 @@ public class GreeAirDevice {
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
 
-    public boolean getIsBound() {
-        return isBound;
-    }
-
-    public void setIsBound(boolean isBound) {
-        this.isBound = isBound;
-    }
-
-    public InetAddress getAddress() {
-        return ipAddress;
-    }
-
-    public void setAddress(InetAddress address) {
-        this.ipAddress = address;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getKey() {
-        return encKey;
-    }
-
-    public String getId() {
-        return scanResponseGson.isPresent() ? scanResponseGson.get().packJson.mac : "";
-    }
-
-    public String getName() {
-        return scanResponseGson.isPresent() ? scanResponseGson.get().packJson.name : "";
-    }
-
-    public String getVendor() {
-        return scanResponseGson.isPresent()
-                ? scanResponseGson.get().packJson.brand + " " + scanResponseGson.get().packJson.vender
-                : "";
-    }
-
-    public String getModel() {
-        return scanResponseGson.isPresent()
-                ? scanResponseGson.get().packJson.series + " " + scanResponseGson.get().packJson.model
-                : "";
-    }
-
-    public GreeScanResponseDTO getScanResponseGson() {
-        return scanResponseGson.get();
-    }
-
-    public void setScanResponseGson(GreeScanResponseDTO gson) {
-        scanResponseGson = Optional.of(gson);
-    }
-
-    public GreeBindResponseDTO getBindResponseGson() {
-        return bindResponseGson.get();
-    }
-
-    public GreeStatusResponseDTO getGreeStatusResponse4Gson() {
-        return statusResponseGson.get();
-    }
-
     public void bindWithDevice(DatagramSocket clientSocket) throws GreeException {
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[347];
@@ -144,7 +80,7 @@ public class GreeAirDevice {
             // Prep the Binding Request pack
             GreeBindRequestPackDTO bindReqPackGson = new GreeBindRequestPackDTO();
             bindReqPackGson.mac = getId();
-            bindReqPackGson.t = "bind";
+            bindReqPackGson.t = GREE_CMDT_BIND;
             bindReqPackGson.uid = 0;
             String bindReqPackStr = gson.toJson(bindReqPackGson);
 
@@ -153,10 +89,10 @@ public class GreeAirDevice {
                     bindReqPackStr);
 
             // Prep the Binding Request
-            GreeBindRequestDTO bindReqGson = new GreeBindRequestDTO();
-            bindReqGson.cid = "app";
+            GreeRequestDTO bindReqGson = new GreeRequestDTO();
+            bindReqGson.cid = GREE_CID;
             bindReqGson.i = 1;
-            bindReqGson.t = "pack";
+            bindReqGson.t = GREE_CMDT_PACK;
             bindReqGson.uid = 0;
             bindReqGson.tcid = getId();
             bindReqGson.pack = new String(encryptedBindReqPacket.getBytes(), UTF8_CHARSET);
@@ -193,7 +129,7 @@ public class GreeAirDevice {
     }
 
     public void setDevicePower(DatagramSocket clientSocket, int value) throws GreeException {
-        setCommandValue(clientSocket, "Pow", value);
+        setCommandValue(clientSocket, GREE_PROP_POWER, value);
     }
 
     public void SetDeviceMode(DatagramSocket clientSocket, int value) throws GreeException {
@@ -201,7 +137,7 @@ public class GreeAirDevice {
         if ((value < 0 || value > 4)) {
             throw new GreeException("Device mode out of range!");
         }
-        setCommandValue(clientSocket, "Mod", value);
+        setCommandValue(clientSocket, GREE_PROP_MODE, value);
     }
 
     public void setDeviceSwingUpDown(DatagramSocket clientSocket, int value) throws GreeException {
@@ -211,7 +147,7 @@ public class GreeAirDevice {
             throw new GreeException("SwingUpDown value out of range!");
         }
         // Set the values in the HashMap
-        setCommandValue(clientSocket, "SwUpDn", value);
+        setCommandValue(clientSocket, GREE_PROP_SWINGUPDOWN, value);
     }
 
     public void setDeviceSwingLeftRight(DatagramSocket clientSocket, int value) throws GreeException {
@@ -220,7 +156,7 @@ public class GreeAirDevice {
             throw new GreeException("Device not bound or value out of range!");
         }
         // Set the values in the HashMap
-        setCommandValue(clientSocket, "SwingLfRig", value);
+        setCommandValue(clientSocket, GREE_PROP_SWINGLEFTRIGHT, value);
     }
 
     /**
@@ -240,10 +176,10 @@ public class GreeAirDevice {
 
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("WdSpd", value);
-        parameters.put("Quiet", 0);
-        parameters.put("Tur", 0);
-        parameters.put("NoiseSet", 0);
+        parameters.put(GREE_PROP_WINDSPEED, value);
+        parameters.put(GREE_PROP_QUIET, 0);
+        parameters.put(GREE_PROP_TURBO, 0);
+        parameters.put(GREE_PROP_NOISE, 0);
         executeCommand(clientSocket, parameters);
     }
 
@@ -254,7 +190,7 @@ public class GreeAirDevice {
         }
 
         // Set the values in the HashMap
-        setCommandValue(clientSocket, "Tur", value);
+        setCommandValue(clientSocket, GREE_PROP_TURBO, value);
     }
 
     public void setQuietMode(DatagramSocket clientSocket, int value) throws GreeException {
@@ -264,15 +200,15 @@ public class GreeAirDevice {
         }
 
         // Set the values in the HashMap
-        setCommandValue(clientSocket, "Quiet", value);
+        setCommandValue(clientSocket, GREE_PROP_QUIET, value);
     }
 
     public int getDeviceTurbo() {
-        return getIntStatusVal("Tur");
+        return getIntStatusVal(GREE_PROP_TURBO);
     }
 
     public void setDeviceLight(DatagramSocket clientSocket, int value) throws GreeException {
-        setCommandValue(clientSocket, "Lig", value);
+        setCommandValue(clientSocket, GREE_PROP_LIGHT, value);
     }
 
     /**
@@ -348,7 +284,7 @@ public class GreeAirDevice {
         int newVal = value;
         int outVal = value;
         // Get Celsius or Fahrenheit from status message
-        Integer CorF = getIntStatusVal("TemUn");
+        Integer CorF = getIntStatusVal(GREE_PROP_TEMPUNIT);
         // TODO put a param in openhab to allow setting this from the config
 
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
@@ -378,22 +314,22 @@ public class GreeAirDevice {
 
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("TemUn", CorF);
-        parameters.put("SetTem", outVal);
-        parameters.put("TemRec", halfStep);
+        parameters.put(GREE_PROP_TEMPUNIT, CorF);
+        parameters.put(GREE_PROP_SETTEMP, outVal);
+        parameters.put(GREE_PROP_TEMPREC, halfStep);
         executeCommand(clientSocket, parameters);
     }
 
     public void setDeviceAir(DatagramSocket clientSocket, int value) throws GreeException {
-        setCommandValue(clientSocket, "Air", value);
+        setCommandValue(clientSocket, GREE_PROP_AIR, value);
     }
 
     public void setDeviceDry(DatagramSocket clientSocket, int value) throws GreeException {
-        setCommandValue(clientSocket, "Blo", value);
+        setCommandValue(clientSocket, GREE_PROP_DRY, value);
     }
 
     public void setDeviceHealth(DatagramSocket clientSocket, int value) throws GreeException {
-        setCommandValue(clientSocket, "Health", value);
+        setCommandValue(clientSocket, GREE_PROP_HEALTH, value);
     }
 
     public void setDevicePwrSaving(DatagramSocket clientSocket, int value) throws GreeException {
@@ -404,12 +340,12 @@ public class GreeAirDevice {
 
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("SvSt", value);
-        parameters.put("WdSpd", 0);
-        parameters.put("Quiet", 0);
-        parameters.put("Tur", 0);
-        parameters.put("SwhSlp", 0);
-        parameters.put("SlpMod", 0);
+        parameters.put(GREE_PROP_PWR_SAVING, value);
+        parameters.put(GREE_PROP_WINDSPEED, 0);
+        parameters.put(GREE_PROP_QUIET, 0);
+        parameters.put(GREE_PROP_TURBO, 0);
+        parameters.put(GREE_PROP_SLEEP, 0);
+        parameters.put(GREE_PROP_SLEEPMODE, 0);
         executeCommand(clientSocket, parameters);
     }
 
@@ -497,7 +433,7 @@ public class GreeAirDevice {
             GreeExecuteCommandPackDTO execCmdPackGson = new GreeExecuteCommandPackDTO();
             execCmdPackGson.opt = keyArray;
             execCmdPackGson.p = valueArray;
-            execCmdPackGson.t = "cmd";
+            execCmdPackGson.t = GREE_CMDT_CMD;
             String execCmdPackStr = gson.toJson(execCmdPackGson);
 
             // Now Encrypt the Binding Request pack
@@ -506,10 +442,10 @@ public class GreeAirDevice {
             // encryptedCommandReqPacket);
 
             // Prep the Command Request
-            GreeExecCommandDTO execCmdGson = new GreeExecCommandDTO();
-            execCmdGson.cid = "app";
+            GreeRequestDTO execCmdGson = new GreeRequestDTO();
+            execCmdGson.cid = GREE_CID;
             execCmdGson.i = 0;
-            execCmdGson.t = "pack";
+            execCmdGson.t = GREE_CMDT_PACK;
             execCmdGson.uid = 0;
             execCmdGson.tcid = getId();
             execCmdGson.pack = new String(encryptedCommandReqPacket.getBytes(), UTF8_CHARSET);
@@ -549,28 +485,27 @@ public class GreeAirDevice {
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
-
         try {
             // Set the values in the HashMap
             ArrayList<String> columns = new ArrayList<>();
-            columns.add("Pow");
-            columns.add("Mod");
-            columns.add("SetTem");
-            columns.add("WdSpd");
-            columns.add("Air");
-            columns.add("Blo");
-            columns.add("Health");
-            columns.add("SwhSlp");
-            columns.add("Lig");
-            columns.add("SwingLfRig");
-            columns.add("SwUpDn");
-            columns.add("Quiet");
-            columns.add("Tur");
-            columns.add("StHt");
-            columns.add("TemUn");
-            columns.add("HeatCoolType");
-            columns.add("TemRec");
-            columns.add("SvSt");
+            columns.add(GREE_PROP_POWER);
+            columns.add(GREE_PROP_MODE);
+            columns.add(GREE_PROP_SETTEMP);
+            columns.add(GREE_PROP_WINDSPEED);
+            columns.add(GREE_PROP_AIR);
+            columns.add(GREE_PROP_DRY);
+            columns.add(GREE_PROP_HEALTH);
+            columns.add(GREE_PROP_SLEEP);
+            columns.add(GREE_PROP_LIGHT);
+            columns.add(GREE_PROP_SWINGLEFTRIGHT);
+            columns.add(GREE_PROP_SWINGUPDOWN);
+            columns.add(GREE_PROP_QUIET);
+            columns.add(GREE_PROP_TURBO);
+            columns.add(GREE_PROP_TEMPUNIT);
+            columns.add(GREE_PROP_HEAT);
+            columns.add(GREE_PROP_HEATCOOL);
+            columns.add(GREE_PROP_TEMPREC);
+            columns.add(GREE_PROP_PWR_SAVING);
             columns.add("NoiseSet");
 
             // Convert the parameter map values to arrays
@@ -578,7 +513,7 @@ public class GreeAirDevice {
 
             // Prep the Command Request pack
             GreeReqStatusPackDTO reqStatusPackGson = new GreeReqStatusPackDTO();
-            reqStatusPackGson.t = "status";
+            reqStatusPackGson.t = GREE_CMDT_STATUS;
             reqStatusPackGson.cols = colArray;
             reqStatusPackGson.mac = getId();
             String reqStatusPackStr = gson.toJson(reqStatusPackGson);
@@ -587,10 +522,10 @@ public class GreeAirDevice {
             String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), reqStatusPackStr);
 
             // Prep the Status Request
-            GreeReqStatusDTO reqStatusGson = new GreeReqStatusDTO();
-            reqStatusGson.cid = "app";
+            GreeRequestDTO reqStatusGson = new GreeRequestDTO();
+            reqStatusGson.cid = GREE_CID;
             reqStatusGson.i = 0;
-            reqStatusGson.t = "pack";
+            reqStatusGson.t = GREE_CMDT_PACK;
             reqStatusGson.uid = 0;
             reqStatusGson.tcid = getId();
             reqStatusGson.pack = new String(encryptedStatusReqPacket.getBytes(), UTF8_CHARSET);
@@ -634,9 +569,9 @@ public class GreeAirDevice {
         // Status message back from A/C always reports degrees C
         // If using Fahrenheit, us SetTem, TemUn and TemRec to reconstruct the Fahrenheit temperature
         // Get Celsius or Fahrenheit from status message
-        int CorF = getIntStatusVal("TemUn");
-        int newVal = getIntStatusVal("SetTem");
-        int halfStep = getIntStatusVal("TemRec");
+        int CorF = getIntStatusVal(GREE_PROP_TEMPUNIT);
+        int newVal = getIntStatusVal(GREE_PROP_SETTEMP);
+        int halfStep = getIntStatusVal(GREE_PROP_TEMPREC);
 
         if ((CorF == -1) || (newVal == -1) || (halfStep == -1)) {
             throw new IllegalArgumentException("SetTem,TemUn or TemRec is invalid, not performing conversion");
@@ -645,7 +580,7 @@ public class GreeAirDevice {
             String[] columns = statusResponseGson.get().packJson.cols;
             Integer[] values = statusResponseGson.get().packJson.dat;
             List<String> colList = Arrays.asList(columns);
-            int valueArrayposition = colList.indexOf("SetTem");
+            int valueArrayposition = colList.indexOf(GREE_PROP_SETTEMP);
             if (valueArrayposition != -1) {
                 // convert Celsius to Fahrenheit,
                 // SetTem status returns degrees C regardless of TempUn setting
@@ -659,5 +594,69 @@ public class GreeAirDevice {
                 values[valueArrayposition] = newVal;
             }
         }
+    }
+
+    public boolean getIsBound() {
+        return isBound;
+    }
+
+    public void setIsBound(boolean isBound) {
+        this.isBound = isBound;
+    }
+
+    public InetAddress getAddress() {
+        return ipAddress;
+    }
+
+    public void setAddress(InetAddress address) {
+        this.ipAddress = address;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getKey() {
+        return encKey;
+    }
+
+    public String getId() {
+        return scanResponseGson.isPresent() ? scanResponseGson.get().packJson.mac : "";
+    }
+
+    public String getName() {
+        return scanResponseGson.isPresent() ? scanResponseGson.get().packJson.name : "";
+    }
+
+    public String getVendor() {
+        return scanResponseGson.isPresent()
+                ? scanResponseGson.get().packJson.brand + " " + scanResponseGson.get().packJson.vender
+                : "";
+    }
+
+    public String getModel() {
+        return scanResponseGson.isPresent()
+                ? scanResponseGson.get().packJson.series + " " + scanResponseGson.get().packJson.model
+                : "";
+    }
+
+    public GreeScanResponseDTO getScanResponseGson() {
+        return scanResponseGson.get();
+    }
+
+    public void setScanResponseGson(GreeScanResponseDTO gson) {
+        scanResponseGson = Optional.of(gson);
+    }
+
+    public GreeBindResponseDTO getBindResponseGson() {
+        return bindResponseGson.get();
+    }
+
+    public GreeStatusResponseDTO getGreeStatusResponse4Gson() {
+        return statusResponseGson.get();
     }
 }

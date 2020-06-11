@@ -26,16 +26,12 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
-import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.GreeTranslationProvider;
 import org.openhab.binding.gree.internal.handler.GreeAirDevice;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -62,10 +58,9 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
 
     @Activate
     public GreeDiscoveryService(@Reference NetworkAddressService networkAddressService,
-            @Reference LocaleProvider localeProvider, @Reference TranslationProvider i18nProvider) {
+            @Reference GreeTranslationProvider translationProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SEC);
-        Bundle bundle = FrameworkUtil.getBundle(this.getClass());
-        messages = new GreeTranslationProvider(bundle.getBundleContext().getBundle(), i18nProvider, localeProvider);
+        messages = translationProvider;
         String ip = networkAddressService.getConfiguredBroadcastAddress();
         broadcastAddress = ip != null ? ip : "";
     }

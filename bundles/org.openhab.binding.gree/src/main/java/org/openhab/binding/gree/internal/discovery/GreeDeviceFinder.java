@@ -15,6 +15,7 @@ package org.openhab.binding.gree.internal.discovery;
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 
 /**
  * The GreeDeviceFinder provides functionality for searching for GREE Airconditioners on the network and keeping a list
@@ -89,8 +91,13 @@ public class GreeDeviceFinder {
                     int remotePort = receivePacket.getPort();
 
                     // Read the response
+                    // String modifiedSentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
+                    // GreeScanResponseDTO scanResponseGson = gson.fromJson(modifiedSentence,
+                    // GreeScanResponseDTO.class);
                     String modifiedSentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
-                    GreeScanResponseDTO scanResponseGson = gson.fromJson(modifiedSentence, GreeScanResponseDTO.class);
+                    StringReader stringReader = new StringReader(modifiedSentence);
+                    GreeScanResponseDTO scanResponseGson = gson.fromJson(new JsonReader(stringReader),
+                            GreeScanResponseDTO.class);
 
                     // If there was no pack, ignore the response
                     if (scanResponseGson.pack == null) {

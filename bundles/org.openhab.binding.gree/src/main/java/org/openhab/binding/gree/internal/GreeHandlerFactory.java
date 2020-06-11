@@ -18,8 +18,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
-import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -45,10 +43,10 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public GreeHandlerFactory(@Reference NetworkAddressService networkAddressService,
-            @Reference LocaleProvider localeProvider, @Reference TranslationProvider i18nProvider,
-            ComponentContext componentContext, Map<String, Object> configProperties) {
+            @Reference GreeTranslationProvider translationProvider, ComponentContext componentContext,
+            Map<String, Object> configProperties) {
         super.activate(componentContext);
-        messages = new GreeTranslationProvider(bundleContext.getBundle(), i18nProvider, localeProvider);
+        messages = translationProvider;
     }
 
     @Override

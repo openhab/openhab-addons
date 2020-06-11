@@ -239,7 +239,7 @@ public class GreeHandler extends BaseThingHandler {
         }
 
         // Turn on the unit if currently off
-        if (!isNumber && (device.getIntStatusVal("Pow") == 0)) {
+        if (!isNumber && (device.getIntStatusVal(GREE_PROP_POWER) == 0)) {
             logger.debug("Send Auto-ON for mode {}", mode);
             device.setDevicePower(socket, 1);
         }
@@ -289,8 +289,11 @@ public class GreeHandler extends BaseThingHandler {
         if (command instanceof OnOffType) {
             return ((OnOffType) command) == OnOffType.ON ? 1 : 0;
         }
-        if ((command instanceof DecimalType) && (((DecimalType) command).intValue() <= 2)) {
-            return ((DecimalType) command).intValue();
+        if (command instanceof DecimalType) {
+            int value = ((DecimalType) command).intValue();
+            if ((value == 0) || (value == 1)) {
+                return ((DecimalType) command).intValue();
+            }
         }
         throw new IllegalArgumentException("Invalid OnOffType");
     }
@@ -360,51 +363,51 @@ public class GreeHandler extends BaseThingHandler {
     private void publishChannel(ChannelUID channelUID) throws GreeException {
         try {
             String channelID = channelUID.getId();
-            Optional<State> state = Optional.empty();
+            State state = null;
             switch (channelUID.getIdWithoutGroup()) {
                 case POWER_CHANNEL:
-                    state = updateOnOff("Pow");
+                    state = updateOnOff(GREE_PROP_POWER);
                     break;
                 case MODE_CHANNEL:
                     state = updateMode();
                     break;
                 case TURBO_CHANNEL:
-                    state = updateOnOff("Tur");
+                    state = updateOnOff(GREE_PROP_TURBO);
                     break;
                 case LIGHT_CHANNEL:
-                    state = updateOnOff("Lig");
+                    state = updateOnOff(GREE_PROP_LIGHT);
                     break;
                 case TEMP_CHANNEL:
-                    state = updateTemp("SetTem");
+                    state = updateTemp(GREE_PROP_SETTEMP);
                     break;
                 case SWINGUD_CHANNEL:
-                    state = updateNumber("SwUpDn");
+                    state = updateNumber(GREE_PROP_SWINGUPDOWN);
                     break;
                 case SWINGLR_CHANNEL:
-                    state = updateNumber("SwingLfRig");
+                    state = updateNumber(GREE_PROP_SWINGLEFTRIGHT);
                     break;
                 case WINDSPEED_CHANNEL:
-                    state = updateNumber("WdSpd");
+                    state = updateNumber(GREE_PROP_WINDSPEED);
                     break;
                 case QUIET_CHANNEL:
                     state = updateQuiet();
                     break;
                 case AIR_CHANNEL:
-                    state = updateOnOff("Air");
+                    state = updateOnOff(GREE_PROP_AIR);
                     break;
                 case DRY_CHANNEL:
-                    state = updateOnOff("Blo");
+                    state = updateOnOff(GREE_PROP_DRY);
                     break;
                 case HEALTH_CHANNEL:
-                    state = updateOnOff("Health");
+                    state = updateOnOff(GREE_PROP_HEALTH);
                     break;
                 case PWRSAV_CHANNEL:
-                    state = updateOnOff("SvSt");
+                    state = updateOnOff(GREE_PROP_PWR_SAVING);
                     break;
             }
-            if (state.isPresent()) {
-                logger.trace("Updating channel {} : {}", channelID, state.get());
-                updateState(channelID, state.get());
+            if (state != null) {
+                logger.trace("Updating channel {} : {}", channelID, state);
+                updateState(channelID, state);
             }
         } catch (GreeException e) {
             logger.warn("Exception on channel update: {}", e.toString());
@@ -413,30 +416,30 @@ public class GreeHandler extends BaseThingHandler {
         }
     }
 
-    private Optional<State> updateOnOff(final String valueName) throws GreeException {
+    private @Nullable State updateOnOff(final String valueName) throws GreeException {
         if (device.hasStatusValChanged(valueName)) {
-            return Optional.of(device.getIntStatusVal(valueName) == 1 ? OnOffType.ON : OnOffType.OFF);
+            return device.getIntStatusVal(valueName) == 1 ? OnOffType.ON : OnOffType.OFF;
         }
-        return Optional.empty();
+        return null;
     }
 
-    private Optional<State> updateNumber(final String valueName) throws GreeException {
+    private @Nullable State updateNumber(final String valueName) throws GreeException {
         if (device.hasStatusValChanged(valueName)) {
-            return Optional.of(new DecimalType(device.getIntStatusVal(valueName)));
+            return new DecimalType(device.getIntStatusVal(valueName));
         }
-        return Optional.empty();
+        return null;
     }
 
-    private Optional<State> updateMode() throws GreeException {
-        if (device.hasStatusValChanged("Mod")) {
-            int mode = device.getIntStatusVal("Mod");
+    private @Nullable State updateMode() throws GreeException {
+        if (device.hasStatusValChanged(GREE_PROP_MODE)) {
+            int mode = device.getIntStatusVal(GREE_PROP_MODE);
             String modeStr = "";
             switch (mode) {
                 case GREE_MODE_AUTO:
                     modeStr = MODE_AUTO;
                     break;
                 case GREE_MODE_COOL:
-                    boolean powerSave = device.getIntStatusVal("SvSt") == 1;
+                    boolean powerSave = device.getIntStatusVal(GREE_PROP_PWR_SAVING) == 1;
                     modeStr = !powerSave ? MODE_COOL : MODE_ECO;
                     break;
                 case GREE_MODE_DRY:
@@ -455,31 +458,31 @@ public class GreeHandler extends BaseThingHandler {
             }
             if (!modeStr.isEmpty()) {
                 logger.debug("Updading mode channel with {}/{}", mode, modeStr);
-                return Optional.of(new StringType(modeStr));
+                return new StringType(modeStr);
             }
         }
-        return Optional.empty();
+        return null;
     }
 
-    private Optional<State> updateQuiet() throws GreeException {
-        if (device.hasStatusValChanged("Quiet")) {
-            switch (device.getIntStatusVal("Quiet")) {
+    private @Nullable State updateQuiet() throws GreeException {
+        if (device.hasStatusValChanged(GREE_PROP_QUIET)) {
+            switch (device.getIntStatusVal(GREE_PROP_QUIET)) {
                 case GREE_QUIET_OFF:
-                    return Optional.of(new StringType(QUIET_OFF));
+                    return new StringType(QUIET_OFF);
                 case GREE_QUIET_AUTO:
-                    return Optional.of(new StringType(QUIET_AUTO));
+                    return new StringType(QUIET_AUTO);
                 case GREE_QUIET_QUIET:
-                    return Optional.of(new StringType(QUIET_QUIET));
+                    return new StringType(QUIET_QUIET);
             }
         }
-        return Optional.empty();
+        return null;
     }
 
-    private Optional<State> updateTemp(final String valueName) throws GreeException {
+    private @Nullable State updateTemp(final String valueName) throws GreeException {
         if (device.hasStatusValChanged(valueName)) {
-            return Optional.of(toQuantityType(device.getIntStatusVal(valueName), DIGITS_TEMP, SIUnits.CELSIUS));
+            return toQuantityType(device.getIntStatusVal(valueName), DIGITS_TEMP, SIUnits.CELSIUS);
         }
-        return Optional.empty();
+        return null;
     }
 
     public static State toQuantityType(int value, int digits, Unit<?> unit) {

@@ -19,6 +19,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * {@link GreeTranslationProvider} provides i18n message lookup
@@ -26,14 +30,17 @@ import org.osgi.framework.Bundle;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
+@Component(service = GreeTranslationProvider.class, immediate = true, configurationPid = "localization.gree")
 public class GreeTranslationProvider {
 
     private final Bundle bundle;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
 
-    public GreeTranslationProvider(Bundle bundle, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        this.bundle = bundle;
+    @Activate
+    public GreeTranslationProvider(@Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider) {
+        this.bundle = FrameworkUtil.getBundle(this.getClass());
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
     }
