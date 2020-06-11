@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.math.BigDecimal;
@@ -155,24 +156,27 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         if (!propertiesInitializedSuccessfully) {
             FullHueObject fullLight = getLight();
             if (fullLight != null) {
+                Map<String, String> properties = editProperties();
                 String softwareVersion = fullLight.getSoftwareVersion();
                 if (softwareVersion != null) {
-                    updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, softwareVersion);
+                    properties.put(PROPERTY_FIRMWARE_VERSION, softwareVersion);
                 }
                 String modelId = fullLight.getNormalizedModelID();
                 if (modelId != null) {
-                    updateProperty(Thing.PROPERTY_MODEL_ID, modelId);
+                    properties.put(PROPERTY_MODEL_ID, modelId);
                     String vendor = getVendor(modelId);
                     if (vendor != null) {
-                        updateProperty(Thing.PROPERTY_VENDOR, vendor);
+                        properties.put(PROPERTY_VENDOR, vendor);
                     }
                 } else {
-                    updateProperty(Thing.PROPERTY_VENDOR, fullLight.getManufacturerName());
+                    properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
                 }
+                properties.put(PRODUCT_NAME, fullLight.getProductName());
                 String uniqueID = fullLight.getUniqueID();
                 if (uniqueID != null) {
-                    updateProperty(UNIQUE_ID, uniqueID);
+                    properties.put(UNIQUE_ID, uniqueID);
                 }
+                updateProperties(properties);
                 isOsramPar16 = OSRAM_PAR16_50_TW_MODEL_ID.equals(modelId);
                 propertiesInitializedSuccessfully = true;
             }

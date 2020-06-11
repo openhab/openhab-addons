@@ -35,6 +35,7 @@ import org.openhab.binding.plugwise.internal.handler.PlugwiseSenseHandler;
 import org.openhab.binding.plugwise.internal.handler.PlugwiseStickHandler;
 import org.openhab.binding.plugwise.internal.handler.PlugwiseSwitchHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -49,7 +50,12 @@ public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public PlugwiseHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -97,12 +103,4 @@ public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    @Reference
-    protected void setSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
-    }
 }

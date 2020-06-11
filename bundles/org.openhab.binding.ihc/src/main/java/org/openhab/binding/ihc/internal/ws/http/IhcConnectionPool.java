@@ -93,7 +93,7 @@ public class IhcConnectionPool {
 
             @Override
             public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                logger.trace("Trusting server cert: " + certs[0].getIssuerDN());
+                logger.trace("Trusting server cert: {}", certs[0].getIssuerDN());
             }
         } };
 
@@ -115,8 +115,7 @@ public class IhcConnectionPool {
 
             @Override
             public boolean verify(String arg0, SSLSession arg1) {
-                logger.trace("HostnameVerifier: arg0 = " + arg0);
-                logger.trace("HostnameVerifier: arg1 = " + arg1);
+                logger.trace("HostnameVerifier: arg0 = {}, arg1 = {}", arg0, arg1);
                 return true;
             }
         };

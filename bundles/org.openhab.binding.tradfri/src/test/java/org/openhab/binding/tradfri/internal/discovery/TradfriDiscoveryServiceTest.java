@@ -164,6 +164,22 @@ public class TradfriDiscoveryServiceTest {
     }
 
     @Test
+    public void validDiscoveryResultAlternativeColorLightCWS() {
+        String json = "{\"3311\":[{\"5850\":1,\"5709\":32886,\"5851\":216,\"5707\":5309,\"5708\":52400,\"5710\":27217,\"5706\":\"efd275\",\"9003\":0}],\"9001\":\"Mushroom lamp\",\"9002\":1571036916,\"9020\":1571588312,\"9003\":65539,\"9054\":0,\"9019\":1,\"3\":{\"0\":\"IKEA of Sweden\",\"1\":\"TRADFRI bulb E27 C\\/WS opal 600\",\"2\":\"\",\"3\":\"1.3.009\",\"6\":1},\"5750\":2}";
+        JsonObject data = new JsonParser().parse(json).getAsJsonObject();
+
+        discovery.onUpdate("65539", data);
+
+        assertNotNull(discoveryResult);
+        assertThat(discoveryResult.getFlag(), is(DiscoveryResultFlag.NEW));
+        assertThat(discoveryResult.getThingUID(), is(new ThingUID("tradfri:0210:1:65539")));
+        assertThat(discoveryResult.getThingTypeUID(), is(THING_TYPE_COLOR_LIGHT));
+        assertThat(discoveryResult.getBridgeUID(), is(GATEWAY_THING_UID));
+        assertThat(discoveryResult.getProperties().get(CONFIG_ID), is(65539));
+        assertThat(discoveryResult.getRepresentationProperty(), is(CONFIG_ID));
+    }
+
+    @Test
     public void validDiscoveryResultRemoteControl() {
         String json = "{\"9001\":\"TRADFRI remote control\",\"9002\":1492843083,\"9020\":1506977986,\"9003\":65536,\"9054\":0,\"5750\":0,\"9019\":1,\"3\":{\"0\":\"IKEA of Sweden\",\"1\":\"TRADFRI remote control\",\"2\":\"\",\"3\":\"1.2.214\",\"6\":3,\"9\":47},\"15009\":[{\"9003\":0}]}";
         JsonObject data = new JsonParser().parse(json).getAsJsonObject();

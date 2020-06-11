@@ -32,4 +32,8 @@ public class CommunicationApiException extends Exception {
     public CommunicationApiException(String message) {
         super(message);
     }
+
+    public CommunicationApiException(String message, Throwable e) {
+        super(message, e);
+    }
 }

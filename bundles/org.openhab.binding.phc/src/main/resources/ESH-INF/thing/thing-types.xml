@@ -86,28 +86,28 @@
 			</parameter>
 			<parameter name="upDownTime1" type="integer">
 				<advanced>true</advanced>
-				<label>Time shutter 1</label>
+				<label>Time Shutter 1</label>
 				<description>The Time which the first shutter needs to move up/down.</description>
 				<required>false</required>
 				<default>30</default>
 			</parameter>
 			<parameter name="upDownTime2" type="integer">
 				<advanced>true</advanced>
-				<label>Time shutter 2</label>
+				<label>Time Shutter 2</label>
 				<description>The Time which the second shutter needs to move up/down.</description>
 				<required>false</required>
 				<default>30</default>
 			</parameter>
 			<parameter name="upDownTime3" type="integer">
 				<advanced>true</advanced>
-				<label>Time shutter 3</label>
+				<label>Time Shutter 3</label>
 				<description>The Time which the third shutter needs to move up/down.</description>
 				<required>false</required>
 				<default>30</default>
 			</parameter>
 			<parameter name="upDownTime4" type="integer">
 				<advanced>true</advanced>
-				<label>Time shutter 4</label>
+				<label>Time Shutter 4</label>
 				<description>The Time which the fourth shutter needs to move up/down.</description>
 				<required>false</required>
 				<default>30</default>

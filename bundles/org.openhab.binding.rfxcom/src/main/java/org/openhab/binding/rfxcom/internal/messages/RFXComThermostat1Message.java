@@ -23,13 +23,14 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for thermostat1 message.
  * Digimax 210 Thermostat RF sensor operational
  *
  * @author Les Ashworth - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated for OH2
  */
 public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComThermostat1Message.SubType> {
 
@@ -154,8 +155,7 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
                 return new DecimalType(temperature);
@@ -174,7 +174,7 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
                 }
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -184,12 +184,12 @@ public class RFXComThermostat1Message extends RFXComDeviceMessageImpl<RFXComTher
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type) {
         throw new UnsupportedOperationException();
     }
 

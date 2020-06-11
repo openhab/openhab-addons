@@ -17,6 +17,7 @@ package org.openhab.binding.tplinksmarthome.internal.model;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@FunctionalInterface
 public interface HasErrorResponse {
     /**
      * @return returns the object containing the error response

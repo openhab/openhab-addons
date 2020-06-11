@@ -59,7 +59,7 @@ public class XMLConnection extends AbstractConnection {
     private <T> T postMessage(String prefix, String message, String suffix,
             CheckedConsumer<HttpURLConnection, T> responseConsumer) throws IOException {
         if (message.startsWith("<?xml")) {
-            throw new IOException("No preformatted xml allowed!");
+            throw new IOException("No pre-formatted xml allowed!");
         }
         message = prefix + message + suffix;
 
@@ -74,6 +74,7 @@ public class XMLConnection extends AbstractConnection {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Length", Integer.toString(message.length()));
 
+            connection.setConnectTimeout(5); // set a timeout in case the device is not reachable (went offline)
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);

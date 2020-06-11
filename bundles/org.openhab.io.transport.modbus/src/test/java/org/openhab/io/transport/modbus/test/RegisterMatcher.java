@@ -20,6 +20,9 @@ import org.hamcrest.Description;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 class RegisterMatcher extends AbstractRequestComparer<ModbusWriteRegisterRequestBlueprint> {
 
     private Integer[] expectedRegisterValues;

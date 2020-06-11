@@ -86,6 +86,9 @@ The following things types are available:
 | Mi Toothbrush                | miio:unsupported | soocare.toothbrush.x3  | No        |           |
 | Mi Robot Vacuum              | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes       |           |
 | Mi Robot Vacuum v2           | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes       |           |
+| Mi Robot Vacuum 1S           | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes       |           |
+| Roborock Vacuum S5 Max       | miio:vacuum      | [roborock.vacuum.s5e](#roborock-vacuum-s5e) | Yes       |           |
+| Roborock Vacuum S6           | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |           |
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |           |
 | roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |           |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |           |
@@ -129,7 +132,7 @@ The following things types are available:
 
 The binding has 2 methods for discovering devices. Depending on your network setup and the device model, your device may be discovered by one or both methods. If both methods discover your device, 2 discovery results may be in your inbox for the same device.
 
-The MDNS discovery method will discover your device type, but won't discover a (required) token.
+The mDNS discovery method will discover your device type, but will not discover a (required) token.
 The basic discovery will not discovery the type, but will discover a token for models that support it.
 Accept only one of the 2 discovery results, the alternate one can further be ignored.
 
@@ -228,7 +231,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | setHumidity      | Number  | Humidity Set                        |
 | aqi              | Number  | Air Quality Index                   |
 | translevel       | Number  | Trans_level                         |
-| bright           | Number  | Led Brightness                      |
+| bright           | Number  | LED Brightness                      |
 | buzzer           | Switch  | Buzzer Status                       |
 | depth            | Number  | Depth                               |
 | dry              | Switch  | Dry                                 |
@@ -247,7 +250,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | setHumidity      | Number  | Humidity Set                        |
 | aqi              | Number  | Air Quality Index                   |
 | translevel       | Number  | Trans_level                         |
-| bright           | Number  | Led Brightness                      |
+| bright           | Number  | LED Brightness                      |
 | buzzer           | Switch  | Buzzer Status                       |
 | depth            | Number  | Depth                               |
 | dry              | Switch  | Dry                                 |
@@ -265,7 +268,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -286,7 +289,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -307,7 +310,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -328,7 +331,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -349,8 +352,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
-| bright           | Number  | Led Brightness                      |
+| led              | Switch  | LED Status                          |
+| bright           | Number  | LED Brightness                      |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
 | usedhours        | Number  | Run Time                            |
@@ -370,8 +373,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
-| bright           | Number  | Led Brightness                      |
+| led              | Switch  | LED Status                          |
+| bright           | Number  | LED Brightness                      |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
 | usedhours        | Number  | Run Time                            |
@@ -391,7 +394,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -412,7 +415,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -433,7 +436,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -454,8 +457,8 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
-| bright           | Number  | Led Brightness                      |
+| led              | Switch  | LED Status                          |
+| bright           | Number  | LED Brightness                      |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
 | usedhours        | Number  | Run Time                            |
@@ -475,7 +478,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -496,7 +499,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -517,7 +520,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -538,7 +541,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | humidity         | Number  | Humidity                            |
 | aqi              | Number  | Air Quality Index                   |
 | averageaqi       | Number  | Average Air Quality Index           |
-| led              | Switch  | Led Status                          |
+| led              | Switch  | LED Status                          |
 | buzzer           | Switch  | Buzzer Status                       |
 | filtermaxlife    | Number  | Filter Max Life                     |
 | filterhours      | Number  | Filter Hours used                   |
@@ -560,7 +563,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | angle            | Number  | Angle                               |
 | poweroffTime     | Number  | Timer                               |
 | buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | Led                                 |
+| led_b            | Number  | LED                                 |
 | child_lock       | Switch  | Child Lock                          |
 | speedLevel       | Number  | Speed Level                         |
 | speed            | Number  | Speed                               |
@@ -582,7 +585,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | angle            | Number  | Angle                               |
 | poweroffTime     | Number  | Timer                               |
 | buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | Led                                 |
+| led_b            | Number  | LED                                 |
 | child_lock       | Switch  | Child Lock                          |
 | speedLevel       | Number  | Speed Level                         |
 | speed            | Number  | Speed                               |
@@ -604,7 +607,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | angle            | Number  | Angle                               |
 | poweroffTime     | Number  | Timer                               |
 | buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | Led                                 |
+| led_b            | Number  | LED                                 |
 | child_lock       | Switch  | Child Lock                          |
 | speedLevel       | Number  | Speed Level                         |
 | speed            | Number  | Speed                               |
@@ -626,7 +629,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | angle            | Number  | Angle                               |
 | poweroffTime     | Number  | Timer                               |
 | buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | Led                                 |
+| led_b            | Number  | LED                                 |
 | child_lock       | Switch  | Child Lock                          |
 | speedLevel       | Number  | Speed Level                         |
 | speed            | Number  | Speed                               |
@@ -644,7 +647,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | angle            | Number  | Angle                               |
 | poweroffTime     | Number  | Timer                               |
 | buzzer           | Switch  | Buzzer                              |
-| led_b            | Number  | Led                                 |
+| led_b            | Number  | LED                                 |
 | child_lock       | Switch  | Child Lock                          |
 | speedLevel       | Number  | Speed Level                         |
 | speed            | Number  | Speed                               |
@@ -662,7 +665,7 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | setHumidity      | Number  | Humidity Set                        |
 | aqi              | Number  | Air Quality Index                   |
 | translevel       | Number  | Trans_level                         |
-| bright           | Number  | Led Brightness                      |
+| bright           | Number  | LED Brightness                      |
 | buzzer           | Switch  | Buzzer Status                       |
 | depth            | Number  | Depth                               |
 | dry              | Switch  | Dry                                 |
@@ -1342,7 +1345,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1365,7 +1368,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1388,7 +1391,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1411,7 +1414,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1434,7 +1437,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Number bright "Led Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:bright"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1457,7 +1460,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Number bright "Led Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:bright"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1480,7 +1483,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1503,7 +1506,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1526,7 +1529,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1549,7 +1552,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Number bright "Led Brightness" (G_airpurifier) {channel="miio:basic:airpurifier:bright"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1572,7 +1575,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1595,7 +1598,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1618,7 +1621,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1641,7 +1644,7 @@ String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
 Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
 Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
 Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
-Switch led "Led Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
 Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
 Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
 Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
@@ -1665,7 +1668,7 @@ Number usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
 Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_b "Led" (G_fan) {channel="miio:basic:fan:led_b"}
+Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
@@ -1689,7 +1692,7 @@ Number usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
 Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_b "Led" (G_fan) {channel="miio:basic:fan:led_b"}
+Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
@@ -1713,7 +1716,7 @@ Number usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
 Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_b "Led" (G_fan) {channel="miio:basic:fan:led_b"}
+Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
@@ -1737,7 +1740,7 @@ Number usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
 Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_b "Led" (G_fan) {channel="miio:basic:fan:led_b"}
+Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
@@ -1757,7 +1760,7 @@ Number usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
 Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
 Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
 Switch buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
-Number led_b "Led" (G_fan) {channel="miio:basic:fan:led_b"}
+Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
 Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
 Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}

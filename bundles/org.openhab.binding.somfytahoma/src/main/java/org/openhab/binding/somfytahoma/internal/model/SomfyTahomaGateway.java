@@ -17,14 +17,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link SomfyTahomaGateway} holds information about a gateway bound
  * to TahomaLink account.
+ *
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
 public class SomfyTahomaGateway {
 
     private String gatewayId = "";
+    private int type;
 
     public String getGatewayId() {
         return gatewayId;
+    }
+
+    public int getType() {
+        return type;
     }
 }

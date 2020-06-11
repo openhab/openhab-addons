@@ -49,13 +49,13 @@
 		</parameter>
 
 		<parameter name="readWelcome" type="boolean" required="true">
-			<label>Access Welcome camera</label>
+			<label>Access Welcome Camera</label>
 			<description>Read and Access Welcome camera's data.</description>
 			<default>false</default>
 		</parameter>
 
 		<parameter name="webHookUrl" type="text" required="false">
-			<label>Webhook address</label>
+			<label>Webhook Address</label>
 			<description>Protocol, public IP and port to access OH2 server from Internet.</description>
 			<advanced>true</advanced>
 		</parameter>
@@ -120,7 +120,7 @@
 		</parameter>
 
 		<parameter name="setpointDefaultDuration" type="integer" required="false">
-			<label>Setpoint duration</label>
+			<label>Setpoint Duration</label>
 			<description>Default duration of thermostat change when force to max or manual.</description>
 			<default>60</default>
 			<advanced>true</advanced>

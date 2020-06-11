@@ -77,7 +77,7 @@ public class SonosXMLParser {
         creator,
         album,
         albumArtist,
-        desc;
+        desc
     }
 
     /**
@@ -425,7 +425,6 @@ public class SonosXMLParser {
                     break;
                 case DESC:
                     desc.append(ch, start, length);
-                    ;
                     break;
                 default:
                     break;

@@ -299,6 +299,8 @@ public class AirQualityHandler extends BaseThingHandler {
                     return data.getData().getIaqi().getNo2();
                 case CO:
                     return data.getData().getIaqi().getCo();
+                case SO2:
+                    return data.getData().getIaqi().getSo2();                    
                 case LOCATIONNAME:
                     return data.getData().getCity().getName();
                 case STATIONID:

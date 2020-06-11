@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.homematic.internal.type;
 
-import java.util.Locale;
-
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
-import org.openhab.binding.homematic.type.HomematicThingTypeExcluder;
 
 /**
  * Extends the ChannelGroupTypeProvider to manually add a ChannelGroupType.

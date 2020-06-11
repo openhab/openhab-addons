@@ -60,7 +60,7 @@ public class KM200GatewayDiscoveryService extends AbstractDiscoveryService imple
     @Override
     protected void startBackgroundDiscovery() {
         discoverDevices();
-    };
+    }
 
     @Override
     public void gatewayStatusChanged(ThingStatus status) {

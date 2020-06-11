@@ -173,7 +173,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
             String msg = String.format("Zone not set or invalid zone name used: '%s'. It needs to be on of: '%s'",
                     zoneConfig.getZoneValue(), Arrays.toString(Zone.values()));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-            logger.warn(msg);
+            logger.warn("{}", msg);
             return;
         }
 

@@ -176,7 +176,7 @@
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
-				<label>Serial Port name</label>
+				<label>Serial Port Name</label>
 				<context>serial-port</context>
 				<description>The Serial port name to use to connect to the AVR.</description>
 			</parameter>
@@ -191,7 +191,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="zoneControls">
-		<label>Controls</label>
+		<label>Zone Controls</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -204,7 +204,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="controls2014">
-		<label>zoneControls2014</label>
+		<label>Controls 2014</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -217,7 +217,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="zoneControls2014">
-		<label>zoneControls2014</label>
+		<label>Zone Controls 2014</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -230,7 +230,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="hdZoneControls2014">
-		<label>zoneControls2014</label>
+		<label>HD Zone Controls 2014</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -243,7 +243,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="controls2015">
-		<label>zoneControls2015</label>
+		<label>Controls 2015</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -256,7 +256,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="zoneControls2015">
-		<label>zoneControls2015</label>
+		<label>Zone Controls 2015</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -269,7 +269,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="hdZoneControls2015">
-		<label>zoneControls2015</label>
+		<label>HD Zone Controls 2015</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -282,7 +282,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="controls2016">
-		<label>controls2016</label>
+		<label>Controls 2016</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -295,7 +295,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="zoneControls2016">
-		<label>zoneControls2016</label>
+		<label>Zone Controls 2016</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -308,7 +308,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="hdZoneControls2016">
-		<label>hdZoneControls2016</label>
+		<label>HD Zone Controls 2016</label>
 		<channels>
 			<channel id="power" typeId="powerChannel" />
 			<channel id="volumeDimmer" typeId="volumeChannelDimmer" />
@@ -350,7 +350,7 @@
 
 	<channel-type id="setInputSourceChannel">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -381,7 +381,7 @@
 
 	<channel-type id="setInputSourceChannel2014">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -417,7 +417,7 @@
 
 	<channel-type id="setInputSourceChannel2015">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -451,7 +451,7 @@
 
 	<channel-type id="setInputSourceChannel2016">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -485,7 +485,7 @@
 
 	<channel-type id="setInputSourceZoneChannel2014">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -510,7 +510,7 @@
 
 	<channel-type id="setInputSourceZoneChannel2015">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -535,7 +535,7 @@
 
 	<channel-type id="setInputSourceZoneChannel2016">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -561,7 +561,7 @@
 
 	<channel-type id="setInputSourceHDZoneChannel2014">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -584,7 +584,7 @@
 
 	<channel-type id="setInputSourceHDZoneChannel2015">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>
@@ -612,7 +612,7 @@
 
 	<channel-type id="setInputSourceHDZoneChannel2016">
 		<item-type>String</item-type>
-		<label>Input source</label>
+		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
 		<state>
 			<options>

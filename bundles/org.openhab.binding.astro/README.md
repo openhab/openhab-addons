@@ -20,7 +20,7 @@ No binding configuration required.
 
 ## Thing Configuration
 
-All Things require the parameter `geolocation` (as `<latitude>,<longitude>,[<altitude in m>]`) for which the calculation is done. 
+All Things require the parameter `geolocation` (as `<latitude>,<longitude>[,<altitude in m>]`) for which the calculation is done. 
 The altitude segment is optional and sharpens results provided by the Radiation group.
 Optionally, a refresh `interval` (in seconds) can be defined to also calculate positional data like azimuth and elevation.
 
@@ -159,7 +159,7 @@ astro:sun:home [ geolocation="52.5200066,13.4049540,100", interval=60 ] {
 }
 ```
 
-or a offset and latest
+or an offset and latest
 
 ```
 astro:sun:home [ geolocation="52.5200066,13.4049540,100", interval=60 ] {

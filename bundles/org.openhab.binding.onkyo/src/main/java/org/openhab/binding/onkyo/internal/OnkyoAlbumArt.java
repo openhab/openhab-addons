@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * Class to handle Onkyo Album Arts.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Stewart Cossey - fixed bug in getAlbumArt function
  */
 public class OnkyoAlbumArt {
 
@@ -39,7 +40,7 @@ public class OnkyoAlbumArt {
         NOTSTARTED,
         STARTED,
         NEXT,
-        READY;
+        READY
     }
 
     private enum ImageType {
@@ -47,7 +48,7 @@ public class OnkyoAlbumArt {
         JPEG,
         URL,
         NONE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private StringBuilder albumArtStringBuilder = new StringBuilder();

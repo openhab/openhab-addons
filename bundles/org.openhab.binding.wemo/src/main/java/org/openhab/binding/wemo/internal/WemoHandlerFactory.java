@@ -31,6 +31,7 @@ import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.wemo.internal.discovery.WemoLinkDiscoveryService;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.binding.wemo.internal.handler.WemoCoffeeHandler;
+import org.openhab.binding.wemo.internal.handler.WemoDimmerHandler;
 import org.openhab.binding.wemo.internal.handler.WemoHandler;
 import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
 import org.openhab.binding.wemo.internal.handler.WemoMakerHandler;
@@ -64,6 +65,7 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    @SuppressWarnings({ "null", "unused" })
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -90,6 +92,10 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
                 logger.debug("Creating a WemoCoffeeHandler for thing '{}' with UDN '{}'", thing.getUID(),
                         thing.getConfiguration().get(UDN));
                 return new WemoCoffeeHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_DIMMER)) {
+                logger.debug("Creating a WemoDimmerHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoDimmerHandler(thing, upnpIOService, wemoHttpcaller);
             } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MZ100)) {
                 return new WemoLightHandler(thing, upnpIOService, wemoHttpcaller);
             } else {

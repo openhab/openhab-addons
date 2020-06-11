@@ -36,6 +36,8 @@ public class RegoRegisterMapper {
         public double scaleFactor();
 
         public Unit<?> unit();
+
+        public int convertValue(short value);
     }
 
     private static class ChannelFactory {
@@ -64,6 +66,11 @@ public class RegoRegisterMapper {
             public Unit<?> unit() {
                 return unit;
             }
+
+            @Override
+            public int convertValue(short value) {
+                return value;
+            }
         }
 
         private ChannelFactory() {
@@ -74,7 +81,12 @@ public class RegoRegisterMapper {
         }
 
         static Channel hours(short address) {
-            return new ChannelImpl(address, 1, SmartHomeUnits.HOUR);
+            return new ChannelImpl(address, 1, SmartHomeUnits.HOUR) {
+                @Override
+                public int convertValue(short value) {
+                    return Short.toUnsignedInt(value);
+                }
+            };
         }
 
         static Channel percent(short address) {

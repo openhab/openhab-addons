@@ -12,19 +12,14 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.SWITCH;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.SWITCH;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaOnOffHandler} is responsible for handling commands,
@@ -35,23 +30,16 @@ import java.util.HashMap;
 @NonNullByDefault
 public class SomfyTahomaOnOffHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaOnOffHandler.class);
-
     public SomfyTahomaOnOffHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(SWITCH, "core:OnOffState");
-        }};
+        stateNames.put(SWITCH, "core:OnOffState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (SomfyTahomaBindingConstants.SWITCH.equals(channelUID.getId()) && command instanceof OnOffType) {
-            sendCommand(command.toString().toLowerCase(), "[]");
-        }
-        if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            sendCommand(command.toString().toLowerCase());
         }
     }
 }

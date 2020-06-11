@@ -57,20 +57,20 @@ public class HueLightEntry {
         public final String archetype = "classicbulb";
         public final String function = "functional";
         public final String direction = "omnidirectional";
-    };
+    }
 
     public Config config = new Config();
 
     public static class Streaming {
         public boolean renderer = false;
         public boolean proxy = false;
-    };
+    }
 
     public static class Capabilities {
         public boolean certified = false;
         public final Streaming streaming = new Streaming();
         public final Object control = new Object();
-    };
+    }
 
     public Capabilities capabilities = new Capabilities();
 

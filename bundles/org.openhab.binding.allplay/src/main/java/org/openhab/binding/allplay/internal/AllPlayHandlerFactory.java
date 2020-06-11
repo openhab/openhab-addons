@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.audio.AudioSink;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -33,6 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.allplay.internal.handler.AllPlayHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -53,14 +55,26 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(AllPlayHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(SPEAKER_THING_TYPE);
-    private Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+    private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     private AllPlay allPlay;
     private AllPlayBindingProperties bindingProperties;
 
-    private AudioHTTPServer audioHTTPServer;
-    private NetworkAddressService networkAddressService;
+    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab2-addons/pull/6080 and
+    // https://github.com/eclipse/smarthome/issues/5182
+    private final ThingRegistry thingRegistry;
+    private final AudioHTTPServer audioHTTPServer;
+    private final NetworkAddressService networkAddressService;
     private String callbackUrl;
+
+    @Activate
+    public AllPlayHandlerFactory(final @Reference ThingRegistry thingRegistry,
+            final @Reference AudioHTTPServer audioHTTPServer,
+            final @Reference NetworkAddressService networkAddressService) {
+        this.thingRegistry = thingRegistry;
+        this.audioHTTPServer = audioHTTPServer;
+        this.networkAddressService = networkAddressService;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -70,10 +84,10 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(AllPlayBindingConstants.SPEAKER_THING_TYPE)) {
+        if (thingTypeUID.equals(SPEAKER_THING_TYPE)) {
             logger.debug("Creating AllPlayHandler for thing {}", thing.getUID());
 
-            AllPlayHandler handler = new AllPlayHandler(thing, allPlay, bindingProperties);
+            AllPlayHandler handler = new AllPlayHandler(thingRegistry, thing, allPlay, bindingProperties);
             registerAudioSink(thing, handler);
 
             return handler;
@@ -124,24 +138,6 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         allPlay.disconnect();
         allPlay = null;
         super.deactivate(componentContext);
-    }
-
-    @Reference
-    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
-        this.audioHTTPServer = audioHTTPServer;
-    }
-
-    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
-        this.audioHTTPServer = null;
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
     }
 
     private String assembleCallbackUrl() {

@@ -12,18 +12,13 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.ALARM_COMMAND;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.ALARM_COMMAND;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaExternalAlarmHandler} is responsible for handling commands,
@@ -34,24 +29,16 @@ import java.util.HashMap;
 @NonNullByDefault
 public class SomfyTahomaExternalAlarmHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaExternalAlarmHandler.class);
-
     public SomfyTahomaExternalAlarmHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put("active_zones_state", "core:ActiveZonesState");
-        }};
+        stateNames.put("active_zones_state", "core:ActiveZonesState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (ALARM_COMMAND.equals(channelUID.getId()) && command instanceof StringType) {
-            sendCommand(command.toString(), "[]");
-        }
-        if (RefreshType.REFRESH.equals(command)) {
-            sendCommand("refreshState", "[]");
-            updateChannelState(channelUID);
+            sendCommand(command.toString());
         }
     }
 

@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComPowerMessageTest {
     @Test(expected = RFXComMessageNotImplementedException.class)
     public void checkNotImplemented() throws Exception {

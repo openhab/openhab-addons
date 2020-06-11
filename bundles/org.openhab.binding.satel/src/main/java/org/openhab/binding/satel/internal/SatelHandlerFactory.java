@@ -30,8 +30,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.satel.internal.config.SatelThingConfig;
 import org.openhab.binding.satel.internal.discovery.SatelDeviceDiscoveryService;
+import org.openhab.binding.satel.internal.handler.Atd100Handler;
 import org.openhab.binding.satel.internal.handler.Ethm1BridgeHandler;
 import org.openhab.binding.satel.internal.handler.IntRSBridgeHandler;
 import org.openhab.binding.satel.internal.handler.SatelBridgeHandler;
@@ -43,6 +45,7 @@ import org.openhab.binding.satel.internal.handler.SatelSystemHandler;
 import org.openhab.binding.satel.internal.handler.SatelZoneHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SatelHandlerFactory} is responsible for creating things and thing
@@ -58,6 +61,8 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
             .flatMap(uids -> uids.stream()).collect(Collectors.toSet());
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new ConcurrentHashMap<>();
+
+    private SerialPortManager serialPortManager;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -87,7 +92,7 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (IntRSBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            SatelBridgeHandler bridgeHandler = new IntRSBridgeHandler((Bridge) thing);
+            SatelBridgeHandler bridgeHandler = new IntRSBridgeHandler((Bridge) thing, serialPortManager);
             registerDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (SatelZoneHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -102,6 +107,8 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
             return new SatelSystemHandler(thing);
         } else if (SatelEventLogHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SatelEventLogHandler(thing);
+        } else if (Atd100Handler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new Atd100Handler(thing);
         }
 
         return null;
@@ -116,6 +123,15 @@ public class SatelHandlerFactory extends BaseThingHandlerFactory {
         if (discoveryServiceRegistration != null) {
             discoveryServiceRegistration.unregister();
         }
+    }
+
+    @Reference
+    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
+
+    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
+        this.serialPortManager = null;
     }
 
     private void registerDiscoveryService(SatelBridgeHandler bridgeHandler) {

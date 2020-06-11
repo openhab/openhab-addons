@@ -21,5 +21,5 @@ public enum AggregatePeriod {
     DAY,
     WEEK,
     MONTH,
-    YEAR;
+    YEAR
 }

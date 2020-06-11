@@ -15,12 +15,12 @@
 			<default>remote</default>
 		</parameter>
 		<parameter name="expose" type="text" required="false" multiple="true">
-			<label>Items to expose to apps such as IFTTT</label>
+			<label>Items to Expose</label>
 			<description>List of items that are made accessible to IFTTT and similar services.</description>
 			<context>item</context>
 		</parameter>
 		<parameter name="baseURL" type="text" required="false">
-			<label>Base URL for the openHAB Cloud server</label>
+			<label>Base URL</label>
 			<description>Base URL for the openHAB Cloud server</description>
 			<default>https://myopenhab.org/</default>
 		</parameter>

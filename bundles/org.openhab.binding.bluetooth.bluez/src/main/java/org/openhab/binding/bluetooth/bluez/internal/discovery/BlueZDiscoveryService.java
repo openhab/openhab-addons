@@ -61,11 +61,11 @@ public class BlueZDiscoveryService extends AbstractDiscoveryService {
             return;
         } catch (RuntimeException e) {
             // we do not get anything more specific from TinyB here
-            if (e.getMessage().contains("AccessDenied")) {
+            if (e.getMessage() != null && e.getMessage().contains("AccessDenied")) {
                 logger.warn(
                         "Cannot access BlueZ stack due to permission problems. Make sure that your OS user is part of the 'bluetooth' group of BlueZ.");
             } else {
-                logger.warn("Failed to scan for Bluetooth devices: {} ", e.getMessage(), e);
+                logger.warn("Failed to scan for Bluetooth devices", e);
             }
         }
     }

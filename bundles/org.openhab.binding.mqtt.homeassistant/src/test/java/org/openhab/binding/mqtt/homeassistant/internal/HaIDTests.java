@@ -13,13 +13,18 @@
 package org.openhab.binding.mqtt.homeassistant.internal;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.junit.Test;
-import org.openhab.binding.mqtt.homeassistant.internal.HaID;
-import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 
+/**
+ * @author Jochen Klein - Initial contribution
+ */
 public class HaIDTests {
 
     @Test
@@ -38,10 +43,11 @@ public class HaIDTests {
 
         assertThat(restore, is(subject));
 
-        HandlerConfiguration haConfig = subject.toHandlerConfiguration();
+        HandlerConfiguration haConfig = new HandlerConfiguration(subject.baseTopic,
+                Collections.singletonList(subject.toShortTopic()));
 
-        restore = HaID.fromConfig(haConfig);
-        assertThat(restore, is(new HaID("homeassistant/+/name/config")));
+        Collection<HaID> restoreList = HaID.fromConfig(haConfig);
+        assertThat(restoreList, hasItem(new HaID("homeassistant/switch/name/config")));
     }
 
     @Test
@@ -60,10 +66,11 @@ public class HaIDTests {
 
         assertThat(restore, is(subject));
 
-        HandlerConfiguration haConfig = subject.toHandlerConfiguration();
+        HandlerConfiguration haConfig = new HandlerConfiguration(subject.baseTopic,
+                Collections.singletonList(subject.toShortTopic()));
 
-        restore = HaID.fromConfig(haConfig);
-        assertThat(restore, is(new HaID("homeassistant/+/node/name/config")));
+        Collection<HaID> restoreList = HaID.fromConfig(haConfig);
+        assertThat(restoreList, hasItem(new HaID("homeassistant/switch/node/name/config")));
     }
 
 }

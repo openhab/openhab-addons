@@ -19,8 +19,10 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.util.UIDUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -92,6 +94,7 @@ public abstract class BaseChannelConfiguration {
     protected @Nullable Device device;
 
     static class Device {
+        @JsonAdapter(ListOrStringDeserializer.class)
         protected @Nullable List<String> identifiers;
         protected @Nullable List<Connection> connections;
         protected @Nullable String manufacturer;
@@ -105,9 +108,35 @@ public abstract class BaseChannelConfiguration {
         }
     }
 
+    @JsonAdapter(ConnectionDeserializer.class)
     static class Connection {
         protected @Nullable String type;
         protected @Nullable String identifier;
+    }
+
+    public String getThingName() {
+        @Nullable
+        String result = null;
+
+        if (this.device != null) {
+            result = this.device.name;
+        }
+        if (result == null) {
+            result = name;
+        }
+        return result;
+    }
+
+    public String getThingId(String defaultId) {
+        @Nullable
+        String result = null;
+        if (this.device != null) {
+            result = this.device.getId();
+        }
+        if (result == null) {
+            result = unique_id;
+        }
+        return UIDUtils.encode(result != null ? result : defaultId);
     }
 
     public Map<String, Object> appendToProperties(Map<String, Object> properties) {

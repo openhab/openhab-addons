@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Pawel Pieczul - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.loxone")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.loxone")
 public class LxHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

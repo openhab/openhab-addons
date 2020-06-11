@@ -84,4 +84,4 @@ public enum MessageType {
     public int toInt() {
         return identifier;
     }
-};
+}

@@ -264,7 +264,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
     @Override
     protected void doInitialization() {
         Thing thing = getThing();
-        logger.debug("Initialize LOGO! {} memory handler.");
+        logger.debug("Initialize LOGO! memory handler.");
 
         config.set(getConfigAs(PLCMemoryConfiguration.class));
 

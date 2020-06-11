@@ -99,7 +99,6 @@ public class DSCAlarmDiscoveryService extends AbstractDiscoveryService {
                 if (partitionNumber >= 1 && partitionNumber <= 8) {
                     thingID = "partition" + String.valueOf(partitionNumber);
                     thingLabel = "Partition " + String.valueOf(partitionNumber);
-                    ;
                     properties = new HashMap<>(0);
                     thingUID = new ThingUID(DSCAlarmBindingConstants.PARTITION_THING_TYPE, bridge.getUID(), thingID);
                     properties.put(DSCAlarmPartitionConfiguration.PARTITION_NUMBER, partitionNumber);
@@ -110,7 +109,6 @@ public class DSCAlarmDiscoveryService extends AbstractDiscoveryService {
                 if (zoneNumber >= 1 && zoneNumber <= 64) {
                     thingID = "zone" + String.valueOf(zoneNumber);
                     thingLabel = "Zone " + String.valueOf(zoneNumber);
-                    ;
                     properties = new HashMap<>(0);
                     thingUID = new ThingUID(DSCAlarmBindingConstants.ZONE_THING_TYPE, bridge.getUID(), thingID);
                     properties.put(DSCAlarmZoneConfiguration.ZONE_NUMBER, zoneNumber);

@@ -24,8 +24,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
@@ -51,10 +49,10 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
 
     private final Logger logger = LoggerFactory.getLogger(SmartMeterChannelTypeProvider.class);
 
-    private Map<String, ChannelType> obisChannelMap = new ConcurrentHashMap<>();
+    private final Map<String, ChannelType> obisChannelMap = new ConcurrentHashMap<>();
 
     @Override
-    public @NonNull Collection<@NonNull ChannelType> getChannelTypes(@Nullable Locale locale) {
+    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
         return obisChannelMap.values();
     }
 
@@ -62,17 +60,6 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
         return obisChannelMap.values().stream().filter(channelType -> channelType.getUID().equals(channelTypeUID))
                 .findFirst().orElse(null);
-    }
-
-    @Override
-    public @Nullable ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID,
-            @Nullable Locale locale) {
-        return null;
-    }
-
-    @Override
-    public @Nullable Collection<@NonNull ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
-        return null;
     }
 
     @Override
@@ -118,7 +105,7 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
 
     /**
      * Gets the {@link ChannelTypeUID} for the given OBIS code.
-     * 
+     *
      * @param obis The obis code.
      * @return The {@link ChannelTypeUID} or null.
      */

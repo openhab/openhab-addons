@@ -23,13 +23,16 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.transform.map.internal.MapTransformationService;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.osgi.framework.BundleContext;
 
 /**
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  */
 public class MapTransformationServiceTest {
 
@@ -44,28 +47,50 @@ public class MapTransformationServiceTest {
     private static final String CONFIG_FOLDER = BASE_FOLDER + File.separator + SRC_FOLDER;
     private static final String USED_FILENAME = CONFIG_FOLDER + File.separator + "transform/" + EXISTING_FILENAME_DE;
 
-    private MapTransformationService processor;
+    @Mock
+    private BundleContext bundleContext;
+
+    private TestableMapTransformationService processor;
+
+    private class TestableMapTransformationService extends MapTransformationService {
+        @Override
+        protected String getSourcePath() {
+            return BASE_FOLDER + File.separator + super.getSourcePath();
+        }
+
+        @Override
+        protected Locale getLocale() {
+            return Locale.US;
+        }
+
+        @Override
+        public void activate(BundleContext context) {
+            super.activate(context);
+        }
+
+        @Override
+        public void deactivate() {
+            super.deactivate();
+        }
+    };
 
     @Before
-    public void init() throws IOException {
-        processor = new MapTransformationService() {
-            @Override
-            protected String getSourcePath() {
-                return BASE_FOLDER + File.separator + super.getSourcePath();
-            }
+    public void setUp() throws IOException {
+        MockitoAnnotations.initMocks(this);
 
-            @Override
-            protected Locale getLocale() {
-                return Locale.US;
-            }
-        };
-        FileUtils.deleteDirectory(new File(CONFIG_FOLDER));
+        processor = new TestableMapTransformationService();
+        processor.activate(bundleContext);
         FileUtils.copyDirectory(new File(SRC_FOLDER), new File(CONFIG_FOLDER));
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        processor.deactivate();
+        FileUtils.deleteDirectory(new File(CONFIG_FOLDER));
     }
 
     @Test
     public void testTransformByMap() throws Exception {
-
         // Test that we find a translation in an existing file
         String transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_CLOSED);
         Assert.assertEquals("zu", transformedResponse);

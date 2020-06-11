@@ -53,8 +53,7 @@ public class ChannelState implements MqttMessageSubscriber {
     protected final Value cachedValue;
 
     // Runtime variables
-    @Nullable
-    private MqttBrokerConnection connection;
+    private @Nullable MqttBrokerConnection connection;
     protected final List<ChannelStateTransformation> transformationsIn = new ArrayList<>();
     protected final List<ChannelStateTransformation> transformationsOut = new ArrayList<>();
     private @Nullable ChannelStateUpdateListener channelStateUpdateListener;
@@ -153,21 +152,29 @@ public class ChannelState implements MqttMessageSubscriber {
         }
 
         // String value: Apply transformations
-        String strvalue = new String(payload, StandardCharsets.UTF_8);
+        String strValue = new String(payload, StandardCharsets.UTF_8);
         for (ChannelStateTransformation t : transformationsIn) {
-            strvalue = t.processValue(strvalue);
+            String transformedValue = t.processValue(strValue);
+            if (transformedValue != null) {
+                strValue = transformedValue;
+            } else {
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", strValue,
+                        t.serviceName);
+                receivedOrTimeout();
+                return;
+            }
         }
 
         // Is trigger?: Special handling
         if (config.trigger) {
-            channelStateUpdateListener.triggerChannel(channelUID, strvalue);
+            channelStateUpdateListener.triggerChannel(channelUID, strValue);
             receivedOrTimeout();
             return;
         }
 
-        Command command = TypeParser.parseCommand(cachedValue.getSupportedCommandTypes(), strvalue);
+        Command command = TypeParser.parseCommand(cachedValue.getSupportedCommandTypes(), strValue);
         if (command == null) {
-            logger.warn("Incoming payload '{}' not supported by type '{}'", strvalue,
+            logger.warn("Incoming payload '{}' not supported by type '{}'", strValue,
                     cachedValue.getClass().getSimpleName());
             receivedOrTimeout();
             return;
@@ -184,7 +191,7 @@ public class ChannelState implements MqttMessageSubscriber {
         try {
             cachedValue.update(command);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            logger.warn("Command '{}' not supported by type '{}': {}", strvalue, cachedValue.getClass().getSimpleName(),
+            logger.warn("Command '{}' not supported by type '{}': {}", strValue, cachedValue.getClass().getSimpleName(),
                     e.getMessage());
             receivedOrTimeout();
             return;
@@ -243,6 +250,7 @@ public class ChannelState implements MqttMessageSubscriber {
     }
 
     private void internalStop() {
+        logger.debug("Unsubscribed channel {} form topic: {}", this.channelUID, config.stateTopic);
         this.connection = null;
         this.channelStateUpdateListener = null;
         hasSubscribed = false;
@@ -274,14 +282,16 @@ public class ChannelState implements MqttMessageSubscriber {
      * @param connection A broker connection
      * @param scheduler A scheduler to realize the timeout
      * @param timeout A timeout in milliseconds. Can be 0 to disable the timeout and let the future return earlier.
-     * @param channelStateUpdateListener An update listener
      * @return A future that completes with true if the subscribing worked, with false if the stateTopic is not set
      *         and exceptionally otherwise.
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        if (hasSubscribed) {
+        // if the connection is still the same, the subscription is still present, otherwise we need to renew
+        if (hasSubscribed && connection.equals(this.connection)) {
             return CompletableFuture.completedFuture(null);
+        } else {
+            hasSubscribed = false;
         }
 
         this.connection = connection;
@@ -340,6 +350,18 @@ public class ChannelState implements MqttMessageSubscriber {
             return CompletableFuture.completedFuture(false);
         }
 
+        // Outgoing transformations
+        for (ChannelStateTransformation t : transformationsOut) {
+            String transformedValue = t.processValue(mqttCommandValue);
+            if (transformedValue != null) {
+                mqttCommandValue = transformedValue;
+            } else {
+                logger.debug("Transformation '{}' returned null on '{}', discarding message", mqttCommandValue,
+                        t.serviceName);
+                return CompletableFuture.completedFuture(false);
+            }
+        }
+
         // Formatter: Applied before the channel state value is published to the MQTT broker.
         if (config.formatBeforePublish.length() > 0) {
             try (Formatter formatter = new Formatter()) {
@@ -349,12 +371,10 @@ public class ChannelState implements MqttMessageSubscriber {
                 logger.debug("Format pattern incorrect for {}", channelUID, e);
             }
         }
-        // Outgoing transformations
-        for (ChannelStateTransformation t : transformationsOut) {
-            mqttCommandValue = t.processValue(mqttCommandValue);
-        }
-        // Send retained messages if this is a stateful channel
-        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), 1, config.retained);
+
+        int qos = (config.qos != null) ? config.qos : connection.getQos();
+
+        return connection.publish(config.commandTopic, mqttCommandValue.getBytes(), qos, config.retained);
     }
 
     /**

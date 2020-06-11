@@ -122,7 +122,7 @@
 			<channel id="gradient" typeId="gradient" />
 			<channel id="niveau" typeId="niveau" />
 			<channel id="timer_MO" typeId="timer">
-				<label>Monday heatingtimer</label>
+				<label>Monday Heating Timer</label>
 				<description>On/Off timer for Monday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">3000</property>
@@ -131,7 +131,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_TU" typeId="timer">
-				<label>Tuesday heatingtimer</label>
+				<label>Tuesday Heating Timer</label>
 				<description>On/Off timer for Tuesday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">3008</property>
@@ -140,7 +140,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_WE" typeId="timer">
-				<label>Wednesday heatingtimer</label>
+				<label>Wednesday Heating Timer</label>
 				<description>On/Off timer for Wednesday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">3010</property>
@@ -149,7 +149,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_TH" typeId="timer">
-				<label>Thursday heatingtimer</label>
+				<label>Thursday Heating Timer</label>
 				<description>On/Off timer for Thursday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">3018</property>
@@ -158,7 +158,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_FR" typeId="timer">
-				<label>Friday heatingtimer</label>
+				<label>Friday Heating Timer</label>
 				<description>On/Off timer for Friday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">3020</property>
@@ -167,7 +167,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_SA" typeId="timer">
-				<label>Saturday heatingtimer</label>
+				<label>Saturday Heating Timer</label>
 				<description>On/Off timer for Saturday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">3028</property>
@@ -176,7 +176,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_SU" typeId="timer">
-				<label>Sunday heatingtimer</label>
+				<label>Sunday Heating Timer</label>
 				<description>On/Off timer for Sunday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">3030</property>
@@ -185,7 +185,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_ww_MO" typeId="timer">
-				<label>Monday hotwatertimer</label>
+				<label>Monday Hot Water Timer</label>
 				<description>On/Off timer for Monday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">2100</property>
@@ -194,7 +194,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_ww_TU" typeId="timer">
-				<label>Tuesday hotwatertimer</label>
+				<label>Tuesday Hot Water Timer</label>
 				<description>On/Off timer for Tuesday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">2108</property>
@@ -203,7 +203,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_ww_WE" typeId="timer">
-				<label>Wednesday hotwatertimer</label>
+				<label>Wednesday Hot Water Timer</label>
 				<description>On/Off timer for Wednesday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">2110</property>
@@ -212,7 +212,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_ww_TH" typeId="timer">
-				<label>Thursday hotwatertimer</label>
+				<label>Thursday Hot Water Timer</label>
 				<description>On/Off timer for Thursday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">2118</property>
@@ -221,7 +221,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_ww_FR" typeId="timer">
-				<label>Friday hotwatertimer</label>
+				<label>Friday Hot Water Timer</label>
 				<description>On/Off timer for Friday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">2120</property>
@@ -230,7 +230,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_ww_SA" typeId="timer">
-				<label>Saturday hotwatertimer</label>
+				<label>Saturday Hot Water Timer</label>
 				<description>On/Off timer for Saturday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">2128</property>
@@ -239,7 +239,7 @@
 				</properties>
 			</channel>
 			<channel id="timer_ww_SU" typeId="timer">
-				<label>Sunday hotwatertimer</label>
+				<label>Sunday Hot Water Timer</label>
 				<description>On/Off timer for Sunday. Up to 4 timers can be set</description>
 				<properties>
 					<property name="address">2130</property>
@@ -309,7 +309,7 @@
 
 	<channel-type id="systemtime">
 		<item-type>DateTime</item-type>
-		<label>DateTime of the heating system</label>
+		<label>DateTime of the Heating System</label>
 		<state readOnly="true" />
 	</channel-type>
 
@@ -346,7 +346,7 @@
 
 	<channel-type id="exhaust_temp">
 		<item-type>Number</item-type>
-		<label>Exhaust temperature</label>
+		<label>Exhaust Temperature</label>
 		<description>Actual temperature of the exhaust</description>
 		<category>Temperature</category>
 		<state pattern="%.1f °C" readOnly="true" />
@@ -392,14 +392,14 @@
 
 	<channel-type id="fanspeed">
 		<item-type>Number</item-type>
-		<label>Fan speed</label>
+		<label>Fan Speed</label>
 		<description>Fan Speed in rpm</description>
 		<state pattern="%d rpm" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="fanspeed_target" advanced="true">
 		<item-type>Number</item-type>
-		<label>Target Fan speed</label>
+		<label>Target Fan Speed</label>
 		<description>Fan Speed in rpm</description>
 		<state pattern="%d rpm" readOnly="true" />
 	</channel-type>
@@ -589,7 +589,7 @@
 
 	<channel-type id="timer" advanced="true">
 		<item-type>String</item-type>
-		<label>Timer for heating or warm water</label>
+		<label>Timer for Heating or Warm Water</label>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
 
@@ -613,21 +613,21 @@
 
 	<channel-type id="bufferload">
 		<item-type>Switch</item-type>
-		<label>Buffer load pump</label>
+		<label>Buffer Load Pump</label>
 		<description>State of the pump (on/off)</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="loadsuppression" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Load suppression</label>
+		<label>Load Suppression</label>
 		<description>State of the load suppression (on/off)</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="producedheat" advanced="true">
 		<item-type>Number</item-type>
-		<label>Produced heat</label>
+		<label>Produced Heat</label>
 		<description>Produced heat since starting solar system</description>
 		<state pattern="%.2f kWh" readOnly="true" />
 	</channel-type>

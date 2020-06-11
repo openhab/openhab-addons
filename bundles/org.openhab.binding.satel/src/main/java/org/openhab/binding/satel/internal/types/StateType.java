@@ -58,6 +58,12 @@ public interface StateType {
      */
     int getBytesCount(boolean extendedCmd);
 
+    /**
+     * Builds bit set based on list of state types. Each bit is addressed by refresh command.
+     *
+     * @param states list of states
+     * @return built bit set
+     */
     public static BitSet getStatesBitSet(StateType... states) {
         BitSet stateBits = new BitSet();
         for (StateType state : states) {

@@ -47,7 +47,7 @@ import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListene
 public class XMLProtocolFactory implements ProtocolFactory {
     @Override
     public void createConnection(String host, ConnectionStateListener connectionStateListener) {
-        connectionStateListener.connectionEstablished(new XMLConnection(host));
+        connectionStateListener.onConnectionCreated(new XMLConnection(host));
     }
 
     @Override
@@ -132,8 +132,6 @@ public class XMLProtocolFactory implements ProtocolFactory {
 
     @Override
     public InputConverter InputConverter(AbstractConnection connection, String setting) {
-
         return new InputConverterXML(connection, setting);
     }
-
 }

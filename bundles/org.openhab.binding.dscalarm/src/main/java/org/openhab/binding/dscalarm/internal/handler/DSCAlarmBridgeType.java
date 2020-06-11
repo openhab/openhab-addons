@@ -20,5 +20,5 @@ package org.openhab.binding.dscalarm.internal.handler;
 public enum DSCAlarmBridgeType {
     Envisalink,
     IT100,
-    TCPServer;
+    TCPServer
 }

@@ -218,8 +218,9 @@ public class NtpOSGiTest extends JavaOSGiTest {
         assertFormat(testItemState, DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS);
         ZonedDateTime timeZoneFromItemRegistry = ((DateTimeType) getItemState(ACCEPTED_ITEM_TYPE_DATE_TIME))
                 .getZonedDateTime();
-        
-        ZoneOffset expectedOffset = ZoneId.of(TEST_TIME_ZONE_ID).getRules().getOffset(timeZoneFromItemRegistry.toInstant());
+
+        ZoneOffset expectedOffset = ZoneId.of(TEST_TIME_ZONE_ID).getRules()
+                .getOffset(timeZoneFromItemRegistry.toInstant());
         assertEquals(expectedOffset, timeZoneFromItemRegistry.getOffset());
     }
 
@@ -231,7 +232,8 @@ public class NtpOSGiTest extends JavaOSGiTest {
         ZonedDateTime timeZoneIdFromItemRegistry = ((DateTimeType) getItemState(ACCEPTED_ITEM_TYPE_DATE_TIME))
                 .getZonedDateTime();
 
-        ZoneOffset expectedOffset = ZoneId.of(TEST_TIME_ZONE_ID).getRules().getOffset(timeZoneIdFromItemRegistry.toInstant());
+        ZoneOffset expectedOffset = ZoneId.of(TEST_TIME_ZONE_ID).getRules()
+                .getOffset(timeZoneIdFromItemRegistry.toInstant());
         assertEquals(expectedOffset, timeZoneIdFromItemRegistry.getOffset());
     }
 
@@ -476,7 +478,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         }
         waitForAssert(() -> {
             assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, ntpThing.getStatusInfo().getStatusDetail());
-        });
+        }, 60000, DFL_SLEEP_TIME);
     }
 
     private void assertEventIsReceived(UpdateEventType updateEventType, String channelID, String acceptedItemType) {

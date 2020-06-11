@@ -16,7 +16,7 @@ import static org.openhab.binding.loxone.internal.LxBindingConstants.*;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -55,6 +55,6 @@ class LxControlTextState extends LxControl {
         super.initialize(config);
         ChannelUID id = addChannel("String", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_TEXT),
                 defaultChannelLabel, "Text state", tags, null, () -> getStateStringValue(STATE_TEXT_AND_ICON));
-        addChannelStateDescription(id, new StateDescription(null, null, null, null, true, null));
+        addChannelStateDescriptionFragment(id, StateDescriptionFragmentBuilder.create().withReadOnly(true).build());
     }
 }

@@ -37,7 +37,7 @@
 				<required>false</required>
 			</parameter>
 			<parameter name="refreshmode" type="text">
-				<label>Refresh mode</label>
+				<label>Refresh Mode</label>
 				<description>Suppress re-transmission and refresh every 800ms or send every packet.</description>
 				<required>false</required>
 				<options>

@@ -14,6 +14,7 @@ package org.openhab.binding.network.internal.dhcp;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -34,7 +35,9 @@ public class DHCPTest {
     public void testService() throws SocketException {
         String testIP = "10.1.2.3";
         IPRequestReceivedCallback dhcpListener = mock(IPRequestReceivedCallback.class);
-        assertThat(DHCPListenService.instance, is(nullValue()));
+
+        // if this is not the case this test is not very useful, we don't always have the static field under control.
+        assumeTrue(DHCPListenService.instance == null);
         DHCPListenService.register(testIP, dhcpListener);
         assertThat(DHCPListenService.instance, is(notNullValue()));
         DHCPListenService.unregister(testIP);

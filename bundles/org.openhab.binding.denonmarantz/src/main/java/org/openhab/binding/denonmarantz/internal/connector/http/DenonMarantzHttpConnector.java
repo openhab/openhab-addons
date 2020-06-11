@@ -127,7 +127,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
                 try {
                     refreshHttpProperties();
                 } catch (IOException e) {
-                    logger.debug("IO error while retrieving document: {}", e);
+                    logger.debug("IO error while retrieving document", e);
                     state.connectionError("IO error while connecting to AVR: " + e.getMessage());
                     stopPolling();
                 } catch (RuntimeException e) {

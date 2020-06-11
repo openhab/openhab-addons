@@ -19,15 +19,15 @@ package org.openhab.binding.nanoleaf.internal.model;
  */
 public class GlobalOrientation {
 
-    private Integer value;
+    private int value;
     private Integer max;
     private Integer min;
 
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(int value) {
         this.value = value;
     }
 

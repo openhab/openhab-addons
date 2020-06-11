@@ -1,13 +1,15 @@
 # GPSTracker Binding
 
-This binding allows you to connect mobile GPS tracker applications to openHAB and process GPS location reports. Currently two applications are supported:
+This binding allows you to connect mobile GPS tracker applications to openHAB and process GPS location reports.
+
+Currently two applications are supported:
 
 * [OwnTracks](https://owntracks.org/booklet/) - iOS, Android
 * [GPSLogger](https://gpslogger.app/) - Android
 
 GPS location reports are sent to openHAB using HTTP.
 Please be aware that this communication uses the public network so make sure your openHAB installation is [secured](https://www.openhab.org/docs/installation/security.html#encrypted-communication) (but accessible from public internet through myopenhab.org or using a reverse proxy) and you configured HTTP**S** access in tracking applications.
-The easiest way to achieve this is to use the [openHAB Cloud Connector](https://www.openhab.org/addons/integrations/openhabcloud/) in conjunction with [myopenHAB.org](http://www.myopenhab.org/).
+The easiest way to achieve this is to use the [openHAB Cloud Connector](https://www.openhab.org/addons/integrations/openhabcloud/) in conjunction with [myopenHAB.org](https://www.myopenhab.org/).
 
 The binding can process two message types received from trackers:
 

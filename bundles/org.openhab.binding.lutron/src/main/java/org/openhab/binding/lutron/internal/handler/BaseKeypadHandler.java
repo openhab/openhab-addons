@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -34,6 +35,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lutron.internal.KeypadComponent;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfig;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,16 +72,45 @@ public abstract class BaseKeypadHandler extends LutronHandler {
 
     protected abstract void configureComponents(String model);
 
-    protected abstract boolean isLed(int id);
-
-    protected abstract boolean isButton(int id);
-
-    protected abstract boolean isCCI(int id);
-
     private final Object asyncInitLock = new Object();
+
+    protected KeypadConfig kp;
 
     public BaseKeypadHandler(Thing thing) {
         super(thing);
+    }
+
+    /**
+     * Determine if keypad component with the specified id is a LED. Keypad handlers which do not use a KeypadConfig
+     * object must override this to provide their own test.
+     *
+     * @param id The component id.
+     * @return True if the component is a LED.
+     */
+    protected boolean isLed(int id) {
+        return kp.isLed(id);
+    }
+
+    /**
+     * Determine if keypad component with the specified id is a button. Keypad handlers which do not use a KeypadConfig
+     * object must override this to provide their own test.
+     *
+     * @param id The component id.
+     * @return True if the component is a button.
+     */
+    protected boolean isButton(int id) {
+        return kp.isButton(id);
+    }
+
+    /**
+     * Determine if keypad component with the specified id is a CCI. Keypad handlers which do not use a KeypadConfig
+     * object must override this to provide their own test.
+     *
+     * @param id The component id.
+     * @return True if the component is a CCI.
+     */
+    protected boolean isCCI(int id) {
+        return kp.isCCI(id);
     }
 
     protected void configureChannels() {
@@ -187,6 +218,11 @@ public abstract class BaseKeypadHandler extends LutronHandler {
         synchronized (asyncInitLock) {
             logger.debug("Async init thread staring for keypad handler {}", integrationId);
 
+            buttonList.clear(); // in case we are re-initializing
+            ledList.clear();
+            cciList.clear();
+            componentChannelMap.clear();
+
             configureComponents(model);
 
             // load the channel-id map
@@ -268,8 +304,8 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             return;
         }
 
-        // For buttons and CCIs, handle OnOffType commands
-        if (isButton(componentID) || isCCI(componentID)) {
+        // For buttons, handle OnOffType commands
+        if (isButton(componentID)) {
             if (command instanceof OnOffType) {
                 if (command == OnOffType.ON) {
                     device(componentID, ACTION_PRESS);
@@ -283,6 +319,13 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                 logger.warn("Invalid command type {} received for channel {} device {}", command, channelUID,
                         getThing().getUID());
             }
+            return;
+        }
+
+        // Contact channels for CCIs are read-only, so ignore commands
+        if (isCCI(componentID)) {
+            logger.debug("Invalid command type {} received for channel {} device {}", command, channelUID,
+                    getThing().getUID());
             return;
         }
     }
@@ -335,12 +378,20 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                         updateState(channelUID, OnOffType.OFF);
                     }
                 } else if (ACTION_PRESS.toString().equals(parameters[1])) {
-                    updateState(channelUID, OnOffType.ON);
-                    if (autoRelease) {
-                        updateState(channelUID, OnOffType.OFF);
+                    if (isButton(component)) {
+                        updateState(channelUID, OnOffType.ON);
+                        if (autoRelease) {
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    } else { // component is CCI
+                        updateState(channelUID, OpenClosedType.CLOSED);
                     }
                 } else if (ACTION_RELEASE.toString().equals(parameters[1])) {
-                    updateState(channelUID, OnOffType.OFF);
+                    if (isButton(component)) {
+                        updateState(channelUID, OnOffType.OFF);
+                    } else { // component is CCI
+                        updateState(channelUID, OpenClosedType.OPEN);
+                    }
                 } else if (ACTION_HOLD.toString().equals(parameters[1])) {
                     updateState(channelUID, OnOffType.OFF); // Signal a release if we receive a hold code as we will not
                                                             // get a subsequent release.

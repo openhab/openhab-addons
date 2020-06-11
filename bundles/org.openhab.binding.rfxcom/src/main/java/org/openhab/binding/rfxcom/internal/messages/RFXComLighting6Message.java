@@ -22,12 +22,13 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for lighting6 message. See Blyss.
  *
  * @author Damien Servant - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated for OH2
  */
 public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighting6Message.SubType> {
 
@@ -133,8 +134,7 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_COMMAND:
                 switch (command) {
@@ -165,7 +165,7 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -188,7 +188,6 @@ public class RFXComLighting6Message extends RFXComDeviceMessageImpl<RFXComLighti
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {

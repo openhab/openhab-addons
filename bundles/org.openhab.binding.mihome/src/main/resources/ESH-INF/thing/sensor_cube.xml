@@ -24,7 +24,7 @@
 
 	<channel-type id="cubeAction">
 		<kind>trigger</kind>
-		<label>Cube event</label>
+		<label>Cube Event</label>
 		<event>
 			<options>
 				<option value="MOVE">move</option>

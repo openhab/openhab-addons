@@ -22,7 +22,7 @@ import com.google.gson.annotations.Expose;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-public class SetRelayState implements HasErrorResponse {
+public class SetRelayState extends ContextState implements HasErrorResponse {
 
     public static class RelayState extends ErrorResponse {
         @Expose(deserialize = false)
@@ -37,6 +37,10 @@ public class SetRelayState implements HasErrorResponse {
     public static class System {
         @Expose
         private RelayState setRelayState = new RelayState();
+
+        public void setRelayState(OnOffType onOff) {
+            setRelayState.state = onOff == OnOffType.ON ? 1 : 0;
+        }
 
         @Override
         public String toString() {
@@ -53,7 +57,7 @@ public class SetRelayState implements HasErrorResponse {
     }
 
     public void setRelayState(OnOffType onOff) {
-        system.setRelayState.state = onOff == OnOffType.ON ? 1 : 0;
+        system.setRelayState(onOff);
     }
 
     @Override

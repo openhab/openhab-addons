@@ -154,7 +154,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
     }
 
     private void processChannelWriteRequest(RegoRegisterMapper.Channel channel, Command command) {
-        short value = (short) (commandToValue(command) / channel.scaleFactor() + 0.5);
+        short value = (short) Math.round(commandToValue(command) / channel.scaleFactor());
         byte[] commandPayload = CommandFactory.createWriteToSystemRegisterCommand(channel.address(), value);
         executeCommand(null, commandPayload, ResponseParserFactory.WRITE, result -> {
             // Ignore result since it is a write command.
@@ -235,7 +235,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
             byte[] command = CommandFactory.createReadFromSystemRegisterCommand(channel.address());
             executeCommandAndUpdateState(channelIID, command, ResponseParserFactory.SHORT, value -> {
                 Unit<?> unit = channel.unit();
-                double result = value * channel.scaleFactor();
+                double result = Math.round(channel.convertValue(value) * channel.scaleFactor() * 10.0) / 10.0;
                 return unit != null ? new QuantityType<>(result, unit) : new DecimalType(result);
             });
         } else {

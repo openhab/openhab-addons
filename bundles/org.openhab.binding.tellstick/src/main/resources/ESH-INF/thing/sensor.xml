@@ -144,7 +144,7 @@
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>Last device update</label>
+		<label>Last Device Update</label>
 		<description>Last device update</description>
 		<state readOnly="true">
 		</state>

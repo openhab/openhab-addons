@@ -26,7 +26,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class NhcSystemInfo2 {
-    class NhcSwVersion {
+    static class NhcSwVersion {
         String nhcVersion = "";
         String cocoImage = "";
     }

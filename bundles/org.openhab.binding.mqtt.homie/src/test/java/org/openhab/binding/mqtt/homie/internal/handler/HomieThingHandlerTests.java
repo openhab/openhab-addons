@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.testHomieThing;
+import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.TEST_HOMIE_THING;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,35 +40,36 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ThingTypeRegistry;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.homie.ChannelStateHelper;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.homie.ThingHandlerHelper;
-import org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
+import org.openhab.binding.mqtt.homie.ChannelStateHelper;
+import org.openhab.binding.mqtt.homie.ThingHandlerHelper;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
-import org.openhab.binding.mqtt.homie.internal.handler.HomieThingHandler;
 import org.openhab.binding.mqtt.homie.internal.homie300.Device;
 import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes;
+import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.homie.internal.homie300.Node;
 import org.openhab.binding.mqtt.homie.internal.homie300.NodeAttributes;
 import org.openhab.binding.mqtt.homie.internal.homie300.Property;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes;
-import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataTypeEnum;
 
 /**
@@ -94,11 +95,14 @@ public class HomieThingHandlerTests {
     @Mock
     private ScheduledFuture<?> scheduledFuture;
 
+    @Mock
+    private ThingTypeRegistry thingTypeRegistry;
+
     private HomieThingHandler thingHandler;
 
-    private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider();
+    private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry);
 
-    private final String deviceID = ThingChannelConstants.testHomieThing.getId();
+    private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;
 
     // A completed future is returned for a subscribe call to the attributes
@@ -114,7 +118,7 @@ public class HomieThingHandlerTests {
         config.put("basetopic", "homie");
         config.put("deviceid", deviceID);
 
-        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, testHomieThing.getId())
+        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, TEST_HOMIE_THING.getId())
                 .withConfiguration(config).build();
         thing.setStatusInfo(thingStatus);
 
@@ -228,8 +232,10 @@ public class HomieThingHandlerTests {
         thingHandler.device.nodes.put(node.nodeID, node);
 
         ThingHandlerHelper.setConnection(thingHandler, connection);
-        thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
+        // we need to set a channel value first, undefined values ignored on REFRESH
+        property.getChannelState().getCache().update(new StringType("testString"));
 
+        thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
         verify(callback).stateUpdated(argThat(arg -> property.channelUID.equals(arg)),
                 argThat(arg -> property.getChannelState().getCache().getChannelState().equals(arg)));
     }

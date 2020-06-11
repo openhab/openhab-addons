@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.A5_11;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.function.Function;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -27,7 +29,7 @@ import org.openhab.binding.enocean.internal.eep.EEPHelper;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -40,7 +42,7 @@ public class A5_11_04 extends _4BSMessage {
         NO_ERROR_PRESENT,
         LAMP_FAILURE,
         INTERNAL_FAILURE,
-        FAILURE_ON_THE_EXTERNAL_PERIPHERY;
+        FAILURE_ON_THE_EXTERNAL_PERIPHERY
     }
 
     private enum ParameterMode {
@@ -177,7 +179,7 @@ public class A5_11_04 extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
         if (isErrorState()) {
             return UnDefType.UNDEF;
@@ -192,7 +194,7 @@ public class A5_11_04 extends _4BSMessage {
                 return getPowerMeasurementData();
             case CHANNEL_TOTALUSAGE:
                 State value = getEnergyMeasurementData();
-
+                State currentState = getCurrentStateFunc.apply(channelId);
                 return EEPHelper.validateTotalUsage(value, currentState, config);
             case CHANNEL_COUNTER:
                 return getOperatingHours();

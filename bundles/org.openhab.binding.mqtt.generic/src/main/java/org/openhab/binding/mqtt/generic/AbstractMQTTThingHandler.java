@@ -14,7 +14,6 @@ package org.openhab.binding.mqtt.generic;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -80,7 +79,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
      * @param channelUID The channelUID
      * @return A channel state. May be null.
      */
-    abstract public @Nullable ChannelState getChannelState(ChannelUID channelUID);
+    public abstract @Nullable ChannelState getChannelState(ChannelUID channelUID);
 
     /**
      * Start the topic discovery and subscribe to all channel state topics on all {@link ChannelState}s.
@@ -89,7 +88,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
      * @param connection A started broker connection
      * @return A future that completes normal on success and exceptionally on any errors.
      */
-    abstract protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
+    protected abstract CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection);
 
     /**
      * Called when the MQTT connection disappeared.
@@ -107,23 +106,36 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
         final @Nullable ChannelState data = getChannelState(channelUID);
 
         if (data == null) {
-            logger.warn("Channel {} not supported", channelUID.getId());
-            if (command instanceof RefreshType) {
-                updateState(channelUID.getId(), UnDefType.UNDEF);
+            logger.warn("Channel {} not supported!", channelUID);
+            return;
+        }
+
+        if (command instanceof RefreshType) {
+            State state = data.getCache().getChannelState();
+            if (state instanceof UnDefType) {
+                logger.debug("Channel {} received REFRESH but no value cached, ignoring", channelUID);
+            } else {
+                updateState(channelUID, state);
             }
             return;
         }
 
-        if (command instanceof RefreshType || data.isReadOnly()) {
-            updateState(channelUID.getId(), data.getCache().getChannelState());
+        if (data.isReadOnly()) {
+            logger.trace("Channel {} is a read-only channel, ignoring command {}", channelUID, command);
             return;
         }
 
         final CompletableFuture<Boolean> future = data.publishValue(command);
-        future.exceptionally(e -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-            return false;
-        }).thenRun(() -> logger.debug("Successfully published value {} to topic {}", command, data.getStateTopic()));
+        future.handle((v, ex) -> {
+            if (ex != null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getLocalizedMessage());
+                logger.debug("Failed publishing value {} to topic {}: {}", command, data.getCommandTopic(),
+                        ex.getMessage());
+            } else {
+                logger.debug("Successfully published value {} to topic {}", command, data.getCommandTopic());
+            }
+            return null;
+        });
     }
 
     @Override
@@ -206,12 +218,22 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
 
     @Override
     public void dispose() {
-        MqttBrokerConnection connection = this.connection;
-        if (connection != null) {
-            connection.unsubscribeAll();
+        stop();
+        try {
+            unsubscribeAll().get(500, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.warn("unsubscription on disposal failed for {}: ", thing.getUID(), e);
         }
+        connection = null;
         super.dispose();
     }
+
+    /**
+     * this method must unsubscribe all topics used by this thing handler
+     *
+     * @return
+     */
+    public abstract CompletableFuture<Void> unsubscribeAll();
 
     @Override
     public void updateChannelState(ChannelUID channelUID, State value) {
@@ -231,7 +253,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler implemen
     public @Nullable MqttBrokerConnection getConnection() {
         return connection;
     }
-    
+
     /**
      * This is for tests only to inject a broker connection.
      *

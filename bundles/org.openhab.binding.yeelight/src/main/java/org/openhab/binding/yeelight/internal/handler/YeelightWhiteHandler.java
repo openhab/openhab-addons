@@ -37,7 +37,7 @@ public class YeelightWhiteHandler extends YeelightHandlerBase {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        handleCommandHelper(channelUID, command, "Handle White Command {}");
+        handleCommandHelper(channelUID, command, "Handle White Command");
     }
 
     @Override

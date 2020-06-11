@@ -15,14 +15,13 @@ package org.openhab.binding.nibeheatpump.internal.message;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.smarthome.core.util.HexUtils;
-
 import org.junit.Test;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 
 /**
  * Tests cases for {@link ModbusReadRequestMessage}.
  *
- * @author Pauli Anttila
+ * @author Pauli Anttila - Initial contribution
  */
 public class ModbusReadResponseMessageTest {
 

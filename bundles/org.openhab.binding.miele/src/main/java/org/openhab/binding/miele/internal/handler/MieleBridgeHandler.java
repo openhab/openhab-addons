@@ -66,6 +66,7 @@ import com.google.gson.JsonParser;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Fixed lifecycle issues
+ * @author Martin Lepsy - Added protocol information to support WiFi devices & some refactoring for HomeDevice
  */
 public class MieleBridgeHandler extends BaseBridgeHandler {
 
@@ -96,6 +97,9 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     // Data structures to de-JSONify whatever Miele appliances are sending us
     public class HomeDevice {
+
+        private static final String PROTOCOL_LAN = "LAN";
+
         public String Name;
         public String Status;
         public String ParentUID;
@@ -110,6 +114,19 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         public JsonObject Properties;
 
         HomeDevice() {
+        }
+
+        public String getId() {
+            return getApplianceId().replaceAll("[^a-zA-Z0-9_]", "_");
+        }
+
+        public String getProtocol() {
+            return ProtocolAdapterName.equals(PROTOCOL_LAN) ? HDM_LAN : HDM_ZIGBEE;
+        }
+
+        public String getApplianceId() {
+            return ProtocolAdapterName.equals(PROTOCOL_LAN) ? StringUtils.right(UID, UID.length() - HDM_LAN.length())
+                    : StringUtils.right(UID, UID.length() - HDM_ZIGBEE.length());
         }
     }
 
@@ -174,7 +191,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 headers = new HashMap<>();
 
                 onUpdate();
-                updateStatus(ThingStatus.ONLINE);
+                updateStatus(ThingStatus.UNKNOWN);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Invalid IP address for the Miele@Home gateway or multicast interface:" + getConfig().get(HOST)
@@ -187,7 +204,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     private Runnable pollingRunnable = new Runnable() {
-
         @Override
         public void run() {
             if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()) {
@@ -196,10 +212,8 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                         currentBridgeConnectionState = true;
                     } else {
                         currentBridgeConnectionState = false;
-                        if (lastBridgeConnectionState) {
-                            lastBridgeConnectionState = false;
-                            onConnectionLost();
-                        }
+                        lastBridgeConnectionState = false;
+                        onConnectionLost();
                     }
 
                     if (!lastBridgeConnectionState && currentBridgeConnectionState) {
@@ -220,7 +234,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                     }
                                 }
                                 if (!isExisting) {
-                                    logger.info("A new appliance with ID '{}' has been added", hd.UID);
+                                    logger.debug("A new appliance with ID '{}' has been added", hd.UID);
                                     for (ApplianceStatusListener listener : applianceStatusListeners) {
                                         listener.onApplianceAdded(hd);
                                     }
@@ -236,7 +250,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                                     }
                                 }
                                 if (!isCurrent) {
-                                    logger.info("The appliance with ID '{}' has been removed", hd);
+                                    logger.debug("The appliance with ID '{}' has been removed", hd);
                                     for (ApplianceStatusListener listener : applianceStatusListeners) {
                                         listener.onApplianceRemoved(hd);
                                     }
@@ -247,7 +261,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
                             for (Thing appliance : getThing().getThings()) {
                                 if (appliance.getStatus() == ThingStatus.ONLINE) {
-                                    String UID = "hdm:ZigBee:"
+                                    String UID = appliance.getProperties().get(PROTOCOL_PROPERTY_NAME)
                                             + (String) appliance.getConfiguration().getProperties().get(APPLIANCE_ID);
 
                                     Object[] args = new Object[2];
@@ -411,9 +425,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     };
 
     public JsonElement invokeOperation(String UID, String modelID, String methodName) {
+        return invokeOperation(UID, modelID, methodName, HDM_ZIGBEE);
+    }
+
+    public JsonElement invokeOperation(String UID, String modelID, String methodName, String protocol) {
+
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             Object[] args = new Object[4];
-            args[0] = "hdm:ZigBee:" + UID;
+            args[0] = protocol + UID;
             args[1] = "com.miele.xgw3000.gateway.hdm.deviceclasses.Miele" + modelID;
             args[2] = methodName;
             args[3] = null;
@@ -558,7 +577,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
      *
      */
     public void onConnectionLost() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
     }
 
     /**

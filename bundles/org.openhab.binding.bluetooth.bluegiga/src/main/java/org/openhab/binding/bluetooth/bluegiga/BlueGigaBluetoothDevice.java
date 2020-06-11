@@ -65,7 +65,7 @@ public class BlueGigaBluetoothDevice extends BluetoothDevice implements BlueGiga
         GET_SERVICES,
         GET_CHARACTERISTICS,
         CHARACTERISTIC_READ,
-        CHARACTERISTIC_WRITE;
+        CHARACTERISTIC_WRITE
     }
 
     private BlueGigaProcedure procedureProgress = BlueGigaProcedure.NONE;

@@ -14,7 +14,7 @@
 			<channel id="led" typeId="led" />
 			<channel id="rssi" typeId="rssi" />
 			<channel id="power" typeId="power" />
-			<channel id="energyUsage" typeId="energyUsage" />
+			<channel id="energyUsage" typeId="energy-usage" />
 			<channel id="current" typeId="current" />
 			<channel id="voltage" typeId="voltage" />
 		</channels>

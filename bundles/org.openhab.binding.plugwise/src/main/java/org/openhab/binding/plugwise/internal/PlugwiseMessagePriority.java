@@ -36,6 +36,6 @@ public enum PlugwiseMessagePriority {
      * Messages for normal state updates and Thing discovery. E.g. scheduled tasks that update the state of a
      * channel.
      */
-    UPDATE_AND_DISCOVERY;
+    UPDATE_AND_DISCOVERY
 
 }

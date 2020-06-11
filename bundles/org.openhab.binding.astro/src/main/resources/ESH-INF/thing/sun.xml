@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="sun">
-		<label>Astro sun data</label>
+		<label>Astro Sun Data</label>
 		<description>Provides astronomical data from the sun</description>
 
 		<channel-groups>

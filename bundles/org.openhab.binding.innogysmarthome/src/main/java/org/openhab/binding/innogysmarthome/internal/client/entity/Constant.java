@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity;
 
-import com.google.api.client.util.Key;
-
 /**
  * The {@link Constant} entity is used for {@link Action}s.
  *
@@ -22,7 +20,6 @@ import com.google.api.client.util.Key;
  */
 public class Constant {
 
-    @Key("value")
     public Object value;
 
     public Constant(Object value) {

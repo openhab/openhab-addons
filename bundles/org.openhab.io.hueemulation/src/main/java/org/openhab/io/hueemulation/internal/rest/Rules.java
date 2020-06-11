@@ -12,7 +12,6 @@
  */
 package org.openhab.io.hueemulation.internal.rest;
 
-import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -239,7 +238,7 @@ public class Rules implements RegistryChangeListener<Rule> {
     @ApiOperation(value = "Return all rules")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK") })
     public Response getRulesApi(@Context UriInfo uri,
-            @PathParam("username") @ApiParam(value = "username") String username) throws IOException {
+            @PathParam("username") @ApiParam(value = "username") String username) {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }

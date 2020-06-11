@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.D2_01;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_REPEATERMODE;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -41,7 +41,7 @@ public class D2_01_0F_NodON extends D2_01 {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         if (channelId.equalsIgnoreCase(CHANNEL_REPEATERMODE)) {
 
@@ -60,7 +60,7 @@ public class D2_01_0F_NodON extends D2_01 {
                 }
             }
         } else {
-            super.convertFromCommandImpl(channelId, channelTypeId, command, currentState, config);
+            super.convertFromCommandImpl(channelId, channelTypeId, command, getCurrentStateFunc, config);
         }
     }
 }

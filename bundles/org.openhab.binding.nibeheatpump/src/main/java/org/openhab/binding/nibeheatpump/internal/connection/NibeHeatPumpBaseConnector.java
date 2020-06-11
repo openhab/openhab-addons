@@ -67,7 +67,7 @@ public abstract class NibeHeatPumpBaseConnector implements NibeHeatPumpConnector
                 try {
                     listener.msgReceived(msg);
                 } catch (Exception e) {
-                    logger.error("Event listener invoking error, exception {}", e);
+                    logger.error("Event listener invoking error", e);
                 }
             }
         }
@@ -78,7 +78,7 @@ public abstract class NibeHeatPumpBaseConnector implements NibeHeatPumpConnector
             try {
                 listener.errorOccurred(error);
             } catch (Exception e) {
-                logger.error("Event listener invoking error, exception {}", e);
+                logger.error("Event listener invoking error", e);
             }
         }
     }

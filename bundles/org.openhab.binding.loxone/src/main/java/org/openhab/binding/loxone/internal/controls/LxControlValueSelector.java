@@ -24,7 +24,8 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragment;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.binding.loxone.internal.types.LxState;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
@@ -192,10 +193,11 @@ class LxControlValueSelector extends LxControl {
             logger.debug("Error parsing value for state {}: {}", stateName, e.getMessage());
         }
         if (minValue != null && maxValue != null && stepValue != null && minValue < maxValue) {
-            StateDescription description = new StateDescription(new BigDecimal(minValue), new BigDecimal(maxValue),
-                    new BigDecimal(stepValue), format, false, null);
-            addChannelStateDescription(channelId, description);
-            addChannelStateDescription(numberChannelId, description);
+            StateDescriptionFragment fragment = StateDescriptionFragmentBuilder.create()
+                    .withMinimum(new BigDecimal(minValue)).withMaximum(new BigDecimal(maxValue))
+                    .withStep(new BigDecimal(stepValue)).withPattern(format).withReadOnly(false).build();
+            addChannelStateDescriptionFragment(channelId, fragment);
+            addChannelStateDescriptionFragment(numberChannelId, fragment);
         }
     }
 }

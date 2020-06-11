@@ -53,7 +53,7 @@ public class LifxSelectorUtil {
 
     enum CastType {
         BROADCAST,
-        UNICAST;
+        UNICAST
     }
 
     @SuppressWarnings("resource")

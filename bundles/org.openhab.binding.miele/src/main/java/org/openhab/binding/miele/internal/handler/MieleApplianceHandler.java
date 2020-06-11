@@ -52,6 +52,7 @@ import com.google.gson.JsonParser;
  * the {@link ApplianceChannelSelector} datapoints
  *
  * @author Karel Goderis - Initial contribution
+ * @author Martin Lepsy - Added check for JsonNull result
  */
 public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannelSelector> extends BaseThingHandler
         implements ApplianceStatusListener {
@@ -142,8 +143,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
     }
 
     @Override
-    public void onApplianceStateChanged(String UID, DeviceClassObject dco) {
-        String myUID = "hdm:ZigBee:" + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+    public void onApplianceStateChanged(String UID, DeviceClassObject dco) { 
+        String myUID = ((String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME))  + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
         String modelID = StringUtils.right(dco.DeviceClass,
                 dco.DeviceClass.length() - new String("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele").length());
 
@@ -175,7 +176,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     @Override
     public void onAppliancePropertyChanged(String UID, DeviceProperty dp) {
-        String myUID = "hdm:ZigBee:" + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String myUID = ((String) getThing().getProperties().get(PROTOCOL_PROPERTY_NAME)) + (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
         if (myUID.equals(UID)) {
             try {
@@ -269,5 +270,9 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             }
         }
         return this.bridgeHandler;
+    }
+
+    protected boolean isResultProcessable(JsonElement result) {
+        return result != null && !result.isJsonNull();
     }
 }

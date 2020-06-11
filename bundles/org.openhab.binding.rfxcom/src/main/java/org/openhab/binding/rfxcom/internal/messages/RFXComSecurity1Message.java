@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for Security1 message.
@@ -196,7 +197,6 @@ public class RFXComSecurity1Message extends RFXComBatteryDeviceMessage<RFXComSec
 
     @Override
     public void encodeMessage(byte[] data) throws RFXComException {
-
         super.encodeMessage(data);
 
         subType = fromByte(SubType.class, super.subType);
@@ -212,7 +212,6 @@ public class RFXComSecurity1Message extends RFXComBatteryDeviceMessage<RFXComSec
 
     @Override
     public byte[] decodeMessage() {
-
         byte[] data = new byte[9];
 
         data[0] = 0x08;
@@ -234,8 +233,7 @@ public class RFXComSecurity1Message extends RFXComBatteryDeviceMessage<RFXComSec
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
-
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_MOTION:
                 switch (status) {
@@ -265,7 +263,7 @@ public class RFXComSecurity1Message extends RFXComBatteryDeviceMessage<RFXComSec
                 return new StringType(status.toString());
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -275,13 +273,12 @@ public class RFXComSecurity1Message extends RFXComBatteryDeviceMessage<RFXComSec
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         sensorId = Integer.parseInt(deviceId);
     }
 
     @Override
     public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
-
         switch (channelId) {
             case CHANNEL_COMMAND:
                 if ((type instanceof OnOffType) && (subType == SubType.X10_SECURITY_REMOTE)) {

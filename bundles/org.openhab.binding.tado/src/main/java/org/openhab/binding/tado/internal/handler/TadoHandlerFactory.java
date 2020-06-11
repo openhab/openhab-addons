@@ -44,7 +44,7 @@ import org.osgi.service.component.annotations.Component;
 public class TadoHandlerFactory extends BaseThingHandlerFactory {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_HOME, THING_TYPE_ZONE, THING_TYPE_MOBILE_DEVICE)));;
+            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_HOME, THING_TYPE_ZONE, THING_TYPE_MOBILE_DEVICE)));
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 

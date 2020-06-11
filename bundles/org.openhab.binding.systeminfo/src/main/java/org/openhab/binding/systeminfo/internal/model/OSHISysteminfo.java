@@ -15,6 +15,8 @@ package org.openhab.binding.systeminfo.internal.model;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.osgi.service.component.annotations.Component;
@@ -45,29 +47,31 @@ import oshi.util.EdidUtil;
  *         initializeSysteminfo method
  * @author Christoph Weitkamp - Update to OSHI 3.13.0 - Replaced deprecated method
  *         CentralProcessor#getSystemSerialNumber()
+ * @author Wouter Born - Update to OSHI 4.0.0 and add null annotations
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI github repository</a>
  */
+@NonNullByDefault
 @Component(service = SysteminfoInterface.class)
 public class OSHISysteminfo implements SysteminfoInterface {
 
-    HardwareAbstractionLayer hal;
+    private final Logger logger = LoggerFactory.getLogger(OSHISysteminfo.class);
 
-    private Logger logger = LoggerFactory.getLogger(OSHISysteminfo.class);
+    private @NonNullByDefault({}) HardwareAbstractionLayer hal;
 
     // Dynamic objects (may be queried repeatedly)
-    private GlobalMemory memory;
-    private CentralProcessor cpu;
-    private Sensors sensors;
+    private @NonNullByDefault({}) GlobalMemory memory;
+    private @NonNullByDefault({}) CentralProcessor cpu;
+    private @NonNullByDefault({}) Sensors sensors;
 
     // Static objects, should be recreated on each request
-    private ComputerSystem computerSystem;
-    private OperatingSystem operatingSystem;
-    private NetworkIF[] networks;
-    private Display[] displays;
-    private OSFileStore[] fileStores;
-    private PowerSource[] powerSources;
-    private HWDiskStore[] drives;
+    private @NonNullByDefault({}) ComputerSystem computerSystem;
+    private @NonNullByDefault({}) OperatingSystem operatingSystem;
+    private @NonNullByDefault({}) NetworkIF[] networks;
+    private @NonNullByDefault({}) Display[] displays;
+    private @NonNullByDefault({}) OSFileStore[] fileStores;
+    private @NonNullByDefault({}) PowerSource[] powerSources;
+    private @NonNullByDefault({}) HWDiskStore[] drives;
 
     public static final int PRECISION_AFTER_DECIMAL_SIGN = 1;
 
@@ -103,9 +107,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
         drives = hal.getDiskStores();
     }
 
-    @SuppressWarnings("null")
-    private Object getDevice(Object[] devices, int index) throws DeviceNotFoundException {
-        if ((devices != null) && (devices.length <= index)) {
+    private Object getDevice(Object @Nullable [] devices, int index) throws DeviceNotFoundException {
+        if ((devices == null) || (devices.length <= index)) {
             throw new DeviceNotFoundException("Device with index: " + index + " can not be found!");
         }
         return devices[index];
@@ -171,13 +174,6 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getCpuLoad() {
-        double processorLoad = cpu.getSystemCpuLoad();
-        BigDecimal processorLoadPercent = getPercentsValue(processorLoad);
-        return new DecimalType(processorLoadPercent);
-    }
-
-    @Override
     public DecimalType getMemoryTotal() {
         long totalMemory = memory.getTotal();
         totalMemory = getSizeInMB(totalMemory);
@@ -236,7 +232,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
+    public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
         // In the current OSHI version a new query is required for the storage data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         fileStores = operatingSystem.getFileSystem().getFileStores();
@@ -253,7 +249,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
+    public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
         // In the current OSHI version a new query is required for the storage data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         fileStores = operatingSystem.getFileSystem().getFileStores();
@@ -333,28 +329,28 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getSensorsCpuTemperature() {
+    public @Nullable DecimalType getSensorsCpuTemperature() {
         BigDecimal cpuTemp = new BigDecimal(sensors.getCpuTemperature());
         cpuTemp = cpuTemp.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
         return cpuTemp.signum() == 1 ? new DecimalType(cpuTemp) : null;
     }
 
     @Override
-    public DecimalType getSensorsCpuVoltage() {
+    public @Nullable DecimalType getSensorsCpuVoltage() {
         BigDecimal cpuVoltage = new BigDecimal(sensors.getCpuVoltage());
         cpuVoltage = cpuVoltage.setScale(PRECISION_AFTER_DECIMAL_SIGN, BigDecimal.ROUND_HALF_UP);
         return cpuVoltage.signum() == 1 ? new DecimalType(cpuVoltage) : null;
     }
 
     @Override
-    public DecimalType getSensorsFanSpeed(int index) throws DeviceNotFoundException {
+    public @Nullable DecimalType getSensorsFanSpeed(int index) throws DeviceNotFoundException {
         int[] fanSpeeds = sensors.getFanSpeeds();
         int speed = (int) getDevice(ArrayUtils.toObject(fanSpeeds), index);
         return speed > 0 ? new DecimalType(speed) : null;
     }
 
     @Override
-    public DecimalType getBatteryRemainingTime(int index) throws DeviceNotFoundException {
+    public @Nullable DecimalType getBatteryRemainingTime(int index) throws DeviceNotFoundException {
         // In the current OSHI version a new query is required for the battery data values to be updated
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         powerSources = hal.getPowerSources();
@@ -384,7 +380,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getMemoryAvailablePercent() {
+    public @Nullable DecimalType getMemoryAvailablePercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
         if (totalMemory > 0) {
@@ -397,7 +393,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getMemoryUsedPercent() {
+    public @Nullable DecimalType getMemoryUsedPercent() {
         long availableMemory = memory.getAvailable();
         long totalMemory = memory.getTotal();
         long usedMemory = totalMemory - availableMemory;
@@ -432,32 +428,32 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getSwapTotal() {
-        long swapTotal = memory.getSwapTotal();
+    public @Nullable DecimalType getSwapTotal() {
+        long swapTotal = memory.getVirtualMemory().getSwapTotal();
         swapTotal = getSizeInMB(swapTotal);
         return swapTotal > 0 ? new DecimalType(swapTotal) : null;
     }
 
     @Override
-    public DecimalType getSwapAvailable() {
-        long swapTotal = memory.getSwapTotal();
-        long swapUsed = memory.getSwapUsed();
+    public @Nullable DecimalType getSwapAvailable() {
+        long swapTotal = memory.getVirtualMemory().getSwapTotal();
+        long swapUsed = memory.getVirtualMemory().getSwapUsed();
         long swapAvaialble = swapTotal - swapUsed;
         swapAvaialble = getSizeInMB(swapAvaialble);
         return swapAvaialble > 0 ? new DecimalType(swapAvaialble) : null;
     }
 
     @Override
-    public DecimalType getSwapUsed() {
-        long swapTotal = memory.getSwapUsed();
+    public @Nullable DecimalType getSwapUsed() {
+        long swapTotal = memory.getVirtualMemory().getSwapUsed();
         swapTotal = getSizeInMB(swapTotal);
         return swapTotal > 0 ? new DecimalType(swapTotal) : null;
     }
 
     @Override
-    public DecimalType getSwapAvailablePercent() {
-        long usedSwap = memory.getSwapUsed();
-        long totalSwap = memory.getSwapTotal();
+    public @Nullable DecimalType getSwapAvailablePercent() {
+        long usedSwap = memory.getVirtualMemory().getSwapUsed();
+        long totalSwap = memory.getVirtualMemory().getSwapTotal();
         long freeSwap = totalSwap - usedSwap;
         if (totalSwap > 0) {
             double freePercentDecimal = (double) freeSwap / (double) totalSwap;
@@ -469,9 +465,9 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getSwapUsedPercent() {
-        long usedSwap = memory.getSwapUsed();
-        long totalSwap = memory.getSwapTotal();
+    public @Nullable DecimalType getSwapUsedPercent() {
+        long usedSwap = memory.getVirtualMemory().getSwapUsed();
+        long totalSwap = memory.getVirtualMemory().getSwapTotal();
         if (totalSwap > 0) {
             double usedPercentDecimal = (double) usedSwap / (double) totalSwap;
             BigDecimal usedPercent = getPercentsValue(usedPercentDecimal);
@@ -503,7 +499,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public DecimalType getCpuLoad1() {
+    public @Nullable DecimalType getCpuLoad1() {
         BigDecimal avarageCpuLoad = getAvarageCpuLoad(1);
         return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
     }
@@ -514,7 +510,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public DecimalType getCpuLoad5() {
+    public @Nullable DecimalType getCpuLoad5() {
         BigDecimal avarageCpuLoad = getAvarageCpuLoad(5);
         return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
     }
@@ -525,7 +521,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * This information is available only on Mac and Linux OS.
      */
     @Override
-    public DecimalType getCpuLoad15() {
+    public @Nullable DecimalType getCpuLoad15() {
         BigDecimal avarageCpuLoad = getAvarageCpuLoad(15);
         return avarageCpuLoad.signum() == -1 ? null : new DecimalType(avarageCpuLoad);
     }
@@ -554,7 +550,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getCpuUptime() {
-        long seconds = cpu.getSystemUptime();
+        long seconds = operatingSystem.getSystemUptime();
         return new DecimalType(getTimeInMinutes(seconds));
     }
 
@@ -577,7 +573,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         networks = hal.getNetworkIFs();
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
-        network.updateNetworkStats();
+        network.updateAttributes();
         long packRecv = network.getPacketsRecv();
         return new DecimalType(packRecv);
     }
@@ -588,7 +584,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         networks = hal.getNetworkIFs();
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
-        network.updateNetworkStats();
+        network.updateAttributes();
         long packSent = network.getPacketsSent();
         return new DecimalType(packSent);
     }
@@ -599,7 +595,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         networks = hal.getNetworkIFs();
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
-        network.updateNetworkStats();
+        network.updateAttributes();
         long bytesSent = network.getBytesSent();
         return new DecimalType(getSizeInMB(bytesSent));
     }
@@ -610,13 +606,13 @@ public class OSHISysteminfo implements SysteminfoInterface {
         // In OSHI 4.0.0. it is planned to change this mechanism - see https://github.com/oshi/oshi/issues/310
         networks = hal.getNetworkIFs();
         NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
-        network.updateNetworkStats();
+        network.updateAttributes();
         long bytesRecv = network.getBytesRecv();
         return new DecimalType(getSizeInMB(bytesRecv));
     }
 
     @Override
-    public StringType getProcessName(int pid) throws DeviceNotFoundException {
+    public @Nullable StringType getProcessName(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
             String name = process.getName();
@@ -627,7 +623,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
+    public @Nullable DecimalType getProcessCpuUsage(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
             double cpuUsageRaw = (process.getKernelTime() + process.getUserTime()) / process.getUpTime();
@@ -639,7 +635,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException {
+    public @Nullable DecimalType getProcessMemoryUsage(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
             long memortInBytes = process.getResidentSetSize();
@@ -651,7 +647,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public StringType getProcessPath(int pid) throws DeviceNotFoundException {
+    public @Nullable StringType getProcessPath(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
             String path = process.getPath();
@@ -662,7 +658,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
     }
 
     @Override
-    public DecimalType getProcessThreads(int pid) throws DeviceNotFoundException {
+    public @Nullable DecimalType getProcessThreads(int pid) throws DeviceNotFoundException {
         if (pid > 0) {
             OSProcess process = getProcess(pid);
             int threadCount = process.getThreadCount();

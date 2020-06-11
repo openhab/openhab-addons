@@ -53,5 +53,5 @@ public class XiaomiSensorSmokeHandler extends XiaomiSensorBaseAlarmHandler {
             Integer density = data.get(DENSITY).getAsInt();
             updateState(CHANNEL_DENSITY, new DecimalType(density));
         }
-    };
+    }
 }

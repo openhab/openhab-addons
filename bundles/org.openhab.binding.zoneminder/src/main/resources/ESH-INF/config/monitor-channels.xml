@@ -9,8 +9,8 @@
 			<label>Monitor ID</label>
 			<description>The ID of the monitor in ZoneMinder</description>
 		</parameter>
-		<parameter name="monitorTriggerTimeout" type="integer" required="false" min="0" max="65335">
-			<label>ForceAlarm timeout</label>
+		<parameter name="monitorTriggerTimeout" type="integer" required="false" min="0" max="65535">
+			<label>ForceAlarm Timeout</label>
 			<description>Timeout in seconds when activating alarm. Default is 60 seconds</description>
 			<default>60</default>
 		</parameter>

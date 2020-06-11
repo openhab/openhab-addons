@@ -15,8 +15,11 @@ package org.openhab.binding.lutron.internal.handler;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.lutron.internal.KeypadComponent;
+import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,36 +28,39 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Adair - Initial contribution
  */
+@NonNullByDefault
 public class VcrxHandler extends BaseKeypadHandler {
 
     private static enum Component implements KeypadComponent {
-        BUTTON1(1, "button1", "Button 1"),
-        BUTTON2(2, "button2", "Button 2"),
-        BUTTON3(3, "button3", "Button 3"),
-        BUTTON4(4, "button4", "Button 4"),
-        BUTTON5(5, "button5", "Button 5"),
-        BUTTON6(6, "button6", "Button 6"),
+        BUTTON1(1, "button1", "Button 1", ComponentType.BUTTON),
+        BUTTON2(2, "button2", "Button 2", ComponentType.BUTTON),
+        BUTTON3(3, "button3", "Button 3", ComponentType.BUTTON),
+        BUTTON4(4, "button4", "Button 4", ComponentType.BUTTON),
+        BUTTON5(5, "button5", "Button 5", ComponentType.BUTTON),
+        BUTTON6(6, "button6", "Button 6", ComponentType.BUTTON),
 
-        CCI1(30, "cci1", "CCI 1"),
-        CCI2(31, "cci2", "CCI 2"),
-        CCI3(32, "cci3", "CCI 3"),
-        CCI4(33, "cci4", "CCI 4"),
+        CCI1(30, "cci1", "CCI 1", ComponentType.CCI),
+        CCI2(31, "cci2", "CCI 2", ComponentType.CCI),
+        CCI3(32, "cci3", "CCI 3", ComponentType.CCI),
+        CCI4(33, "cci4", "CCI 4", ComponentType.CCI),
 
-        LED1(81, "led1", "LED 1"),
-        LED2(82, "led2", "LED 2"),
-        LED3(83, "led3", "LED 3"),
-        LED4(84, "led4", "LED 4"),
-        LED5(85, "led5", "LED 5"),
-        LED6(86, "led6", "LED 6");
+        LED1(81, "led1", "LED 1", ComponentType.LED),
+        LED2(82, "led2", "LED 2", ComponentType.LED),
+        LED3(83, "led3", "LED 3", ComponentType.LED),
+        LED4(84, "led4", "LED 4", ComponentType.LED),
+        LED5(85, "led5", "LED 5", ComponentType.LED),
+        LED6(86, "led6", "LED 6", ComponentType.LED);
 
         private final int id;
         private final String channel;
         private final String description;
+        private final ComponentType type;
 
-        Component(int id, String channel, String description) {
+        Component(int id, String channel, String description, ComponentType type) {
             this.id = id;
             this.channel = channel;
             this.description = description;
+            this.type = type;
         }
 
         @Override
@@ -72,15 +78,19 @@ public class VcrxHandler extends BaseKeypadHandler {
             return this.description;
         }
 
+        @Override
+        public ComponentType type() {
+            return type;
+        }
     }
 
-    private static final List<Component> buttonGroup = Arrays.asList(Component.BUTTON1, Component.BUTTON2,
+    private static final List<Component> BUTTONGROUP = Arrays.asList(Component.BUTTON1, Component.BUTTON2,
             Component.BUTTON3, Component.BUTTON4, Component.BUTTON5, Component.BUTTON6);
 
-    private static final List<Component> ledGroup = Arrays.asList(Component.LED1, Component.LED2, Component.LED3,
+    private static final List<Component> LEDGROUP = Arrays.asList(Component.LED1, Component.LED2, Component.LED3,
             Component.LED4, Component.LED5, Component.LED6);
 
-    private static final List<Component> cciGroup = Arrays.asList(Component.CCI1, Component.CCI2, Component.CCI3,
+    private static final List<Component> CCIGROUP = Arrays.asList(Component.CCI1, Component.CCI2, Component.CCI3,
             Component.CCI4);
 
     private final Logger logger = LoggerFactory.getLogger(VcrxHandler.class);
@@ -101,12 +111,12 @@ public class VcrxHandler extends BaseKeypadHandler {
     }
 
     @Override
-    protected void configureComponents(String model) {
+    protected void configureComponents(@Nullable String model) {
         logger.debug("Configuring components for VCRX");
 
-        buttonList.addAll(buttonGroup);
-        ledList.addAll(ledGroup);
-        cciList.addAll(cciGroup);
+        buttonList.addAll(BUTTONGROUP);
+        ledList.addAll(LEDGROUP);
+        cciList.addAll(CCIGROUP);
     }
 
     public VcrxHandler(Thing thing) {

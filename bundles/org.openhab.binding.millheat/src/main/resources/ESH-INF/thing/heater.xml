@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="millheat"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="heater">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account" />
+		</supported-bridge-type-refs>
+
+		<label>Wi-Fi Enabled Heater</label>
+
+		<channels>
+			<channel id="currentTemperature" typeId="currentTemperature" />
+			<channel id="heatingActive" typeId="heatingActive" />
+			<channel id="fanActive" typeId="fanActive" />
+			<channel id="currentEnergy" typeId="currentEnergy" />
+			<channel id="independent" typeId="independent" />
+			<channel id="window" typeId="window" />
+		</channels>
+
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:millheat:heater" />
+	</thing-type>
+</thing:thing-descriptions>

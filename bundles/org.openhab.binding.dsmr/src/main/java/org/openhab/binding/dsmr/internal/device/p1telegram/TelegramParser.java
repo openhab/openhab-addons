@@ -32,11 +32,11 @@ public interface TelegramParser {
      * Reset the current telegram state.
      */
     default void reset() {
-    };
+    }
 
     /**
      * @param lenientMode the lenientMode to set
      */
     default void setLenientMode(boolean lenientMode) {
-    };
+    }
 }

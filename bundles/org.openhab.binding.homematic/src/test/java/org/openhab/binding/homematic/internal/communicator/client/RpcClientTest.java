@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.communicator.client;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*;
 import static org.openhab.binding.homematic.test.util.DimmerHelper.*;
@@ -31,6 +29,9 @@ import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.test.util.RpcClientMockImpl;
 
+/**
+ * @author Florian Stolte - Initial contribution
+ */
 public class RpcClientTest extends JavaTest {
 
     private RpcClientMockImpl rpcClient;

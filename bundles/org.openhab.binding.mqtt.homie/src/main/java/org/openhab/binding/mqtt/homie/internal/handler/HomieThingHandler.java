@@ -33,11 +33,11 @@ import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homie.internal.homie300.Device;
 import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes;
+import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.openhab.binding.mqtt.homie.internal.homie300.DeviceCallback;
 import org.openhab.binding.mqtt.homie.internal.homie300.HandlerConfiguration;
 import org.openhab.binding.mqtt.homie.internal.homie300.Node;
 import org.openhab.binding.mqtt.homie.internal.homie300.Property;
-import org.openhab.binding.mqtt.homie.internal.homie300.DeviceAttributes.ReadyState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,17 +107,21 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     @Override
     public void handleRemoval() {
         this.stop();
-        if(config.removetopics)
+        if (config.removetopics) {
             this.removeRetainedTopics();
+        }
         super.handleRemoval();
     }
 
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
         logger.debug("About to start Homie device {}", device.attributes.name);
-        // We have mostly retained messages for Homie. QoS 1 is required.
-        connection.setRetain(true);
-        connection.setQos(1);
+        if (connection.getQos() != 1) {
+            // QoS 1 is required.
+            logger.warn(
+                    "Homie devices require QoS 1 but Qos 0/2 is configured. Using override. Please check the configuration");
+            connection.setQos(1);
+        }
         return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
             return device.startChannels(connection, scheduler, attributeReceiveTimeout, this);
         }).thenRun(() -> {
@@ -135,6 +139,12 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         }
         delayedProcessing.join();
         device.stop();
+    }
+
+    @Override
+    public CompletableFuture<Void> unsubscribeAll() {
+        // already unsubscribed everything by calling stop()
+        return CompletableFuture.allOf();
     }
 
     @Override
@@ -216,12 +226,18 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
             });
         }
     }
+
     /**
      * Removes all retained topics related to the device
      */
     private void removeRetainedTopics() {
-        device.getRetainedTopics().stream().map(
-            d -> {return String.format("%s/%s", config.basetopic, d);}).collect(Collectors.toList()).forEach(
-                t -> this.connection.publish(t, new byte[0], 1, true));
+        MqttBrokerConnection connection = this.connection;
+        if (connection == null) {
+            logger.warn("couldn't remove retained topics for {} because connection is null", thing.getUID());
+            return;
+        }
+        device.getRetainedTopics().stream().map(d -> {
+            return String.format("%s/%s", config.basetopic, d);
+        }).collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
     }
 }

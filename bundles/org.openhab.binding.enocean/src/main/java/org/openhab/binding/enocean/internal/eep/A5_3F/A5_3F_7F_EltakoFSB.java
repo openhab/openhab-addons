@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_3F;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -48,7 +48,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
         int shutTime = 0xFF;
         if (config != null) {
@@ -56,7 +56,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
         }
 
         if (command instanceof PercentType) {
-            State channelState = currentState.get(channelId);
+            State channelState = getCurrentStateFunc.apply(channelId);
 
             PercentType target = (PercentType) command;
             if (target.intValue() == PercentType.ZERO.intValue()) {
@@ -91,20 +91,29 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
+        State currentState = getCurrentStateFunc.apply(channelId);
 
         if (currentState != null) {
-            int direction = getDB_1() == MoveUp ? -1 : 1;
             int duration = ((getDB_3Value() << 8) + getDB_2Value()) / 10; // => Time in DB3 and DB2 is given
                                                                           // in ms
 
-            PercentType current = currentState.as(PercentType.class);
-            if (config != null && current != null) {
+            if (config != null) {
                 EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
-                if (c.shutTime != -1 && c.shutTime != 0) {
-                    return new PercentType(Math.min(100, (Math.max(0, current.intValue()
-                            + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
+                if (duration == c.shutTime) {
+                    return getDB_1() == MoveUp ? PercentType.ZERO : PercentType.HUNDRED;
+                } else {
+                    PercentType current = PercentType.ZERO;
+                    if (currentState instanceof PercentType) {
+                        current = currentState.as(PercentType.class);
+                    }
+
+                    int direction = getDB_1() == MoveUp ? -1 : 1;
+                    if (c.shutTime != -1 && c.shutTime != 0) {
+                        return new PercentType(Math.min(100, (Math.max(0, current.intValue()
+                                + direction * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
+                    }
                 }
             }
         }

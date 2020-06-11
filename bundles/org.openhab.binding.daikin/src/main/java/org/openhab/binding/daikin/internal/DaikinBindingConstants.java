@@ -14,6 +14,8 @@ package org.openhab.binding.daikin.internal;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -23,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
  */
 @NonNullByDefault
 public class DaikinBindingConstants {
@@ -31,6 +34,7 @@ public class DaikinBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AC_UNIT = new ThingTypeUID(BINDING_ID, "ac_unit");
+    public static final ThingTypeUID THING_TYPE_AIRBASE_AC_UNIT = new ThingTypeUID(BINDING_ID, "airbase_ac_unit");
 
     // List of all Channel ids
     public static final String CHANNEL_AC_TEMP = "settemp";
@@ -42,5 +46,10 @@ public class DaikinBindingConstants {
     public static final String CHANNEL_AC_FAN_DIR = "fandir";
     public static final String CHANNEL_HUMIDITY = "humidity";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AC_UNIT);
+    // additional channels for Airbase Controller
+    public static final String CHANNEL_AIRBASE_AC_FAN_SPEED = "airbasefanspeed";
+    public static final String CHANNEL_AIRBASE_AC_ZONE = "zone";
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_AC_UNIT, THING_TYPE_AIRBASE_AC_UNIT).collect(Collectors.toSet()));
 }

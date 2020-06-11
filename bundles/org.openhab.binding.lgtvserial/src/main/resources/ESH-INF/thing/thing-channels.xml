@@ -12,13 +12,13 @@
 
 	<channel-type id="3d-extended">
 		<item-type>String</item-type>
-		<label>3d extended</label>
+		<label>3d Extended</label>
 		<description>Change the 3d option, if your TV supports it</description>
 	</channel-type>
 
 	<channel-type id="aspect-ratio">
 		<item-type>String</item-type>
-		<label>Aspect ratio</label>
+		<label>Aspect Ratio</label>
 		<description>Adjust the screen format</description>
 		<state>
 			<options>
@@ -49,13 +49,13 @@
 
 	<channel-type id="auto-sleep">
 		<item-type>Switch</item-type>
-		<label>Auto sleep</label>
+		<label>Auto Sleep</label>
 		<description>Set Auto Sleep</description>
 	</channel-type>
 
 	<channel-type id="auto-volume">
 		<item-type>Switch</item-type>
-		<label>Auto volume</label>
+		<label>Auto Volume</label>
 		<description>Automatically adjust the volume level</description>
 	</channel-type>
 
@@ -97,7 +97,7 @@
 
 	<channel-type id="color-temperature">
 		<item-type>String</item-type>
-		<label>Color temperature</label>
+		<label>Color Temperature</label>
 		<description>Color temperature of the display</description>
 		<state>
 			<options>
@@ -110,7 +110,7 @@
 
 	<channel-type id="color-temperature2">
 		<item-type>Dimmer</item-type>
-		<label>Color temperature</label>
+		<label>Color Temperature</label>
 		<description>Color temperature of the display (between 0 and 100)</description>
 	</channel-type>
 
@@ -122,7 +122,7 @@
 
 	<channel-type id="elapsed-time">
 		<item-type>String</item-type>
-		<label>Elapsed time</label>
+		<label>Elapsed Time</label>
 		<description>Read the elapsed time</description>
 	</channel-type>
 
@@ -144,7 +144,7 @@
 
 	<channel-type id="fan-fault-check">
 		<item-type>String</item-type>
-		<label>Fan fault</label>
+		<label>Fan Fault</label>
 		<description>Check the fan fault of the TV</description>
 		<state readOnly="true">
 			<options>
@@ -288,7 +288,7 @@
 
 	<channel-type id="lamp-fault-check">
 		<item-type>String</item-type>
-		<label>Lamp fault</label>
+		<label>Lamp Fault</label>
 		<description>Check the lamp fault of the TV</description>
 		<state readOnly="true">
 			<options>
@@ -300,7 +300,7 @@
 
 	<channel-type id="natural-mode">
 		<item-type>Switch</item-type>
-		<label>Natural mode</label>
+		<label>Natural Mode</label>
 		<description>To assign the Tile Natural mode for Tiling function</description>
 	</channel-type>
 
@@ -332,7 +332,7 @@
 
 	<channel-type id="picture-mode">
 		<item-type>String</item-type>
-		<label>Picture mode</label>
+		<label>Picture Mode</label>
 		<description>To adjust picture mode</description>
 		<state>
 			<options>
@@ -355,13 +355,13 @@
 
 	<channel-type id="power-indicator">
 		<item-type>Switch</item-type>
-		<label>Power indicator</label>
+		<label>Power Indicator</label>
 		<description>To set the LED for Power Indicator</description>
 	</channel-type>
 
 	<channel-type id="power-saving">
 		<item-type>String</item-type>
-		<label>Power saving</label>
+		<label>Power Saving</label>
 		<description>Set the Power saving mode</description>
 		<state>
 			<options>
@@ -381,7 +381,7 @@
 
 	<channel-type id="screen-mute">
 		<item-type>String</item-type>
-		<label>Screen mute</label>
+		<label>Screen Mute</label>
 		<description>Select screen mute on/off</description>
 		<state>
 			<options>
@@ -394,7 +394,7 @@
 
 	<channel-type id="serial-number">
 		<item-type>String</item-type>
-		<label>Serial number</label>
+		<label>Serial Number</label>
 		<description>Read the serial numbers</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -408,7 +408,7 @@
 	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
 	<channel-type id="sleep-time">
 		<item-type>String</item-type>
-		<label>Sleep time</label>
+		<label>Sleep Time</label>
 		<description>Set sleep time</description>
 		<state>
 			<options>
@@ -428,7 +428,7 @@
 	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
 	<channel-type id="sound-mode">
 		<item-type>String</item-type>
-		<label>Sound mode</label>
+		<label>Sound Mode</label>
 		<description>To adjust sound mode</description>
 		<state>
 			<options>
@@ -445,7 +445,7 @@
 
 	<channel-type id="software-version">
 		<item-type>String</item-type>
-		<label>Software version</label>
+		<label>Software Version</label>
 		<description>Check the software version</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -459,7 +459,7 @@
 	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
 	<channel-type id="temperature-value">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature value</label>
+		<label>Temperature Value</label>
 		<description>Read the inside temperature value</description>
 		<state readOnly="true" pattern="%.1f %unit%" />
 	</channel-type>
@@ -467,7 +467,7 @@
 	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
 	<channel-type id="tile">
 		<item-type>String</item-type>
-		<label>Tile mode</label>
+		<label>Tile Mode</label>
 		<description>Change a tile mode</description>
 		<state>
 			<options>
@@ -503,13 +503,13 @@
 
 	<channel-type id="tile-h-position">
 		<item-type>Dimmer</item-type>
-		<label>Horizontal position</label>
+		<label>Horizontal Position</label>
 		<description>Set the horizontal position</description>
 	</channel-type>
 
 	<channel-type id="tile-h-size">
 		<item-type>Dimmer</item-type>
-		<label>Horizontal size</label>
+		<label>Horizontal Size</label>
 		<description>Set the horizontal size</description>
 	</channel-type>
 
@@ -523,13 +523,13 @@
 
 	<channel-type id="tile-v-position">
 		<item-type>Dimmer</item-type>
-		<label>Vertical position</label>
+		<label>Vertical Position</label>
 		<description>Set the vertical position</description>
 	</channel-type>
 
 	<channel-type id="tile-v-size">
 		<item-type>Dimmer</item-type>
-		<label>Vertical size</label>
+		<label>Vertical Size</label>
 		<description>Set the vertical size</description>
 	</channel-type>
 

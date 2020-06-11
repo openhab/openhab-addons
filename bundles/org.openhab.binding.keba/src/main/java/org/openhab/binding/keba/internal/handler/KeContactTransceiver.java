@@ -236,7 +236,7 @@ class KeContactTransceiver {
                             boolean error = false;
 
                             for (KeContactHandler handler : handlers) {
-                                if (datagramChannels.get(handler).equals(theChannel)) {
+                                if (theChannel.equals(datagramChannels.get(handler))) {
                                     theHandler = handler;
                                     break;
                                 }

@@ -16,7 +16,6 @@ import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 /**
  * Shut up pax-web, which scans for this initializer class and loudly complains if it can't be found.
@@ -25,7 +24,7 @@ import javax.servlet.ServletException;
  */
 public class JerseyServletContainerInitializer implements ServletContainerInitializer {
     @Override
-    public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+    public void onStartup(Set<Class<?>> c, ServletContext ctx) {
 
     }
 }

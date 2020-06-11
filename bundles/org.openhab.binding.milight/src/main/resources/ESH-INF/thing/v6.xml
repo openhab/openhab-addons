@@ -35,7 +35,7 @@
 				<default>0</default>
 			</parameter>
 			<parameter name="repeat" type="integer" required="false" min="0" max="5">
-				<label>Repeat commands</label>
+				<label>Repeat Commands</label>
 				<description>Usually the bridge receives all commands albeit UDP is used. But the actual bulbs might be slightly out
 					of bridge radio range and it sometimes helps to send commands multiple times.
 				</description>
@@ -43,7 +43,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="delayTime" type="integer" required="false" min="0" max="400">
-				<label>Wait between commands (ms)</label>
+				<label>Wait Between Commands (ms)</label>
 				<description>Time to wait before sending another command to the bridge. It is safe to have a wait time of 1/10s but
 					usually sufficient to just wait 50ms. If the value is too high, commands queue up.
 				</description>
@@ -51,7 +51,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
-				<label>Custom port</label>
+				<label>Custom Port</label>
 				<description>You can set a custom port that will take precedence over the default port which is selected depending
 					on the bridge version: Version 6 uses 5987, Version 3/4/5 uses 8899. Version 2 uses 50000.
 				</description>
@@ -70,7 +70,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshTime" type="integer" min="100" max="10000" required="true">
-				<label>Keep alive interval</label>
+				<label>Keep Alive Interval</label>
 				<description>Interval in milliseconds to send a keep alive ping. If the value is too high, a session may expire and
 					the bridge and all devices could go offline for a few seconds.
 				</description>
@@ -84,7 +84,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridgeV6" />
 		</supported-bridge-type-refs>
-		<label>Integrated bulb (iBox)</label>
+		<label>Integrated Bulb (iBox)</label>
 		<description>Integrated bulb of the ibox bridge with no dedicated white channel and therefore no saturation control
 		</description>
 		<category>Lightbulb</category>
@@ -112,7 +112,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridgeV6" />
 		</supported-bridge-type-refs>
-		<label>Color bulb with cold white (iBox)</label>
+		<label>Color Bulb with Cold White (iBox)</label>
 		<description>Color bulb with white channel for the new Milight/Easybulb system.</description>
 		<category>Lightbulb</category>
 
@@ -142,7 +142,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridgeV6" />
 		</supported-bridge-type-refs>
-		<label>Color bulb with cold/warm white (iBox)</label>
+		<label>Color Bulb with Cold/warm White (iBox)</label>
 		<description>Color bulb with warm and cold white support for the new Milight/Easybulb system.</description>
 		<category>Lightbulb</category>
 

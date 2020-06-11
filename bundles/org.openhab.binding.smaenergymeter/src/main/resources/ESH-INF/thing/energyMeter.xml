@@ -33,7 +33,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pollingPeriod" type="integer" required="false">
-				<label>Polling period</label>
+				<label>Polling Period</label>
 				<description>Polling period for refreshing the data in s</description>
 				<default>30</default>
 				<advanced>true</advanced>
@@ -43,25 +43,25 @@
 
 	<channel-type id="powerInType">
 		<item-type>Number</item-type>
-		<label>Purchased power</label>
+		<label>Purchased Power</label>
 		<category>Energy</category>
 		<state pattern="%.2f W" readOnly="true" />
 	</channel-type>
 	<channel-type id="powerOutType">
 		<item-type>Number</item-type>
-		<label>Grid feed-in power</label>
+		<label>Grid Feed-in Power</label>
 		<category>Energy</category>
 		<state pattern="%.2f W" readOnly="true" />
 	</channel-type>
 	<channel-type id="energyInType">
 		<item-type>Number</item-type>
-		<label>Purchased energy</label>
+		<label>Purchased Energy</label>
 		<category>Energy</category>
 		<state pattern="%.2f kWh" readOnly="true" />
 	</channel-type>
 	<channel-type id="energyOutType">
 		<item-type>Number</item-type>
-		<label>Grid feed-in energy</label>
+		<label>Grid Feed-in Energy</label>
 		<category>Energy</category>
 		<state pattern="%.2f kWh" readOnly="true" />
 	</channel-type>

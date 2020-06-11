@@ -19,41 +19,41 @@ package org.openhab.binding.nanoleaf.internal.model;
  */
 public class Rhythm {
 
-    private Boolean rhythmConnected;
-    private Boolean rhythmActive;
-    private Integer rhythmId;
+    private boolean rhythmConnected;
+    private boolean rhythmActive;
+    private int rhythmId;
     private String hardwareVersion;
     private String firmwareVersion;
-    private Boolean auxAvailable;
-    private Integer rhythmMode;
+    private boolean auxAvailable;
+    private int rhythmMode;
     private RhythmPos rhythmPos;
 
-    public Boolean getRhythmConnected() {
+    public boolean getRhythmConnected() {
         return rhythmConnected;
     }
 
-    public void setRhythmConnected(Boolean rhythmConnected) {
+    public void setRhythmConnected(boolean rhythmConnected) {
         this.rhythmConnected = rhythmConnected;
     }
 
-    public Boolean getRhythmActive() {
+    public boolean getRhythmActive() {
         return rhythmActive;
     }
 
-    public void setRhythmActive(Boolean rhythmActive) {
+    public void setRhythmActive(boolean rhythmActive) {
         this.rhythmActive = rhythmActive;
     }
 
-    public Integer getRhythmId() {
+    public int getRhythmId() {
         return rhythmId;
     }
 
-    public void setRhythmId(Integer rhythmId) {
+    public void setRhythmId(int rhythmId) {
         this.rhythmId = rhythmId;
     }
 
     public String getHardwareVersion() {
-        return hardwareVersion;
+        return hardwareVersion == null ? "" : this.hardwareVersion;
     }
 
     public void setHardwareVersion(String hardwareVersion) {
@@ -61,26 +61,26 @@ public class Rhythm {
     }
 
     public String getFirmwareVersion() {
-        return firmwareVersion;
+        return firmwareVersion == null ? "" : this.firmwareVersion;
     }
 
     public void setFirmwareVersion(String firmwareVersion) {
         this.firmwareVersion = firmwareVersion;
     }
 
-    public Boolean getAuxAvailable() {
+    public boolean getAuxAvailable() {
         return auxAvailable;
     }
 
-    public void setAuxAvailable(Boolean auxAvailable) {
+    public void setAuxAvailable(boolean auxAvailable) {
         this.auxAvailable = auxAvailable;
     }
 
-    public Integer getRhythmMode() {
+    public int getRhythmMode() {
         return rhythmMode;
     }
 
-    public void setRhythmMode(Integer rhythmMode) {
+    public void setRhythmMode(int rhythmMode) {
         this.rhythmMode = rhythmMode;
     }
 

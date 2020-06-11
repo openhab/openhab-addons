@@ -32,7 +32,7 @@ public class PlugwiseRelayConfig {
     public enum PowerStateChanging {
         COMMAND_SWITCHING,
         ALWAYS_ON,
-        ALWAYS_OFF;
+        ALWAYS_OFF
     }
 
     private String macAddress = "";

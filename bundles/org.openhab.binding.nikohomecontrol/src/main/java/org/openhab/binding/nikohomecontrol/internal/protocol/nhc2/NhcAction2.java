@@ -15,6 +15,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +36,9 @@ public class NhcAction2 extends NhcAction {
     private String model;
     private String technology;
 
-    NhcAction2(String id, String name, String model, String technology, ActionType type, @Nullable String location) {
-        super(id, name, type, location);
+    NhcAction2(String id, String name, String model, String technology, ActionType type, @Nullable String location,
+            NikoHomeControlCommunication nhcComm) {
+        super(id, name, type, location, nhcComm);
         this.model = model;
         this.technology = technology;
     }
@@ -110,9 +112,7 @@ public class NhcAction2 extends NhcAction {
     public void execute(String command) {
         logger.debug("Niko Home Control: execute action {} of type {} for {}", command, type, id);
 
-        if (nhcComm != null) {
-            nhcComm.executeAction(id, command);
-        }
+        nhcComm.executeAction(id, command);
     }
 
     /**

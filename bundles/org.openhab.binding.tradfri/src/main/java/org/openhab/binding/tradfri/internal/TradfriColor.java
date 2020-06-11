@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tradfri.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 
@@ -24,6 +26,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
  * @author Stefan Triller - Use conversions from HSBType
  *
  */
+@NonNullByDefault
 public class TradfriColor {
 
     // Tradfri uses the CIE color space (see https://en.wikipedia.org/wiki/CIE_1931_color_space),
@@ -42,7 +45,7 @@ public class TradfriColor {
      * Brightness level in the tradfri range 0 to 254.
      * May be <code>null</code> if the calculation method does not support this color range.
      */
-    public Integer brightness;
+    public @Nullable Integer brightness;
 
     /**
      * Construct from CIE XY values in the tradfri range.
@@ -51,7 +54,7 @@ public class TradfriColor {
      * @param xyY y value 0 to 65535
      * @param xyBrightness brightness from 0 to 254
      */
-    public TradfriColor(Integer xyX, Integer xyY, Integer brightness) {
+    public TradfriColor(Integer xyX, Integer xyY, @Nullable Integer brightness) {
         this.xyX = xyX;
         this.xyY = xyY;
         if (brightness != null) {
@@ -86,6 +89,10 @@ public class TradfriColor {
 
         HSBType converted = HSBType.fromXY(x, y);
 
+        final Integer brightness = this.brightness;
+        if (brightness == null) {
+            throw new IllegalStateException("cannot convert to HSB with brightness=null");
+        }
         return new HSBType(converted.getHue(), converted.getSaturation(), xyBrightnessToPercentType(brightness));
     }
 
@@ -171,10 +178,11 @@ public class TradfriColor {
      * @return {@link PercentType} with brightness level (0 = light is off, 1 = lowest, 100 = highest)
      */
     public static PercentType xyBrightnessToPercentType(int xyBrightness) {
+
         if (xyBrightness > 254) {
-            xyBrightness = 254;
+            return PercentType.HUNDRED;
         } else if (xyBrightness < 0) {
-            xyBrightness = 0;
+            return PercentType.ZERO;
         }
         return new PercentType((int) Math.ceil(xyBrightness / 2.54));
     }

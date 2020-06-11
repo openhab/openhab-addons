@@ -19,9 +19,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
-import org.openhab.binding.bluetooth.bluegiga.internal.eir.EirDataType;
-import org.openhab.binding.bluetooth.bluegiga.internal.eir.EirRecord;
 
+/**
+ * Tests {@link EirRecord}.
+ *
+ * @author Kai Kreuzer - Initial contribution
+ */
 public class EirRecordTest {
 
     @SuppressWarnings("unchecked")

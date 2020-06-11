@@ -30,21 +30,21 @@
 
 	<channel-type id="energystamp" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Energy timestamp</label>
+		<label>Energy Timestamp</label>
 		<description>Timestamp of the start of the last energy measurement interval</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="lastseen" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Last seen</label>
+		<label>Last Seen</label>
 		<description>Timestamp of the last received message</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="leftbuttonstate">
 		<item-type>Switch</item-type>
-		<label>Left button state</label>
+		<label>Left Button State</label>
 		<description>Current state of the left button</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -60,7 +60,7 @@
 
 	<channel-type id="realtimeclock" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Real-time clock</label>
+		<label>Real-time Clock</label>
 		<description>Time as indicated by the real-time internal clock of the Circle+</description>
 		<state readOnly="true"></state>
 		<config-description-ref uri="channel-type:plugwise:slowerupdates" />
@@ -68,7 +68,7 @@
 
 	<channel-type id="rightbuttonstate">
 		<item-type>Switch</item-type>
-		<label>Right button state</label>
+		<label>Right Button State</label>
 		<description>Current state of the right button</description>
 		<state readOnly="true" />
 	</channel-type>

@@ -14,7 +14,7 @@ package org.openhab.binding.neeo.internal.net;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -101,8 +101,7 @@ public class HttpResponse {
             return "";
         }
 
-        final Charset charSet = Charset.forName("utf-8");
-        return new String(localContents, charSet);
+        return new String(localContents, StandardCharsets.UTF_8);
     }
 
     /**

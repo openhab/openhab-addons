@@ -32,6 +32,9 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
+import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
+import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * Discovery service for Daikin AC units.
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
  *
  */
 @Component(service = DiscoveryService.class)
@@ -121,20 +125,37 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
             String host = incomingPacket.getAddress().toString().substring(1);
             logger.debug("Received packet from {}", host);
-            new DaikinWebTargets(host).getControlInfo();
+            // look for Daikin controller
+            ControlInfo controlInfo = new DaikinWebTargets(host).getControlInfo();
+            if (controlInfo.ret.equals("OK")) {
+                ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AC_UNIT, host.replace('.', '_'));
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin AC Unit (" + host + ")")
+                        .build();
 
-            ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AC_UNIT, host.replace('.', '_'));
-            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                    .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin AC Unit (" + host + ")")
-                    .build();
+                logger.debug("Successfully discovered host {}", host);
+                thingDiscovered(result);
+                return true;
+            }
+            // look for Daikin Airbase controller
+            AirbaseControlInfo airbaseControlInfo = new DaikinWebTargets(host).getAirbaseControlInfo();
+            if (airbaseControlInfo.ret.equals("OK")) {
+                AirbaseBasicInfo basicInfo = new DaikinWebTargets(host).getAirbaseBasicInfo();
+                ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT, basicInfo.ssid);
+                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin Airbase AC Unit (" + host + ")")
+                        .build();
 
-            logger.debug("Successfully discovered host {}", host);
-            thingDiscovered(result);
+                logger.debug("Successfully discovered host {}", host);
+                thingDiscovered(result);
+                return true;
+            }
+
         } catch (Exception e) {
             return false;
         }
-
-        return true;
+        // Shouldn't get here unless we don't detect a controller
+        return false;
     }
 
     private List<InetAddress> getBroadcastAddresses() {

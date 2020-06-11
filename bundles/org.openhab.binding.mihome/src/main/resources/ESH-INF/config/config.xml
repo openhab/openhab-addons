@@ -6,7 +6,7 @@
 
 	<config-description uri="thing-type:mihome:device">
 		<parameter name="itemId" type="text">
-			<label>MiHome device ID</label>
+			<label>MiHome Device ID</label>
 			<description>The identifier of this MiHome device</description>
 			<required>true</required>
 			<advanced>true</advanced>

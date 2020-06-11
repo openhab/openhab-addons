@@ -46,7 +46,7 @@ Once the system location will be changed, the background discovery updates the c
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | apikey          | API key to access the OpenWeatherMap API. **Mandatory**                                                                                                                                                                                                                           |
 | refreshInterval | Specifies the refresh interval (in minutes). Optional, the default value is 60, the minimum value is 10.                                                                                                                                                                          |
-| language        | Language to be used by the OpenWeatherMap API. Optional, valid values are: `ar`, `bg`, `ca`, `de`, `el`, `en`, `es`, `fa`, `fi`, `fr`, `gl`, `hr`, `hu`, `it`, `ja`, `kr`, `la`, `lt`, `mk`,  `nl`, `pl`, `pt`, `ro`, `ru`, `sk`, `sl`, `sw`, `tr`, `ua`, `vi`, `zh_cn`, `zh_tw`. |
+| language        | Language to be used by the OpenWeatherMap API. Optional, valid values are: `ar`, `bg`, `ca`, `de`, `el`, `en`, `es`, `fa`, `fi`, `fr`, `gl`, `hr`, `hu`, `it`, `ja`, `kr`, `la`, `lt`, `mk`,  `nl`, `pl`, `pt`, `ro`, `ru`, `se`, `sk`, `sl`, `tr`, `ua`, `vi`, `zh_cn`, `zh_tw`. |
 
 ### Current Weather And Forecast
 
@@ -95,6 +95,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | current          | cloudiness     | Number:Dimensionless | Current cloudiness.                                                     |
 | current          | rain           | Number:Length        | Rain volume of the last hour.                                           |
 | current          | snow           | Number:Length        | Snow volume of the last hour.                                           |
+| current          | visibility     | Number:Length        | Current visibility.                                                     |
 
 **Attention**: Rain item is showing "1h" in the case when data are received from weather stations directly.
 The fact is that some METAR stations do not have precipitation indicators or do not measure precipitation conditions due to some other technical reasons.
@@ -184,6 +185,7 @@ Number:Angle localCurrentWindDirection "Current wind direction [%d %unit%]" <win
 Number:Dimensionless localCurrentCloudiness "Current cloudiness [%d %unit%]" <clouds> { channel="openweathermap:weather-and-forecast:api:local:current#cloudiness" }
 Number:Length localCurrentRainVolume "Current rain volume [%.1f %unit%]" <rain> { channel="openweathermap:weather-and-forecast:api:local:current#rain" }
 Number:Length localCurrentSnowVolume "Current snow volume [%.1f %unit%]" <snow> { channel="openweathermap:weather-and-forecast:api:local:current#snow" }
+Number:Length localCurrentVisibility "Current visibility [%.1f km]" <visibility> { channel="openweathermap:weather-and-forecast:api:local:current#visibility" }
 
 DateTime localDailyForecastTodayTimestamp "Timestamp of forecast [%1$tY-%1$tm-%1$td]" <time> { channel="openweathermap:weather-and-forecast:api:local:forecastToday#time-stamp" }
 String localDailyForecastTodayCondition "Condition for today [%s]" <sun_clouds> { channel="openweathermap:weather-and-forecast:api:local:forecastToday#condition" }
@@ -257,6 +259,7 @@ sitemap demo label="OpenWeatherMap" {
         Text item=localCurrentCloudiness
         Text item=localCurrentRainVolume
         Text item=localCurrentSnowVolume
+        Text item=localCurrentVisibility
     }
     Frame label="Local forecast for today" {
         Text item=localDailyForecastTodayTimestamp

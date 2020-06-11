@@ -29,5 +29,5 @@ public enum ZodiacSign {
     SAGITTARIUS,
     CAPRICORN,
     AQUARIUS,
-    PISCES;
+    PISCES
 }

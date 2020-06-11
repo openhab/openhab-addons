@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.A5_38;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_DIMMER;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -54,7 +54,7 @@ public class A5_38_08_Dimming extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_DIMMER:
                 byte dimmValue;
@@ -99,23 +99,22 @@ public class A5_38_08_Dimming extends _4BSMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, State currentState, Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_DIMMER:
-                if (!getBit(0, 0)) {
+                if (!getBit(getDB_0(), 0)) {
+                    // Switching Command is OFF (DB0.0==0), return 0%
                     return new PercentType(0);
                 } else {
+                    // DB2 contains the Dimming value (absolute[0...255] or relative/Eltako [0...100])
                     int dimmValue = getDB_2Value();
 
                     EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
-
-                    if (!c.eltakoDimmer) {
-                        if (getBit(0, 2)) {
-                            // relative value
-                        } else {
-                            // absolute value
-                            dimmValue /= 2.55;
-                        }
+                    
+                    // if Standard dimmer and Dimming Range is absolute (DB0.2==0), 
+                    if (!c.eltakoDimmer && !getBit(getDB_0(),2)) {
+                        //  map range [0...255] to [0%...100%]
+                        dimmValue /= 2.55;
                     }
 
                     return new PercentType(dimmValue);

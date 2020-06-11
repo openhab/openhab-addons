@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="PLENTICOREPLUS55WITHOUTBATTERY">
-		<label>KOSTAL PLENTICORE plus 5.5 (no battery)</label>
+		<label>KOSTAL PLENTICORE Plus 5.5 (no Battery)</label>
 		<description>Bindings for the KOSTAL PIKO PLENTICORE plus 5.5 solar inverter (no battery attached)</description>
 		<category>Inverter</category>
 		<channels>

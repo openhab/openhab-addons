@@ -19,5 +19,5 @@ package org.openhab.binding.openuv.internal;
  * @author Gaël L"hopital - Initial contribution
  */
 public class SafeExposureConfiguration {
-    public Integer index;
+    public int index = -1;
 }

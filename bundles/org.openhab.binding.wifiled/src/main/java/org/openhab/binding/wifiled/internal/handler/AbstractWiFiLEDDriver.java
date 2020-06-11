@@ -38,7 +38,7 @@ public abstract class AbstractWiFiLEDDriver {
     public enum Protocol {
         LD382,
         LD382A,
-        LD686;
+        LD686
     }
 
     public enum Driver {

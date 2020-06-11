@@ -53,6 +53,7 @@ public class AirQualityBindingConstants {
     public static final String O3 = "o3";
     public static final String NO2 = "no2";
     public static final String CO = "co";
+    public static final String SO2 = "so2";
     public static final String LOCATIONNAME = "locationName";
     public static final String STATIONLOCATION = "stationLocation";
     public static final String STATIONID = "stationId";
@@ -63,7 +64,7 @@ public class AirQualityBindingConstants {
     public static final String DOMINENTPOL = "dominentpol";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AQI);
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(AQI, AQIDESCRIPTION, PM25, PM10, O3, NO2, CO,
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(AQI, AQIDESCRIPTION, PM25, PM10, O3, NO2, CO, SO2,
             LOCATIONNAME, STATIONLOCATION, STATIONID, OBSERVATIONTIME, TEMPERATURE, PRESSURE, HUMIDITY)
             .collect(Collectors.toSet());
 

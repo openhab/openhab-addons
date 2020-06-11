@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Christian Niessner - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.bosesoundtouch")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.bosesoundtouch")
 public class BoseSoundTouchHandlerFactory extends BaseThingHandlerFactory {
 
     private StorageService storageService;

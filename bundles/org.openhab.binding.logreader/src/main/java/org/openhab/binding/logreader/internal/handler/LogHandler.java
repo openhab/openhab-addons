@@ -156,7 +156,6 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     @Override
     public void fileNotFound() {
         final String msg = String.format("Log file '%s' does not exist", configuration.filePath);
-        logger.debug(msg);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, msg);
     }
 

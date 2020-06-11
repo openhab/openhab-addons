@@ -28,7 +28,7 @@ public abstract class SonyAudioMethod {
         this.method = method;
         this.version = version;
     }
-};
+}
 
 /**
  * The {@link GetPowerStatus} SONY Audio control API method

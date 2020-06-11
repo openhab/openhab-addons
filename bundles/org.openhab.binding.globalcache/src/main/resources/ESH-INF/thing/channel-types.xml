@@ -12,7 +12,7 @@
 	</channel-type>
 
 	<channel-type id="channel-type-cc">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Contact Closure</label>
 		<description>Transmits contact closure command on module:connector</description>
 	</channel-type>

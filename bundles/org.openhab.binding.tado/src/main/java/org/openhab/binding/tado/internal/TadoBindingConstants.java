@@ -19,6 +19,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Dennis Frommknecht - Initial contribution
+ * @author Andrew Fiddian-Green - Added Low Battery Alarm, A/C Power and Open Window channels
+ * 
  */
 public class TadoBindingConstants {
 
@@ -41,6 +43,8 @@ public class TadoBindingConstants {
     public final static String CHANNEL_ZONE_HUMIDITY = "humidity";
 
     public final static String CHANNEL_ZONE_HEATING_POWER = "heatingPower";
+    // air conditioning power
+    public final static String CHANNEL_ZONE_AC_POWER = "acPower";
 
     public final static String CHANNEL_ZONE_HVAC_MODE = "hvacMode";
 
@@ -77,6 +81,11 @@ public class TadoBindingConstants {
 
     public final static String CHANNEL_ZONE_TIMER_DURATION = "timerDuration";
     public final static String CHANNEL_ZONE_OVERLAY_EXPIRY = "overlayExpiry";
+
+    // battery low alarm channel
+    public final static String CHANNEL_ZONE_BATTERY_LOW_ALARM = "batteryLowAlarm";
+    // open window detected channel
+    public final static String CHANNEL_ZONE_OPEN_WINDOW_DETECTED = "openWindowDetected";
 
     public final static String CHANNEL_MOBILE_DEVICE_AT_HOME = "atHome";
 

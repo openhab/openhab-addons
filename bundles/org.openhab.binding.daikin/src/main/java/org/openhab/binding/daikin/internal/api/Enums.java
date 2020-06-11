@@ -30,7 +30,7 @@ public class Enums {
         HEAT(4),
         FAN(6);
 
-        private static Logger LOGGER = LoggerFactory.getLogger(Mode.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(Mode.class);
         private final int value;
 
         Mode(int value) {
@@ -64,7 +64,7 @@ public class Enums {
         LEVEL_4("6"),
         LEVEL_5("7");
 
-        private static Logger LOGGER = LoggerFactory.getLogger(FanSpeed.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(FanSpeed.class);
         private final String value;
 
         FanSpeed(String value) {
@@ -96,7 +96,7 @@ public class Enums {
         HORIZONTAL(2),
         VERTICAL_AND_HORIZONTAL(3);
 
-        private static Logger LOGGER = LoggerFactory.getLogger(FanMovement.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger(FanMovement.class);
         private final int value;
 
         FanMovement(int value) {

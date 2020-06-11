@@ -22,7 +22,7 @@ Although it seems to work a majority of the times, there have been instances whe
 
 ## Device Discovery
 
-The Russound binding does support devices discovery via the paperUI.
+The Russound binding does support devices discovery via the Paper UI.
 When you start device discovery, the system will scan all network interfaces and **all IP Addresses in the subnet on each interface** looking for a Russound system device.
 If found, the device will be added to the inbox.
 Adding the device will then start a scan of the device to discover all the controllers, sources, and zones attached defined on the device.
@@ -30,7 +30,7 @@ As these are found, they will be added to the inbox.
 
 ## HABPANEL or other UI
 
-All media management functions are supported to allow building of a dynamic UI for the various streaming sources.  
+All media management functions are supported to allow building of a dynamic UI for the various streaming sources.
 All media management channels begin with "mm".
 An example HABPanel implementation can be found in the HABPanel forum.
 
@@ -144,7 +144,7 @@ The controller channel will contain up to 6 controllers and the sources will con
 | source             | RW         | Number     | The (physical) number for the current source                                              |
 | bass               | RW         | Number     | The bass setting (-10 to 10)                                                              |
 | treble             | RW         | Number     | The treble setting (-10 to 10)                                                            |
-| balance            | RW         | Number     | The balance setting (-10 &lsqb;full left&rsqb; to 10 &lsqb;full right&rsqb;)                                  |
+| balance            | RW         | Number     | The balance setting (-10 &lsqb;full left&rsqb; to 10 &lsqb;full right&rsqb;)              |
 | loudness           | RW         | Switch     | Set's the loudness on/off                                                                 |
 | turnonvolume       | RW         | Dimmer     | The initial volume when turned on (0 to 100)                                              |
 | donotdisturb       | RW         | String     | The do not disturb setting (on/off/slave)                                                 |
@@ -176,17 +176,20 @@ The controller channel will contain up to 6 controllers and the sources will con
 
 1.  As of the time of this document, rating ON (like) produced an error in the firmware from the related command.  This has been reported to Russound.
 2.  keypress/keyrelease/keyhold/keycode/event are advanced commands that will pass the related event string to Russound (i.e. `EVENT C[x].Z[y]!KeyPress [stringtype]`).  Please see the "RIO Protocol for 3rd Party Integrators.pdf" (found at the Russound Portal) for proper string forms.
-3.  If you send a OnOffType to the volume will have the same affect as turning the zone on/off (ie sending OnOffType to "status")
+3.  If you send an OnOffType to the volume will have the same affect as turning the zone on/off (ie sending OnOffType to "status")
 4.  The volume PercentType will be scaled to Russound's volume of 0-50 (ie 50% = volume of 25, 100% = volume of 50)
 5.  Initialize a media management session by sending ON to the channel.  The related source thing will then start sending out media management information in the MM channels.  To close the session - simply send OFF to the channel.  Sending OFF to the channel when a session has not been initialized does nothing.  Likewise if the related source is a tuner, this command does nothing.
 
 ##### System Favorites
 
-The JSON will look like `[{"id":xxx,"valid":true,"name":"yyyy"},...]` and will have a representation for each VALID favorite on the system (ie where "valid" is true).  You will have up to 32 system favorites in the JSON array (the ID field will be between 1 and 32).  System favorites will be the same on ALL zones (because they are system level).  This channel appears on the zone because when you send a system favorite representation to zone channel, it sets the system favorite to what is playing in the zone.  
+The JSON will look like `[{"id":xxx,"valid":true,"name":"yyyy"},...]` and will have a representation for each VALID favorite on the system (ie where "valid" is true).
+You will have up to 32 system favorites in the JSON array (the ID field will be between 1 and 32).
+System favorites will be the same on ALL zones (because they are system level).
+This channel appears on the zone because when you send a system favorite representation to zone channel, it sets the system favorite to what is playing in the zone.
 
 There are three different ways to use this channel:
 
-1.  Save a system favorite.  Send a representation with "valid" set to true.  Example: to set system favorite 3 to what is playing in the zone: `[{"id":3,"valid":true,"name":"80s Rock"}]`.  If system favorite 3 was invalid, this would save what is currently playing and make it valid.  If system favorite 3 was already valid, this would overlay the favorite with what is currently playing and change it's name.
+1.  Save a system favorite.  Send a representation with "valid" set to true.  Example: to set system favorite 3 to what is playing in the zone: `[{"id":3,"valid":true,"name":"80s Rock"}]`.  If system favorite 3 was invalid, this would save what is currently playing and make it valid.  If system favorite 3 was already valid, this would overlay the favorite with what is currently playing and change its name.
 2.  Update the name of a system favorite.  Send a representation of an existing ID with "valid" set to true and the new name.  Example: we could update system favorite 3 (after the above statement) by sending: `[{"id":3,"valid":true,"name":"80s Rock Even More"}]`.  Note this will ONLY change the name (this will NOT save what is currently playing to the system favorite).  
 3.  Delete a system favorite.  Send a representation with "valid" as false.  Example: deleting system favorite 3 (after the above statements) by sending: `[{"id":3","valid":false"}]`
 
@@ -198,7 +201,7 @@ The JSON will look like `[{"id":xxx,"valid":true,"name":"yyyy"},...]` and will h
 
 There are two different ways to use this channel:
 
-1.  Save a zone favorite.  Send a representation with "valid" set to true.  Example: to set zone favorite 2 to what is playing in the zone: `[{"id":2,"valid":true,"name":"80s Rock"}]`.  
+1.  Save a zone favorite.  Send a representation with "valid" set to true.  Example: to set zone favorite 2 to what is playing in the zone: `[{"id":2,"valid":true,"name":"80s Rock"}]`.
 2.  Delete a zone favorite.  Send a representation with "valid" as false.  Example: deleting zone favorite 2 (after the above statement) by sending: `[{"id":2","valid":false"}] `
 
 There is no ability to change JUST the name.  Sending a new name will save the new name AND set the favorite to what is currently playing.
@@ -207,23 +210,29 @@ The channel will be refreshed with the new representation after processing.  If 
 
 ##### Zone Presets
 
-The JSON will look like `[{"id":xxx,"valid":true,"name":"yyyy", "bank": xxx, "bankPreset":yyyy},...]` and will have a representation for each VALID preset in the zone (ie where "valid" is true).  Please note that this channel is only valid if the related source is a tuner.  If not a tuner, an empty json array will be returned.  You will have up to 36 presets to choose from (ID from 1 to 36).  The "bank" and "bankPreset" are readonly (will be ignored if sent) and are informational only (i.e. specify the bank and the preset within the bank for convenience).
+The JSON will look like `[{"id":xxx,"valid":true,"name":"yyyy", "bank": xxx, "bankPreset":yyyy},...]` and will have a representation for each VALID preset in the zone (ie where "valid" is true).
+Please note that this channel is only valid if the related source is a tuner.
+If not a tuner, an empty json array will be returned.
+You will have up to 36 presets to choose from (ID from 1 to 36).
+The "bank" and "bankPreset" are readonly (will be ignored if sent) and are informational only (i.e. specify the bank and the preset within the bank for convenience).
 
 There are two different ways to use this channel:
 
-1.  Save a preset.  Send a representation to an ID that is invalid with "valid" set to true.  Example: to set a zone pret 2 to what is playing in the zone: `[{"id":2,"valid":true,"name":"103.7 FM"}]`.  
-2.  Save a preset with default name.  Send a representation to an ID that is invalid with "valid" set to true.  Example: to set a zone pret 2 to what is playing in the zone: `[{"id":2,"valid":true,"name":"103.7 FM"}]`.  
+1.  Save a preset.  Send a representation to an ID that is invalid with "valid" set to true.  Example: to set a zone pret 2 to what is playing in the zone: `[{"id":2,"valid":true,"name":"103.7 FM"}]`.
+2.  Save a preset with default name.  Send a representation to an ID that is invalid with "valid" set to true.  Example: to set a zone pret 2 to what is playing in the zone: `[{"id":2,"valid":true,"name":"103.7 FM"}]`.
 3.  Delete a zone favorite.  Send a representation with "valid" as false.  Example: deleting zone favorite 2 (after the above statement) by sending: `[{"id":2","valid":false"}]`
 
-There is no ability to change JUST the name.  Sending a new name will save the new name AND set the favorite to what is currently playing.
+There is no ability to change JUST the name.
+Sending a new name will save the new name AND set the favorite to what is currently playing.
 
-The channel will be refreshed with the new representation after processing.  If the refreshed representation doesn't include the changes, the russound system rejected them for some reason (generally length of the name).
+The channel will be refreshed with the new representation after processing.
+If the refreshed representation doesn't include the changes, the russound system rejected them for some reason (generally length of the name).
 
 ### Source channel support cross reference
 
-| Channel Type ID    | Sirius | XM | SMS3 | DMS 3.1 Media | DMS 3.1 AM/FM | iBridge | Internal AM/FM | Arcam T32 | Others |                                             
+| Channel Type ID    | Sirius | XM | SMS3 | DMS 3.1 Media | DMS 3.1 AM/FM | iBridge | Internal AM/FM | Arcam T32 | Others |
 |--------------------|--------|----|------|---------------|---------------|---------|----------------|-----------|--------|
-| name               | X      | X  | X    | X             | X             | X       | X              | X         | X      |         
+| name               | X      | X  | X    | X             | X             | X       | X              | X         | X      |
 | type               | X      | X  | X    | X             | X             | X       | X              | X         | X      |
 | ipaddress          |        |    | X    | X             | X             |         |                |           |        |
 | composername       | X      |    |      |               |               |         |                |           |        |
@@ -372,7 +381,7 @@ Frame label="Russound" {
     Text item= Rio_Src_RadioText2
     Text item= Rio_Src_RadioText3
     Text item= Rio_Src_RadioText4
-   }   
+   }
   }
  }
 }

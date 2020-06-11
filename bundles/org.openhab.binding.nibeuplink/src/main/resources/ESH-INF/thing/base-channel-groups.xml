@@ -33,7 +33,7 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="base-hotwater">
-		<label>Hot water Channels</label>
+		<label>Hot Water Channels</label>
 		<channels>
 			<channel id="40013" typeId="base-type-40013" />
 			<channel id="40014" typeId="base-type-40014" />

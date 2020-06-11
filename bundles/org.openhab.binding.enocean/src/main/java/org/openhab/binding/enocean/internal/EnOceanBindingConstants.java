@@ -19,8 +19,18 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Illuminance;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Volume;
+
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.items.ItemUtil;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
+import org.eclipse.smarthome.core.library.dimension.VolumetricFlowRate;
 import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -59,15 +69,17 @@ public class EnOceanBindingConstants {
     public final static ThingTypeUID THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR = new ThingTypeUID(BINDING_ID,
             "lightTemperatureOccupancySensor");
     public final static ThingTypeUID THING_TYPE_LIGHTSENSOR = new ThingTypeUID(BINDING_ID, "lightSensor");
+    public final static ThingTypeUID THING_TYPE_ENVIRONMENTALSENSOR = new ThingTypeUID(BINDING_ID,
+            "environmentalSensor");
     public final static ThingTypeUID THING_TYPE_GENERICTHING = new ThingTypeUID(BINDING_ID, "genericThing");
     public final static ThingTypeUID THING_TYPE_ROLLERSHUTTER = new ThingTypeUID(BINDING_ID, "rollershutter");
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_PUSHBUTTON, THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE,
                     THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE,
                     THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,
                     THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER,
-                    THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
+                    THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR, THING_TYPE_ENVIRONMENTALSENSOR,
                     THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT));
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
@@ -88,11 +100,19 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_FANSPEEDSTAGE = "fanSpeedStage";
     public final static String CHANNEL_OCCUPANCY = "occupancy";
     public final static String CHANNEL_MOTIONDETECTION = "motionDetection";
+    public final static String CHANNEL_VIBRATION = "vibration";
     public final static String CHANNEL_ILLUMINATION = "illumination";
+    public final static String CHANNEL_ILLUMINATIONWEST = "illuminationWest";
+    public final static String CHANNEL_ILLUMINATIONSOUTHNORTH = "illuminationSouthNorth";
+    public final static String CHANNEL_ILLUMINATIONEAST = "illuminationEast";
+    public final static String CHANNEL_WINDSPEED = "windspeed";
+    public final static String CHANNEL_RAINSTATUS = "rainStatus";
     public final static String CHANNEL_COUNTER = "counter";
     public final static String CHANNEL_CURRENTNUMBER = "currentNumber";
 
     public final static String CHANNEL_PUSHBUTTON = "pushButton";
+    public final static String CHANNEL_DOUBLEPRESS = "doublePress";
+    public final static String CHANNEL_LONGPRESS = "longPress";
 
     public final static String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
     public final static String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
@@ -109,10 +129,11 @@ public class EnOceanBindingConstants {
     public final static String CHANNEL_TEACHINCMD = "teachInCMD";
     public final static String CHANNEL_INSTANTPOWER = "instantpower";
     public final static String CHANNEL_TOTALUSAGE = "totalusage";
-    public final static String CHANNEL_INSTANTLITRE = "amrLitre";
-    public final static String CHANNEL_TOTALCUBICMETRE = "amrCubicMetre";
+    public final static String CHANNEL_CURRENTFLOW = "currentFlow";
+    public final static String CHANNEL_CUMULATIVEVALUE = "cumulativeValue";
     public final static String CHANNEL_BATTERY_VOLTAGE = "batteryVoltage";
     public final static String CHANNEL_ENERGY_STORAGE = "energyStorage";
+    public final static String CHANNEL_BATTERY_LEVEL = "batteryLevel";
 
     public final static String CHANNEL_AUTOOFF = "autoOFF";
     public final static String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";
@@ -162,9 +183,9 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_ROLLERSHUTTER, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ROLLERSHUTTER), CoreItemFactory.ROLLERSHUTTER));
                     put(CHANNEL_ANGLE, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ANGLE),
-                            CoreItemFactory.NUMBER));
+                            CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Angle.class.getSimpleName()));
                     put(CHANNEL_TEMPERATURE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
                     put(CHANNEL_HUMIDITY, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_HUMIDITY), CoreItemFactory.NUMBER));
                     put(CHANNEL_FANSPEEDSTAGE, new EnOceanChannelDescription(
@@ -173,8 +194,20 @@ public class EnOceanBindingConstants {
                             new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY), CoreItemFactory.SWITCH));
                     put(CHANNEL_MOTIONDETECTION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_MOTIONDETECTION), CoreItemFactory.SWITCH));
+                    put(CHANNEL_VIBRATION, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_VIBRATION), CoreItemFactory.SWITCH));
                     put(CHANNEL_ILLUMINATION, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATION), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Illuminance.class.getSimpleName()));
+                    put(CHANNEL_ILLUMINATIONWEST, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONWEST), CoreItemFactory.NUMBER));
+                    put(CHANNEL_ILLUMINATIONSOUTHNORTH, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONSOUTHNORTH), CoreItemFactory.NUMBER));
+                    put(CHANNEL_ILLUMINATIONEAST, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ILLUMINATIONEAST), CoreItemFactory.NUMBER));
+                    put(CHANNEL_WINDSPEED, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_WINDSPEED), CoreItemFactory.NUMBER));
+                    put(CHANNEL_RAINSTATUS, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_RAINSTATUS), CoreItemFactory.SWITCH));
                     put(CHANNEL_COUNTER, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_COUNTER),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_CURRENTNUMBER, new EnOceanChannelDescription(
@@ -186,15 +219,23 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_WINDOWHANDLESTATE, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWHANDLESTATE), CoreItemFactory.STRING));
                     put(CHANNEL_BATTERY_VOLTAGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_VOLTAGE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_BATTERY_VOLTAGE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + ElectricPotential.class.getSimpleName()));
                     put(CHANNEL_ENERGY_STORAGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_ENERGY_STORAGE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + ElectricPotential.class.getSimpleName()));
+                    put(CHANNEL_BATTERY_LEVEL, new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID(), 
+                            CoreItemFactory.NUMBER));
                     put(CHANNEL_TEACHINCMD, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_TEACHINCMD), CoreItemFactory.SWITCH));
 
                     put(CHANNEL_PUSHBUTTON,
                             new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
                                     null, "Push button", false, true));
+                    put(CHANNEL_DOUBLEPRESS,
+                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
+                                    null, "Double press", false, true));
+                    put(CHANNEL_LONGPRESS,
+                            new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(),
+                                    null, "Long press", false, true));
 
                     put(CHANNEL_ROCKERSWITCH_CHANNELA,
                             new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(),
@@ -221,13 +262,13 @@ public class EnOceanBindingConstants {
                             CoreItemFactory.ROLLERSHUTTER, "Rocker Switch Listener (Rollershutter)", true, false));
 
                     put(CHANNEL_INSTANTPOWER, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Power.class.getSimpleName()));
                     put(CHANNEL_TOTALUSAGE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE), CoreItemFactory.NUMBER));
-                    put(CHANNEL_INSTANTLITRE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTLITRE), CoreItemFactory.NUMBER));
-                    put(CHANNEL_TOTALCUBICMETRE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALCUBICMETRE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TOTALUSAGE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Energy.class.getSimpleName()));
+                    put(CHANNEL_CURRENTFLOW, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CURRENTFLOW), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + VolumetricFlowRate.class.getSimpleName()));
+                    put(CHANNEL_CUMULATIVEVALUE, new EnOceanChannelDescription(
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_CUMULATIVEVALUE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Volume.class.getSimpleName()));
                     put(CHANNEL_AUTOOFF, new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AUTOOFF),
                             CoreItemFactory.NUMBER));
                     put(CHANNEL_DELAYRADIOOFF, new EnOceanChannelDescription(
@@ -269,9 +310,9 @@ public class EnOceanBindingConstants {
                     put(CHANNEL_DISPLAY_ORIENTATION, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_DISPLAY_ORIENTATION), CoreItemFactory.NUMBER));
                     put(CHANNEL_TEMPERATURE_SETPOINT, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE_SETPOINT), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_TEMPERATURE_SETPOINT), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
                     put(CHANNEL_FEED_TEMPERATURE, new EnOceanChannelDescription(
-                            new ChannelTypeUID(BINDING_ID, CHANNEL_FEED_TEMPERATURE), CoreItemFactory.NUMBER));
+                            new ChannelTypeUID(BINDING_ID, CHANNEL_FEED_TEMPERATURE), CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Temperature.class.getSimpleName()));
                     put(CHANNEL_MEASUREMENT_CONTROL, new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_MEASUREMENT_CONTROL), CoreItemFactory.SWITCH));
                     put(CHANNEL_FAILURE_CODE, new EnOceanChannelDescription(

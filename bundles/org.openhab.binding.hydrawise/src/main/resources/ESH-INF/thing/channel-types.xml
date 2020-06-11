@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hydrawise"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="zone">
+		<label>Zone</label>
+		<description>Hydrawise zone</description>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="icon" typeId="icon" />
+			<channel id="time" typeId="time" />
+			<channel id="type" typeId="type" />
+			<channel id="runcustom" typeId="runcustom" />
+			<channel id="run" typeId="run" />
+			<channel id="nextruntime" typeId="nextruntime" />
+			<channel id="timeleft" typeId="timeleft" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="allzones">
+		<label>All Zones</label>
+		<description>Commands that control all Hydrawise zones</description>
+		<channels>
+			<channel id="runcustom" typeId="runcustom" />
+			<channel id="run" typeId="run" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-group-type id="sensor">
+		<label>Sensor</label>
+		<description>Hydrawise sensor</description>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="input" typeId="input" />
+			<channel id="mode" typeId="mode" />
+			<channel id="timer" typeId="timer" />
+			<channel id="offtimer" typeId="offtimer" />
+			<channel id="offlevel" typeId="offlevel" />
+			<channel id="active" typeId="active" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="forecast">
+		<label>Weather Forecast</label>
+		<description>Hydrawise weather forecast</description>
+		<channels>
+			<channel id="temperaturehigh" typeId="temperaturehigh" />
+			<channel id="temperaturelow" typeId="temperaturelow" />
+			<channel id="conditions" typeId="conditions" />
+			<channel id="day" typeId="day" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="wind" typeId="wind" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Controller -->
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="icon">
+		<item-type>String</item-type>
+		<label>Icon URL</label>
+		<description>Icon URL for this zone</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start Time</label>
+		<description>Zone start time in seconds</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="type" advanced="true">
+		<item-type>Number</item-type>
+		<label>Type</label>
+		<description>Zone Type</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="nextruntime">
+		<item-type>DateTime</item-type>
+		<label>Next Run Time</label>
+		<description>Next time this zone is scheduled to run</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="run">
+		<item-type>Switch</item-type>
+		<label>Run Zones</label>
+		<description>Run or stop zones for the default time.</description>
+	</channel-type>
+
+	<channel-type id="runcustom">
+		<item-type>Number</item-type>
+		<label>Run Zones With Custom Duration </label>
+		<description>Run zones now for a custom duration of time in seconds</description>
+	</channel-type>
+
+	<channel-type id="timeleft">
+		<item-type>Number</item-type>
+		<label>Time Left Seconds</label>
+		<description>Time left that zone will run for</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- Sensor -->
+
+	<channel-type id="input" advanced="true">
+		<item-type>Number</item-type>
+		<label>Input</label>
+		<description>Sensor input</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="type" advanced="true">
+		<item-type>Number</item-type>
+		<label>Type</label>
+		<description>Sensor type</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="mode" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Sensor mode</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="timer" advanced="true">
+		<item-type>Number</item-type>
+		<label>Timer</label>
+		<description>Sensor timer</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="offtimer" advanced="true">
+		<item-type>Number</item-type>
+		<label>Off Timer</label>
+		<description>Sensor off timer</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="name" advanced="true">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Sensor name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="offlevel" advanced="true">
+		<item-type>Number</item-type>
+		<label>Off Level</label>
+		<description>Sensor off level</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="active">
+		<item-type>Switch</item-type>
+		<label>Active</label>
+		<description>Sensor active</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- Weather Forecast -->
+	<channel-type id="temperaturehigh">
+		<item-type>Number:Temperature</item-type>
+		<label>High temperature</label>
+		<description>High temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="temperaturelow">
+		<item-type>Number:Temperature</item-type>
+		<label>Low Temperature</label>
+		<description>Low Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+
+	<channel-type id="conditions">
+		<item-type>String</item-type>
+		<label>Conditions</label>
+		<description>Weather conditions</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="conditions">
+		<item-type>String</item-type>
+		<label>Conditions</label>
+		<description>Weather conditions</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="day">
+		<item-type>String</item-type>
+		<label>Day of Week</label>
+		<description>Day of week for the weather forecast</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Humidity percentage</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%d%%" />
+	</channel-type>
+
+	<channel-type id="wind">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>Wind speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%" />
+	</channel-type>
+</thing:thing-descriptions>

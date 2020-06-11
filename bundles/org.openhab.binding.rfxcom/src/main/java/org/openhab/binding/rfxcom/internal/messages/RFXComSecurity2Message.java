@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for Security2 message.
@@ -54,10 +55,10 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSec
     public int sensorId;
     public int buttonStatus;
 
-    private final int BUTTON_0_BIT = 0x02;
-    private final int BUTTON_1_BIT = 0x04;
-    private final int BUTTON_2_BIT = 0x08;
-    private final int BUTTON_3_BIT = 0x01;
+    private static final int BUTTON_0_BIT = 0x02;
+    private static final int BUTTON_1_BIT = 0x04;
+    private static final int BUTTON_2_BIT = 0x08;
+    private static final int BUTTON_3_BIT = 0x01;
 
     public RFXComSecurity2Message() {
         super(PacketType.SECURITY2);
@@ -114,7 +115,7 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSec
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_CONTACT:
                 return ((buttonStatus & BUTTON_0_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
@@ -129,7 +130,7 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSec
                 return ((buttonStatus & BUTTON_3_BIT) == 0) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 
@@ -139,7 +140,7 @@ public class RFXComSecurity2Message extends RFXComBatteryDeviceMessage<RFXComSec
     }
 
     @Override
-    public void setDeviceId(String deviceId) throws RFXComException {
+    public void setDeviceId(String deviceId) {
         sensorId = Integer.parseInt(deviceId);
     }
 

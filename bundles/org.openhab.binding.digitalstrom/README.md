@@ -1,6 +1,6 @@
 # digitalSTROM Binding
 
-  This binding integrates the [digitalSTROM-System](http://www.digitalstrom.de/).
+  This binding integrates the [digitalSTROM-System](https://www.digitalstrom.de/).
 The integration happens through the digitalSTROM-Server, which acts as a gateway to connect the digitalSTROM-Devices.
 The digitalSTROM-Server communicates through the digitalSTROM-Meters with the digitalSTROM-Devices, which are directly connected to the power-line.
 
@@ -16,10 +16,13 @@ The digitalSTROM-Server is required for accessing any other digitalSTROM-Devices
 
 ### digitalSTROM-Devices
 
-At this point almost all available **GE**, **SW**, **GR** and **BL** digitalSTROM-Devices with a set output-mode, unequal *disabled*, are supported by this binding. Furthermore sensor devices like the **dS-iSens200** and **SW-devices** with binary-inputs are supported.
+At this point almost all available **GE**, **SW**, **GR** and **BL** digitalSTROM-Devices with a set output-mode, unequal *disabled*, are supported by this binding.
+Furthermore sensor devices like the **dS-iSens200** and **SW-devices** with binary-inputs are supported.
 Last but not least the **circuit** (dS-Meter) is supported, too. They will provide the power consumption and electric meter as channels.
 
-For that there are identically named thing types. Only the *GR* type has a channel (shade), which cannot be changed. The other types add their channels dynamically affected by the set color-group and output-mode. They also automatically change or add the channels, if the color-group or output-mode has changed through the dSS-web-configuration or the configured sensor priorities of the thing has changed.
+For that there are identically named thing types. Only the *GR* type has a channel (shade), which cannot be changed.
+The other types add their channels dynamically affected by the set color-group and output-mode.
+They also automatically change or add the channels, if the color-group or output-mode has changed through the dSS-web-configuration or the configured sensor priorities of the thing has changed.
 
 - The following table shows all tested digitalSTROM-Devices with their output-modes.
 
@@ -30,7 +33,7 @@ For that there are identically named thing types. Only the *GR* type has a chann
 | GE-TKM210 | switched, dimmed | yellow |
 | GE-SDM200 | switched, dimmed | yellow |
 | GE-UMV200 | 1-10V dimmed | yellow |
-| GR-KL200 | standard output-mode | grey |    
+| GR-KL200 | standard output-mode | grey |
 | GR-KL210 | standard output-mode| grey |
 | GR-KL220 | standard output-mode | grey |
 | SW-KL200 | switch, powersave, wipe | black, yellow |
@@ -57,7 +60,8 @@ The different scene thing types are listed in the following table.
 ### digitalSTROM-Zone-Temperature-Control
 
 Last but not least, the digitalSTROM-Zone-Temperature-Control is also supported, if a zone-temerature-control is configured, as thing-type **zone_temperature_control**.
-The difference between the digitalSTROM-heating-control-app is, that there are no operation-modes, like *comfort* or *eco*. You can directly set the target temperature, in case *pid-control* is configured, otherwise you can set the value in percent of heating valves at the zone. 
+The difference between the digitalSTROM-heating-control-app is, that there are no operation-modes, like *comfort* or *eco*.
+You can directly set the target temperature, in case *pid-control* is configured, otherwise you can set the value in percent of heating valves at the zone.
 The needed channels will be added automatically, as it is also the case for the devices. 
 
 ## Discovery
@@ -87,7 +91,7 @@ The digitalSTROM-Server thing has the following configuration parameter groups: 
 #### Connection configuration
 
 If the digitalSTROM-Server isn’t found automatically, e.g. because the server isn’t placed at the local network or the mDNS-service is deactivated, you have to insert the network address or URL and the authentication data manually through the graphical user interface or type it into the \*.thing with textual configuration.
-If you use your user name and password for authentication and there is already a token for this application, it will be automatically retrieved from the digitalSTROM-Server, otherwise a new application-token will be generated. 
+If you use your user name and password for authentication and there is already a token for this application, it will be automatically retrieved from the digitalSTROM-Server, otherwise a new application-token will be generated.
 
 | Parameter Label | Parameter ID | Description  | Required | Advanced 
 |--------------|------------|--------------------------------|----------------- |------------- |
@@ -137,7 +141,7 @@ In addition to the configuration the digitalSTROM-Server has the following prope
 | Serial | The digitalSTROM-Server hardware serial number. |
 | Ethernet | The digitalSTROM-Server IEEE mac address. |
 | MachineID | The digitalSTROM-Server unique id. |
-| Kernel | The digitalSTROM-Server linux kernel release string. | 
+| Kernel | The digitalSTROM-Server Linux kernel release string. | 
 
 ### digitalSTROM-Devices
 
@@ -156,7 +160,7 @@ The following table shows the parameter:
 #### Sensor setup
 
 The GE, BL and SW digitalSTROM-Devices usually have sensors to capture power consumption data.
-So these devices have the following parameters to read them out.  
+So these devices have the following parameters to read them out.
 
 | Parameter Label | Parameter ID| Description  | Required | Advanced | Default |
 |-----------------|--------------------|-----------------------------|----------------- |------------- | -----------|
@@ -173,12 +177,12 @@ The following table shows all informative properties:
 | ------------- | ------------------------------------- |
 |dSUID | The unique identifier of a digitalSTORM-device with virtual devices. | 
 | deviceName | he name of a digitalSTROM-Device. | 
-| meterDSID | Identifier of the meter to which the device is connected. |   
-| hwInfo | The hardware type from this digitalSTROM-Device. |   
-| zoneID |The digitalSTROM-Device is part of this zone. |   
-| groups | The digitalSTROM-Device is part of this user-defined or functional groups. |    
-| output mode | The current digitalSTROM-Device output mode e.g. 22 = dimmable. |    
-| funcColorGroup | The current digitalSTROM-Device functional color group e.g. yellow = light. | 
+| meterDSID | Identifier of the meter to which the device is connected. |
+| hwInfo | The hardware type from this digitalSTROM-Device. |
+| zoneID |The digitalSTROM-Device is part of this zone. |
+| groups | The digitalSTROM-Device is part of this user-defined or functional groups. |
+| output mode | The current digitalSTROM-Device output mode e.g. 22 = dimmable. |
+| funcColorGroup | The current digitalSTROM-Device functional color group e.g. yellow = light. |
 
 The device scene configurations will also be persisted in the properties. There are in the format:
 
@@ -224,7 +228,7 @@ As configuration only the zone ID or the zone name, to identify the controlled z
 
 ### digitalSTROM-Scenes
 
-The digitalSTROM-Scenes can be defined with following parameters.  
+The digitalSTROM-Scenes can be defined with following parameters.
 
 | Parameter Label | Parameter ID| Description  | Required | Advanced | 
 |-----------------|------------------------|----------------------------------|----------------- |------------- |
@@ -269,7 +273,7 @@ Thing digitalstrom:groupScene:preset1 (digitalstrom:dssBridge:myDssBridge) [ zon
 
 ## Channels
 
-All devices support some of the following channels:  
+All devices support some of the following channels:
 
 ### Output-Channels
 
@@ -331,10 +335,10 @@ digitalSTROM-Devices which are able to set a binary-input sensor like SW-UMR200 
 |-------|---------|------------------------------------|----------------- |
 | binary_input_presence | Switch |  Will be activated, if a presence is detected.  | SW |
 | binary_input_brightness | Switch |  Will be activated, if the brightness is higher than a setted value. | SW |
-| binary_input_presence_in_darkness | Switch |  Will be activated, if a presence is detected. Sensor has a integrated twilight sensor.  | SW |
+| binary_input_presence_in_darkness | Switch |  Will be activated, if a presence is detected. Sensor has an integrated twilight sensor.  | SW |
 | binary_input_twilight | Switch |  Will be activated by twilight.  | SW |
 | binary_input_motion | Switch |  Will be activated, if a motion is detected. | SW |
-| binary_input_motion_in_darkness | Switch |  Will be activated, if a motion is detected. Sensor has a integrated twilight sensor. | SW |
+| binary_input_motion_in_darkness | Switch |  Will be activated, if a motion is detected. Sensor has an integrated twilight sensor. | SW |
 | binary_input_smoke | Switch |  Will be activated, if smoke is detected. | SW |
 | binary_input_wind_strenght_above_limit | Switch |   Will be activated, if wind strength is above a user adjusted limit. | SW |
 | binary_input_rain | Switch |  Will be activated, if rain is detected. | SW |
@@ -379,7 +383,7 @@ The digitalSTROM-Server
 * The digitalSTROM-Server only informs the binding about scene-commands. So if you set the output value of devices e.g. through  the dSS-App, the binding will not be informed about the changes and you have to send a "refresh-command" to update the channel.
 * If you press a physical switch at your digitalSTROM-installation and the called scene-value is not red out yet, it can take a bit time to read it out and change the state of the channel.
 It the scene-value is red out, the state will change immediately.
-See also *General-Informations/digitalSTROM-Scenes*.   
+See also *General-Informations/digitalSTROM-Scenes*.
 
 *Channels with accepted command type increase and decrease:*
 
@@ -400,10 +404,10 @@ Bridge digitalstrom:dssBridge:dSS [ dSSAddress="urlOfMyDss",  userName="dssadmin
   SW SW-ZWS-200 [ dSID="3504175fe0000000000651c0"] 
   SW SW-UMR-200 [ dSID="302ed89f43f00ec0000a1034"] 
   dSiSens200 dS-iSens200 [ dSID="302ed89f43f026800003543d"] 
-  zoneTemperatureControl zoneTemperatureControl [ zoneID="livingroom"]     
+  zoneTemperatureControl zoneTemperatureControl [ zoneID="livingroom"]
   GR GR-KL220 [ dSID="3504175fe0000000000651c1" ] 
   namedScene Scene1 [ zoneID="5", groupID="1", sceneID="5"] 
-  circuit circuit1 [ dSID="3504175fe0000010000004e4" ]    
+  circuit circuit1 [ dSID="3504175fe0000010000004e4" ]
   GR GR-KL200 [ dSID="3504175fe0000000000651c1" ]
 }
 ```
@@ -511,7 +515,7 @@ sitemap demo label="Main Menu"
     
    Frame label="TV"{
       Switch item=DeviceSwitch
-    }  
+    }
   }
 }
 ```
@@ -530,7 +534,7 @@ The current troubleshooting to read out the new scene configuration after a save
 
 1. delete the thing to delete the persistently saved scene configuration
 2. restart the server to delete the temporary saved scene configuration 
-3. add the thing again to read out the scene configuration again.   
+3. add the thing again to read out the scene configuration again.
 
 ### Initial state of digitalSTROM-Scenes and devices
 
@@ -550,5 +554,5 @@ If you configure your system with textual configuration files, like *\*.thing*, 
 
 If you want to create a rule, which uses things of the digitalSTROM-Binding, there are also two things you have to consider.
 
-1. If the rule contains several digitalSTROM-Devices, which can be summarized in a digitalSTROM-Scene, e.g. some lights in a zone, please use a equivalent supported scene. That will significantly reduce the communication to the digitalSTROM-Server, increases performance and does not bypass the digitalSTROM state-machine.
+1. If the rule contains several digitalSTROM-Devices, which can be summarized in a digitalSTROM-Scene, e.g. some lights in a zone, please use an equivalent supported scene. That will significantly reduce the communication to the digitalSTROM-Server, increases performance and does not bypass the digitalSTROM state-machine.
 2. If you implement your own temperature control algorithm for a zone/room, e.g. because you want to use other temperature sensors, and call more than one digitalSTROM-BL-KM200, please use the *zone_temperature_control* for valve value control. The *zone_temperature_control* for valve value control will call all digitalSTROM-BL-KM200 with one command and increases the performance. To get the needed channel at the *zone_temperature_control* you have to choose a control mode unequal to *pid-controlled* for the affected zone at the digitalSTROM-heating-control-app. 

@@ -12,14 +12,19 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown, if an action was called with invalid parameters.
  *
  * @author Oliver Kuhl - Initial contribution
  *
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class InvalidActionTriggeredException extends ApiException {
+
+    private static final long serialVersionUID = 1L;
+
     public InvalidActionTriggeredException() {
     }
 

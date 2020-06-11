@@ -42,6 +42,7 @@ import com.google.gson.JsonElement;
  * associated with the Miele@Home gateway
  *
  * @author Karel Goderis - Initial contribution
+ * @author Martin Lepsy - Added protocol information in order so support WiFi devices
  */
 public class MieleApplianceDiscoveryService extends AbstractDiscoveryService implements ApplianceStatusListener {
 
@@ -97,8 +98,10 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         if (thingUID != null) {
             ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
             Map<String, Object> properties = new HashMap<>(2);
-            properties.put(APPLIANCE_ID,
-                    StringUtils.right(appliance.UID, appliance.UID.length() - new String("hdm:ZigBee:").length()));
+
+            properties.put(PROTOCOL_PROPERTY_NAME, appliance.getProtocol());
+            properties.put(APPLIANCE_ID, appliance.getApplianceId());
+
             for (JsonElement dc : appliance.DeviceClasses) {
                 if (dc.getAsString().contains("com.miele.xgw3000.gateway.hdm.deviceclasses.Miele")
                         && !dc.getAsString().equals("com.miele.xgw3000.gateway.hdm.deviceclasses.MieleAppliance")) {
@@ -155,7 +158,7 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
                     StringUtils.lowerCase(modelID.replaceAll("[^a-zA-Z0-9_]", "_")));
 
             if (getSupportedThingTypes().contains(thingTypeUID)) {
-                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, getId(appliance));
+                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, appliance.getId());
                 return thingUID;
             } else {
                 return null;
@@ -164,10 +167,4 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
             return null;
         }
     }
-
-    private String getId(HomeDevice appliance) {
-        return StringUtils.right(appliance.UID, appliance.UID.length() - new String("hdm:ZigBee:").length())
-                .replaceAll("[^a-zA-Z0-9_]", "_");
-    }
-
 }

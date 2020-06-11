@@ -117,7 +117,7 @@ public abstract class EnOceanTransceiver {
                         sendNext();
                     }
                 } catch (EnOceanException e) {
-                    logger.error("exception while sending data {}", e);
+                    logger.error("exception while sending data", e);
                 }
             }
         }
@@ -145,7 +145,7 @@ public abstract class EnOceanTransceiver {
     public EnOceanTransceiver(TransceiverErrorListener errorListener, ScheduledExecutorService scheduler) {
 
         requestQueue = new RequestQueue(scheduler);
-        listeners = new HashMap<Long, HashSet<ESP3PacketListener>>();
+        listeners = new HashMap<>();
         teachInListener = null;
         this.errorListener = errorListener;
     }
@@ -396,51 +396,54 @@ public abstract class EnOceanTransceiver {
     }
 
     protected void informListeners(ERP1Message msg) {
-        byte[] senderId = msg.getSenderId();
+        try {
+            byte[] senderId = msg.getSenderId();
 
-        if (senderId != null) {
-            if (filteredDeviceId != null && senderId[0] == filteredDeviceId[0] && senderId[1] == filteredDeviceId[1]
-                    && senderId[2] == filteredDeviceId[2]) {
-                // filter away own messages which are received through a repeater
-                return;
-            }
-
-            if (teachInListener != null) {
-                if (msg.getIsTeachIn() || (msg.getRORG() == RORG.RPS)) {
-                    logger.info("Received teach in message from {}", HexUtils.bytesToHex(msg.getSenderId()));
-                    teachInListener.espPacketReceived(msg);
+            if (senderId != null) {
+                if (filteredDeviceId != null && senderId[0] == filteredDeviceId[0] && senderId[1] == filteredDeviceId[1]
+                        && senderId[2] == filteredDeviceId[2]) {
+                    // filter away own messages which are received through a repeater
                     return;
                 }
-            } else {
-                if (msg.getIsTeachIn()) {
-                    logger.info("Discard message because this is a teach-in telegram from {}!",
-                            HexUtils.bytesToHex(msg.getSenderId()));
-                    return;
+
+                if (teachInListener != null) {
+                    if (msg.getIsTeachIn() || (msg.getRORG() == RORG.RPS)) {
+                        logger.info("Received teach in message from {}", HexUtils.bytesToHex(msg.getSenderId()));
+                        teachInListener.espPacketReceived(msg);
+                        return;
+                    }
+                } else {
+                    if (msg.getIsTeachIn()) {
+                        logger.info("Discard message because this is a teach-in telegram from {}!",
+                                HexUtils.bytesToHex(msg.getSenderId()));
+                        return;
+                    }
+                }
+
+                long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
+                HashSet<ESP3PacketListener> pl = listeners.get(s);
+                if (pl != null) {
+                    pl.forEach(l -> l.espPacketReceived(msg));
                 }
             }
-
-            long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
-            HashSet<ESP3PacketListener> pl = listeners.get(s);
-            if (pl != null) {
-                pl.forEach(l -> l.espPacketReceived(msg));
-            }
+        } catch (Exception e) {
+            logger.error("Exception in informListeners", e);
         }
     }
 
-    public void addPacketListener(ESP3PacketListener listener) {
+    public void addPacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
 
-        if (listeners.computeIfAbsent(listener.getSenderIdToListenTo(), k -> new HashSet<ESP3PacketListener>())
-                .add(listener)) {
-            logger.debug("Listener added: {}", listener.getSenderIdToListenTo());
+        if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>()).add(listener)) {
+            logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }
 
-    public void removePacketListener(ESP3PacketListener listener) {
-        HashSet<ESP3PacketListener> pl = listeners.get(listener.getSenderIdToListenTo());
+    public void removePacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
+        HashSet<ESP3PacketListener> pl = listeners.get(senderIdToListenTo);
         if (pl != null) {
             pl.remove(listener);
             if (pl.isEmpty()) {
-                listeners.remove(listener.getSenderIdToListenTo());
+                listeners.remove(senderIdToListenTo);
             }
         }
     }

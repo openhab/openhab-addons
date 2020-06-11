@@ -32,5 +32,10 @@ public interface Prediction {
     /**
      * Date-time of prediction.
      */
-    ZonedDateTime getDateTime();
+    ZonedDateTime getDateTimeOfPrediction();
+
+    /**
+     * Date-time of when the prediction was made.
+     */
+    ZonedDateTime getActualDateTime();
 }

@@ -77,7 +77,7 @@ public abstract class AbstractSensorJobExecutor {
                 pollingSchedulers.get(circuit.getMeterDSID()).cancel(true);
             }
         }
-    };
+    }
 
     /**
      * Creates a new {@link AbstractSensorJobExecutor}.

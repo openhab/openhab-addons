@@ -156,7 +156,7 @@ public class SatelMessage {
     @Override
     public String toString() {
         return String.format("Message: command = %02X, payload = %s", this.command, getPayloadAsHex());
-    };
+    }
 
     @Override
     public boolean equals(Object obj) {

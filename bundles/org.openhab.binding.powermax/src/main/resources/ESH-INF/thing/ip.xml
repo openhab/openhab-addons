@@ -43,7 +43,7 @@
 				<label>IP Address</label>
 				<description>The IP address to use for connecting to the Ethernet interface of the alarm system.</description>
 			</parameter>
-			<parameter name="tcpPort" type="integer" min="0" required="true">
+			<parameter name="tcpPort" type="integer" min="1" max="65535" required="true">
 				<label>TCP Port</label>
 				<description>The TCP port to use for connecting to the Ethernet interface of the alarm system.</description>
 			</parameter>

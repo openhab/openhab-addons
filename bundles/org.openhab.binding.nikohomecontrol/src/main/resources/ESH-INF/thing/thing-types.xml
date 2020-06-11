@@ -19,13 +19,13 @@
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
-				<label>Bridge port</label>
+				<label>Bridge Port</label>
 				<description>Port to communicate with Niko Home Control IP-interface, default 8000</description>
 				<default>8000</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval for connection with Niko Home Control IP-interface (min), default 300. If set to 0 or left empty, no refresh will be scheduled</description>
 				<default>300</default>
 				<advanced>true</advanced>
@@ -47,7 +47,7 @@
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="false">
-				<label>Bridge port</label>
+				<label>Bridge Port</label>
 				<description>Port for secure MQTT communication with Connected Controller, default 8883</description>
 				<default>8883</default>
 				<advanced>true</advanced>
@@ -62,7 +62,7 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Refresh interval for connection with Connected Controller (min), default 300. If set to 0 or left empty, no refresh will be scheduled</description>
 				<default>300</default>
 				<advanced>true</advanced>
@@ -123,7 +123,7 @@
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="step" type="integer" required="true">
-				<label>Step value</label>
+				<label>Step Value</label>
 				<description>Step value used for increase/decrease of dimmer brightness, default 10%</description>
 				<default>10</default>
 				<advanced>true</advanced>
@@ -167,7 +167,7 @@
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="overruleTime" type="integer" required="false">
-				<label>Overrule time</label>
+				<label>Overrule Time</label>
 				<description>Default overrule duration in minutes when an overrule temperature is set without providing overrule time, 60 minutes by default</description>
 				<default>60</default>
 				<advanced>true</advanced>

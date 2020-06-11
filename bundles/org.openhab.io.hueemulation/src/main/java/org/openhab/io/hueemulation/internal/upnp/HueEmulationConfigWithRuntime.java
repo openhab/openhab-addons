@@ -23,6 +23,8 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.hueemulation.internal.HueEmulationConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The upnp server runtime configuration. Based on a {@link HueEmulationConfig} and determined ip address and port.
@@ -33,6 +35,9 @@ import org.openhab.io.hueemulation.internal.HueEmulationConfig;
  */
 @NonNullByDefault
 class HueEmulationConfigWithRuntime extends Thread implements Runnable {
+
+    private final Logger logger = LoggerFactory.getLogger(HueEmulationConfigWithRuntime.class);
+
     final @NonNullByDefault({}) HueEmulationConfig config;
     final InetAddress address;
     final String addressString;
@@ -55,10 +60,10 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
         address = InetAddress.getByName(addrString);
         if (address instanceof Inet6Address) {
             addressString = "[" + address.getHostAddress().split("%")[0] + "]";
-            multicastAddress = MULTI_ADDR_IPV4;
+            multicastAddress = MULTI_ADDR_IPV6;
         } else {
             addressString = address.getHostAddress();
-            multicastAddress = MULTI_ADDR_IPV6;
+            multicastAddress = MULTI_ADDR_IPV4;
         }
 
         port = config.discoveryHttpPort == 0 ? Integer.getInteger("org.osgi.service.http.port", 8080)
@@ -74,10 +79,10 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
         address = InetAddress.getByName("localhost");
         if (address instanceof Inet6Address) {
             addressString = "[" + address.getHostAddress().split("%")[0] + "]";
-            multicastAddress = MULTI_ADDR_IPV4;
+            multicastAddress = MULTI_ADDR_IPV6;
         } else {
             addressString = address.getHostAddress();
-            multicastAddress = MULTI_ADDR_IPV6;
+            multicastAddress = MULTI_ADDR_IPV4;
         }
         port = 8080;
     }
@@ -93,7 +98,8 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
     public synchronized CompletableFuture<@Nullable HueEmulationConfigWithRuntime> startNow(
             @Nullable HueEmulationConfigWithRuntime ignored) {
         if (hasAlreadyBeenStarted) {
-            throw new IllegalStateException("Cannot restart thread");
+            logger.debug("Cannot restart thread");
+            return future;
         }
         hasAlreadyBeenStarted = true;
         super.start();

@@ -91,14 +91,14 @@
 
 	<channel-type id="nowPlayingStationLocation" advanced="true">
 		<item-type>String</item-type>
-		<label>Station location</label>
+		<label>Station Location</label>
 		<description>Location of current playing radio station</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="nowPlayingStationName" advanced="true">
 		<item-type>String</item-type>
-		<label>Station name</label>
+		<label>Station Name</label>
 		<description>Name of current playing radio station</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -156,27 +156,27 @@
 
 	<channel-type id="rateEnabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Rating enabled</label>
+		<label>Rating Enabled</label>
 		<description>Current source allows rating</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="saveAsPreset" advanced="true">
 		<item-type>Number</item-type>
-		<label>Save As Preset</label>
+		<label>Save as Preset</label>
 		<description>A selected presetable Contentitem is save as Preset with number >6</description>
 	</channel-type>
 
 	<channel-type id="skipEnabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Skip enabled</label>
+		<label>Skip Enabled</label>
 		<description>Current source allows skipping to next track</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="skipPreviousEnabled" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Skip/Previous enabled</label>
+		<label>Skip/Previous Enabled</label>
 		<description>Current source allows scrolling through tracks</description>
 		<state readOnly="true" />
 	</channel-type>

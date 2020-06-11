@@ -33,5 +33,5 @@ public class BluetoothConnectionStatusNotification extends BluetoothNotification
      */
     public ConnectionState getConnectionState() {
         return connectionState;
-    };
+    }
 }

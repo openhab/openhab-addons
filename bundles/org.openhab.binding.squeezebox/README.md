@@ -1,6 +1,6 @@
 # Logitech Squeezebox Binding
 
-This binding integrates the [Logitech Media Server](http://www.mysqueezebox.com) and compatible Squeeze players.
+This binding integrates the [Logitech Media Server](https://www.mysqueezebox.com) and compatible Squeeze players.
 
 ## Introduction
 
@@ -15,7 +15,7 @@ In 2006, Slim Devices was acquired by Logitech for $20 million USD.
 Logitech continued the development of the player until they announced in August 2012 that it would be discontinued.
 Given the cross-platform nature of the server and software client, some users have ensured the continued use of the platform by utilizing the Raspberry Pi as dedicated Squeezebox device (both client and server).
 
-Taken from: [Wiki](http://en.wikipedia.org/wiki/Squeezebox_%28network_music_player%29)
+Taken from: [Wiki](https://en.wikipedia.org/wiki/Squeezebox_%28network_music_player%29)
 
 ## Supported Things
 
@@ -38,8 +38,7 @@ The binding has the following configuration options, which can be set for "bindi
 When a SqueezeBox is used as an audio sink, the SqueezeBox player connects to openHAB to get the audio stream.
 By default, the binding sends the SqueezeBox the URL for getting the audio stream based on the Primary
 Address (Network Settings configuration) and the openHAB HTTP port.
-Sometimes it's necessary to use the Callback URL to override the default, such as when using a reverse proxy or with
-some docker implementations.
+Sometimes it is necessary to use the Callback URL to override the default, such as when using a reverse proxy or with some Docker implementations.
 
 ## Thing Configuration
 

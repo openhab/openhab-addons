@@ -26,5 +26,5 @@ public enum SilvercrestWifiSocketResponseType {
     /** ACKnowledgement. */
     ACK,
     /** Discovery request. */
-    DISCOVERY;
+    DISCOVERY
 }

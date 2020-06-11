@@ -25,6 +25,7 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miele.internal.MieleBindingConstants;
@@ -37,12 +38,16 @@ import org.slf4j.LoggerFactory;
  * {@link MDNSDiscoveryService}.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Martin Lepsy - Added check for Miele gateway for cleaner discovery
  *
  */
 @Component(immediate = true)
 public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);
+    private static final String PATH_TO_CHECK_FOR_XGW3000 = "/rest/";
+    private static final String SERVICE_NAME = "mieleathome";
+    private static final String PATH_PROPERTY_NAME = "path";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -56,7 +61,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
-        if (service.getApplication().contains("mieleathome")) {
+        if (isMieleGateway(service)) {
             ThingUID uid = getThingUID(service);
 
             if (uid != null) {
@@ -94,6 +99,20 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
 
         return null;
+    }
+
+    /**
+     * Checks if service is a Miele XGW3000 Gateway
+     *
+     * application must be mieleathome
+     * must contain path with value /rest/
+     *
+     * @param service the service to check
+     * @return true, if the discovered service is a Miele XGW3000 Gateway
+     */
+    private boolean isMieleGateway(ServiceInfo service) {
+        return service.getApplication().contains(SERVICE_NAME) && service.getPropertyString(PATH_PROPERTY_NAME) != null
+                && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
     }
 
 }

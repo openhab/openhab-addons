@@ -15,13 +15,13 @@ This includes the main classes required to implement Bluetooth:
  
 ## Implementing a new Bluetooth Adapter bundle
  
-Bluetooth adapters are modelled as a bridge in ESH.
+Bluetooth adapters are modelled as a bridge in openHAB.
 The bridge handler provides the link with the Bluetooth hardware (eg a dongle, or system Bluetooth API).
 An adapter bundle needs to implement two main classes: the `BridgeHandler` which should implement `BluetoothAdapter` (any be registered as a service), and a `ThingFactory`, which is required to instantiate the handler.
  
 The bridge handler must implement any functionality required to interface to the Bluetooth layer.
 It is responsible for managing the Bluetooth scanning, device discovery (i.e. the device interrogation to get the list of services and characteristics) and reading and writing of characteristics.
-The bridge needs to manage any interaction between the interface with any things it provides – this needs to account for any constraints that a interface may impose such that things do not need to worry about any peculiarities imposed by a specific interface.
+The bridge needs to manage any interaction between the interface with any things it provides – this needs to account for any constraints that an interface may impose such that things do not need to worry about any peculiarities imposed by a specific interface.
 
 Classes such as `BluetoothCharacteristic` or `BluetoothService` may be extended to provide additional functionality to interface to a specific library if needed.
  

@@ -164,8 +164,31 @@ public class ValueTests {
     }
 
     @Test
-    public void rollershutterUpdate() {
+    public void rollershutterUpdateWithStrings () {
         RollershutterValue v = new RollershutterValue("fancyON", "fancyOff", "fancyStop");
+        // Test with command
+        v.update(UpDownType.UP);
+        assertThat(v.getMQTTpublishValue(), is("fancyON"));
+        assertThat(v.getChannelState(), is(PercentType.ZERO));
+        v.update(UpDownType.DOWN);
+        assertThat(v.getMQTTpublishValue(), is("fancyOff"));
+        assertThat(v.getChannelState(), is(PercentType.HUNDRED));
+
+        // Test with custom string
+        v.update(new StringType("fancyON"));
+        assertThat(v.getMQTTpublishValue(), is("fancyON"));
+        assertThat(v.getChannelState(), is(PercentType.ZERO));
+        v.update(new StringType("fancyOff"));
+        assertThat(v.getMQTTpublishValue(), is("fancyOff"));
+        assertThat(v.getChannelState(), is(PercentType.HUNDRED));
+        v.update(new PercentType(27));
+        assertThat(v.getMQTTpublishValue(), is("27"));
+        assertThat(v.getChannelState(), is(new PercentType(27)));
+    }
+
+    @Test
+    public void rollershutterUpdateWithOutStrings () {
+        RollershutterValue v = new RollershutterValue(null, null, "fancyStop");
         // Test with command
         v.update(UpDownType.UP);
         assertThat(v.getMQTTpublishValue(), is("0"));
@@ -175,10 +198,10 @@ public class ValueTests {
         assertThat(v.getChannelState(), is(PercentType.HUNDRED));
 
         // Test with custom string
-        v.update(new StringType("fancyON"));
+        v.update(PercentType.ZERO);
         assertThat(v.getMQTTpublishValue(), is("0"));
         assertThat(v.getChannelState(), is(PercentType.ZERO));
-        v.update(new StringType("fancyOff"));
+        v.update(PercentType.HUNDRED);
         assertThat(v.getMQTTpublishValue(), is("100"));
         assertThat(v.getChannelState(), is(PercentType.HUNDRED));
         v.update(new PercentType(27));

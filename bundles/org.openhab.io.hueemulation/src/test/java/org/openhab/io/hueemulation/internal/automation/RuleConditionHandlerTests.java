@@ -15,7 +15,6 @@ package org.openhab.io.hueemulation.internal.automation;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
@@ -67,7 +66,7 @@ public class RuleConditionHandlerTests {
     }
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         ds = new HueDataStore();
 
         ds.lights.put("1", new HueLightEntry(new SwitchItem("switch"), "switch", DeviceType.SwitchType));

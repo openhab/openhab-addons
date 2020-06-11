@@ -10,7 +10,7 @@
 			<required>true</required>
 		</parameter>
 		<parameter name="type" type="text">
-			<label>Send Value as</label>
+			<label>Send Value As</label>
 			<description>Interpret received channel value as date or time</description>
 			<options>
 				<option value="date">date</option>

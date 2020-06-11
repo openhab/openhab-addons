@@ -47,5 +47,5 @@ public enum GardenaSmartCommandName {
     WATERING_TIMER_VALVE_6,
 
     // pump
-    PUMP_MANUAL_WATERING_TIMER;
+    PUMP_MANUAL_WATERING_TIMER
 }

@@ -39,6 +39,7 @@ public class WemoBindingConstants {
     public static final ThingTypeUID THING_TYPE_MZ100 = new ThingTypeUID(BINDING_ID, "MZ100");
     public static final ThingTypeUID THING_TYPE_MAKER = new ThingTypeUID(BINDING_ID, "Maker");
     public static final ThingTypeUID THING_TYPE_COFFEE = new ThingTypeUID(BINDING_ID, "CoffeeMaker");
+    public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
 
     // List of all Channel ids
     public static final String CHANNEL_STATE = "state";
@@ -59,7 +60,6 @@ public class WemoBindingConstants {
     public static final String CHANNEL_SENSOR = "sensor";
     public static final String CHANNEL_ONSTANDBY = "onStandBy";
 
-
     public static final String CHANNEL_COFFEEMODE = "coffeeMode";
     public static final String CHANNEL_MODETIME = "modeTime";
     public static final String CHANNEL_TIMEREMAINING = "timeRemaining";
@@ -68,6 +68,14 @@ public class WemoBindingConstants {
     public static final String CHANNEL_FILTERADVISE = "filterAdvise";
     public static final String CHANNEL_BREWED = "brewed";
     public static final String CHANNEL_LASTCLEANED = "lastCleaned";
+
+    public static final String CHANNEL_FADERENABLED = "faderEnabled";
+    public static final String CHANNEL_TIMERSTART = "timerStart";
+    public static final String CHANNEL_FADERCOUNTDOWNTIME = "faderCountDownTime";
+    public static final String CHANNEL_NIGHTMODE = "nightMode";
+    public static final String CHANNEL_STARTTIME = "startTime";
+    public static final String CHANNEL_ENDTIME = "endTime";
+    public static final String CHANNEL_NIGHTMODEBRIGHTNESS = "nightModeBrightness";
 
     // List of thing configuration properties
     public static final String UDN = "udn";
@@ -86,10 +94,9 @@ public class WemoBindingConstants {
             .unmodifiableSet(Stream.of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION)
                     .collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION,
-                            THING_TYPE_BRIDGE, THING_TYPE_MZ100, THING_TYPE_MAKER, THING_TYPE_COFFEE)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
+            .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION, THING_TYPE_BRIDGE,
+                    THING_TYPE_MZ100, THING_TYPE_MAKER, THING_TYPE_COFFEE, THING_TYPE_DIMMER)
+            .collect(Collectors.toSet()));
 
 }

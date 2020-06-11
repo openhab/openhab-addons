@@ -10,7 +10,7 @@
 			<bridge-type-ref id="account" />
 		</supported-bridge-type-refs>
 
-		<label>Gardena Smart Sileno mower</label>
+		<label>Gardena Smart Sileno Mower</label>
 		<description>A Gardena Smart Sileno mower</description>
 
 		<channel-groups>
@@ -78,14 +78,14 @@
 
 	<channel-type id="mowerDurationProperty">
 		<item-type>Number</item-type>
-		<label>Mowing time</label>
+		<label>Mowing Time</label>
 		<description>Mowing time in minutes</description>
 		<state pattern="%d min" min="1" max="1440" step="1" />
 	</channel-type>
 
 	<channel-type id="parkUntilFurtherNotice">
 		<item-type>Switch</item-type>
-		<label>Park And Pause All Timers</label>
+		<label>Park and Pause All Timers</label>
 		<description>Park and pause all timers</description>
 	</channel-type>
 
@@ -250,7 +250,7 @@
 
 	<channel-type id="sourceForNextStart" advanced="true">
 		<item-type>String</item-type>
-		<label>Source For Next Start</label>
+		<label>Source for Next Start</label>
 		<description>The source for the next start</description>
 		<state readOnly="true">
 			<options>
@@ -305,14 +305,14 @@
 
 	<channel-type id="firmwareUploadProgress" advanced="true">
 		<item-type>Number</item-type>
-		<label>Upload progress</label>
+		<label>Upload Progress</label>
 		<description>Firmware upload in progress</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="firmwareAvailableVersion" advanced="true">
 		<item-type>String</item-type>
-		<label>Available version</label>
+		<label>Available Version</label>
 		<description>Available firmware version</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -586,7 +586,7 @@
 				</options>
 			</parameter>
 			<parameter name="turn_on_pressure" type="text">
-				<label>Turn on pressure</label>
+				<label>Turn On Pressure</label>
 				<options>
 					<option value="2.0">2.0</option>
 					<option value="2.2">2.2</option>
@@ -703,7 +703,7 @@
 
 	<channel-type id="turnOnPressure">
 		<item-type>Number</item-type>
-		<label>Turn on pressure</label>
+		<label>Turn On Pressure</label>
 		<description>Turn on pressure</description>
 		<state readOnly="true" pattern="%d bar">
 			<options>

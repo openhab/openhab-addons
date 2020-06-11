@@ -32,6 +32,7 @@ By default the pairing mode disables itself after 1 minute (can be configured).
 
 It is important to note that you are exposing *Items* not *Things* or *Channels*.
 Only Color, Dimmer, Rollershutter, Switch and Group type *Items* are supported.
+Group type items require the "Huelight" tag to be exposed as devices instead of Groups.
 
 This service can emulate 3 different devices:
 
@@ -104,7 +105,7 @@ Permanent V1 bridge emulation (no obvious reason to enable that):
 org.openhab.hueemulation:permanentV1bridge=false
 ```
 
-The hue emulation service will announce its existence via UPNP on every
+The hue emulation service will announce its existence via UPnP on every
 of the openHAB configured primary addresses (IPv4 and IPv6).
 
 Usually you do not want to set this option, but change the primary address configuration of openHAB.

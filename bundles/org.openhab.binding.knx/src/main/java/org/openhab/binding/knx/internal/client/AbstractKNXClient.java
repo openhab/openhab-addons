@@ -142,17 +142,17 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
 
     private boolean scheduleReconnectJob() {
         if (autoReconnectPeriod > 0) {
-            connectJob = knxScheduler.scheduleWithFixedDelay(() -> connect(), 0, autoReconnectPeriod, TimeUnit.SECONDS);
+            connectJob = knxScheduler.schedule(this::connect, autoReconnectPeriod, TimeUnit.SECONDS);
             return true;
         } else {
             return false;
         }
     }
 
-    private void cancelReconnectJob(boolean kill) {
+    private void cancelReconnectJob() {
         ScheduledFuture<?> currentReconnectJob = connectJob;
         if (currentReconnectJob != null) {
-            currentReconnectJob.cancel(kill);
+            currentReconnectJob.cancel(true);
             connectJob = null;
         }
     }
@@ -200,11 +200,12 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
                     TimeUnit.MILLISECONDS);
 
             statusUpdateCallback.updateStatus(ThingStatus.ONLINE);
-            cancelReconnectJob(false);
+            connectJob = null;
             return true;
         } catch (KNXException | InterruptedException e) {
             logger.debug("Error connecting to the bus: {}", e.getMessage(), e);
             disconnect(e);
+            scheduleReconnectJob();
             return false;
         }
     }
@@ -219,6 +220,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
+    @SuppressWarnings("null")
     private void releaseConnection() {
         logger.debug("Bridge {} is disconnecting from the KNX bus", thingUID);
         readDatapoints.clear();
@@ -268,6 +270,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         return typeHelper.toDPTValue(type, dpt);
     }
 
+    @SuppressWarnings("null")
     private void readNextQueuedDatapoint() {
         if (!connectIfNotAutomatic()) {
             return;
@@ -299,7 +302,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     public void dispose() {
-        cancelReconnectJob(true);
+        cancelReconnectJob();
         disconnect(null);
     }
 

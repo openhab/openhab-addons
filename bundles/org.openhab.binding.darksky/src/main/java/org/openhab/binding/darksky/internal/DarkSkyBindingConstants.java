@@ -46,11 +46,13 @@ public class DarkSkyBindingConstants {
             "hourlyForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DAILY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
             "dailyForecast");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ALERTS = new ChannelGroupTypeUID(BINDING_ID, "alerts");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_CURRENT_WEATHER = "current";
     public static final String CHANNEL_GROUP_FORECAST_TODAY = "forecastToday";
     public static final String CHANNEL_GROUP_FORECAST_TOMORROW = "forecastTomorrow";
+    public static final String CHANNEL_GROUP_ALERTS = "alerts";
 
     // List of all channels
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
@@ -60,6 +62,9 @@ public class DarkSkyBindingConstants {
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_MIN_TEMPERATURE = "min-temperature";
     public static final String CHANNEL_MAX_TEMPERATURE = "max-temperature";
+    public static final String CHANNEL_APPARENT_TEMPERATURE = "apparent-temperature";
+    public static final String CHANNEL_MIN_APPARENT_TEMPERATURE = "min-apparent-temperature";
+    public static final String CHANNEL_MAX_APPARENT_TEMPERATURE = "max-apparent-temperature";
     public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_WIND_SPEED = "wind-speed";
@@ -69,17 +74,22 @@ public class DarkSkyBindingConstants {
     public static final String CHANNEL_VISIBILITY = "visibility";
     public static final String CHANNEL_RAIN = "rain";
     public static final String CHANNEL_SNOW = "snow";
+    public static final String CHANNEL_PRECIPITATION_INTENSITY = "precip-intensity";
     public static final String CHANNEL_PRECIPITATION_PROBABILITY = "precip-probability";
+    public static final String CHANNEL_PRECIPITATION_TYPE = "precip-type";
     public static final String CHANNEL_UVINDEX = "uvindex";
     public static final String CHANNEL_OZONE = "ozone";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
+    public static final String CHANNEL_ALERT_TITLE = "title";
+    public static final String CHANNEL_ALERT_ISSUED = "issued";
+    public static final String CHANNEL_ALERT_EXPIRES = "expires";
+    public static final String CHANNEL_ALERT_DESCRIPTION = "description";
+    public static final String CHANNEL_ALERT_SEVERITY = "severity";
+    public static final String CHANNEL_ALERT_URI = "uri";
 
     public static final String TRIGGER_SUNRISE = CHANNEL_GROUP_CURRENT_WEATHER + "#sunrise-event";
     public static final String TRIGGER_SUNSET = CHANNEL_GROUP_CURRENT_WEATHER + "#sunset-event";
 
     public static final String EVENT_START = "START";
-
-    // List of all configuration
-    public static final String CONFIG_FORECAST_DAYS = "forecastDays";
 }

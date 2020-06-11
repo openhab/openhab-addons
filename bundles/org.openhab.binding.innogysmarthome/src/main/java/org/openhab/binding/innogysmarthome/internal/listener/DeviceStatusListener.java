@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.innogysmarthome.internal.listener;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.event.Event;
 
@@ -20,6 +21,7 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.event.Event;
  *
  * @author Oliver Kuhl - Initial contribution
  */
+@NonNullByDefault
 public interface DeviceStatusListener {
 
     /**

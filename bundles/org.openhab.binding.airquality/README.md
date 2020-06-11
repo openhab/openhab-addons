@@ -1,12 +1,13 @@
 # Air Quality Binding
 
-This binding uses the [AQIcn.org service](http://aqicn.org) for providing air quality information for any location worldwide.
+This binding uses the [AQIcn.org service](https://aqicn.org) for providing air quality information for any location worldwide.
 
-The World Air Quality Index project is a social enterprise project started in 2007. Its mission is to promote Air Pollution awareness and provide a unified Air Quality information for the whole world.
+The World Air Quality Index project is a social enterprise project started in 2007.
+Its mission is to promote Air Pollution awareness and provide a unified Air Quality information for the whole world.
 
-The project is proving a transparent Air Quality information for more than 70 countries, covering more than 9000 stations in 600 major cities, via those two websites: [aqicn.org](http://aqicn.org) and [waqi.info](http://waqi.info).
+The project is proving a transparent Air Quality information for more than 70 countries, covering more than 9000 stations in 600 major cities, via those two websites: [aqicn.org](https://aqicn.org) and [waqi.info](https://waqi.info).
 
-To use this binding, you first need to [register and get your API token](http://aqicn.org/data-platform/token/).
+To use this binding, you first need to [register and get your API token](https://aqicn.org/data-platform/token/).
 
 ## Supported Things
 
@@ -17,7 +18,7 @@ Of course, you can add multiple Things, e.g. for measuring AQI for different loc
 ## Discovery
 
 Local Air Quality can be autodiscovered based on system location.
-You'll have complete default configuration with your apiKey.
+You will have complete default configuration with your apiKey.
 
 ## Binding Configuration
 
@@ -62,6 +63,7 @@ The AirQuality information that is retrieved is available as these channels:
 | o3              | Number               | Ozone level (O3)                             |
 | no2             | Number               | Nitrogen Dioxide level (NO2)                 |
 | co              | Number               | Carbon monoxide level (CO)                   |
+| so2             | Number               | Sulfur dioxide level (SO2)                   |
 | observationTime | DateTime             | Observation date and time                    |
 | temperature     | Number:Temperature   | Temperature in Celsius degrees               |
 | pressure        | Number:Pressure      | Pressure level                               |
@@ -70,7 +72,7 @@ The AirQuality information that is retrieved is available as these channels:
 
 `AQI Description` item provides a human-readable output that can be interpreted e.g. by MAP transformation.
 
-*Note that channels like* `pm25`, `pm10`, `o3`, `no2`, `co` *can sometimes return* `UNDEF` *value due to the fact that some stations don't provide measurements for them.*
+*Note that channels like* `pm25`, `pm10`, `o3`, `no2`, `co`, `so2` *can sometimes return* `UNDEF` *value due to the fact that some stations don't provide measurements for them.*
 
 ## Full Example
 
@@ -110,6 +112,7 @@ Number   Aqi_Pm10            "PM\u2081\u2080 Level" <line> (AirQuality) { channe
 Number   Aqi_O3              "O\u2083 Level" <line> (AirQuality) { channel="airquality:aqi:home:o3" }
 Number   Aqi_No2             "NO\u2082 Level" <line> (AirQuality) { channel="airquality:aqi:home:no2" }
 Number   Aqi_Co              "CO Level" <line> (AirQuality) { channel="airquality:aqi:home:co" }
+Number   Aqi_So2             "SO\u2082 Level" <line> (AirQuality) { channel="airquality:aqi:home:so2" }
 
 String   Aqi_LocationName    "Measuring Location" <settings> (AirQuality) { channel="airquality:aqi:home:locationName" }
 Location Aqi_StationGeo      "Station Location" <office> (AirQuality) { channel="airquality:aqi:home:stationLocation" }
@@ -151,6 +154,7 @@ sitemap airquality label="Air Quality" {
         Text item=Aqi_O3
         Text item=Aqi_No2
         Text item=Aqi_Co
+        Text item=Aqi_So2
     }
 
     Frame {

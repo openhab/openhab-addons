@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.link;
 
-import org.openhab.binding.innogysmarthome.internal.client.entity.Message;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
-
-import com.google.api.client.util.Key;
+import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
 
 /**
  * Defines the data structure for a {@link Link}. This is the basic component used to link different data types in the
@@ -32,45 +30,20 @@ public class Link {
     public static final String LINK_TYPE_SHC = "/desc/device/SHC.RWE/";
     public static final String LINK_TYPE_UNKNOWN = "unknown";
 
-    @Key("value")
-    private String value;
-
-    public Link(String value) {
-        this.value = value;
-    }
-
-    public Link() {
-    }
-
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
     /**
      * Returns the Type of the {@link Link}.
      *
      * @return {@link #LINK_TYPE_CAPABILITY},{@link #LINK_TYPE_DEVICE}, {@link #LINK_TYPE_MESSAGE},
      *         {@link #LINK_TYPE_SHC} or {@link #LINK_TYPE_UNKNOWN}
      */
-    public String getLinkType() {
-        String linkValue = getValue();
-        if (linkValue.startsWith(LINK_TYPE_CAPABILITY)) {
+    public static String getLinkType(String link) {
+        if (link.startsWith(LINK_TYPE_CAPABILITY)) {
             return LINK_TYPE_CAPABILITY;
-        } else if (linkValue.startsWith(LINK_TYPE_DEVICE)) {
+        } else if (link.startsWith(LINK_TYPE_DEVICE)) {
             return LINK_TYPE_DEVICE;
-        } else if (linkValue.startsWith(LINK_TYPE_MESSAGE)) {
+        } else if (link.startsWith(LINK_TYPE_MESSAGE)) {
             return LINK_TYPE_MESSAGE;
-        } else if (linkValue.startsWith(LINK_TYPE_SHC)) {
+        } else if (link.startsWith(LINK_TYPE_SHC)) {
             return LINK_TYPE_SHC;
         } else {
             return LINK_TYPE_UNKNOWN;
@@ -82,11 +55,11 @@ public class Link {
      *
      * @return String the id of the link or null
      */
-    public String getId() {
-        if (this.value != null) {
-            String linkType = getLinkType();
-            if (linkType != null && !linkType.equals(Link.LINK_TYPE_UNKNOWN) && !linkType.equals(Link.LINK_TYPE_SHC)) {
-                return this.value.replace(linkType, "");
+    public static String getId(String link) {
+        if (link != null) {
+            final String linkType = getLinkType(link);
+            if (linkType != null && !Link.LINK_TYPE_UNKNOWN.equals(linkType) && !Link.LINK_TYPE_SHC.equals(linkType)) {
+                return link.replace(linkType, "");
             }
         }
         return null;
@@ -97,8 +70,8 @@ public class Link {
      *
      * @return
      */
-    public boolean isTypeCapability() {
-        return getLinkType().equals(LINK_TYPE_CAPABILITY);
+    public static boolean isTypeCapability(String link) {
+        return LINK_TYPE_CAPABILITY.equals(Link.getLinkType(link));
     }
 
     /**
@@ -106,8 +79,8 @@ public class Link {
      *
      * @return
      */
-    public boolean isTypeDevice() {
-        return getLinkType().equals(LINK_TYPE_DEVICE);
+    public static boolean isTypeDevice(String link) {
+        return LINK_TYPE_DEVICE.equals(Link.getLinkType(link));
     }
 
     /**
@@ -115,8 +88,8 @@ public class Link {
      *
      * @return
      */
-    public boolean isTypeMessage() {
-        return getLinkType().equals(LINK_TYPE_MESSAGE);
+    public static boolean isTypeMessage(String link) {
+        return LINK_TYPE_MESSAGE.equals(Link.getLinkType(link));
     }
 
     /**
@@ -124,8 +97,8 @@ public class Link {
      *
      * @return
      */
-    public boolean isTypeSHC() {
-        return getLinkType().equals(LINK_TYPE_SHC);
+    public static boolean isTypeSHC(String link) {
+        return LINK_TYPE_SHC.equals(Link.getLinkType(link));
     }
 
     /**
@@ -133,7 +106,7 @@ public class Link {
      *
      * @return
      */
-    public boolean isTypeUnknown() {
-        return getLinkType().equals(LINK_TYPE_UNKNOWN);
+    public static boolean isTypeUnknown(String link) {
+        return LINK_TYPE_UNKNOWN.equals(Link.getLinkType(link));
     }
 }

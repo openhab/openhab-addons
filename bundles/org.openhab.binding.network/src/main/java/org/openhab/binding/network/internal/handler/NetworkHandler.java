@@ -24,6 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -85,7 +88,8 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
             case CHANNEL_LATENCY:
             case CHANNEL_DEPRECATED_TIME:
                 presenceDetection.getValue(value -> {
-                    updateState(CHANNEL_LATENCY, new DecimalType(value.getLowestLatency()));
+                    updateState(CHANNEL_LATENCY,
+                            new QuantityType<>(value.getLowestLatency(), MetricPrefix.MILLI(SmartHomeUnits.SECOND)));
                     updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(value.getLowestLatency()));
                 });
                 break;
@@ -116,7 +120,8 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
     @Override
     public void partialDetectionResult(PresenceDetectionValue value) {
         updateState(CHANNEL_ONLINE, OnOffType.ON);
-        updateState(CHANNEL_LATENCY, new DecimalType(value.getLowestLatency()));
+        updateState(CHANNEL_LATENCY,
+                new QuantityType<>(value.getLowestLatency(), MetricPrefix.MILLI(SmartHomeUnits.SECOND)));
         updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(value.getLowestLatency()));
     }
 

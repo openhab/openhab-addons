@@ -37,7 +37,7 @@ public class ChannelConfig {
      * Instead a postCommand() call is performed.
      */
     public boolean postCommand = false;
-    /** If true publishes messages as retained messages */
+    public @Nullable Integer qos;
     public boolean retained = false;
     /** If true, the state topic will not update a state, but trigger a channel instead. */
     public boolean trigger = false;

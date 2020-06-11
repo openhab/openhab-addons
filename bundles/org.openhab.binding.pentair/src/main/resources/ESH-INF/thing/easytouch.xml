@@ -59,25 +59,25 @@
 
 	<channel-type id="pooltemp">
 		<item-type>Number</item-type>
-		<label>Pool water temperature</label>
+		<label>Pool Water Temperature</label>
 		<description>Pool water temperature. Only valid when pool pump is running and in pool mode.</description>
 	</channel-type>
 
 	<channel-type id="spatemp">
 		<item-type>Number</item-type>
-		<label>Spa water temperature</label>
+		<label>Spa Water Temperature</label>
 		<description>Spa water temperature.  Only valide when in spa mode.</description>
 	</channel-type>
 
 	<channel-type id="airtemp">
 		<item-type>Number</item-type>
-		<label>Air temperature</label>
+		<label>Air Temperature</label>
 		<description>Air temperature.</description>
 	</channel-type>
 
 	<channel-type id="solartemp" advanced="true">
 		<item-type>Number</item-type>
-		<label>Solar temperature</label>
+		<label>Solar Temperature</label>
 		<description>Solar temperature.</description>
 	</channel-type>
 
@@ -109,20 +109,20 @@
 
 	<channel-type id="heatactive">
 		<item-type>Number</item-type>
-		<label>Heat active</label>
+		<label>Heat Active</label>
 		<description>Heat active state</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="poolsetpoint">
 		<item-type>Number</item-type>
-		<label>Pool temperature set point</label>
+		<label>Pool Temperature Set Point</label>
 		<description>Pool temperature set point</description>
 	</channel-type>
 
 	<channel-type id="spasetpoint">
 		<item-type>Number</item-type>
-		<label>Spa temperature set point</label>
+		<label>Spa Temperature Set Point</label>
 		<description>Spa temperature set point</description>
 	</channel-type>
 

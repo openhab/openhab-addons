@@ -14,22 +14,6 @@ https://github.com/openhab/openhab2-addons
 
 == Third-party Content
 
-Connect-SDK-Java-Core
-* License: Apache 2.0 License
-* Project: https://github.com/ConnectSDK/Connect-SDK-Android-Core
-* Source:  https://github.com/sprehn/Connect-SDK-Java-Core/releases
-
-Java-WebSocket
-* License: MIT License
-* Project: https://tootallnate.github.io/Java-WebSocket
-* Source:  https://github.com/TooTallNate/Java-WebSocket
-
-json
-* License: JSON License
-* Project: https://www.json.org
-* Source:  https://github.com/douglascrockford/JSON-java
-
-xpp3
-* License: Apache 2.0 License
-* Project: http://www.extreme.indiana.edu/xgws/xsoap/xpp/mxp1
-* Source:  http://www.extreme.indiana.edu/xgws/xsoap/xpp/mxp1
+The web socket communication with LGWebOS is derived from Connect-SDK-Java-Core.
+ * License: Apache 2.0 License
+ * Project: https://github.com/ConnectSDK/Connect-SDK-Android-Core

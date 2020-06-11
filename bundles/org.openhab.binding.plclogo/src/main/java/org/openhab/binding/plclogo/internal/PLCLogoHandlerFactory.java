@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  * @author Alexander Falkenstern - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.plclogo", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.plclogo")
 public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;

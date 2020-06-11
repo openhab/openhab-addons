@@ -77,6 +77,7 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_CLOUDINESS = "cloudiness";
     public static final String CHANNEL_RAIN = "rain";
     public static final String CHANNEL_SNOW = "snow";
+    public static final String CHANNEL_VISIBILITY = "visibility";
     public static final String CHANNEL_UVINDEX = "uvindex";
 
     // List of all configuration

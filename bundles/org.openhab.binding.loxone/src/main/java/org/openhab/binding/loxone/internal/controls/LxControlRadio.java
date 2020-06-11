@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
@@ -85,8 +85,10 @@ class LxControlRadio extends LxControl {
                 outputs.add(new StateOption("0", details.allOff));
                 outputsMap.put("0", details.allOff);
             }
-            addChannelStateDescription(cid, new StateDescription(BigDecimal.ZERO, new BigDecimal(MAX_RADIO_OUTPUTS),
-                    BigDecimal.ONE, null, false, outputs));
+            addChannelStateDescriptionFragment(cid,
+                    StateDescriptionFragmentBuilder.create().withMinimum(BigDecimal.ZERO)
+                            .withMaximum(new BigDecimal(MAX_RADIO_OUTPUTS)).withStep(BigDecimal.ONE).withReadOnly(false)
+                            .withOptions(outputs).build());
         }
     }
 

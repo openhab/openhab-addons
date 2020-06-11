@@ -15,6 +15,7 @@ package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +31,8 @@ public class NhcThermostat1 extends NhcThermostat {
 
     private final Logger logger = LoggerFactory.getLogger(NhcThermostat1.class);
 
-    NhcThermostat1(String id, String name, @Nullable String location) {
-        super(id, name, location);
+    NhcThermostat1(String id, String name, @Nullable String location, NikoHomeControlCommunication nhcComm) {
+        super(id, name, location, nhcComm);
     }
 
     /**
@@ -43,9 +44,7 @@ public class NhcThermostat1 extends NhcThermostat {
     public void executeMode(int mode) {
         logger.debug("Niko Home Control: execute thermostat mode {} for {}", mode, id);
 
-        if (nhcComm != null) {
-            nhcComm.executeThermostat(id, Integer.toString(mode));
-        }
+        nhcComm.executeThermostat(id, Integer.toString(mode));
     }
 
     /**
@@ -59,8 +58,6 @@ public class NhcThermostat1 extends NhcThermostat {
         logger.debug("Niko Home Control: execute thermostat overrule {} during {} min for {}", overrule, overruletime,
                 id);
 
-        if (nhcComm != null) {
-            nhcComm.executeThermostat(id, overrule, overruletime);
-        }
+        nhcComm.executeThermostat(id, overrule, overruletime);
     }
 }

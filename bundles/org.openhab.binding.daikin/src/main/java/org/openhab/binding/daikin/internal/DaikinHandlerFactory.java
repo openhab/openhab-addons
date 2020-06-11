@@ -27,8 +27,10 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.daikin")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.daikin")
 @NonNullByDefault
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
 
@@ -41,7 +43,7 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
+        if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT) || thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT)) {
             return new DaikinAcUnitHandler(thing);
         }
 

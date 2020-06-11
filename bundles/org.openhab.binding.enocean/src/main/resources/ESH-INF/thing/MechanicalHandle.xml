@@ -26,6 +26,7 @@
 					<option value="F6_10_00">F6-10-00</option>
 					<option value="F6_10_01">F6-10-01</option>
 					<option value="A5_14_09">A5-14-09</option>
+					<option value="A5_14_0A">A5-14-0A</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>

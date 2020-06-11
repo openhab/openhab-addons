@@ -19,5 +19,5 @@ package org.openhab.binding.solaredge.internal.model;
  */
 public enum ChannelType {
     LIVE,
-    AGGREGATE;
+    AGGREGATE
 }

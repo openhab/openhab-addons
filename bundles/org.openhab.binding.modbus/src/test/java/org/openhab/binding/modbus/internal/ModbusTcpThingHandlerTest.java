@@ -38,6 +38,9 @@ import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class ModbusTcpThingHandlerTest {
 

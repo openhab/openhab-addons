@@ -9,7 +9,7 @@
 
 		<config-description>
 			<parameter name="port" type="text" required="true">
-				<label>Serial port</label>
+				<label>Serial Port</label>
 				<description>Serial port connected to the module.</description>
 				<context>serial-port</context>
 			</parameter>
@@ -20,13 +20,13 @@
 				<unitLabel>Milliseconds</unitLabel>
 			</parameter>
 			<parameter name="refresh" type="integer" unit="ms">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Current state polling interval, in milliseconds.</description>
 				<default>5000</default>
 				<unitLabel>Milliseconds</unitLabel>
 			</parameter>
 			<parameter name="userCode" type="text" pattern="[0-9]{4,8}">
-				<label>User code</label>
+				<label>User Code</label>
 				<description>Security code of the user in behalf of all operations will be executed.</description>
 				<context>password</context>
 			</parameter>

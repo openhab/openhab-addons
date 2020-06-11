@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 
 import com.google.gson.annotations.SerializedName;
@@ -81,6 +84,32 @@ public class Sysinfo extends ErrorResponse {
     }
 
     /**
+     * Status of a single outlet on power strip.
+     */
+    public static class Outlet {
+        private String alias;
+        private String id;
+        private long onTime;
+        private int state;
+
+        public String getAlias() {
+            return alias;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public long getOnTime() {
+            return onTime;
+        }
+
+        public OnOffType getState() {
+            return state == 1 ? OnOffType.ON : OnOffType.OFF;
+        }
+    }
+
+    /**
      * Status of the range extended Wi-Fi.
      */
     public static class RangeextenderWireless {
@@ -121,6 +150,10 @@ public class Sysinfo extends ErrorResponse {
     private int ledOff;
     private double latitude;
     private double longitude;
+
+    // powerstrip/multiple plugs support.
+    private int childNum;
+    private List<Outlet> children = new ArrayList<>();
 
     // dimmer specific system info
     private int brightness;
@@ -249,6 +282,14 @@ public class Sysinfo extends ErrorResponse {
 
     public Plug getPlug() {
         return plug;
+    }
+
+    public int getChildNum() {
+        return childNum;
+    }
+
+    public List<Outlet> getChildren() {
+        return children;
     }
 
     public Sysinfo getSystem() {

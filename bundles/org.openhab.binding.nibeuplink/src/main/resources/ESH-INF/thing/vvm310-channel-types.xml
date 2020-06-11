@@ -5,21 +5,21 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="vvm310-type-40025">
 		<item-type>Number:Temperature</item-type>
-		<label>BT20 Exhaust air temp. 1</label>
+		<label>BT20 Exhaust Air Temp. 1</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40026">
 		<item-type>Number:Temperature</item-type>
-		<label>BT21 Vented air temp. 1</label>
+		<label>BT21 Vented Air Temp. 1</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40075">
 		<item-type>Number:Temperature</item-type>
-		<label>BT22 Supply air temp.</label>
+		<label>BT22 Supply Air Temp.</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -33,21 +33,21 @@
 	</channel-type>
 	<channel-type id="vvm310-type-40311">
 		<item-type>Number:Dimensionless</item-type>
-		<label>External ERS accessory GQ2 speed</label>
+		<label>External ERS Accessory GQ2 Speed</label>
 		<description>Indicates the speed of the GQ2 fan speed on the ERS accessory.</description>
 		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40312">
 		<item-type>Number:Dimensionless</item-type>
-		<label>External ERS accessory GQ3 speed</label>
+		<label>External ERS Accessory GQ3 Speed</label>
 		<description>Indicates the speed of the GQ3 fan speed on the ERS accessory.</description>
 		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40737">
 		<item-type>Number:Time</item-type>
-		<label>EB101-EP14 Tot. Cooling op.time compr</label>
+		<label>EB101-EP14 Tot. Cooling Op.time Compr</label>
 		<description></description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
@@ -61,14 +61,14 @@
 	</channel-type>
 	<channel-type id="vvm310-type-40183">
 		<item-type>Number:Temperature</item-type>
-		<label>AZ30-BT23 Outdoor temp. ERS</label>
+		<label>AZ30-BT23 Outdoor Temp. ERS</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-40942">
 		<item-type>Switch</item-type>
-		<label>External ERS accessory block status</label>
+		<label>External ERS Accessory Block Status</label>
 		<description>Indicates if the ERS accessory is externaly blocked.</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -109,21 +109,21 @@
 	</channel-type>
 	<channel-type id="vvm310-type-44069">
 		<item-type>Number</item-type>
-		<label>EB101-EP14 Compressor starts</label>
+		<label>EB101-EP14 Compressor Starts</label>
 		<description></description>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44071">
 		<item-type>Number:Time</item-type>
-		<label>EB101-EP14 Tot. op.time compr</label>
+		<label>EB101-EP14 Tot. Op.time Compr</label>
 		<description></description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-44073">
 		<item-type>Number:Time</item-type>
-		<label>EB101-EP14 Tot. HW op.time compr</label>
+		<label>EB101-EP14 Tot. HW Op.time Compr</label>
 		<description></description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
@@ -158,7 +158,7 @@
 	</channel-type>
 	<channel-type id="vvm310-type-44396">
 		<item-type>Number:Dimensionless</item-type>
-		<label>EB101 Speed charge pump</label>
+		<label>EB101 Speed Charge Pump</label>
 		<description></description>
 		<state pattern="%d %%" readOnly="true">
 		</state>
@@ -218,7 +218,7 @@
 	</channel-type>
 	<channel-type id="vvm310-type-47260">
 		<item-type>Number</item-type>
-		<label>Selected Fan speed</label>
+		<label>Selected Fan Speed</label>
 		<description>Currently selected fan speed</description>
 		<state readOnly="false">
 			<options>
@@ -232,20 +232,20 @@
 	</channel-type>
 	<channel-type id="vvm310-type-47394">
 		<item-type>Switch</item-type>
-		<label>Use room sensor S1</label>
+		<label>Use Room Sensor S1</label>
 		<description>When activated the system uses the room sensor 0=Off 1=On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="vvm310-type-47402">
 		<item-type>Number</item-type>
-		<label>Room sensor factor S1</label>
+		<label>Room Sensor Factor S1</label>
 		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>
 	</channel-type>
 	<channel-type id="vvm310-type-48793">
 		<item-type>Number</item-type>
-		<label>Room sensor cool factor S1</label>
+		<label>Room Sensor Cool Factor S1</label>
 		<description>Setting of how much the difference between set and actual room temperature should affect the supply temperature in cooling mode.</description>
 		<state min="0" max="60" step="1" pattern="%.1f" readOnly="false">
 		</state>

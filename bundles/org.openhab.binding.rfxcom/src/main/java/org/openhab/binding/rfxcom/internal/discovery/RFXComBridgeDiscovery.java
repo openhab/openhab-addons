@@ -82,7 +82,6 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
     }
 
     private synchronized void discoverRfxcom() {
-
         try {
             JD2XX jd2xx = new JD2XX();
             logger.debug("Discovering RFXCOM transceiver devices by JD2XX version {}", jd2xx.getLibraryVersion());
@@ -131,7 +130,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
     private void addBridge(ThingTypeUID bridgeType, String bridgeId) {
         logger.debug("Discovered RFXCOM transceiver, bridgeType='{}', bridgeId='{}'", bridgeType, bridgeId);
 
-        Map<String, Object> properties = new HashMap<>(2);
+        Map<String, Object> properties = new HashMap<>();
         properties.put(RFXComBridgeConfiguration.BRIDGE_ID, bridgeId);
 
         ThingUID uid = new ThingUID(bridgeType, bridgeId);

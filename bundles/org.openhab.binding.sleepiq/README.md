@@ -6,7 +6,7 @@ This binding integrates with the SleepIQ system from Select Comfort for Sleep Nu
 
 SleepIQ is a service provided by Select Comfort and sold as an option for Sleep Number beds.
 The system collects data about the bed (including individual air chamber data for dual chamber beds).
-This information includes whether or not a sleeper is in bed, the current sleep number setting, the pressure of the air chamber, and it's link status.
+This information includes whether or not a sleeper is in bed, the current sleep number setting, the pressure of the air chamber, and its link status.
 This data can then be analyzed for any number of purposes, including improving sleep.
 
 ## Supported Things

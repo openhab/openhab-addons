@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.lutron.internal.handler;
 
-import java.util.Arrays;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.lutron.internal.KeypadComponent;
+import org.openhab.binding.lutron.internal.discovery.project.ComponentType;
+import org.openhab.binding.lutron.internal.keypadconfig.KeypadConfigSeetouch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,79 +26,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Adair - Initial contribution
  */
+@NonNullByDefault
 public class KeypadHandler extends BaseKeypadHandler {
-
-    private static enum Component implements KeypadComponent {
-        BUTTON1(1, "button1", "Button 1"),
-        BUTTON2(2, "button2", "Button 2"),
-        BUTTON3(3, "button3", "Button 3"),
-        BUTTON4(4, "button4", "Button 4"),
-        BUTTON5(5, "button5", "Button 5"),
-        BUTTON6(6, "button6", "Button 6"),
-        BUTTON7(7, "button7", "Button 7"),
-
-        LOWER1(16, "buttontoplower", "Top lower button"),
-        RAISE1(17, "buttontopraise", "Top raise button"),
-        LOWER2(18, "buttonbottomlower", "Bottom lower button"),
-        RAISE2(19, "buttonbottomraise", "Bottom raise button"),
-
-        // CCI1(25, "cci1", ""), // listed in spec but currently unused in binding
-        // CCI2(26, "cci2", ""), // listed in spec but currently unused in binding
-
-        LED1(81, "led1", "LED 1"),
-        LED2(82, "led2", "LED 2"),
-        LED3(83, "led3", "LED 3"),
-        LED4(84, "led4", "LED 4"),
-        LED5(85, "led5", "LED 5"),
-        LED6(86, "led6", "LED 6"),
-        LED7(87, "led7", "LED 7");
-
-        private final int id;
-        private final String channel;
-        private final String description;
-
-        Component(int id, String channel, String description) {
-            this.id = id;
-            this.channel = channel;
-            this.description = description;
-        }
-
-        @Override
-        public int id() {
-            return id;
-        }
-
-        @Override
-        public String channel() {
-            return channel;
-        }
-
-        @Override
-        public String description() {
-            return description;
-        }
-
-    }
 
     private final Logger logger = LoggerFactory.getLogger(KeypadHandler.class);
 
     @Override
-    protected boolean isLed(int id) {
-        return (id >= 81 && id <= 87);
-    }
-
-    @Override
-    protected boolean isButton(int id) {
-        return ((id >= 1 && id <= 7) || (id >= 16 && id <= 19));
-    }
-
-    @Override
-    protected boolean isCCI(int id) {
-        return false;
-    }
-
-    @Override
-    protected void configureComponents(String model) {
+    protected void configureComponents(@Nullable String model) {
         String mod = model == null ? "Generic" : model;
         logger.debug("Configuring components for keypad model {}", model);
 
@@ -105,97 +40,72 @@ public class KeypadHandler extends BaseKeypadHandler {
             case "W1RLD":
             case "H1RLD":
             case "HN1RLD":
-                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
-                        Component.BUTTON5, Component.BUTTON6));
-                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
-                ledList.addAll(
-                        Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED5, Component.LED6));
+                buttonList = kp.getComponents("W1RLD", ComponentType.BUTTON);
+                ledList = kp.getComponents("W1RLD", ComponentType.LED);
                 break;
             case "W2RLD":
             case "H2RLD":
             case "HN2RLD":
-                buttonList.addAll(
-                        Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON5, Component.BUTTON6));
-                buttonList
-                        .addAll(Arrays.asList(Component.LOWER1, Component.RAISE1, Component.LOWER2, Component.RAISE2));
-                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED5, Component.LED6));
+                buttonList = kp.getComponents("W2RLD", ComponentType.BUTTON);
+                ledList = kp.getComponents("W2RLD", ComponentType.LED);
                 break;
             case "W3S":
             case "H3S":
             case "HN3S":
-                buttonList.addAll(
-                        Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3, Component.BUTTON6));
-                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
-                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED6));
+                buttonList = kp.getComponents("W3S", ComponentType.BUTTON);
+                ledList = kp.getComponents("W3S", ComponentType.LED);
+
                 break;
             case "W3BD":
-                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
-                        Component.BUTTON5, Component.BUTTON6, Component.BUTTON7));
-                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED5,
-                        Component.LED6, Component.LED7));
+                buttonList = kp.getComponents(mod, ComponentType.BUTTON);
+                ledList = kp.getComponents(mod, ComponentType.LED);
                 break;
             case "W3BRL":
-                buttonList.addAll(Arrays.asList(Component.BUTTON2, Component.BUTTON3, Component.BUTTON4));
-                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
-                ledList.addAll(Arrays.asList(Component.LED2, Component.LED3, Component.LED4));
+                buttonList = kp.getComponents(mod, ComponentType.BUTTON);
+                ledList = kp.getComponents(mod, ComponentType.LED);
                 break;
             case "W3BSRL":
             case "H3BSRL":
             case "HN3BSRL":
-                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON3, Component.BUTTON5));
-                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
-                ledList.addAll(Arrays.asList(Component.LED1, Component.LED3, Component.LED5));
+                buttonList = kp.getComponents("W3BSRL", ComponentType.BUTTON);
+                ledList = kp.getComponents("W3BSRL", ComponentType.LED);
                 break;
             case "W4S":
             case "H4S":
             case "HN4S":
-                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
-                        Component.BUTTON4, Component.BUTTON6));
-                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
-                ledList.addAll(
-                        Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4, Component.LED6));
+                buttonList = kp.getComponents("W4S", ComponentType.BUTTON);
+                ledList = kp.getComponents("W4S", ComponentType.LED);
                 break;
             case "W5BRL":
             case "H5BRL":
             case "HN5BRL":
             case "W5BRLIR":
-                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
-                        Component.BUTTON4, Component.BUTTON5));
-                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
-                ledList.addAll(
-                        Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4, Component.LED5));
+                buttonList = kp.getComponents("W5BRL", ComponentType.BUTTON);
+                ledList = kp.getComponents("W5BRL", ComponentType.LED);
                 break;
             case "W6BRL":
             case "H6BRL":
             case "HN6BRL":
-                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
-                        Component.BUTTON4, Component.BUTTON5, Component.BUTTON6));
-                buttonList.addAll(Arrays.asList(Component.LOWER2, Component.RAISE2));
-                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4,
-                        Component.LED5, Component.LED6));
+                buttonList = kp.getComponents("W6BRL", ComponentType.BUTTON);
+                ledList = kp.getComponents("W6BRL", ComponentType.LED);
                 break;
             case "W7B":
-                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
-                        Component.BUTTON4, Component.BUTTON5, Component.BUTTON6, Component.BUTTON7));
-                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4,
-                        Component.LED5, Component.LED6, Component.LED7));
+                buttonList = kp.getComponents(mod, ComponentType.BUTTON);
+                ledList = kp.getComponents(mod, ComponentType.LED);
                 break;
             default:
                 logger.warn("No valid keypad model defined ({}). Assuming Generic model.", mod);
                 // fall through
             case "Generic":
-                buttonList.addAll(Arrays.asList(Component.BUTTON1, Component.BUTTON2, Component.BUTTON3,
-                        Component.BUTTON4, Component.BUTTON5, Component.BUTTON6, Component.BUTTON7));
-                buttonList
-                        .addAll(Arrays.asList(Component.LOWER1, Component.RAISE1, Component.LOWER2, Component.RAISE2));
-                ledList.addAll(Arrays.asList(Component.LED1, Component.LED2, Component.LED3, Component.LED4,
-                        Component.LED5, Component.LED6, Component.LED7));
+                buttonList = kp.getComponents("Generic", ComponentType.BUTTON);
+                ledList = kp.getComponents("Generic", ComponentType.LED);
                 break;
         }
     }
 
     public KeypadHandler(Thing thing) {
         super(thing);
+        kp = new KeypadConfigSeetouch();
     }
 
 }

@@ -132,7 +132,7 @@
 	</channel-type>
 	<channel-type id="actualTresholdkWType" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>Actual threshold</label>
+		<label>Actual Threshold</label>
 		<description>The actual threshold.</description>
 		<state pattern="%.3f %unit%" readOnly="true" />
 	</channel-type>
@@ -150,13 +150,13 @@
 	</channel-type>
 	<channel-type id="powerFailuresType" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number Of Power Failures</label>
+		<label>Number of Power Failures</label>
 		<description>The number of power failures.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="longPowerFailuresType" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number Of Long Power Failures</label>
+		<label>Number of Long Power Failures</label>
 		<description>The number of long power failures.</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -182,37 +182,37 @@ Each entry has its own channel (emeter_power_failure_log_duration*x*, *x* = 0 - 
 	</channel-type>
 	<channel-type id="voltageSagsL1Type" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number Of Voltage Sags L1</label>
+		<label>Number of Voltage Sags L1</label>
 		<description>The number of voltage sags L1.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="voltageSagsL2Type" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number Of Voltage Sags L2</label>
+		<label>Number of Voltage Sags L2</label>
 		<description>The number of voltage sags L2.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="voltageSagsL3Type" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number Of Voltage Sags L3</label>
+		<label>Number of Voltage Sags L3</label>
 		<description>The number of voltage sags L3.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="voltageSwellsL1Type" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number Of Voltage Swells L1</label>
+		<label>Number of Voltage Swells L1</label>
 		<description>The number of voltage swells L1.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="voltageSwellsL2Type" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number Of Voltage Swells L2</label>
+		<label>Number of Voltage Swells L2</label>
 		<description>The number of voltage swells L2.</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="voltageSwellsL3Type" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number Of Voltage Swells L3</label>
+		<label>Number of Voltage Swells L3</label>
 		<description>The number of voltage swells L3.</description>
 		<state readOnly="true" />
 	</channel-type>

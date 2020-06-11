@@ -57,13 +57,13 @@
 	</channel-type>
 	<channel-type id="homepersoncount" advanced="false">
 		<item-type>Number</item-type>
-		<label>Person counter</label>
+		<label>Person Counter</label>
 		<description>Total number of Persons that are at home</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="homeunknowncount" advanced="true">
 		<item-type>Number</item-type>
-		<label>Unknown Person counter</label>
+		<label>Unknown Person Counter</label>
 		<description>Count how many Unknown Persons are at home</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
@@ -114,13 +114,13 @@
 	</channel-type>
 	<channel-type id="video_status">
 		<item-type>String</item-type>
-		<label>Video status</label>
+		<label>Video Status</label>
 		<description>Status of the video (recording, deleted or available)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="is_arrival">
 		<item-type>Switch</item-type>
-		<label>Is arrival</label>
+		<label>Is Arrival</label>
 		<description>If person was considered "away" before being seen during this event</description>
 		<state readOnly="true"></state>
 	</channel-type>

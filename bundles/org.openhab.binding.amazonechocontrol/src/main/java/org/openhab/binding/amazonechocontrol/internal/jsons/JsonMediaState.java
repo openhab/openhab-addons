@@ -47,7 +47,7 @@ public class JsonMediaState {
     // public long timeLastShuffled; parsing fails with some values, so do not use it
     public int volume;
 
-    public class QueueEntry {
+    public static class QueueEntry {
 
         public @Nullable String album;
         public @Nullable String albumAsin;

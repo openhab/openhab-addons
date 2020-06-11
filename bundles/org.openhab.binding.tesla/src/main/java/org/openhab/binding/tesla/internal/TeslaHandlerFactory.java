@@ -12,20 +12,21 @@
  */
 package org.openhab.binding.tesla.internal;
 
-import static org.openhab.binding.tesla.internal.TeslaBindingConstants.THING_TYPE_MODELS;
+import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.eclipse.smarthome.core.storage.StorageService;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.tesla.internal.handler.TeslaHandler;
+import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
+import org.openhab.binding.tesla.internal.handler.TeslaVehicleHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TeslaHandlerFactory} is responsible for creating things and thing
@@ -33,13 +34,14 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Karel Goderis - Initial contribution
  * @author Nicolai Grødum - Adding token based auth
+ * @author Kai Kreuzer - Introduced account handler
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tesla")
 public class TeslaHandlerFactory extends BaseThingHandlerFactory {
 
-    private StorageService storageService;
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MODELS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_ACCOUNT, THING_TYPE_MODELS, THING_TYPE_MODEL3, THING_TYPE_MODELX, THING_TYPE_MODELY)
+            .collect(Collectors.toSet());
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -50,19 +52,10 @@ public class TeslaHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_MODELS)) {
-            return new TeslaHandler(thing, storageService);
+        if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
+            return new TeslaAccountHandler((Bridge) thing);
+        } else {
+            return new TeslaVehicleHandler(thing);
         }
-
-        return null;
-    }
-
-    @Reference
-    public void setStorageService(StorageService storageService) {
-        this.storageService = storageService;
-    }
-
-    public void unsetStorageService(StorageService storageService) {
-        this.storageService = null;
     }
 }

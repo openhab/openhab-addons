@@ -35,7 +35,7 @@ public interface NhcControllerEvent {
      */
     public default @Nullable InetAddress getAddr() {
         return null;
-    };
+    }
 
     /**
      * Get the listening port of the Niko Home Control IP-interface.
@@ -44,7 +44,7 @@ public interface NhcControllerEvent {
      */
     public default int getPort() {
         return 0;
-    };
+    }
 
     /**
      * Get the touch profile of the Niko Home Control II system.
@@ -53,7 +53,7 @@ public interface NhcControllerEvent {
      */
     public default String getProfile() {
         return "";
-    };
+    }
 
     /**
      * Get the touch profile password of the Niko Home Control II system.
@@ -62,7 +62,7 @@ public interface NhcControllerEvent {
      */
     public default String getPassword() {
         return "";
-    };
+    }
 
     /**
      * Called to indicate the connection with the Niko Home Control Controller is offline.

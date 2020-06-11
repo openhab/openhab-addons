@@ -57,7 +57,7 @@ public class HarmonyDeviceDiscoveryService extends AbstractDiscoveryService impl
     @Override
     protected void startBackgroundDiscovery() {
         discoverDevices();
-    };
+    }
 
     @Override
     public void hubStatusChanged(ThingStatus status) {

@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -37,7 +36,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.binding.mqtt.internal.MqttThingID;
 import org.osgi.service.cm.ConfigurationException;
 
@@ -134,13 +132,12 @@ public class BrokerHandlerTest {
         handler.initialize();
         verify(connection, times(2)).addConnectionObserver(any());
         verify(connection, times(1)).start();
-        boolean s = o.semaphore.tryAcquire(300, TimeUnit.MILLISECONDS);
         // First we expect a CONNECTING state and then a CONNECTED unique state change
         assertThat(o.counter, is(2));
         // First we expect a CONNECTING state and then a CONNECTED state change
         // (and other CONNECTED after the future completes)
         verify(handler, times(3)).connectionStateChanged(any(), any());
-        return s;
+        return true;
     }
 
 }

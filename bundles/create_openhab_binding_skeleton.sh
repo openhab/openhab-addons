@@ -11,7 +11,7 @@ author=$2
 githubUser=$3
 
 mvn -s archetype-settings.xml archetype:generate -N \
-  -DarchetypeGroupId=org.openhab.core \
+  -DarchetypeGroupId=org.openhab.core.tools.archetypes \
   -DarchetypeArtifactId=org.openhab.core.tools.archetypes.binding \
   -DarchetypeVersion=$openHABVersion \
   -DgroupId=org.openhab.binding \

@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Simple Push Button</label>
-		<description>Represents a physical push button (EEP: F6-01)</description>
+		<description>Represents a physical Push Button (EEP: F6-01, D2-03)</description>
 
 		<config-description>
 			<parameter name="enoceanId" type="text">
@@ -24,6 +24,7 @@
 				<description>EEP which is used by push button</description>
 				<options>
 					<option value="F6_01_01">F6-01-01</option>
+					<option value="D2_03_0A">D2-03-0A</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>F6_01_01</default>

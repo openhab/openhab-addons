@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown, when the innogy SmartHome Client API returns an unknown error.
  *
  * @author Oliver Kuhl - Initial contribution
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class ApiException extends Exception {
+
+    private static final long serialVersionUID = 1L;
 
     public ApiException() {
     }
@@ -26,5 +30,4 @@ public class ApiException extends Exception {
     public ApiException(String message) {
         super(message);
     }
-
 }

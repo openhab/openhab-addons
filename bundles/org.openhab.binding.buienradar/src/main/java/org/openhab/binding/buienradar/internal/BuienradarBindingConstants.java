@@ -29,6 +29,7 @@ public class BuienradarBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RAIN_FORECAST = new ThingTypeUID(BINDING_ID, "rain_forecast");
 
+    public static final String ACTUAL_DATETIME = "actual_datetime";
     public static final String FORECAST_0 = "forecast_0";
     public static final String FORECAST_5 = "forecast_5";
     public static final String FORECAST_10 = "forecast_10";

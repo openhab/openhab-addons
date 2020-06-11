@@ -19,8 +19,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaWindowHandler} is responsible for handling commands,
@@ -31,47 +29,46 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaWindowHandler.class);
-
     public SomfyTahomaWindowHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (!CONTROL.equals(channelUID.getId())) {
             return;
         }
 
         if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            return;
         } else {
             String cmd = getTahomaCommand(command.toString());
-            //Check if the rollershutter is not moving
-            String executionId = getCurrentExecutions();
-            if (executionId != null) {
-                //STOP command should be interpreted if rollershutter is moving
-                //otherwise do nothing
-                if (COMMAND_STOP.equals(cmd)) {
+            if (COMMAND_STOP.equals(cmd)) {
+                //Check if the window is not moving
+                String executionId = getCurrentExecutions();
+                if (executionId != null) {
+                    //STOP command should be interpreted if window is moving
+                    //otherwise do nothing
                     cancelExecution(executionId);
                 }
             } else {
-                if (!cmd.equals(COMMAND_STOP)) {
-                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
-                    sendCommand(cmd, param);
-                }
+                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                sendCommand(cmd, param);
             }
         }
     }
 
-    private String getTahomaCommand(String command) {
+    @Override
+    protected String getTahomaCommand(String command) {
         switch (command) {
             case "OFF":
             case "DOWN":
+            case "CLOSE":
                 return COMMAND_CLOSE;
             case "ON":
             case "UP":
+            case "OPEN":
                 return COMMAND_OPEN;
             case "STOP":
                 return COMMAND_STOP;

@@ -71,5 +71,5 @@ class LxControlInfoOnlyDigital extends LxControl {
             }
         }
         return null;
-    };
+    }
 }

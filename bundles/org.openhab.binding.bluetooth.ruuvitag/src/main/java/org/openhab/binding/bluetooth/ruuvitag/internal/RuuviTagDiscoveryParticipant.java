@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
-import org.openhab.binding.bluetooth.ruuvitag.RuuviTagBindingConstants;
 import org.osgi.service.component.annotations.Component;
 
 /**

@@ -1,6 +1,7 @@
 ---
 name: "\U0001F914 Support/Usage Question"
 about: For usage questions, please use the openHAB community board!
+labels: question
 
 ---
 

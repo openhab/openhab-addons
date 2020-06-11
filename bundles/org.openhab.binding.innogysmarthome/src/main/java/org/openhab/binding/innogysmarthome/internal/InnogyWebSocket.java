@@ -13,9 +13,9 @@
 package org.openhab.binding.innogysmarthome.internal;
 
 import java.net.URI;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -26,6 +26,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.innogysmarthome.internal.handler.InnogyBridgeHandler;
+import org.openhab.binding.innogysmarthome.internal.listener.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +36,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Oliver Kuhl - Initial contribution
  */
+@NonNullByDefault
 @WebSocket
 public class InnogyWebSocket {
 
-    private Logger logger = LoggerFactory.getLogger(InnogyWebSocket.class);
-    private final CountDownLatch closeLatch;
-    private Session session;
-    private org.openhab.binding.innogysmarthome.internal.listener.EventListener eventListener;
-    private WebSocketClient client;
+    private final Logger logger = LoggerFactory.getLogger(InnogyWebSocket.class);
+    private final EventListener eventListener;
     private final URI webSocketURI;
     private final int maxIdleTimeout;
+
+    private @Nullable Session session;
+    private @Nullable WebSocketClient client;
+    private boolean closing;
 
     /**
      * Constructs the {@link InnogyWebSocket}.
@@ -53,9 +56,8 @@ public class InnogyWebSocket {
      * @param webSocketURI the {@link URI} of the websocket endpoint
      * @param maxIdleTimeout
      */
-    public InnogyWebSocket(InnogyBridgeHandler bridgeHandler, URI webSocketURI, int maxIdleTimeout) {
-        this.eventListener = bridgeHandler;
-        this.closeLatch = new CountDownLatch(1);
+    public InnogyWebSocket(EventListener eventListener, URI webSocketURI, int maxIdleTimeout) {
+        this.eventListener = eventListener;
         this.webSocketURI = webSocketURI;
         this.maxIdleTimeout = maxIdleTimeout;
     }
@@ -66,8 +68,7 @@ public class InnogyWebSocket {
      * @throws Exception
      */
     public synchronized void start() throws Exception {
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        // sslContextFactory.setTrustAll(true); // The magic
+        final SslContextFactory sslContextFactory = new SslContextFactory();
 
         if (client == null || client.isStopped()) {
             client = new WebSocketClient(sslContextFactory);
@@ -87,6 +88,7 @@ public class InnogyWebSocket {
      * Stops the {@link InnogyWebSocket}.
      */
     public synchronized void stop() {
+        this.closing = true;
         if (isRunning()) {
             logger.debug("Closing session...");
             session.close();
@@ -108,13 +110,13 @@ public class InnogyWebSocket {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
+        this.closing = false;
         logger.info("Connected to innogy Webservice.");
         logger.trace("innogy Websocket session: {}", session);
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        this.closeLatch.countDown();
         if (statusCode == StatusCode.NORMAL) {
             logger.info("Connection to innogy Webservice was closed normally.");
         } else {
@@ -124,27 +126,19 @@ public class InnogyWebSocket {
         }
     }
 
-    /**
-     * Await the closing of the websocket.
-     *
-     * @param duration
-     * @param unit
-     * @return
-     * @throws InterruptedException
-     */
-    public boolean awaitClose(int duration, TimeUnit unit) throws InterruptedException {
-        logger.debug("innogy WebSocket awaitClose() - {}{}", duration, unit);
-        return this.closeLatch.await(duration, unit);
-    }
-
     @OnWebSocketError
     public void onError(Throwable cause) {
-        logger.error("innogy WebSocket onError() - {}", cause.getMessage());
+        logger.debug("innogy WebSocket onError() - {}", cause.getMessage());
+        eventListener.onError(cause);
     }
 
     @OnWebSocketMessage
     public void onMessage(String msg) {
         logger.debug("innogy WebSocket onMessage() - {}", msg);
-        eventListener.onEvent(msg);
+        if (closing) {
+            logger.debug("innogy WebSocket onMessage() - ignored, WebSocket is closing...");
+        } else {
+            eventListener.onEvent(msg);
+        }
     }
 }

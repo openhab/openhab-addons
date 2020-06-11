@@ -28,4 +28,8 @@ public class RFXComUnsupportedValueException extends RFXComException {
     public RFXComUnsupportedValueException(Class<?> enumeration, int value) {
         this(enumeration, String.valueOf(value));
     }
+
+    public RFXComUnsupportedValueException(Class<?> enumeration, int value, Object subType) {
+        super("Unsupported value '" + value + "' with subtype " + subType + " for " + enumeration.getSimpleName());
+    }
 }

@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ConsoleCommandExtension.class)
 public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
-
     private static final String SUBCMD_CLEAR_PAIRINGS = "clearPairings";
     private static final String SUBCMD_ALLOW_UNAUTHENTICATED = "allowUnauthenticated";
 
@@ -102,7 +101,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
             homekit.refreshAuthInfo();
             console.println("Cleared homekit pairings");
         } catch (Exception e) {
-            logger.error("Could not clear homekit pairings", e);
+            logger.warn("Could not clear homekit pairings", e);
         }
     }
 

@@ -31,7 +31,7 @@ public class YeelightColorHandler extends YeelightHandlerBase {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        handleCommandHelper(channelUID, command, "Handle Color Command {}");
+        handleCommandHelper(channelUID, command, "Handle Color Command");
     }
 
     @Override

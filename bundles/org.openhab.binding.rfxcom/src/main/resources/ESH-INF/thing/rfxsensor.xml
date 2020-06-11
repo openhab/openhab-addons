@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="rfxcom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="rfxsensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="tcpbridge" />
+			<bridge-type-ref id="RFXtrx433" />
+			<bridge-type-ref id="RFXrec433" />
+		</supported-bridge-type-refs>
+
+		<label>RFXCOM RFXSensor</label>
+		<description>A RFXSensor device.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="referenceVoltage" typeId="voltage" />
+			<channel id="voltage" typeId="voltage" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="pressure" typeId="pressure" />
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Sensor Id. Example 8</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

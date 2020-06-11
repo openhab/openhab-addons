@@ -40,5 +40,5 @@ public enum DeviceMode {
     /*
      * device is off.
      */
-    MODE_OFF;
+    MODE_OFF
 }

@@ -17,12 +17,12 @@
 				<description>The IP or host name of the SqueezeServer
 				</description>
 			</parameter>
-			<parameter name="webport" type="integer" required="true" min="1" max="65335">
+			<parameter name="webport" type="integer" required="true" min="1" max="65535">
 				<label>SqueezeServer Web Port</label>
 				<description>Webport interface of the SqueezeServer</description>
 				<default>9000</default>
 			</parameter>
-			<parameter name="cliport" type="integer" required="true" min="1" max="65335">
+			<parameter name="cliport" type="integer" required="true" min="1" max="65535">
 				<label>SqueezeServer CLI Port</label>
 				<description>Port of the CLI interface of the SqueezeServer</description>
 				<default>9090</default>

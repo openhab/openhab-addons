@@ -10,7 +10,7 @@
 			<bridge-type-ref id="int-rs" />
 		</supported-bridge-type-refs>
 
-		<label>Alarm system</label>
+		<label>Alarm System</label>
 		<description>A virtual thing describing general status of the alarm system.</description>
 
 		<channels>
@@ -28,7 +28,7 @@
 
 	<channel-type id="date_time">
 		<item-type>DateTime</item-type>
-		<label>Date and time</label>
+		<label>Date and Time</label>
 		<description>Current date and time in the alarm system</description>
 	</channel-type>
 
@@ -40,41 +40,41 @@
 
 	<channel-type id="troubles_memory" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Troubles memory</label>
+		<label>Troubles Memory</label>
 		<description>Memorized state of system troubles</description>
 	</channel-type>
 
 	<channel-type id="service_mode">
 		<item-type>Switch</item-type>
-		<label>Service mode</label>
+		<label>Service Mode</label>
 		<description>Active when the system is in service mode</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="acu100_present" advanced="true">
 		<item-type>Switch</item-type>
-		<label>ACU-100 present</label>
+		<label>ACU-100 Present</label>
 		<description>Active when there is an ACU-100 module installed in the system</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="intrx_present" advanced="true">
 		<item-type>Switch</item-type>
-		<label>INT-RX present</label>
+		<label>INT-RX Present</label>
 		<description>Active when there is an INT-RX module installed in the system</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="grade23_set" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Grade2/Grade3 set</label>
+		<label>Grade2/Grade3 Set</label>
 		<description>Active when Grade2/Grade3 option is set in the system</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="user_code">
 		<item-type>String</item-type>
-		<label>User code</label>
+		<label>User Code</label>
 		<description>Accepts string commands that override configured user code. Send empty string to revert user code to the one in the binding configuration.</description>
 	</channel-type>
 

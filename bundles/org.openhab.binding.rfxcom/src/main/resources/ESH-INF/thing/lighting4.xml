@@ -33,12 +33,12 @@
 				</options>
 			</parameter>
 			<parameter name="pulse" type="integer" min="100" max="800">
-				<label>Pulse length</label>
+				<label>Pulse Length</label>
 				<description>Pulse length of the device</description>
 				<default>350</default>
 			</parameter>
 			<parameter name="onCommandId" type="integer" required="true">
-				<label>On command</label>
+				<label>On Command</label>
 				<description>Specifies command to be send when ON must be transmitted</description>
 				<options>
 					<option value="0">OFF (value 0)</option>
@@ -61,7 +61,7 @@
 				<default>1</default>
 			</parameter>
 			<parameter name="offCommandId" type="integer" required="true">
-				<label>Off command</label>
+				<label>Off Command</label>
 				<description>Specifies command to be send when OFF must be transmitted</description>
 				<options>
 					<option value="0">OFF (value 0)</option>

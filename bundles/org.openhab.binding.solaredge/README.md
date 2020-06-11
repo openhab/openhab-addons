@@ -15,7 +15,7 @@ While on the one hand the S0 meter is the cheaper solution the solaredge meter o
 For more details please see here:
 - [SolarEdge meter](https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter)
 - [Avoiding Feed-In limitations with consumption meters](https://www.solaredge.com/solutions/feed-in-limitation-and-metering-solution#)
-- [Detailed description of meter setup](http://solaredge.com/sites/default/files/feed-in_limitation_application_note.pdf)
+- [Detailed description of meter setup](https://solaredge.com/sites/default/files/feed-in_limitation_application_note.pdf)
 
 ## Discovery
 

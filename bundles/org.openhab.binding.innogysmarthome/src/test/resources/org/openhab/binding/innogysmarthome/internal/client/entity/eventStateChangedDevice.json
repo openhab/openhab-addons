@@ -1,0 +1,11 @@
+{
+	"sequenceNumber": -1,
+	"type": "StateChanged",
+	"desc": "/desc/event/StateChanged",
+	"namespace": "core.RWE",
+	"timestamp": "2019-03-10T20:49:25.4940000Z",
+	"source": "/device/b487e440f3e743649477fbbb64f8d55a",
+	"properties": {
+		"deviceInclusionState": "Included"
+	}
+}

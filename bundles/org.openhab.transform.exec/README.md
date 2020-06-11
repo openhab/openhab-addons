@@ -75,6 +75,6 @@ Please note: This profile is a one-way transformation, i.e. only values from a d
 # Further Reading
 
 * [Manual](http://man7.org/linux/man-pages/man1/date.1.html) and [tutorial](https://linode.com/docs/tools-reference/tools/use-the-date-command-in-linux/) for date.
-* [Manual](http://man7.org/linux/man-pages/man1/numfmt.1.html) and [tutorial](http://www.pixelbeat.org/docs/numfmt.html) for numfmt.
+* [Manual](http://man7.org/linux/man-pages/man1/numfmt.1.html) and [tutorial](https://www.pixelbeat.org/docs/numfmt.html) for numfmt.
 
 

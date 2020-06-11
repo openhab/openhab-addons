@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 class NhcMessage2 {
-    class NhcMessageParam {
+    static class NhcMessageParam {
         @Nullable
         List<NhcSystemInfo2> systemInfo;
         @Nullable

@@ -3,7 +3,7 @@
 System information Binding provides operating system and hardware information including:
 
 -   Operating system name, version and manufacturer;
--   CPU average recent load and load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime;
+-   CPU average load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime;
 -   Free, total and available memory;
 -   Free, total and available swap memory;
 -   Hard drive name, model and serial number;
@@ -29,7 +29,7 @@ The thing has the following properties:
 -   `os_family` - The family of the operating system
 
 If multiple storage or display devices support is needed, new thing type has to be defined.
-This is workaround until [this issue] (https://github.com/eclipse/smarthome/issues/588) is resolved and it is possible to add dynamically channels to DSL defined thing.
+This is workaround until [this issue](https://github.com/eclipse/smarthome/issues/588) is resolved and it is possible to add dynamically channels to DSL defined thing.
 
 ## Discovery
 
@@ -37,7 +37,7 @@ The discovery service implementation tries to resolve the computer name.
 If the resolving process fails, the computer name is set to "Unknown".
 In both cases it creates a Discovery Result with thing type  **computer**.
 
-When [this issue] (https://github.com/eclipse/smarthome/issues/1118) is resolved it will be possible to implement creation of dynamic channels (e.g. the binding will scan how much storage devices are present and create channel groups for them).
+When [this issue](https://github.com/eclipse/smarthome/issues/1118) is resolved it will be possible to implement creation of dynamic channels (e.g. the binding will scan how much storage devices are present and create channel groups for them).
 At the moment this is not supported.
 
 ## Binding configuration
@@ -81,7 +81,7 @@ In the list below, you can find, how are channel group and channels id`s related
 *   **group** `battery` (deviceIndex)
   * **channel** `name, remainingCapacity, remainingTime`
 *   **group** `cpu`
-  * **channel** `name, description, load, load1, load5, load15, uptime`
+  * **channel** `name, description, load1, load5, load15, uptime`
 *   **group** `sensors`
   * **channel** `cpuTemp, cpuVoltage, fanSpeed`
 *   **group** `network` (deviceIndex)
@@ -108,7 +108,6 @@ The binding introduces the following channels:
 
 | Channel ID         | Channel Description                                              | Supported item type | Default priority | Advanced |
 |--------------------|------------------------------------------------------------------|---------------------|------------------|----------|
-| load               | Recent load in percents                                          | Number              | High             | False    |
 | load1              | Load for the last 1 minute                                       | Number              | Medium           | True     |
 | load5              | Load for the last 5 minutes                                      | Number              | Medium           | True     |
 | load15             | Load for the last 15 minutes                                     | Number              | Medium           | True     |
@@ -207,7 +206,6 @@ Number Network_PacketsReceived    "Packets received"    <returnpipe>     { chann
 /* CPU information*/
 String CPU_Name                   "Name"                <none>           { channel="systeminfo:computer:work:cpu#name" }
 String CPU_Description            "Description"         <none>           { channel="systeminfo:computer:work:cpu#description" }
-Number CPU_Load                   "Load"                <none>           { channel="systeminfo:computer:work:cpu#load"}
 Number CPU_Load1                  "Load (1 min)"        <none>           { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Load5                  "Load (5 min)"        <none>           { channel="systeminfo:computer:work:cpu#load5" }
 Number CPU_Load15                 "Load (15 min)"       <none>           { channel="systeminfo:computer:work:cpu#load15" }
@@ -281,7 +279,6 @@ Text label="Systeminfo" {
     Frame label="CPU Information" {
         Default item=CPU_Name
         Default item=CPU_Description
-        Default item=CPU_Load
         Default item=CPU_Load1
         Default item=CPU_Load5
         Default item=CPU_Load15

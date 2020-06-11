@@ -44,7 +44,7 @@
 				<required>false</required>
 			</parameter>
 			<parameter name="volumeStepSize" type="integer">
-				<label>Volume step size</label>
+				<label>Volume Step Size</label>
 				<description>Step size to use if the volume is changed using the increase/decrease command.</description>
 				<default>1</default>
 				<advanced>true</advanced>

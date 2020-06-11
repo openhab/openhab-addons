@@ -95,7 +95,7 @@ public class YamahaReceiverHandlerTest extends AbstractXMLProtocolTest {
         subject.setCallback(callback);
 
         doAnswer(a -> {
-            ((ConnectionStateListener) a.getArgument(1)).connectionEstablished(ctx.getConnection());
+            ((ConnectionStateListener) a.getArgument(1)).onConnectionCreated(ctx.getConnection());
             return null;
         }).when(protocolFactory).createConnection(anyString(), same(subject));
     }

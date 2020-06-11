@@ -13,7 +13,6 @@
 package org.openhab.binding.deconz.internal.netutils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +24,7 @@ import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.InputStreamContentProvider;
-import org.eclipse.jetty.http.HttpMethod;;
+import org.eclipse.jetty.http.HttpMethod;
 
 /**
  * An asynchronous API for HTTP interactions.
@@ -34,6 +33,7 @@ import org.eclipse.jetty.http.HttpMethod;;
  */
 @NonNullByDefault
 public class AsyncHttpClient {
+
     private final HttpClient client;
 
     public AsyncHttpClient(HttpClient client) {
@@ -47,7 +47,6 @@ public class AsyncHttpClient {
      * @param jsonString The message body
      * @param timeout A timeout
      * @return The result
-     * @throws IOException Any IO exception in an error case.
      */
     public CompletableFuture<Result> post(String address, String jsonString, int timeout) {
         return doNetwork(HttpMethod.POST, address, jsonString, timeout);
@@ -60,7 +59,6 @@ public class AsyncHttpClient {
      * @param jsonString The message body
      * @param timeout A timeout
      * @return The result
-     * @throws IOException Any IO exception in an error case.
      */
     public CompletableFuture<Result> put(String address, String jsonString, int timeout) {
         return doNetwork(HttpMethod.PUT, address, jsonString, timeout);
@@ -72,7 +70,6 @@ public class AsyncHttpClient {
      * @param address The address
      * @param timeout A timeout
      * @return The result
-     * @throws IOException Any IO exception in an error case.
      */
     public CompletableFuture<Result> get(String address, int timeout) {
         return doNetwork(HttpMethod.GET, address, null, timeout);
@@ -84,14 +81,13 @@ public class AsyncHttpClient {
      * @param address The address
      * @param timeout A timeout
      * @return The result
-     * @throws IOException Any IO exception in an error case.
      */
     public CompletableFuture<Result> delete(String address, int timeout) {
         return doNetwork(HttpMethod.DELETE, address, null, timeout);
     }
 
     private CompletableFuture<Result> doNetwork(HttpMethod method, String address, @Nullable String body, int timeout) {
-        final CompletableFuture<Result> f = new CompletableFuture<Result>();
+        final CompletableFuture<Result> f = new CompletableFuture<>();
         Request request = client.newRequest(URI.create(address));
         if (body != null) {
             try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body.getBytes());

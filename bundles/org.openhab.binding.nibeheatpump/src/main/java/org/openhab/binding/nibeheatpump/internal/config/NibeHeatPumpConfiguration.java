@@ -39,8 +39,8 @@ public class NibeHeatPumpConfiguration {
 
         str += "hostName = " + hostName;
         str += ", port = " + port;
-        str += ", port4readCommands = " + readCommandsPort;
-        str += ", port4writeCommands = " + writeCommandsPort;
+        str += ", readCommandsPort = " + readCommandsPort;
+        str += ", writeCommandsPort = " + writeCommandsPort;
         str += ", serialPort = " + serialPort;
         str += ", refreshInterval = " + refreshInterval;
         str += ", enableReadCommands = " + enableReadCommands;
@@ -48,7 +48,7 @@ public class NibeHeatPumpConfiguration {
         str += ", sendAckToMODBUS40 = " + sendAckToMODBUS40;
         str += ", sendAckToRMU40 = " + sendAckToRMU40;
         str += ", sendAckToSMS40 = " + sendAckToSMS40;
-        str += ", enableCoilsForWriteCommands = " + enableWriteCommandsToRegisters;
+        str += ", enableWriteCommandsToRegisters = " + enableWriteCommandsToRegisters;
         str += ", throttleTime = " + throttleTime;
 
         return str;

@@ -23,7 +23,6 @@ import org.eclipse.smarthome.core.transform.TransformationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.transform.scale.internal.ScaleTransformationService;
 
 /**
  * @author Gaël L'hopital - Initial contribution
@@ -128,10 +127,27 @@ public class ScaleTransformServiceTest {
     public void testTransformQuantityType() throws TransformationException {
         QuantityType<Dimensionless> airQuality = new QuantityType<>("992 ppm");
         String aqScaleFile = "scale/netatmo_aq.scale";
-        String expected = "Correcte";
+        String expected = "Correcte (992 ppm) !";
 
         String transformedResponse = processor.transform(aqScaleFile, airQuality.toString());
         Assert.assertEquals(expected, transformedResponse);
+    }
+
+    @Test
+    public void testCatchNonNumericValue() throws TransformationException {
+        // checks that an error is raised when trying to scale an erroneous value
+        String existingscale = "scale/catchnonnumeric.scale";
+        String source = "azerty";
+        String transformedResponse = processor.transform(existingscale, source);
+        Assert.assertEquals("Non Numeric", transformedResponse);
+    }
+
+    @Test
+    public void testTransformAndFormat() throws TransformationException {
+        String existingscale = "scale/netatmo_aq.scale";
+        String source = "992";
+        String transformedResponse = processor.transform(existingscale, source);
+        Assert.assertEquals("Correcte (992) !", transformedResponse);
     }
 
 }

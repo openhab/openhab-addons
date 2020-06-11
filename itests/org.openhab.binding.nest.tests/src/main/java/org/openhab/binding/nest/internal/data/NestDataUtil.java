@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.nest.internal.data;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -89,13 +90,7 @@ public final class NestDataUtil {
 
     public static String fromFile(String fileName) throws IOException {
         try (Reader reader = openDataReader(fileName)) {
-            StringWriter writer = new StringWriter();
-            char[] buffer = new char[1024 * 4];
-            int n = 0;
-            while (-1 != (n = reader.read(buffer))) {
-                writer.write(buffer, 0, n);
-            }
-            return writer.toString();
+            return new BufferedReader(reader).lines().parallel().collect(Collectors.joining("\n"));
         }
     }
 

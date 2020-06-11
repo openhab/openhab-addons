@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StrDn1080Handler extends SonyAudioHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SonyAudioHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(StrDn1080Handler.class);
 
     public StrDn1080Handler(Thing thing, WebSocketClient webSocketClient) {
         super(thing, webSocketClient);

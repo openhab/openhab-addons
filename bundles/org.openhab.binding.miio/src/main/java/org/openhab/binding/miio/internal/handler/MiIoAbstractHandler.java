@@ -275,7 +275,6 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
                 miioCom = new MiIoAsyncCommunication(configuration.host, token, Utils.hexStringToByteArray(deviceId),
                         lastId, configuration.timeout);
                 Message miIoResponse = miioCom.sendPing(configuration.host);
-                ;
                 if (miIoResponse != null) {
                     logger.debug("Ping response from device {} at {}. Time stamp: {}, OH time {}, delta {}",
                             Utils.getHex(miIoResponse.getDeviceId()), configuration.host, miIoResponse.getTimestamp(),

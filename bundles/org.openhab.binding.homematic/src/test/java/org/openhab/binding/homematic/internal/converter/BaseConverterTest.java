@@ -20,6 +20,9 @@ import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmValueType;
 
+/**
+ * @author Michael Reitler - Initial contribution
+ */
 public class BaseConverterTest {
 
     protected final HmDatapoint floatDp = new HmDatapoint("floatDp", "", HmValueType.FLOAT, null, false,

@@ -51,6 +51,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -371,9 +372,13 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             updateState(channel.getUID(), state);
         } else {
             logger.debug("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
-            AVMFritzBaseThingHandler handler = (AVMFritzBaseThingHandler) thing.getHandler();
+            ThingHandler handler = thing.getHandler();
             if (handler != null) {
-                handler.createChannel(channelId);
+                if (handler instanceof AVMFritzBaseThingHandler) {
+                    ((AVMFritzBaseThingHandler) handler).createChannel(channelId);
+                } else if (handler instanceof Powerline546EHandler) {
+                    ((Powerline546EHandler) handler).createChannel(channelId);
+                }
             }
         }
     }

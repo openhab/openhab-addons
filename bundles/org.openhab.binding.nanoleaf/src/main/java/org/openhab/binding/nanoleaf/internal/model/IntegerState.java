@@ -19,7 +19,7 @@ package org.openhab.binding.nanoleaf.internal.model;
  */
 public interface IntegerState {
 
-    void setValue(Integer value);
+    void setValue(int value);
 
-    Integer getValue();
+    int getValue();
 }

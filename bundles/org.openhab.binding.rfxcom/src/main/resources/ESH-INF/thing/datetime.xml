@@ -11,7 +11,7 @@
 			<bridge-type-ref id="RFXrec433" />
 		</supported-bridge-type-refs>
 
-		<label>RFXCOM Date/time sensor</label>
+		<label>RFXCOM Date/time Sensor</label>
 		<description>A DateTime device.</description>
 
 		<channels>

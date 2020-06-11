@@ -72,7 +72,7 @@ public abstract class BaseDsI18n {
 
     protected void setTranslationProvider(TranslationProvider translationProvider) {
         this.translationProvider = translationProvider;
-    };
+    }
 
     /**
      * Unsets the {@link TranslationProvider} at the {@link BaseDsI18n}.
@@ -81,7 +81,7 @@ public abstract class BaseDsI18n {
      */
     protected void unsetTranslationProvider(TranslationProvider translationProvider) {
         this.translationProvider = null;
-    };
+    }
 
     /**
      * Returns the internationalized text in the language of the {@link Locale} of the given key. If the key an does not

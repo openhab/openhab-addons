@@ -19,6 +19,7 @@ import org.openhab.binding.lifx.internal.LifxLightState;
 import org.openhab.binding.lifx.internal.fields.HSBK;
 import org.openhab.binding.lifx.internal.protocol.PowerState;
 import org.openhab.binding.lifx.internal.protocol.SignalStrength;
+import org.openhab.binding.lifx.internal.protocol.Effect;
 
 /**
  * The {@link LifxLightStateListener} is notified when the properties of a {@link LifxLightState} change.
@@ -59,4 +60,12 @@ public interface LifxLightStateListener {
      * @param newSignalStrength the new signal strength value
      */
     void handleSignalStrengthChange(@Nullable SignalStrength oldSignalStrength, SignalStrength newSignalStrength);
+
+    /**
+     * Called when the tile effect changes.
+     *
+     * @param oldEffect the old tile effect value
+     * @param newEffect new tile effectvalue
+     */
+    void handleTileEffectChange(@Nullable Effect oldEffect, Effect newEffect);
 }

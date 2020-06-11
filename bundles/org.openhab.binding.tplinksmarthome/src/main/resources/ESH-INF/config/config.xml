@@ -16,13 +16,13 @@
 			<description>The id of the device.</description>
 		</parameter>
 		<parameter name="transitionPeriod" type="integer" min="0">
-			<label>Transition period</label>
+			<label>Transition Period</label>
 			<description>Time the transition to the new state takes in milliseconds.</description>
 			<unitLabel>milliseconds</unitLabel>
 			<default>0</default>
 		</parameter>
 		<parameter name="refresh" type="integer" min="1">
-			<label>Refresh rate</label>
+			<label>Refresh Rate</label>
 			<description>Refresh of device state in seconds.</description>
 			<unitLabel>seconds</unitLabel>
 			<default>30</default>
@@ -40,7 +40,7 @@
 			<description>The id of the device.</description>
 		</parameter>
 		<parameter name="refresh" type="integer" min="1">
-			<label>Refresh rate</label>
+			<label>Refresh Rate</label>
 			<description>Refresh of device state in seconds.</description>
 			<unitLabel>seconds</unitLabel>
 			<default>30</default>
@@ -58,7 +58,7 @@
 			<description>The id of the device.</description>
 		</parameter>
 		<parameter name="refresh" type="integer" min="1">
-			<label>Refresh rate</label>
+			<label>Refresh Rate</label>
 			<description>Refresh of device state in seconds.</description>
 			<unitLabel>seconds</unitLabel>
 			<default>1</default>

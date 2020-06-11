@@ -3,23 +3,23 @@
 The KM200 Binding is communicating with a [Buderus Logamatic web KM200 / KM100 / KM50](https://www.buderus.de/de/produkte/catalogue/alle-produkte/7719_gateway-logamatic-web-km200-km100-km50). 
 It is possible to receive and send parameters like string or float values.
 
-**Important**: If the communication is not working and you see in the logfile errors like "illegal key size" then you have to change the [Java Cryptography Extension to the Unlimited Strength Jurisdiction](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html). 
+**Important**: If the communication is not working and you see in the logfile errors like "illegal key size" then you have to change the [Java Cryptography Extension to the Unlimited Strength Jurisdiction](https://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html). 
 
 ## Supported Things
 
 This binding supports 11 different things types
 
-| Thing              |  Paper UI Only | Description                                               |
-| ------------------ |  ------------ |----------------------------------------------------------- |
-| `appliance`       |               | The appliance (The heater inside of this heating system). |
-| `dhwCircuit`      |               | A hot water circuit.                                      |
-| `gateway`         |               | The gateway. (The connected KM200/100/50 device).         |
+| Thing            | Paper UI Only | Description                                               |
+| ---------------- | ------------- |---------------------------------------------------------- |
+| `appliance`      |               | The appliance (The heater inside of this heating system). |
+| `dhwCircuit`     |               | A hot water circuit.                                      |
+| `gateway`        |               | The gateway. (The connected KM200/100/50 device).         |
 | `heatingCircuit` |               | A heating circuit.                                        |
 | `heatSource`     |               | The heat source.                                          |
 | `holidayMode`    |               | The holiday modes configuration.                          |
-| `sensor`          |               | The sensors.                                              |
+| `sensor`         |               | The sensors.                                              |
 | `solarCircuit`   |               | A solar circuit.                                          |
-| `system`          |               | The system without sensors and appliance.                 |
+| `system`         |               | The system without sensors and appliance.                 |
 | `notification`   |               | The notifications.                                        |
 | `switchProgram`  |       X       | A switch program.                                         |
 

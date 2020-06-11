@@ -16,6 +16,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -25,9 +27,10 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
 /**
  * Helper class for testing the RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
-public class RFXComTestHelper {
+@NonNullByDefault
+class RFXComTestHelper {
     static void basicBoundaryCheck(PacketType packetType, RFXComMessage message) throws RFXComException {
         // This is a place where its easy to make mistakes in coding, and can result in errors, normally
         // array bounds errors
@@ -36,7 +39,7 @@ public class RFXComTestHelper {
         assertEquals("Wrong packet type", packetType.toByte(), binaryMessage[1]);
     }
 
-    static void checkDiscoveryResult(RFXComDeviceMessage msg, String deviceId, Integer pulse, String subType,
+    static void checkDiscoveryResult(RFXComDeviceMessage msg, String deviceId, @Nullable Integer pulse, String subType,
             int offCommand, int onCommand) throws RFXComException {
         String thingUID = "homeduino:rfxcom:fssfsd:thing";
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(new ThingUID(thingUID));
@@ -55,6 +58,6 @@ public class RFXComTestHelper {
     }
 
     static int getActualIntValue(RFXComDeviceMessage msg, String channelId) throws RFXComException {
-        return ((DecimalType) msg.convertToState(channelId)).intValue();
+        return ((DecimalType) msg.convertToState(channelId, new MockDeviceState())).intValue();
     }
 }

@@ -15,6 +15,8 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.SubType.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -22,16 +24,18 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
 import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.Contact;
 import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.Motion;
 import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.Status;
+import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.SubType;
 
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComSecurity1MessageTest {
-    private void testSomeMessages(String hexMessage, RFXComSecurity1Message.SubType subType, int sequenceNumber,
-            String deviceId, int batteryLevel, Contact contact, Motion motion, Status status, int signalLevel)
-            throws RFXComException {
+    private void testSomeMessages(String hexMessage, @Nullable SubType subType, int sequenceNumber,
+            @Nullable String deviceId, int batteryLevel, @Nullable Contact contact, @Nullable Motion motion,
+            @Nullable Status status, int signalLevel) throws RFXComException {
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComSecurity1Message msg = (RFXComSecurity1Message) RFXComMessageFactory.createMessage(message);
         assertEquals("SubType", subType, msg.subType);

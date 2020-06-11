@@ -15,10 +15,14 @@ package org.openhab.binding.enocean.internal.handler;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -26,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -45,9 +50,8 @@ import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     // List of thing types which support sending of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_CENTRALCOMMAND, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING,
-                    THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT));
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_CENTRALCOMMAND,
+            THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER, THING_TYPE_THERMOSTAT));
 
     protected byte[] senderId; // base id of bridge + senderIdOffset, used for sending msg
     protected byte[] destinationId; // in case of broadcast FFFFFFFF otherwise the enocean id of the device
@@ -56,8 +60,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     private ScheduledFuture<?> refreshJob; // used for polling current status of thing
 
-    public EnOceanBaseActuatorHandler(Thing thing) {
-        super(thing);
+    public EnOceanBaseActuatorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
+        super(thing, itemChannelLinkRegistry);
     }
 
     /**
@@ -91,13 +95,40 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
     }
 
     @Override
+    Collection<EEPType> getEEPTypes() {
+        Collection<EEPType> r = super.getEEPTypes();
+        if (sendingEEPType == null) {
+            return r;
+        }
+        
+        return Collections.unmodifiableCollection(Stream.concat(r.stream(), Collections.singletonList(sendingEEPType).stream()).collect(Collectors.toList()));
+    }
+
+    @Override
     boolean validateConfig() {
+        
+        EnOceanActuatorConfig config = getConfiguration();
+        if(config == null) {
+            configurationErrorDescription = "Configuration is not valid";
+            return false;
+        }
+
+        if(config.sendingEEPId == null || config.sendingEEPId.isEmpty()) {
+            configurationErrorDescription = "Sending EEP must be provided";
+            return false;
+        }
+
+
+        try {
+            sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
+        } catch (IllegalArgumentException e) {
+            configurationErrorDescription = "Sending EEP is not supported";
+            return false;
+        }
+        
         if (super.validateConfig()) {
-
             try {
-                sendingEEPType = EEPType.getType(getConfiguration().sendingEEPId);
-                updateChannels(sendingEEPType, false);
-
+                
                 if (sendingEEPType.getSupportsRefresh()) {
                     if (getConfiguration().pollingInterval > 0) {
                         refreshJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -117,7 +148,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 }
 
             } catch (Exception e) {
-                configurationErrorDescription = "Sending EEP is not supported";
+                configurationErrorDescription = "Configuration is not valid";
                 return false;
             }
 
@@ -173,7 +204,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
         logger.debug("polling channels");
         if (thing.getStatus().equals(ThingStatus.ONLINE)) {
-            for (Channel channel : getLinkedChannels()) {
+            for (Channel channel : this.getThing().getChannels()) {
                 handleCommand(channel.getUID(), RefreshType.REFRESH);
             }
         }
@@ -187,9 +218,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return;
         }
 
+        // check if the channel is linked otherwise do nothing
         String channelId = channelUID.getId();
-        Channel channel = getThing().getChannel(channelId);
-        if (channel == null) {
+        Channel channel = getThing().getChannel(channelUID);
+        if (channel == null || !isLinked(channelUID)) {
             return;
         }
 
@@ -211,20 +243,16 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             }
         }
 
-        // check if the channel is linked otherwise do nothing
-        if (!getLinkedChannels().contains(channel)) {
-            return;
-        }
-
         try {
             Configuration channelConfig = channel.getConfiguration();
 
             EEP eep = EEPFactory.createEEP(sendingEEPType);
-            eep.convertFromCommand(channelId, channelTypeId, command, channelState, channelConfig);
-
-            if (eep.hasData()) {
-                ESP3Packet msg = eep.setSenderId(senderId).setDestinationId(destinationId)
-                        .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
+            if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
+                   .hasData()) {
+                ESP3Packet msg = eep.setSenderId(senderId)
+                                    .setDestinationId(destinationId)
+                                    .setSuppressRepeating(getConfiguration().suppressRepeating)
+                                    .getERP1Message();
 
                 getBridgeHandler().sendMessage(msg, null);
             }

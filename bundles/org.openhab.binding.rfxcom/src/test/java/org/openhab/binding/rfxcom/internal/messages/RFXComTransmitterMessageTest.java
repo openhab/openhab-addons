@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.Response.ACK;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.SubType.RESPONSE;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -25,8 +26,9 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.Sub
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComTransmitterMessageTest {
     private void testMessage(String hexMsg, Response response, SubType subType, int seqNbr) throws RFXComException {
         final RFXComTransmitterMessage msg = (RFXComTransmitterMessage) RFXComMessageFactory

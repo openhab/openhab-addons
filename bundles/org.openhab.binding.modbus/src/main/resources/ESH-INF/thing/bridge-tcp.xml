@@ -3,11 +3,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="tcp">
-		<label>Modbus TCP slave</label>
+		<label>Modbus TCP Slave</label>
 		<description>Endpoint for Modbus TCP slaves</description>
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>IP Address or hostname</label>
+				<label>IP Address or Hostname</label>
 				<description>Network address of the device</description>
 				<default>localhost</default>
 				<context>network-address</context>
@@ -25,40 +25,40 @@
 			</parameter>
 			
 			<parameter name="enableDiscovery" type="boolean">
-				<label>Discovery enabled</label>
+				<label>Discovery Enabled</label>
 				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the supported devices.</description>
 				<default>false</default>
 			</parameter>
 
 			<!-- connection handling -->
-			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0">
-				<label>Time between transactions (ms)</label>
+			<parameter name="timeBetweenTransactionsMillis" type="integer" min="0" unit="ms">
+				<label>Time Between Transactions</label>
 				<description>How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.
 				</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="timeBetweenReconnectMillis" type="integer" min="0">
-				<label>Time between reconnections (ms)</label>
+			<parameter name="timeBetweenReconnectMillis" type="integer" min="0" unit="ms">
+				<label>Time Between Reconnections</label>
 				<description>How long to wait to before trying to establish a new connection after the previous one has been
 					disconnected. In milliseconds.</description>
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="connectMaxTries" type="integer" min="1">
-				<label>Maximum connection tries</label>
+				<label>Maximum Connection Tries</label>
 				<description>How many times we try to establish the connection. Should be at least 1.</description>
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="reconnectAfterMillis" type="integer" min="0">
-				<label>Disconnect and establish the connection again after this time (ms)</label>
+			<parameter name="reconnectAfterMillis" type="integer" min="0" unit="ms">
+				<label>Reconnect Again After</label>
 				<description>The connection is kept open at least the time specified here. Value of zero means that connection is
 					disconnected after every MODBUS transaction. In milliseconds.</description>
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="connectTimeoutMillis" type="integer" min="0">
-				<label>Timeout for establishing the connection (ms)</label>
+			<parameter name="connectTimeoutMillis" type="integer" min="0" unit="ms">
+				<label>Timeout for Establishing the Connection</label>
 				<description>The maximum time that is waited when establishing the connection. Value of zero means that system/OS
 					default is respected. In milliseconds.</description>
 				<default>10000</default>

@@ -41,6 +41,7 @@ import org.openhab.binding.darksky.internal.discovery.DarkSkyDiscoveryService;
 import org.openhab.binding.darksky.internal.handler.DarkSkyAPIHandler;
 import org.openhab.binding.darksky.internal.handler.DarkSkyWeatherAndForecastHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -60,10 +61,20 @@ public class DarkSkyHandlerFactory extends BaseThingHandlerFactory {
                     .collect(Collectors.toSet()));
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private @NonNullByDefault({}) HttpClient httpClient;
-    private @NonNullByDefault({}) LocaleProvider localeProvider;
-    private @NonNullByDefault({}) LocationProvider locationProvider;
-    private @NonNullByDefault({}) TranslationProvider i18nProvider;
+    private final HttpClient httpClient;
+    private final LocaleProvider localeProvider;
+    private final LocationProvider locationProvider;
+    private final TranslationProvider i18nProvider;
+
+    @Activate
+    public DarkSkyHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference LocaleProvider localeProvider, final @Reference LocationProvider locationProvider,
+            final @Reference TranslationProvider i18nProvider) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.localeProvider = localeProvider;
+        this.locationProvider = locationProvider;
+        this.i18nProvider = i18nProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -103,41 +114,5 @@ public class DarkSkyHandlerFactory extends BaseThingHandlerFactory {
                 }
             }
         }
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
-    }
-
-    @Reference
-    protected void setLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    @Reference
-    protected void setTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = i18nProvider;
-    }
-
-    protected void unsetTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = null;
     }
 }

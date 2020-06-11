@@ -1,7 +1,7 @@
 # innogy SmartHome Binding
 
-The binding integrates the [innogy SmartHome](http://innogy.com/smarthome) system into openHAB.
-It uses the official API as provided by innogy as cloud service.
+The binding integrates the [innogy SmartHome](https://innogy.com/smarthome) system into openHAB.
+It uses the official API 1.1 as provided by innogy as cloud service.
 As all status updates and commands have to go through the API, a permanent internet connection is required.
 Currently there is no API for a direct communication with the innogy SmartHome Controller (SHC).
 
@@ -11,42 +11,43 @@ Currently there is no API for a direct communication with the innogy SmartHome C
 
 The innogy SmartHome Controller (SHC) is the bridge, that provides the central communication with the devices.
 Without the SHC, you cannot communicate with the devices.
+This binding supports both the SHC and the SHC2 (with support for Bluetooth devices).
 
 ### Devices
 
 The following table shows all supported and tested devices and their channels.
 The channels are described in detail in the next chapter.
 
-| Device | Description | Supported channels |
-| ------ | ----------- | ------------------ |
-| BRC8 | Basic Remote Controller | button1 ... button8, button1_count ... button8_count, battery_low |
-| ISC2 | In Wall Smart Controller | button1, button2, button1_count, button2_count |
-| ISD2 | In Wall Smart Dimmer | button1, button2, button1_count, button2_count, dimmer |
-| ISR2 | In Wall Smart Rollershutter | button1, button2, button1_count, button2_count, rollershutter |
-| ISS2 | In Wall Smart Switch | button1, button2, button1_count, button2_count, switch |
-| PSD | Pluggable Smart Dimmer | dimmer |
-| PSS | Pluggable Smart Switch, indoor | switch |
-| PSSO | Pluggable Smart Switch, outdoor | switch |
-| RST | Radiator Mounted Smart Thermostat | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
-| RST2 | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
-| | VariableActuator | switch |
-| WDS | Window Door Sensor | contact, battery_low |
-| WMD| Wall Mounted Motion Detector, indoor | motion_count, luminance, battery_low |
-| WMDO | Wall Mounted Motion Detector, outdoor | motion_count, luminance, battery_low |
-| WRT | Wall Mounted Room Thermostat | set_temperature, temperature, humidity, battery_low |
-| WSC2 | Wall Mounted Smart Controller | button1, button2, button1_count, button2_count, battery_low |
-| WSD | Wall Mounted Smoke Detector, old version | smoke, alarm, battery_low |
-| WSD2 | Wall Mounted Smoke Detector, new version | smoke, alarm, battery_low |
+| Device | Description                                                              | Supported channels                                                                                                        |
+|--------|--------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| BRC8   | Basic Remote Controller                                                  | button1 ... button8, button1_count ... button8_count, battery_low                                                         |
+| ISC2   | In Wall Smart Controller                                                 | button1, button2, button1_count, button2_count                                                                            |
+| ISD2   | In Wall Smart Dimmer                                                     | button1, button2, button1_count, button2_count, dimmer                                                                    |
+| ISR2   | In Wall Smart Rollershutter                                              | button1, button2, button1_count, button2_count, rollershutter                                                             |
+| ISS2   | In Wall Smart Switch                                                     | button1, button2, button1_count, button2_count, switch                                                                    |
+| PSD    | Pluggable Smart Dimmer                                                   | dimmer                                                                                                                    |
+| PSS    | Pluggable Smart Switch, indoor                                           | switch                                                                                                                    |
+| PSSO   | Pluggable Smart Switch, outdoor                                          | switch                                                                                                                    |
+| BT-PSS | Bluetooth Pluggable Smart Switch, indoor                                 | switch                                                                                                                    |
+| RST    | Radiator Mounted Smart Thermostat                                        | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
+| RST2   | Radiator Mounted Smart Thermostat (newer two battery version since 2018) | set_temperature, temperature, frost_warning, humidity, mold_warning, operation_mode, window_reduction_active, battery_low |
+|        | VariableActuator                                                         | switch                                                                                                                    |
+| WDS    | Window Door Sensor                                                       | contact, battery_low                                                                                                      |
+| WMD    | Wall Mounted Motion Detector, indoor                                     | motion_count, luminance, battery_low                                                                                      |
+| WMDO   | Wall Mounted Motion Detector, outdoor                                    | motion_count, luminance, battery_low                                                                                      |
+| WRT    | Wall Mounted Room Thermostat                                             | set_temperature, temperature, humidity, battery_low                                                                       |
+| WSC2   | Wall Mounted Smart Controller                                            | button1, button2, button1_count, button2_count, battery_low                                                               |
+| WSD    | Wall Mounted Smoke Detector, old version                                 | smoke, alarm, battery_low                                                                                                 |
+| WSD2   | Wall Mounted Smoke Detector, new version                                 | smoke, alarm, battery_low                                                                                                 |
 
 Powermeter devices
 
-| Device | Description | Supported channels |
-| ------ | ----------- | ------------------ |
-| AnalogMeter | The Analog Meter from the innogy EnergyControl product | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh |
-| GenerationMeter | The Generation Meter from the innogy PowerControlSolar product | energy_generation_month_kwh, total_energy_generation, energy_generation_month_euro, energy_generation_day_euro, energy_generation_day_kwh, power_generation_watt |
-| SmartMeter | The Smart Meter from the innogy PowerControl product. | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh, power_consumption_watt |
-| Two-Way-Meter | The Two-Way-Meter from the innogy PowerControlSolar product | energy_month_kwh, total_energy, energy_month_euro, energy_day_euro, energy_day_kwh, energy_feed_month_kwh, total_energy_fed, energy_feed_month_euro, energy_feed_day_euro, energy_feed_day_kwh, power_watt |
-
+| Device          | Description                                                    | Supported channels                                                                                                                                                                                         |
+|-----------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AnalogMeter     | The Analog Meter from the innogy EnergyControl product         | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh                                                          |
+| GenerationMeter | The Generation Meter from the innogy PowerControlSolar product | energy_generation_month_kwh, total_energy_generation, energy_generation_month_euro, energy_generation_day_euro, energy_generation_day_kwh, power_generation_watt                                           |
+| SmartMeter      | The Smart Meter from the innogy PowerControl product.          | energy_consumption_month_kwh, absolute_energy_consumption, energy_consumption_month_euro, energy_consumption_day_euro, energy_consumption_day_kwh, power_consumption_watt                                  |
+| Two-Way-Meter   | The Two-Way-Meter from the innogy PowerControlSolar product    | energy_month_kwh, total_energy, energy_month_euro, energy_day_euro, energy_day_kwh, energy_feed_month_kwh, total_energy_fed, energy_feed_month_euro, energy_feed_day_euro, energy_feed_day_kwh, power_watt |
 
 ## Discovery
 
@@ -60,40 +61,45 @@ However, only devices will appear that are added in the innogy SmartHome app bef
 
 ## Channels
 
-| Channel Type ID | Item Type    | Description  | Available on thing |
-| --------------- | ------------ | ------------ | ------------------ |
-| alarm | Switch | Switches the alarm (ON/OFF) | WSD, WSD2 |
-| battery_low | Switch | Indicates, if the battery is low (ON/OFF) | BRC8, RST, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
-| contact | Contact | Indicates the contact state (OPEN/CLOSED) | WDS |
-| dimmer | Dimmer | Allows to dimm a light device | ISD2, PSD |
-| frost_warning | Switch | active, if the measured temperature is too low (ON/OFF) | RST |
-| humidity | Number | Relative humidity in percent | RST, WRT |
-| button1 | - | trigger channel for rules, fires with each push | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2 |
-| button2 | - | trigger channel for rules, fires with each push | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2 |
-| button3 | - | trigger channel for rules, fires with each push | BRC8 |
-| button4 | - | trigger channel for rules, fires with each push | BRC8 |
-| button5 | - | trigger channel for rules, fires with each push | BRC8 |
-| button6 | - | trigger channel for rules, fires with each push | BRC8 |
-| button7 | - | trigger channel for rules, fires with each push | BRC8 |
-| button8 | - | trigger channel for rules, fires with each push | BRC8 |
-| button1_count | Number | number of button pushes for button 1, increased with each push | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2 |
-| button2_count | Number | number of button pushes for button 2, increased with each push | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2 |
-| button3_count | Number | number of button pushes for button 3, increased with each push | BRC8 |
-| button4_count | Number | number of button pushes for button 4, increased with each push | BRC8 |
-| button5_count | Number | number of button pushes for button 5, increased with each push | BRC8 |
-| button6_count | Number | number of button pushes for button 6, increased with each push | BRC8 |
-| button7_count | Number | number of button pushes for button 7, increased with each push | BRC8 |
-| button8_count | Number | number of button pushes for button 8, increased with each push | BRC8 |
-| luminance | Number | Indicates the measured luminance in percent | WMD, WMD0 |
-| mold_warning | Switch | active, if the measured humidity is too low (ON/OFF) | RST |
-| motion_count | Number | Number of detected motions, increases with each detected motion | WMD, WMDO |
-| operation_mode | String | the mode of a thermostat (auto/manual) | RST |
-| rollershutter | Rollershutter | Controls a roller shutter | ISR2 |
-| set_temperature | Number | Sets the target temperature in °C | RST, WRT |
-| smoke | Switch | Indicates, if smoke was detected (ON/OFF) | WSD, WSD2 |
-| switch | Switch | A switch to turn the device or variable on/off (ON/OFF) | ISS2, PSS, PSSO, VariableActuator |
-| temperature | Number | Holds the actual temperature in °C | RST, WRT |
-| window_reduction_active | Switch | indicates if a linked window is open and temperature reduced (ON/OFF)  | RST |
+| Channel Type ID         | Item Type     | Description                                                           | Available on thing                              |
+|-------------------------|---------------|-----------------------------------------------------------------------|-------------------------------------------------|
+| alarm                   | Switch        | Switches the alarm (ON/OFF)                                           | WSD, WSD2                                       |
+| battery_low             | Switch        | Indicates, if the battery is low (ON/OFF)                             | BRC8, RST, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
+| contact                 | Contact       | Indicates the contact state (OPEN/CLOSED)                             | WDS                                             |
+| dimmer                  | Dimmer        | Allows to dimm a light device                                         | ISD2, PSD                                       |
+| frost_warning           | Switch        | active, if the measured temperature is too low (ON/OFF)               | RST                                             |
+| humidity                | Number        | Relative humidity in percent                                          | RST, WRT                                        |
+| button1                 | -             | trigger channel for rules, fires with each push                       | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2              |
+| button2                 | -             | trigger channel for rules, fires with each push                       | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2              |
+| button3                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
+| button4                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
+| button5                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
+| button6                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
+| button7                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
+| button8                 | -             | trigger channel for rules, fires with each push                       | BRC8                                            |
+| button1_count           | Number        | number of button pushes for button 1, increased with each push        | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2              |
+| button2_count           | Number        | number of button pushes for button 2, increased with each push        | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2              |
+| button3_count           | Number        | number of button pushes for button 3, increased with each push        | BRC8                                            |
+| button4_count           | Number        | number of button pushes for button 4, increased with each push        | BRC8                                            |
+| button5_count           | Number        | number of button pushes for button 5, increased with each push        | BRC8                                            |
+| button6_count           | Number        | number of button pushes for button 6, increased with each push        | BRC8                                            |
+| button7_count           | Number        | number of button pushes for button 7, increased with each push        | BRC8                                            |
+| button8_count           | Number        | number of button pushes for button 8, increased with each push        | BRC8                                            |
+| luminance               | Number        | Indicates the measured luminance in percent                           | WMD, WMD0                                       |
+| mold_warning            | Switch        | active, if the measured humidity is too low (ON/OFF)                  | RST                                             |
+| motion_count            | Number        | Number of detected motions, increases with each detected motion       | WMD, WMDO                                       |
+| operation_mode          | String        | the mode of a thermostat (auto/manual)                                | RST                                             |
+| rollershutter*          | Rollershutter | Controls a roller shutter                                             | ISR2                                            |
+| set_temperature         | Number        | Sets the target temperature in °C                                     | RST, WRT                                        |
+| smoke                   | Switch        | Indicates, if smoke was detected (ON/OFF)                             | WSD, WSD2                                       |
+| switch                  | Switch        | A switch to turn the device or variable on/off (ON/OFF)               | ISS2, PSS, PSSO, VariableActuator               |
+| temperature             | Number        | Holds the actual temperature in °C                                    | RST, WRT                                        |
+| window_reduction_active | Switch        | indicates if a linked window is open and temperature reduced (ON/OFF) | RST                                             |
+
+The `rollershutter` channel has a `boolean` parameter `invert`.
+It is `false` by default.
+This means `100` on innogy is `UP` and `0` is `DOWN`.
+When `invert` is `true` than `0` on innogy is `UP` and `100` is `DOWN`.
 
 ## Thing configuration
 
@@ -168,7 +174,7 @@ The device ID (e.g. e9a74941a3807b57332214f346fb1129) can be found in the Paper 
 However, a full example .things configuration look like this:
 
 ```
-Bridge innogysmarthome:bridge:mybride "innogy SmartHome Controller" [ refreshtoken="<insert-your-refresh-token-here>" ] {
+Bridge innogysmarthome:bridge:mybride "innogy SmartHome Controller" {
     Thing ISD2 myDimmer "Dimmer Kitchen" @ "Kitchen" [ id="<device-id>" ]
     Thing ISS2 myLightSwitch "Light Livingroom" @ "Livingroom" [ id="<device-id>" ]
     Thing PSS myTVSwitch "TV" @ "Livingroom" [ id="<device-id>" ]
@@ -227,15 +233,15 @@ end
 
 ## Resolving certificate issues
 
-If the bridge stays offline with the following status shown in the PaperUI, the reason could be an expired certificate:
+If the bridge stays offline with the following status shown in the Paper UI, the reason could be an expired certificate:
 
 `OFFLINE - COMMUNICATION_ERROR sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target`
 
-To solve this on a linux system, follow this steps:
+To solve this on a Linux system, follow this steps:
 
 1. Download the certificates (.cer-files) of https://home.innogy-smarthome.de and https://innogy.com including the "DigiCert Global Root G2" to your computer.
-As this depends on the usen browser and operating system, please google on how to achieve this for your situation.
-2. On your linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
+As this depends on the used browser and operating system, please use a web search engine to find out how to achieve this for your situation.
+2. On your Linux system, goto your Java Machine's certificate store, e.g. `/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/jre/lib/security`.
 The path should include a file called `cacerts` (this is the certificate store) and may differ depending on the system used.
 3. Copy the .cer-files from step 1 into this directory.
 4. Import each certificate with the command: `sudo keytool –importcert –alias “innogysmarthome” –keystore cacerts –file innogy.cer`

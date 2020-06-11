@@ -78,7 +78,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             try {
                 updateWemoState();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e);
+                logger.debug("Exception during poll", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -129,7 +129,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             try {
                 updateWemoState();
             } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e);
+                logger.debug("Exception during poll", e);
             }
         } else if (channelUID.getId().equals(CHANNEL_RELAY)) {
             if (command instanceof OnOffType) {
@@ -193,6 +193,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo Maker.
      */
+    @SuppressWarnings("null")
     protected void updateWemoState() {
         String action = "GetAttributes";
         String actionService = "deviceevent";

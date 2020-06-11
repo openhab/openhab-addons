@@ -7,13 +7,13 @@
 
 	<channel-type id="audiolooptest" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Audio loop test</label>
+		<label>Audio Loop Test</label>
 		<description>Audio loop test result</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="audioloopteststamp">
 		<item-type>DateTime</item-type>
-		<label>Audio loop test time</label>
+		<label>Audio Loop Test Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -42,7 +42,7 @@
 	</channel-type>
 	<channel-type id="callstatestamp">
 		<item-type>DateTime</item-type>
-		<label>Call state time</label>
+		<label>Call State Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -59,7 +59,7 @@
 	</channel-type>
 	<channel-type id="cardstamp">
 		<item-type>DateTime</item-type>
-		<label>Card detection time</label>
+		<label>Card Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -76,7 +76,7 @@
 	</channel-type>
 	<channel-type id="codestamp">
 		<item-type>DateTime</item-type>
-		<label>Code entered time</label>
+		<label>Code Entered Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -92,18 +92,18 @@
 	</channel-type>
 	<channel-type id="devicestatestamp">
 		<item-type>DateTime</item-type>
-		<label>Device state time</label>
+		<label>Device State Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="keypressed">
 		<kind>trigger</kind>
-		<label>Key pressed</label>
+		<label>Key Pressed</label>
 		<description>The key pressed, 0, 1, …, 9, *, # for keypad buttons and %1..%54 for call buttons</description>
 	</channel-type>
 	<channel-type id="keypressedstamp">
 		<item-type>DateTime</item-type>
-		<label>Key press time</label>
+		<label>Key Press Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -114,7 +114,7 @@
 	</channel-type>
 	<channel-type id="keyreleasedstamp">
 		<item-type>DateTime</item-type>
-		<label>Key released time</label>
+		<label>Key Released Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -126,7 +126,7 @@
 	</channel-type>
 	<channel-type id="motionstamp">
 		<item-type>DateTime</item-type>
-		<label>Motion detection time</label>
+		<label>Motion Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -138,7 +138,7 @@
 	</channel-type>
 	<channel-type id="noisestamp">
 		<item-type>DateTime</item-type>
-		<label>Noise detection time</label>
+		<label>Noise Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -167,7 +167,7 @@
 	</channel-type>
 	<channel-type id="switchstatestamp">
 		<item-type>DateTime</item-type>
-		<label>Switch switch time</label>
+		<label>Switch Switch Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
 		<state readOnly="true" />
 	</channel-type>

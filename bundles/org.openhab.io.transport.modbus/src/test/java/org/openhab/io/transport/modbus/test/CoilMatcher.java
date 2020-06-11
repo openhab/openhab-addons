@@ -20,6 +20,9 @@ import org.hamcrest.Description;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 class CoilMatcher extends AbstractRequestComparer<ModbusWriteCoilRequestBlueprint> {
 
     private Boolean[] expectedCoils;

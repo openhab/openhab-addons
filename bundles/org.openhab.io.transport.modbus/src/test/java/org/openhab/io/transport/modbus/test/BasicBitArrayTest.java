@@ -18,6 +18,9 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.BasicBitArray;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 public class BasicBitArrayTest {
 
     @Test

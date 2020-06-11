@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * across the whole binding.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Arjan Mels - Added constants for websocket based remote controller
  */
 @NonNullByDefault
 public class SamsungTvBindingConstants {
@@ -31,6 +32,8 @@ public class SamsungTvBindingConstants {
     // List of all remote controller thing channel id's
     public static final String KEY_CODE = "keyCode";
     public static final String POWER = "power";
+    public static final String ART_MODE = "artMode";
+    public static final String SOURCE_APP = "sourceApp";
 
     // List of all media renderer thing channel id's
     public static final String VOLUME = "volume";

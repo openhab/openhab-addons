@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shellybulb">
+		<label>Shelly Bulb (SHBULB)</label>
+		<description>Shelly Bulb</description>
+		<category>Lightbulb</category>
+
+		<channel-groups>
+			<channel-group id="control" typeId="bulbControl" />
+			<channel-group id="color" typeId="colorSettingsBulb" />
+			<channel-group id="white" typeId="whiteSettings" />
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:shelly:generic" />
+	</thing-type>
+
+	<thing-type id="shellyrgbw2-color">
+		<label>Shelly RGBW2 Color Mode (SHRGBW2)</label>
+		<description>Shelly RGBW2 Controller - Color Mode</description>
+		<category>Lightbulb</category>
+		<channel-groups>
+			<channel-group id="control" typeId="lightControl" />
+			<channel-group id="color" typeId="colorSettingsRGBW2" />
+			<channel-group id="meter" typeId="basicMeter" />
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:shelly:generic" />
+	</thing-type>
+
+	<thing-type id="shellyrgbw2-white">
+		<label>Shelly RGBW2 White Mode (SHRGBW2)</label>
+		<description>Shelly RGBW2 Controller - White Mode</description>
+		<category>Lightbulb</category>
+
+		<channel-groups>
+			<channel-group id="channel1" typeId="rgbw2Channel">
+				<label>Channel 1</label>
+			</channel-group>
+			<channel-group id="channel2" typeId="rgbw2Channel">
+				<label>Channel 2</label>
+			</channel-group>
+			<channel-group id="channel3" typeId="rgbw2Channel">
+				<label>Channel 3</label>
+			</channel-group>
+			<channel-group id="channel4" typeId="rgbw2Channel">
+				<label>Channel 4</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="basicMeter">
+				<label>Power Meter Channel 1</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="basicMeter">
+				<label>Power Meter Channel 2</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="basicMeter">
+				<label>Power Meter Channel 3</label>
+			</channel-group>
+			<channel-group id="meter4" typeId="basicMeter">
+				<label>Power Meter Channel 4</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:shelly:generic" />
+	</thing-type>
+
+	<channel-group-type id="bulbControl">
+		<label>Light Control</label>
+		<description>Control your light</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="mode" typeId="colorMode" />
+			<channel id="autoOn" typeId="timerAutoOn" />
+			<channel id="autoOff" typeId="timerAutoOff" />
+			<channel id="timerActive" typeId="timerActive" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="lightControl">
+		<label>Light Control</label>
+		<description>Control your light channels</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="autoOn" typeId="timerAutoOn" />
+			<channel id="autoOff" typeId="timerAutoOff" />
+			<channel id="timerActive" typeId="timerActive" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="colorSettingsBulb">
+		<label>Colors</label>
+		<description>Light colors</description>
+		<channels>
+			<channel id="hsb" typeId="system.color" />
+			<channel id="full" typeId="colorFull" />
+			<channel id="red" typeId="colorRed" />
+			<channel id="green" typeId="colorGreen" />
+			<channel id="blue" typeId="colorBlue" />
+			<channel id="white" typeId="colorWhite" />
+			<channel id="gain" typeId="colorGain" />
+			<channel id="effect" typeId="colorEffectBulb" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="colorSettingsRGBW2">
+		<label>Colors</label>
+		<description>Light colors</description>
+		<channels>
+			<channel id="hsb" typeId="system.color" />
+			<channel id="full" typeId="colorFull" />
+			<channel id="red" typeId="colorRed" />
+			<channel id="green" typeId="colorGreen" />
+			<channel id="blue" typeId="colorBlue" />
+			<channel id="white" typeId="colorWhite" />
+			<channel id="gain" typeId="colorGain" />
+			<channel id="effect" typeId="colorEffectRGBW2" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="whiteSettings">
+		<label>White settings</label>
+		<description>Adjust colors when device is in white mode</description>
+		<channels>
+			<channel id="brightness" typeId="whiteBrightness" />
+			<channel id="temperature" typeId="whiteTemp" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="rgbw2Channel">
+		<label>Control</label>
+		<description>Switch channel and adjust settings</description>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="autoOn" typeId="timerAutoOn" />
+			<channel id="autoOff" typeId="timerAutoOff" />
+			<channel id="timerActive" typeId="timerActive" />
+			<channel id="brightness" typeId="whiteBrightness" />
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

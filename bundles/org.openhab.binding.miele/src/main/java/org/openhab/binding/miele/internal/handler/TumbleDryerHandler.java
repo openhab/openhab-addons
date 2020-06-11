@@ -30,6 +30,7 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
+ * @author Martin Lepsy - fixed handling of empty JSON results
  */
 public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannelSelector> {
 
@@ -69,7 +70,7 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
                 }
             }
             // process result
-            if (result != null) {
+            if (isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {

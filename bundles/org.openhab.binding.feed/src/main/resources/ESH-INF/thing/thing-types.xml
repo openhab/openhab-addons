@@ -34,7 +34,7 @@
 				up to date, updates the feed content stored in the channel -->
 
 			<parameter name="refresh" type="integer">
-				<label>Refresh time interval</label>
+				<label>Refresh Time Interval</label>
 				<description>Refresh time interval in minutes.</description>
 				<default>20</default>
 			</parameter>
@@ -44,21 +44,21 @@
 
 	<channel-type id="latest-title">
 		<item-type>String</item-type>
-		<label>Latest title</label>
+		<label>Latest Title</label>
 		<description>Contains the title of the last feed entry.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
 	<channel-type id="latest-description">
 		<item-type>String</item-type>
-		<label>Latest description</label>
+		<label>Latest Description</label>
 		<description>Contains the description of last feed entry.</description>
 		<state readOnly="true" pattern="%s" />
 	</channel-type>
 
 	<channel-type id="latest-date">
 		<item-type>DateTime</item-type>
-		<label>Latest published date</label>
+		<label>Latest Published Date</label>
 		<description>Contains the published date of the last feed entry.</description>
 		<state readOnly="true" pattern="%tc %n" />
 	</channel-type>
@@ -86,14 +86,14 @@
 
 	<channel-type id="last-update" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Last update</label>
+		<label>Last Update</label>
 		<description>The last update date of the feed</description>
 		<state readOnly="true" pattern="%tc %n" />
 	</channel-type>
 
 	<channel-type id="number-of-entries" advanced="true">
 		<item-type>Number</item-type>
-		<label>Number of entries</label>
+		<label>Number of Entries</label>
 		<description>Number of entries in the feed</description>
 		<state readOnly="true" pattern="%d" />
 	</channel-type>

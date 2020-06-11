@@ -28,6 +28,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public final class ModelTestUtil {
 
+    public static final Gson GSON = GsonUtil.createGson();
+
     private ModelTestUtil() {
         // Util class
     }
@@ -42,8 +44,9 @@ public final class ModelTestUtil {
      * @return instance of clazz with read data from json file
      * @throws IOException when file could not be read.
      */
-    public static <T> T toJson(Gson gson, String filename, Class<T> clazz) throws IOException {
-        return gson.fromJson(readJson(filename), clazz);
+    public static <T> T jsonFromFile(String filename, Class<T> clazz) throws IOException {
+        return GSON.fromJson(readJson(filename), clazz);
+
     }
 
     /**
@@ -60,4 +63,5 @@ public final class ModelTestUtil {
                 .toString(ModelTestUtil.class.getResourceAsStream(filename + ".json"), StandardCharsets.UTF_8.name())
                 .replaceAll("[\n\r\t ]", "");
     }
+
 }

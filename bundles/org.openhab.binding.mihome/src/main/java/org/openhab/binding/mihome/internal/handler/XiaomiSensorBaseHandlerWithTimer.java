@@ -55,7 +55,7 @@ public abstract class XiaomiSensorBaseHandlerWithTimer extends XiaomiSensorBaseH
             onTimer();
             timerIsRunning = false;
         }
-    };
+    }
 
     synchronized void startTimer() {
         cancelRunningTimer();

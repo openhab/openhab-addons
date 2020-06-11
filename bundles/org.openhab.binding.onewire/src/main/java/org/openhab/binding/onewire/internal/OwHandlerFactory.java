@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.onewire")
 public class OwHandlerFactory extends BaseThingHandlerFactory {
     Logger logger = LoggerFactory.getLogger(OwHandlerFactory.class);
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
@@ -64,7 +64,6 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        logger.error("factory {} creating thing {}", this, thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (OwserverBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {

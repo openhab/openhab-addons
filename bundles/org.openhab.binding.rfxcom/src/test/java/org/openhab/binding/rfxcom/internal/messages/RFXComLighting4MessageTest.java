@@ -21,6 +21,8 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting4Messag
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
@@ -31,8 +33,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden
+ * @author Martin van Wingerden - Initial contribution
  */
+@NonNullByDefault
 public class RFXComLighting4MessageTest {
     @Test
     public void basicBoundaryCheck() throws RFXComException {
@@ -47,18 +50,17 @@ public class RFXComLighting4MessageTest {
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory.createMessage(binaryMessage);
 
         assertEquals("Sensor Id", "90000", msg.getDeviceId());
-
     }
 
-    private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId, Integer pulse,
-            RFXComLighting4Message.Commands command, Integer seqNbr, int signalLevel, int offCommand, int onCommand)
-            throws RFXComException {
+    private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId,
+            @Nullable Integer pulse, RFXComLighting4Message.Commands command, @Nullable Integer seqNbr, int signalLevel,
+            int offCommand, int onCommand) throws RFXComException {
         testMessage(hexMsg, subType, deviceId, pulse, command.toByte(), seqNbr, signalLevel, offCommand, onCommand);
     }
 
-    private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId, Integer pulse,
-            byte commandByte, Integer seqNbr, int signalLevel, int offCommand, int onCommand)
-            throws RFXComException {
+    private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId,
+            @Nullable Integer pulse, byte commandByte, @Nullable Integer seqNbr, int signalLevel, int offCommand,
+            int onCommand) throws RFXComException {
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory
                 .createMessage(HexUtils.hexToBytes(hexMsg));
         assertEquals("Sensor Id", deviceId, msg.getDeviceId());
@@ -84,7 +86,17 @@ public class RFXComLighting4MessageTest {
         testMessage("09130035D149A2017750", PT2262, "857242", 375, OFF_2, 53, 2, 2, 1);
         testMessage("0913000B4E462A012280", PT2262, "320610", 290, ON_10, 11, 3, 4, 10);
         testMessage("09130009232D2E013970", PT2262, "144082", 313, OFF_14, 9, 2, 14, 1);
-        testMessage("091300CA0F8D2801AA70", PT2262, "63698", 426, (byte)8, 202, 2, 8, 1);
+        testMessage("091300CA0F8D2801AA70", PT2262, "63698", 426, ON_8, 202, 2, 4, 8);
+    }
+
+    @Test
+    public void testSomeAlarmRemote() throws RFXComException {
+        testMessage("0913004A0D8998016E60", PT2262, "55449", 366, ON_8, 74, 2, 4, 8);
+    }
+
+    @Test
+    public void testCheapPirSensor() throws RFXComException {
+        testMessage("091300EF505FC6019670", PT2262, "329212", 406, ON_6, 239, 2, 4, 6);
     }
 
     @Test

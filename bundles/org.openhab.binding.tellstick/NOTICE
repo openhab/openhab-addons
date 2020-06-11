@@ -33,3 +33,9 @@ reactive-streams
 * License: CC0 1.0 License
 * Project: https://www.reactive-streams.org
 * Source:  https://github.com/reactive-streams/reactive-streams-jvm
+
+jna
+* License: Apache 2.0 License
+* Project: https://github.com/java-native-access/jna
+* Source:  https://github.com/java-native-access/jna
+

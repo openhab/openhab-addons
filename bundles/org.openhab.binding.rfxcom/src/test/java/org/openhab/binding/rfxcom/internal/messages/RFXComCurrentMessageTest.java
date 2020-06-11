@@ -14,6 +14,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -24,6 +25,7 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComCurrentMessage.SubType
  *
  * @author Martin van Wingerden - Initial Contribution
  */
+@NonNullByDefault
 public class RFXComCurrentMessageTest {
 
     @Test
@@ -45,6 +47,5 @@ public class RFXComCurrentMessageTest {
         byte[] decoded = msg.decodeMessage();
 
         assertEquals("Message converted back", message, HexUtils.bytesToHex(decoded));
-
     }
 }

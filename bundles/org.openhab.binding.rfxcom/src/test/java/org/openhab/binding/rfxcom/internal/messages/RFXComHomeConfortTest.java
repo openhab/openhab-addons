@@ -15,26 +15,25 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertArrayEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.HOME_CONFORT;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComHomeConfortMessage.Commands;
 import org.openhab.binding.rfxcom.internal.messages.RFXComHomeConfortMessage.SubType;
 
-
 /**
  * Test for RFXCom-binding
  *
- * @author Martin van Wingerden - Initial contribution of empty test
+ * @author Martin van Wingerden - Initial contribution
  * @author Mike Jagdis - added message handling and real test
  */
+@NonNullByDefault
 public class RFXComHomeConfortTest {
-    private void testMessage(SubType subType, Commands command, String deviceId, String data)
-            throws RFXComException {
-
+    private void testMessage(SubType subType, Commands command, String deviceId, String data) throws RFXComException {
         RFXComHomeConfortMessage message = (RFXComHomeConfortMessage) RFXComMessageFactory.createMessage(HOME_CONFORT);
         message.setSubType(subType);
-	message.command = command;
+        message.command = command;
         message.setDeviceId(deviceId);
 
         assertArrayEquals(HexUtils.hexToBytes(data), message.decodeMessage());

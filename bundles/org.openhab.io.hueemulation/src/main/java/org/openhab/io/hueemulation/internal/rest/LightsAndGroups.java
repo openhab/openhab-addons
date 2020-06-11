@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -32,6 +31,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.registry.RegistryChangeListener;
 import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.GenericItem;
@@ -97,8 +97,8 @@ import io.swagger.annotations.ApiResponses;
 @NonNullByDefault
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class LightsAndGroups implements RegistryChangeListener<Item> {
+    public static final String EXPOSE_AS_DEVICE_TAG = "huelight";
     private final Logger logger = LoggerFactory.getLogger(LightsAndGroups.class);
     private static final String ITEM_TYPE_GROUP = "Group";
     private static final Set<String> ALLOWED_ITEM_TYPES = Stream.of(CoreItemFactory.COLOR, CoreItemFactory.DIMMER,
@@ -111,7 +111,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @Reference
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;
     @Reference(policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.OPTIONAL)
-    protected volatile @NonNullByDefault({}) EventPublisher eventPublisher;
+    protected volatile @Nullable EventPublisher eventPublisher;
 
     /**
      * Registers to the {@link ItemRegistry} and enumerates currently existing items.
@@ -154,7 +154,7 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
         String hueID = cs.mapItemUIDtoHueID(element);
 
-        if (element instanceof GroupItem) {
+        if (element instanceof GroupItem && !element.hasTag(EXPOSE_AS_DEVICE_TAG)) {
             GroupItem g = (GroupItem) element;
             HueGroupEntry group = new HueGroupEntry(g.getName(), g, deviceType);
 
@@ -373,9 +373,10 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
         // If a command could be created, post it to the framework now
         if (command != null) {
-            if (eventPublisher != null) {
+            EventPublisher localEventPublisher = eventPublisher;
+            if (localEventPublisher != null) {
                 logger.debug("sending {} to {}", command, itemUID);
-                eventPublisher.post(ItemEventFactory.createCommandEvent(itemUID, command, "hueemulation"));
+                localEventPublisher.post(ItemEventFactory.createCommandEvent(itemUID, command, "hueemulation"));
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", itemUID);
             }
@@ -418,8 +419,10 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         // If a command could be created, post it to the framework now
         if (command != null) {
             logger.debug("sending {} to {}", command, id);
-            if (eventPublisher != null) {
-                eventPublisher.post(ItemEventFactory.createCommandEvent(groupItem.getUID(), command, "hueemulation"));
+            EventPublisher localEventPublisher = eventPublisher;
+            if (localEventPublisher != null) {
+                localEventPublisher
+                        .post(ItemEventFactory.createCommandEvent(groupItem.getUID(), command, "hueemulation"));
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", groupItem.getUID());
             }

@@ -10,31 +10,31 @@
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
-				<label>Network address</label>
+				<label>Network Address</label>
 				<description>Network address of the ethernet transceiver</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="portNumber" type="integer" required="true">
-				<label>Port number</label>
+				<label>Port Number</label>
 				<description>TCP port number of the transceiver service</description>
 			</parameter>
 			<parameter name="bufferSize" type="integer" required="false">
-				<label>Buffer size</label>
+				<label>Buffer Size</label>
 				<description>Buffer size used by the TCP socket when sending and receiving commands to the transceiver</description>
 				<default>1024</default>
 			</parameter>
 			<parameter name="responseTimeOut" type="integer" required="false">
-				<label>Response time out</label>
+				<label>Response Time Out</label>
 				<description>Specifies the time milliseconds to wait for a response from the transceiver when sending a command.</description>
 				<default>100</default>
 			</parameter>
 			<parameter name="pingTimeOut" type="integer" required="false">
-				<label>Ping time out</label>
+				<label>Ping Time Out</label>
 				<description>Specifies the time milliseconds to wait for a response from the transceiver when pinging the device</description>
 				<default>1000</default>
 			</parameter>
 			<parameter name="reconnectInterval" type="integer" required="false">
-				<label>Reconnect interval</label>
+				<label>Reconnect Interval</label>
 				<description>Specifies the time seconds to wait before reconnecting to a transceiver after a communication failure</description>
 				<default>10</default>
 			</parameter>

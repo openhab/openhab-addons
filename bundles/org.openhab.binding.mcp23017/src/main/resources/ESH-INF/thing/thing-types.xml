@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="mcp23017">
-		<label>mcp23017</label>
+		<label>MCP23017</label>
 		<description>Thing for mcp23017 integrated circuit</description>
 		<channel-groups>
 			<channel-group id="input" typeId="inputgroup"/>

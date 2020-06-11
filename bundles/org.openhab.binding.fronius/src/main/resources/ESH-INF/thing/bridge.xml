@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>Fronius bridge</label>
+		<label>Fronius Bridge</label>
 		<description>A bridge to connect Fronius devices</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true" groupName="network">
@@ -13,7 +13,7 @@
 				<description>The hostname or IP address of the Fronius gateway/device</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="2">
-				<label>Refresh interval</label>
+				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
 			</parameter>

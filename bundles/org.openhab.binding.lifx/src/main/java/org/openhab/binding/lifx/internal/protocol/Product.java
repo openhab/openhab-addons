@@ -58,10 +58,12 @@ public enum Product {
     PRODUCT_50(50, "LIFX Mini Day and Dusk", TR_1500_4000),
     PRODUCT_51(51, "LIFX Mini White", TR_2700_2700),
     PRODUCT_52(52, "LIFX GU10", TR_2500_9000, COLOR),
-    PRODUCT_55(55, "LIFX Tile", TR_2500_9000, CHAIN, COLOR),
+    PRODUCT_55(55, "LIFX Tile", TR_2500_9000, CHAIN, COLOR, MATRIX, TILE_EFFECT),
+    PRODUCT_57(57, "LIFX Candle", TR_2500_9000, COLOR, MATRIX),
     PRODUCT_59(59, "LIFX Mini Color", TR_2500_9000, COLOR),
     PRODUCT_60(60, "LIFX Mini Day and Dusk", TR_1500_4000),
-    PRODUCT_61(61, "LIFX Mini White", TR_2700_2700);
+    PRODUCT_61(61, "LIFX Mini White", TR_2700_2700),
+    PRODUCT_68(68, "LIFX Candle", TR_2500_9000, COLOR, MATRIX);
 
     /**
      * Enumerates the product features.
@@ -70,7 +72,9 @@ public enum Product {
         CHAIN,
         COLOR,
         INFRARED,
+        MATRIX,
         MULTIZONE,
+        TILE_EFFECT
     }
 
     /**
@@ -205,7 +209,9 @@ public enum Product {
 
     public ThingTypeUID getThingTypeUID() {
         if (hasFeature(COLOR)) {
-            if (hasFeature(INFRARED)) {
+            if (hasFeature(TILE_EFFECT)) {
+                return LifxBindingConstants.THING_TYPE_TILELIGHT;
+            } else if (hasFeature(INFRARED)) {
                 return LifxBindingConstants.THING_TYPE_COLORIRLIGHT;
             } else if (hasFeature(MULTIZONE)) {
                 return LifxBindingConstants.THING_TYPE_COLORMZLIGHT;

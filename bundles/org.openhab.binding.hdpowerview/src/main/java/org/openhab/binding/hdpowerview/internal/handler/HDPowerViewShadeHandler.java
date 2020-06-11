@@ -51,7 +51,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
-        getBridgeHandler().pollNow();
     }
 
     @Override
@@ -117,7 +116,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         try {
             response = bridge.getWebTargets().moveShade(shadeId, position);
         } catch (IOException e) {
-            logger.error("{}", e.getMessage(), e);
+            logger.warn("Unexpected error: {}", e.getMessage());
             return;
         }
         if (response != null) {

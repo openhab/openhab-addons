@@ -30,7 +30,7 @@
 				<default>100</default>
 			</parameter>
 			<parameter name="maxNbrRepeats" type="integer" required="true">
-				<label>Maximum Number Of Repeats</label>
+				<label>Maximum Number of Repeats</label>
 				<description>Maximum number of repeats in case of a communication error (like HTTP 500 error)</description>
 				<default>10</default>
 			</parameter>

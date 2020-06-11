@@ -52,7 +52,7 @@ public class MqttServiceDiscoveryService extends AbstractDiscoveryService implem
     @Activate
     protected void activate(Map<String, Object> config) {
         super.activate(config);
-    };
+    }
 
     @Override
     @Deactivate

@@ -17,6 +17,9 @@ import org.hamcrest.TypeSafeMatcher;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 
+/**
+ * @author Sami Salonen - Initial contribution
+ */
 abstract class AbstractRequestComparer<T extends ModbusWriteRequestBlueprint> extends TypeSafeMatcher<T> {
 
     private int expectedUnitId;

@@ -1,6 +1,6 @@
 # Niko Home Control Binding
 
-The Niko Home Control binding integrates with a [Niko Home Control](http://www.nikohomecontrol.be/) system through a Niko Home Control IP-interface or Niko Home Control Connected Controller.
+The Niko Home Control binding integrates with a [Niko Home Control](https://www.niko.eu/) system through a Niko Home Control IP-interface or Niko Home Control Connected Controller.
 
 The binding supports both Niko Home Control I and Niko Home Control II.
 
@@ -59,12 +59,12 @@ It is possible to trigger a manual scan for things on the Niko Home Control brid
 Note that Niko Home Control II will require the touch profile and password parameters to be set on the bridge before the scan for actions can succeed.
 The bridge will remain offline as long as these parameters are not set.
 
-If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in PaperUI.
-Locations can subsequently be changed through the thing location parameter in PaperUI.
+If the Niko Home Control system has locations configured, these will be copied to thing locations and grouped as such in Paper UI.
+Locations can subsequently be changed through the thing location parameter in Paper UI.
 
 ## Thing Configuration
 
-Besides using PaperUI to manually configure things or adding automatically discovered things through PaperUI, you can add thing definitions in the things file.
+Besides using Paper UI to manually configure things or adding automatically discovered things through Paper UI, you can add thing definitions in the things file.
 
 The Thing configuration for the **bridge** uses the following syntax:
 
@@ -85,7 +85,7 @@ For Niko Home Control II:
 
 ```
 Bridge nikohomecontrol:bridge2:<bridgeId> [ addr="<IP-address of IP-interface>", port=<listening port>,
-                                           profile=<touch profile>, password=<password>,
+                                           profile="<touch profile>", password="<password>",
                                            refresh=<Refresh interval> ]
 ```
 
@@ -101,14 +101,14 @@ The Thing configuration for **Niko Home Control actions** has the following synt
 
 ```
 Thing nikohomecontrol:<thing type>:<bridgeId>:<thingId> "Label" @ "Location"
-                        [ actionId=<Niko Home Control action ID>,
+                        [ actionId="<Niko Home Control action ID>",
                           step=<dimmer increase/decrease step value> ]
 ```
 
 or nested in the bridge configuration:
 
 ```
-<thing type> <thingId> "Label" @ "Location" [ actionId=<Niko Home Control action ID>,
+<thing type> <thingId> "Label" @ "Location" [ actionId="<Niko Home Control action ID>",
                          step=<dimmer increase/decrease step value> ]
 ```
 
@@ -130,7 +130,7 @@ Discovery will identify All Off actions and map them to `pushButton` things.
 For Niko Home Control I, the `actionId` parameter is the unique IP Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control I programming software.
 It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
 For textual configuration, you can manually retrieve it from the content of the .nhcp configuration file created by the programming software.
-Open the file with an unzip tool to read it's content.
+Open the file with an unzip tool to read its content.
 
 For Niko Home Control II, the `actionId` parameter is a unique ID for the action in the controller. It can only be auto-discovered.
 If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
@@ -145,13 +145,13 @@ The Thing configuration for **Niko Home Control thermostats** has the following 
 
 ```
 Thing nikohomecontrol:thermostat:<bridgeId>:<thingId> "Label" @ "Location"
-                        [ thermostatId=<Niko Home Control thermostat ID> ]
+                        [ thermostatId="<Niko Home Control thermostat ID>" ]
 ```
 
 or nested in the bridge configuration:
 
 ```
-thermostat <thingId> "Label" @ "Location" [ thermostatId=<Niko Home Control thermostat ID> ]
+thermostat <thingId> "Label" @ "Location" [ thermostatId="<Niko Home Control thermostat ID>" ]
 ```
 
 `thingId` can have any value, but will be set to the same value as the thermostatId parameter if discovery is used.
@@ -221,11 +221,11 @@ All of this has not been implemented.
 
 ```
 Bridge nikohomecontrol:bridge:nhc1 [ addr="192.168.0.70", port=8000, refresh=300 ] {
-    pushButton 1 "AllOff" [ actionId=1 ]
-    onOff 2 "LivingRoom" @ "Downstairs" [ actionId=2 ]
-    dimmer 3 "TVRoom" [ actionId=3, step=5 ]
-    blind 4 [ actionId=4 ]
-    thermostat 5 [ thermostatId=0, overruleTime=10 ]
+    pushButton 1 "AllOff" [ actionId="1" ]
+    onOff 2 "LivingRoom" @ "Downstairs" [ actionId="2" ]
+    dimmer 3 "TVRoom" [ actionId="3", step=5 ]
+    blind 4 [ actionId="4" ]
+    thermostat 5 [ thermostatId="0", overruleTime=10 ]
 }
 
 Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, profile="openHAB", password="mypassword", refresh=300 ] {
@@ -237,10 +237,10 @@ Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8883, profile="o
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
-    onOff 11 @ "Upstairs"[ actionId=11 ]
-    dimmer 12 [ actionId=12, step=5 ]
-    blind 13 [ actionId=13 ]
-    thermostat 14 [ thermostatId=10 ]
+    onOff 11 @ "Upstairs" [ actionId="11" ]
+    dimmer 12 [ actionId="12", step=5 ]
+    blind 13 [ actionId="13" ]
+    thermostat 14 [ thermostatId="10" ]
 }
 ```
 

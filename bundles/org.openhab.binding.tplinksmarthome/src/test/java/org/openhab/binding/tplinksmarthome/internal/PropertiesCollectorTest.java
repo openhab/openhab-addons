@@ -17,23 +17,18 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.tplinksmarthome.internal.model.GetSysinfo;
-import org.openhab.binding.tplinksmarthome.internal.model.GsonUtil;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
-
-import com.google.gson.Gson;
 
 /**
  * Test class for {@link PropertiesCollector} class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class PropertiesCollectorTest {
-
-    private final Gson gson = GsonUtil.createGson();
 
     /**
      * Tests if properties for a bulb device are correctly parsed.
@@ -65,11 +60,10 @@ public class PropertiesCollectorTest {
         assertProperties("rangeextender_get_sysinfo_response", TPLinkSmartHomeThingType.RE270K, 11);
     }
 
-    private void assertProperties(@NonNull String responseFile, @NonNull TPLinkSmartHomeThingType thingType,
-            int expectedSize) throws IOException {
-        ThingTypeUID thingTypeUID = thingType.thingTypeUID();
-        Map<String, Object> props = PropertiesCollector.collectProperties(thingTypeUID, "localhost",
-                ModelTestUtil.toJson(gson, responseFile, GetSysinfo.class).getSysinfo());
+    private void assertProperties(String responseFile, TPLinkSmartHomeThingType thingType, int expectedSize)
+            throws IOException {
+        final Map<String, Object> props = PropertiesCollector.collectProperties(thingType, "localhost",
+                ModelTestUtil.jsonFromFile(responseFile, GetSysinfo.class).getSysinfo());
 
         assertEquals("Number of properties not as expected for properties: " + props, expectedSize, props.size());
         props.entrySet().stream().forEach(

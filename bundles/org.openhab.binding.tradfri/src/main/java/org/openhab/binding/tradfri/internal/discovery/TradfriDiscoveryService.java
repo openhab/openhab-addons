@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -42,8 +44,8 @@ import com.google.gson.JsonSyntaxException;
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  * @author Andre Fuechsel - fixed the results removal
  */
+@NonNullByDefault
 public class TradfriDiscoveryService extends AbstractDiscoveryService implements DeviceUpdateListener {
-
     private final Logger logger = LoggerFactory.getLogger(TradfriDiscoveryService.class);
 
     private final TradfriGatewayHandler handler;
@@ -55,7 +57,7 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
             "FLOALT panel WS 30x30", "FLOALT panel WS 60x60", "FLOALT panel WS 30x90",
             "TRADFRI bulb E12 WS opal 400lm" };
 
-    private static final String COLOR_MODELS_IDENTIFIER = "CWS";
+    private static final String[] COLOR_MODEL_IDENTIFIER_HINTS = new String[] { "CWS", " C/WS " };
 
     public TradfriDiscoveryService(TradfriGatewayHandler bridgeHandler) {
         super(Stream.concat(SUPPORTED_LIGHT_TYPES_UIDS.stream(), SUPPORTED_CONTROLLER_TYPES_UIDS.stream())
@@ -85,10 +87,10 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void onUpdate(String instanceId, JsonObject data) {
+    public void onUpdate(@Nullable String instanceId, @Nullable JsonObject data) {
         ThingUID bridge = handler.getThing().getUID();
         try {
-            if (data.has(INSTANCE_ID)) {
+            if (data != null && data.has(INSTANCE_ID)) {
                 int id = data.get(INSTANCE_ID).getAsInt();
                 String type = data.get(TYPE).getAsString();
                 JsonObject deviceInfo = data.get(DEVICE).getAsJsonObject();
@@ -106,7 +108,7 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
                     // As the protocol does not distinguishes between color and full-color lights,
                     // we check if the "CWS" identifier is given in the model name
                     ThingTypeUID thingType = null;
-                    if (model != null && model.contains(COLOR_MODELS_IDENTIFIER)) {
+                    if (model != null && Arrays.stream(COLOR_MODEL_IDENTIFIER_HINTS).anyMatch(model::contains)) {
                         thingType = THING_TYPE_COLOR_LIGHT;
                     }
                     if (thingType == null && //
@@ -145,8 +147,9 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService implements
 
                 Map<String, Object> properties = new HashMap<>(1);
                 properties.put("id", id);
-                properties.put(PROPERTY_MODEL_ID, model);
-
+                if (model != null) {
+                    properties.put(PROPERTY_MODEL_ID, model);
+                }
                 if (deviceInfo.get(DEVICE_VENDOR) != null) {
                     properties.put(PROPERTY_VENDOR, deviceInfo.get(DEVICE_VENDOR).getAsString());
                 }

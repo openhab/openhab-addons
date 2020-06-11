@@ -37,7 +37,7 @@
 	</channel-type>
 	<channel-type id="routeToSink" advanced="true">
 		<item-type>String</item-type>
-		<label>Route to sink</label>
+		<label>Route to Sink</label>
 		<description>Shows the sink a sink-input is currently routed to</description>
 	</channel-type>
 

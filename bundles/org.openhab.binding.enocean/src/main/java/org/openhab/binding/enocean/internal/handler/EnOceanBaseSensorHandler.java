@@ -12,21 +12,23 @@
  */
 package org.openhab.binding.enocean.internal.handler;
 
+import static java.util.Collections.unmodifiableCollection;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.link.ItemChannelLinkRegistry;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -50,16 +52,16 @@ import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
 public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements ESP3PacketListener {
 
     // List of all thing types which support receiving of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_ROOMOPERATINGPANEL, THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT,
                     THING_TYPE_TEMPERATURESENSOR, THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_ROCKERSWITCH,
                     THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
-                    THING_TYPE_PUSHBUTTON, THING_TYPE_AUTOMATEDMETERSENSOR));
+                    THING_TYPE_PUSHBUTTON, THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_ENVIRONMENTALSENSOR));
 
     protected Hashtable<RORG, EEPType> receivingEEPTypes = null;
 
-    public EnOceanBaseSensorHandler(Thing thing) {
-        super(thing);
+    public EnOceanBaseSensorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
+        super(thing, itemChannelLinkRegistry);
     }
 
     @Override
@@ -68,12 +70,20 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     }
 
     @Override
+    Collection<EEPType> getEEPTypes() {
+        if (receivingEEPTypes == null) {
+            return Collections.emptyList();
+        }
+
+        return unmodifiableCollection(receivingEEPTypes.values());
+    }
+
+    @Override
     boolean validateConfig() {
         receivingEEPTypes = null;
 
         try {
             if (config.receivingEEPId != null && !config.receivingEEPId.isEmpty()) {
-                boolean first = true;
                 receivingEEPTypes = new Hashtable<>();
 
                 for (String receivingEEP : config.receivingEEPId) {
@@ -88,8 +98,6 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                     }
 
                     receivingEEPTypes.put(receivingEEPType.getRORG(), receivingEEPType);
-                    updateChannels(receivingEEPType, first);
-                    first = false;
                 }
             } else {
                 receivingEEPTypes = null;
@@ -98,6 +106,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
             configurationErrorDescription = "Receiving EEP is not supported";
             return false;
         }
+
+        updateChannels();
 
         if (receivingEEPTypes != null) {
             if (!validateEnoceanId(config.enoceanId)) {
@@ -133,14 +143,11 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
         // The only possible command would be "Refresh"
     }
 
-    protected Predicate<Channel> stateFilter(EEPType eepType, byte[] senderId) {
-        return c -> ChannelKind.STATE.equals(c.getKind())
-                && eepType.GetSupportedChannels().containsKey(c.getUID().getId());
-    }
-
-    protected Predicate<Channel> triggerFilter(EEPType eepType, byte[] senderId) {
-        return c -> ChannelKind.TRIGGER.equals(c.getKind())
-                && eepType.GetSupportedChannels().containsKey(c.getUID().getId());
+    protected Predicate<Channel> channelFilter(EEPType eepType, byte[] senderId) {
+        return c -> {
+            boolean result = eepType.GetSupportedChannels().containsKey(c.getUID().getId());
+            return (isLinked(c.getUID()) || c.getKind() == ChannelKind.TRIGGER) && result;
+        };
     }
 
     @Override
@@ -158,44 +165,42 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
 
         EEP eep = EEPFactory.buildEEP(receivingEEPType, (ERP1Message) packet);
         logger.debug("ESP Packet payload {} for {} received", HexUtils.bytesToHex(packet.getPayload()),
-                config.enoceanId);
+                HexUtils.bytesToHex(msg.getSenderId()));
 
         if (eep.isValid()) {
-            Supplier<Stream<Channel>> streamSupplier = () -> getLinkedChannels().stream();
             byte[] senderId = msg.getSenderId();
 
-            // try to interpret received message for all linked channels
-            streamSupplier.get().filter(stateFilter(receivingEEPType, senderId)).forEach(channel -> {
-                ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+            // try to interpret received message for all linked or trigger channels
+            getThing().getChannels().stream().filter(channelFilter(receivingEEPType, senderId))
+                    .sorted((c1, c2) -> c1.getKind().compareTo(c2.getKind())) // handle state channels first
+                    .forEachOrdered(channel -> {
 
-                String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
-                String channelId = channel.getUID().getId();
-                Configuration channelConfig = channel.getConfiguration();
+                        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+                        String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
 
-                State currentState = getCurrentState(channelId);
-                State result = eep.convertToState(channelId, channelTypeId, channelConfig, currentState);
+                        String channelId = channel.getUID().getId();
+                        Configuration channelConfig = channel.getConfiguration();
 
-                // if message can be interpreted (result != UnDefType.UNDEF) => update item state
-                if (result != null && result != UnDefType.UNDEF) {
-                    updateState(channelId, result);
-                    setCurrentState(channelTypeId, result); // update internal state map
-                }
-            });
+                        switch (channel.getKind()) {
+                            case STATE:
+                                State result = eep.convertToState(channelId, channelTypeId, channelConfig,
+                                        id -> getCurrentState(id));
 
-            streamSupplier.get().filter(triggerFilter(receivingEEPType, senderId)).forEach(channel -> {
-                ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-
-                String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
-                String channelId = channel.getUID().getId();
-                Configuration channelConfig = channel.getConfiguration();
-
-                String lastEvent = lastEvents.get(channelId);
-                String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig);
-                if (event != null) {
-                    triggerChannel(channel.getUID(), event);
-                    lastEvents.put(channelId, event);
-                }
-            });
+                                // if message can be interpreted (result != UnDefType.UNDEF) => update item state
+                                if (result != null && result != UnDefType.UNDEF) {
+                                    updateState(channelId, result);
+                                }
+                                break;
+                            case TRIGGER:
+                                String lastEvent = lastEvents.get(channelId);
+                                String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig);
+                                if (event != null) {
+                                    triggerChannel(channel.getUID(), event);
+                                    lastEvents.put(channelId, event);
+                                }
+                                break;
+                        }
+                    });
         }
     }
 }

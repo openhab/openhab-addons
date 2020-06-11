@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="samsungtv"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="volume">
@@ -94,6 +95,18 @@
 		<description>TV power. Some of the Samsung TV models doesn't allow to set
 			Power ON remotely.
 		</description>
+	</channel-type>
+
+	<channel-type id="artmode">
+		<item-type>Switch</item-type>
+		<label>Art Mode</label>
+		<description>TV Art Mode.</description>
+	</channel-type>
+
+	<channel-type id="sourceapp" advanced="true">
+		<item-type>String</item-type>
+		<label>Application</label>
+		<description>Application currently running</description>
 	</channel-type>
 
 	<channel-type id="keycode">

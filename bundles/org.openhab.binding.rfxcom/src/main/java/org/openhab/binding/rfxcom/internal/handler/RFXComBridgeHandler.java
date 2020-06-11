@@ -218,7 +218,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void sendMessage(RFXComMessage msg) throws RFXComException {
+    public void sendMessage(RFXComMessage msg) {
         try {
             RFXComBaseMessage baseMsg = (RFXComBaseMessage) msg;
             transmitQueue.enqueue(baseMsg);
@@ -330,8 +330,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
-        return deviceStatusListeners.contains(deviceStatusListener) ? false
-                : deviceStatusListeners.add(deviceStatusListener);
+        return !deviceStatusListeners.contains(deviceStatusListener) && deviceStatusListeners.add(deviceStatusListener);
     }
 
     public boolean unregisterDeviceStatusListener(DeviceMessageListener deviceStatusListener) {

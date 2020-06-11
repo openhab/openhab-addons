@@ -14,6 +14,8 @@ package org.openhab.binding.tradfri.internal.model;
 
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
@@ -22,6 +24,7 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public class TradfriPlugData extends TradfriDeviceData {
 
     public TradfriPlugData() {

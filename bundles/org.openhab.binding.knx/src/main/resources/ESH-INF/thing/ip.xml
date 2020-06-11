@@ -60,9 +60,9 @@
 				<description>Limits the read retries while initialization from the KNX bus</description>
 				<default>3</default>
 			</parameter>
-			<parameter name="autoReconnectPeriod" type="integer">
+			<parameter name="autoReconnectPeriod" type="integer" >
 				<label>Auto Reconnect Period</label>
-				<description>Seconds between connection retries when KNX link has been lost, 0 means never retry</description>
+				<description>Seconds between connection retries when KNX link has been lost, 0 means never retry, minimum 30s</description>
 				<default>60</default>
 			</parameter>
 		</config-description>

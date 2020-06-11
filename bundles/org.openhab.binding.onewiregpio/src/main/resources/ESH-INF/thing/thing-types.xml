@@ -12,12 +12,12 @@
 		</channels>
 		<config-description>
 			<parameter name="gpio_bus_file" type="text" required="true">
-				<label>Device path</label>
+				<label>Device Path</label>
 				<description>device id in format: /sys/bus/w1/devices/DEVICE_ID_TO_SET/w1_slave</description>
 			</parameter>
 
 			<parameter name="refresh_time" type="integer">
-				<label>Refresh time interval</label>
+				<label>Refresh Time Interval</label>
 				<description>Refresh time interval in seconds.</description>
 				<default>600</default>
 			</parameter>

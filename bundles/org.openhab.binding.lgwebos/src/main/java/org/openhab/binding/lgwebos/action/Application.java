@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lgwebos.action;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This represents id and name of a WebOS application.
  *
  * @author Sebastian Prehn - Initial contribution
  */
+@NonNullByDefault
 public class Application {
     private String id;
     private String name;

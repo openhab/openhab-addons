@@ -14,7 +14,7 @@ package org.openhab.binding.openuv.internal.json;
 
 import java.math.BigInteger;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
@@ -25,14 +25,13 @@ import org.eclipse.smarthome.core.types.UnDefType;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@NonNullByDefault
 public class SafeExposureTime {
-    private BigInteger st1 = BigInteger.ZERO;
-    private BigInteger st2 = BigInteger.ZERO;
-    private BigInteger st3 = BigInteger.ZERO;
-    private BigInteger st4 = BigInteger.ZERO;
-    private BigInteger st5 = BigInteger.ZERO;
-    private BigInteger st6 = BigInteger.ZERO;
+    public @Nullable BigInteger st1;
+    public @Nullable BigInteger st2;
+    public @Nullable BigInteger st3;
+    public @Nullable BigInteger st4;
+    public @Nullable BigInteger st5;
+    public @Nullable BigInteger st6;
 
     public State getSafeExposure(int index) {
         BigInteger result;
@@ -52,9 +51,12 @@ public class SafeExposureTime {
             case 5:
                 result = st5;
                 break;
-            default:
+            case 6:
                 result = st6;
+                break;
+            default:
+                result = null;
         }
-        return result != BigInteger.ZERO ? new QuantityType<>(result, SmartHomeUnits.MINUTE) : UnDefType.NULL;
+        return (result != null) ? new QuantityType<>(result, SmartHomeUnits.MINUTE) : UnDefType.NULL;
     }
 }

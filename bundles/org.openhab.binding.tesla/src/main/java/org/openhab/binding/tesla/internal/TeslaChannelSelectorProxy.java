@@ -14,6 +14,7 @@ package org.openhab.binding.tesla.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -24,9 +25,15 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PointType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.Type;
+
+import tec.uom.se.unit.MetricPrefix;
 
 /**
  * The {@link TeslaChannelSelectorProxy} class is a helper class to instantiate
@@ -84,12 +91,8 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
-                if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILE);
             }
         },
         CALENDAR_SUPPORTED("calendar_supported", "calendarsupported", OnOffType.class, true) {
@@ -162,40 +165,28 @@ public class TeslaChannelSelectorProxy {
         CHARGE_LIMIT_SOC_MIN("charge_limit_soc_min", "chargelimitminimum", PercentType.class, false),
         CHARGE_LIMIT_SOC_STD("charge_limit_soc_std", "chargelimitsocstandard", PercentType.class, false),
         CHARGE_PORT_LATCH("charge_port_latch", "chargeportlatch", StringType.class, false),
-        CHARGE_MILES_ADDED_IDEAL("charge_miles_added_ideal", "chargeidealmilesadded", DecimalType.class, false) {
+        CHARGE_MILES_ADDED_IDEAL("charge_miles_added_ideal", "chargeidealdistanceadded", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
-                if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILES_PER_HOUR);
             }
         },
-        CHARGE_MILES_ADDED_RANGE("charge_miles_added_rated", "chargeratedmilesadded", DecimalType.class, false) {
+        CHARGE_MILES_ADDED_RANGE("charge_miles_added_rated", "chargerateddistanceadded", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
-                if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILES_PER_HOUR);
             }
         },
         CHARGE_RATE("charge_rate", "chargerate", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
-                if (properties.containsKey("chargerateunits") && properties.get("chargerateunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILES_PER_HOUR);
             }
         },
         CHARGE_STARTING_RANGE("charge_starting_range", "chargestartingrange", StringType.class, false),
@@ -299,11 +290,8 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, SIUnits.CELSIUS);
             }
         },
         ELEVATION("elevation", "location", DecimalType.class, false) {
@@ -319,25 +307,24 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
-                if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILE);
             }
         },
-        EST_HEADING("est_heading", "estimatedheading", DecimalType.class, false),
+        EST_HEADING("est_heading", "headingestimation", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                State someState = super.getState(s);
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, SmartHomeUnits.DEGREE_ANGLE);
+            }
+        },
         EST_RANGE("est_range", "estimatedrange", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
-                if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILE);
             }
         },
         EU_VEHICLE("eu_vehicle", "european", OnOffType.class, true) {
@@ -442,7 +429,14 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
-        HEADING("heading", "heading", DecimalType.class, false),
+        HEADING("heading", "heading", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                State someState = super.getState(s);
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, SmartHomeUnits.DEGREE_ANGLE);
+            }
+        },
         HONK_HORN(null, "honkhorn", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -471,23 +465,16 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
-                if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILE);
             }
         },
         INSIDE_TEMP("inside_temp", "insidetemp", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, SIUnits.CELSIUS);
             }
         },
         LAST_AUTOPARK_ERROR("last_autopark_error", "lastautoparkerror", StringType.class, false),
@@ -640,12 +627,9 @@ public class TeslaChannelSelectorProxy {
         ODOMETER("odometer", "odometer", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                double odo = Math.round(((DecimalType) super.getState(s)).doubleValue() * 10.0) / 10.0;
-                if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    odo = odo * 1.609344;
-                }
-
-                return super.getState(String.valueOf(odo));
+                State someState = super.getState(s);
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILE);
             }
         },
         OPEN_FRUNK(null, "openfrunk", OnOffType.class, false) {
@@ -677,11 +661,8 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, SIUnits.CELSIUS);
             }
         },
         PARSED_CALENDAR("parsed_calendar_supported", "parsedcalendar", OnOffType.class, false) {
@@ -700,11 +681,8 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, SIUnits.CELSIUS);
             }
         },
         PERF_CONFIG("perf_config", "configuration", StringType.class, true),
@@ -749,11 +727,11 @@ public class TeslaChannelSelectorProxy {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                double odo = ((DecimalType) someState).doubleValue();
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
                 if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                    return super.getState(String.valueOf(odo * 1.609344));
+                    return new QuantityType<>(value, MetricPrefix.KILO(SIUnits.METRE));
                 } else {
-                    return someState;
+                    return new QuantityType<>(value, ImperialUnits.MILE);
                 }
             }
         },
@@ -805,7 +783,7 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
-        REMOTE_START_SUPPORTED("remote_start_supported", "remotestartsuported", OnOffType.class, false) {
+        REMOTE_START_SUPPORTED("remote_start_supported", "remotestartsupported", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 if (s.equals("true") || s.equals("1")) {
@@ -917,14 +895,10 @@ public class TeslaChannelSelectorProxy {
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
                 if (someState != null) {
-                    double odo = ((DecimalType) someState).doubleValue();
-                    if (properties.containsKey("distanceunits") && properties.get("distanceunits").equals("km/hr")) {
-                        return super.getState(String.valueOf(odo * 1.609344));
-                    } else {
-                        return someState;
-                    }
+                    BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                    return new QuantityType<>(value, ImperialUnits.MILES_PER_HOUR);
                 } else {
-                    return someState;
+                    return null;
                 }
             }
         },
@@ -955,15 +929,12 @@ public class TeslaChannelSelectorProxy {
         },
         SUN_ROOF_STATE("sun_roof_state", "sunroofstate", StringType.class, false),
         SUN_ROOF("sun_roof_percent_open", "sunroof", PercentType.class, false),
-        TEMPERATURE(null, "temperature", DecimalType.class, false) {
+        COMBINED_TEMP(null, "combinedtemp", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 State someState = super.getState(s);
-                if (properties.containsKey("temperatureunits") && properties.get("temperatureunits").equals("F")) {
-                    return super.getState(String.valueOf(celsiusToFahrenheit(((DecimalType) someState))));
-                } else {
-                    return someState;
-                }
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, SIUnits.CELSIUS);
             }
         },
         TIME_TO_FULL_CHARGE("time_to_full_charge", "timetofullcharge", DecimalType.class, false),
@@ -1033,30 +1004,6 @@ public class TeslaChannelSelectorProxy {
             }
         },
         WIPERBLADE_HEATER("wiper_blade_heater", "wiperbladeheater", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
-        ALLOWWAKEUP(null, "allowwakeup", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
-        ENABLEEVENTS(null, "enableevents", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 if (s.equals("true") || s.equals("1")) {
@@ -1151,11 +1098,6 @@ public class TeslaChannelSelectorProxy {
 
     public State getState(String s, TeslaChannelSelector selector, Map<String, String> properties) {
         return selector.getState(s, this, properties);
-    }
-
-    private static int celsiusToFahrenheit(DecimalType c) {
-        float cTemp = c.floatValue();
-        return (int) Math.round((cTemp * 9.0 / 5.0) + 32.0);
     }
 
 }

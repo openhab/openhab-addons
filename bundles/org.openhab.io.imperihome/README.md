@@ -1,6 +1,6 @@
 # ImperiHome integration service
 
-This IO service exposes openHAB Items to the Evertygo [ImperiHome](http://www.evertygo.com/imperihome) dashboard app for Android and iOS.
+This IO service exposes openHAB Items to the Evertygo [ImperiHome](https://imperihome.com/) dashboard app for Android and iOS.
 It creates a REST service at _/imperihome/iss_ that implements the [ImperiHome Standard System API](http://dev.evertygo.com/api/iss) (ISS).
 
 ## Installation
@@ -66,14 +66,14 @@ For example:
 iss:room:Kitchen
 ```
 
-If you've defined your Items in _.items_ files, tags can be added using:
+If you have defined your Items in _.items_ files, tags can be added using:
 
 ```
 [ "mytag" ]
 ```
 
 syntax (after the _(Groups)_ and before the _{channel}_).
-If you created your items another way, e.g. using the Paper UI, [HABmin](https://github.com/openhab/org.openhab.ui.habmin) allows you to modify the tags.
+If you created your items another way, e.g. using the Paper UI, [HABmin](/docs/configuration/ui/habmin/) allows you to modify the tags.
 
 ### Tag: _type_
 
@@ -117,7 +117,7 @@ iss:label:Kitchen light
 
 ### Tag: _mapping_
 
-Sets the mapping for a ImperiHome MultiSwitch device, just like an openHAB sitemap mapping does.
+Sets the mapping for an ImperiHome MultiSwitch device, just like an openHAB sitemap mapping does.
 In the example below, 'All off', 'Relax' and 'Reading' will be visible in ImperiHome.
 Clicking one of the options will send a 0, 1 or 2 value command to the openHAB item.
 

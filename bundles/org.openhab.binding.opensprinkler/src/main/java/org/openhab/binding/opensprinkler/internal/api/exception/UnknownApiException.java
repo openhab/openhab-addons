@@ -18,7 +18,7 @@ package org.openhab.binding.opensprinkler.internal.api.exception;
  *
  * @author Chris Graham - Initial contribution
  */
-public class UnknownApiException extends Exception {
+public class UnknownApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.
      */

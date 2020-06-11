@@ -14,6 +14,8 @@ package org.openhab.binding.enocean.internal.eep.A5_04;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_BATTERY_VOLTAGE;
 
+import java.util.function.Function;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -31,13 +33,13 @@ public class A5_04_02_Eltako extends A5_04_02 {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
         if (channelId.equals(CHANNEL_BATTERY_VOLTAGE)) {
             double voltage = getDB_3Value() * 6.58 / 255.0; // not sure if this is right
             return new QuantityType<>(voltage, SmartHomeUnits.VOLT);
         }
 
-        return super.convertToStateImpl(channelId, channelTypeId, currentState, config);
+        return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
     }
 }

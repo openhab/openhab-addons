@@ -100,7 +100,7 @@
 				<limitToOptions>true</limitToOptions>
 			</parameter>
 			<parameter name="reversePolarity" type="boolean">
-				<label>Reverse polarity</label>
+				<label>Reverse Polarity</label>
 				<default>false</default>
 			</parameter>
 		</config-description>

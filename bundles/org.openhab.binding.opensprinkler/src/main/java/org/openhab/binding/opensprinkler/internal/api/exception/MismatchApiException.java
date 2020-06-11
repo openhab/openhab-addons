@@ -18,7 +18,7 @@ package org.openhab.binding.opensprinkler.internal.api.exception;
  *
  * @author Chris Graham - Initial contribution
  */
-public class MismatchApiException extends Exception {
+public class MismatchApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.
      */

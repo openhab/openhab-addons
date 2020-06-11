@@ -29,6 +29,7 @@ import org.openhab.binding.lifx.internal.handler.LifxLightHandler.CurrentLightSt
 import org.openhab.binding.lifx.internal.protocol.GetColorZonesRequest;
 import org.openhab.binding.lifx.internal.protocol.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.protocol.GetRequest;
+import org.openhab.binding.lifx.internal.protocol.GetTileEffectRequest;
 import org.openhab.binding.lifx.internal.protocol.GetWifiInfoRequest;
 import org.openhab.binding.lifx.internal.protocol.Packet;
 import org.openhab.binding.lifx.internal.protocol.Product;
@@ -37,6 +38,7 @@ import org.openhab.binding.lifx.internal.protocol.StateLightPowerResponse;
 import org.openhab.binding.lifx.internal.protocol.StateMultiZoneResponse;
 import org.openhab.binding.lifx.internal.protocol.StatePowerResponse;
 import org.openhab.binding.lifx.internal.protocol.StateResponse;
+import org.openhab.binding.lifx.internal.protocol.StateTileEffectResponse;
 import org.openhab.binding.lifx.internal.protocol.StateWifiInfoResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,6 +139,9 @@ public class LifxLightCurrentStateUpdater {
         if (product.hasFeature(MULTIZONE)) {
             communicationHandler.sendPacket(new GetColorZonesRequest());
         }
+        if (product.hasFeature(TILE_EFFECT)) {
+            communicationHandler.sendPacket(new GetTileEffectRequest());
+        }
         if (updateSignalStrength) {
             communicationHandler.sendPacket(new GetWifiInfoRequest());
         }
@@ -158,6 +163,8 @@ public class LifxLightCurrentStateUpdater {
                 handleMultiZoneStatus((StateMultiZoneResponse) packet);
             } else if (packet instanceof StateWifiInfoResponse) {
                 handleWifiInfoStatus((StateWifiInfoResponse) packet);
+            } else if (packet instanceof StateTileEffectResponse) {
+                handleTileEffectStatus((StateTileEffectResponse) packet);
             }
 
             currentLightState.setOnline();
@@ -206,4 +213,7 @@ public class LifxLightCurrentStateUpdater {
         currentLightState.setSignalStrength(packet.getSignalStrength());
     }
 
+    private void handleTileEffectStatus(StateTileEffectResponse packet) {
+        currentLightState.setTileEffect(packet.getEffect());
+    }
 }

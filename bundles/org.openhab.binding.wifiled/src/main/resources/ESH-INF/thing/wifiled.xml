@@ -30,13 +30,13 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pollingPeriod" type="integer" required="false">
-				<label>Polling period</label>
+				<label>Polling Period</label>
 				<description>Polling period for refreshing the data in s</description>
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="protocol" type="text" required="false">
-				<label>Device protocol</label>
+				<label>Device Protocol</label>
 				<description>The protocol used for communication with the device</description>
 				<default>LD382A</default>
 				<options>
@@ -47,7 +47,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="driver" type="text" required="false">
-				<label>Device driver</label>
+				<label>Device Driver</label>
 				<description>The driver used to control the device</description>
 				<default>CLASSIC</default>
 				<options>
@@ -57,13 +57,13 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="fadeDurationInMs" type="integer" required="false" min="0" max="10000">
-				<label>Fading duration</label>
+				<label>Fading Duration</label>
 				<description>The duration for the color fading in milliseconds</description>
 				<default>1000</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="fadeSteps" type="integer" required="false" min="1" max="256">
-				<label>Fading steps</label>
+				<label>Fading Steps</label>
 				<description>The number of steps used to fade over to the new color</description>
 				<default>100</default>
 				<advanced>true</advanced>
@@ -120,7 +120,7 @@
 	</channel-type>
 	<channel-type id="programSpeed" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Program speed</label>
+		<label>Program Speed</label>
 	</channel-type>
 
 </thing:thing-descriptions>

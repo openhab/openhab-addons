@@ -1,6 +1,6 @@
 # Solar-Log Binding 
 
-The [Solar-Log Family](http://www.solar-log.com/en/home.html) of monitoring devices for PV installations provide a MODBUS (TCP) and JSON-based API to access a number of internal data related to power generation and consumption. This binding implements access to the data via the JSON API.
+The [Solar-Log Family](https://www.solar-log.com/en/) of monitoring devices for PV installations provide a MODBUS (TCP) and JSON-based API to access a number of internal data related to power generation and consumption. This binding implements access to the data via the JSON API.
 
 ## Use of the binding
 
@@ -43,7 +43,7 @@ consyieldyesterday  | Wh | 112 Total consumption for the previous day; all of th
 consyieldmonth      | Wh | 113 Total consumption for the month; all of the consumption meters
 consyieldyear       | Wh | 114 Total consumption for the year; all of the consumption meters
 consyieldtotal      | Wh | 115 Accumulated total consumption, all Consumption meter
-totalPower          | Wp | 116 Installed generator power
+totalpower          | Wp | 116 Installed generator power
 
 ## More information
 

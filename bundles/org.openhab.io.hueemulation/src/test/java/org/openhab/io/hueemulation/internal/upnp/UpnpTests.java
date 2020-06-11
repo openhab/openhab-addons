@@ -53,6 +53,7 @@ public class UpnpTests {
     protected UpnpServer subject;
     protected static OSGiMainHandler mainHttpHandler;
     private static HttpServiceImpl httpServiceImpl;
+    private static String descriptionPath;
 
     LightsAndGroups lightsAndGroups = new LightsAndGroups();
 
@@ -60,6 +61,8 @@ public class UpnpTests {
     public static void setupHttpParts() throws IOException {
         commonSetup = new CommonSetup(true);
         commonSetup.start(new ResourceConfig());
+
+        descriptionPath = commonSetup.basePath.replace("/api", "/description.xml");
 
         Logger logger = new org.glassfish.grizzly.osgi.httpservice.util.Logger(mock(ServiceTracker.class));
 
@@ -97,7 +100,7 @@ public class UpnpTests {
 
     @Test
     public void descriptionWithoutAddress() {
-        Response response = commonSetup.client.target("http://localhost:8080/description.xml").request().get();
+        Response response = commonSetup.client.target(descriptionPath).request().get();
         assertEquals(404, response.getStatus());
     }
 
@@ -107,7 +110,7 @@ public class UpnpTests {
         HueEmulationConfigWithRuntime r = subject.createConfiguration(null);
         r = subject.performAddressTest(r);
         subject.applyConfiguration(r);
-        Response response = commonSetup.client.target("http://localhost:8080/description.xml").request().get();
+        Response response = commonSetup.client.target(descriptionPath).request().get();
         assertEquals(200, response.getStatus());
         String body = response.readEntity(String.class);
         assertThat(body, is(subject.xmlDocWithAddress));

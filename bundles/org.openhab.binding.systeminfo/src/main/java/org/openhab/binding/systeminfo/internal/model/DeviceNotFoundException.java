@@ -14,12 +14,16 @@ package org.openhab.binding.systeminfo.internal.model;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link DeviceNotFoundException} is used to indicate that device can not be found on this hardware configuration, most
  * probably because the device is not installed.
  *
  * @author Svilen Valkanov - Initial contribution
+ * @author Wouter Born - Add null annotations
  */
+@NonNullByDefault
 public class DeviceNotFoundException extends IOException {
     private static final long serialVersionUID = -707507777792259512L;
 

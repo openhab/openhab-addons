@@ -93,7 +93,7 @@ public class KM200Cryption {
             byte[] decryptedDataWOZP = removeZeroPadding(decryptedData);
             return (new String(decryptedDataWOZP, remoteDevice.getCharSet()));
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.debug("Exception on encoding: {}", e);
+            logger.debug("Exception on encoding", e);
             return null;
         }
     }
@@ -117,7 +117,7 @@ public class KM200Cryption {
                 logger.info("Base64encoding not possible: {}", e.getMessage());
             }
         } catch (UnsupportedEncodingException | GeneralSecurityException e) {
-            logger.error("Exception on encoding: {}", e);
+            logger.error("Exception on encoding", e);
         }
         return null;
     }

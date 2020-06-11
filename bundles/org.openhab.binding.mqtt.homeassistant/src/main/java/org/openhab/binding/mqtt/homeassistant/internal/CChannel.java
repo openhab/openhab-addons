@@ -63,15 +63,17 @@ public class CChannel {
     private final Channel channel; // ESH Channel
     private final ChannelType type;
     private final ChannelTypeUID channelTypeUID;
+    private final ChannelStateUpdateListener channelStateUpdateListener;
 
     private CChannel(ChannelUID channelUID, ChannelState channelState, Channel channel, ChannelType type,
-            ChannelTypeUID channelTypeUID) {
+            ChannelTypeUID channelTypeUID, ChannelStateUpdateListener channelStateUpdateListener) {
         super();
         this.channelUID = channelUID;
         this.channelState = channelState;
         this.channel = channel;
         this.type = type;
         this.channelTypeUID = channelTypeUID;
+        this.channelStateUpdateListener = channelStateUpdateListener;
     }
 
     public ChannelUID getChannelUID() {
@@ -92,6 +94,9 @@ public class CChannel {
 
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
+        // Make sure we set the callback again which might have been nulled during an stop
+        channelState.setChannelStateUpdateListener(this.channelStateUpdateListener);
+
         return channelState.start(connection, scheduler, timeout);
     }
 
@@ -121,22 +126,18 @@ public class CChannel {
         private @Nullable String command_topic;
         private boolean retain;
         private String unit = "";
-        private @Nullable ChannelStateUpdateListener channelStateUpdateListener;
+        private ChannelStateUpdateListener channelStateUpdateListener;
 
         private @Nullable String templateIn;
 
         public Builder(AbstractComponent<?> component, ComponentConfiguration componentConfiguration, String channelID,
-                Value valueState, String label) {
+                Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
             this.component = component;
             this.componentConfiguration = componentConfiguration;
             this.channelID = channelID;
             this.valueState = valueState;
             this.label = label;
-        }
-
-        public Builder listener(@Nullable ChannelStateUpdateListener channelStateUpdateListener) {
             this.channelStateUpdateListener = channelStateUpdateListener;
-            return this;
         }
 
         public Builder stateTopic(@Nullable String state_topic) {
@@ -203,7 +204,8 @@ public class CChannel {
             channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
                     .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
 
-            CChannel result = new CChannel(channelUID, channelState, channel, type, channelTypeUID);
+            CChannel result = new CChannel(channelUID, channelState, channel, type, channelTypeUID,
+                    channelStateUpdateListener);
 
             @Nullable
             TransformationServiceProvider transformationProvider = componentConfiguration

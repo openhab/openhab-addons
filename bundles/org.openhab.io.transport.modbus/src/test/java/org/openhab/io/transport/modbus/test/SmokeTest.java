@@ -56,9 +56,7 @@ import net.wimpi.modbus.procimg.SimpleDigitalOut;
 import net.wimpi.modbus.procimg.SimpleRegister;
 
 /**
- *
- * @author Sami Salonen
- *
+ * @author Sami Salonen - Initial contribution
  */
 public class SmokeTest extends IntegrationTestSupport {
 

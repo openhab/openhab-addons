@@ -15,6 +15,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.junit.Assert.assertArrayEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType._433_92MHZ_TRANSCEIVER;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,8 +25,9 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 /**
  * Test for RFXCom-binding
  *
- * @author Mike Jagdis
+ * @author Mike Jagdis - Initial contribution
  */
+@NonNullByDefault
 public class RFXComInterfaceControlMessageTest {
     private RFXComBridgeConfiguration configuration = new RFXComBridgeConfiguration();
 
@@ -44,7 +46,7 @@ public class RFXComInterfaceControlMessageTest {
         configuration.enableBlindsT1T2T3T4 = false;
         configuration.enableBlindsT0 = false;
         configuration.enableProGuard = false;
-//      configuration.enableFS20Packets = false;
+        // configuration.enableFS20Packets = false;
         configuration.enableLaCrosse = false;
         configuration.enableHidekiUPM = false;
         configuration.enableADLightwaveRF = false;
@@ -60,11 +62,10 @@ public class RFXComInterfaceControlMessageTest {
         configuration.enableX10 = false;
     }
 
-    private void testMessage(RFXComInterfaceMessage.TransceiverType transceiverType, RFXComBridgeConfiguration configuration, String data)
-            throws RFXComException {
-
+    private void testMessage(RFXComInterfaceMessage.TransceiverType transceiverType,
+            RFXComBridgeConfiguration configuration, String data) {
         assertArrayEquals(HexUtils.hexToBytes(data),
-            new RFXComInterfaceControlMessage(transceiverType, configuration).decodeMessage());
+                new RFXComInterfaceControlMessage(transceiverType, configuration).decodeMessage());
     }
 
     @Test
@@ -133,11 +134,11 @@ public class RFXComInterfaceControlMessageTest {
         testMessage(_433_92MHZ_TRANSCEIVER, configuration, "0D00000203530000200000000000");
     }
 
-//  @Test
-//  public void testFS20PacketsMessage() throws RFXComException {
-//      configuration.enableFS20Packets = true;
-//      testMessage(_433_92MHZ_TRANSCEIVER, configuration, "0D00000203530000100000000000");
-//  }
+    // @Test
+    // public void testFS20PacketsMessage() throws RFXComException {
+    // configuration.enableFS20Packets = true;
+    // testMessage(_433_92MHZ_TRANSCEIVER, configuration, "0D00000203530000100000000000");
+    // }
 
     @Test
     public void testLaCrosseMessage() throws RFXComException {

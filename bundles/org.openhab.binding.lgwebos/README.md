@@ -1,7 +1,7 @@
 # LG webOS Binding
 
 The binding integrates LG WebOS based smart TVs.
-This binding uses a [forked version](https://github.com/sprehn/Connect-SDK-Java-Core) of LG's [Connect SDK](https://github.com/ConnectSDK/Connect-SDK-Android-Core) library.
+This binding is an adoption of LG's [Connect SDK](https://github.com/ConnectSDK/Connect-SDK-Android-Core) library, which is no longer maintained and which was specific to Android.
 
 ## Supported Things
 
@@ -20,25 +20,34 @@ In combination with the wake on LAN binding this will allow you to start the TV 
 
 ## Binding Configuration
 
-The binding has only one configuration parameter, which is only required if the binding cannot automatically detect openHAB's local IP address: 
-
-| Name    | Description                                                          |
-|---------|----------------------------------------------------------------------|
-| localIP | This is the local IP of your openHAB host on the network. (Optional) |
-
-If LocalIP is not set, the binding will use openHAB's primary IP address, which may be configured under network settings.
+The binding has no configuration parameter. 
 
 ## Discovery
 
 TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
-Please note, that if you are running openHAB in a docker container you need to use macvlan or host networking for this binding to work.
+Please note, that if you are running openHAB in a Docker container you need to use macvlan or host networking for this binding to work.
+If automatic discovery is not possible you may still manually configure a device based on host and access key.
 
 ## Thing Configuration
 
-WebOS TV has no configuration parameters.
-Please note that at least one channel must be bound to an item before the binding will make an attempt to connect and pair with the TV once that one is turned on.
+WebOS TV has two configuration parameters.
+
+Parameters:
+
+| Name    | Description                                                                  |
+|---------|------------------------------------------------------------------------------|
+| host    | Hostname or IP address of TV                                                 |
+| key     | Key exchanged with TV after pairing (enter it after you paired the device)   |
+
+### Configuration in .things file
+
+Set host and key parameter as in the following example:
+
+```
+Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef"]
+```
 
 ## Channels
 
@@ -47,8 +56,8 @@ Please note that at least one channel must be bound to an item before the bindin
 | power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
-| channel         | Number    | Current channel number.                                                                                                               | RW         |
-| channelName     | String    | Current channel name.                                                                                                                                                                                                    | R          |
+| channel         | String    | Current channel number.                                                                                                                                                                                                 | RW         |
+| channelName     | String    | Current channel name.                                                                                                                                                                                                   | R          |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
@@ -56,18 +65,7 @@ Please note that at least one channel must be bound to an item before the bindin
 
 ## Example
 
-Assuming your TV has device ID 3aab9eea-953b-4272-bdbd-f0cd0ecf4a46. 
-By default this binding will create ThingIDs for discovery results with prefix lgwebos:WebOSTV: and the device ID. e.g. lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46.
-Thus, you can find your TV's device ID by looking into discovery results in Paper UI.
-
-You could also specify an alternate ThingID using a .things file, specifying the deviceId as a mandatory configuration parameter:
-
-```
-Thing lgwebos:WebOSTV:tv1 [ deviceId="3aab9eea-953b-4272-bdbd-f0cd0ecf4a46" ]
-```
-
-However, for the next steps of this example we will assumes you are using automatic discovery and the default ThingID.
-
+Assuming your ThingID is lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46.
 
 demo.items:
 
@@ -76,9 +74,9 @@ Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwe
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
 Dimmer LG_TV0_Volume "Volume [%S]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown"
-Number LG_TV0_ChannelNo "Channel [%d]"       { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
+String LG_TV0_Channel "Channel [%d]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
 Number LG_TV0_ChannelDummy "ChannelUpDown"
-String LG_TV0_Channel "Channel [%S]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
+String LG_TV0_ChannelName "Channel [%S]"     { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
 String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:toast"}
 Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaStop" }
 String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
@@ -98,9 +96,9 @@ sitemap demo label="Main Menu"
         Switch item=LG_TV0_Mute
         Text item=LG_TV0_Volume
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
-        Text item=LG_TV0_ChannelNo
-        Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
         Text item=LG_TV0_Channel
+        Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
+        Text item=LG_TV0_ChannelName
         Default item=LG_TV0_Player
         Text item=LG_TV0_Application
         Selection item=LG_TV0_Application mappings=[
@@ -147,10 +145,15 @@ end
 rule "ChannelUpDown"
 when Item LG_TV0_ChannelDummy received command
 then
-    var currentChannel = LG_TV0_ChannelNo.state as DecimalType
+    val actions = getActions("lgwebos","lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46")
+    if(null === actions) {
+        logInfo("actions", "Actions not found, check thing ID")
+        return
+    }
+                
     switch receivedCommand{
-        case 0: LG_TV0_ChannelNo.sendCommand(currentChannel - 1)
-        case 1: LG_TV0_ChannelNo.sendCommand(currentChannel + 1)
+                    case 0: actions.decreaseChannel()
+                    case 1: actions.increaseChannel()
     }
 end
 ```
@@ -174,13 +177,14 @@ Example
         logInfo("actions", "Actions not found, check thing ID")
         return
  }
- ```
+```
 
 ### showToast(text)
 
-Sends a toast message to a WebOS device with openHab icon.
+Sends a toast message to a WebOS device with openHAB icon.
 
 Parameters:
+
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
 | text    | The text to display                                                  |
@@ -196,6 +200,7 @@ actions.showToast("Hello World")
 Sends a toast message to a WebOS device with custom icon.
 
 Parameters:
+
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
 | icon    | The URL to the icon to display                                       |
@@ -212,6 +217,7 @@ actions.showToast("http://localhost:8080/icon/energy?format=png","Hello World")
 Opens the given URL in the TV's browser application.
 
 Parameters:
+
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
 | url     | The URL to open                                                      |
@@ -226,7 +232,8 @@ actions.launchBrowser("https://www.openhab.org")
 
 Returns a list of Applications supported by this TV.
 
-Application Properties
+Application Properties:
+
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
 | id      | The Application ID, which serves as parameter appId in other methods.|
@@ -244,6 +251,7 @@ apps.forEach[a| logInfo("action",a.toString)]
 Opens the application with given Application ID.
 
 Parameters:
+
 | Name    | Description                                                                    |
 |---------|--------------------------------------------------------------------------------|
 | appId   | The Application ID. getApplications provides available apps and their appIds.  |
@@ -263,6 +271,7 @@ actions.launchApplication("com.webos.app.hdmi3") // HDMI3
 Opens the application with given Application ID and passes an additional parameter.
 
 Parameters:
+
 | Name    | Description                                                                   |
 |---------|-------------------------------------------------------------------------------|
 | appId   | The Application ID. getApplications provides available apps and their appIds. |
@@ -281,9 +290,10 @@ actions.launchApplication("appId","{\"key\":\"value\"}")
 Sends a text input to a WebOS device.
 
 Parameters:
+
 | Name    | Description                                                          |
 |---------|----------------------------------------------------------------------|
-| text    | The text to input  |
+| text    | The text to input                                                    |
 
 Example:
 
@@ -296,6 +306,7 @@ actions.sendText("Some text")
 Sends a button press event to a WebOS device.
 
 Parameters:
+
 | Name    | Description                                                            |
 |---------|------------------------------------------------------------------------|
 | button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, DELETE, ENTER, HOME, or OK  |
@@ -334,8 +345,3 @@ In case of issues you may find it helpful to enable debug level logging and chec
 log:set debug org.openhab.binding.lgwebos
 ```
 
-Additional logs are available from the underlying library:
-
-```
-log:set debug com.connectsdk
-```

@@ -15,7 +15,7 @@
 
 		<config-description>
 			<parameter name="remote" type="text" required="true">
-				<label>Remote name</label>
+				<label>Remote Name</label>
 				<description>The name of the remote as configured in LIRC</description>
 			</parameter>
 		</config-description>

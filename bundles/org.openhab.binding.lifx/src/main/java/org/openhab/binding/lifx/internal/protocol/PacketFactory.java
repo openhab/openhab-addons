@@ -64,6 +64,7 @@ public class PacketFactory {
         register(GetServiceRequest.class);
         register(GetTagLabelsRequest.class);
         register(GetTagsRequest.class);
+        register(GetTileEffectRequest.class);
         register(GetVersionRequest.class);
         register(GetWifiFirmwareRequest.class);
         register(GetWifiInfoRequest.class);
@@ -87,6 +88,7 @@ public class PacketFactory {
         register(StatePowerResponse.class);
         register(StateResponse.class);
         register(StateServiceResponse.class);
+        register(StateTileEffectResponse.class);
         register(StateVersionResponse.class);
         register(StateWifiFirmwareResponse.class);
         register(StateWifiInfoResponse.class);

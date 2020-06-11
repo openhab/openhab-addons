@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab</groupId>
+    <artifactId>openhab-super-pom</artifactId>
+    <version>[1.0, 2.0)</version>
+  </parent>
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
@@ -25,6 +29,13 @@
     </license>
   </licenses>
 
+  <modules>
+    <module>bom</module>
+    <module>bundles</module>
+    <module>features</module>
+    <module>itests</module>
+  </modules>
+
   <scm>
     <connection>scm:git:https://github.com/openhab/openhab2-addons.git</connection>
     <developerConnection>scm:git:https://github.com/openhab/openhab2-addons.git</developerConnection>
@@ -33,18 +44,18 @@
   </scm>
 
   <issueManagement>
-    <system>Github</system>
+    <system>GitHub</system>
     <url>https://github.com/openhab/openhab2-addons/issues</url>
   </issueManagement>
 
   <distributionManagement>
     <repository>
       <id>bintray</id>
-      <url>https://api.bintray.com/maven/openhab/mvn/openhab2-addons/;publish=1</url>
+      <url>${oh.repo.distBaseUrl}/openhab2-addons/;publish=1</url>
     </repository>
     <snapshotRepository>
       <id>jfrog</id>
-      <url>https://openhab.jfrog.io/openhab/libs-snapshot-local</url>
+      <url>${oh.repo.snapshotBaseUrl}/libs-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -56,55 +67,19 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <bnd.version>4.2.0</bnd.version>
-    <karaf.version>4.2.4</karaf.version>
-    <sat.version>0.6.1</sat.version>
+    <bnd.version>4.3.0</bnd.version>
+    <karaf.version>4.2.7</karaf.version>
+    <sat.version>0.8.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
 
     <bnd.importpackage></bnd.importpackage>
     <bnd.exportpackage></bnd.exportpackage>
-    <bnd.includeresource></bnd.includeresource>
+    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
+    <feature.directory>src/main/feature/feature.xml</feature.directory>
+    <spotless.version>1.24.3</spotless.version>
+    <spotless.check.skip>true</spotless.check.skip> <!-- Spotless disabled for now -->
   </properties>
-
-  <repositories>
-    <repository>
-      <id>jcenter</id>
-      <name>JCenter Repository</name>
-      <url>https://jcenter.bintray.com</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-
-    <repository>
-      <id>openhab-artifactory-release</id>
-      <name>JFrog Artifactory Repository</name>
-      <url>https://openhab.jfrog.io/openhab/libs-release</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>openhab-artifactory-release</id>
-      <url>https://openhab.jfrog.io/openhab/libs-release</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <dependencyManagement>
     <dependencies>
@@ -147,18 +122,6 @@
   </dependencyManagement>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>.</directory>
-        <includes>
-          <include>NOTICE</include> <!-- general -->
-          <include>*.xsd</include> <!-- only a very rare -->
-        </includes>
-      </resource>
-    </resources>
     <pluginManagement>
       <plugins>
 
@@ -170,8 +133,7 @@
           <artifactId>bnd-maven-plugin</artifactId>
           <version>${bnd.version}</version>
           <configuration>
-            <bnd><![CDATA[
-Bundle-SymbolicName: ${project.artifactId}
+            <bnd><![CDATA[Bundle-SymbolicName: ${project.artifactId}
 Automatic-Module-Name: ${def;bsn}
 Import-Package: \\
   io.swagger.annotations.*;resolution:=optional,\\
@@ -190,8 +152,7 @@ Import-Package: \\
   ${bnd.exportpackage}
 -sources: false
 -contract: *
--includeresource: ${bnd.includeresource}
-]]></bnd>
+-includeresource: ${bnd.includeresource}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
           </configuration>
@@ -203,7 +164,7 @@ Import-Package: \\
             </execution>
           </executions>
         </plugin>
-        <!-- Required to make the maven-jar-plugin pick up the bnd generated 
+        <!-- Required to make the maven-jar-plugin pick up the bnd generated
           manifest. Also avoid packaging empty Jars -->
         <!-- Moved... -->
 
@@ -249,8 +210,7 @@ Import-Package: \\
           <version>${bnd.version}</version>
           <configuration>
             <failOnChanges>false</failOnChanges>
-            <bndruns>
-            </bndruns>
+            <bndruns></bndruns>
           </configuration>
           <executions>
             <execution>
@@ -293,7 +253,7 @@ Import-Package: \\
           </executions>
         </plugin>
 
-        <!-- Define the version of the baseline plugin we use and avoid failing 
+        <!-- Define the version of the baseline plugin we use and avoid failing
           when no baseline jar exists. -->
         <!-- (for example before the first release) -->
         <plugin>
@@ -345,12 +305,6 @@ Import-Package: \\
               <version>3.16.0</version>
             </dependency>
           </dependencies>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
         </plugin>
 
         <plugin>
@@ -444,8 +398,7 @@ Import-Package: \\
             </headerDefinitions>
             <includes>
               <include>**/org/openhab/**/*.java</include>
-              <include>**/feature.xml</include>
-              <include>**/OSGI-INF/*.xml</include>
+              <include>**/features/**/header.xml</include>
             </includes>
             <excludes>
               <exclude>target/**</exclude>
@@ -467,8 +420,7 @@ Import-Package: \\
           </executions>
         </plugin>
 
-        <!-- This plugin's configuration is used to store Eclipse m2e settings 
-          only. -->
+        <!-- This plugin's configuration is used to store Eclipse m2e settings only. -->
         <!-- It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -531,17 +483,32 @@ Import-Package: \\
                     <ignore></ignore>
                   </action>
                 </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[3.0.0,)</versionRange>
+                    <goals>
+                      <goal>unpack</goal>
+                      <goal>unpack-dependencies</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute></execute>
+                  </action>
+                </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.openhab.tools.sat</groupId>
           <artifactId>sat-plugin</artifactId>
           <version>${sat.version}</version>
           <configuration>
-            <checkstyleProperties>${basedirRoot}/tools/checkstyle/ruleset.properties</checkstyleProperties>
-            <checkstyleFilter>${basedirRoot}/tools/checkstyle/suppressions.xml</checkstyleFilter>
+            <checkstyleProperties>${basedirRoot}/tools/static-code-analysis/checkstyle/ruleset.properties</checkstyleProperties>
+            <checkstyleFilter>${basedirRoot}/tools/static-code-analysis/checkstyle/suppressions.xml</checkstyleFilter>
           </configuration>
           <executions>
             <execution>
@@ -553,6 +520,75 @@ Import-Package: \\
                 <goal>report</goal>
               </goals>
               <phase>verify</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>${spotless.version}</version>
+          <configuration>
+            <java>
+              <eclipse>
+                <file>openhab_codestyle.xml</file>
+                <version>4.11.0</version>
+              </eclipse>
+              <removeUnusedImports></removeUnusedImports>
+              <importOrder>
+                <file>openhab.importorder</file>
+              </importOrder>
+              <endWithNewline />
+            </java>
+            <formats>
+              <format>
+                <!-- *.xml -->
+                <includes>
+                  <include>src/**/*.xml</include>
+                </includes>
+                <excludes>
+                  <exclude>**/pom.xml</exclude>
+                </excludes>
+                <eclipseWtp>
+                  <type>XML</type>
+                  <files>
+                    <file>openhab_wst_xml_files.prefs</file>
+                  </files>
+                  <version>4.12.0</version>
+                </eclipseWtp>
+                <trimTrailingWhitespace />
+                <endWithNewline />
+              </format>
+              <format>
+                <!-- pom.xml -->
+                <includes>
+                  <include>pom.xml</include>
+                </includes>
+                <eclipseWtp>
+                  <type>XML</type>
+                  <files>
+                    <file>openhab_wst_pom_file.prefs</file>
+                  </files>
+                  <version>4.12.0</version>
+                </eclipseWtp>
+                <trimTrailingWhitespace />
+                <endWithNewline />
+              </format>
+            </formats>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.openhab.tools</groupId>
+              <artifactId>openhab-codestyle</artifactId>
+              <version>${sat.version}</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>codestyle_check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <phase>initialize</phase>
             </execution>
           </executions>
         </plugin>
@@ -581,6 +617,7 @@ Import-Package: \\
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -648,15 +685,16 @@ Import-Package: \\
     <profile>
       <id>add-libraries-cli</id>
       <activation>
-        <file>
-          <exists>lib/</exists>
-        </file>
         <property>
           <name>!m2e.version</name>
         </property>
+        <file>
+          <exists>lib/</exists>
+        </file>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/../../NOTICE, -${.}/../../*.xsd, ${.}/../../lib/;filter:=*.jar;lib:=true</bnd.includeresource>
+        <feature.directory>../../src/main/feature/feature.xml</feature.directory>
       </properties>
       <build>
         <plugins>
@@ -686,32 +724,19 @@ Import-Package: \\
         </plugins>
       </build>
     </profile>
-
     <profile>
       <id>add-libraries-eclipse</id>
       <activation>
-        <file>
-          <exists>lib/</exists>
-        </file>
         <property>
           <name>m2e.version</name>
         </property>
+        <file>
+          <exists>lib/</exists>
+        </file>
       </activation>
       <properties>
-        <bnd.includeresource>${.}/../../lib/; filter:=*.jar; lib:=true</bnd.includeresource>
+        <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, ${.}/lib/;filter:=*.jar;lib:=true</bnd.includeresource>
       </properties>
-    </profile>
-
-    <profile>
-      <id>skip-itest</id>
-      <activation>
-        <property>
-          <name>!skipTests</name>
-        </property>
-      </activation>
-      <modules>
-        <module>itests</module>
-      </modules>
     </profile>
     <profile>
       <id>with-bnd-resolver-resolve</id>
@@ -740,34 +765,6 @@ Import-Package: \\
         </pluginManagement>
       </build>
     </profile>
-    <profile>
-      <id>openhab-snapshot-repository</id>
-      <activation>
-        <property>
-          <name>!noOhSnapRepo</name>
-        </property>
-      </activation>
-      <repositories>
-        <repository>
-          <id>openhab-artifactory-snapshot</id>
-          <name>JFrog Artifactory Repository</name>
-          <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>daily</updatePolicy>
-          </snapshots>
-        </repository>
-      </repositories>
-    </profile>
   </profiles>
-
-  <modules>
-    <module>bom</module>
-    <module>bundles</module>
-    <module>features</module>
-  </modules>
 
 </project>

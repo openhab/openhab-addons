@@ -18,7 +18,7 @@ package org.openhab.binding.opensprinkler.internal.api.exception;
  *
  * @author Chris Graham - Initial contribution
  */
-public class DataFormatErrorApiException extends Exception {
+public class DataFormatErrorApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.
      */

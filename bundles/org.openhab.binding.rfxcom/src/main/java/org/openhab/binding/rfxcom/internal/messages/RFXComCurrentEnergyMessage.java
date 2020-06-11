@@ -21,11 +21,12 @@ import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
+import org.openhab.binding.rfxcom.internal.handler.DeviceState;
 
 /**
  * RFXCOM data class for Current and Energy message.
  *
- * @author Damien Servant
+ * @author Damien Servant - Initial contribution
  */
 public class RFXComCurrentEnergyMessage extends RFXComBatteryDeviceMessage<RFXComCurrentEnergyMessage.SubType> {
     private static final float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;
@@ -135,7 +136,7 @@ public class RFXComCurrentEnergyMessage extends RFXComBatteryDeviceMessage<RFXCo
     }
 
     @Override
-    public State convertToState(String channelId) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
         switch (channelId) {
             case CHANNEL_CHANNEL1_AMPS:
                 return new DecimalType(channel1Amps);
@@ -150,7 +151,7 @@ public class RFXComCurrentEnergyMessage extends RFXComBatteryDeviceMessage<RFXCo
                 return new DecimalType(totalUsage);
 
             default:
-                return super.convertToState(channelId);
+                return super.convertToState(channelId, deviceState);
         }
     }
 

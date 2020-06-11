@@ -50,6 +50,14 @@ public class MQTTActions implements ThingActions {
     public void publishMQTT(
             @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String topic,
             @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") @Nullable String value) {
+        publishMQTT(topic, value, null);
+    }
+
+    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
+    public void publishMQTT(
+            @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String topic,
+            @ActionInput(name = "value", label = "@text/actionInputValueLabel", description = "@text/actionInputValueDesc") @Nullable String value,
+            @ActionInput(name = "retain", label = "@text/actionInputRetainlabel", description = "@text/actionInputRetainDesc") @Nullable Boolean retain) {
         AbstractBrokerHandler brokerHandler = handler;
         if (brokerHandler == null) {
             logger.warn("MQTT Action service ThingHandler is null!");
@@ -68,7 +76,10 @@ public class MQTTActions implements ThingActions {
             logger.debug("skipping MQTT publishing of value '{}' as topic is null.", value);
             return;
         }
-        connection.publish(topic, value.getBytes()).thenRun(() -> {
+        if (retain == null) {
+            retain = connection.isRetain();
+        }
+        connection.publish(topic, value.getBytes(), connection.getQos(), retain).thenRun(() -> {
             logger.debug("MQTT publish to {} performed", topic);
         }).exceptionally(e -> {
             logger.warn("MQTT publish to {} failed!", topic);
@@ -77,8 +88,12 @@ public class MQTTActions implements ThingActions {
     }
 
     public static void publishMQTT(@Nullable ThingActions actions, @Nullable String topic, @Nullable String value) {
+        publishMQTT(actions, topic, value, null);
+    }
+
+    public static void publishMQTT(@Nullable ThingActions actions, @Nullable String topic, @Nullable String value, @Nullable Boolean retain) {
         if (actions instanceof MQTTActions) {
-            ((MQTTActions) actions).publishMQTT(topic, value);
+            ((MQTTActions) actions).publishMQTT(topic, value, retain);
         } else {
             throw new IllegalArgumentException("Instance is not an MQTTActions class.");
         }

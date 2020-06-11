@@ -18,7 +18,6 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigDescription;
 import org.eclipse.smarthome.config.core.ConfigDescriptionProvider;
-import org.openhab.binding.homematic.type.HomematicThingTypeExcluder;
 
 /**
  * Extends the ConfigDescriptionProvider to manually add a ConfigDescription.

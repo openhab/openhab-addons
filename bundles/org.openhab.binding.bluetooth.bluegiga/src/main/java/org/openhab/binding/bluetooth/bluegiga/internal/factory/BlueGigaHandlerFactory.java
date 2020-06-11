@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - added support for adapter service registration
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.bluegiga", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluegiga")
 public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

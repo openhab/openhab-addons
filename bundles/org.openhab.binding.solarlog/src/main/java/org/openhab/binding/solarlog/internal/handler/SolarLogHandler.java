@@ -80,13 +80,13 @@ public class SolarLogHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 // Very rudimentary Exception differentiation
             } catch (IOException e) {
-                logger.debug("Error reading response from Solar-Log: {}", e);
+                logger.debug("Error reading response from Solar-Log", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error with the device. Please retry later.");
             } catch (JsonSyntaxException je) {
-                logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je);
+                logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
             } catch (Exception e) {
-                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e);
+                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
             }
         }, 0, config.refreshInterval < 15 ? 15 : config.refreshInterval, TimeUnit.SECONDS); // Minimum interval is 15 s
     }
@@ -121,7 +121,7 @@ public class SolarLogHandler extends BaseThingHandler {
                             updateState(channel.getUID(), state);
                         }
                     } else {
-                        logger.debug("Error refreshing source {}", getThing().getUID(), channelConfig.getId());
+                        logger.debug("Error refreshing source {}: {}", getThing().getUID(), channelConfig.getId());
                     }
                 }
             }
@@ -148,7 +148,7 @@ public class SolarLogHandler extends BaseThingHandler {
                         return new StringType(value);
                     }
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Parsing date failed: {}. Returning nothing", e);
+                    logger.warn("Parsing date failed. Returning nothing", e);
                     return UnDefType.UNDEF;
                 }
                 // All other channels should be numbers
@@ -158,7 +158,7 @@ public class SolarLogHandler extends BaseThingHandler {
                     return new DecimalType(new BigDecimal(value));
                 } catch (NumberFormatException e) {
                     // Log a warning and return UNDEF
-                    logger.warn("Parsing number failed: {}. Returning nothing", e);
+                    logger.warn("Parsing number failed. Returning nothing", e);
                     return UnDefType.UNDEF;
                 }
         }

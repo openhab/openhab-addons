@@ -20,8 +20,8 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
-import com.beowulfe.hap.accessories.HumiditySensor;
+import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.accessories.HumiditySensor;
 
 /**
  *
@@ -52,5 +52,4 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl<Numb
     public void unsubscribeCurrentRelativeHumidity() {
         getUpdater().unsubscribe(getItem());
     }
-
 }

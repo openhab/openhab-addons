@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.net.ssl.TrustManager;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +35,6 @@ import org.openhab.binding.mqtt.internal.ssl.PinMessageDigest;
 import org.openhab.binding.mqtt.internal.ssl.PinTrustManager;
 import org.openhab.binding.mqtt.internal.ssl.PinType;
 import org.openhab.binding.mqtt.internal.ssl.PinnedCallback;
-import org.openhab.binding.mqtt.internal.ssl.PinningSSLContextProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +112,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     @Override
     public void dispose() {
         try {
-            connection.stop().get(1000, TimeUnit.MILLISECONDS);
+            if (connection != null) {
+                connection.stop().get(1000, TimeUnit.MILLISECONDS);
+            } else {
+                logger.warn("Trying to dispose handler {} but connection is already null. Most likely this is a bug.",
+                        thing.getUID());
+            }
         } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
         }
         super.dispose();
@@ -130,7 +136,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             PinnedCallback callback) throws IllegalArgumentException {
         final PinTrustManager trustManager = new PinTrustManager();
 
-        connection.setSSLContextProvider(new PinningSSLContextProvider(trustManager));
+        connection.setTrustManagers(new TrustManager[] { trustManager });
         trustManager.setCallback(callback);
 
         if (config.certificatepin) {
@@ -220,8 +226,10 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     @Override
     public void initialize() {
         config = getConfigAs(BrokerHandlerConfig.class);
-        connection = createBrokerConnection();
+        final MqttBrokerConnection connection = createBrokerConnection();
         assignSSLContextProvider(config, connection, this);
+        this.connection = connection;
+
         super.initialize();
     }
 }

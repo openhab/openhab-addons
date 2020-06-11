@@ -18,8 +18,8 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import com.beowulfe.hap.accessories.TemperatureSensor;
-import com.beowulfe.hap.accessories.properties.TemperatureUnit;
+import io.github.hapjava.accessories.TemperatureSensor;
+import io.github.hapjava.accessories.properties.TemperatureUnit;
 
 /**
  *
@@ -38,21 +38,21 @@ abstract class AbstractTemperatureHomekitAccessoryImpl<T extends GenericItem> ex
 
     @Override
     public TemperatureUnit getTemperatureUnit() {
-        return settings.useFahrenheitTemperature() ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
+        return settings.useFahrenheitTemperature ? TemperatureUnit.FAHRENHEIT : TemperatureUnit.CELSIUS;
     }
 
     @Override
     public double getMaximumTemperature() {
-        return settings.getMaximumTemperature();
+        return settings.maximumTemperature;
     }
 
     @Override
     public double getMinimumTemperature() {
-        return settings.getMinimumTemperature();
+        return settings.minimumTemperature;
     }
 
     protected double convertToCelsius(double degrees) {
-        if (settings.useFahrenheitTemperature()) {
+        if (settings.useFahrenheitTemperature) {
             return Math.round((5d / 9d) * (degrees - 32d) * 1000d) / 1000d;
         } else {
             return degrees;
@@ -60,7 +60,7 @@ abstract class AbstractTemperatureHomekitAccessoryImpl<T extends GenericItem> ex
     }
 
     protected double convertFromCelsius(double degrees) {
-        if (settings.useFahrenheitTemperature()) {
+        if (settings.useFahrenheitTemperature) {
             return Math.round((((9d / 5d) * degrees) + 32d) * 10d) / 10d;
         } else {
             return degrees;

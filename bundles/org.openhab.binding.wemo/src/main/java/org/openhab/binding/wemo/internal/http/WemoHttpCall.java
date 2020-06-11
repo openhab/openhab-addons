@@ -15,7 +15,7 @@ package org.openhab.binding.wemo.internal.http;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -39,7 +39,7 @@ public class WemoHttpCall {
             wemoHeaders.setProperty("CONTENT-TYPE", WemoBindingConstants.HTTP_CALL_CONTENT_HEADER);
             wemoHeaders.put("SOAPACTION", soapHeader);
 
-            InputStream wemoContent = new ByteArrayInputStream(content.getBytes(Charset.forName("UTF-8")));
+            InputStream wemoContent = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
             String wemoCallResponse = HttpUtil.executeUrl("POST", wemoURL, wemoHeaders, wemoContent, null, 2000);
             return wemoCallResponse;

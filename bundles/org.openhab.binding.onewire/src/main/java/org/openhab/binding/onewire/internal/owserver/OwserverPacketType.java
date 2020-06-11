@@ -20,5 +20,5 @@ package org.openhab.binding.onewire.internal.owserver;
 
 public enum OwserverPacketType {
     REQUEST,
-    RETURN;
+    RETURN
 }

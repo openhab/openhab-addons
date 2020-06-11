@@ -12,18 +12,14 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.LOCK;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.OPEN;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaDoorLockHandler} is responsible for handling commands,
@@ -34,27 +30,20 @@ import java.util.HashMap;
 @NonNullByDefault
 public class SomfyTahomaDoorLockHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaDoorLockHandler.class);
-
     public SomfyTahomaDoorLockHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {{
-            put(OPEN, "core:OpenClosedState");
-            put(LOCK, "core:LockedUnlockedState");
-        }};
+        stateNames.put(OPEN, "core:OpenClosedState");
+        stateNames.put(LOCK, "core:LockedUnlockedState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("DoorLock channel: {} received command: {}", channelUID.getId(),command.toString());
+        super.handleCommand(channelUID, command);
         if (OPEN.equals(channelUID.getId()) && command instanceof OnOffType) {
-            sendCommand(command.equals(OnOffType.ON) ? "open" : "close", "[]");
+            sendCommand(command.equals(OnOffType.ON) ? "open" : "close");
         }
         if (LOCK.equals(channelUID.getId()) && command instanceof OnOffType) {
-            sendCommand(command.equals(OnOffType.ON) ? "lock" : "unlock", "[]");
-        }
-        if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            sendCommand(command.equals(OnOffType.ON) ? "lock" : "unlock");
         }
     }
 }

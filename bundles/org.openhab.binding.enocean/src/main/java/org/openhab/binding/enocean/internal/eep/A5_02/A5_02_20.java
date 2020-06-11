@@ -33,6 +33,16 @@ public class A5_02_20 extends A5_02 {
     protected double getScaledMax() {
         return 41.2;
     }
+    
+    @Override
+    protected double getUnscaledMin() {
+        return 1023;
+    }
+    
+    @Override
+    protected double getUnscaledMax() {
+        return 0;
+    }
 
     @Override
     protected int getUnscaledTemperatureValue() {

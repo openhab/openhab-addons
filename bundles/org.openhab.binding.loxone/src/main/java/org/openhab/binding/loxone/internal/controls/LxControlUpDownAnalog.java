@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.slf4j.Logger;
@@ -78,10 +78,11 @@ class LxControlUpDownAnalog extends LxControl {
                 minValue = details.min;
                 maxValue = details.max;
                 if (details.step != null) {
-                    addChannelStateDescription(channelId,
-                            new StateDescription(new BigDecimal(minValue), new BigDecimal(maxValue),
-                                    new BigDecimal(details.step), details.format != null ? details.format : "%.1f",
-                                    false, null));
+                    addChannelStateDescriptionFragment(channelId,
+                            StateDescriptionFragmentBuilder.create().withMinimum(new BigDecimal(minValue))
+                                    .withMaximum(new BigDecimal(maxValue)).withStep(new BigDecimal(details.step))
+                                    .withPattern(details.format != null ? details.format : "%.1f").withReadOnly(false)
+                                    .build());
                 }
             } else {
                 logger.warn("Received min value > max value: {}, {}", minValue, maxValue);

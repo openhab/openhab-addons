@@ -105,7 +105,9 @@ public enum KM200ThingType {
         }
     },
 
-    SWITCHPROGRAM("", KM200BindingConstants.THING_TYPE_SWITCH_PROGRAM);
+    SWITCHPROGRAM("", KM200BindingConstants.THING_TYPE_SWITCH_PROGRAM),
+
+    SYSTEMSTATES("/systemStates", KM200BindingConstants.THING_TYPE_SYSTEMSTATES);
 
     public final String rootPath;
 

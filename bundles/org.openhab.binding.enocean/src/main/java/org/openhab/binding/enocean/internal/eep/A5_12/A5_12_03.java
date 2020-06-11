@@ -35,6 +35,7 @@ public class A5_12_03 extends A5_12 {
 
     @Override
     protected State calcCurrentValue(float value) {
-        return new QuantityType<>(value, SmartHomeUnits.LITRE);
+        // value is given in litre/second, hence multiply by 60
+        return new QuantityType<>(value * 60, SmartHomeUnits.LITRE_PER_MINUTE);
     }
 }

@@ -9,7 +9,7 @@
 
 	<!-- These things supports the LG TV models from the document with P/NO : SAC34134216 -->
 	<thing-type id="lgtv-LV-series">
-		<label>LV/LW series</label>
+		<label>LV/LW Series</label>
 		<description><![CDATA[This thing supports the LED LCD TV models <size>LV<type> and <size>LW<type> except *LV255C, *LV355B, *LV355C models]]></description>
 
 		<channels>
@@ -42,7 +42,7 @@
 	</thing-type>
 
 	<thing-type id="lgtv-LVx55-series">
-		<label>LV/LW series</label>
+		<label>LV/LW Series</label>
 		<description><![CDATA[This thing supports the *LV255C, *LV355B, *LV355C models.]]></description>
 		<channels>
 			<channel id="3d" typeId="3d" />
@@ -75,7 +75,7 @@
 
 
 	<thing-type id="lgtv-LK-series">
-		<label>LK series</label>
+		<label>LK Series</label>
 		<description><![CDATA[This thing supports the LCD TV models <size>LK<type>]]></description>
 
 		<channels>
@@ -107,7 +107,7 @@
 	</thing-type>
 
 	<thing-type id="lgtv-PW-series">
-		<label>PW series</label>
+		<label>PW Series</label>
 		<description><![CDATA[This thing supports the PLASMA TV models <size>PW<type>]]></description>
 
 		<channels>
@@ -140,7 +140,7 @@
 
 	<channel-type id="aspect-ratio-SAC34134216">
 		<item-type>String</item-type>
-		<label>Aspect ratio</label>
+		<label>Aspect Ratio</label>
 		<description>Adjust the screen format</description>
 		<state>
 			<options>

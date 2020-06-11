@@ -22,6 +22,7 @@ import java.security.GeneralSecurityException;
  * @author Karel Goderis - Initial contribution
  * @author Nicolai Grødum - Adding token based auth
  */
+@SuppressWarnings("unused")
 public class TokenRequestPassword extends TokenRequest {
 
     private String grant_type = "password";

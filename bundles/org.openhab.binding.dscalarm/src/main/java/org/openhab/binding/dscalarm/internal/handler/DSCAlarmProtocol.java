@@ -19,5 +19,5 @@ package org.openhab.binding.dscalarm.internal.handler;
  */
 public enum DSCAlarmProtocol {
     ENVISALINK_TPI,
-    IT100_API;
+    IT100_API
 }

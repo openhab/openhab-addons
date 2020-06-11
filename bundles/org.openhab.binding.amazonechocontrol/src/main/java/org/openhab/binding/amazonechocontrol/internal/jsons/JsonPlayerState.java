@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class JsonPlayerState {
     public @Nullable PlayerInfo playerInfo;
 
-    public class PlayerInfo {
+    public static class PlayerInfo {
         public @Nullable String state;
         public @Nullable InfoText infoText;
         public @Nullable InfoText miniInfoText;
@@ -37,7 +37,7 @@ public class JsonPlayerState {
 
         public @Nullable Progress progress;
 
-        public class InfoText {
+        public static class InfoText {
             public boolean multiLineMode;
             public @Nullable String subText1;
             public @Nullable String subText2;
@@ -45,24 +45,24 @@ public class JsonPlayerState {
 
         }
 
-        public class Provider {
+        public static class Provider {
             public @Nullable String providerDisplayName;
             public @Nullable String providerName;
         }
 
-        public class Volume {
+        public static class Volume {
             public boolean muted;
             public int volume;
         }
 
-        public class MainArt {
+        public static class MainArt {
             public @Nullable String altText;
             public @Nullable String artType;
             public @Nullable String contentType;
             public @Nullable String url;
         }
 
-        public class Progress {
+        public static class Progress {
             public @Nullable Boolean allowScrubbing;
             public @Nullable Object locationInfo;
             public @Nullable Long mediaLength;

@@ -122,7 +122,7 @@ public class FreeboxApiManager {
     }
 
     public boolean authorize(boolean useHttps, String fqdn, String apiBaseUrl, String apiVersion, String appToken) {
-        String[] versionSplit = apiVersion.split(".");
+        String[] versionSplit = apiVersion.split("\\.");
         String majorVersion = "5";
         if (versionSplit.length > 0) {
             majorVersion = versionSplit[0];

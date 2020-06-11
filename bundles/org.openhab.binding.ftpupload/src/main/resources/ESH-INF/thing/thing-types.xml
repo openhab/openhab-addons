@@ -41,7 +41,7 @@
 	</channel-type>
 	<channel-type id="image-received">
 		<kind>trigger</kind>
-		<label>Image file received trigger channel</label>
+		<label>Image File Received Trigger Channel</label>
 		<event>
 			<options>
 				<option value="IMAGE_RECEIVED">Image received</option>

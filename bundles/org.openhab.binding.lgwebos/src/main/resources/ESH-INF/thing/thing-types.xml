@@ -20,7 +20,17 @@
 			<channel id="appLauncher" typeId="appLauncherChannelType" />
 		</channels>
 
+		<properties>
+			<property name="deviceId" />
+			<property name="lastConnected" />
+			<property name="modelName" />
+			<property name="manufacturer" />
+			<property name="deviceOS" />
+			<property name="deviceOSVersion" />
+			<property name="deviceOSReleaseVersion" />
+		</properties>
 		<representation-property>deviceId</representation-property>
+
 
 		<config-description-ref uri="thing-type:lgwebos:WebOSTV" />
 	</thing-type>
@@ -44,10 +54,9 @@
 		<state min="0" max="100" step="1"></state>
 	</channel-type>
 	<channel-type id="channelType">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Channel</label>
 		<description>Current Channel</description>
-		<state min="1" step="1"></state>
 	</channel-type>
 	<channel-type id="channelNameChannelType">
 		<item-type>String</item-type>

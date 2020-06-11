@@ -54,7 +54,7 @@ public class DigiplexZoneHandler extends BaseThingHandler {
 
     @Nullable
     private DigiplexBridgeHandler bridgeHandler;
-    private DigiplexZoneMessageHandler messageHandler = new DigiplexZoneMessageHandler();;
+    private DigiplexZoneMessageHandler messageHandler = new DigiplexZoneMessageHandler();
     private int zoneNo;
     private int areaNo = 0; // not known at the beginning (protocol limitation)
     private OpenClosedType status = OpenClosedType.CLOSED;

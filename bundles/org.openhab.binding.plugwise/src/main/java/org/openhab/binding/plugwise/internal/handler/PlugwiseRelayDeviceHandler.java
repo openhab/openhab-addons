@@ -588,7 +588,7 @@ public class PlugwiseRelayDeviceHandler extends AbstractPlugwiseThingHandler {
             previousLogAddress = previousLogAddress + 1;
             sendMessage(message);
         }
-    };
+    }
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {

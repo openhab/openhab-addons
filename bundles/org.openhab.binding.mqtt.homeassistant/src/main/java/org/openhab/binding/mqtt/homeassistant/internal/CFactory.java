@@ -44,11 +44,10 @@ public class CFactory {
      * @return A HA MQTT Component
      */
     public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID,
-            String channelConfigurationJSON, @Nullable ChannelStateUpdateListener updateListener, Gson gson,
+            String channelConfigurationJSON, ChannelStateUpdateListener updateListener, Gson gson,
             TransformationServiceProvider transformationServiceProvider) {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson).listener(updateListener)
-                        .transformationProvider(transformationServiceProvider);
+                channelConfigurationJSON, gson, updateListener).transformationProvider(transformationServiceProvider);
         try {
             switch (haID.component) {
                 case "alarm_control_panel":
@@ -83,19 +82,16 @@ public class CFactory {
         private HaID haID;
         private String configJSON;
         private @Nullable TransformationServiceProvider transformationServiceProvider;
-        private @Nullable ChannelStateUpdateListener updateListener;
+        private ChannelStateUpdateListener updateListener;
         private Gson gson;
 
-        protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson) {
+        protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
+                ChannelStateUpdateListener updateListener) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
             this.gson = gson;
-        }
-
-        public ComponentConfiguration listener(@Nullable ChannelStateUpdateListener updateListener) {
             this.updateListener = updateListener;
-            return this;
         }
 
         public ComponentConfiguration transformationProvider(
@@ -116,7 +112,6 @@ public class CFactory {
             return configJSON;
         }
 
-        @Nullable
         public ChannelStateUpdateListener getUpdateListener() {
             return updateListener;
         }

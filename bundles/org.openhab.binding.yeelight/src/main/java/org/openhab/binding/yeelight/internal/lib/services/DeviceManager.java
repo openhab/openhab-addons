@@ -92,7 +92,7 @@ public class DeviceManager {
                 try {
                     Thread.sleep(timeToStop);
                 } catch (InterruptedException e) {
-                    logger.debug("Exception: {}", e);
+                    logger.debug("Interrupted while sleeping", e);
                 } finally {
                     stopDiscovery();
                 }

@@ -12,27 +12,27 @@
 		<description>This device is not supported by the binding but you can still add it to your OpenHAB configuration. All messages from the device are available as channels providing values to String Items. Please open an issue on the openhab-addons2 github page to get this device added to the binding in the future. Meanwhile you can parse the messages with rules and/or JSONPATH transformations.</description>
 		<channels>
 			<channel id="reportMessage" typeId="rawMessage">
-				<label>Last report message</label>
+				<label>Last Report Message</label>
 				<description>Report state or sensor values</description>
 			</channel>
 			<channel id="heartbeatMessage" typeId="rawMessage">
-				<label>Last heartbeat message</label>
+				<label>Last Heartbeat Message</label>
 				<description>Alive signal (up to every 60 minutes)</description>
 			</channel>
 			<channel id="readAckMessage" typeId="rawMessage">
-				<label>Last read acknowledgement message</label>
+				<label>Last Read Acknowledgement Message</label>
 				<description>Answer to an active read request</description>
 			</channel>
 			<channel id="writeAckMessage" typeId="rawMessage">
-				<label>Last write acknowledgement message</label>
+				<label>Last Write Acknowledgement Message</label>
 				<description>Answer to a command</description>
 			</channel>
 			<channel id="lastMessage" typeId="rawMessage">
-				<label>Last raw message</label>
+				<label>Last Raw Message</label>
 				<description>Last raw message from the device</description>
 			</channel>
 			<channel id="writeMessage" typeId="rawMessage">
-				<label>Last command parameters</label>
+				<label>Last Command Parameters</label>
 				<description>Channel to write command parameters - Example: \"join_permission\":\"yes\"</description>
 			</channel>
 		</channels>

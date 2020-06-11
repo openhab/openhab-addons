@@ -19,15 +19,15 @@ package org.openhab.binding.nanoleaf.internal.model;
  */
 public class On implements BooleanState {
 
-    private Boolean value;
+    private boolean value;
 
     @Override
-    public Boolean getValue() {
+    public boolean getValue() {
         return value;
     }
 
     @Override
-    public void setValue(Boolean value) {
+    public void setValue(boolean value) {
         this.value = value;
     }
 

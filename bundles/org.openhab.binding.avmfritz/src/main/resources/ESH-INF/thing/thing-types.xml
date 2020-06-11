@@ -188,7 +188,7 @@
 			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
-		<label>HAN-FUN contact</label>
+		<label>HAN-FUN Contact</label>
 		<description>HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder).</description>
 
 		<channels>
@@ -206,12 +206,12 @@
 			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
 		</supported-bridge-type-refs>
 
-		<label>HAN-FUN switch</label>
+		<label>HAN-FUN Switch</label>
 		<description>HAN-FUN switch (e.g. SmartHome Wandtaster).</description>
 
 		<channels>
 			<channel id="press" typeId="system.rawbutton">
-				<label>Button press</label>
+				<label>Button Press</label>
 				<description>Triggered when a button was pressed.</description>
 			</channel>
 			<channel typeId="last_change" id="last_change" />

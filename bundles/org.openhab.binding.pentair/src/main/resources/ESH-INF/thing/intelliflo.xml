@@ -33,14 +33,14 @@
 
 	<channel-type id="pumpmode">
 		<item-type>Number</item-type>
-		<label>Pump mode</label>
+		<label>Pump Mode</label>
 		<description>Pump mode</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="runswitch">
 		<item-type>Switch</item-type>
-		<label>Pump running</label>
+		<label>Pump Running</label>
 		<description>Indicator on whether the pump is running or not.</description>
 		<state readOnly="true"/>
 	</channel-type>

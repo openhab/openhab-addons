@@ -9,7 +9,7 @@
 			<bridge-type-ref id="broker" />
 			<bridge-type-ref id="systemBroker" />
 		</supported-bridge-type-refs>
-		<label>Homie MQTT device</label>
+		<label>Homie MQTT Device</label>
 		<description>You need a configured Broker first. This thing represents a device, that follows the "MQTT Homie Convention" (Version 3.x).</description>
 		<properties>
 			<property name="homieversion" />
@@ -20,12 +20,12 @@
 				<description>Homie Device ID. This is part of the MQTT topic, e.g. "homie/deviceid/$homie".</description>
 			</parameter>
 			<parameter name="basetopic" type="text" required="true">
-				<label>MQTT base prefix</label>
+				<label>MQTT Base Prefix</label>
 				<description>MQTT base prefix</description>
 				<default>homie</default>
 			</parameter>
 			<parameter name="removetopics" type="boolean">
-				<label>Remove retained topics</label>
+				<label>Remove Retained Topics</label>
 				<description>Remove retained topics when thing is deleted</description>
 				<default>false</default>
 			</parameter>

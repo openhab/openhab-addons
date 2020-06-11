@@ -12,7 +12,7 @@ There is exactly one supported thing, which represents a Synop message. It has t
 
 ## Thing Configuration
 
-Besides the Synop Station Number (as ```synopID``` as a [StationID](http://www.ogimet.com/gsynop_nav.phtml.en) string), the second configuration parameter is ```refreshInterval``` which defines the refresh interval in minutes.
+Besides the Synop Station Number (as ```synopID``` as a [StationID](https://www.ogimet.com/gsynop_nav.phtml.en) string), the second configuration parameter is ```refreshInterval``` which defines the refresh interval in minutes.
 Synop message are typically updated every hour.
 
 

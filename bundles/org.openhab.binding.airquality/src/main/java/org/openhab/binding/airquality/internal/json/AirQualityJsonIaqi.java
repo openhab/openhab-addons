@@ -32,6 +32,7 @@ public class AirQualityJsonIaqi {
     private AirQualityValue<BigDecimal> o3;
     private AirQualityValue<BigDecimal> no2;
     private AirQualityValue<BigDecimal> co;
+    private AirQualityValue<BigDecimal> so2;
     private AirQualityValue<BigDecimal> t;
 
     @SerializedName("p")
@@ -58,6 +59,10 @@ public class AirQualityJsonIaqi {
 
     public BigDecimal getNo2() {
         return no2.getValue();
+    }
+
+    public BigDecimal getSo2() {
+        return so2.getValue();
     }
 
     public BigDecimal getCo() {

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.km200", configurationPolicy = ConfigurationPolicy.OPTIONAL)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.km200")
 public class KM200HandlerFactory extends BaseThingHandlerFactory {
 
     public final Set<ThingTypeUID> SUPPORTED_ALL_THING_TYPES_UIDS = Collections

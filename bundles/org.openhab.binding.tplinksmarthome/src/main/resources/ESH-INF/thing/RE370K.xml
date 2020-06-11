@@ -10,7 +10,7 @@
 		<category>PowerOutlet</category>
 
 		<channels>
-			<channel id="switch" typeId="switchReadonly" />
+			<channel id="switch" typeId="switch-readonly" />
 			<channel id="rssi" typeId="rssi" />
 		</channels>
 

@@ -12,24 +12,13 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.capability;
 
-import java.util.List;
-
-import org.openhab.binding.innogysmarthome.internal.client.entity.ConfigPropertyList;
-import org.openhab.binding.innogysmarthome.internal.client.entity.link.Link;
-import org.openhab.binding.innogysmarthome.internal.client.entity.state.CapabilityState;
-
-import com.google.api.client.util.Key;
-
 /**
  * Defines the structure of a {@link Capability}. A capability is a specific functionality of a device like a
  * temperature sensor.
  *
  * @author Oliver Kuhl - Initial contribution
  */
-public class Capability extends ConfigPropertyList {
-
-    private static final String CONFIG_PROPERTY_ACTIVITY_LOG_ACTIVE = "ActivityLogActive";
-    private static final String CONFIG_PROPERTY_PUSH_BUTTONS = "PushButtons";
+public class Capability {
 
     /** capability types */
     public static final String TYPE_SWITCHACTUATOR = "SwitchActuator";
@@ -56,29 +45,22 @@ public class Capability extends ConfigPropertyList {
     /**
      * Unique id for the Capability.
      */
-    @Key("id")
     private String id;
 
     /**
      * Type of the capability – must be unique per device, since the device links to the capability via the type.
      */
-    @Key("type")
     private String type;
 
     /**
-     * Link to the metadata of that specific capability. The link should be complete and can be followed without further
-     * additions. In the instance of a capability, the Link will point to the actual instance of the underlying device.
-     *
-     * Optional.
+     * Contains the link to the parent device, which offers the capability.
      */
-    @Key("desc")
-    private String desc;
+    private String device;
 
     /**
-     * Contain the link to the parent device, which offers the capability.
+     * This represents a container of all configuration properties.
      */
-    @Key("Device")
-    private List<Link> deviceLink;
+    private CapabilityConfig config;
 
     private CapabilityState capabilityState;
 
@@ -111,31 +93,31 @@ public class Capability extends ConfigPropertyList {
     }
 
     /**
-     * @return the desc
-     */
-    public String getDesc() {
-        return desc;
-    }
-
-    /**
-     * @param desc the desc to set
-     */
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    /**
      * @return
      */
-    public List<Link> getDeviceLink() {
-        return deviceLink;
+    public String getDeviceLink() {
+        return device;
     }
 
     /**
      * @param deviceLink
      */
-    public void setDeviceLink(List<Link> deviceLink) {
-        this.deviceLink = deviceLink;
+    public void setDeviceLink(String deviceLink) {
+        this.device = deviceLink;
+    }
+
+    /**
+     * @return the config
+     */
+    public CapabilityConfig getConfig() {
+        return config;
+    }
+
+    /**
+     * @param config the config to set
+     */
+    public void setConfig(CapabilityConfig config) {
+        this.config = config;
     }
 
     /**
@@ -161,7 +143,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean hasState() {
-        return capabilityState != null;
+        return (capabilityState != null) && (capabilityState.getState() != null);
     }
 
     /**
@@ -169,9 +151,8 @@ public class Capability extends ConfigPropertyList {
      *
      * @return
      */
-    @Override
     public String getName() {
-        return getPropertyValueAsString(CONFIG_PROPERTY_NAME);
+        return getConfig().getName();
     }
 
     /**
@@ -180,7 +161,7 @@ public class Capability extends ConfigPropertyList {
      * @return boolean or null, if the {@link Capability} does not have this property.
      */
     public boolean getActivityLogActive() {
-        return getPropertyValueAsBoolean(CONFIG_PROPERTY_ACTIVITY_LOG_ACTIVE);
+        return getConfig().getActivityLogActive();
     }
 
     /**
@@ -189,7 +170,7 @@ public class Capability extends ConfigPropertyList {
      * @return int or null, if the {@link Capability} does not have this property.
      */
     public int getPushButtons() {
-        return getPropertyValueAsInteger(CONFIG_PROPERTY_PUSH_BUTTONS);
+        return getConfig().getPushButtons();
     }
 
     /**
@@ -198,7 +179,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeVariableActuator() {
-        return getType().equals(TYPE_VARIABLEACTUATOR);
+        return TYPE_VARIABLEACTUATOR.equals(getType());
     }
 
     /**
@@ -207,7 +188,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeSwitchActuator() {
-        return getType().equals(TYPE_SWITCHACTUATOR);
+        return TYPE_SWITCHACTUATOR.equals(getType());
     }
 
     /**
@@ -216,7 +197,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeThermostatActuator() {
-        return getType().equals(TYPE_THERMOSTATACTUATOR);
+        return TYPE_THERMOSTATACTUATOR.equals(getType());
     }
 
     /**
@@ -225,7 +206,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeTemperatureSensor() {
-        return getType().equals(TYPE_TEMPERATURESENSOR);
+        return TYPE_TEMPERATURESENSOR.equals(getType());
     }
 
     /**
@@ -234,7 +215,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeHumiditySensor() {
-        return getType().equals(TYPE_HUMIDITYSENSOR);
+        return TYPE_HUMIDITYSENSOR.equals(getType());
     }
 
     /**
@@ -243,7 +224,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeWindowDoorSensor() {
-        return getType().equals(TYPE_WINDOWDOORSENSOR);
+        return TYPE_WINDOWDOORSENSOR.equals(getType());
     }
 
     /**
@@ -252,7 +233,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeSmokeDetectorSensor() {
-        return getType().equals(TYPE_SMOKEDETECTORSENSOR);
+        return TYPE_SMOKEDETECTORSENSOR.equals(getType());
     }
 
     /**
@@ -261,7 +242,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeAlarmActuator() {
-        return getType().equals(TYPE_ALARMACTUATOR);
+        return TYPE_ALARMACTUATOR.equals(getType());
     }
 
     /**
@@ -270,7 +251,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeMotionDetectionSensor() {
-        return getType().equals(TYPE_MOTIONDETECTIONSENSOR);
+        return TYPE_MOTIONDETECTIONSENSOR.equals(getType());
     }
 
     /**
@@ -279,7 +260,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeLuminanceSensor() {
-        return getType().equals(TYPE_LUMINANCESENSOR);
+        return TYPE_LUMINANCESENSOR.equals(getType());
     }
 
     /**
@@ -288,7 +269,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypePushButtonSensor() {
-        return getType().equals(TYPE_PUSHBUTTONSENSOR);
+        return TYPE_PUSHBUTTONSENSOR.equals(getType());
     }
 
     /**
@@ -297,7 +278,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeDimmerActuator() {
-        return getType().equals(TYPE_DIMMERACTUATOR);
+        return TYPE_DIMMERACTUATOR.equals(getType());
     }
 
     /**
@@ -306,7 +287,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeRollerShutterActuator() {
-        return getType().equals(TYPE_ROLLERSHUTTERACTUATOR);
+        return TYPE_ROLLERSHUTTERACTUATOR.equals(getType());
     }
 
     /**
@@ -315,7 +296,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeEnergyConsumptionSensor() {
-        return getType().equals(TYPE_ENERGYCONSUMPTIONSENSOR);
+        return TYPE_ENERGYCONSUMPTIONSENSOR.equals(getType());
     }
 
     /**
@@ -324,7 +305,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypePowerConsumptionSensor() {
-        return getType().equals(TYPE_POWERCONSUMPTIONSENSOR);
+        return TYPE_POWERCONSUMPTIONSENSOR.equals(getType());
     }
 
     /**
@@ -333,7 +314,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeGenerationMeterEnergySensor() {
-        return getType().equals(TYPE_GENERATIONMETERENERGYSENSOR);
+        return TYPE_GENERATIONMETERENERGYSENSOR.equals(getType());
     }
 
     /**
@@ -342,7 +323,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeGenerationMeterPowerConsumptionSensor() {
-        return getType().equals(TYPE_GENERATIONMETERPOWERCONSUMPTIONSENSOR);
+        return TYPE_GENERATIONMETERPOWERCONSUMPTIONSENSOR.equals(getType());
     }
 
     /**
@@ -351,7 +332,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeTwoWayMeterEnergyConsumptionSensor() {
-        return getType().equals(TYPE_TWOWAYMETERENERGYCONSUMPTIONSENSOR);
+        return TYPE_TWOWAYMETERENERGYCONSUMPTIONSENSOR.equals(getType());
     }
 
     /**
@@ -360,7 +341,7 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeTwoWayMeterEnergyFeedSensor() {
-        return getType().equals(TYPE_TWOWAYMETERENERGYFEEDSENSOR);
+        return TYPE_TWOWAYMETERENERGYFEEDSENSOR.equals(getType());
     }
 
     /**
@@ -369,6 +350,6 @@ public class Capability extends ConfigPropertyList {
      * @return
      */
     public boolean isTypeTwoWayMeterPowerConsumptionSensor() {
-        return getType().equals(TYPE_TWOWAYMETERPOWERCONSUMPTIONSENSOR);
+        return TYPE_TWOWAYMETERPOWERCONSUMPTIONSENSOR.equals(getType());
     }
 }

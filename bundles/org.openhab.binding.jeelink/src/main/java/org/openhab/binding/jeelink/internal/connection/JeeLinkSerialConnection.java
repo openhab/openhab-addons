@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.util.TooManyListenersException;
 
 import org.slf4j.Logger;
@@ -79,26 +78,25 @@ public class JeeLinkSerialConnection extends AbstractJeeLinkConnection {
                 serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
 
-                try (Reader isr = new InputStreamReader(serialPort.getInputStream());
-                        BufferedReader input = new BufferedReader(isr)) {
-                    serialPort.addEventListener(new SerialPortEventListener() {
-                        @Override
-                        public void serialEvent(SerialPortEvent event) {
-                            try {
-                                if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-                                    propagateLine(input.readLine());
-                                }
-                            } catch (IOException ex) {
-                                logger.debug("Error reading from serial port!", ex);
-                                closeConnection();
-                                notifyAbort("propagate: " + ex.getMessage());
-                            }
-                        }
-                    });
+                final BufferedReader input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
 
-                    serialPort.notifyOnDataAvailable(true);
-                    notifyOpen();
-                }
+                serialPort.addEventListener(new SerialPortEventListener() {
+                    @Override
+                    public void serialEvent(SerialPortEvent event) {
+                        try {
+                            if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+                                propagateLine(input.readLine());
+                            }
+                        } catch (IOException ex) {
+                            logger.debug("Error reading from serial port!", ex);
+                            closeConnection();
+                            notifyAbort("propagate: " + ex.getMessage());
+                        }
+                    }
+                });
+
+                serialPort.notifyOnDataAvailable(true);
+                notifyOpen();
             }
         } catch (UnsupportedCommOperationException | IOException | TooManyListenersException ex) {
             closeConnection();

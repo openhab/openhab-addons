@@ -45,6 +45,7 @@ import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
+import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Samuel Leisering - Added support for sensor API
  * @author Christoph Weitkamp - Added support for sensor API
+ * @author Meng Yiqi - Added support for CLIP sensor
  */
 @NonNullByDefault
 public class HueLightDiscoveryService extends AbstractDiscoveryService
@@ -66,7 +68,8 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
             .of(HueLightHandler.SUPPORTED_THING_TYPES.stream(), DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     TapSwitchHandler.SUPPORTED_THING_TYPES.stream(), PresenceHandler.SUPPORTED_THING_TYPES.stream(),
-                    TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream())
+                    TemperatureHandler.SUPPORTED_THING_TYPES.stream(), LightLevelHandler.SUPPORTED_THING_TYPES.stream(),
+                    ClipHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(HueLightDiscoveryService.class);
@@ -84,6 +87,8 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
             new SimpleEntry<>("color_temperature_light", "0220"),
             new SimpleEntry<>("zllswitch", "0820"),
             new SimpleEntry<>("zgpswitch", "0830"),
+            new SimpleEntry<>("clipgenericstatus", "0840"),
+            new SimpleEntry<>("clipgenericflag", "0850"),
             new SimpleEntry<>("zllpresence", "0107"),
             new SimpleEntry<>("zlltemperature", "0302"),
             new SimpleEntry<>("zlllightlevel", "0106")
@@ -206,7 +211,6 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
     private @Nullable ThingTypeUID getThingTypeUID(FullHueObject hueObject) {
         String thingTypeId = TYPE_TO_ZIGBEE_ID_MAP
                 .get(hueObject.getType().replaceAll(NORMALIZE_ID_REGEX, "_").toLowerCase());
-
         return thingTypeId != null ? new ThingTypeUID(BINDING_ID, thingTypeId) : null;
     }
 
@@ -220,7 +224,6 @@ public class HueLightDiscoveryService extends AbstractDiscoveryService
         ThingTypeUID thingTypeUID = getThingTypeUID(sensor);
 
         String modelId = sensor.getNormalizedModelID();
-
         if (thingUID != null && thingTypeUID != null) {
             ThingUID bridgeUID = hueBridgeHandler.getThing().getUID();
             Map<String, Object> properties = new HashMap<>();

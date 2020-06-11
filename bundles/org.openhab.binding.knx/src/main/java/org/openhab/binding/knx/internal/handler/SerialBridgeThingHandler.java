@@ -36,7 +36,7 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
     public SerialBridgeThingHandler(Bridge bridge) {
         super(bridge);
         SerialBridgeConfiguration config = getConfigAs(SerialBridgeConfiguration.class);
-        client = new SerialClient(config.getAutoReconnectPeriod().intValue(), thing.getUID(),
+        client = new SerialClient(config.getAutoReconnectPeriod(), thing.getUID(),
                 config.getResponseTimeout().intValue(), config.getReadingPause().intValue(),
                 config.getReadRetriesLimit().intValue(), getScheduler(), config.getSerialPort(), this);
     }

@@ -21,7 +21,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 
 /**
@@ -68,7 +68,8 @@ class LxControlTimedSwitch extends LxControlPushbutton {
         ChannelUID id = addChannel("Number", new ChannelTypeUID(BINDING_ID, MINISERVER_CHANNEL_TYPE_RO_NUMBER),
                 defaultChannelLabel + " / Deactivation Delay", "Deactivation Delay", null, null,
                 this::getDeactivationState);
-        addChannelStateDescription(id, new StateDescription(new BigDecimal(-1), null, null, null, true, null));
+        addChannelStateDescriptionFragment(id,
+                StateDescriptionFragmentBuilder.create().withMinimum(new BigDecimal(-1)).withReadOnly(true).build());
     }
 
     private State getDeactivationState() {

@@ -368,7 +368,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                                     try {
                                         updateState(tmpChannel.getUID(), state);
                                     } catch (IllegalStateException e) {
-                                        logger.error("Could not get updated item state, Error: {}", e);
+                                        logger.error("Could not get updated item state", e);
                                     }
                                 }
                             }
@@ -422,7 +422,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                             try {
                                 gatewayHandler.updateState(actChannel.getUID(), state);
                             } catch (IllegalStateException e) {
-                                logger.error("Could not get updated item state, Error: {}", e);
+                                logger.error("Could not get updated item state", e);
                             }
                         }
                     }
@@ -527,7 +527,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
                             try {
                                 gatewayHandler.updateState(channel.getUID(), state);
                             } catch (IllegalStateException e) {
-                                logger.error("Could not get updated item state, Error: {}", e);
+                                logger.error("Could not get updated item state", e);
                             }
                         }
                     }

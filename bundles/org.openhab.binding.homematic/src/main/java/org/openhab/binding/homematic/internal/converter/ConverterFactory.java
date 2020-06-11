@@ -67,7 +67,7 @@ public class ConverterFactory {
             converter = converterCache.get(converterClass.getName());
             if (converter == null) {
                 try {
-                    converter = converterClass.newInstance();
+                    converter = converterClass.getConstructor().newInstance();
                     converterCache.put(converterClass.getName(), converter);
                 } catch (Exception e) {
                     // ignore

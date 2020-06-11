@@ -14,7 +14,7 @@ package org.openhab.binding.enocean.internal.eep.Base;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
-import java.util.Map;
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 
 /**
  *
@@ -48,12 +49,12 @@ public class PTM200Message extends _RPSMessage {
 
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
-            Map<String, State> currentState, Configuration config) {
+            Function<String, State> getCurrentStateFunc, Configuration config) {
 
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
         if (!isValid()) {
             return UnDefType.UNDEF;
@@ -65,8 +66,14 @@ public class PTM200Message extends _RPSMessage {
             case CHANNEL_ROLLERSHUTTER:
                 return bytes[0] == Up ? PercentType.ZERO : (bytes[0] == Down ? PercentType.HUNDRED : UnDefType.UNDEF);
             case CHANNEL_CONTACT:
-                return bytes[0] == Open ? OpenClosedType.OPEN
-                        : (bytes[0] == Closed ? OpenClosedType.CLOSED : UnDefType.UNDEF);
+                EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
+                if (c.inverted) {
+                    return bytes[0] == Open ? OpenClosedType.CLOSED
+                            : (bytes[0] == Closed ? OpenClosedType.OPEN : UnDefType.UNDEF);
+                } else {
+                    return bytes[0] == Open ? OpenClosedType.OPEN
+                            : (bytes[0] == Closed ? OpenClosedType.CLOSED : UnDefType.UNDEF);
+                }
         }
 
         return UnDefType.UNDEF;

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin S. Eskildsen - Initial contribution
  *
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.zoneminder")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.zoneminder")
 public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ZoneMinderHandlerFactory.class);
@@ -56,14 +56,11 @@ public class ZoneMinderHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_BRIDGE_ZONEMINDER_SERVER)) {
             logger.debug("[FACTORY]: creating handler for bridge thing '{}'", thing);
-            ZoneMinderServerBridgeHandler bridge = new ZoneMinderServerBridgeHandler((Bridge) thing);
-
-            return bridge;
+            return new ZoneMinderServerBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(ZoneMinderConstants.THING_TYPE_THING_ZONEMINDER_MONITOR)) {
             return new ZoneMinderThingMonitorHandler(thing);
         }
 
         return null;
     }
-
 }

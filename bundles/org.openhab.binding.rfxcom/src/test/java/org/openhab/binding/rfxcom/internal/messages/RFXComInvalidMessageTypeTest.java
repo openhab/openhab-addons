@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.junit.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -20,13 +21,14 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueExce
 /**
  * Test for RFXCom-binding
  *
- * @author James Hewitt-Thomas
+ * @author James Hewitt-Thomas - Initial contribution
  */
+@NonNullByDefault
 public class RFXComInvalidMessageTypeTest {
 
     @Test(expected = RFXComUnsupportedValueException.class)
     public void testMessage() throws RFXComException {
         byte[] message = HexUtils.hexToBytes("07CC01271356ECC0");
-        final RFXComMessage msg = RFXComMessageFactory.createMessage(message);
+        RFXComMessageFactory.createMessage(message);
     }
 }

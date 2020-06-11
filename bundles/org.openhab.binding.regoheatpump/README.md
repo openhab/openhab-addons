@@ -29,7 +29,7 @@ Two connection types are supported:
 #### TCP/IP connection
 
 A transparent bridge between the serial interface of the heat pump and network (i.e. wifi) is used.
-This way no additional wires are required between heat pump and computer, running openhab.
+This way no additional wires are required between heat pump and computer, running openHAB.
 
 There are many existing project providing such functionality, i.e. [ser2net](http://ser2net.sourceforge.net/).
 
@@ -141,7 +141,7 @@ Access: R = read only; RW = read write
 
 ## The Husdata interface
 
-The [Husdata](http://www.husdata.se/) interface bridges the often complex communication methods with a heat pump controller and provides access through a simple standard interface over RS-232.
+The [Husdata](https://www.husdata.se/) interface bridges the often complex communication methods with a heat pump controller and provides access through a simple standard interface over RS-232.
 
 Supported heat pump models
 

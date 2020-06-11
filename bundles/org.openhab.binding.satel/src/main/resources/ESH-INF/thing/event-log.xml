@@ -11,7 +11,7 @@
 			<bridge-type-ref id="int-rs" />
 		</supported-bridge-type-refs>
 
-		<label>Event log</label>
+		<label>Event Log</label>
 		<description><![CDATA[A virtual thing that allows reading records from the alarm system event log.<br>
 		Event log must read sequentially starting from the most recent record.]]></description>
 
@@ -27,20 +27,20 @@
 
 	<channel-type id="index">
 		<item-type>Number</item-type>
-		<label>Current index</label>
+		<label>Current Index</label>
 		<description>Index of the current record in the event log. Send '-1' to get most recent record.</description>
 	</channel-type>
 
 	<channel-type id="prev_index">
 		<item-type>Number</item-type>
-		<label>Previous index</label>
+		<label>Previous Index</label>
 		<description>Index of the previous record in the event log. Use this value to iterate over the log.</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>Date and time</label>
+		<label>Date and Time</label>
 		<description>Date and time when the event happened.</description>
 		<state readOnly="true" />
 	</channel-type>

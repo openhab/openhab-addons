@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.somfytahoma.internal.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.util.ArrayList;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SomfyTahomaDeviceDefinition} holds information about a device definition.
@@ -34,7 +34,7 @@ public class SomfyTahomaDeviceDefinition {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{ ");
-        for( SomfyTahomaDeviceDefinitionCommand cmd: commands) {
+        for (SomfyTahomaDeviceDefinitionCommand cmd : commands) {
             sb.append(cmd.toString()).append("; ");
         }
 

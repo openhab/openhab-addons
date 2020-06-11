@@ -170,7 +170,6 @@ public abstract class AbstractMqttAttributeClass implements SubscribeFieldToMQTT
     public CompletableFuture<@Nullable Void> subscribeAndReceive(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, String basetopic, @Nullable AttributeChanged attributeChangedListener,
             int timeout) {
-
         // We first need to unsubscribe old subscriptions if any
         final CompletableFuture<@Nullable Void> startFuture;
         if (subscriptions.size() > 0) {

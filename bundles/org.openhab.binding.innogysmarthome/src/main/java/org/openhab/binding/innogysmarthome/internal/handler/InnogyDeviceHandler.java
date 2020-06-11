@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -39,11 +41,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.innogysmarthome.internal.client.entity.Property;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
+import org.openhab.binding.innogysmarthome.internal.client.entity.capability.CapabilityState;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.event.Event;
-import org.openhab.binding.innogysmarthome.internal.client.entity.state.CapabilityState;
 import org.openhab.binding.innogysmarthome.internal.listener.DeviceStatusListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,29 +55,35 @@ import org.slf4j.LoggerFactory;
  *
  * @author Oliver Kuhl - Initial contribution
  */
+@NonNullByDefault
 public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatusListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = SUPPORTED_DEVICE_THING_TYPES;
-    private final Logger logger = LoggerFactory.getLogger(InnogyDeviceHandler.class);
 
-    private String deviceId;
-    private InnogyBridgeHandler bridgeHandler;
+    private static final String DEBUG = "DEBUG";
+    private static final String LONG_PRESS = "LongPress";
+    private static final String SHORT_PRESS = "ShortPress";
+
+    private final Logger logger = LoggerFactory.getLogger(InnogyDeviceHandler.class);
     private final Object lock = new Object();
+
+    private String deviceId = "";
+    private @Nullable InnogyBridgeHandler bridgeHandler;
 
     /**
      * Constructs a new {@link InnogyDeviceHandler} for the given {@link Thing}.
      *
      * @param thing
      */
-    public InnogyDeviceHandler(Thing thing) {
+    public InnogyDeviceHandler(final Thing thing) {
         super(thing);
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(final ChannelUID channelUID, final Command command) {
         logger.debug("handleCommand called for channel '{}' of type '{}' with command '{}'", channelUID,
                 getThing().getThingTypeUID().getId(), command);
-        InnogyBridgeHandler innogyBridgeHandler = getInnogyBridgeHandler();
+        final InnogyBridgeHandler innogyBridgeHandler = getInnogyBridgeHandler();
         if (innogyBridgeHandler == null) {
             logger.warn("BridgeHandler not found. Cannot handle command without bridge.");
             return;
@@ -87,24 +94,38 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
         }
 
         if (command instanceof RefreshType) {
-            Device device = innogyBridgeHandler.getDeviceById(deviceId);
+            final Device device = innogyBridgeHandler.getDeviceById(deviceId);
             if (device != null) {
                 onDeviceStateChanged(device);
             }
             return;
         }
 
-        // TODO: add devices
         // SWITCH
-        if (channelUID.getId().equals(CHANNEL_SWITCH)) {
+        if (CHANNEL_SWITCH.equals(channelUID.getId())) {
+            // DEBUGGING HELPER
+            // ----------------
+            final Device device = innogyBridgeHandler.getDeviceById(deviceId);
+            if (DEBUG.equals(device.getConfig().getName())) {
+                logger.debug("DEBUG SWITCH ACTIVATED!");
+                if (OnOffType.ON.equals(command)) {
+                    innogyBridgeHandler.onEvent(
+                            "{\"sequenceNumber\": -1,\"type\": \"MessageCreated\",\"desc\": \"/desc/event/MessageCreated\",\"namespace\": \"core.RWE\",\"timestamp\": \"2019-07-07T18:41:47.2970000Z\",\"source\": \"/desc/device/SHC.RWE/1.0\",\"data\": {\"id\": \"6e5ce2290cd247208f95a5b53736958b\",\"type\": \"DeviceLowBattery\",\"read\": false,\"class\": \"Alert\",\"timestamp\": \"2019-07-07T18:41:47.232Z\",\"devices\": [\"/device/fe51785319854f36a621d0b4f8ea0e25\"],\"properties\": {\"deviceName\": \"Heizkörperthermostat\",\"serialNumber\": \"914110165056\",\"locationName\": \"Bad\"},\"namespace\": \"core.RWE\"}}");
+                } else {
+                    innogyBridgeHandler.onEvent(
+                            "{\"sequenceNumber\": -1,\"type\": \"MessageDeleted\",\"desc\": \"/desc/event/MessageDeleted\",\"namespace\": \"core.RWE\",\"timestamp\": \"2019-07-07T19:15:39.2100000Z\",\"data\": { \"id\": \"6e5ce2290cd247208f95a5b53736958b\" }}");
+                }
+                return;
+            }
+            // ----------------
             if (command instanceof OnOffType) {
                 innogyBridgeHandler.commandSwitchDevice(deviceId, OnOffType.ON.equals(command));
             }
 
             // DIMMER
-        } else if (channelUID.getId().equals(CHANNEL_DIMMER)) {
+        } else if (CHANNEL_DIMMER.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
-                DecimalType dimLevel = (DecimalType) command;
+                final DecimalType dimLevel = (DecimalType) command;
                 innogyBridgeHandler.commandSetDimmLevel(deviceId, dimLevel.intValue());
             } else if (command instanceof OnOffType) {
                 if (OnOffType.ON.equals(command)) {
@@ -115,9 +136,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             }
 
             // ROLLERSHUTTER
-        } else if (channelUID.getId().equals(CHANNEL_ROLLERSHUTTER)) {
+        } else if (CHANNEL_ROLLERSHUTTER.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
-                DecimalType rollerShutterLevel = (DecimalType) command;
+                final DecimalType rollerShutterLevel = (DecimalType) command;
                 innogyBridgeHandler.commandSetRollerShutterLevel(deviceId,
                         invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, rollerShutterLevel.intValue()));
             } else if (command instanceof OnOffType) {
@@ -139,29 +160,30 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             }
 
             // SET_TEMPERATURE
-        } else if (channelUID.getId().equals(CHANNEL_SET_TEMPERATURE)) {
+        } else if (CHANNEL_SET_TEMPERATURE.equals(channelUID.getId())) {
             if (command instanceof DecimalType) {
-                DecimalType pointTemperature = (DecimalType) command;
+                final DecimalType pointTemperature = (DecimalType) command;
                 innogyBridgeHandler.commandUpdatePointTemperature(deviceId, pointTemperature.doubleValue());
             }
 
             // OPERATION_MODE
-        } else if (channelUID.getId().equals(CHANNEL_OPERATION_MODE)) {
+        } else if (CHANNEL_OPERATION_MODE.equals(channelUID.getId())) {
             if (command instanceof StringType) {
-                StringType autoModeCommand = (StringType) command;
+                final String autoModeCommand = command.toString();
 
-                if (autoModeCommand.toString().equals("Auto")) {
+                if (CapabilityState.STATE_VALUE_OPERATION_MODE_AUTO.equals(autoModeCommand)) {
                     innogyBridgeHandler.commandSetOperationMode(deviceId, true);
-                } else if (autoModeCommand.toString().equals("Manu")) {
+                } else if (CapabilityState.STATE_VALUE_OPERATION_MODE_MANUAL.equals(autoModeCommand)) {
                     innogyBridgeHandler.commandSetOperationMode(deviceId, false);
                 } else {
                     logger.warn("Could not set operationmode. Invalid value '{}'! Only '{}' or '{}' allowed.",
-                            autoModeCommand.toString(), "Auto", "Manu");
+                            autoModeCommand, CapabilityState.STATE_VALUE_OPERATION_MODE_AUTO,
+                            CapabilityState.STATE_VALUE_OPERATION_MODE_MANUAL);
                 }
             }
 
             // ALARM
-        } else if (channelUID.getId().equals(CHANNEL_ALARM)) {
+        } else if (CHANNEL_ALARM.equals(channelUID.getId())) {
             if (command instanceof OnOffType) {
                 innogyBridgeHandler.commandSwitchAlarm(deviceId, OnOffType.ON.equals(command));
             }
@@ -174,11 +196,18 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
     @Override
     public void initialize() {
         logger.debug("Initializing innogy SmartHome device handler.");
-        initializeThing((getBridge() == null) ? null : getBridge().getStatus());
+        initializeThing(getBridge() == null ? null : getBridge().getStatus());
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+    public void dispose() {
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterDeviceStatusListener(this);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(final ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
         initializeThing(bridgeStatusInfo.getStatus());
     }
@@ -188,7 +217,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      *
      * @param bridgeStatus
      */
-    private void initializeThing(ThingStatus bridgeStatus) {
+    private void initializeThing(@Nullable final ThingStatus bridgeStatus) {
         logger.debug("initializeThing thing {} bridge status {}", getThing().getUID(), bridgeStatus);
         final String configDeviceId = (String) getConfig().get(PROPERTY_ID);
         if (configDeviceId != null) {
@@ -197,8 +226,12 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             // the bridge
             if (getInnogyBridgeHandler() != null) {
                 if (bridgeStatus == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                    initializeProperties();
+                    if (initializeProperties()) {
+                        updateStatus(ThingStatus.ONLINE);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                                "Device not found in innogy config. Was it removed?");
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
@@ -213,12 +246,13 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
     /**
      * Initializes all properties of the {@link Device}, like vendor, serialnumber etc.
      */
-    private void initializeProperties() {
+    private boolean initializeProperties() {
         synchronized (this.lock) {
-            Device device = getDevice();
+            final Device device = getDevice();
             if (device != null) {
-                Map<String, String> properties = editProperties();
+                final Map<String, String> properties = editProperties();
                 properties.put(PROPERTY_ID, device.getId());
+                properties.put(PROPERTY_PROTOCOL_ID, device.getConfig().getProtocolId());
                 if (device.hasSerialNumber()) {
                     properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialnumber());
                 }
@@ -239,17 +273,39 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 } else if (device.isRadioDevice()) {
                     properties.put(PROPERTY_DEVICE_TYPE, "Radio");
                 }
-                properties.put(PROPERTY_TIME_OF_ACCEPTANCE,
-                        device.getTimeOfAcceptance().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
 
-                properties.put(PROPERTY_TIME_OF_DISCOVERY,
-                        device.getTimeOfDiscovery().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+                // Thermostat
+                if (Device.DEVICE_TYPE_RST.equals(device.getType())
+                        || Device.DEVICE_TYPE_WRT.equals(device.getType())) {
+                    properties.put(PROPERTY_DISPLAY_CURRENT_TEMPERATURE,
+                            device.getConfig().getDisplayCurrentTemperature());
+                }
+
+                // Meter
+                if (Device.DEVICE_TYPE_ANALOG_METER.equals(device.getType())
+                        || Device.DEVICE_TYPE_GENERATION_METER.equals(device.getType())
+                        || Device.DEVICE_TYPE_SMARTMETER.equals(device.getType())
+                        || Device.DEVICE_TYPE_TWO_WAY_METER.equals(device.getType())) {
+                    properties.put(PROPERTY_METER_ID, device.getConfig().getMeterId());
+                    properties.put(PROPERTY_METER_FIRMWARE_VERSION, device.getConfig().getMeterFirmwareVersion());
+                }
+
+                if (device.getConfig().getTimeOfAcceptance() != null) {
+                    properties.put(PROPERTY_TIME_OF_ACCEPTANCE, device.getConfig().getTimeOfAcceptance()
+                            .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+                }
+                if (device.getConfig().getTimeOfDiscovery() != null) {
+                    properties.put(PROPERTY_TIME_OF_DISCOVERY, device.getConfig().getTimeOfDiscovery()
+                            .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+                }
+
                 updateProperties(properties);
 
-                // TODO: check device state first! E.g. there is no state, when device is still in configuration state.
                 onDeviceStateChanged(device);
+                return true;
             } else {
                 logger.warn("initializeProperties: device is null");
+                return false;
             }
         }
     }
@@ -260,7 +316,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      *
      * @return the {@link Device} or null, if not found or no {@link InnogyBridgeHandler} is available
      */
-    private Device getDevice() {
+    private @Nullable Device getDevice() {
         if (getInnogyBridgeHandler() != null) {
             return getInnogyBridgeHandler().getDeviceById(deviceId);
         }
@@ -272,14 +328,14 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      *
      * @return the {@link InnogyBridgeHandler} or null
      */
-    private InnogyBridgeHandler getInnogyBridgeHandler() {
+    private @Nullable InnogyBridgeHandler getInnogyBridgeHandler() {
         synchronized (this.lock) {
             if (this.bridgeHandler == null) {
-                Bridge bridge = getBridge();
+                final Bridge bridge = getBridge();
                 if (bridge == null) {
                     return null;
                 }
-                ThingHandler handler = bridge.getHandler();
+                final ThingHandler handler = bridge.getHandler();
                 if (handler instanceof InnogyBridgeHandler) {
                     this.bridgeHandler = (InnogyBridgeHandler) handler;
                     this.bridgeHandler.registerDeviceStatusListener(this);
@@ -292,7 +348,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     @Override
-    public void onDeviceStateChanged(Device device) {
+    public void onDeviceStateChanged(final Device device) {
         synchronized (this.lock) {
             if (!deviceId.equals(device.getId())) {
                 logger.trace("DeviceId {} not relevant for this handler (responsible for id {})", device.getId(),
@@ -300,17 +356,21 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 return;
             }
 
-            logger.debug("onDeviceStateChanged called with device {}/{}", device.getName(), device.getId());
+            logger.debug("onDeviceStateChanged called with device {}/{}", device.getConfig().getName(), device.getId());
 
             // DEVICE STATES
-            if (device.hasState()) {
-                Boolean reachable = device.getDeviceState().isReachable();
-                boolean included = device.getDeviceState().deviceIsIncluded();
+            if (device.hasDeviceState()) {
+                Boolean reachable = null;
+                if (device.getDeviceState().hasIsReachableState()) {
+                    reachable = device.getDeviceState().isReachable();
+                }
+
                 if (reachable != null && !reachable) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable.");
                     return;
-                } else if (reachable != null && reachable) {
-                    if (included) {
+                } else if ((reachable != null && reachable)
+                        || Device.DEVICE_TYPE_VARIABLE_ACTUATOR.equals(device.getType())) {
+                    if (device.getDeviceState().deviceIsIncluded()) {
                         updateStatus(ThingStatus.ONLINE);
                     } else {
                         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
@@ -329,17 +389,17 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             }
 
             // CAPABILITY STATES
-            for (Capability c : device.getCapabilityMap().values()) {
+            for (final Capability c : device.getCapabilityMap().values()) {
                 logger.debug("->capability:{} ({}/{})", c.getId(), c.getType(), c.getName());
 
                 if (c.getCapabilityState() == null) {
-                    logger.debug("Capability not available for device {} ({})", device.getName(), device.getType());
+                    logger.debug("Capability not available for device {} ({})", device.getConfig().getName(),
+                            device.getType());
                     continue;
                 }
-                // TODO: ADD DEVICES
                 switch (c.getType()) {
                     case Capability.TYPE_VARIABLEACTUATOR:
-                        Boolean variableActuatorState = c.getCapabilityState().getVariableActuatorState();
+                        final Boolean variableActuatorState = c.getCapabilityState().getVariableActuatorState();
                         if (variableActuatorState != null) {
                             updateState(CHANNEL_SWITCH, variableActuatorState ? OnOffType.ON : OnOffType.OFF);
                         } else {
@@ -348,7 +408,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_SWITCHACTUATOR:
-                        Boolean switchActuatorState = c.getCapabilityState().getSwitchActuatorState();
+                        final Boolean switchActuatorState = c.getCapabilityState().getSwitchActuatorState();
                         if (switchActuatorState != null) {
                             updateState(CHANNEL_SWITCH, switchActuatorState ? OnOffType.ON : OnOffType.OFF);
                         } else {
@@ -357,10 +417,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_DIMMERACTUATOR:
-                        Double dimmerActuatorState = c.getCapabilityState().getDimmerActuatorState();
-                        if (dimmerActuatorState != null) {
-                            int dimLevel = dimmerActuatorState.intValue();
-                            logger.debug("Dimlevel state {} -> type {}", dimmerActuatorState, dimLevel);
+                        final Integer dimLevel = c.getCapabilityState().getDimmerActuatorState();
+                        if (dimLevel != null) {
+                            logger.debug("Dimlevel state {}", dimLevel);
                             if (dimLevel > 0) {
                                 updateState(CHANNEL_DIMMER, OnOffType.ON);
                             } else {
@@ -373,16 +432,14 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_ROLLERSHUTTERACTUATOR:
-                        Double rollerShutterActuatorState = c.getCapabilityState().getRollerShutterActuatorState();
-                        if (rollerShutterActuatorState != null) {
-                            int rollerShutterLevel = invertValueIfConfigured(CHANNEL_ROLLERSHUTTER,
-                                    rollerShutterActuatorState.intValue());
-                            logger.debug("RollerShutterlevel state {} -> type {}", rollerShutterActuatorState,
-                                    rollerShutterLevel);
+                        Integer rollerShutterLevel = c.getCapabilityState().getRollerShutterActuatorState();
+                        if (rollerShutterLevel != null) {
+                            rollerShutterLevel = invertValueIfConfigured(CHANNEL_ROLLERSHUTTER, rollerShutterLevel);
+                            logger.debug("RollerShutterlevel state {}", rollerShutterLevel);
                             if (rollerShutterLevel > 0) {
-                                updateState(CHANNEL_ROLLERSHUTTER, OnOffType.ON);
+                                updateState(CHANNEL_ROLLERSHUTTER, UpDownType.DOWN);
                             } else {
-                                updateState(CHANNEL_ROLLERSHUTTER, OnOffType.OFF);
+                                updateState(CHANNEL_ROLLERSHUTTER, UpDownType.UP);
                             }
                             updateState(CHANNEL_ROLLERSHUTTER, new PercentType(rollerShutterLevel));
                         } else {
@@ -392,18 +449,18 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         break;
                     case Capability.TYPE_TEMPERATURESENSOR:
                         // temperature
-                        Double temperatureSensorState = c.getCapabilityState().getTemperatureSensorTemperatureState();
+                        final Double temperatureSensorState = c.getCapabilityState()
+                                .getTemperatureSensorTemperatureState();
                         if (temperatureSensorState != null) {
                             logger.debug("-> Temperature sensor state: {}", temperatureSensorState);
-                            DecimalType temp = new DecimalType(temperatureSensorState);
-                            updateState(CHANNEL_TEMPERATURE, temp);
+                            updateState(CHANNEL_TEMPERATURE, new DecimalType(temperatureSensorState));
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
                                     c.getCapabilityState().getId(), c.getId());
                         }
 
                         // frost warning
-                        Boolean temperatureSensorFrostWarningState = c.getCapabilityState()
+                        final Boolean temperatureSensorFrostWarningState = c.getCapabilityState()
                                 .getTemperatureSensorFrostWarningState();
                         if (temperatureSensorFrostWarningState != null) {
                             updateState(CHANNEL_FROST_WARNING,
@@ -416,13 +473,14 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         break;
                     case Capability.TYPE_THERMOSTATACTUATOR:
                         // point temperature
-                        Double thermostatActuatorPointTemperatureState = c.getCapabilityState()
+                        final Double thermostatActuatorPointTemperatureState = c.getCapabilityState()
                                 .getThermostatActuatorPointTemperatureState();
                         if (thermostatActuatorPointTemperatureState != null) {
-                            DecimalType pointTemp = new DecimalType(thermostatActuatorPointTemperatureState);
+                            final DecimalType pointTemp = new DecimalType(thermostatActuatorPointTemperatureState);
                             logger.debug(
                                     "Update CHANNEL_SET_TEMPERATURE: state:{}->decType:{} (DeviceName {}, Capab-ID:{})",
-                                    thermostatActuatorPointTemperatureState, pointTemp, device.getName(), c.getId());
+                                    thermostatActuatorPointTemperatureState, pointTemp, device.getConfig().getName(),
+                                    c.getId());
                             updateState(CHANNEL_SET_TEMPERATURE, pointTemp);
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
@@ -430,10 +488,10 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
 
                         // operation mode
-                        String thermostatActuatorOperationModeState = c.getCapabilityState()
+                        final String thermostatActuatorOperationModeState = c.getCapabilityState()
                                 .getThermostatActuatorOperationModeState();
                         if (thermostatActuatorOperationModeState != null) {
-                            StringType operationMode = new StringType(thermostatActuatorOperationModeState);
+                            final StringType operationMode = new StringType(thermostatActuatorOperationModeState);
                             updateState(CHANNEL_OPERATION_MODE, operationMode);
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
@@ -441,7 +499,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
 
                         // window reduction active
-                        Boolean thermostatActuatorWindowReductionActiveState = c.getCapabilityState()
+                        final Boolean thermostatActuatorWindowReductionActiveState = c.getCapabilityState()
                                 .getThermostatActuatorWindowReductionActiveState();
                         if (thermostatActuatorWindowReductionActiveState != null) {
                             updateState(CHANNEL_WINDOW_REDUCTION_ACTIVE,
@@ -453,9 +511,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         break;
                     case Capability.TYPE_HUMIDITYSENSOR:
                         // humidity
-                        Double humidityState = c.getCapabilityState().getHumiditySensorHumidityState();
+                        final Double humidityState = c.getCapabilityState().getHumiditySensorHumidityState();
                         if (humidityState != null) {
-                            DecimalType humidity = new DecimalType(humidityState);
+                            final DecimalType humidity = new DecimalType(humidityState);
                             updateState(CHANNEL_HUMIDITY, humidity);
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
@@ -463,7 +521,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
 
                         // mold warning
-                        Boolean humiditySensorMoldWarningState = c.getCapabilityState()
+                        final Boolean humiditySensorMoldWarningState = c.getCapabilityState()
                                 .getHumiditySensorMoldWarningState();
                         if (humiditySensorMoldWarningState != null) {
                             updateState(CHANNEL_MOLD_WARNING,
@@ -474,7 +532,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_WINDOWDOORSENSOR:
-                        Boolean contactState = c.getCapabilityState().getWindowDoorSensorState();
+                        final Boolean contactState = c.getCapabilityState().getWindowDoorSensorState();
                         if (contactState != null) {
                             updateState(CHANNEL_CONTACT, contactState ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                         } else {
@@ -483,7 +541,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_SMOKEDETECTORSENSOR:
-                        Boolean smokeState = c.getCapabilityState().getSmokeDetectorSensorState();
+                        final Boolean smokeState = c.getCapabilityState().getSmokeDetectorSensorState();
                         if (smokeState != null) {
                             updateState(CHANNEL_SMOKE, smokeState ? OnOffType.ON : OnOffType.OFF);
                         } else {
@@ -492,7 +550,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_ALARMACTUATOR:
-                        Boolean alarmState = c.getCapabilityState().getAlarmActuatorState();
+                        final Boolean alarmState = c.getCapabilityState().getAlarmActuatorState();
                         if (alarmState != null) {
                             updateState(CHANNEL_ALARM, alarmState ? OnOffType.ON : OnOffType.OFF);
                         } else {
@@ -501,9 +559,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_MOTIONDETECTIONSENSOR:
-                        Double motionState = c.getCapabilityState().getMotionDetectionSensorState();
+                        final Integer motionState = c.getCapabilityState().getMotionDetectionSensorState();
                         if (motionState != null) {
-                            DecimalType motionCount = new DecimalType(motionState);
+                            final DecimalType motionCount = new DecimalType(motionState);
                             logger.debug("Motion state {} -> count {}", motionState, motionCount);
                             updateState(CHANNEL_MOTION_COUNT, motionCount);
                         } else {
@@ -512,9 +570,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_LUMINANCESENSOR:
-                        Double luminanceState = c.getCapabilityState().getLuminanceSensorState();
+                        final Double luminanceState = c.getCapabilityState().getLuminanceSensorState();
                         if (luminanceState != null) {
-                            DecimalType luminance = new DecimalType(luminanceState);
+                            final DecimalType luminance = new DecimalType(luminanceState);
                             updateState(CHANNEL_LUMINANCE, luminance);
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
@@ -522,37 +580,32 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         }
                         break;
                     case Capability.TYPE_PUSHBUTTONSENSOR:
-                        Double pushCountState = c.getCapabilityState().getPushButtonSensorCounterState();
-                        Double buttonIndexState = c.getCapabilityState().getPushButtonSensorButtonIndexState();
+                        final Integer pushCountState = c.getCapabilityState().getPushButtonSensorCounterState();
+                        final Integer buttonIndexState = c.getCapabilityState().getPushButtonSensorButtonIndexState();
                         logger.debug("Pushbutton index {} count {}", buttonIndexState, pushCountState);
                         if (pushCountState != null) {
-                            DecimalType pushCount = new DecimalType(pushCountState);
-                            if (buttonIndexState.equals(0.0)) {
-                                triggerChannel(CHANNEL_BUTTON1, CommonTriggerEvents.PRESSED);
-                                updateState(CHANNEL_BUTTON1_COUNT, pushCount);
-                            } else if (buttonIndexState.equals(1.0)) {
-                                triggerChannel(CHANNEL_BUTTON2, CommonTriggerEvents.PRESSED);
-                                updateState(CHANNEL_BUTTON2_COUNT, pushCount);
-                            } else if (buttonIndexState.equals(2.0)) {
-                                triggerChannel(CHANNEL_BUTTON3, CommonTriggerEvents.PRESSED);
-                                updateState(CHANNEL_BUTTON3_COUNT, pushCount);
-                            } else if (buttonIndexState.equals(3.0)) {
-                                triggerChannel(CHANNEL_BUTTON4, CommonTriggerEvents.PRESSED);
-                                updateState(CHANNEL_BUTTON4_COUNT, pushCount);
-                            } else if (buttonIndexState.equals(4.0)) {
-                                triggerChannel(CHANNEL_BUTTON5, CommonTriggerEvents.PRESSED);
-                                updateState(CHANNEL_BUTTON5_COUNT, pushCount);
-                            } else if (buttonIndexState.equals(5.0)) {
-                                triggerChannel(CHANNEL_BUTTON6, CommonTriggerEvents.PRESSED);
-                                updateState(CHANNEL_BUTTON6_COUNT, pushCount);
-                            } else if (buttonIndexState.equals(6.0)) {
-                                triggerChannel(CHANNEL_BUTTON7, CommonTriggerEvents.PRESSED);
-                                updateState(CHANNEL_BUTTON7_COUNT, pushCount);
-                            } else if (buttonIndexState.equals(7.0)) {
-                                triggerChannel(CHANNEL_BUTTON8, CommonTriggerEvents.PRESSED);
-                                updateState(CHANNEL_BUTTON8_COUNT, pushCount);
+                            final DecimalType pushCount = new DecimalType(pushCountState);
+                            // prevent error when buttonIndexState is null
+                            if (buttonIndexState != null) {
+                                if (buttonIndexState >= 0 && buttonIndexState <= 7) {
+                                    final int channelIndex = buttonIndexState + 1;
+                                    final String type = c.getCapabilityState().getPushButtonSensorButtonIndexType();
+                                    final String triggerEvent = SHORT_PRESS.equals(type)
+                                            ? CommonTriggerEvents.SHORT_PRESSED
+                                            : (LONG_PRESS.equals(type) ? CommonTriggerEvents.LONG_PRESSED
+                                                    : CommonTriggerEvents.PRESSED);
+
+                                    triggerChannel(CHANNEL_BUTTON + channelIndex, triggerEvent);
+                                    updateState(String.format(CHANNEL_BUTTON_COUNT, channelIndex), pushCount);
+                                } else {
+                                    logger.debug("Button index {} not supported.", buttonIndexState);
+                                }
+                                // Button handled so remove state to avoid re-trigger.
+                                c.getCapabilityState().setPushButtonSensorButtonIndexState(null);
+                                c.getCapabilityState().setPushButtonSensorButtonIndexType(null);
                             } else {
-                                logger.debug("Button index {} not supported.", buttonIndexState);
+                                logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
+                                        c.getCapabilityState().getId(), c.getId());
                             }
                         } else {
                             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", c.getType(),
@@ -600,6 +653,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                         updateStateForEnergyChannel(CHANNEL_ENERGY_MONTH_EURO,
                                 c.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInEuroState(),
                                 c);
+                        updateStateForEnergyChannel(CHANNEL_ENERGY_DAY_EURO,
+                                c.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInEuroState(),
+                                c);
                         updateStateForEnergyChannel(CHANNEL_ENERGY_DAY_KWH,
                                 c.getCapabilityState().getTwoWayMeterEnergyConsumptionSensorEnergyPerDayInKWhState(),
                                 c);
@@ -626,6 +682,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 }
             }
         }
+
     }
 
     /**
@@ -635,9 +692,10 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      * @param state
      * @param capability
      */
-    private void updateStateForEnergyChannel(String channelId, Double state, Capability capability) {
+    private void updateStateForEnergyChannel(final String channelId, @Nullable final Double state,
+            final Capability capability) {
         if (state != null) {
-            DecimalType newValue = new DecimalType(state);
+            final DecimalType newValue = new DecimalType(state);
             updateState(channelId, newValue);
         } else {
             logger.debug("State for {} is STILL NULL!! cstate-id: {}, c-id: {}", capability.getType(),
@@ -646,11 +704,10 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     @Override
-    public void onDeviceStateChanged(Device device, Event event) {
+    public void onDeviceStateChanged(final Device changedDevice, final Event event) {
         synchronized (this.lock) {
+            Device device = changedDevice;
             if (!deviceId.equals(device.getId())) {
-                logger.trace("DeviceId {} not relevant for this handler (responsible for id {})", device.getId(),
-                        deviceId);
                 return;
             }
 
@@ -658,327 +715,236 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
 
             if (event.isLinkedtoCapability()) {
                 boolean deviceChanged = false;
-                String linkId = event.getLinkId();
-                for (Property p : event.getPropertyList()) {
-                    logger.debug("State changed {} to {}.", p.getName(), p.getValue());
-                    HashMap<String, Capability> capabilityMap = device.getCapabilityMap();
-                    Capability capability = capabilityMap.get(linkId);
-                    logger.trace("Loaded Capability {}, {} with id {}, device {} from device id {}",
-                            capability.getType(), capability.getName(), capability.getId(),
-                            capability.getDeviceLink().get(0).getValue(), device.getId());
+                final String linkedCapabilityId = event.getSourceId();
 
-                    CapabilityState capabilityState;
-                    if (capability.hasState()) {
-                        capabilityState = capability.getCapabilityState();
-                    } else {
-                        logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
-                        device = getInnogyBridgeHandler().refreshDevice(deviceId);
+                HashMap<String, Capability> capabilityMap = device.getCapabilityMap();
+                Capability capability = capabilityMap.get(linkedCapabilityId);
+                logger.trace("Loaded Capability {}, {} with id {}, device {} from device id {}", capability.getType(),
+                        capability.getName(), capability.getId(), capability.getDeviceLink(), device.getId());
 
-                        capabilityMap = device.getCapabilityMap();
-                        capability = capabilityMap.get(linkId);
-                        if (capability.hasState()) {
-                            capabilityState = capability.getCapabilityState();
-                        } else {
-                            continue;
-                        }
-                    }
+                CapabilityState capabilityState;
+                if (capability.hasState()) {
+                    capabilityState = capability.getCapabilityState();
 
-                    // TODO: ADD DEVICES
                     // VariableActuator
                     if (capability.isTypeVariableActuator()) {
-                        capabilityState.setVariableActuatorState((boolean) p.getValue());
+                        capabilityState.setVariableActuatorState(event.getProperties().getValue());
                         deviceChanged = true;
 
                         // SwitchActuator
                     } else if (capability.isTypeSwitchActuator()) {
-                        capabilityState.setSwitchActuatorState((boolean) p.getValue());
+                        capabilityState.setSwitchActuatorState(event.getProperties().getOnState());
                         deviceChanged = true;
 
                         // DimmerActuator
                     } else if (capability.isTypeDimmerActuator()) {
-                        capabilityState.setDimmerActuatorState((double) p.getValue());
+                        capabilityState.setDimmerActuatorState(event.getProperties().getDimLevel());
                         deviceChanged = true;
 
                         // RollerShutterActuator
                     } else if (capability.isTypeRollerShutterActuator()) {
-                        capabilityState.setRollerShutterActuatorState((double) p.getValue());
+                        capabilityState.setRollerShutterActuatorState(event.getProperties().getShutterLevel());
                         deviceChanged = true;
 
                         // TemperatureSensor
                     } else if (capability.isTypeTemperatureSensor()) {
-                        if (p.getName().equals(CapabilityState.STATE_NAME_TEMPERATURE_SENSOR_TEMPERATURE)) {
-                            capabilityState.setTemperatureSensorTemperatureState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(CapabilityState.STATE_NAME_TEMPERATURE_SENSOR_FROST_WARNING)) {
-                            capabilityState.setTemperatureSensorFrostWarningState((boolean) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
+                        // when values are changed, they come with separate events
+                        // values should only updated when they are not null
+                        final Double tmpTemperatureState = event.getProperties().getTemperature();
+                        final Boolean tmpFrostWarningState = event.getProperties().getFrostWarning();
+                        if (tmpTemperatureState != null) {
+                            capabilityState.setTemperatureSensorTemperatureState(tmpTemperatureState);
                         }
+                        if (tmpFrostWarningState != null) {
+                            capabilityState.setTemperatureSensorFrostWarningState(tmpFrostWarningState);
+                        }
+                        deviceChanged = true;
 
                         // ThermostatActuator
                     } else if (capability.isTypeThermostatActuator()) {
-                        // point temperature
-                        if (p.getName().equals(CapabilityState.STATE_NAME_THERMOSTAT_ACTUATOR_POINT_TEMPERATURE)) {
-                            capabilityState.setThermostatActuatorPointTemperatureState((double) p.getValue());
-                            deviceChanged = true;
-                            logger.debug("ThermostatActuator PointTemperature State: {}",
-                                    capabilityState.getThermostatActuatorPointTemperatureState());
-                            logger.debug("ThermostatActuator PointTemperature State from device: {}",
-                                    device.getCapabilityMap().get(linkId).getCapabilityState()
-                                            .getThermostatActuatorPointTemperatureState());
+                        // when values are changed, they come with separate events
+                        // values should only updated when they are not null
 
-                            // operation mode
-                        } else if (p.getName().equals(CapabilityState.STATE_NAME_THERMOSTAT_ACTUATOR_OPERATION_MODE)) {
-                            capabilityState.setThermostatActuatorOperationModeState((String) p.getValue());
-                            deviceChanged = true;
-                            logger.debug("ThermostatActuator OperationMode State: {}",
-                                    capabilityState.getThermostatActuatorOperationModeState());
+                        final Double tmpPointTemperatureState = event.getProperties().getPointTemperature();
+                        final String tmpOperationModeState = event.getProperties().getOperationMode();
+                        final Boolean tmpWindowReductionActiveState = event.getProperties().getWindowReductionActive();
 
-                            // window reduction active
-                        } else if (p.getName()
-                                .equals(CapabilityState.STATE_NAME_THERMOSTAT_ACTUATOR_WINDOW_REDUCTION_ACTIVE)) {
-                            capabilityState.setThermostatActuatorWindowReductionActiveState((boolean) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
+                        if (tmpPointTemperatureState != null) {
+                            capabilityState.setThermostatActuatorPointTemperatureState(tmpPointTemperatureState);
                         }
+                        if (tmpOperationModeState != null) {
+                            capabilityState.setThermostatActuatorOperationModeState(tmpOperationModeState);
+                        }
+                        if (tmpWindowReductionActiveState != null) {
+                            capabilityState
+                                    .setThermostatActuatorWindowReductionActiveState(tmpWindowReductionActiveState);
+                        }
+                        deviceChanged = true;
 
                         // HumiditySensor
                     } else if (capability.isTypeHumiditySensor()) {
-                        // humidity
-                        if (p.getName().equals(CapabilityState.STATE_NAME_HUMIDITY_SENSOR_HUMIDITY)) {
-                            capabilityState.setHumiditySensorHumidityState((double) p.getValue());
-                            deviceChanged = true;
-
-                            // mold warning
-                        } else if (p.getName().equals(CapabilityState.STATE_NAME_HUMIDITY_SENSOR_MOLD_WARNING)) {
-                            capabilityState.setHumiditySensorMoldWarningState((boolean) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
+                        // when values are changed, they come with separate events
+                        // values should only updated when they are not null
+                        final Double tmpHumidityState = event.getProperties().getHumidity();
+                        final Boolean tmpMoldWarningState = event.getProperties().getMoldWarning();
+                        if (tmpHumidityState != null) {
+                            capabilityState.setHumiditySensorHumidityState(tmpHumidityState);
                         }
+                        if (tmpMoldWarningState != null) {
+                            capabilityState.setHumiditySensorMoldWarningState(tmpMoldWarningState);
+                        }
+                        deviceChanged = true;
 
                         // WindowDoorSensor
                     } else if (capability.isTypeWindowDoorSensor()) {
-                        if (p.getName().equals(CapabilityState.STATE_NAME_WINDOW_DOOR_SENSOR)) {
-                            capabilityState.setWindowDoorSensorState((boolean) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
-                        }
+                        capabilityState.setWindowDoorSensorState(event.getProperties().getIsOpen());
+                        deviceChanged = true;
 
                         // SmokeDetectorSensor
                     } else if (capability.isTypeSmokeDetectorSensor()) {
-                        if (p.getName().equals(CapabilityState.STATE_NAME_SMOKE_DETECTOR_SENSOR)) {
-                            capabilityState.setSmokeDetectorSensorState((boolean) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
-                        }
+                        capabilityState.setSmokeDetectorSensorState(event.getProperties().getIsSmokeAlarm());
+                        deviceChanged = true;
 
                         // AlarmActuator
                     } else if (capability.isTypeAlarmActuator()) {
-                        if (p.getName().equals(CapabilityState.STATE_NAME_ALARM_ACTUATOR)) {
-                            capabilityState.setAlarmActuatorState((boolean) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
-                        }
+                        capabilityState.setAlarmActuatorState(event.getProperties().getOnState());
+                        deviceChanged = true;
 
                         // MotionDetectionSensor
                     } else if (capability.isTypeMotionDetectionSensor()) {
-                        if (p.getName().equals(CapabilityState.STATE_NAME_MOTION_DETECTION_SENSOR)) {
-                            capabilityState.setMotionDetectionSensorState((double) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
-                        }
+                        capabilityState.setMotionDetectionSensorState(event.getProperties().getMotionDetectedCount());
+                        deviceChanged = true;
 
                         // LuminanceSensor
                     } else if (capability.isTypeLuminanceSensor()) {
-                        if (p.getName().equals(CapabilityState.STATE_NAME_LUMINANCE_SENSOR)) {
-                            capabilityState.setLuminanceSensorState((double) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
-                        }
+                        capabilityState.setLuminanceSensorState(event.getProperties().getLuminance());
+                        deviceChanged = true;
 
                         // PushButtonSensor
                     } else if (capability.isTypePushButtonSensor()) {
-                        if (p.getName().equals(CapabilityState.STATE_NAME_PUSH_BUTTON_SENSOR_BUTTON_INDEX)) {
-                            capabilityState.setPushButtonSensorButtonIndexState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(CapabilityState.STATE_NAME_PUSH_BUTTON_SENSOR_COUNTER)) {
-                            capabilityState.setPushButtonSensorCounterState((double) p.getValue());
-                            deviceChanged = true;
-                        } else {
-                            logger.debug("Capability-property {} not yet supported.", p.getName());
+                        // if the same button is pressed more than once
+                        // the buttonIndex and LastKeyPressCounter come with two events
+                        // updates should only do when arriving value
+                        final Integer tmpButtonIndex = event.getProperties().getLastPressedButtonIndex();
+                        final Integer tmpLastKeyPressCounter = event.getProperties().getLastKeyPressCounter();
+                        final String lastKeyPressType = event.getProperties().getLastKeyPressType();
+                        if (tmpButtonIndex != null && lastKeyPressType != null) {
+                            capabilityState.setPushButtonSensorButtonIndexState(tmpButtonIndex);
+                            capabilityState.setPushButtonSensorButtonIndexType(lastKeyPressType);
                         }
+                        if (tmpLastKeyPressCounter != null) {
+                            capabilityState.setPushButtonSensorCounterState(tmpLastKeyPressCounter);
+                        }
+                        deviceChanged = true;
 
                         // EnergyConsumptionSensor
                     } else if (capability.isTypeEnergyConsumptionSensor()) {
-                        if (p.getName().equals(
-                                CapabilityState.STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_MONTH_KWH)) {
-                            capabilityState
-                                    .setEnergyConsumptionSensorEnergyConsumptionMonthKWhState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ABSOLUTE_ENERGY_CONSUMPTION)) {
-                            capabilityState
-                                    .setEnergyConsumptionSensorAbsoluteEnergyConsumptionState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_MONTH_EURO)) {
-                            capabilityState
-                                    .setEnergyConsumptionSensorEnergyConsumptionMonthEuroState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_DAY_EURO)) {
-                            capabilityState
-                                    .setEnergyConsumptionSensorEnergyConsumptionDayEuroState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_ENERGY_CONSUMPTION_SENSOR_ENERGY_CONSUMPTION_DAY_KWH)) {
-                            capabilityState
-                                    .setEnergyConsumptionSensorEnergyConsumptionDayKWhState((double) p.getValue());
-                            deviceChanged = true;
-                        }
+                        capabilityState.setEnergyConsumptionSensorEnergyConsumptionMonthKWhState(
+                                event.getProperties().getEnergyConsumptionMonthKWh());
+                        capabilityState.setEnergyConsumptionSensorAbsoluteEnergyConsumptionState(
+                                event.getProperties().getAbsoluteEnergyConsumption());
+                        capabilityState.setEnergyConsumptionSensorEnergyConsumptionMonthEuroState(
+                                event.getProperties().getEnergyConsumptionMonthEuro());
+                        capabilityState.setEnergyConsumptionSensorEnergyConsumptionDayEuroState(
+                                event.getProperties().getEnergyConsumptionDayEuro());
+                        capabilityState.setEnergyConsumptionSensorEnergyConsumptionDayKWhState(
+                                event.getProperties().getEnergyConsumptionDayKWh());
+                        deviceChanged = true;
 
                         // PowerConsumptionSensor
                     } else if (capability.isTypePowerConsumptionSensor()) {
-                        if (p.getName()
-                                .equals(CapabilityState.STATE_NAME_POWER_CONSUMPTION_SENSOR_POWER_CONSUMPTION_WATT)) {
-                            capabilityState.setPowerConsumptionSensorPowerConsumptionWattState((double) p.getValue());
-                            deviceChanged = true;
-                        }
+                        capabilityState.setPowerConsumptionSensorPowerConsumptionWattState(
+                                event.getProperties().getPowerConsumptionWatt());
+                        deviceChanged = true;
 
                         // GenerationMeterEnergySensor
                     } else if (capability.isTypeGenerationMeterEnergySensor()) {
-                        if (p.getName().equals(
-                                CapabilityState.STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_MONTH_IN_KWH)) {
-                            capabilityState
-                                    .setGenerationMeterEnergySensorEnergyPerMonthInKWhState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName()
-                                .equals(CapabilityState.STATE_NAME_GENERATION_METER_ENERGY_SENSOR_TOTAL_ENERGY)) {
-                            capabilityState.setGenerationMeterEnergySensorTotalEnergyState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_MONTH_IN_EURO)) {
-                            capabilityState
-                                    .setGenerationMeterEnergySensorEnergyPerMonthInEuroState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_DAY_IN_EURO)) {
-                            capabilityState
-                                    .setGenerationMeterEnergySensorEnergyPerDayInEuroState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_GENERATION_METER_ENERGY_SENSOR_ENERGY_PER_DAY_IN_KWH)) {
-                            capabilityState.setGenerationMeterEnergySensorEnergyPerDayInKWhState((double) p.getValue());
-                            deviceChanged = true;
-                        }
+                        capabilityState.setGenerationMeterEnergySensorEnergyPerMonthInKWhState(
+                                event.getProperties().getEnergyPerMonthInKWh());
+                        capabilityState
+                                .setGenerationMeterEnergySensorTotalEnergyState(event.getProperties().getTotalEnergy());
+                        capabilityState.setGenerationMeterEnergySensorEnergyPerMonthInEuroState(
+                                event.getProperties().getEnergyPerMonthInEuro());
+                        capabilityState.setGenerationMeterEnergySensorEnergyPerDayInEuroState(
+                                event.getProperties().getEnergyPerDayInEuro());
+                        capabilityState.setGenerationMeterEnergySensorEnergyPerDayInKWhState(
+                                event.getProperties().getEnergyPerDayInKWh());
+                        deviceChanged = true;
 
                         // GenerationMeterPowerConsumptionSensor
                     } else if (capability.isTypeGenerationMeterPowerConsumptionSensor()) {
-                        if (p.getName().equals(
-                                CapabilityState.STATE_NAME_GENERATION_METER_POWER_CONSUMPTION_SENSOR_POWER_IN_WATT)) {
-                            capabilityState
-                                    .setGenerationMeterPowerConsumptionSensorPowerInWattState((double) p.getValue());
-                            deviceChanged = true;
-                        }
+                        capabilityState.setGenerationMeterPowerConsumptionSensorPowerInWattState(
+                                event.getProperties().getPowerInWatt());
+                        deviceChanged = true;
 
                         // TwoWayMeterEnergyConsumptionSensor
                     } else if (capability.isTypeTwoWayMeterEnergyConsumptionSensor()) {
-                        if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_MONTH_IN_KWH)) {
-                            capabilityState.setTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInKWhState(
-                                    (double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_TOTAL_ENERGY)) {
-                            capabilityState
-                                    .setTwoWayMeterEnergyConsumptionSensorTotalEnergyState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_MONTH_IN_EURO)) {
-                            capabilityState.setTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInEuroState(
-                                    (double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_DAY_IN_EURO)) {
-                            capabilityState.setTwoWayMeterEnergyConsumptionSensorEnergyPerDayInEuroState(
-                                    (double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_CONSUMPTION_SENSOR_ENERGY_PER_DAY_IN_KWH)) {
-                            capabilityState
-                                    .setTwoWayMeterEnergyConsumptionSensorEnergyPerDayInKWhState((double) p.getValue());
-                            deviceChanged = true;
-                        }
+                        capabilityState.setTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInKWhState(
+                                event.getProperties().getEnergyPerMonthInKWh());
+                        capabilityState.setTwoWayMeterEnergyConsumptionSensorTotalEnergyState(
+                                event.getProperties().getTotalEnergy());
+                        capabilityState.setTwoWayMeterEnergyConsumptionSensorEnergyPerMonthInEuroState(
+                                event.getProperties().getEnergyPerMonthInEuro());
+                        capabilityState.setTwoWayMeterEnergyConsumptionSensorEnergyPerDayInEuroState(
+                                event.getProperties().getEnergyPerDayInEuro());
+                        capabilityState.setTwoWayMeterEnergyConsumptionSensorEnergyPerDayInKWhState(
+                                event.getProperties().getEnergyPerDayInKWh());
+                        deviceChanged = true;
 
                         // TwoWayMeterEnergyFeedSensor
                     } else if (capability.isTypeTwoWayMeterEnergyFeedSensor()) {
-                        if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_MONTH_IN_KWH)) {
-                            capabilityState
-                                    .setTwoWayMeterEnergyFeedSensorEnergyPerMonthInKWhState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName()
-                                .equals(CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_TOTAL_ENERGY)) {
-                            capabilityState.setTwoWayMeterEnergyFeedSensorTotalEnergyState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_MONTH_IN_EURO)) {
-                            capabilityState
-                                    .setTwoWayMeterEnergyFeedSensorEnergyPerMonthInEuroState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_DAY_IN_EURO)) {
-                            capabilityState
-                                    .setTwoWayMeterEnergyFeedSensorEnergyPerDayInEuroState((double) p.getValue());
-                            deviceChanged = true;
-                        } else if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_ENERGY_FEED_SENSOR_ENERGY_PER_DAY_IN_KWH)) {
-                            capabilityState.setTwoWayMeterEnergyFeedSensorEnergyPerDayInKWhState((double) p.getValue());
-                            deviceChanged = true;
-                        }
+                        capabilityState.setTwoWayMeterEnergyFeedSensorEnergyPerMonthInKWhState(
+                                event.getProperties().getEnergyPerMonthInKWh());
+                        capabilityState
+                                .setTwoWayMeterEnergyFeedSensorTotalEnergyState(event.getProperties().getTotalEnergy());
+                        capabilityState.setTwoWayMeterEnergyFeedSensorEnergyPerMonthInEuroState(
+                                event.getProperties().getEnergyPerMonthInEuro());
+                        capabilityState.setTwoWayMeterEnergyFeedSensorEnergyPerDayInEuroState(
+                                event.getProperties().getEnergyPerDayInEuro());
+                        capabilityState.setTwoWayMeterEnergyFeedSensorEnergyPerDayInKWhState(
+                                event.getProperties().getEnergyPerDayInKWh());
+                        deviceChanged = true;
 
                         // TwoWayMeterPowerConsumptionSensor
                     } else if (capability.isTypeTwoWayMeterPowerConsumptionSensor()) {
-                        if (p.getName().equals(
-                                CapabilityState.STATE_NAME_TWO_WAY_METER_POWER_CONSUMPTION_SENSOR_POWER_IN_WATT)) {
-                            capabilityState.setTwoWayMeterPowerConsumptionSensorPowerInWattState((double) p.getValue());
-                            deviceChanged = true;
-                        }
+                        capabilityState.setTwoWayMeterPowerConsumptionSensorPowerInWattState(
+                                event.getProperties().getPowerInWatt());
+                        deviceChanged = true;
+
                     } else {
                         logger.debug("Unsupported capability type {}.", capability.getType());
-                        continue;
+                    }
+                } else { // capability.hasState()
+                    logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
+                    final InnogyBridgeHandler innogyBridgeHandler = getInnogyBridgeHandler();
+
+                    if (innogyBridgeHandler != null) {
+                        device = innogyBridgeHandler.refreshDevice(deviceId);
+                    }
+                    if (device != null) {
+                        capabilityMap = device.getCapabilityMap();
+                        capability = capabilityMap.get(linkedCapabilityId);
+                        if (capability.hasState()) {
+                            capabilityState = capability.getCapabilityState();
+                            deviceChanged = true;
+                        }
                     }
                 }
-
-                if (deviceChanged) {
+                if (deviceChanged && device != null) {
                     onDeviceStateChanged(device);
                 }
 
             } else if (event.isLinkedtoDevice()) {
-                if (device.hasState()) {
-                    Map<String, Property> stateMap = device.getDeviceState().getStateMap();
-                    for (Property p : event.getPropertyList()) {
-                        logger.debug("State changed {} to {}.", p.getName(), p.getValue());
-
-                        stateMap.get(p.getName()).setValue(p.getValue());
-                        stateMap.get(p.getName()).setLastchanged((p.getLastchanged()));
-                    }
+                if (device.hasDeviceState()) {
                     onDeviceStateChanged(device);
                 } else {
-                    logger.debug("Device {}/{} has no state.", device.getName(), device.getId());
+                    logger.debug("Device {}/{} has no state.", device.getConfig().getName(), device.getId());
                     return;
                 }
 
             }
         }
+
     }
 
     /**
@@ -987,18 +953,18 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      * @param value
      * @return the value or the inverted value
      */
-    private int invertValueIfConfigured(String channelId, int value) {
+    private int invertValueIfConfigured(final String channelId, final int value) {
         if (!CHANNEL_ROLLERSHUTTER.equals(channelId)) {
             logger.debug("Channel {} cannot be inverted.", channelId);
             return value;
         }
+        final Channel channel = getThing().getChannel(channelId);
 
-        Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.debug("Channel {} was null! Value not inverted.", channelId);
             return value;
         }
-
-        return 100 - value;
+        final Boolean invert = (Boolean) channel.getConfiguration().get("invert");
+        return invert != null && invert ? value : (100 - value);
     }
 }

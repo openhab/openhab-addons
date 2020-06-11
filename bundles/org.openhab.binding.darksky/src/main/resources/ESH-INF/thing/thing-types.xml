@@ -10,7 +10,7 @@
 			<bridge-type-ref id="weather-api" />
 		</supported-bridge-type-refs>
 
-		<label>Weather And Forecast</label>
+		<label>Weather and Forecast</label>
 		<description>Provides current weather and forecast data from the Dark Sky API.</description>
 
 		<channel-groups>

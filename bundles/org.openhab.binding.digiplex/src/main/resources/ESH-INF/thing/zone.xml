@@ -35,7 +35,7 @@
 
 	<channel-type id="extended_status">
 		<item-type>String</item-type>
-		<label>Extended zone status</label>
+		<label>Extended Zone Status</label>
 		<description>Indicates actual zone state as a string</description>
 		<state readOnly="true">
 			<options>
@@ -49,7 +49,7 @@
 
 	<channel-type id="alarm">
 		<item-type>Contact</item-type>
-		<label>Alarm triggered</label>
+		<label>Alarm Triggered</label>
 		<description>Indicates if zone is in alarm</description>
 		<state readOnly="true">
 			<options>
@@ -61,7 +61,7 @@
 
 	<channel-type id="fire_alarm">
 		<item-type>Contact</item-type>
-		<label>Fire alarm triggered</label>
+		<label>Fire Alarm Triggered</label>
 		<description>Indicates if zone is in fire alarm</description>
 		<state readOnly="true">
 			<options>
@@ -73,7 +73,7 @@
 
 	<channel-type id="supervision_lost">
 		<item-type>Contact</item-type>
-		<label>Supervision lost</label>
+		<label>Supervision Lost</label>
 		<description>Indicates if zone has lost a supervision</description>
 		<state readOnly="true">
 			<options>
@@ -85,7 +85,7 @@
 
 	<channel-type id="low_battery">
 		<item-type>Contact</item-type>
-		<label>Low battery warning</label>
+		<label>Low Battery Warning</label>
 		<description>Indicates if zone is low on battery</description>
 		<state readOnly="true">
 			<options>
@@ -97,7 +97,7 @@
 
 	<channel-type id="last_triggered">
 		<item-type>DateTime</item-type>
-		<label>Last triggered time</label>
+		<label>Last Triggered Time</label>
 		<description>Indicates when the zone has been triggered for the last time</description>
 		<state readOnly="true" />
 	</channel-type>

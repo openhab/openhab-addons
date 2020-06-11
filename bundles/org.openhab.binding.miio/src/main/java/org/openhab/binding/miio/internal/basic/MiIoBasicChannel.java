@@ -53,7 +53,7 @@ public class MiIoBasicChannel {
     private String channelGroup;
     @SerializedName("actions")
     @Expose
-    private List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<MiIoDeviceAction>();;
+    private List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<MiIoDeviceAction>();
 
     public String getProperty() {
         return property;

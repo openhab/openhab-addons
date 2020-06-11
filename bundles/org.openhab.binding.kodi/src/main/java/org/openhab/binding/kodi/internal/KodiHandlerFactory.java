@@ -66,7 +66,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         Dictionary<String, Object> properties = componentContext.getProperties();
         callbackUrl = (String) properties.get("callbackUrl");
-    };
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -78,10 +78,11 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_KODI)) {
-            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider, webSocketClient);
+            String callbackUrl = createCallbackUrl();
+            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider, webSocketClient, callbackUrl);
 
             // register the Kodi as an audio sink
-            KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, createCallbackUrl());
+            KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
                     .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());

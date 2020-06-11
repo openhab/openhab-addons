@@ -33,7 +33,7 @@ The received extensions description is XML. The schema is like in the following 
         <created>1487690446</created>
         <changed>1489494314</changed>
         <foundationmember>1</foundationmember>
-        <homepageurl>http://www.openhabfoundation.org</homepageurl>
+        <homepageurl>https://www.openhabfoundation.org</homepageurl>
         <image>
             https://marketplace.eclipse.org/sites/default/files/styles/ds_medium/public/iot-package/logo/heating.png?itok=qMbbIXEU
         </image>

@@ -22,8 +22,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.bluetooth.ruuvitag.RuuviTagBindingConstants;
-import org.openhab.binding.bluetooth.ruuvitag.handler.RuuviTagHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**

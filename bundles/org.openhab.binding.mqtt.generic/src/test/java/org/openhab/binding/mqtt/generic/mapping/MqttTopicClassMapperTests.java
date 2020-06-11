@@ -97,7 +97,7 @@ public class MqttTopicClassMapperTests {
         public @NonNull Object getFieldsOf() {
             return this;
         }
-    };
+    }
 
     @Mock
     MqttBrokerConnection connection;

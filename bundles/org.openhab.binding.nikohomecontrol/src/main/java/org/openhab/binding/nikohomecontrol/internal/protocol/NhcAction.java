@@ -32,7 +32,7 @@ public abstract class NhcAction {
 
     private final Logger logger = LoggerFactory.getLogger(NhcAction.class);
 
-    protected @Nullable NikoHomeControlCommunication nhcComm;
+    protected NikoHomeControlCommunication nhcComm;
 
     protected String id;
     protected String name;
@@ -45,11 +45,13 @@ public abstract class NhcAction {
     @Nullable
     private NhcActionEvent eventHandler;
 
-    protected NhcAction(String id, String name, ActionType type, @Nullable String location) {
+    protected NhcAction(String id, String name, ActionType type, @Nullable String location,
+            NikoHomeControlCommunication nhcComm) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.location = location;
+        this.nhcComm = nhcComm;
     }
 
     /**
@@ -61,17 +63,6 @@ public abstract class NhcAction {
      */
     public void setEventHandler(NhcActionEvent eventHandler) {
         this.eventHandler = eventHandler;
-    }
-
-    /**
-     * This method sets a pointer to the nhcComm object of class {@link NikoHomeControlCommuncation}.
-     * This is then used to be able to call back the sendCommand method in this class to send a command to the
-     * Niko Home Control IP-interface when..
-     *
-     * @param nhcComm
-     */
-    public void setNhcComm(NikoHomeControlCommunication nhcComm) {
-        this.nhcComm = nhcComm;
     }
 
     /**

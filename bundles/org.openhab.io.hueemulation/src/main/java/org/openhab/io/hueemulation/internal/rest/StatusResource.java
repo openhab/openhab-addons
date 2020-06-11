@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class StatusResource implements RegistryListener {
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policyOption = ReferencePolicyOption.GREEDY)
-    protected @NonNullByDefault({}) UpnpServer discovery;
+    protected @Nullable UpnpServer discovery;
     @Reference
     protected @NonNullByDefault({}) ConfigStore cs;
     @Reference
@@ -125,11 +125,10 @@ public class StatusResource implements RegistryListener {
     @Path("status")
     @Produces("text/html")
     public String getStatus() {
-        if (discovery == null) { // Optional service wiring
+        UpnpServer localDiscovery = discovery;
+        if (localDiscovery == null) { // Optional service wiring
             return "UPnP Server service not started!";
         }
-
-        int httpPort = discovery.getDefaultport();
 
         String format = "<html><body><h1>Self test</h1>" + //
                 "<p>To access any links you need be in pairing mode!</p>" + //
@@ -145,18 +144,18 @@ public class StatusResource implements RegistryListener {
                 + //
                 "<h2>Users</h2><ul>%s</ul></body></html>";
 
-        final String users = cs.ds.config.whitelist.entrySet().stream().map(user -> "<li>" + user.getKey() + " <b>"
+        String users = cs.ds.config.whitelist.entrySet().stream().map(user -> "<li>" + user.getKey() + " <b>"
                 + user.getValue().name + "</b> <small>" + user.getValue().lastUseDate + "</small>")
                 .collect(Collectors.joining("\n"));
 
-        final String url = "http://" + cs.ds.config.ipaddress + ":" + String.valueOf(httpPort);
+        String url = "http://" + cs.ds.config.ipaddress + ":" + String.valueOf(localDiscovery.getDefaultport());
 
-        final String reachable = discovery.selfTests().stream()
+        String reachable = localDiscovery.selfTests().stream()
                 .map(entry -> TR(TD(entry.address) + TD(toYesNo(entry.reachable)) + TD(toYesNo(entry.isOurs))))
                 .collect(Collectors.joining("\n"));
 
         Registry registry = upnpService.getRegistry();
-        final String upnps;
+        String upnps;
         if (registry != null) {
             upnps = registry.getRemoteDevices().stream().map(device -> getDetails(device))
                     .map(details -> TR(TD(details.getSerialNumber()) + TD(details.getFriendlyName())))
@@ -165,7 +164,7 @@ public class StatusResource implements RegistryListener {
             upnps = TR(TD("service not available") + TD(""));
         }
 
-        if (!discovery.upnpAnnouncementThreadRunning()) {
+        if (!localDiscovery.upnpAnnouncementThreadRunning()) {
             selfTestUpnpFound = upnpStatus.upnp_announcement_thread_not_running;
         }
 
@@ -224,7 +223,9 @@ public class StatusResource implements RegistryListener {
     @NonNullByDefault({})
     @Override
     public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
-        if (selfTestUpnpFound != upnpStatus.success || discovery.upnpAnnouncementThreadRunning()) {
+        UpnpServer localDiscovery = discovery;
+        if (selfTestUpnpFound != upnpStatus.success || localDiscovery == null
+                || localDiscovery.upnpAnnouncementThreadRunning()) {
             return;
         }
         DeviceDetails details = getDetails(device);
@@ -237,7 +238,9 @@ public class StatusResource implements RegistryListener {
     @NonNullByDefault({})
     @Override
     public void localDeviceAdded(Registry registry, LocalDevice device) {
-        if (selfTestUpnpFound == upnpStatus.success || discovery.upnpAnnouncementThreadRunning()) {
+        UpnpServer localDiscovery = discovery;
+        if (selfTestUpnpFound == upnpStatus.success || localDiscovery == null
+                || localDiscovery.upnpAnnouncementThreadRunning()) {
             return;
         }
         checkForDevice(getDetails(device));

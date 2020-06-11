@@ -33,28 +33,28 @@
 	</channel-type>
 	<channel-type id="f1145-type-40025">
 		<item-type>Number:Temperature</item-type>
-		<label>BT20 Exhaust air temp. 1</label>
+		<label>BT20 Exhaust Air Temp. 1</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f1145-type-40026">
 		<item-type>Number:Temperature</item-type>
-		<label>BT21 Vented air temp. 1</label>
+		<label>BT21 Vented Air Temp. 1</label>
 		<description></description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f1145-type-40015">
 		<item-type>Number:Temperature</item-type>
-		<label>EB100-EP14-BT10 Brine In Temperature</label>
+		<label>EB100-EP14-BT10 Brine in Temperature</label>
 		<description>Brine in temperature, BT10</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f1145-type-40016">
 		<item-type>Number:Temperature</item-type>
-		<label>EB100-EP14-BT11 Brine Out Temperature</label>
+		<label>EB100-EP14-BT11 Brine out Temperature</label>
 		<description>Brine out temperature, BT11</description>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
@@ -68,14 +68,14 @@
 	</channel-type>
 	<channel-type id="f1145-type-43416">
 		<item-type>Number</item-type>
-		<label>Compressor starts EB100-EP14</label>
+		<label>Compressor Starts EB100-EP14</label>
 		<description>Number of compressor starts</description>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f1145-type-43103">
 		<item-type>Number</item-type>
-		<label>HPAC state</label>
+		<label>HPAC State</label>
 		<description>State of the HPAC accessory</description>
 		<state pattern="%d" readOnly="true">
 			<options>
@@ -98,14 +98,14 @@
 	</channel-type>
 	<channel-type id="f1145-type-43420">
 		<item-type>Number:Time</item-type>
-		<label>Tot. op.time compr. EB100-EP14</label>
+		<label>Tot. Op.time Compr. EB100-EP14</label>
 		<description>Total compressor operation time</description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="f1145-type-43424">
 		<item-type>Number:Time</item-type>
-		<label>Tot. HW op.time compr. EB100-EP14</label>
+		<label>Tot. HW Op.time Compr. EB100-EP14</label>
 		<description>Total compressor operation time in hot water mode</description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>

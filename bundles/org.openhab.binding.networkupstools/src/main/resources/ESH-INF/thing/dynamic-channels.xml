@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="networkupstools"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<description>String channel</description>
+		<state readOnly="true" />
+		<config-description-ref uri="channel-type:ups:dynamic-channel-config" />
+	</channel-type>
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<description>Number channel</description>
+		<state readOnly="true" />
+		<config-description-ref uri="channel-type:ups:dynamic-channel-config" />
+	</channel-type>
+	<channel-type id="number-electric-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Electric Current</label>
+		<description>Electric Current channel</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type" />
+	</channel-type>
+	<channel-type id="number-electric-potential">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Electric Potential</label>
+		<description>Electric Potential channel</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type" />
+	</channel-type>
+	<channel-type id="number-frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<description>Frequency channel</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type" />
+	</channel-type>
+	<channel-type id="number-power">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Power channel</description>
+		<state pattern="%.1f %unit%" readOnly="true" />
+		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type" />
+	</channel-type>
+	<channel-type id="number-time">
+		<item-type>Number:Time</item-type>
+		<label>Time</label>
+		<description>Time channel</description>
+		<state pattern="%d %unit%" readOnly="true" />
+		<config-description-ref uri="channel-type:ups:dynamic-channel-config-quantity-type" />
+	</channel-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch channel</description>
+		<state readOnly="true" />
+		<config-description-ref uri="channel-type:ups:dynamic-channel-config" />
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -80,7 +80,7 @@ public class PitayaDevice extends DeviceBase {
                 }
             }
         } catch (Exception e) {
-            logger.debug("Exception: {}", e);
+            logger.debug("Exception", e);
         }
 
         super.onNotify(msg);

@@ -173,7 +173,7 @@
 	</channel-type>
 	<channel-type id="menuItem" advanced="true">
 		<item-type>String</item-type>
-		<label>Menu item</label>
+		<label>Menu Item</label>
 		<description>Net/USB menu item</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>

@@ -54,14 +54,14 @@
 
 	<channel-type id="monitor_alarm">
 		<item-type>Switch</item-type>
-		<label>Alarm status</label>
+		<label>Alarm Status</label>
 		<description>set to 'ON' when one of the following is true: Motion detected, Signal lost, Force Alarm pressed, External Alarm. Else set to 'OFF'</description>
 		<state readOnly="true" />
 	</channel-type>
 
 	<channel-type id="monitor_recording">
 		<item-type>Switch</item-type>
-		<label>Recording status</label>
+		<label>Recording Status</label>
 		<description>set to 'ON' when either channel monitor-alarm set to 'ON', or  montior function is 'Mocord' or 'Record'. Else set to 'OFF'</description>
 		<state readOnly="true" />
 	</channel-type>
@@ -83,7 +83,7 @@
 
 	<channel-type id="monitor_function" advanced="true">
 		<item-type>String</item-type>
-		<label>Operating mode</label>
+		<label>Operating Mode</label>
 		<description>Current Monitor Function: None, Monitor, Modect, Record, Mocord, Nodect</description>
 		<state pattern="%s" readOnly="false">
 			<options>
@@ -115,21 +115,21 @@
 
 	<channel-type id="monitor_zmc_daemon" advanced="true">
 		<item-type>Switch</item-type>
-		<label>zmc daemon Status</label>
+		<label>Capture Daemon Status</label>
 		<description>State of ZoneMinder Capture daemon for this monitor</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="monitor_zma_daemon" advanced="true">
 		<item-type>Switch</item-type>
-		<label>zma daemon Status</label>
+		<label>Analysis Daemon Status</label>
 		<description>State of ZoneMinder Analysis daemon for this monitor</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="monitor_zmf_daemon" advanced="true">
 		<item-type>Switch</item-type>
-		<label>zmf daemon Status</label>
+		<label>Frame Daemon Status</label>
 		<description>State of ZoneMinder Frame daemon for this monitor</description>
 		<state readOnly="true"/>
 	</channel-type>

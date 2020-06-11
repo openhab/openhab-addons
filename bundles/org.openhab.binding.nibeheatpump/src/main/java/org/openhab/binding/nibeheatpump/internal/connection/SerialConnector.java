@@ -21,9 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
-import org.eclipse.smarthome.core.util.HexUtils;
-
 import org.apache.commons.io.IOUtils;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
 import org.openhab.binding.nibeheatpump.internal.message.MessageFactory;
@@ -246,7 +245,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
                     logger.error("Reading from serial port failed", e);
                     sendErrorToListeners(e.getMessage());
                 } catch (Exception e) {
-                    logger.debug("Error occurred during serial port read, reason: {}", e);
+                    logger.debug("Error occurred during serial port read", e);
                 }
 
                 // run state machine to process all received data

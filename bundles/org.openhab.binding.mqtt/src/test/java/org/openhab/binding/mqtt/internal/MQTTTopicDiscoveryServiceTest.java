@@ -14,9 +14,11 @@ package org.openhab.binding.mqtt.internal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -24,13 +26,17 @@ import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
+import org.eclipse.smarthome.io.transport.mqtt.MqttService;
+import org.eclipse.smarthome.io.transport.mqtt.internal.TopicSubscribers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryParticipant;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
+import org.openhab.binding.mqtt.discovery.TopicSubscribe;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.binding.mqtt.handler.BrokerHandlerEx;
 import org.openhab.binding.mqtt.handler.MqttBrokerConnectionEx;
@@ -47,6 +53,9 @@ public class MQTTTopicDiscoveryServiceTest {
     private ScheduledExecutorService scheduler;
 
     private MqttBrokerHandlerFactory subject;
+
+    @Mock
+    private MqttService mqttService;
 
     @Mock
     private Bridge thing;
@@ -79,7 +88,7 @@ public class MQTTTopicDiscoveryServiceTest {
         handler = spy(new BrokerHandlerEx(thing, connection));
         handler.setCallback(callback);
 
-        subject = new MqttBrokerHandlerFactory();
+        subject = new MqttBrokerHandlerFactory(mqttService);
     }
 
     @After
@@ -94,10 +103,10 @@ public class MQTTTopicDiscoveryServiceTest {
 
         subject.subscribe(listener, "topic");
         subject.createdHandler(handler);
-        assertThat(subject.subscriber.get(listener).topic, is("topic"));
+        assertTrue(subject.discoveryTopics.get("topic").contains(listener));
         // Simulate receiving
         final byte[] bytes = "TEST".getBytes();
-        subject.subscriber.get(listener).observedBrokerHandlers.get(thing.getUID()).processMessage("topic", bytes);
+        connection.getSubscribers().get("topic").forEach(s -> s.processMessage("topic", bytes));
         verify(listener).receivedMessage(eq(thing.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
 
@@ -108,11 +117,11 @@ public class MQTTTopicDiscoveryServiceTest {
 
         subject.createdHandler(handler);
         subject.subscribe(listener, "topic");
-        assertThat(subject.subscriber.get(listener).topic, is("topic"));
+        assertTrue(subject.discoveryTopics.get("topic").contains(listener));
 
         // Simulate receiving
         final byte[] bytes = "TEST".getBytes();
-        subject.subscriber.get(listener).observedBrokerHandlers.get(thing.getUID()).processMessage("topic", bytes);
+        connection.getSubscribers().get("topic").forEach(s -> s.processMessage("topic", bytes));
         verify(listener).receivedMessage(eq(thing.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
 
@@ -120,10 +129,7 @@ public class MQTTTopicDiscoveryServiceTest {
     public void handlerInitializeAfterSubscribe() {
         subject.createdHandler(handler);
         subject.subscribe(listener, "topic");
-        assertThat(subject.subscriber.get(listener).topic, is("topic"));
-
-        // No observed broker handler, because no connection created yet within the handler
-        assertThat(subject.subscriber.get(listener).observedBrokerHandlers.size(), is(0));
+        assertTrue(subject.discoveryTopics.get("topic").contains(listener));
 
         // Init handler -> create connection
         handler.initialize();
@@ -131,7 +137,9 @@ public class MQTTTopicDiscoveryServiceTest {
 
         // Simulate receiving
         final byte[] bytes = "TEST".getBytes();
-        subject.subscriber.get(listener).observedBrokerHandlers.get(thing.getUID()).processMessage("topic", bytes);
+
+        connection.getSubscribers().getOrDefault("topic", new TopicSubscribers("topic"))
+                .forEach(s -> s.processMessage("topic", bytes));
         verify(listener).receivedMessage(eq(thing.getUID()), eq(connection), eq("topic"), eq(bytes));
     }
 
@@ -142,11 +150,12 @@ public class MQTTTopicDiscoveryServiceTest {
 
         subject.createdHandler(handler);
         subject.subscribe(listener, "topic");
-        assertThat(subject.subscriber.get(listener).topic, is("topic"));
+        assertTrue(subject.discoveryTopics.get("topic").contains(listener));
 
         // Simulate receiving
         final byte[] bytes = "".getBytes();
-        subject.subscriber.get(listener).observedBrokerHandlers.get(thing.getUID()).processMessage("topic", bytes);
+        connection.getSubscribers().getOrDefault("topic", new TopicSubscribers("topic"))
+                .forEach(s -> s.processMessage("topic", bytes));
         verify(listener).topicVanished(eq(thing.getUID()), eq(connection), eq("topic"));
     }
 

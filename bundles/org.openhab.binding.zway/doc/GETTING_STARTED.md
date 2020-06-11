@@ -25,7 +25,7 @@
 
 ## Create and configure a Z-Way Bridge
 
-Open the *PaperUI*
+Open the *Paper UI*
 
 ![openHAB Home](images/getting-started/01-openHAB-Home.png)
 

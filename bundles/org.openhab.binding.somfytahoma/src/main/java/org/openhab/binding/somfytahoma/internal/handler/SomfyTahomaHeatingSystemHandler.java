@@ -12,17 +12,13 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
-
-import java.util.HashMap;
 
 /**
  * The {@link SomfyTahomaHeatingSystemHandler} is responsible for handling commands,
@@ -33,25 +29,19 @@ import java.util.HashMap;
 @NonNullByDefault
 public class SomfyTahomaHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaHeatingSystemHandler.class);
-
     public SomfyTahomaHeatingSystemHandler(Thing thing) {
         super(thing);
-        stateNames = new HashMap<String, String>() {
-            {
-                put(TARGET_TEMPERATURE, "core:TargetTemperatureState");
-                put(CURRENT_TEMPERATURE, "zwave:SetPointHeatingValueState");
-                put(BATTERY_LEVEL, "core:BatteryLevelState");
-                put(CURRENT_STATE, "zwave:SetPointTypeState");
-            }
-        };
+        stateNames.put(TARGET_TEMPERATURE, "core:TargetTemperatureState");
+        stateNames.put(CURRENT_TEMPERATURE, "zwave:SetPointHeatingValueState");
+        stateNames.put(BATTERY_LEVEL, "core:BatteryLevelState");
+        stateNames.put(CURRENT_STATE, "zwave:SetPointTypeState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+            return;
         } else {
             if (TARGET_TEMPERATURE.equals(channelUID.getId())) {
                 String param = "[" + command.toString() + "]";

@@ -33,7 +33,7 @@ public class DSCAlarmMessage {
         PANEL_EVENT,
         PARTITION_EVENT,
         ZONE_EVENT,
-        KEYPAD_EVENT;
+        KEYPAD_EVENT
     }
 
     public enum DSCAlarmMessageInfoType {
@@ -47,7 +47,7 @@ public class DSCAlarmMessage {
         DATA,
         MODE,
         USER,
-        ERROR;
+        ERROR
     }
 
     private DSCAlarmMessageType messageType = DSCAlarmMessageType.PANEL_EVENT;

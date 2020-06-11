@@ -1,23 +1,26 @@
 # Samsung TV Binding
 
-This binding integrates the [Samsung TV's](http://www.samsung.com).
+This binding integrates the [Samsung TV's](https://www.samsung.com).
 
 ## Supported Things
 
 Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported.
+Also support added for TVs using websocket remote interface (2016+ models) 
 Because Samsung does not publish any documentation about the TV's UPnP interface, there could be differences between different TV models, which could lead to mismatch problems.
 
 Tested TV models:
 
-| Model       | State   | Notes                                                                                                            |
-|-------------|---------|---------------------------------------------------------------------------------------------------------------|
-| UE48J5670SU | PARTIAL | Supported channels: `volume`, `sourceName`                                                                       |
-| UE46E5505   | OK      | Initial contribution is done by this model                                                                       |
-| UE46D5700   | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                              |
-| UE40F6500   | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                             |
-| UN50J5200   | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                      |
-| LE40D579    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power` |
+| Model       | State   | Notes                                                                                                                                                  |
+|-------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| UE48J5670SU | PARTIAL | Supported channels: `volume`, `sourceName`                                                                                                             |
+| UE46E5505   | OK      | Initial contribution is done by this model                                                                                                             |
+| UE46D5700   | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                                                                    |
+| UE40F6500   | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                                                                   |
+| UN50J5200   | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                                                            |
+| LE40D579    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
 | LE40C650    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
+| UE55LS003   | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
+| UE43MU6199  | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                |
 
 ## Discovery
 
@@ -29,7 +32,8 @@ The binding does not require any special configuration.
 
 ## Thing Configuration
 
-The Samsung TV Thing requires the host name and port address as a configuration value in order for the binding to know how to access it. Samsung TV publish several UPnP devices and hostname is used to recognize those UPnP devices.
+The Samsung TV Thing requires the host name and port address as a configuration value in order for the binding to know how to access it.
+Samsung TV publish several UPnP devices and hostname is used to recognize those UPnP devices.
 Port address is used for remote control emulation protocol.
 Additionally, a refresh interval can be configured in milliseconds to specify how often TV resources are polled.
 
@@ -59,6 +63,8 @@ TVs support the following channels:
 | url              | String    | Start TV web browser and go the given web page.                                                         |
 | stopBrowser      | Switch    | Stop TV's web browser and go back to TV mode.                                                           |
 | power            | Switch    | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                         |
+| artMode          | Switch    | TV art mode for e.g. Samsung The Frame TV's. Only relevant if power=off. If set to on when power=on, the power will be switched off |
+| sourceApp        | String    | Currently active App.                                                                                   |
 | keyCode          | String    | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
 
 E.g.

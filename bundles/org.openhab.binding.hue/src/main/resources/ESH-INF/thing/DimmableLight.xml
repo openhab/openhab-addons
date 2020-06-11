@@ -26,7 +26,7 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="fadetime" type="integer" min="0" step="100">
-				<label>Fade time</label>
+				<label>Fade Time</label>
 				<description>Fade time in ms for changing values</description>
 				<default>400</default>
 			</parameter>

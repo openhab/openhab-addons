@@ -14,12 +14,15 @@ package org.openhab.binding.enocean.internal.eep.A5_14;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
+import java.util.function.Function;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.binding.enocean.internal.config.EnOceanChannelContactConfig;
 
 /**
  * Window/Door-Sensor with States Open/Closed/Tilt, Supply voltage monitor
@@ -50,30 +53,31 @@ public class A5_14_09 extends A5_14 {
         return UnDefType.UNDEF;
     }
 
-    private State getContact() {
+    private State getContact(boolean inverted) {
         byte ct = (byte) ((getDB_0() & 0x06) >> 1);
 
         switch (ct) {
             case CLOSED:
-                return OpenClosedType.CLOSED;
+                return inverted? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             case OPEN:
             case TILTED:
-                return OpenClosedType.OPEN;
+                return inverted? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         }
 
         return UnDefType.UNDEF;
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, State currentState,
+    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_WINDOWHANDLESTATE:
                 return getWindowhandleState();
             case CHANNEL_CONTACT:
-                return getContact();
+                EnOceanChannelContactConfig c = config.as(EnOceanChannelContactConfig.class);
+                return getContact(c.inverted);
         }
 
-        return super.convertToStateImpl(channelId, channelTypeId, currentState, config);
+        return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
     }
 }

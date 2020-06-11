@@ -208,7 +208,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     httpApiUsable = true;
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.debug("Error when trying to access AVR using HTTP on port 80: {}, reverting to Telnet mode.", e);
+                logger.debug("Error when trying to access AVR using HTTP on port 80, reverting to Telnet mode.", e);
             }
 
             if (telnetEnable) {
@@ -224,7 +224,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                         httpApiUsable = true;
                     }
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    logger.debug("Additionally tried to connect to port 8080, this also failed: {}", e);
+                    logger.debug("Additionally tried to connect to port 8080, this also failed", e);
                 }
             }
 
@@ -240,7 +240,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                             .timeout(3, TimeUnit.SECONDS).send();
                     status = response.getStatus();
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                    logger.debug("Failed in fetching the Deviceinfo.xml to determine zone count: {}", e);
+                    logger.debug("Failed in fetching the Deviceinfo.xml to determine zone count", e);
                 }
 
                 if (status == HttpURLConnection.HTTP_OK && response != null) {

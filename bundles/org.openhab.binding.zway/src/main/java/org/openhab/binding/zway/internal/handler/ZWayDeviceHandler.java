@@ -122,7 +122,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 }
             }
         }
-    };
+    }
 
     private class Disposer implements Runnable {
 
@@ -142,7 +142,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             // status update will remove finally
             updateStatus(ThingStatus.REMOVED);
         }
-    };
+    }
 
     public ZWayDeviceHandler(Thing thing) {
         super(thing);
@@ -251,7 +251,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                 logger.debug("Polling not possible, Z-Way device isn't ONLINE");
             }
         }
-    };
+    }
 
     private synchronized void setLocation() {
         Map<String, String> properties = getThing().getProperties();

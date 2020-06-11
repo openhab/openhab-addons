@@ -85,14 +85,13 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Handling command '{}' for {}", command, channelUID);
 
-        Channel channel = getThing().getChannel(channelUID.getId());
-        if (channel == null) {
-            logger.warn("No such channel: {}", channelUID);
+        if (command instanceof RefreshType) {
+            // nothing to refresh
             return;
         }
 
-        if (command instanceof RefreshType) {
-            // nothing to refresh
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Hub is offline, ignoring command {} for channel {}", command, channelUID);
             return;
         }
 
@@ -135,7 +134,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "A harmony device thing must be configured with a device name OR a postive device id");
         }
-    };
+    }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {

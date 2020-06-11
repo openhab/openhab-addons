@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
@@ -135,16 +136,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             logger.debug("Polling for state");
             pollShades();
             pollScenes();
-        } catch (IOException e) {
-            logger.debug("Could not connect to bridge", e);
+        } catch (JsonParseException e) {
+            logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
+        } catch (ProcessingException | IOException e) {
+            logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
-        } catch (Exception e) {
-            logger.warn("Unexpected error connecting to bridge", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void pollShades() throws IOException {
+    private void pollShades() throws JsonParseException, ProcessingException, IOException {
         Shades shades = webTargets.getShades();
         updateStatus(ThingStatus.ONLINE);
         if (shades != null) {
@@ -169,7 +169,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollScenes() throws JsonParseException, IOException {
+    private void pollScenes() throws JsonParseException, ProcessingException, IOException {
         Scenes scenes = webTargets.getScenes();
         if (scenes != null) {
             logger.debug("Received {} scenes", scenes.sceneIds.size());

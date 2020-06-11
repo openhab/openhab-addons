@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.openhab.binding.loxone.internal.LxBindingConfiguration;
 import org.openhab.binding.loxone.internal.LxServerHandlerApi;
 import org.openhab.binding.loxone.internal.types.LxConfig;
 import org.openhab.binding.loxone.internal.types.LxUuid;
@@ -45,6 +47,7 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
 
     Gson gson;
     LxConfig config;
+    LxBindingConfiguration bindingConfig = new LxBindingConfiguration();
 
     Queue<String> actionQueue = new LinkedList<>();
 
@@ -62,7 +65,7 @@ public class LxServerHandlerDummy implements LxServerHandlerApi {
     void loadConfiguration() {
         InputStream stream = LxServerHandlerDummy.class.getResourceAsStream("LoxAPP3.json");
         assertNotNull(stream);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
         assertNotNull(reader);
         String msg = reader.lines().collect(Collectors.joining(System.lineSeparator()));
         assertNotNull(msg);

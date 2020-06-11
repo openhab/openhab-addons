@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * List of states is read from LoxApp3.json configuration file.
  * <p>
  * Each state is identified by its own UUID and a name of the state. Names are proprietary to a particular type of the
- * control and as such are defined in {@link LxControl} child classes implementation (e.g. {@link LxControlSwitch}
+ * control and as such are defined in {@link LxControl} child classes implementation.
  * Objects of this class are used to bind state updates received from the Miniserver to a control object.
  *
  * @author Pawel Pieczul - initial contribution

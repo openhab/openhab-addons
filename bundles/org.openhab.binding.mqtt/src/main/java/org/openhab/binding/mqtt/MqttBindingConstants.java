@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class MqttBindingConstants {
     private static final String BINDING_ID = "mqtt";
 

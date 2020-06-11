@@ -88,7 +88,11 @@ public abstract class SatelModule extends EventDispatcher implements SatelEventL
      */
     protected static class ConnectionFailureException extends Exception {
 
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 2L;
+
+        public ConnectionFailureException(String message) {
+            super(message);
+        }
 
         public ConnectionFailureException(String message, Throwable cause) {
             super(message, cause);

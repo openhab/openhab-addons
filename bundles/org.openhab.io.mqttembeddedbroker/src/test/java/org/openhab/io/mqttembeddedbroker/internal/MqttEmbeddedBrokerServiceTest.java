@@ -19,7 +19,10 @@ import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
@@ -28,12 +31,14 @@ import java.util.concurrent.TimeUnit;
 import javax.naming.ConfigurationException;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection.Protocol;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionObserver;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
 import org.eclipse.smarthome.io.transport.mqtt.MqttException;
 import org.eclipse.smarthome.io.transport.mqtt.MqttService;
+import org.eclipse.smarthome.test.java.JavaTest;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 import org.junit.After;
@@ -41,8 +46,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.moquette.broker.RetainedMessage;
 import io.moquette.broker.subscriptions.Topic;
@@ -53,25 +56,23 @@ import io.moquette.broker.subscriptions.Topic;
  *
  * @author David Graeff - Initial contribution
  */
-public class MqttEmbeddedBrokerServiceTest {
-    private final Logger logger = LoggerFactory.getLogger(MqttEmbeddedBrokerServiceTest.class);
+public class MqttEmbeddedBrokerServiceTest extends JavaTest {
 
     private EmbeddedBrokerService subject;
-    private ServiceConfiguration config = new ServiceConfiguration();
+    private Map<String, Object> config = new HashMap<>();
     private @Mock MqttService service;
 
     @Before
     public void setUp() throws ConfigurationException, MqttException, GeneralSecurityException, IOException {
         MockitoAnnotations.initMocks(this);
-        subject = new EmbeddedBrokerService();
-        subject.setMqttService(service);
 
-        config.username = "username";
-        config.password = "password";
-        config.port = 12345;
-        config.secure = false;
-        config.persistenceFile = "";
+        config.put("username", "username");
+        config.put("password", "password");
+        config.put("port", 12345);
+        config.put("secure", false);
+        config.put("persistenceFile", "");
 
+        subject = new EmbeddedBrokerService(service, config);
     }
 
     @After
@@ -98,13 +99,10 @@ public class MqttEmbeddedBrokerServiceTest {
         semaphore.tryAcquire(3000, TimeUnit.MILLISECONDS);
 
         c.removeConnectionObserver(mqttConnectionObserver);
-
     }
 
     @Test
     public void connectUnsecureAndTestCredentials() throws InterruptedException, IOException, ExecutionException {
-        subject.initialize(config);
-
         MqttBrokerConnection c = subject.getConnection();
         assertNotNull(c);
         waitForConnectionChange(c, MqttConnectionState.CONNECTED);
@@ -119,12 +117,9 @@ public class MqttEmbeddedBrokerServiceTest {
         MqttBrokerConnection wrongCredentials = new MqttBrokerConnection(Protocol.TCP, c.getHost(), c.getPort(), false,
                 "wrongCred");
         wrongCredentials.setCredentials("someUser", "somePassword");
-        try {
-            if (wrongCredentials.start().get()) {
-                fail("Wrong credentials accepted!");
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+
+        if (wrongCredentials.start().get()) {
+            fail("Wrong credentials accepted!");
         }
 
         wrongCredentials.stop().get();
@@ -133,12 +128,9 @@ public class MqttEmbeddedBrokerServiceTest {
         MqttBrokerConnection correctCredentials = new MqttBrokerConnection(Protocol.TCP, c.getHost(), c.getPort(),
                 false, "correctCred");
         correctCredentials.setCredentials(c.getUser(), c.getPassword());
-        try {
-            if (!correctCredentials.start().get()) {
-                fail("Couldn't connect although correct credentials");
-            }
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+
+        if (!correctCredentials.start().get()) {
+            fail("Couldn't connect although correct credentials");
         }
 
         correctCredentials.stop().get();
@@ -146,8 +138,8 @@ public class MqttEmbeddedBrokerServiceTest {
 
     @Test
     public void connectSecure() throws InterruptedException, IOException {
-        config.secure = true;
-        subject.initialize(config);
+        config.put("secure", true);
+        subject.modified(config);
 
         MqttBrokerConnection c = subject.getConnection();
         assertNotNull(c);
@@ -163,8 +155,15 @@ public class MqttEmbeddedBrokerServiceTest {
 
     @Test
     public void testPersistence() throws InterruptedException, IOException, ExecutionException {
-        config.persistenceFile = "persist.mqtt";
-        subject.initialize(config);
+        config.put("persistenceFile", "persist.mqtt");
+        Path path = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath();
+        File jksFile = path.resolve("persist.mqtt").toFile();
+
+        if (jksFile.exists()) {
+            jksFile.delete();
+        }
+
+        subject.modified(config);
 
         MqttBrokerConnection c = subject.getConnection();
         assertNotNull(c);
@@ -175,9 +174,9 @@ public class MqttEmbeddedBrokerServiceTest {
 
         // Stop server -> close persistence storage and sync it to disk
         subject.deactivate();
-
-        File jksFile = new File(subject.getPersistenceFilename());
         assertTrue(jksFile.exists());
+        // this is needed to ensure the file is correctly written
+        waitForAssert(() -> assertEquals(12288, jksFile.length()));
 
         // The original file is still open, create a temp file for examination
         File temp = File.createTempFile("abc", ".tmp");

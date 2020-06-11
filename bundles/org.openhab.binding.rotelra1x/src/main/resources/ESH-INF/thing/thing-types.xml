@@ -19,7 +19,7 @@
 
 		<config-description>
 			<parameter name="port" type="text">
-				<label>Serial port</label>
+				<label>Serial Port</label>
 				<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 				<required>true</required>
 			</parameter>
@@ -27,7 +27,7 @@
 				complicated the code, and it could be nice to set 100 % at less than
 				the receiver's max. -->
 			<parameter name="maximum-volume" type="integer" min="1">
-				<label>Maximum volume</label>
+				<label>Maximum Volume</label>
 				<description>Volume level representing 100 %.</description>
 				<default>100</default>
 				<required>true</required>
@@ -86,7 +86,7 @@
 
 	<channel-type id="brightness" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>Display brightness</label>
+		<label>Display Brightness</label>
 		<description>Display backlight brightness.</description>
 	</channel-type>
 

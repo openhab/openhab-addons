@@ -14,12 +14,8 @@ package org.openhab.binding.homematic.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.homematic.test.util.BridgeHelper.createHomematicBridge;
 import static org.openhab.binding.homematic.test.util.DimmerHelper.createDimmerHmDevice;
 
@@ -34,7 +30,6 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
-import org.openhab.binding.homematic.internal.discovery.HomematicDeviceDiscoveryService;
 import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
@@ -42,7 +37,7 @@ import org.openhab.binding.homematic.test.util.SimpleDiscoveryListener;
 
 /**
  * Tests for {@link HomematicDeviceDiscoveryServiceTest}.
- * 
+ *
  * @author Florian Stolte - Initial Contribution
  *
  */
@@ -54,7 +49,8 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
     @Before
     public void setup() throws IOException {
         this.homematicBridgeHandler = mockHomematicBridgeHandler();
-        this.homematicDeviceDiscoveryService = new HomematicDeviceDiscoveryService(homematicBridgeHandler);
+        this.homematicDeviceDiscoveryService = new HomematicDeviceDiscoveryService();
+        this.homematicDeviceDiscoveryService.setThingHandler(homematicBridgeHandler);
     }
 
     private HomematicBridgeHandler mockHomematicBridgeHandler() throws IOException {

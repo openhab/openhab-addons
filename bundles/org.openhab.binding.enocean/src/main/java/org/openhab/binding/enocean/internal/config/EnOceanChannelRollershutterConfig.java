@@ -18,7 +18,7 @@ package org.openhab.binding.enocean.internal.config;
  */
 public class EnOceanChannelRollershutterConfig {
 
-    public Integer shutTime;
+    public int shutTime;
 
     public EnOceanChannelRollershutterConfig() {
         shutTime = 255;

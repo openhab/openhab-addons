@@ -23,10 +23,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.extensionservice.marketplace.internal.MarketplaceExtensionService;
-import org.openhab.extensionservice.marketplace.internal.MarketplaceProxy;
 import org.openhab.extensionservice.marketplace.internal.model.Node;
 
+/**
+ * Tests {@link MarketplaceExtensionService}.
+ *
+ * @author Kai Kreuzer - Initial contribution
+ */
 public class MarketplaceExtensionServiceTest {
 
     private static final String BASE_PATH = "http://marketplace.eclipse.org/marketplace-client-intro";

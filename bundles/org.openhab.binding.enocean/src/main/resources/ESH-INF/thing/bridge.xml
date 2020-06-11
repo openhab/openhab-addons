@@ -22,12 +22,12 @@
 			</parameter>
 			<parameter name="rs485" type="boolean">
 				<advanced>true</advanced>
-				<label>Gateway connected directly to RS485 BUS</label>
+				<label>Gateway Connected Directly to RS485 BUS</label>
 				<default>false</default>
 			</parameter>
 			<parameter name="nextSenderId" type="integer">
 				<advanced>true</advanced>
-				<label>Next device Id</label>
+				<label>Next Device Id</label>
 				<description>Defines the next device Id, if empty, the next device id is automatically determined</description>
 			</parameter>
 		</config-description>

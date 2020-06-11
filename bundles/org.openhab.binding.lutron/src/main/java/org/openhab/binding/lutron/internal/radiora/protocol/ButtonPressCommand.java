@@ -27,7 +27,7 @@ public class ButtonPressCommand extends RadioRACommand {
     public enum ButtonState {
         OFF,
         ON,
-        TOG;
+        TOG
     }
 
     private int buttonNumber; // 1 to 15, 16 ALL ON, 17 ALL OFF
