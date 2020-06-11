@@ -10,7 +10,6 @@
 
 		<channel-groups>
 			<channel-group id="bindingControl" typeId="bindingControl" />
-			<channel-group id="ccease" typeId="ccease" />
 			<channel-group id="ventilation" typeId="ventilation" />
 			<channel-group id="temperatures" typeId="temperatures" />
 			<channel-group id="times" typeId="times" />
@@ -26,8 +25,8 @@
 			<channel-group id="menuP9" typeId="menuP9" />
 			<channel-group id="inputs" typeId="inputs" />
 			<channel-group id="analog" typeId="analog" />
-			<channel-group id="error" typeId="error" />
-			<channel-group id="reset" typeId="reset" />
+			<channel-group id="errors" typeId="errors" />
+			<channel-group id="resets" typeId="resets" />
 		</channel-groups>
 
 		<config-description>
@@ -646,64 +645,64 @@
 		<item-type>Number:Time</item-type>
 		<label>Level 0 Duration</label>
 		<description>Uptime at level 0 (away)</description>
-		<category>Number</category>
-		<state readOnly="true" />
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="level1_time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Level 1 Duration</label>
 		<description>Uptime at level 1</description>
-		<category>Number</category>
-		<state readOnly="true" />
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="level2_time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Level 2 Duration</label>
 		<description>Uptime at level 2</description>
-		<category>Number</category>
-		<state readOnly="true" />
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="level3_time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Level 3 Duration</label>
 		<description>Uptime at level 3</description>
-		<category>Number</category>
-		<state readOnly="true" />
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="freeze_time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Antifrost Duration</label>
 		<description>Uptime of antifrost</description>
-		<category>Number</category>
-		<state readOnly="true" />
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="preheater_time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Preheater Duration</label>
 		<description>Uptime of preheater</description>
-		<category>Number</category>
-		<state readOnly="true" />
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="bypass_time" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Bypass Duration</label>
 		<description>Hours of bypass open</description>
-		<category>Number</category>
-		<state readOnly="true" />
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="filter_hours">
 		<item-type>Number:Time</item-type>
 		<label>Filter Duration</label>
 		<description>Uptime of the filter</description>
-		<category>Number</category>
-		<state readOnly="true" />
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%" />
 	</channel-type>
 
 	<channel-type id="bypass_factor" advanced="true">
