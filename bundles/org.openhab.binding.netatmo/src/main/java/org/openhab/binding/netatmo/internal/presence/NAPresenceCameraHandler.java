@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.presence;
 
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
+
+import io.swagger.client.model.NAWelcomeCamera;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -31,6 +34,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE;
 
 /**
  * {@link NAPresenceCameraHandler} is the class used to handle Presence camera data
@@ -48,7 +52,6 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private Optional<String> localCameraURL = Optional.empty();
     private boolean isLocalCameraURLLoaded;
-    private boolean isAutoMode;
 
     public NAPresenceCameraHandler(Thing thing) {
         super(thing);
@@ -57,62 +60,80 @@ public class NAPresenceCameraHandler extends CameraHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getId();
-        if (CHANNEL_CAMERA_FLOODLIGHT.equals(channelId)) {
-            switchFloodlight(OnOffType.ON.equals(command));
+        switch (channelId) {
+            case CHANNEL_CAMERA_FLOODLIGHT:
+                switchFloodlight(OnOffType.ON.equals(command));
+            case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
+                switchFloodlightAutoMode(OnOffType.ON.equals(command));
         }
         super.handleCommand(channelUID, command);
     }
 
     @Override
     protected State getNAThingProperty(@NonNull String channelId) {
-        if (CHANNEL_CAMERA_FLOODLIGHT.equals(channelId)) {
-            return getFloodlightState();
+        switch (channelId) {
+            case CHANNEL_CAMERA_FLOODLIGHT:
+                return getFloodlightState();
+            case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
+                return getFloodlightAutoModeState();
         }
         return super.getNAThingProperty(channelId);
     }
 
     private State getFloodlightState() {
-        Optional<String> localCameraURL = getLocalCameraURL();
-        if(localCameraURL.isPresent()) {
-            String floodlightGetURL = localCameraURL.get() + FLOODLIGHT_GET_URL_PATH;
-
-            Optional<JSONObject> json = executeGETRequestJSON(floodlightGetURL);
-            Optional<String> mode = json.map(j -> j.getString("mode"));
-            if(mode.isPresent()) {
-                isAutoMode = mode.get().equals("auto");
-            } else {
-                logger.error("The floodlight state could not get found!");
-            }
+        if (module != null) {
+            final boolean isOn = NAWelcomeCamera.LightModeStatusEnum.ON.equals(module.getLightModeStatus());
+            return toOnOffType(isOn);
         }
         return UnDefType.UNDEF;
     }
 
-    private void switchFloodlight(boolean isOn) {
-        Optional<String> localCameraURL = getLocalCameraURL();
-        if(localCameraURL.isPresent()) {
-            StringBuilder url = new StringBuilder();
-            url.append(localCameraURL.get());
-            url.append(FLOODLIGHT_SET_URL_PATH);
-            url.append("?config=%7B%22mode%22:%22");
-            if(isOn) {
-                url.append("on");
-            } else {
-                if(isAutoMode) {
-                    url.append("auto");
-                } else {
-                    url.append("off");
-                }
-            }
-            url.append("%22%7D");
+    private State getFloodlightAutoModeState() {
+        if (module != null) {
+            return toOnOffType(isFloodlightAutoMode());
+        }
+        return UnDefType.UNDEF;
+    }
 
-            executeGETRequest(url.toString());
+    private boolean isFloodlightAutoMode() {
+        if (module != null) {
+            return NAWelcomeCamera.LightModeStatusEnum.AUTO.equals(module.getLightModeStatus());
+        }
+        return false;
+    }
+
+    private void switchFloodlight(boolean isOn) {
+        if (isOn) {
+            changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.ON);
+        } else {
+            switchFloodlightAutoMode(isFloodlightAutoMode());
+        }
+    }
+
+    private void switchFloodlightAutoMode(boolean isAutoMode) {
+        if (isAutoMode) {
+            changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.AUTO);
+        } else {
+            changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.OFF);
+        }
+    }
+
+    private void changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum mode) {
+        Optional<String> localCameraURL = getLocalCameraURL();
+        if (localCameraURL.isPresent()) {
+            String url = localCameraURL.get()
+                    + FLOODLIGHT_SET_URL_PATH
+                    + "?config=%7B%22mode%22:%22"
+                    + mode.toString()
+                    + "%22%7D";
+            executeGETRequest(url);
         }
     }
 
     private Optional<String> getLocalCameraURL() {
-        if(!isLocalCameraURLLoaded) {
+        if (!isLocalCameraURLLoaded) {
             String vpnUrl = getVpnUrl();
-            if(vpnUrl != null) {
+            if (vpnUrl != null) {
                 String pingURL = vpnUrl + PING_URL_PATH;
                 Optional<JSONObject> json = executeGETRequestJSON(pingURL);
                 localCameraURL = json.map(j -> j.getString("local_url"));
