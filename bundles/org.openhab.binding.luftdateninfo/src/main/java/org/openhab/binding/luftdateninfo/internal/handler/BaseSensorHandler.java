@@ -54,6 +54,12 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected final static int UPDATE_VALUE_ERROR = 2;
     protected final static int UPDATE_VALUE_EMPTY = 3;
 
+    protected int LC_UNKNOWN = -1;
+    protected int LC_RUNNING = 0;
+    protected int LC_INITIALIZING = 1;
+    protected int LC_DISPOSED = 2;
+    protected int lifecycleStatus = LC_UNKNOWN;
+
     public BaseSensorHandler(Thing thing) {
         super(thing);
     }
@@ -67,6 +73,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        lifecycleStatus = LC_INITIALIZING;
         scheduler.execute(() -> {
             config = getConfigAs(LuftdatenInfoConfiguration.class);
             configStatus = checkConfig(config);
@@ -100,6 +107,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
                 logger.warn("Configuration not valid. Sensor ID as a number is mandatory!");
                 updateStatus(ThingStatus.OFFLINE);
             }
+            lifecycleStatus = LC_RUNNING;
         });
 
     }
@@ -109,6 +117,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        lifecycleStatus = LC_DISPOSED;
     }
 
     /**
@@ -132,6 +141,10 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         } else {
             return CONFIG_IS_NULL;
         }
+    }
+
+    public int getLifecycleStatus() {
+        return lifecycleStatus;
     }
 
     protected abstract int updateChannels();
