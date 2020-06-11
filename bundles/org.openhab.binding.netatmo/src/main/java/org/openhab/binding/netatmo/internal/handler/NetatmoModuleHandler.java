@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.State;
@@ -43,8 +44,8 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     protected MODULE module;
     private boolean refreshRequired;
 
-    protected NetatmoModuleHandler(Thing thing) {
-        super(thing);
+    protected NetatmoModuleHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
             if (channelId.equalsIgnoreCase(CHANNEL_LAST_MESSAGE) && module != null) {
                 Method getLastMessage = module.getClass().getMethod("getLastMessage");
                 Integer lastMessage = (Integer) getLastMessage.invoke(module);
-                return ChannelTypeUtils.toDateTimeType(lastMessage);
+                return ChannelTypeUtils.toDateTimeType(lastMessage, timeZoneProvider.getTimeZone());
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
