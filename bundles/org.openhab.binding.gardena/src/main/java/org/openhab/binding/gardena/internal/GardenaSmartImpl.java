@@ -149,6 +149,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         for (GardenaSmartWebSocket webSocket : webSockets) {
             webSocket.stop();
         }
+        webSockets.clear();
     }
 
     /**
