@@ -271,6 +271,9 @@ public class NetatmoBindingConstants {
     public static final String WELCOME_PICTURE_IMAGEID = "image_id";
     public static final String WELCOME_PICTURE_KEY = "key";
 
+    // Presence outdoor camera specific channels
+    public static final String CHANNEL_CAMERA_FLOODLIGHT = "cameraFloodlight";
+
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream
             .of(MAIN_THING_TYPE, MODULE1_THING_TYPE, MODULE2_THING_TYPE, MODULE3_THING_TYPE, MODULE4_THING_TYPE,

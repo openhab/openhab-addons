@@ -133,7 +133,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
     }
 
     @SuppressWarnings("null")
-    private String getVpnUrl() {
+    protected String getVpnUrl() {
         return (module == null) ? null : module.getVpnUrl();
     }
 
