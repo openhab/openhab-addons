@@ -32,30 +32,30 @@ The channels are the same for all forecasts:
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| Temperature  | Number | Temperature in Celsius  |
-| Wind direction  | Number | Wind direction in degrees  |
-| Wind Speed  | Number | Wind speed in m/s  |
-| Wind gust speed  | Number | Wind gust speed in m/s  |
-| Minimum precipitation  | Number | Minimum precipitation intensity in mm/h  |
-| Maximum precipitation  | Number | Maximum precipitation intensity in mm/h  |
+| Temperature  | Number:Temperature | Temperature in Celsius  |
+| Wind direction  | Number:Angle | Wind direction in degrees  |
+| Wind Speed  | Number:Speed | Wind speed in m/s  |
+| Wind gust speed  | Number:Speed | Wind gust speed in m/s  |
+| Minimum precipitation  | Number:Speed | Minimum precipitation intensity in mm/h  |
+| Maximum precipitation  | Number:Speed | Maximum precipitation intensity in mm/h  |
 | Precipitation category*  | Number | Type of precipitation  |
-| Air pressure  | Number | Air pressure in hPa  |
-| Relative humidity  | Number | Relative humidity in percent  |
-| Total cloud cover  | Number | Mean value of total cloud cover in percent  |
+| Air pressure  | Number:Pressure | Air pressure in hPa  |
+| Relative humidity  | Number:Dimensionless | Relative humidity in percent  |
+| Total cloud cover  | Number:Dimensionless | Mean value of total cloud cover in percent  |
 | Weather condition**  | Number | Short description of the weather conditions  |
 
 #### Advanced channels
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| Visibility  | Number | Horizontal visibility in km  |
-| Thunder probability  | Number | Probability of thunder in percent  |
-| Frozen precipitation  | Number | Percent of precipitation in frozen form (will be set to UNDEF if there's no precipitation)  |
-| Low level cloud cover  | Number | Mean value of low level cloud cover (0-2500 m) in percent  |
-| Medium level cloud cover  | Number | Mean value of medium level cloud cover (2500-6000 m) in percent  |
-| High level cloud cover  | Number | Mean value of high level cloud cover (> 6000 m) in percent  |
-| Mean precipitation  | Number | Mean precipitation intensity in mm/h  |
-| Median precipitation  | Number | Median precipitation intensity in mm/h  |
+| Visibility  | Number:Length | Horizontal visibility in km  |
+| Thunder probability  | Number:Dimensionless | Probability of thunder in percent  |
+| Frozen precipitation  | Number:Dimensionless | Percent of precipitation in frozen form (will be set to UNDEF if there's no precipitation)  |
+| Low level cloud cover  | Number:Dimensionless | Mean value of low level cloud cover (0-2500 m) in percent  |
+| Medium level cloud cover  | Number:Dimensionless | Mean value of medium level cloud cover (2500-6000 m) in percent  |
+| High level cloud cover  | Number:Dimensionless | Mean value of high level cloud cover (> 6000 m) in percent  |
+| Mean precipitation  | Number:Speed | Mean precipitation intensity in mm/h  |
+| Median precipitation  | Number:Speed | Median precipitation intensity in mm/h  |
 
 \* The precipitation category can have a value from 0-6, representing different types of precipitaion:
 
@@ -113,14 +113,14 @@ Thing smhi:forecast:demoforecast "Demo forecast" [ latitude=57.997072, longitude
 demo.items
 
 ```
-Number Smhi_Temperature_Now "Current temperature [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_0#t"}
-Number Smhi_Min_Precipitation_Now "Current precipitation (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_0#pmin"}
+Number:Temperature Smhi_Temperature_Now "Current temperature [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_0#t"}
+Number:Speed Smhi_Min_Precipitation_Now "Current precipitation (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_0#pmin"}
 
-Number Smhi_Temperature_1hour "Temperature next hour [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_1#t"}
-Number Smhi_Min_Precipitation_1hour "Precipitaion next hour (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#pmin"}
+Number:Temperature Smhi_Temperature_1hour "Temperature next hour [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_1#t"}
+Number:Speed Smhi_Min_Precipitation_1hour "Precipitaion next hour (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#pmin"}
 
-Number Smhi_Temperature_Tomorrow "Temperature tomorrow [%.1f °C]" {channel="smhi:forecast:demoforecast:day_1#t"}
-Number Smhi_Min_Precipitation_Tomorrow "Precipitaion tomorrow (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#pmin"}
+Number:Temperature Smhi_Temperature_Tomorrow "Temperature tomorrow [%.1f °C]" {channel="smhi:forecast:demoforecast:day_1#t"}
+Number:Speed Smhi_Min_Precipitation_Tomorrow "Precipitaion tomorrow (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#pmin"}
 ```
 
 demo.sitemap
