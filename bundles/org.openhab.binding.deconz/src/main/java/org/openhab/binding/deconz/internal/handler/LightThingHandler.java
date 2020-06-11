@@ -169,7 +169,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof DecimalType) {
-                    newLightState.colormode = "ct";
                     newLightState.ct = unscaleColorTemperature(((DecimalType) command).doubleValue());
 
                     if (currentOn != null && !currentOn) {
