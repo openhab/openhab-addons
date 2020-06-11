@@ -39,7 +39,9 @@ public class FreeMobileSmsActions implements ThingActions {
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() { return handler; }
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void sendFreeMobileSMS(
