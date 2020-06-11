@@ -22,9 +22,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -546,26 +548,25 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * @param deviceId    Id of device to change state for
      * @param serviceName Name of service of device to change state for
      * @param state       New state data to set for service
+     * 
+     * @return Response of request
      */
-    public <T extends Object> void putState(@NonNull String deviceId, String serviceName, T state) {
+    public <T extends Object> @Nullable Response putState(@NonNull String deviceId, String serviceName, T state) {
         if (this.httpClient == null) {
-            return;
+            return null;
         }
 
         // Create request
-        String url = "https://" + config.ipAddress + ":8444/smarthome/devices/" + deviceId + "/services/" + serviceName
-                + "/state";
-        Gson gson = new Gson();
-        String body = gson.toJson(state);
-        Request request = this.httpClient.newRequest(url).header("Content-Type", "application/json")
-                .header("Accept", "application/json").header("Gateway-ID", "64-DA-A0-02-14-9B").method(PUT)
-                .content(new StringContentProvider(body));
+        String url = this.createServiceUrl(serviceName, deviceId);
+        Request request = this.createRequest(url, PUT, state);
 
         // Send request
         try {
-            request.send();
+            Response response = request.send();
+            return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("HTTP request failed: {}", e);
+            return null;
         }
     }
 
@@ -617,4 +618,15 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private String createServiceUrl(String serviceName, String deviceId) {
+        return "https://" + config.ipAddress + ":8444/smarthome/devices/" + deviceId + "/services/" + serviceName
+                + "/state";
+    }
+
+    private Request createRequest(String url, HttpMethod method, Object content) {
+        Gson gson = new Gson();
+        String body = gson.toJson(content);
+        return this.httpClient.newRequest(url).method(method).header("Content-Type", "application/json")
+                .content(new StringContentProvider(body));
+    }
 }
