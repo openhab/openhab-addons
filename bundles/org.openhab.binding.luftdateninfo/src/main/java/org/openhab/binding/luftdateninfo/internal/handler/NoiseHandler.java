@@ -41,10 +41,9 @@ public class NoiseHandler extends BaseSensorHandler {
     }
 
     @Override
-    public int updateChannels() {
-        String response = HTTPHandler.getResponse(config.sensorid);
-        if (response != null) {
-            List<SensorDataValue> valueList = HTTPHandler.getValues(response);
+    public int updateChannels(@Nullable String json) {
+        if (json != null) {
+            List<SensorDataValue> valueList = HTTPHandler.getValues(json);
             if (valueList != null) {
                 if (HTTPHandler.isNoise(valueList)) {
 
