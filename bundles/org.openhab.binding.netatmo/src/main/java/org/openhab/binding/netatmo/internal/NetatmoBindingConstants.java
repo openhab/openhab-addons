@@ -272,6 +272,7 @@ public class NetatmoBindingConstants {
     public static final String WELCOME_PICTURE_KEY = "key";
 
     // Presence outdoor camera specific channels
+    public static final String CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE = "cameraFloodlightAutoMode";
     public static final String CHANNEL_CAMERA_FLOODLIGHT = "cameraFloodlight";
 
     // List of all supported physical devices and modules
