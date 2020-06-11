@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LuftdatenInfoConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class LuftdatenInfoConfiguration {
 
     /**

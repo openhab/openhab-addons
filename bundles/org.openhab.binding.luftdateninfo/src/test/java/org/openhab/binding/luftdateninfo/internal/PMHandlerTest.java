@@ -1,14 +1,36 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.luftdateninfo.internal;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.luftdateninfo.internal.mock.PMHandlerExtension;
 import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link PMHandlerTest} Test Particualte Matter Handler - Config and updates
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
 public class PMHandlerTest {
+    private static final Logger logger = LoggerFactory.getLogger(PMHandlerTest.class);
 
     @Test
     public void testValidConfigStatus() {
@@ -21,16 +43,15 @@ public class PMHandlerTest {
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
         pmHandler.initialize();
-        System.out.println("LC status: " + pmHandler.getLifecycleStatus());
+        logger.info("LC status: {}", pmHandler.getLifecycleStatus());
         int retryCount = 0; // Test shall fail after max 10 seconds
         while (pmHandler.getLifecycleStatus() != 0 && retryCount < 20) {
             try {
-                System.out.println("LC running not reached - wait");
+                logger.info("LC running not reached - wait");
                 Thread.sleep(500);
                 retryCount++;
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // nothing to do
             }
         }
         /*
@@ -51,16 +72,15 @@ public class PMHandlerTest {
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
         pmHandler.initialize();
-        System.out.println("LC status: " + pmHandler.getLifecycleStatus());
+        logger.info("LC status: {}", pmHandler.getLifecycleStatus());
         int retryCount = 0; // Test shall fail after max 10 seconds
         while (pmHandler.getLifecycleStatus() != 0 && retryCount < 20) {
             try {
-                System.out.println("LC running not reached - wait");
+                logger.info("LC running not reached - wait");
                 Thread.sleep(500);
                 retryCount++;
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                // nothing to do
             }
         }
         /*

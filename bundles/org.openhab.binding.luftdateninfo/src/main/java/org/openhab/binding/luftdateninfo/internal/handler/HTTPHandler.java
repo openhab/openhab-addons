@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -33,7 +34,7 @@ import com.google.gson.Gson;
  *
  * @author Bernd Weymann - Initial contribution
  */
-
+@NonNullByDefault
 public class HTTPHandler {
     private static final Logger logger = LoggerFactory.getLogger(HTTPHandler.class);
     private static String sensorUrl = "http://data.sensor.community/airrohr/v1/sensor/";
@@ -65,7 +66,7 @@ public class HTTPHandler {
             ContentResponse contentResponse = commonHttpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).send();
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
-            System.out.println("Sensor response: " + httpStatus);
+            logger.debug("Sensor response: {}", httpStatus);
             switch (httpStatus) {
                 case 200:
                     return content;
@@ -84,16 +85,11 @@ public class HTTPHandler {
     }
 
     public static List<SensorDataValue> getValues(String response) {
-        System.out.println(response);
         Gson gson = new Gson();
         SensorData[] valueArray = gson.fromJson(response, SensorData[].class);
         if (valueArray.length > 0) {
             SensorData v = valueArray[0];
-            System.out.println(valueArray[0]);
             List<SensorDataValue> l = v.getSensordatavalues();
-            System.out.println(l.size());
-            System.out.println(l.get(0));
-            System.out.println(l.get(1));
             return l;
         } else {
             return null;

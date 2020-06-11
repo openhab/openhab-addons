@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.luftdateninfo.internal.mock;
 
 import java.util.ArrayList;
@@ -5,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -18,9 +30,15 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 
+/**
+ * The {@link ThingMock} Thing Mock
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@NonNullByDefault
 public class ThingMock implements Thing {
 
-    private Configuration config; // = new HashMap<String, Object>();
+    private Configuration config = new Configuration(); // = new HashMap<String, Object>();
 
     @Override
     public @Nullable String getLabel() {
@@ -35,13 +53,13 @@ public class ThingMock implements Thing {
     }
 
     @Override
-    public List<@NonNull Channel> getChannels() {
+    public List<Channel> getChannels() {
         // TODO Auto-generated method stub
         return new ArrayList<Channel>();
     }
 
     @Override
-    public List<@NonNull Channel> getChannelsOfGroup(String channelGroupId) {
+    public List<Channel> getChannelsOfGroup(String channelGroupId) {
         // TODO Auto-generated method stub
         return new ArrayList<Channel>();
     }
@@ -120,7 +138,7 @@ public class ThingMock implements Thing {
     }
 
     @Override
-    public Map<@NonNull String, @NonNull String> getProperties() {
+    public Map<String, String> getProperties() {
         return new HashMap<String, String>();
     }
 
@@ -131,7 +149,7 @@ public class ThingMock implements Thing {
     }
 
     @Override
-    public void setProperties(Map<@NonNull String, @NonNull String> properties) {
+    public void setProperties(Map<String, String> properties) {
         // TODO Auto-generated method stub
 
     }
