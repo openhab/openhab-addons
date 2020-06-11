@@ -1,4 +1,4 @@
-package org.openhab.binding.luftdateninfo.internal.handler;
+package org.openhab.binding.luftdateninfo.internal.util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
