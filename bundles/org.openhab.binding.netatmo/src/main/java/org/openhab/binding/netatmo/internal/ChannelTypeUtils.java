@@ -42,7 +42,7 @@ public class ChannelTypeUtils {
 
     private static @Nullable TimeZoneProvider timeZoneProvider;
 
-    public static void setTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
+    public static void setTimeZoneProvider(@Nullable TimeZoneProvider timeZoneProvider) {
         ChannelTypeUtils.timeZoneProvider = timeZoneProvider;
     }
 
