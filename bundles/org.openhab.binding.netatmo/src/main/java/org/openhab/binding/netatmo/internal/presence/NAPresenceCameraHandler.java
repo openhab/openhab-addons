@@ -124,7 +124,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
         return localCameraURL;
     }
 
-    private Optional<JSONObject> logexecuteGETRequestJSON(String url) {
+    private Optional<JSONObject> executeGETRequestJSON(String url) {
         Optional<String> content = executeGETRequest(url);
         if (content.isPresent()) {
             return Optional.of(new JSONObject(content.get()));
