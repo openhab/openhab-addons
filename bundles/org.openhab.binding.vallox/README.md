@@ -38,8 +38,8 @@ Binding has following configuration parameters depending on thing type:
 
 ### SE models
 
-| Group / Channel           | Type   | Writable   | Description                                 |
-| ------------------------- | :----- | :--------: | :-----------------------------------------: |
+| Group / Channel           | Type   | Writable   | Description                                |
+| ------------------------- | :----- | :--------: | :----------------------------------------- |
 | **Fan control**
 | fanSpeed                  | Number | ✓ | Fan speed |
 | fanSpeedMax               | Number | ✓ | Maximum fan speed |

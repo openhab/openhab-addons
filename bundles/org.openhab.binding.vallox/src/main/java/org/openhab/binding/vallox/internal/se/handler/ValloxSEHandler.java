@@ -202,16 +202,16 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
                     // | +------------- 6 Fault indicator
                     // +--------------- 7 service reminder
                     case POST_HEATING_STATE:
-                        bits.set(3, (command == OnOffType.ON) ? true : false);
+                        bits.set(3, command == OnOffType.ON);
                         break;
                     case HUMIDITY_ADJUST_STATE:
-                        bits.set(2, (command == OnOffType.ON) ? true : false);
+                        bits.set(2, command == OnOffType.ON);
                         break;
                     case CO2_ADJUST_STATE:
-                        bits.set(1, (command == OnOffType.ON) ? true : false);
+                        bits.set(1, command == OnOffType.ON);
                         break;
                     case POWER_STATE:
-                        bits.set(0, (command == OnOffType.ON) ? true : false);
+                        bits.set(0, command == OnOffType.ON);
                         break;
                     default:
                         logger.debug("Unsupported OnOff type channel '{}' with parentChannel 'select'",
@@ -233,16 +233,16 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
                     // | +------------- 6 radiator type 0( (byte)electric, 1( (byte)water
                     // +--------------- 7 cascade adjust 0( (byte)off, 1( (byte)on
                     case AUTOMATIC_HUMIDITY_LEVEL_SEEKER_STATE:
-                        bits.set(4, (command == OnOffType.ON) ? true : false);
+                        bits.set(4, command == OnOffType.ON);
                         break;
                     case BOOST_SWITCH_MODE:
-                        bits.set(5, (command == OnOffType.ON) ? true : false);
+                        bits.set(5, command == OnOffType.ON);
                         break;
                     case RADIATOR_TYPE:
-                        bits.set(6, (command == OnOffType.ON) ? true : false);
+                        bits.set(6, command == OnOffType.ON);
                         break;
                     case CASCADE_ADJUST:
-                        bits.set(7, (command == OnOffType.ON) ? true : false);
+                        bits.set(7, command == OnOffType.ON);
                         break;
                     case ADJUSTMENT_INTERVAL:
                         byte temp = (byte) (Integer.parseInt(command.toString()) & 0x0F);
@@ -271,7 +271,7 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
                     // | +------------- 6
                     // +--------------- 7 Preheating state
                     case PRE_HEATING_STATE:
-                        bits.set(7, (command == OnOffType.ON) ? true : false);
+                        bits.set(7, command == OnOffType.ON);
                         break;
                     default:
                         logger.debug("Unsupported OnOff type channel '{}' with parentChannel 'flags5'",
@@ -292,7 +292,7 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
                     // | +------------- 6
                     // +--------------- 7
                     case MAX_SPEED_LIMIT_MODE:
-                        bits.set(0, (command == OnOffType.ON) ? true : false);
+                        bits.set(0, command == OnOffType.ON);
                         break;
                     default:
                         logger.debug("Unsupported OnOff type channel '{}' with parentChannel 'program2'",
@@ -313,10 +313,10 @@ public class ValloxSEHandler extends BaseThingHandler implements ValloxEventList
                     // | +------------- 6
                     // +--------------- 7
                     case SUPPLY_FAN_OFF:
-                        bits.set(3, (command == OnOffType.ON) ? true : false);
+                        bits.set(3, command == OnOffType.ON);
                         break;
                     case EXHAUST_FAN_OFF:
-                        bits.set(5, (command == OnOffType.ON) ? true : false);
+                        bits.set(5, command == OnOffType.ON);
                         break;
                     default:
                         logger.debug("Unsupported OnOff type channel '{}' with parentChannel 'ioMultiPurpose2'",

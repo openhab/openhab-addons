@@ -111,6 +111,8 @@ public class ValloxIpConnector extends ValloxBaseConnector {
                     buffer.add((byte) data);
                     data = inputStream.read();
                 }
+                logger.trace("End of input stream reached");
+                break;
             } catch (IOException e) {
                 sendErrorToListeners(e.getMessage(), e);
                 break;

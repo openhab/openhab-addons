@@ -185,7 +185,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Output Fan Speed</label>
 		<description>Adjust output fan speed in scale of 0-100%</description>
-		<state min="0" max="1" pattern="%d %unit%" readOnly="false"></state>
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seHrcBypassThreshold" advanced="true">
@@ -290,21 +290,21 @@
 
 	<channel-type id="seAdjustmentInterval" advanced="true">
 		<item-type>Number</item-type>
-		<label>Adjustment interval</label>
+		<label>Adjustment Interval</label>
 		<description>Adjustment interval of Co2 and %RH in scale of 1-15 minutes</description>
 		<state min="1" max="15" step="1" pattern="%d min" readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seAutomaticHumidityLevelSeekerState" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Automatic humidity level seeker state</label>
+		<label>Automatic Humidity Level Seeker</label>
 		<description>Automatic humidity level seeker state</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seBoostSwitchMode" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Boost switch mode</label>
+		<label>Boost Switch Mode</label>
 		<description>Boost switch mode. OFF=Fireplace, ON=Boost</description>
 		<state readOnly="false">
 		</state>
@@ -312,21 +312,21 @@
 
 	<channel-type id="seRadiatorType" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Radiator type</label>
+		<label>Radiator Type</label>
 		<description>Radiator type. OFF=Electric, ON=Water</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seCascadeAdjust" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Cascade adjust</label>
+		<label>Cascade Adjust</label>
 		<description>Adjust heating depending on exhaust air temperature instead of incoming air temperature</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="seMaxSpeedLimitMode" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Maximum speed limit mode</label>
+		<label>Maximum Speed Limit Mode</label>
 		<description>When maximum fan speed is limited. OFF=with adjustments, ON=always</description>
 		<state readOnly="false">
 		</state>
@@ -341,7 +341,7 @@
 
 	<channel-type id="sePostHeatingOn" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Post heating state</label>
+		<label>Post Heating State</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -422,7 +422,7 @@
 
 	<channel-type id="sePostHeatingTargetValue" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Post heating target value</label>
+		<label>Post Heating Target Value</label>
 		<description>Target value for post heating</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
@@ -437,14 +437,14 @@
 
 	<channel-type id="seHrcFreezingAlarm" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Heat recovery cell freezing alarm</label>
+		<label>Heat Recovery Cell Freezing Alarm</label>
 		<description>Indicates if heat recovery cell is about to freeze</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="seWaterRadiatorFreezingAlarm" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Water radiator freezing alarm</label>
+		<label>Water Radiator Freezing Alarm</label>
 		<description>Indicates if water radiator is about to freeze</description>
 		<state readOnly="true"></state>
 	</channel-type>
