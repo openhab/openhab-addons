@@ -33,8 +33,13 @@ final class DataConversion {
     }
 }
 
+/**
+ * Handler for a shutter control device
+ */
 public class ShutterControlHandler extends BoschSHCHandler {
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
+
+    final String ShutterControlServiceName = "ShutterControl";
 
     public ShutterControlHandler(Thing thing) {
         super(thing);
@@ -91,7 +96,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
         if (bridgeHandler == null) {
             return null;
         }
-        return bridgeHandler.refreshState(getThing(), "ShutterControl", ShutterControlState.class);
+        return bridgeHandler.refreshState(getThing(), ShutterControlServiceName, ShutterControlState.class);
     }
 
     private void setDeviceState(ShutterControlState state) {
@@ -103,7 +108,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
         if (deviceId == null) {
             return;
         }
-        bridgeHandler.putState(deviceId, "ShutterControl", state);
+        bridgeHandler.putState(deviceId, ShutterControlServiceName, state);
     }
 
     private void updateState(ShutterControlState state) {
