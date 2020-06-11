@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -211,7 +210,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param characteristicType characteristicType to identify item
      * @param map mapping to update
      */
-    protected void updateMapping(HomekitCharacteristicType characteristicType, EnumMap<?, String> map) {
+    protected void updateMapping(HomekitCharacteristicType characteristicType, Map<?, String> map) {
         getCharacteristic(characteristicType).ifPresent(c -> {
             final Map<String, Object> configuration = c.getConfiguration();
             if (configuration != null) {
@@ -234,7 +233,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return key for the value
      */
     protected <T extends java.lang.Enum<T>> T getKeyFromMapping(final HomekitCharacteristicType characteristicType,
-            EnumMap<T, String> mapping, final T defaultValue) {
+            Map<T, String> mapping, final T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
             final State state = c.get().getItem().getState();
