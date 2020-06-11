@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
@@ -40,8 +41,8 @@ import io.swagger.client.model.NAStationModule;
 public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
-    public NAModule4Handler(Thing thing) {
-        super(thing);
+    public NAModule4Handler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -126,15 +127,15 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
                     case CHANNEL_TEMPERATURE:
                         return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
                     case CHANNEL_DATE_MIN_TEMP:
-                        return toDateTimeType(dashboardData.getDateMinTemp());
+                        return toDateTimeType(dashboardData.getDateMinTemp(), timeZoneProvider.getTimeZone());
                     case CHANNEL_DATE_MAX_TEMP:
-                        return toDateTimeType(dashboardData.getDateMaxTemp());
+                        return toDateTimeType(dashboardData.getDateMaxTemp(), timeZoneProvider.getTimeZone());
                     case CHANNEL_MIN_TEMP:
                         return toQuantityType(dashboardData.getMinTemp(), API_TEMPERATURE_UNIT);
                     case CHANNEL_MAX_TEMP:
                         return toQuantityType(dashboardData.getMaxTemp(), API_TEMPERATURE_UNIT);
                     case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc());
+                        return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
                     case CHANNEL_HUMIDITY:
                         return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
                     case CHANNEL_HUMIDEX:
@@ -193,7 +194,7 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
             case CHANNEL_DATE_MIN_TEMP_THIS_MONTH:
             case CHANNEL_DATE_MAX_TEMP_THIS_WEEK:
             case CHANNEL_DATE_MAX_TEMP_THIS_MONTH:
-                return toDateTimeType(channelMeasurements.get(channelId));
+                return toDateTimeType(channelMeasurements.get(channelId), timeZoneProvider.getTimeZone());
         }
 
         return super.getNAThingProperty(channelId);
