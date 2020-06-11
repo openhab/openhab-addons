@@ -20,6 +20,19 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * Utility functions to convert data between Bosch things and openHAB items
+ */
+final class DataConversion {
+    public static int levelToOpenPercentage(double level) {
+        return (int) Math.round((1 - level) * 100);
+    }
+
+    public static double openPercentageToLevel(double openPercentage) {
+        return (100 - openPercentage) / 100.0;
+    }
+}
+
 public class ShutterControlHandler extends BoschSHCHandler {
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
 
@@ -48,12 +61,15 @@ public class ShutterControlHandler extends BoschSHCHandler {
             // Set current state as target state
             ShutterControlState state = this.getDeviceState();
             this.setDeviceState(state);
+        } else if (command instanceof PercentType) {
+            PercentType percentType = (PercentType) command;
+            double level = DataConversion.openPercentageToLevel(percentType.doubleValue());
+            this.setDeviceState(new ShutterControlState(level));
         }
     }
 
     @Override
     public void processUpdate(String id, @NonNull JsonElement state) {
-        logger.debug("Shutter Control: received update: {} {}", id, state);
         try {
             Gson gson = new Gson();
             updateState(gson.fromJson(state, ShutterControlState.class));
@@ -92,7 +108,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
 
     private void updateState(ShutterControlState state) {
         // Convert level to open ratio
-        int openPercentage = new Double((1 - state.level) * 100).intValue();
+        int openPercentage = DataConversion.levelToOpenPercentage(state.level);
         updateState(CHANNEL_LEVEL, new PercentType(openPercentage));
     }
 }
