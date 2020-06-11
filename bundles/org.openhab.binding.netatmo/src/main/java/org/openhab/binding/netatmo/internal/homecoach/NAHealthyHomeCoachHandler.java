@@ -58,7 +58,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
             NADashboardData dashboardData = device.getDashboardData();
             switch (channelId) {
                 case CHANNEL_CO2:
-                    return toQuantityType(dashboardData.getCo2(), API_CO2_UNIT);
+                    return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
                 case CHANNEL_TEMPERATURE:
                     return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
                 case CHANNEL_HEALTH_INDEX:
