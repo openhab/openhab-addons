@@ -47,8 +47,7 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FreeMobileSmsHandler.class);
 
-    @Nullable
-    private FreeMobileSmsConfiguration config;
+    private @Nullable FreeMobileSmsConfiguration config;
 
     private final Sender sender = new Sender();
 
