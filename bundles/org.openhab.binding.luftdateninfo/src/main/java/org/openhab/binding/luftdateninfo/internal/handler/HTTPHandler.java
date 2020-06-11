@@ -113,7 +113,8 @@ public class HTTPHandler {
         while (iter.hasNext()) {
             SensorDataValue v = iter.next();
             // check for temperature and humidty - prssure is optinoal for some sensors
-            if (v.getValue_type().equals(TEMPERATURE) || v.getValue_type().equals(HUMIDITY)) {
+            if (v.getValue_type().equals(TEMPERATURE) || v.getValue_type().equals(HUMIDITY)
+                    || v.getValue_type().equals(PRESSURE) || v.getValue_type().equals(PRESSURE_SEALEVEL)) {
                 // continue
             } else {
                 return false;
