@@ -62,6 +62,7 @@ public class WlanThermoBindingConstants {
     public static final String CHANNEL_ALARM_OPENHAB_LOW    = "alarm_openhab_low";
     public static final String CHANNEL_ALARM_OPENHAB_HIGH   = "alarm_openhab_high";
     public static final String CHANNEL_COLOR                = "color";
+    public static final String CHANNEL_COLOR_NAME           = "color_name";
     
     public static final String CHANNEL_PITMASTER_ENABLED    = "enabled";
     public static final String CHANNEL_PITMASTER_CURRENT    = "current";

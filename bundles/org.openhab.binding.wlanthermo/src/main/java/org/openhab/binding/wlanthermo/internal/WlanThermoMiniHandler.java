@@ -15,11 +15,10 @@ package org.openhab.binding.wlanthermo.internal;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_ONLINE;
 
-import java.net.URISyntaxException;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import com.google.gson.Gson;
 
@@ -56,6 +55,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     private HttpClient httpClient = new HttpClient();
     @Nullable
     private ScheduledFuture<?> pollingScheduler;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private Gson gson = new Gson();
     private App app = new App();
 
@@ -72,9 +72,9 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
         try {
             httpClient.start();
 
-            //scheduler.schedule(() -> {
+            scheduler.schedule(() -> {
                 checkConnection();
-            //}, config.getPollingInterval(), TimeUnit.SECONDS);
+            }, config.getPollingInterval(), TimeUnit.SECONDS);
 
             logger.debug("Finished initializing!");
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "WlanThermo not found under given address.");
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException | URISyntaxException e) {
+        } catch (Exception e) {
             logger.debug("Failed to connect.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not connect to WlanThermo at "+config.getIpAddress());
             if (pollingScheduler != null) {
@@ -144,7 +144,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
             }
             
 
-        } catch (InterruptedException | ExecutionException | TimeoutException | URISyntaxException e) {
+        } catch (Exception e) {
             logger.debug("Update failed, checking connection", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Update failed, reconnecting...");
             if (pollingScheduler != null) {

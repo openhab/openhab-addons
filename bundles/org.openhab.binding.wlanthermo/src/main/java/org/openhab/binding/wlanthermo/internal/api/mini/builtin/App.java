@@ -5,6 +5,7 @@ import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_HIGH;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_LOW;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_COLOR;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_COLOR_NAME;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_MAX;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_MIN;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_NAME;
@@ -188,7 +189,7 @@ public class App {
                     if (getCpuTemp() == null) {
                         state = UnDefType.UNDEF;
                     } else {
-                        state = new DecimalType();
+                        state = new DecimalType(getCpuTemp());
                     }
                     break;
                 case SYSTEM_CPU_LOAD:
@@ -200,7 +201,7 @@ public class App {
                     break;
             }
         } else if (channelUID.getId().startsWith("channel")) {
-            int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
+            int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length()));
             if (channelId >= 0 && channelId <= 9) {
                 Channel channel = getChannel();
                 if (channel == null) {
@@ -244,6 +245,9 @@ public class App {
                     case CHANNEL_COLOR:
                         Color c = Color.decode(UtilMini.toHex(data.getColor()));
                         state = HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
+                        break;
+                    case CHANNEL_COLOR_NAME:
+                        state = new StringType(data.getColor());
                         break;
                 }
             }

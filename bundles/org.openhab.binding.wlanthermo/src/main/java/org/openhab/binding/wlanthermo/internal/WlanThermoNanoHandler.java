@@ -18,6 +18,8 @@ import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -62,6 +64,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     private HttpClient httpClient = new HttpClient();
     @Nullable
     private ScheduledFuture<?> pollingScheduler;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private Gson gson = new Gson();
     private Data data = new Data();
     private Settings settings = new Settings();
@@ -111,7 +114,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "WlanThermo not found under given address.");
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException | URISyntaxException e) {
+        } catch (Exception e) {
             logger.debug("Failed to connect.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not connect to WlanThermo at "+config.getIpAddress());
             if (pollingScheduler != null) {
@@ -166,7 +169,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             }
             
 
-        } catch (InterruptedException | ExecutionException | TimeoutException | URISyntaxException e) {
+        } catch (Exception e) {
             logger.debug("Update failed, checking connection", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Update failed, reconnecting...");
             if (pollingScheduler != null) {
