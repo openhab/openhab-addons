@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.somfytahoma.internal.model;
-
-import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,21 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaAction {
 
     private String deviceURL = "";
-    private ArrayList<SomfyTahomaCommand> commands = new ArrayList<SomfyTahomaCommand>();
 
     public String getDeviceURL() {
         return deviceURL;
-    }
-
-    public void setDeviceURL(String deviceURL) {
-        this.deviceURL = deviceURL;
-    }
-
-    public ArrayList<SomfyTahomaCommand> getCommands() {
-        return commands;
-    }
-
-    public void addCommand(SomfyTahomaCommand command) {
-        this.commands.add(command);
     }
 }

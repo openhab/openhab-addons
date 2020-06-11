@@ -6,18 +6,15 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:sensebox:config">
-
-	<parameter name="senseBoxId" type="text">
-		<label>Box ID</label>
-		<description>Id of the box, can be found on the map details</description>
-	</parameter>
-
-	<parameter name="refreshInterval" type="integer" min="300" max="86400">
-		<label>Refresh Interval</label>
-		<description>Refresh interval for senseBox data in seconds.</description>
-		<default>300</default>
-	</parameter>
-
+		<parameter name="senseBoxId" type="text" required="true">
+			<label>Box ID</label>
+			<description>Id of the box, can be found on the map details.</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="300" max="86400" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for senseBox data.</description>
+			<default>300</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

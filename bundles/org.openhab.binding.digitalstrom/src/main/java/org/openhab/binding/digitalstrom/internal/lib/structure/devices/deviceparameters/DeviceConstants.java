@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,5 +62,4 @@ public interface DeviceConstants {
 
     /** this index is needed to get the angle of the slats (if device is a blind/jalousie) */
     static final short DEVICE_SENSOR_SLAT_ANGLE_OUTPUT = 4;
-
 }

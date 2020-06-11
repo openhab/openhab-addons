@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,5 +38,4 @@ public class UniFiDeviceInstanceCreator implements InstanceCreator<UniFiDevice> 
     public UniFiDevice createInstance(Type type) {
         return new UniFiDevice(controller);
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.openhab.binding.sinope.internal.util.ByteUtil;
 
 /**
  * The Class SinopeDataAnswer.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public abstract class SinopeDataAnswer extends SinopeAnswer {
@@ -59,7 +59,6 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
         byte[] data = getData();
         this.appData = appData;
         this.appData.read(data);
-
     }
 
     /**
@@ -159,5 +158,4 @@ public abstract class SinopeDataAnswer extends SinopeAnswer {
 
         return sb.toString();
     }
-
 }

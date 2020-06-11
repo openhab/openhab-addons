@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,12 @@ public class OnOffValue extends Value {
     }
 
     @Override
-    public String getMQTTpublishValue() {
-        return (state == OnOffType.ON) ? onCommand : offCommand;
+    public String getMQTTpublishValue(@Nullable String pattern) {
+        String formatPattern = pattern;
+        if (formatPattern == null) {
+            formatPattern = "%s";
+        }
+
+        return String.format(formatPattern, state == OnOffType.ON ? onCommand : offCommand);
     }
 }

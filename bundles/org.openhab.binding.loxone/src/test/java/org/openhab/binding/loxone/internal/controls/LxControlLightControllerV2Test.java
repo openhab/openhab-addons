@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -214,7 +214,7 @@ public class LxControlLightControllerV2Test extends LxControlTest {
 
     private void testMoodList(List<StateOption> options, Integer offId) {
         assertEquals(options.size(), handler.extraControls.size());
-        if (options.size() == 0) {
+        if (options.isEmpty()) {
             return;
         }
         Integer min = null;

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="ntp"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="ntp" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,8 +7,8 @@
 		<label>NTP Server</label>
 		<description>An NTP server that provides current date and time</description>
 		<channels>
-			<channel id="dateTime" typeId="dateTime-channel" />
-			<channel id="string" typeId="string-channel" />
+			<channel id="dateTime" typeId="dateTime-channel"/>
+			<channel id="string" typeId="string-channel"/>
 		</channels>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -52,14 +51,14 @@
 		<label>Date</label>
 		<description>NTP refreshed date &amp; time</description>
 		<category>Date</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="string-channel">
 		<item-type>String</item-type>
 		<label>Date</label>
 		<description>NTP refreshed date &amp; time</description>
 		<category>Date</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="DateTimeFormat" type="text" required="false">
 				<label>Date Time Format</label>

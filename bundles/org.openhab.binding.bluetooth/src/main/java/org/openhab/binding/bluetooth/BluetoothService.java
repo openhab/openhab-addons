@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,7 +106,7 @@ public class BluetoothService {
      * @return the list of {@link BluetoothCharacteristic}s
      */
     public List<BluetoothCharacteristic> getCharacteristics() {
-        return new ArrayList<BluetoothCharacteristic>(supportedCharacteristics.values());
+        return new ArrayList<>(supportedCharacteristics.values());
     }
 
     /**
@@ -250,7 +250,7 @@ public class BluetoothService {
         }
 
         private static void initMapping() {
-            uuidToServiceMapping = new HashMap<UUID, GattService>();
+            uuidToServiceMapping = new HashMap<>();
             for (GattService s : values()) {
                 uuidToServiceMapping.put(s.uuid, s);
             }

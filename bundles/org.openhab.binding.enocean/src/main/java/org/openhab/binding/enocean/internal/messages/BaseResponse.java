@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
-import org.openhab.binding.enocean.internal.transceiver.Helper;
+import org.openhab.binding.enocean.internal.Helper;
 
 /**
  *
@@ -24,5 +24,4 @@ public class BaseResponse extends Response {
         super(response.getPayload().length + response.getOptionalPayload().length, 0,
                 Helper.concatAll(response.getPayload(), response.getOptionalPayload()));
     }
-
 }

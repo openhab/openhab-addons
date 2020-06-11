@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,6 @@ public class ScaleTransformServiceTest {
 
     @Test
     public void testTransformByScale() throws TransformationException {
-
         // need to be sure we'll have the german version
         String existingscale = "scale/humidex_de.scale";
         String source = "10";
@@ -78,7 +77,6 @@ public class ScaleTransformServiceTest {
 
     @Test
     public void testTransformByScaleUndef() throws TransformationException {
-
         // check that for undefined/non numeric value we return empty string
         // Issue #1107
         String existingscale = "scale/humidex_fr.scale";
@@ -89,7 +87,6 @@ public class ScaleTransformServiceTest {
 
     @Test
     public void testTransformByScaleErrorInBounds() throws TransformationException {
-
         // the tested file contains inputs that generate a conversion error of the bounds
         // of range
         String existingscale = "scale/erroneous.scale";
@@ -149,5 +146,4 @@ public class ScaleTransformServiceTest {
         String transformedResponse = processor.transform(existingscale, source);
         Assert.assertEquals("Correcte (992) !", transformedResponse);
     }
-
 }

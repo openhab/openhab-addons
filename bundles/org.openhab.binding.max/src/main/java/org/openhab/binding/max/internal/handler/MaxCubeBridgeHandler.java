@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,6 +46,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -56,7 +57,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.max.internal.MaxBackupUtils;
@@ -165,6 +165,13 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private final Set<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArraySet<>();
 
+    private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(10);
+    private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
+        logger.debug("Refreshing.");
+        refreshData();
+        return true;
+    });
+
     private ScheduledFuture<?> pollingJob;
     private Thread queueConsumerThread;
     private BackupState backup = BackupState.REQUESTED;
@@ -178,7 +185,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             logger.debug("Refresh command received.");
-            refreshData();
+            refreshCache.getValue();
         } else {
             logger.warn("No bridge commands defined. Cannot process '{}'.", command);
         }
@@ -285,7 +292,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         clearDeviceList();
         propertiesSet = false;
         roomPropertiesSet = false;
-
     }
 
     public void cubeReboot() {
@@ -506,12 +512,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         logger.debug("Bridge connection lost. Updating thing status to OFFLINE.");
         previousOnline = false;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
-        for (Thing thing : getThing().getThings()) {
-            ThingHandler handler = thing.getHandler();
-            if (handler != null && handler instanceof MaxDevicesHandler) {
-                ((MaxDevicesHandler) handler).setForceRefresh();
-            }
-        }
         clearDeviceList();
     }
 
@@ -761,7 +761,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         if (!roomPropertiesSet) {
             setProperties(msg);
         }
-        setProperties(msg);
         for (DeviceInformation di : msg.devices) {
             DeviceConfiguration c = null;
             for (DeviceConfiguration conf : configurations) {
@@ -838,15 +837,18 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
             properties.put(Thing.PROPERTY_VENDOR, MaxBindingConstants.PROPERTY_VENDOR_NAME);
             updateProperties(properties);
-            // TODO: Remove this once UI is displaying this info
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
-                logger.debug("key: {}  : {}", entry.getKey(), entry.getValue());
+            if (message.getRFAddress()
+                    .equalsIgnoreCase((String) getConfig().get(MaxBindingConstants.PROPERTY_RFADDRESS))
+                    && message.getSerialNumber()
+                            .equalsIgnoreCase((String) getConfig().get(Thing.PROPERTY_SERIAL_NUMBER))) {
+                logger.debug("MAX! Cube config already up2date.");
+            } else {
+                Configuration configuration = editConfiguration();
+                configuration.put(MaxBindingConstants.PROPERTY_RFADDRESS, message.getRFAddress());
+                configuration.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
+                updateConfiguration(configuration);
+                logger.debug("MAX! Cube config updated");
             }
-            Configuration configuration = editConfiguration();
-            configuration.put(MaxBindingConstants.PROPERTY_RFADDRESS, message.getRFAddress());
-            configuration.put(Thing.PROPERTY_SERIAL_NUMBER, message.getSerialNumber());
-            updateConfiguration(configuration);
-            logger.debug("properties updated");
             propertiesSet = true;
         } catch (Exception e) {
             logger.debug("Exception occurred during property update: {}", e.getMessage(), e);
@@ -938,7 +940,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      * Updates the room information by sending M command
      */
     public void sendDeviceAndRoomNameUpdate(String comment) {
-        if (devices.size() > 0) {
+        if (!devices.isEmpty()) {
             SendCommand sendCommand = new SendCommand("Cube(" + getThing().getUID().getId() + ")",
                     new MCommand(devices, rooms), comment);
             queueCommand(sendCommand);
@@ -978,7 +980,6 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         }
         queueCommand(new SendCommand("Cube(" + getThing().getUID().getId() + ")", new FCommand(ntpServer1, ntpServer2),
                 "Update NTP info"));
-
     }
 
     private boolean socketConnect() throws UnknownHostException, IOException {

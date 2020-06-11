@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.network.internal.toberemoved.cache;
-
-import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
 
 /**
  * Helper class to make the package private cacheUpdater field available for tests.

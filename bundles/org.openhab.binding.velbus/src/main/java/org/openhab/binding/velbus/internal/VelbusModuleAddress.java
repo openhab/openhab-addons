@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.velbus.internal;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
 
@@ -47,7 +48,7 @@ public class VelbusModuleAddress {
     }
 
     public byte[] getActiveAddresses() {
-        ArrayList<Byte> activeAddresses = new ArrayList<Byte>();
+        List<Byte> activeAddresses = new ArrayList<>();
         activeAddresses.add(address);
 
         for (int i = 0; i < subAddresses.length; i++) {

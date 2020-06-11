@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,8 +56,8 @@ public class DimmerDeviceTest extends DeviceTestBase<DimmerDevice> {
 
     @Test
     public void testHandleCommandBrightness() throws IOException {
-        assertInput("dimmer_set_brightness");
-        setSocketReturnAssert("dimmer_set_brightness_response");
+        assertInput("dimmer_set_brightness", "dimmer_set_switch_state_on");
+        setSocketReturnAssert("dimmer_set_brightness_response", "dimmer_set_switch_state_on");
         assertTrue("Brightness channel should be handled",
                 device.handleCommand(CHANNEL_UID_BRIGHTNESS, new PercentType(17)));
     }

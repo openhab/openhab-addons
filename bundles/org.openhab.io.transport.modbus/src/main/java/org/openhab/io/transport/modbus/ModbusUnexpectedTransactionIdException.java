@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,12 +30,12 @@ public class ModbusUnexpectedTransactionIdException extends ModbusTransportExcep
     public ModbusUnexpectedTransactionIdException(int requestId, int responseId) {
         this.requestId = requestId;
         this.responseId = responseId;
-
     }
 
     @Override
     public String getMessage() {
-        return String.format("Transaction id of response (%d) does not equal request (%d)", requestId, responseId);
+        return String.format("Transaction id of request (%d) does not equal response (%d). Slave response is invalid.",
+                requestId, responseId);
     }
 
     @Override
@@ -52,5 +52,4 @@ public class ModbusUnexpectedTransactionIdException extends ModbusTransportExcep
     public int getResponseId() {
         return responseId;
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.types.StateType;
 
 /**
@@ -23,6 +24,7 @@ import org.openhab.binding.satel.internal.types.StateType;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class IntegraStateEvent implements SatelEvent {
 
     private byte command;
@@ -69,13 +71,10 @@ public class IntegraStateEvent implements SatelEvent {
         if (stateType.getStartByte() == 0 && bitsCount == stateBits.size()) {
             return stateBits;
         }
-        BitSet result = stateBitsMap.get(stateType);
-        if (result == null) {
-            int startBit = stateType.getStartByte() * 8;
-            result = stateBits.get(startBit, startBit + bitsCount);
-            stateBitsMap.put(stateType, result);
-        }
-        return result;
+        return stateBitsMap.computeIfAbsent(stateType, k -> {
+            int startBit = k.getStartByte() * 8;
+            return stateBits.get(startBit, startBit + bitsCount);
+        });
     }
 
     /**

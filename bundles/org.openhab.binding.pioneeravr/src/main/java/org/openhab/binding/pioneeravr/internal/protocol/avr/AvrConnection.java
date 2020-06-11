@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    public boolean sendSourceInputQuery(int zone);
+    public boolean sendInputSourceQuery(int zone);
 
     /**
      * Send a listening mode state query to the AVR
@@ -147,5 +147,4 @@ public interface AvrConnection {
      * @return
      */
     public String getConnectionName();
-
 }

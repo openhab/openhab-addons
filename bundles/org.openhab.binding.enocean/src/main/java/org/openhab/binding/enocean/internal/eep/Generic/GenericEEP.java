@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.enocean.internal.eep.Generic;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.PARAMETER_EEPID;
+import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
@@ -99,10 +100,9 @@ public class GenericEEP extends EEP {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (config != null) {
-
             EnOceanChannelTransformationConfig transformationInfo = config.as(EnOceanChannelTransformationConfig.class);
 
             String payload = HexUtils.bytesToHex(bytes);
@@ -119,7 +119,6 @@ public class GenericEEP extends EEP {
 
                     if (state != null) {
                         if (state.isEnum()) {
-
                             for (State s : state.getEnumConstants()) {
                                 if (s.toString().equalsIgnoreCase(parts[1])) {
                                     return s;
@@ -149,7 +148,7 @@ public class GenericEEP extends EEP {
     @Override
     protected int getDataLength() {
         if (packet != null) {
-            return packet.getPayload().length - SenderIdLength - RORGLength - StatusLength;
+            return packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
         } else {
             return bytes.length;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link OutputModeEnum} lists all available digitalSTROM-device output modes.
@@ -89,7 +90,7 @@ public enum OutputModeEnum {
 
     private final int mode;
 
-    static final HashMap<Integer, OutputModeEnum> OUTPUT_MODES = new HashMap<Integer, OutputModeEnum>();
+    static final Map<Integer, OutputModeEnum> OUTPUT_MODES = new HashMap<>();
 
     static {
         for (OutputModeEnum out : OutputModeEnum.values()) {

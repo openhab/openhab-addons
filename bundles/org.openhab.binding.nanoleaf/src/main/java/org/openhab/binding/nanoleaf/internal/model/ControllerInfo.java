@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,22 +12,25 @@
  */
 package org.openhab.binding.nanoleaf.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Represents the light panels controller information
  *
  * @author Martin Raepple - Initial contribution
  */
+@NonNullByDefault
 public class ControllerInfo {
 
-    private String name;
-    private String serialNo;
-    private String manufacturer;
-    private String firmwareVersion;
-    private String model;
-    private State state;
-    private Effects effects;
-    private PanelLayout panelLayout;
-    private Rhythm rhythm;
+    private String name = "";
+    private String serialNo = "";
+    private String manufacturer = "";
+    private String firmwareVersion = "";
+    private String model = "";
+    private State state = new State();
+    private Effects effects = new Effects();
+    private PanelLayout panelLayout = new PanelLayout();
+    private Rhythm rhythm = new Rhythm();
 
     public String getName() {
         return name;

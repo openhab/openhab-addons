@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,8 @@ public class Measurements {
     private float temperatureF;
     private int vocPpb;
 
-    public Measurements(int co2Ppm, int humidityRH, int pm25AQICN, int pm25AQIUS, float pm25Ugm3,
-            float temperatureC, float temperatureF, int vocPpb) {
+    public Measurements(int co2Ppm, int humidityRH, int pm25AQICN, int pm25AQIUS, float pm25Ugm3, float temperatureC,
+            float temperatureF, int vocPpb) {
         this.co2Ppm = co2Ppm;
         this.humidityRH = humidityRH;
         this.pm25AQICN = pm25AQICN;
@@ -110,5 +110,4 @@ public class Measurements {
     public void setVocPpb(int vocPpb) {
         this.vocPpb = vocPpb;
     }
-
 }

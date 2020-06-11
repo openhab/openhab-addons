@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,20 +41,22 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_MY.equals(cmd)) {
+                sendCommand(COMMAND_MY);
+            } else if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the awning is moving and MY is sent => STOP it
+                    // Check if the awning is moving and STOP is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_MY);
                 }
             } else {
-                String param = COMMAND_SET_DEPLOYMENT.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                String param = COMMAND_SET_DEPLOYMENT.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }
@@ -68,8 +70,11 @@ public class SomfyTahomaAwningHandler extends SomfyTahomaBaseThingHandler {
             case "ON":
             case "UP":
                 return COMMAND_UP;
-            case "STOP":
+            case "MOVE":
+            case "MY":
                 return COMMAND_MY;
+            case "STOP":
+                return COMMAND_STOP;
             default:
                 return COMMAND_SET_DEPLOYMENT;
         }

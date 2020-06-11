@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -276,5 +276,4 @@ public class RulesTests {
         assertThat(entry.actions.get(0).address, is("/lights/switch1/state"));
         assertThat(entry.conditions.get(0).address, is("/lights/switch1/state/on"));
     }
-
 }

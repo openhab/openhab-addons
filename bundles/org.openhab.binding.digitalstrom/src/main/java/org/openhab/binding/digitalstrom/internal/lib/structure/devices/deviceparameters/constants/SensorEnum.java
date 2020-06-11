@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,7 +82,7 @@ public enum SensorEnum {
     private final Float max;
     private final Float resolution;
 
-    static final Map<Short, SensorEnum> SENSOR_ENUMS = new HashMap<Short, SensorEnum>();
+    static final Map<Short, SensorEnum> SENSOR_ENUMS = new HashMap<>();
 
     SensorEnum(Short sensorType, String unit, String unitShortcut, int min, float max, float resolution,
             String plattern) {
@@ -246,5 +246,4 @@ public enum SensorEnum {
     public Float getResolution() {
         return resolution;
     }
-
 }

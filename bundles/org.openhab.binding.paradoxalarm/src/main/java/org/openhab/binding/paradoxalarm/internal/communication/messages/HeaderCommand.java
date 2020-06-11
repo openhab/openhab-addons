@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * {@link HeaderCommand}
@@ -26,6 +28,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public enum HeaderCommand {
     SERIAL((byte) 0x00),
     CONNECT_TO_IP_MODULE((byte) 0xF0),

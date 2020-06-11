@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,5 +32,4 @@ public abstract class AbstractTransformationServiceTest {
             + "<condition data=\"Klar\"/></forecast_conditions><forecast_conditions><day_of_week data=\"Fr.\"/><low data=\"0\"/>"
             + "<high data=\"8\"/><icon data=\"/ig/images/weather/sunny.gif\"/><condition data=\"Klar\"/></forecast_conditions>"
             + "</weather></xml_api_reply>";
-
 }

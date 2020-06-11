@@ -16,14 +16,14 @@
 				<label>The out Pin</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:konnected:module" />
+		<config-description-ref uri="thing-type:konnected:module"/>
 	</thing-type>
 	<!-- Zone Channel Type -->
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>This zone is a read only switch type zone</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
@@ -41,7 +41,8 @@
 			</parameter>
 			<parameter name="onvalue" type="text">
 				<label>On Value</label>
-				<description>The value that will be treated by the binding as the on value. For sensors that activate with a high value leave at the default of 1 and sensors that activate with a low value set to 0.</description>
+				<description>The value that will be treated by the binding as the on value. For sensors that activate with a high
+					value leave at the default of 1 and sensors that activate with a low value set to 0.</description>
 				<default>1</default>
 				<options>
 					<option value="0">0</option>
@@ -54,7 +55,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>This zone measures temperature</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text">
 				<label>Zone Number</label>
@@ -87,7 +88,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>This zone measures humidity</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="zone" type="text" required="true">
 				<label>Zone Number</label>
@@ -125,7 +126,8 @@
 			</parameter>
 			<parameter name="onvalue" type="text">
 				<label>On Value</label>
-				<description>The value that will be treated by the binding as an on command. For actuators that activate with a high command set to 1 and actuators that activate with a low value set to 0.</description>
+				<description>The value that will be treated by the binding as an on command. For actuators that activate with a high
+					command set to 1 and actuators that activate with a low value set to 0.</description>
 				<default>1</default>
 				<options>
 					<option value="0">0</option>

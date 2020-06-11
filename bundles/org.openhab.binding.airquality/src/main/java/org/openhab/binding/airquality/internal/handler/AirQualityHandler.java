@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,9 +22,6 @@ import java.net.URLConnection;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Temperature;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -265,7 +262,6 @@ public class AirQualityHandler extends BaseThingHandler {
                 errorMsg = "missing data sub-object";
                 logger.warn("Error in aqicn.org (Air Quality) response: {}", errorMsg);
             }
-
         } catch (MalformedURLException e) {
             errorMsg = e.getMessage();
             logger.warn("Constructed url is not valid: {}", errorMsg);
@@ -300,7 +296,7 @@ public class AirQualityHandler extends BaseThingHandler {
                 case CO:
                     return data.getData().getIaqi().getCo();
                 case SO2:
-                    return data.getData().getIaqi().getSo2();                    
+                    return data.getData().getIaqi().getSo2();
                 case LOCATIONNAME:
                     return data.getData().getCity().getName();
                 case STATIONID:
@@ -310,9 +306,9 @@ public class AirQualityHandler extends BaseThingHandler {
                 case OBSERVATIONTIME:
                     return data.getData().getTime().getObservationTime();
                 case TEMPERATURE:
-                    return new QuantityType<Temperature>(data.getData().getIaqi().getT(), API_TEMPERATURE_UNIT);
+                    return new QuantityType<>(data.getData().getIaqi().getT(), API_TEMPERATURE_UNIT);
                 case PRESSURE:
-                    return new QuantityType<Pressure>(data.getData().getIaqi().getP(), API_PRESSURE_UNIT);
+                    return new QuantityType<>(data.getData().getIaqi().getP(), API_PRESSURE_UNIT);
                 case HUMIDITY:
                     return new QuantityType<>(data.getData().getIaqi().getH(), API_HUMIDITY_UNIT);
                 case DOMINENTPOL:
@@ -322,5 +318,4 @@ public class AirQualityHandler extends BaseThingHandler {
 
         return null;
     }
-
 }

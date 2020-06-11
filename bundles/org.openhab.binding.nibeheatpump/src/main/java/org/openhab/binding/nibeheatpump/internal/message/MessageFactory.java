@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,7 @@ import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocol;
 public class MessageFactory {
 
     public static NibeHeatPumpMessage getMessage(byte[] message) throws NibeHeatPumpException {
-
         if (message != null) {
-
             byte messageTypeByte = NibeHeatPumpProtocol.getMessageType(message);
             MessageType messageType = NibeHeatPumpBaseMessage.getMessageType(messageTypeByte);
 

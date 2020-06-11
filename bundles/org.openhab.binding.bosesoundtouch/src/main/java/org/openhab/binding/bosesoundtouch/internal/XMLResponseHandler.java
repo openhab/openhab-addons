@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -202,8 +202,7 @@ public class XMLResponseHandler extends DefaultHandler {
                         }
                         state = XMLHandlerState.Unprocessed;
                     } else if (state != XMLHandlerState.Volume && state != XMLHandlerState.Presets
-                            && state != XMLHandlerState.Group
-                            && state != XMLHandlerState.Unprocessed) {
+                            && state != XMLHandlerState.Group && state != XMLHandlerState.Unprocessed) {
                         if (!checkDeviceId(localName, attributes, false)) {
                             state = XMLHandlerState.Unprocessed;
                             break;

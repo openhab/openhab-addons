@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * We need to remember some states to change offsets in volume, time index,
      * etc..
      */
-    protected Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<String, State>());
+    protected Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Keeps current track time
@@ -95,11 +95,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * Our mac address, needed everywhere
      */
     private String mac;
-
-    /**
-     * Before we mute or recieve a mute event, store our current volume
-     */
-    private int unmuteVolume = 0;
 
     /**
      * The server sends us the current time on play/pause/stop events, we
@@ -199,9 +194,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 break;
             case CHANNEL_MUTE:
                 if (command.equals(OnOffType.ON)) {
-                    mute();
+                    squeezeBoxServerHandler.mute(mac);
                 } else {
-                    squeezeBoxServerHandler.unMute(mac, unmuteVolume);
+                    squeezeBoxServerHandler.unMute(mac);
                 }
                 break;
             case CHANNEL_STOP:
@@ -236,9 +231,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
                     squeezeBoxServerHandler.volumeDown(mac, currentVolume());
                 } else if (command.equals(OnOffType.OFF)) {
-                    mute();
+                    squeezeBoxServerHandler.mute(mac);
                 } else if (command.equals(OnOffType.ON)) {
-                    squeezeBoxServerHandler.unMute(mac, unmuteVolume);
+                    squeezeBoxServerHandler.unMute(mac);
                 }
                 break;
             case CHANNEL_CONTROL:
@@ -323,6 +318,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
+    public void sourceChangeEvent(String mac, String source) {
+        updateChannel(mac, CHANNEL_SOURCE, StringType.valueOf(source));
+    }
+
+    @Override
     public void absoluteVolumeChangeEvent(String mac, int volume) {
         int newVolume = volume;
         newVolume = Math.min(100, newVolume);
@@ -344,7 +344,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void muteChangeEvent(String mac, boolean mute) {
-        unmuteVolume = currentVolume();
         updateChannel(mac, CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
     }
 
@@ -378,7 +377,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void currentPlaylistShuffleEvent(String mac, int shuffle) {
         updateChannel(mac, CHANNEL_CURRENT_PLAYLIST_SHUFFLE, new DecimalType(shuffle));
-
     }
 
     @Override
@@ -389,7 +387,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void titleChangeEvent(String mac, String title) {
         updateChannel(mac, CHANNEL_TITLE, new StringType(title));
-
     }
 
     @Override
@@ -518,14 +515,6 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 updateState(channelID, state);
             }
         }
-    }
-
-    /**
-     * Helper method to mute a player
-     */
-    private void mute() {
-        unmuteVolume = currentVolume();
-        squeezeBoxServerHandler.mute(mac);
     }
 
     /**

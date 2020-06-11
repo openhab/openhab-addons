@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,6 @@ public class SensorTests {
 
     @Test
     public void renameSensor() {
-
         assertThat(cs.ds.sensors.get("switch1").name, is("name1"));
 
         String body = "{'name':'name2'}";

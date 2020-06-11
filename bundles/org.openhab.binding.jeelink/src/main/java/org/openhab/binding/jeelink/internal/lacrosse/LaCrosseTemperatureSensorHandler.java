@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCrosseTemperatureReading> {
     private final Logger logger = LoggerFactory.getLogger(LaCrosseTemperatureSensorHandler.class);
 
-    public LaCrosseTemperatureSensorHandler(Thing thing) {
-        super(thing);
+    public LaCrosseTemperatureSensorHandler(Thing thing, String sensorType) {
+        super(thing, sensorType);
     }
 
     @Override

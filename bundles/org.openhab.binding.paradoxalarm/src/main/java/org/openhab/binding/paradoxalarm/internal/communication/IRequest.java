@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacketPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 
 /**
  * The {@link IRequest} - interface definition for the request used in the communication.
@@ -21,7 +21,9 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket
  */
 public interface IRequest {
 
-    IPPacketPayload getRequestPayload();
+    IResponseReceiver getResponseReceiver();
+
+    IPPacket getRequestPacket();
 
     void setTimeStamp();
 

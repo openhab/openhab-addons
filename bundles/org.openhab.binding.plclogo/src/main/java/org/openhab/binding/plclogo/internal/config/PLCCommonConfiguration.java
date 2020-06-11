@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,5 +59,4 @@ abstract class PLCCommonConfiguration {
      * @return Configured Siemens LOGO! blocks kind
      */
     public abstract String getBlockKind();
-
 }

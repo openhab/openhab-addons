@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ public class TelegramBindingConstants {
 
     // List of all Channel ids
     public static final String LASTMESSAGETEXT = "lastMessageText";
+    public static final String LASTMESSAGEURL = "lastMessageURL";
     public static final String LASTMESSAGEDATE = "lastMessageDate";
     public static final String LASTMESSAGENAME = "lastMessageName";
     public static final String LASTMESSAGEUSERNAME = "lastMessageUsername";

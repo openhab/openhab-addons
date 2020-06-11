@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class TclScriptDataList {
 
     @XStreamImplicit(itemFieldName = "entry")
-    private List<TclScriptDataEntry> entries = new ArrayList<TclScriptDataEntry>();
+    private List<TclScriptDataEntry> entries = new ArrayList<>();
 
     /**
      * Returns all entries.
@@ -35,5 +35,4 @@ public class TclScriptDataList {
     public List<TclScriptDataEntry> getEntries() {
         return entries;
     }
-
 }

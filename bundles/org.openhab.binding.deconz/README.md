@@ -2,19 +2,16 @@
 
 The Zigbee binding currently does not support the Dresden Elektronik Raspbee and Conbee Zigbee dongles.
 The manufacturer provides a companion app called deCONZ together with the mentioned hardware.
-deCONZ offers a documented real-time channel that this binding makes use of to bring support for all paired Zigbee sensors and switches.
-
-deCONZ also acts as a HUE bridge.
-This binding is meant to be used together with the HUE binding which makes the lights and plugs available.
+deCONZ offers a documented real-time channel that this binding makes use of to bring support for all paired Zigbee devices.
 
 ## Supported Things
 
 There is one bridge (`deconz`) that manages the connection to the deCONZ software instance.
-These things are supported:
+These sensors are supported:
 
 | Device type                       | Resource Type                     | Thing type           |
 |-----------------------------------|-----------------------------------|----------------------|
-| Presence Sensor                   | ZHAPresence, CLIPPrensence        | `presencesensor`     |
+| Presence Sensor                   | ZHAPresence, CLIPPresence         | `presencesensor`     |
 | Power Sensor                      | ZHAPower, CLIPPower               | `powersensor`        |
 | Consumption Sensor                | ZHAConsumption                    | `consumptionsensor`  |
 | Switch                            | ZHASwitch                         | `switch`             |
@@ -25,15 +22,32 @@ These things are supported:
 | Open/Close Sensor                 | ZHAOpenClose                      | `openclosesensor`    |
 | Water Leakage Sensor              | ZHAWater                          | `waterleakagesensor` |
 | Alarm Sensor                      | ZHAAlarm                          | `alarmsensor`        |
+| Fire Sensor                       | ZHAFire                           | `firesensor`         |
 | Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`    |
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
+| Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxide`     |
+
+
+Additionally lights, window coverings (blinds) and thermostats are supported:
+
+| Device type                          | Resource Type                          | Thing type           |
+|--------------------------------------|----------------------------------------|----------------------|
+| Dimmable Light                       | Dimmable light, Dimmable plug-in unit  | `dimmablelight`      |
+| On/Off Light                         | On/Off light, On/Off plug-in unit      | `onofflight`         |
+| Color Light (w/o temperature)        | Color dimmable light                   | `colorlight`         |
+| Extended Color Light (w/temperature) | Extended color light                   | `extendedcolorlight` |
+| Blind / Window Covering              | Window covering device                 | `windowcovering`     |
+| Thermostat                           | ZHAThermostat                          | `thermostat`         |
 
 ## Discovery
 
 deCONZ software instances are discovered automatically in the same subnet.
-Sensors, switches are discovered as soon as a `deconz` bridge Thing comes online.
+Sensors, switches, lights and blinds are discovered as soon as a `deconz` bridge thing comes online.
+If your device is not discovered, please check the DEBUG log for unknown devices and report your findings.
 
 ## Thing Configuration
+
+### Bridge
 
 These configuration parameters are available:
 
@@ -53,6 +67,17 @@ The API key is an optional value.
 If a deCONZ API key is available because it has already been created manually, it can also be entered as a configuration value.
 Otherwise the field can be left empty and the binding will generate the key automatically.
 For this process the deCONZ bridge must be unlocked in the deCONZ software so that third party applications can register ([see deCONZ documentation](https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#unlock-the-gateway)).
+
+### Things
+
+All non-bridge things share the mandatory `id` parameter, an integer assigned to the device while pairing to deconz.
+Auto-discovered things do not need to be configured. 
+
+`dimmablelight`, `extendedcolorlight`, `colorlight` and `colortemperaturelight` have an additional optional parameter `transitiontime`.
+The transition time is the time to move between two states and is configured in seconds.
+The resolution provided is 1/10s.
+If no value is provided, the default value of the device is used.
+
 
 ### Textual Thing Configuration - Retrieving an API Key
 
@@ -79,7 +104,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 
 ## Channels
 
-The devices support some of the following channels:
+The sensor devices support some of the following channels:
 
 | Channel Type ID | Item Type                | Access Mode | Description                                                                               | Thing types                                  |
 |-----------------|--------------------------|:-----------:|-------------------------------------------------------------------------------------------|----------------------------------------------|
@@ -90,34 +115,69 @@ The devices support some of the following channels:
 | voltage         | Number:ElectricPotential |      R      | Current voltage in V                                                                      | some powersensors                            |
 | current         | Number:ElectricCurrent   |      R      | Current current in mA                                                                     | some powersensors                            |
 | button          | Number                   |      R      | Last pressed button id on a switch                                                        | switch                                       |
+| gesture         | Number                   |      R      | A gesture that was performed with the switch                                              | switch                                       |
 | lightlux        | Number:Illuminance       |      R      | Current light illuminance in Lux                                                          | lightsensor                                  |
 | light_level     | Number                   |      R      | Current light level                                                                       | lightsensor                                  |
-| dark            | Switch                   |      R      | Light level is below the darkness threshold.                                              | lightsensor, sometimes for presencesensor    |
-| daylight        | Switch                   |      R      | Light level is above the daylight threshold.                                              | lightsensor                                  |
-| temperature     | Number:Temperature       |      R      | Current temperature in ˚C                                                                 | temperaturesensor, some Xiaomi sensors       |
+| dark            | Switch                   |      R      | Light level is below the darkness threshold                                               | lightsensor, sometimes for presencesensor    |
+| daylight        | Switch                   |      R      | Light level is above the daylight threshold                                               | lightsensor                                  |
+| temperature     | Number:Temperature       |      R      | Current temperature in ˚C                                                                 | temperaturesensor, some Xiaomi sensors,thermostat|
 | humidity        | Number:Dimensionless     |      R      | Current humidity in %                                                                     | humiditysensor                               |
 | pressure        | Number:Pressure          |      R      | Current pressure in hPa                                                                   | pressuresensor                               |
 | open            | Contact                  |      R      | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                              |
 | waterleakage    | Switch                   |      R      | Status of water leakage: `ON` = water leakage detected; `OFF` = no water leakage detected | waterleakagesensor                           |
+| fire            | Switch                   |      R      | Status of a fire: `ON` = fire was detected; `OFF` = no fire detected                      | firesensor                                   |
 | alarm           | Switch                   |      R      | Status of an alarm: `ON` = alarm was triggered; `OFF` = no alarm                          | alarmsensor                                  |
 | tampered        | Switch                   |      R      | Status of a zone: `ON` = zone is being tampered; `OFF` = zone is not tampered             | any IAS sensor                               |
 | vibration       | Switch                   |      R      | Status of vibration: `ON` = vibration was detected; `OFF` = no vibration                  | alarmsensor                                  |
-| light           | String                   |      R      | Light level: `Daylight`,`Sunset`,`Dark`                                                   | daylightsensor                               |
+| light           | String                   |      R      | Light level: `Daylight`; `Sunset`; `Dark`                                                 | daylightsensor                               |
 | value           | Number                   |      R      | Sun position: `130` = dawn; `140` = sunrise; `190` = sunset; `210` = dusk                 | daylightsensor                               |
 | battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
+| carbonmonoxide  | Switch                   |      R      | `ON` = carbon monoxide detected                                                           | carbonmonoxide                               |
+
 
 **NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
 The specification of your sensor depends on the deCONZ capabilities.
 Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
 
+Other devices support
+
+| Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                   |
+|-------------------|--------------------------|:-----------:|---------------------------------------|-----------------------------------------------|
+| brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`                               |                                 
+| switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                  |
+| color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`            |
+| color_temperature | Number                   |     R/W     | `0`->`100` represents cold -> warm    | `colortemperaturelight`, `extendedcolorlight` |
+| position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                              |
+| heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                  |
+| valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                  |
+| mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                  |
+| offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                  |
+
 ### Trigger Channels
 
-The dimmer switch additionally supports a trigger channel.
+The dimmer switch additionally supports trigger channels.
 
-| Channel Type ID | Description               | Thing types |
-|-----------------|---------------------------|-------------|
-| buttonevent     | Event for switch pressed. | switch      |
+| Channel Type ID | Description              | Thing types |
+|-----------------|--------------------------|-------------|
+| buttonevent     | Event for switch pressed | switch      |
+| gestureevent    | Event for gestures       | switch      |
+
+**NOTE:** The `gestureevent` trigger channel is only available if the optional channel `gesture` is present.
+Both will be added during runtime if supported by the switch.
+`gestureevent` can trigger one of the following events:
+
+| Gesture                          | Event |
+|----------------------------------|-------|
+| GESTURE_NONE                     | 0     |
+| GESTURE_SHAKE                    | 1     |
+| GESTURE_DROP                     | 2     |
+| GESTURE_FLIP_90                  | 3     |
+| GESTURE_FLIP_180                 | 4     |
+| GESTURE_PUSH                     | 5     |
+| GESTURE_DOUBLE_TAP               | 6     |
+| GESTURE_ROTATE_CLOCKWISE         | 7     |
+| GESTURE_ROTATE_COUNTER_CLOCKWISE | 8     |
 
 ## Full Example
 
@@ -133,6 +193,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
     waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
     alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8" ]
+    dimmablelight       livingroom-ceiling      "Livingroom Ceiling"        [ id="1" ]
 }
 ```
 
@@ -146,6 +207,7 @@ Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"
 Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
 Switch                  Basement_Alarm          "Basement Alarm Triggered [%s]"                     { channel="deconz:alarmsensor:homeserver:basement-alarm:alarm" }
+Dimmer                  Livingroom_Ceiling      "Livingroom Ceiling [%d]"           <light>         { channel="deconz:dimmablelight:homeserver:livingroom-ceiling:brightness" }                 
 ```
 
 ### Events
@@ -158,3 +220,9 @@ then
     ...
 end
 ```
+
+### Troubleshooting
+
+By default state updates are ignored for 250ms after a command.
+If your light takes more than that to change from one state to another, you might experience a problem with jumping sliders/color pickers.
+In that case the `transitiontime` parameter should be changed to the desired time.

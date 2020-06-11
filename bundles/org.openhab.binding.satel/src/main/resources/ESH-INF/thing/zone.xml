@@ -7,8 +7,8 @@
 	<thing-type id="zone">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ethm-1" />
-			<bridge-type-ref id="int-rs" />
+			<bridge-type-ref id="ethm-1"/>
+			<bridge-type-ref id="int-rs"/>
 		</supported-bridge-type-refs>
 
 		<label>Zone</label>
@@ -18,18 +18,18 @@
 <li>virtual - zones which physically do not exist, but have been programmed as FOLLOW OUTPUT or are controlled by means of a keyfob.</li></ul>]]></description>
 
 		<channels>
-			<channel typeId="violation" id="violation" />
-			<channel typeId="tamper" id="tamper" />
-			<channel typeId="alarm" id="alarm" />
-			<channel typeId="tamper_alarm" id="tamper_alarm" />
-			<channel typeId="alarm_memory" id="alarm_memory" />
-			<channel typeId="tamper_alarm_memory" id="tamper_alarm_memory" />
-			<channel typeId="bypass" id="bypass" />
-			<channel typeId="no_violation_trouble" id="no_violation_trouble" />
-			<channel typeId="long_violation_trouble" id="long_violation_trouble" />
-			<channel typeId="isolate" id="isolate" />
-			<channel typeId="masked" id="masked" />
-			<channel typeId="masked_memory" id="masked_memory" />
+			<channel typeId="violation" id="violation"/>
+			<channel typeId="tamper" id="tamper"/>
+			<channel typeId="alarm" id="alarm"/>
+			<channel typeId="tamper_alarm" id="tamper_alarm"/>
+			<channel typeId="alarm_memory" id="alarm_memory"/>
+			<channel typeId="tamper_alarm_memory" id="tamper_alarm_memory"/>
+			<channel typeId="bypass" id="bypass"/>
+			<channel typeId="no_violation_trouble" id="no_violation_trouble"/>
+			<channel typeId="long_violation_trouble" id="long_violation_trouble"/>
+			<channel typeId="isolate" id="isolate"/>
+			<channel typeId="masked" id="masked"/>
+			<channel typeId="masked_memory" id="masked_memory"/>
 		</channels>
 
 		<config-description>
@@ -53,42 +53,42 @@
 		<item-type>Switch</item-type>
 		<label>Violation</label>
 		<description>Active when violation is detected in the zone</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tamper">
 		<item-type>Switch</item-type>
 		<label>Tamper</label>
 		<description>Active when detector in the zone is tampered</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarm">
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<description>Active when violation is detected in the zone and zone is armed</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tamper_alarm">
 		<item-type>Switch</item-type>
 		<label>Tamper Alarm</label>
 		<description>Active when detector in the zone is tampered and zone is armed</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarm_memory">
 		<item-type>Switch</item-type>
 		<label>Alarm Memory</label>
 		<description>Memorized alarm state for the zone</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="tamper_alarm_memory">
 		<item-type>Switch</item-type>
 		<label>Tamper Alarm Memory</label>
 		<description>Memorized tamper alarm state for the zone</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bypass">
@@ -101,14 +101,14 @@
 		<item-type>Switch</item-type>
 		<label>No Violation Trouble</label>
 		<description>Active when no violation has been detected in the zone for configured time</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="long_violation_trouble" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Long Violation Trouble</label>
 		<description>Active when violation in the zone lasts longer than configured time</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="isolate" advanced="true">
@@ -121,14 +121,14 @@
 		<item-type>Switch</item-type>
 		<label>Masked</label>
 		<description>Active when zone is masked</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="masked_memory" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Masked Memory</label>
 		<description>Memorized masked state for the zone</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

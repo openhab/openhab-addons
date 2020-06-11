@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -185,18 +185,18 @@ public class DateTimeUtils {
      */
     public static Calendar applyConfig(Calendar cal, AstroChannelConfig config) {
         Calendar cCal = cal;
-        if (config.getOffset() != null && config.getOffset() != 0) {
+        if (config.offset != 0) {
             Calendar cOffset = Calendar.getInstance();
             cOffset.setTime(cCal.getTime());
-            cOffset.add(Calendar.MINUTE, config.getOffset());
+            cOffset.add(Calendar.MINUTE, config.offset);
             cCal = cOffset;
         }
 
-        Calendar cEarliest = adjustTime(cCal, getMinutesFromTime(config.getEarliest()));
+        Calendar cEarliest = adjustTime(cCal, getMinutesFromTime(config.earliest));
         if (cCal.before(cEarliest)) {
             return cEarliest;
         }
-        Calendar cLatest = adjustTime(cCal, getMinutesFromTime(config.getLatest()));
+        Calendar cLatest = adjustTime(cCal, getMinutesFromTime(config.latest));
         if (cCal.after(cLatest)) {
             return cLatest;
         }

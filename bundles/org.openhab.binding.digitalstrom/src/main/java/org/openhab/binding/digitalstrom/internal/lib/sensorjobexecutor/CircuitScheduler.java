@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public class CircuitScheduler {
 
     private final DSID meterDSID;
     private long nextExecutionTime = System.currentTimeMillis();
-    private final PriorityQueue<SensorJob> sensorJobQueue = new PriorityQueue<SensorJob>(10, new SensorJobComparator());
+    private final PriorityQueue<SensorJob> sensorJobQueue = new PriorityQueue<>(10, new SensorJobComparator());
     private final Config config;
 
     /**

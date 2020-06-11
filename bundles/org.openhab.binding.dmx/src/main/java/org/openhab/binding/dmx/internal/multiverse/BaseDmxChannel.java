@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -117,7 +117,7 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
      */
     public static List<BaseDmxChannel> fromString(String dmxChannelString, int defaultUniverseId)
             throws IllegalArgumentException {
-        List<BaseDmxChannel> dmxChannels = new ArrayList<BaseDmxChannel>();
+        List<BaseDmxChannel> dmxChannels = new ArrayList<>();
 
         Stream.of(dmxChannelString.split(",")).forEach(singleDmxChannelString -> {
             int dmxChannelId, dmxChannelWidth;

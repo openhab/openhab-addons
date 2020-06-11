@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public class RioBank {
     /**
      * The Bank Name
      */
-    private final AtomicReference<String> name = new AtomicReference<String>(null);
+    private final AtomicReference<String> name = new AtomicReference<>(null);
 
     /**
      * Create the object from the given ID (using the default name of "Bank" + id)

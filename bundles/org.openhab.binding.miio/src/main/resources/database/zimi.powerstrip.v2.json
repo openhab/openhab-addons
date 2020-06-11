@@ -28,13 +28,13 @@
 				"ChannelGroup": "",
 				"actions": [
 					{
-						
+						"parameterType": "EMPTY"
 					}
 				]
 			},
 			{
 				"property": "wifi_led",
-				"friendlyName": "wifi_led",
+				"friendlyName": "wifi LED",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
@@ -56,7 +56,7 @@
 				"actions": [
 					{
 						"command": "set_power_price",
-						"parameterType": "Number"
+						"parameterType": "NUMBER"
 					}
 				]
 			},

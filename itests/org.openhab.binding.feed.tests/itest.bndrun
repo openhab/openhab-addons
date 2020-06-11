@@ -10,12 +10,6 @@ Fragment-Host: org.openhab.binding.feed
 	bnd.identity;id='org.apache.felix.configadmin',\
 	osgi.identity;filter:='(&(osgi.identity=org.ops4j.pax.web.pax-web-runtime)(version>=7.2.3))'
 
-
-# We would like to use the "volatile" storage only
--runblacklist: \
-    bnd.identity;id='org.openhab.core.storage.json',\
-    bnd.identity;id='org.openhab.core.storage.mapdb'
-
 -runvm: -Dorg.osgi.service.http.port=${org.osgi.service.http.port}
 
 #
@@ -32,8 +26,6 @@ Fragment-Host: org.openhab.binding.feed
 	org.apache.servicemix.bundles.xstream;version='[1.4.7,1.4.8)',\
 	org.apache.xbean.bundleutils;version='[4.12.0,4.12.1)',\
 	org.apache.xbean.finder;version='[4.12.0,4.12.1)',\
-	org.openhab.binding.feed;version='[2.5.0,2.5.1)',\
-	org.openhab.binding.feed.tests;version='[2.5.0,2.5.1)',\
 	org.openhab.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.binding.xml;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.core;version='[2.5.0,2.5.1)',\
@@ -69,4 +61,6 @@ Fragment-Host: org.openhab.binding.feed
 	org.ops4j.pax.web.pax-web-api;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-runtime;version='[7.2.11,7.2.12)',\
-	org.ops4j.pax.web.pax-web-spi;version='[7.2.11,7.2.12)'
+	org.ops4j.pax.web.pax-web-spi;version='[7.2.11,7.2.12)',\
+	org.openhab.binding.feed;version='[2.5.6,2.5.7)',\
+	org.openhab.binding.feed.tests;version='[2.5.6,2.5.7)'

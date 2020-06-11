@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,8 +44,8 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
      * Constructor
      *
      * @param serialPortManager the serial port manager
-     * @param serialPortName    the serial port name
-     * @param baudRate          the baud rate to be used
+     * @param serialPortName the serial port name
+     * @param baudRate the baud rate to be used
      */
     public PowermaxSerialConnector(SerialPortManager serialPortManager, String serialPortName, int baudRate) {
         this.serialPortManager = serialPortManager;
@@ -118,7 +118,7 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
             serialPort.removeEventListener();
         }
 
-        super.cleanup();
+        super.cleanup(true);
 
         if (serialPort != null) {
             serialPort.close();
@@ -139,5 +139,4 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
         } catch (InterruptedException e) {
         }
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,19 +12,20 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Custom Cloud Server communication exception
  * 
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
-public class RdsCloudException extends RuntimeException {
+@NonNullByDefault
+public class RdsCloudException extends Exception {
 
     private static final long serialVersionUID = -7048044632627280917L;
 
-    public RdsCloudException(String message)
-    {
-      super(message);
+    public RdsCloudException(String message) {
+        super(message);
     }
-
 }

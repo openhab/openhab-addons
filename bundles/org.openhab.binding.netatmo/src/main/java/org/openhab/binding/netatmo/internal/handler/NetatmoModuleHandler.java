@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -47,8 +48,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected void initializeThing() {
         refreshJob = scheduler.schedule(() -> {
             requestParentRefresh();
         }, 5, TimeUnit.SECONDS);
@@ -72,7 +72,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         try {
             if (channelId.equalsIgnoreCase(CHANNEL_LAST_MESSAGE) && module != null) {
                 Method getLastMessage = module.getClass().getMethod("getLastMessage");
@@ -130,5 +130,4 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     protected void setRefreshRequired(boolean refreshRequired) {
         this.refreshRequired = refreshRequired;
     }
-
 }

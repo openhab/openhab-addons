@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ public class InternalScene {
     private boolean deviceHasChanged = false;
     private String sceneType = SceneTypes.GROUP_SCENE;
 
-    private List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+    private List<Device> devices = Collections.synchronizedList(new LinkedList<>());
     private SceneStatusListener listener;
 
     /**
@@ -230,7 +230,6 @@ public class InternalScene {
      */
     public List<Device> getDeviceList() {
         return this.devices;
-
     }
 
     /**
@@ -329,7 +328,6 @@ public class InternalScene {
         this.listener = listener;
         this.listener.onSceneAdded(this);
         checkDeviceSceneConfig();
-
     }
 
     /**

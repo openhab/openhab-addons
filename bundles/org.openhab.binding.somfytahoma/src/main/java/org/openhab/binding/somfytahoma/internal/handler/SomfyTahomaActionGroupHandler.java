@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
@@ -35,18 +34,12 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
     }
 
     @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
     protected boolean isAlwaysOnline() {
         return true;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
         if (EXECUTE_ACTION.equals(channelUID.getId()) && command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
                 executeActionGroup();

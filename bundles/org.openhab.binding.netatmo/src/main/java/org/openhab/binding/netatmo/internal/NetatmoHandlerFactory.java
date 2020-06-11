@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServlet;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -44,6 +45,7 @@ import org.openhab.binding.netatmo.internal.welcome.NAWelcomeCameraHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomePersonHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -56,14 +58,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
-    private HttpService httpService;
-    private NATherm1StateDescriptionProvider stateDescriptionProvider;
+    private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private final HttpService httpService;
+    private final NATherm1StateDescriptionProvider stateDescriptionProvider;
+
+    @Activate
+    public NetatmoHandlerFactory(final @Reference HttpService httpService,
+            final @Reference NATherm1StateDescriptionProvider stateDescriptionProvider) {
+        this.httpService = httpService;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -71,7 +80,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(APIBRIDGE_THING_TYPE)) {
             WelcomeWebHookServlet servlet = registerWebHookServlet(thing.getUID());
@@ -96,7 +105,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NATherm1Handler(thing, stateDescriptionProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
             return new NAWelcomeHomeHandler(thing);
-        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
+        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE) || thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
             return new NAWelcomeCameraHandler(thing);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing);
@@ -115,12 +124,12 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private synchronized void registerDeviceDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
+    private synchronized void registerDeviceDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
         if (bundleContext != null) {
             NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
             discoveryService.activate(null);
-            discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext.registerService(
-                    DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+            discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext
+                    .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
         }
     }
 
@@ -136,12 +145,12 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private synchronized WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
+    private synchronized @Nullable WelcomeWebHookServlet registerWebHookServlet(ThingUID thingUID) {
         WelcomeWebHookServlet servlet = null;
         if (bundleContext != null) {
             servlet = new WelcomeWebHookServlet(httpService, thingUID.getId());
-            webHookServiceRegs.put(thingUID, bundleContext.registerService(HttpServlet.class.getName(), servlet,
-                    new Hashtable<String, Object>()));
+            webHookServiceRegs.put(thingUID,
+                    bundleContext.registerService(HttpServlet.class.getName(), servlet, new Hashtable<>()));
         }
         return servlet;
     }
@@ -152,23 +161,4 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             serviceReg.unregister();
         }
     }
-
-    @Reference
-    public void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    public void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
-        this.stateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(NATherm1StateDescriptionProvider provider) {
-        this.stateDescriptionProvider = null;
-    }
-
 }

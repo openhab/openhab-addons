@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 /*
  * This file is based on:
  *
@@ -49,6 +48,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -90,30 +92,6 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class LGWebOSTVSocket {
 
-    private static final Gson GSON = new GsonBuilder().create();
-
-    public enum State {
-        DISCONNECTED,
-        REGISTERING,
-        REGISTERED
-    }
-
-    private State state = State.DISCONNECTED;
-
-    private final ConfigProvider config;
-    private final WebSocketClient client;
-    private @Nullable Session session;
-    private final URI destUri;
-    private @Nullable WebOSTVSocketListener listener;
-    private final LGWebOSTVKeyboardInput keyboardInput;
-    /**
-     * Requests to which we are awaiting response.
-     */
-    private HashMap<Integer, ServiceCommand<?>> requests = new HashMap<>();
-
-    private final Logger logger = LoggerFactory.getLogger(LGWebOSTVSocket.class);
-    private int nextRequestId = 0;
-
     private static final String FOREGROUND_APP = "ssap://com.webos.applicationManager/getForegroundAppInfo";
     // private static final String APP_STATUS = "ssap://com.webos.service.appstatus/getAppStatus";
     // private static final String APP_STATE = "ssap://system.launcher/getAppState";
@@ -126,7 +104,42 @@ public class LGWebOSTVSocket {
     // private static final String CURRENT_PROGRAM = "ssap://tv/getChannelCurrentProgramInfo";
     // private static final String THREED_STATUS = "ssap://com.webos.service.tv.display/get3DStatus";
 
-    public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, int port) {
+    private static final int DISCONNECTING_DELAY_SECONDS = 2;
+
+    private static final Gson GSON = new GsonBuilder().create();
+
+    private final Logger logger = LoggerFactory.getLogger(LGWebOSTVSocket.class);
+
+    private final ConfigProvider config;
+    private final WebSocketClient client;
+    private final URI destUri;
+    private final LGWebOSTVKeyboardInput keyboardInput;
+    private final ScheduledExecutorService scheduler;
+
+    public enum State {
+        DISCONNECTING,
+        DISCONNECTED,
+        CONNECTING,
+        REGISTERING,
+        REGISTERED
+    }
+
+    private State state = State.DISCONNECTED;
+
+    private @Nullable Session session;
+    private @Nullable WebOSTVSocketListener listener;
+
+    /**
+     * Requests to which we are awaiting response.
+     */
+    private HashMap<Integer, ServiceCommand<?>> requests = new HashMap<>();
+
+    private int nextRequestId = 0;
+
+    private @Nullable ScheduledFuture<?> disconnectingJob;
+
+    public LGWebOSTVSocket(WebSocketClient client, ConfigProvider config, String host, int port,
+            ScheduledExecutorService scheduler) {
         this.config = config;
         this.client = client;
         this.keyboardInput = new LGWebOSTVKeyboardInput(this);
@@ -136,6 +149,8 @@ public class LGWebOSTVSocket {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("IP address or hostname provided is invalid: " + host);
         }
+
+        this.scheduler = scheduler;
     }
 
     public State getState() {
@@ -143,6 +158,7 @@ public class LGWebOSTVSocket {
     }
 
     private void setState(State state) {
+        logger.debug("setState new {} - current {}", state, this.state);
         State oldState = this.state;
         if (oldState != state) {
             this.state = state;
@@ -169,8 +185,34 @@ public class LGWebOSTVSocket {
 
     public void disconnect() {
         Optional.ofNullable(this.session).ifPresent(s -> s.close());
+        stopDisconnectingJob();
         setState(State.DISCONNECTED);
     }
+
+    private void disconnecting() {
+        logger.debug("disconnecting");
+        if (state == State.REGISTERED) {
+            setState(State.DISCONNECTING);
+        }
+    }
+
+    private void scheduleDisconectingJob() {
+        ScheduledFuture<?> job = disconnectingJob;
+        if (job == null || job.isCancelled()) {
+            logger.debug("Schedule disconecting job");
+            disconnectingJob = scheduler.schedule(this::disconnecting, DISCONNECTING_DELAY_SECONDS, TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopDisconnectingJob() {
+        ScheduledFuture<?> job = disconnectingJob;
+        if (job != null && !job.isCancelled()) {
+            logger.debug("Stop disconnecting job");
+            job.cancel(true);
+        }
+        disconnectingJob = null;
+    }
+
     /*
      * WebSocket Callbacks
      */
@@ -210,6 +252,8 @@ public class LGWebOSTVSocket {
      * WebOS WebSocket API specific Communication
      */
     void sendHello() {
+        setState(State.CONNECTING);
+
         JsonObject packet = new JsonObject();
         packet.addProperty("id", nextRequestId());
         packet.addProperty("type", "hello");
@@ -263,11 +307,10 @@ public class LGWebOSTVSocket {
                 logger.debug("Registration failed with message: {}", message);
                 disconnect();
             }
-
         };
 
-        this.requests.put(id, new ServiceSubscription<JsonObject>("dummy", payload, x -> x, dummyListener));
-        sendMessage(packet);
+        this.requests.put(id, new ServiceSubscription<>("dummy", payload, x -> x, dummyListener));
+        sendMessage(packet, !key.isEmpty());
     }
 
     private int nextRequestId() {
@@ -294,12 +337,14 @@ public class LGWebOSTVSocket {
                 this.sendMessage(packet);
 
                 break;
+            case CONNECTING:
             case REGISTERING:
+            case DISCONNECTING:
             case DISCONNECTED:
-                logger.warn("Skipping command {} for {} in state {}", command, command.getTarget(), state);
+                logger.debug("Skipping {} command {} for {} in state {}", command.getType(), command,
+                        command.getTarget(), state);
                 break;
         }
-
     }
 
     public void unsubscribe(ServiceSubscription<?> subscription) {
@@ -316,24 +361,45 @@ public class LGWebOSTVSocket {
     }
 
     private void sendMessage(JsonObject json) {
+        sendMessage(json, false);
+    }
+
+    private void sendMessage(JsonObject json, boolean checkKey) {
         String msg = GSON.toJson(json);
         Session s = this.session;
         try {
             if (s != null) {
-                logger.trace("Message [out]: {}", msg);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Message [out]: {}", checkKey ? GSON.toJson(maskKeyInJson(json)) : msg);
+                }
                 s.getRemote().sendString(msg);
             } else {
-                logger.warn("No Connection to TV, skipping [out]: {}", msg);
+                logger.warn("No Connection to TV, skipping [out]: {}",
+                        checkKey ? GSON.toJson(maskKeyInJson(json)) : msg);
             }
         } catch (IOException e) {
             logger.warn("Unable to send message.", e);
         }
     }
 
+    private JsonObject maskKeyInJson(JsonObject json) {
+        if (json.has("payload") && json.getAsJsonObject("payload").has("client-key")) {
+            JsonObject jsonCopy = json.deepCopy();
+            JsonObject payload = jsonCopy.getAsJsonObject("payload");
+            payload.remove("client-key");
+            payload.addProperty("client-key", "***");
+            return jsonCopy;
+        }
+        return json;
+    }
+
     @OnWebSocketMessage
     public void onMessage(String message) {
-        logger.trace("Message [in]: {}", message);
         Response response = GSON.fromJson(message, Response.class);
+        JsonElement payload = response.getPayload();
+        JsonObject jsonPayload = payload == null ? null : payload.getAsJsonObject();
+        String messageToLog = (jsonPayload != null && jsonPayload.has("client-key")) ? "***" : message;
+        logger.trace("Message [in]: {}", messageToLog);
         ServiceCommand<?> request = null;
 
         if (response.getId() != null) {
@@ -353,33 +419,33 @@ public class LGWebOSTVSocket {
         switch (response.getType()) {
             case "response":
                 if (request == null) {
-                    logger.debug("No matching request found for response message: {}", message);
+                    logger.debug("No matching request found for response message: {}", messageToLog);
                     break;
                 }
-                if (response.getPayload() == null) {
-                    logger.debug("No payload in response message: {}", message);
+                if (payload == null) {
+                    logger.debug("No payload in response message: {}", messageToLog);
                     break;
                 }
                 try {
-                    request.processResponse(response.getPayload().getAsJsonObject());
+                    request.processResponse(jsonPayload);
                 } catch (RuntimeException ex) {
                     // An uncaught runtime exception in @OnWebSocketMessage annotated method will cause the web socket
                     // implementation to call @OnWebSocketError callback in which we would reset the connection.
                     // Users have the ability to create miss-configurations in which IllegalArgumentException could be
                     // thrown
                     logger.warn("Error while processing message: {} - in response to request: {} - Error Message: {}",
-                            message, request, ex.getMessage());
+                            messageToLog, request, ex.getMessage());
                 }
                 break;
             case "error":
-                logger.debug("Error: {}", message);
+                logger.debug("Error: {}", messageToLog);
 
                 if (request == null) {
-                    logger.warn("No matching request found for error message: {}", message);
+                    logger.warn("No matching request found for error message: {}", messageToLog);
                     break;
                 }
-                if (response.getPayload() == null) {
-                    logger.warn("No payload in error message: {}", message);
+                if (payload == null) {
+                    logger.warn("No payload in error message: {}", messageToLog);
                     break;
                 }
                 try {
@@ -390,39 +456,40 @@ public class LGWebOSTVSocket {
                     // Users have the ability to create miss-configurations in which IllegalArgumentException could be
                     // thrown
                     logger.warn("Error while processing error: {} - in response to request: {} - Error Message: {}",
-                            message, request, ex.getMessage());
+                            messageToLog, request, ex.getMessage());
                 }
                 break;
             case "hello":
-                if (response.getPayload() == null) {
-                    logger.warn("No payload in error message: {}", message);
+                if (state != State.CONNECTING) {
+                    logger.debug("Skipping response {}, not in CONNECTING state, state was {}", messageToLog, state);
                     break;
                 }
-                JsonObject deviceDescription = response.getPayload().getAsJsonObject();
+                if (jsonPayload == null) {
+                    logger.warn("No payload in error message: {}", messageToLog);
+                    break;
+                }
                 Map<String, String> map = new HashMap<>();
-                map.put(PROPERTY_DEVICE_OS, deviceDescription.get("deviceOS").getAsString());
-                map.put(PROPERTY_DEVICE_OS_VERSION, deviceDescription.get("deviceOSVersion").getAsString());
-                map.put(PROPERTY_DEVICE_OS_RELEASE_VERSION,
-                        deviceDescription.get("deviceOSReleaseVersion").getAsString());
+                map.put(PROPERTY_DEVICE_OS, jsonPayload.get("deviceOS").getAsString());
+                map.put(PROPERTY_DEVICE_OS_VERSION, jsonPayload.get("deviceOSVersion").getAsString());
+                map.put(PROPERTY_DEVICE_OS_RELEASE_VERSION, jsonPayload.get("deviceOSReleaseVersion").getAsString());
                 map.put(PROPERTY_LAST_CONNECTED, Instant.now().toString());
                 config.storeProperties(map);
                 sendRegister();
                 break;
             case "registered":
-                if (response.getPayload() == null) {
-                    logger.warn("No payload in registered message: {}", message);
+                if (state != State.REGISTERING) {
+                    logger.debug("Skipping response {}, not in REGISTERING state, state was {}", messageToLog, state);
+                    break;
+                }
+                if (jsonPayload == null) {
+                    logger.warn("No payload in registered message: {}", messageToLog);
                     break;
                 }
                 this.requests.remove(response.getId());
-                config.storeKey(response.getPayload().getAsJsonObject().get("client-key").getAsString());
+                config.storeKey(jsonPayload.get("client-key").getAsString());
                 setState(State.REGISTERED);
                 break;
         }
-
-    }
-
-    public boolean isConnected() {
-        return state == State.REGISTERED;
     }
 
     public interface WebOSTVSocketListener {
@@ -430,7 +497,6 @@ public class LGWebOSTVSocket {
         public void onStateChanged(State state);
 
         public void onError(String errorMessage);
-
     }
 
     public ServiceSubscription<Boolean> subscribeMute(ResponseListener<Boolean> listener) {
@@ -440,14 +506,25 @@ public class LGWebOSTVSocket {
         return request;
     }
 
+    public ServiceCommand<Boolean> getMute(ResponseListener<Boolean> listener) {
+        ServiceCommand<Boolean> request = new ServiceCommand<>(MUTE, null,
+                (jsonObj) -> jsonObj.get("mute").getAsBoolean(), listener);
+        sendCommand(request);
+        return request;
+    }
+
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
         ServiceSubscription<Float> request = new ServiceSubscription<>(VOLUME, null,
-                // "scenario" in the response determines whether "volume" is absolute or a delta value.
-                // it only makes sense to subscribe to changes in absolute volume
-                // accept: "mastervolume_tv_speaker" or "mastervolume_tv_speaker_ext"
-                // ignore external amp/receiver: "mastervolume_ext_speaker_arc" or "mastervolume_ext_speaker_urcu_oss"
-                jsonObj -> jsonObj.get("scenario").getAsString().startsWith("mastervolume_tv_speaker")
-                        ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
+                jsonObj -> jsonObj.get("volume").getAsInt() >= 0 ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
+                        : Float.NaN,
+                listener);
+        sendCommand(request);
+        return request;
+    }
+
+    public ServiceCommand<Float> getVolume(ResponseListener<Float> listener) {
+        ServiceCommand<Float> request = new ServiceCommand<>(VOLUME, null,
+                jsonObj -> jsonObj.get("volume").getAsInt() >= 0 ? (float) (jsonObj.get("volume").getAsInt() / 100.0)
                         : Float.NaN,
                 listener);
         sendCommand(request);
@@ -490,6 +567,14 @@ public class LGWebOSTVSocket {
 
     public ServiceSubscription<ChannelInfo> subscribeCurrentChannel(ResponseListener<ChannelInfo> listener) {
         ServiceSubscription<ChannelInfo> request = new ServiceSubscription<>(CHANNEL, null,
+                jsonObj -> GSON.fromJson(jsonObj, ChannelInfo.class), listener);
+        sendCommand(request);
+
+        return request;
+    }
+
+    public ServiceCommand<ChannelInfo> getCurrentChannel(ResponseListener<ChannelInfo> listener) {
+        ServiceCommand<ChannelInfo> request = new ServiceCommand<>(CHANNEL, null,
                 jsonObj -> GSON.fromJson(jsonObj, ChannelInfo.class), listener);
         sendCommand(request);
 
@@ -564,8 +649,24 @@ public class LGWebOSTVSocket {
     // POWER
     public void powerOff(ResponseListener<CommandConfirmation> listener) {
         String uri = "ssap://system/turnOff";
+
+        ResponseListener<CommandConfirmation> interceptor = new ResponseListener<CommandConfirmation>() {
+
+            @Override
+            public void onSuccess(CommandConfirmation confirmation) {
+                if (confirmation.getReturnValue()) {
+                    disconnecting();
+                }
+                listener.onSuccess(confirmation);
+            }
+
+            @Override
+            public void onError(String message) {
+                listener.onError(message);
+            }
+        };
         ServiceCommand<CommandConfirmation> request = new ServiceCommand<>(uri, null,
-                x -> GSON.fromJson(x, CommandConfirmation.class), listener);
+                x -> GSON.fromJson(x, CommandConfirmation.class), interceptor);
         sendCommand(request);
     }
 
@@ -725,11 +826,30 @@ public class LGWebOSTVSocket {
     }
 
     public ServiceSubscription<AppInfo> subscribeRunningApp(ResponseListener<AppInfo> listener) {
+        ResponseListener<AppInfo> interceptor = new ResponseListener<AppInfo>() {
+
+            @Override
+            public void onSuccess(AppInfo appInfo) {
+                if (appInfo.getId().isEmpty()) {
+                    scheduleDisconectingJob();
+                } else {
+                    stopDisconnectingJob();
+                    if (state == State.DISCONNECTING) {
+                        setState(State.REGISTERED);
+                    }
+                }
+                listener.onSuccess(appInfo);
+            }
+
+            @Override
+            public void onError(String message) {
+                listener.onError(message);
+            }
+        };
         ServiceSubscription<AppInfo> request = new ServiceSubscription<>(FOREGROUND_APP, null,
-                jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), listener);
+                jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), interceptor);
         sendCommand(request);
         return request;
-
     }
 
     public ServiceCommand<AppInfo> getRunningApp(ResponseListener<AppInfo> listener) {
@@ -737,7 +857,6 @@ public class LGWebOSTVSocket {
                 jsonObj -> GSON.fromJson(jsonObj, AppInfo.class), listener);
         sendCommand(request);
         return request;
-
     }
 
     // KEYBOARD
@@ -775,7 +894,6 @@ public class LGWebOSTVSocket {
                     default:
                         break;
                 }
-
             }
 
             @Override
@@ -809,7 +927,12 @@ public class LGWebOSTVSocket {
 
         ServiceCommand<JsonObject> request = new ServiceCommand<>(uri, null, x -> x, listener);
         sendCommand(request);
+    }
 
+    // Simulate Remote Control Button press
+
+    public void sendRCButton(String rcButton, ResponseListener<CommandConfirmation> listener) {
+        executeMouse(s -> s.button(rcButton));
     }
 
     public interface ConfigProvider {
@@ -819,5 +942,4 @@ public class LGWebOSTVSocket {
 
         String getKey();
     }
-
 }

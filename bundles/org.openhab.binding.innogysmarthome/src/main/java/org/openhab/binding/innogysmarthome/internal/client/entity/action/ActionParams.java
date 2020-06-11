@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,8 @@ public class ActionParams {
     private IntegerActionParam shutterLevel;
 
     private StringActionParam operationMode;
+
+    private StringActionParam rampDirection;
 
     /**
      * @return the onState
@@ -116,4 +118,17 @@ public class ActionParams {
         this.operationMode = operationMode;
     }
 
+    /**
+     * @return the rampDirection
+     */
+    public StringActionParam getRampDirection() {
+        return rampDirection;
+    }
+
+    /**
+     * @param rampDirection the rampDirection to set
+     */
+    public void setRampDirection(StringActionParam rampDirection) {
+        this.rampDirection = rampDirection;
+    }
 }

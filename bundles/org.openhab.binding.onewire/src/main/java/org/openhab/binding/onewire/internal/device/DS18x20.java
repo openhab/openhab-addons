@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,8 @@ public class DS18x20 extends AbstractOwDevice {
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured && enabledChannels.contains(CHANNEL_TEMPERATURE)) {
-            QuantityType<Temperature> temperature = new QuantityType<Temperature>(
+            logger.trace("refresh of sensor {} started", sensorId);
+            QuantityType<Temperature> temperature = new QuantityType<>(
                     (DecimalType) bridgeHandler.readDecimalType(sensorId, temperatureParameter), SIUnits.CELSIUS);
             logger.trace("read temperature {} from {}", temperature, sensorId);
             if (ignorePOR && (Double.compare(temperature.doubleValue(), 85.0) == 0)) {

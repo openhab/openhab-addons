@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,12 +31,10 @@ public class JsonAnnouncementContent {
     public static class Display {
         public @Nullable String title;
         public @Nullable String body;
-
     }
 
     public static class Speak {
         public String type = "text";
         public @Nullable String value;
-
     }
 }

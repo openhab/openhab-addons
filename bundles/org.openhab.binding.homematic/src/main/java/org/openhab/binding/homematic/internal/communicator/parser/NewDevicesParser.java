@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
     @Override
     @SuppressWarnings("unchecked")
     public List<String> parse(Object[] message) throws IOException {
-        List<String> adresses = new ArrayList<String>();
+        List<String> adresses = new ArrayList<>();
         if (message != null && message.length > 1) {
             message = (Object[]) message[1];
             for (int i = 0; i < message.length; i++) {
@@ -44,5 +44,4 @@ public class NewDevicesParser extends CommonRpcParser<Object[], List<String>> {
         }
         return adresses;
     }
-
 }

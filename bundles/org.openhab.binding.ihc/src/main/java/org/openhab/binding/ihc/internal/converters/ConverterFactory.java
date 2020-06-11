@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,7 +80,7 @@ public enum ConverterFactory {
     private Map<Key, Converter<? extends WSResourceValue, ? extends Type>> converters;
 
     private ConverterFactory() {
-        converters = new HashMap<Key, Converter<? extends WSResourceValue, ? extends Type>>();
+        converters = new HashMap<>();
 
         converters.put(new Key(WSDateValue.class, DateTimeType.class), new DateTimeTypeWSDateValueConverter());
         converters.put(new Key(WSTimeValue.class, DateTimeType.class), new DateTimeTypeWSTimeValueConverter());

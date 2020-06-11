@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
 
     @Override
     public boolean scanInProgress() {
-        return participants.size() > 0 || waitingForParticipant;
+        return !participants.isEmpty() || waitingForParticipant;
     }
 
     /**
@@ -89,7 +89,7 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
      *            discovered items
      */
     private void startNextParticipant(final ModbusEndpointThingHandler handler, final ModbusDiscoveryService service) {
-        if (participants.size() == 0) {
+        if (participants.isEmpty()) {
             logger.trace("All participants has finished");
             service.scanFinished();
             return; // We're finished, this will exit the process

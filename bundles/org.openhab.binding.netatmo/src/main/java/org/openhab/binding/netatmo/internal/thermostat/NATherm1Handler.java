@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,7 +100,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
 
     @SuppressWarnings("null")
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_THERM_ORIENTATION:
                 return module != null ? toDecimalType(module.getThermOrientation()) : UnDefType.UNDEF;
@@ -304,5 +304,4 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         // TODO : this informations could be sourced from Netatmo API instead of a local configuration element
         return ((Number) config.get(SETPOINT_DEFAULT_DURATION)).intValue();
     }
-
 }

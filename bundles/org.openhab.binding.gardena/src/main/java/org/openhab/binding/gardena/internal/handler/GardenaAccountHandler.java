@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -142,7 +142,7 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     @Override
     public void onDeviceUpdated(Device device) {
         for (ThingUID thingUID : UidUtils.getThingUIDs(device, getThing())) {
-            Thing gardenaThing = getThingByUID(thingUID);
+            Thing gardenaThing = getThing().getThing(thingUID);
             try {
                 GardenaThingHandler gardenaThingHandler = (GardenaThingHandler) gardenaThing.getHandler();
                 gardenaThingHandler.updateProperties(device);
@@ -185,5 +185,4 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     public void onConnectionResumed() {
         updateStatus(ThingStatus.ONLINE);
     }
-
 }

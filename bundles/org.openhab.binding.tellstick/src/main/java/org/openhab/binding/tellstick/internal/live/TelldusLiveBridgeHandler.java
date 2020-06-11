@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
     private TellstickNetDevices deviceList = null;
     private TellstickNetSensors sensorList = null;
     private TelldusLiveDeviceController controller = new TelldusLiveDeviceController();
-    private List<DeviceStatusListener> deviceStatusListeners = new Vector<DeviceStatusListener>();
+    private List<DeviceStatusListener> deviceStatusListeners = new Vector<>();
 
     private static final int REFRESH_DELAY = 10;
 

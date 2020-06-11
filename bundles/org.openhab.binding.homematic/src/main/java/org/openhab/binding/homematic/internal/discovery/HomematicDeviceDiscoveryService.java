@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -183,7 +183,6 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
      * Waits for the discovery scan to finish and then returns.
      */
     public void waitForScanFinishing() {
-
         logger.debug("Waiting for finishing Homematic device discovery scan");
         try {
             waitForInstallModeFinished(DISCOVER_TIMEOUT_SECONDS * 1000);
@@ -246,5 +245,4 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
                 .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withTTL(timeToLive).build();
         thingDiscovered(discoveryResult);
     }
-
 }

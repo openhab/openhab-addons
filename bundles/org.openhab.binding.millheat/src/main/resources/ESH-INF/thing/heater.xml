@@ -6,21 +6,21 @@
 
 	<thing-type id="heater">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Wi-Fi Enabled Heater</label>
 
 		<channels>
-			<channel id="currentTemperature" typeId="currentTemperature" />
-			<channel id="heatingActive" typeId="heatingActive" />
-			<channel id="fanActive" typeId="fanActive" />
-			<channel id="currentEnergy" typeId="currentEnergy" />
-			<channel id="independent" typeId="independent" />
-			<channel id="window" typeId="window" />
+			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="heatingActive" typeId="heatingActive"/>
+			<channel id="fanActive" typeId="fanActive"/>
+			<channel id="currentEnergy" typeId="currentEnergy"/>
+			<channel id="independent" typeId="independent"/>
+			<channel id="window" typeId="window"/>
 		</channels>
 
 		<representation-property>macAddress</representation-property>
-		<config-description-ref uri="thing-type:millheat:heater" />
+		<config-description-ref uri="thing-type:millheat:heater"/>
 	</thing-type>
 </thing:thing-descriptions>

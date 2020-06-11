@@ -6,23 +6,23 @@
 
 	<thing-type id="acdevice">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="melcloudaccount" />
+			<bridge-type-ref id="melcloudaccount"/>
 		</supported-bridge-type-refs>
 		<label>A.C. Device</label>
 		<description>Air conditioning device</description>
 
 		<channels>
-			<channel id="hasPendingCommand" typeId="hasPendingCommand-channel" />
-			<channel id="offline" typeId="offline-channel" />
-			<channel id="power" typeId="power-channel" />
-			<channel id="operationMode" typeId="operationMode-channel" />
-			<channel id="setTemperature" typeId="setTemperature-channel" />
-			<channel id="fanSpeed" typeId="fanSpeed-channel" />
-			<channel id="vaneHorizontal" typeId="vaneHorizontal-channel" />
-			<channel id="vaneVertical" typeId="vaneVertical-channel" />
-			<channel id="roomTemperature" typeId="roomTemperature-channel" />
-			<channel id="lastCommunication" typeId="lastCommunication-channel" />
-			<channel id="nextCommunication" typeId="nextCommunication-channel" />
+			<channel id="hasPendingCommand" typeId="hasPendingCommand-channel"/>
+			<channel id="offline" typeId="offline-channel"/>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="operationMode" typeId="operationMode-channel"/>
+			<channel id="setTemperature" typeId="setTemperature-channel"/>
+			<channel id="fanSpeed" typeId="fanSpeed-channel"/>
+			<channel id="vaneHorizontal" typeId="vaneHorizontal-channel"/>
+			<channel id="vaneVertical" typeId="vaneVertical-channel"/>
+			<channel id="roomTemperature" typeId="roomTemperature-channel"/>
+			<channel id="lastCommunication" typeId="lastCommunication-channel"/>
+			<channel id="nextCommunication" typeId="nextCommunication-channel"/>
 		</channels>
 
 		<config-description>

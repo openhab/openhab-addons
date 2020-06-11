@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.linuxinput.internal.evdev4j.jnr;
 
 import static org.openhab.binding.linuxinput.internal.evdev4j.Utils.constantFromInt;
@@ -127,7 +126,8 @@ public interface EvdevLibrary {
 
     @SuppressWarnings("unused")
     class ReadFlag {
-        private ReadFlag() { }
+        private ReadFlag() {
+        }
 
         public static final int SYNC = 1;
         public static final int NORMAL = 2;
@@ -136,7 +136,8 @@ public interface EvdevLibrary {
     }
 
     class KeyEventValue {
-        private KeyEventValue() { }
+        private KeyEventValue() {
+        }
 
         public static final int UP = 0;
         public static final int DOWN = 1;

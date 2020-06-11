@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,6 @@ public class TadoApiTypeUtils {
 
     public static OverlayTerminationCondition terminationConditionTemplateToTerminationCondition(
             OverlayTerminationConditionTemplate template) {
-
         Integer timerDuration = template.getType() == OverlayTerminationConditionType.TIMER
                 ? ((TimerTerminationConditionTemplate) template).getDurationInSeconds()
                 : null;
@@ -170,5 +169,4 @@ public class TadoApiTypeUtils {
 
         return modeCapabilities != null ? modeCapabilities : new AcModeCapabilities();
     }
-
 }

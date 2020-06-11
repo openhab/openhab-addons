@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -315,7 +315,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             setConnection(currentConnection);
                         }
                     } else {
-
                         // read session data from property
                         String sessionStore = this.stateStorage.get("sessionStorage");
 
@@ -437,7 +436,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         for (EchoHandler child : echoHandlers) {
             child.updateNotifications(timeStamp, timeStampNow, pushPayload, notifications);
         }
-
     }
 
     private void refreshData() {
@@ -582,7 +580,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     public List<Device> updateDeviceList() {
-
         Connection currentConnection = connection;
         if (currentConnection == null) {
             return new ArrayList<>();
@@ -701,7 +698,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         } catch (HttpException | JsonSyntaxException | IOException | URISyntaxException | ConnectionException e) {
             logger.warn("get flash briefing profiles fails", e);
         }
-
     }
 
     @Override

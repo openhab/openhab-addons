@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,6 @@ public class DwdUnwetterHandlerTest extends JavaTest {
 
         // assert that the (temporary) UNKNOWN status was to the mocked thing first:
         assertThat(statusInfoCaptor.getAllValues().get(0).getStatus(), is(ThingStatus.UNKNOWN));
-
     }
 
     /**
@@ -138,5 +137,4 @@ public class DwdUnwetterHandlerTest extends JavaTest {
         }
         return null;
     }
-
 }

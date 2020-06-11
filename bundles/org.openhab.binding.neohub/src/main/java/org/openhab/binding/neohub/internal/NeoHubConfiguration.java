@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NeoHubConfiguration} class contains the thing configuration
  * parameters
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class NeoHubConfiguration {
-
-    public String hostName;
+    public String hostName = "";
     public int portNumber;
     public int pollingInterval;
-
+    public int socketTimeout;
+    public boolean preferLegacyApi;
 }

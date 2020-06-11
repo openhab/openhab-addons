@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -198,7 +198,7 @@ public class Schedules implements RegistryChangeListener<Rule> {
             throw new IllegalStateException("localtime not set!");
         }
 
-        List<Action> actions = new ArrayList<Action>(oldActions);
+        List<Action> actions = new ArrayList<>(oldActions);
 
         if (command != null) {
             RuleUtils.validateHueHttpAddress(ds, command.address);
@@ -339,5 +339,4 @@ public class Schedules implements RegistryChangeListener<Rule> {
 
         return NetworkUtils.singleSuccess(cs.gson, uid, "id");
     }
-
 }

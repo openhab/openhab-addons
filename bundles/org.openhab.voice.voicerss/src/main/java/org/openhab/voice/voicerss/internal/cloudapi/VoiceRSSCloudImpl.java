@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -177,5 +177,4 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         return "http://api.voicerss.org/?key=" + apiKey + "&hl=" + locale + "&c=" + audioFormat
                 + "&f=44khz_16bit_mono&src=" + encodedMsg;
     }
-
 }

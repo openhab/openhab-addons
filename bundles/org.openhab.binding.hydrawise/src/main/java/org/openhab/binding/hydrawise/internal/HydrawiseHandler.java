@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,6 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
     @SuppressWarnings({ "null", "unused" }) // compiler does not like relayMap.get can return null
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.warn("Controller is NOT ONLINE and is not responding to commands");
             return;
@@ -236,7 +235,7 @@ public abstract class HydrawiseHandler extends BaseThingHandler {
             }
 
             updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN,
-                    status.running.size() > 0 ? OnOffType.ON : OnOffType.OFF);
+                    !status.running.isEmpty() ? OnOffType.ON : OnOffType.OFF);
         });
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,14 +31,14 @@ public class ExpiringCacheAsyncTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWrongCacheTime() {
         // Fail if cache time is <= 0
-        new ExpiringCacheAsync<Double>(0, () -> {
+        new ExpiringCacheAsync<>(0, () -> {
         });
     }
 
     @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorNoRefrehCommand() {
-        new ExpiringCacheAsync<Double>(2000, null);
+        new ExpiringCacheAsync<>(2000, null);
     }
 
     @Test

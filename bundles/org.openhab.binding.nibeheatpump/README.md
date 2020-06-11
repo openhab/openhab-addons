@@ -59,7 +59,7 @@ An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet 
 The [ProDiNo](https://www.kmpelectronics.eu/en-us/products/prodinoethernet.aspx) NetBoards are also supported.
 A ProDiNo has an Ethernet and RS-485 port on the board.
 
-Arduino code is available [here](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
+Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
 Arduino code can be build via Arduino IDE.
 For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
@@ -67,7 +67,7 @@ NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by 
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
-C code is available [here](https://github.com/openhab/openhab2-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
+C code is available [here](https://github.com/openhab/openhab-addons/tree/master/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
 
 To build the C code use: 
 
@@ -903,6 +903,8 @@ This binding currently supports following channels for F1x45 pump models:
 | 48458           | Number    | 50          | 100        | Setting | Max speed circ.pump Heat                                 |                                                                                                                                                                    |
 | 48459           | Number    | 0           | 100        | Setting | Speed brine pump cooling                                 |                                                                                                                                                                    |
 | 48487           | Number    | 1           | 100        | Setting | Speed circ.pump Cooling                                  |                                                                                                                                                                    |
+| 49008           | Number    | 100         | 2000       | Setting | Smart Energy Source, DM Diff Source Prio 2               |                                                                                                                                                                    |
+| 49009           | Number    | -2000       | -10        | Setting | Smart Energy Source, DM Start Source Prio 1              |                                                                                                                                                                    |
 
 ### F1x55
 

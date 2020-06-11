@@ -6,15 +6,15 @@
 	<!-- Generic thing for dimmable lights (ZigBee Device ID: 0x0100) -->
 	<thing-type id="0100">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Dimmable Light</label>
 		<description>A dimmable light.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<channel id="alert" typeId="alert" />
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="alert" typeId="alert"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>
@@ -25,9 +25,9 @@
 				<description>The light identifier identifies one certain hue light.</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="fadetime" type="integer" min="0" step="100">
+			<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
 				<label>Fade Time</label>
-				<description>Fade time in ms for changing values</description>
+				<description>Fade time in milliseconds for changing values</description>
 				<default>400</default>
 			</parameter>
 		</config-description>

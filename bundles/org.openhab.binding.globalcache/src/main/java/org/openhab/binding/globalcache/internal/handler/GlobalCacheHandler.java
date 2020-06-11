@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -462,7 +462,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         public CommandProcessor() {
             super("GlobalCache Command Processor");
-            sendQueue = new LinkedBlockingQueue<RequestMessage>(SEND_QUEUE_MAX_DEPTH);
+            sendQueue = new LinkedBlockingQueue<>(SEND_QUEUE_MAX_DEPTH);
             logger.debug("Processor for thing {} created request queue, depth={}", thingID(), SEND_QUEUE_MAX_DEPTH);
         }
 

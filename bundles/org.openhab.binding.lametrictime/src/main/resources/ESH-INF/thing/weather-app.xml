@@ -6,7 +6,7 @@
 
 	<thing-type id="weatherApp" listed="true">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="device" />
+			<bridge-type-ref id="device"/>
 		</supported-bridge-type-refs>
 
 		<label>LaMetric Time Weather</label>

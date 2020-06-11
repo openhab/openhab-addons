@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,13 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConfigurationException extends Exception {
-  private static final long serialVersionUID = -3319800607314286998L;
+    private static final long serialVersionUID = -3319800607314286998L;
 
-  public ConfigurationException(String string) {
-    super(string);
-  }
+    public ConfigurationException(String string) {
+        super(string);
+    }
 
-  public ConfigurationException(Throwable cause) {
-    super(cause);
-  }
+    public ConfigurationException(Throwable cause) {
+        super(cause);
+    }
 }

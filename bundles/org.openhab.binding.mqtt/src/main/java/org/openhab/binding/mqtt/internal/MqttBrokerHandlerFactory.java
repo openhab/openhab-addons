@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mqtt.internal;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,10 +36,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The {@link MqttBrokerHandlerFactory} is responsible for creating things and thing
@@ -108,8 +108,8 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
      */
     @Override
     public void subscribe(MQTTTopicDiscoveryParticipant listener, String topic) {
-        List<MQTTTopicDiscoveryParticipant> listenerList = discoveryTopics
-                .computeIfAbsent(topic, t -> new ArrayList<>());
+        List<MQTTTopicDiscoveryParticipant> listenerList = discoveryTopics.computeIfAbsent(topic,
+                t -> new ArrayList<>());
         listenerList.add(listener);
         handlers.forEach(broker -> broker.registerDiscoveryListener(listener, topic));
     }
@@ -123,6 +123,15 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
         discoveryTopics.forEach((topic, listenerList) -> {
             listenerList.remove(listener);
             handlers.forEach(broker -> broker.unregisterDiscoveryListener(listener, topic));
+        });
+    }
+
+    @Override
+    public void publish(String topic, byte[] payload) {
+        handlers.forEach(handler -> {
+            handler.getConnectionAsync().thenAccept(connection -> {
+                connection.publish(topic, payload);
+            });
         });
     }
 }

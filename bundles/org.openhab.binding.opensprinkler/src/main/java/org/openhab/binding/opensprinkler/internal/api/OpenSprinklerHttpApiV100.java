@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,10 +31,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
+import org.openhab.binding.opensprinkler.internal.model.NoCurrentDrawSensorException;
 import org.openhab.binding.opensprinkler.internal.model.StationProgram;
 import org.openhab.binding.opensprinkler.internal.util.Parse;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link OpenSprinklerHttpApiV100} class is used for communicating with
@@ -180,6 +182,15 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     }
 
     @Override
+    public int currentDraw() throws CommunicationApiException, NoCurrentDrawSensorException {
+        JcResponse info = statusInfo();
+        if (info.curr == null) {
+            throw new NoCurrentDrawSensorException();
+        }
+        return info.curr;
+    }
+
+    @Override
     public int getNumberOfStations() throws CommunicationApiException {
         String returnContent;
 
@@ -256,7 +267,9 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
 
     private static class JcResponse {
         public List<List<Integer>> ps;
+        @SerializedName(value = "sn1", alternate = "rs")
         public int rs;
+        public Integer curr;
     }
 
     /**

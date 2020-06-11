@@ -37,7 +37,7 @@ else is working on the same thing.
 ### Create issues...
 
 Any significant improvement should be documented as [a GitHub
-issue](https://github.com/openhab/openhab2-addons/issues?labels=enhancement&page=1&state=open) before anybody
+issue](https://github.com/openhab/openhab-addons/issues?labels=enhancement&page=1&state=open) before anybody
 starts working on it.
 
 ### ...but check for existing issues first!
@@ -142,7 +142,7 @@ On the command line you can use `git commit -s` to sign off the commit.
 
 * Step 1: learn the component inside out
 * Step 2: make yourself useful by contributing code, bugfixes, support etc.
-* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab2-addons/issues?labels=question&page=1&state=open)
+* Step 3: volunteer on [the discussion group](https://github.com/openhab/openhab-addons/issues?labels=question&page=1&state=open)
 
 Don't forget: being a maintainer is a time investment. Make sure you will have time to make yourself available.
 You don't have to be a maintainer to make a difference on the project!

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -438,7 +438,7 @@ public class IhcResourceInteractionService extends IhcBaseService {
 
         String query = String.format(soapQuery, timeoutInSeconds);
         String response = sendSoapQuery(null, query, getTimeout() + timeoutInSeconds * 1000);
-        List<WSResourceValue> resourceValueList = new ArrayList<WSResourceValue>();
+        List<WSResourceValue> resourceValueList = new ArrayList<>();
 
         try {
             NodeList nodeList = XPathUtils.parseList(response,

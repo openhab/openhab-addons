@@ -9,7 +9,7 @@
 		<label>Neeo Brain</label>
 		<description>The NEEO Brain</description>
 		<channels>
-			<channel id="forwardActions" typeId="brain-forwardactions" />
+			<channel id="forwardActions" typeId="brain-forwardactions"/>
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -43,14 +43,14 @@
 	</bridge-type>
 	<bridge-type id="room">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="brain" />
+			<bridge-type-ref id="brain"/>
 		</supported-bridge-type-refs>
 		<label>Neeo Room</label>
 		<description>Neeo Room</description>
 		<channel-groups>
-			<channel-group id="state" typeId="room-state" />
-			<channel-group id="scenario" typeId="room-scenario" />
-			<channel-group id="recipe" typeId="room-recipe" />
+			<channel-group id="state" typeId="room-state"/>
+			<channel-group id="scenario" typeId="room-scenario"/>
+			<channel-group id="recipe" typeId="room-recipe"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="roomKey" type="text" required="true">
@@ -73,12 +73,12 @@
 	</bridge-type>
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="room" />
+			<bridge-type-ref id="room"/>
 		</supported-bridge-type-refs>
 		<label>Neeo Device</label>
 		<description>Neeo Device</description>
 		<channel-groups>
-			<channel-group id="macros" typeId="device-macros" />
+			<channel-group id="macros" typeId="device-macros"/>
 		</channel-groups>
 		<config-description>
 			<parameter name="deviceKey" type="text" required="true">
@@ -100,7 +100,7 @@
 		<label>Room State</label>
 		<description>The room's state</description>
 		<channels>
-			<channel id="currentStep" typeId="room-state-currentstep" />
+			<channel id="currentStep" typeId="room-state-currentstep"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="room-state-currentstep">
@@ -114,29 +114,29 @@
 		<label>Recipes</label>
 		<description>The room recipes</description>
 		<channels>
-			<channel id="name" typeId="room-recipe-name" />
-			<channel id="type" typeId="room-recipe-type" />
-			<channel id="enabled" typeId="room-recipe-enabled" />
-			<channel id="status" typeId="room-recipe-status" />
+			<channel id="name" typeId="room-recipe-name"/>
+			<channel id="type" typeId="room-recipe-type"/>
+			<channel id="enabled" typeId="room-recipe-enabled"/>
+			<channel id="status" typeId="room-recipe-status"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="room-recipe-name" advanced="true">
 		<item-type>String</item-type>
 		<label>Label Dynamically Generated</label>
 		<description>The recipe name</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="room-recipe-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Label Dynamically Generated</label>
 		<description>The type of recipe</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="room-recipe-enabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Label Dynamically Generated</label>
 		<description>Whether the recipe is enabled or not.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="room-recipe-status">
 		<item-type>Switch</item-type>
@@ -147,22 +147,22 @@
 		<label>Scenarios</label>
 		<description>The room scenarios</description>
 		<channels>
-			<channel id="name" typeId="room-scenario-name" />
-			<channel id="configured" typeId="room-scenario-configured" />
-			<channel id="status" typeId="room-scenario-status" />
+			<channel id="name" typeId="room-scenario-name"/>
+			<channel id="configured" typeId="room-scenario-configured"/>
+			<channel id="status" typeId="room-scenario-status"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="room-scenario-name" advanced="true">
 		<item-type>String</item-type>
 		<label>Label Dynamically Generated</label>
 		<description>The scenario name</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="room-scenario-configured" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Label Dynamically Generated</label>
 		<description>Whether the scenario is configured or not</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="room-scenario-status">
 		<item-type>Switch</item-type>
@@ -173,7 +173,7 @@
 		<label>Macros</label>
 		<description>Executable macros</description>
 		<channels>
-			<channel id="status" typeId="device-macros-status" />
+			<channel id="status" typeId="device-macros-status"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="device-macros-status">

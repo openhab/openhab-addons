@@ -6,18 +6,18 @@
 
 	<thing-type id="WSD">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Wall Mounted Smoke Detector (WSD)</label>
 		<description>A battery powered smoke detector sensor with integrated alarm (first version).</description>
 
 		<channels>
-			<channel id="smoke" typeId="SmokeDetectorSensor" />
-			<channel id="alarm" typeId="AlarmActuator" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="smoke" typeId="SmokeDetectorSensor"/>
+			<channel id="alarm" typeId="AlarmActuator"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:innogysmarthome:config" />
+		<config-description-ref uri="thing-type:innogysmarthome:config"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,22 +21,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ResponseException extends Exception {
-  private static final long serialVersionUID = -3319800607314286998L;
+    private static final long serialVersionUID = -3319800607314286998L;
 
-  public ResponseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-    super(message, cause, enableSuppression, writableStackTrace);
-  }
+    public ResponseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 
-  public ResponseException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public ResponseException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public ResponseException(String message) {
-    super(message);
-  }
+    public ResponseException(String message) {
+        super(message);
+    }
 
-  public ResponseException(Throwable cause) {
-    super(cause);
-  }
-
+    public ResponseException(Throwable cause) {
+        super(cause);
+    }
 }

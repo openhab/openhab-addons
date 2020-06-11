@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         if (device != null) {
             NADashboardData dashboardData = device.getDashboardData();
             switch (channelId) {
@@ -120,5 +120,4 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
         }
         return null;
     }
-
 }

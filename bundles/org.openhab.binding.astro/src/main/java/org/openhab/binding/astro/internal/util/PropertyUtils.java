@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,12 +71,8 @@ public class PropertyUtils {
         }
     }
 
-    public static void setTimeZone(TimeZoneProvider zone) {
-        PropertyUtils.timeZoneProvider = zone;
-    }
-
-    public static void unsetTimeZone() {
-        PropertyUtils.timeZoneProvider = null;
+    public static void setTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
+        PropertyUtils.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -112,5 +108,4 @@ public class PropertyUtils {
         sb.append(str.substring(1));
         return sb.toString();
     }
-
 }

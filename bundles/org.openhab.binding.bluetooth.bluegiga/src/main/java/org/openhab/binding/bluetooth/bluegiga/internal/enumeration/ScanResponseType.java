@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ public enum ScanResponseType {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, ScanResponseType>();
+        codeMapping = new HashMap<>();
         for (ScanResponseType s : values()) {
             codeMapping.put(s.key, s);
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,40 +13,50 @@
 package org.openhab.binding.hpprinter.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link HPEmbeddedWebServerResult} is responsible for returning the
+ * The {@link HPServerResult} is responsible for returning the
  * reading of data from the HP Embedded Web Server.
  *
  * @author Stewart Cossey - Initial contribution
  */
 @NonNullByDefault
 public class HPServerResult<result> {
+    private final RequestStatus status;
+    private final @Nullable result data;
+    private final String errorMessage;
 
-    public HPServerResult(RequestStatus status, result data) {
+    public HPServerResult(RequestStatus status, String errorMessage) {
         this.status = status;
-        this.data = data;
+        this.data = null;
+        this.errorMessage = errorMessage;
     }
 
     public HPServerResult(result data) {
         this.status = RequestStatus.SUCCESS;
         this.data = data;
+        this.errorMessage = "";
     }
-    
+
+    public result getData() {
+        if (status != RequestStatus.SUCCESS || data == null) {
+            throw new IllegalStateException("No data available for result");
+        }
+        return data;
+    }
+
+    public RequestStatus getStatus() {
+        return status;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     public enum RequestStatus {
         SUCCESS,
         TIMEOUT,
         ERROR
     }
-
-    private result data;
-    public result getData() {
-        return data;
-    }
-
-    private RequestStatus status;
-    public RequestStatus getStatus() {
-        return status;
-    }
-
 }

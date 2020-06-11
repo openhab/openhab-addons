@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,9 @@ package org.openhab.binding.satel.internal.handler;
 
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
+import java.nio.charset.Charset;
+import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -29,13 +34,15 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.satel.action.SatelEventLogActions;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand.DeviceType;
 import org.openhab.binding.satel.internal.command.ReadEventCommand;
 import org.openhab.binding.satel.internal.command.ReadEventDescCommand;
 import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
+import org.openhab.binding.satel.internal.types.IntegraType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class SatelEventLogHandler extends SatelThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_EVENTLOG);
@@ -53,10 +61,75 @@ public class SatelEventLogHandler extends SatelThingHandler {
     private static final String DETAILS_SEPARATOR = ", ";
     private static final long CACHE_CLEAR_INTERVAL = TimeUnit.MINUTES.toMillis(30);
 
-    private Logger logger = LoggerFactory.getLogger(SatelEventLogHandler.class);
-    private Map<String, EventDescription> eventDescriptions = new ConcurrentHashMap<>();
-    private Map<String, String> deviceNameCache = new ConcurrentHashMap<>();
-    private ScheduledFuture<?> cacheExpirationJob;
+    private final Logger logger = LoggerFactory.getLogger(SatelEventLogHandler.class);
+    private final Map<String, @Nullable EventDescriptionCacheEntry> eventDescriptions = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable String> deviceNameCache = new ConcurrentHashMap<>();
+    private @Nullable ScheduledFuture<?> cacheExpirationJob;
+    private Charset encoding = Charset.defaultCharset();
+
+    /**
+     * Represents single record of the event log.
+     *
+     * @author Krzysztof Goworek
+     *
+     */
+    public static class EventLogEntry {
+
+        private final int index;
+        private final int prevIndex;
+        private final ZonedDateTime timestamp;
+        private final String description;
+        private final String details;
+
+        private EventLogEntry(int index, int prevIndex, ZonedDateTime timestamp, String description, String details) {
+            this.index = index;
+            this.prevIndex = prevIndex;
+            this.timestamp = timestamp;
+            this.description = description;
+            this.details = details;
+        }
+
+        /**
+         * @return index of this record entry
+         */
+        public int getIndex() {
+            return index;
+        }
+
+        /**
+         * @return index of the previous record entry in the log
+         */
+        public int getPrevIndex() {
+            return prevIndex;
+        }
+
+        /**
+         * @return date and time when the event occurred
+         */
+        public ZonedDateTime getTimestamp() {
+            return timestamp;
+        }
+
+        /**
+         * @return description of the event
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * @return details about zones, partitions, users, etc
+         */
+        public String getDetails() {
+            return details;
+        }
+
+        @Override
+        public String toString() {
+            return "EventLogEntry [index=" + index + ", prevIndex=" + prevIndex + ", timestamp=" + timestamp
+                    + ", description=" + description + ", details=" + details + "]";
+        }
+    }
 
     public SatelEventLogHandler(Thing thing) {
         super(thing);
@@ -66,9 +139,14 @@ public class SatelEventLogHandler extends SatelThingHandler {
     public void initialize() {
         super.initialize();
 
+        withBridgeHandlerPresent(bridgeHandler -> {
+            this.encoding = bridgeHandler.getEncoding();
+        });
+
+        final ScheduledFuture<?> cacheExpirationJob = this.cacheExpirationJob;
         if (cacheExpirationJob == null || cacheExpirationJob.isCancelled()) {
             // for simplicity all cache entries are cleared every 30 minutes
-            cacheExpirationJob = scheduler.scheduleWithFixedDelay(deviceNameCache::clear, CACHE_CLEAR_INTERVAL,
+            this.cacheExpirationJob = scheduler.scheduleWithFixedDelay(deviceNameCache::clear, CACHE_CLEAR_INTERVAL,
                     CACHE_CLEAR_INTERVAL, TimeUnit.MILLISECONDS);
         }
     }
@@ -77,73 +155,117 @@ public class SatelEventLogHandler extends SatelThingHandler {
     public void dispose() {
         super.dispose();
 
+        final ScheduledFuture<?> cacheExpirationJob = this.cacheExpirationJob;
         if (cacheExpirationJob != null && !cacheExpirationJob.isCancelled()) {
             cacheExpirationJob.cancel(true);
-            cacheExpirationJob = null;
         }
+        this.cacheExpirationJob = null;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("New command for {}: {}", channelUID, command);
 
-        if (bridgeHandler != null && CHANNEL_INDEX.equals(channelUID.getId()) && command instanceof DecimalType) {
+        if (CHANNEL_INDEX.equals(channelUID.getId()) && command instanceof DecimalType) {
             int eventIndex = ((DecimalType) command).intValue();
-            readEvent(eventIndex);
+            withBridgeHandlerPresent(bridgeHandler -> readEvent(eventIndex).ifPresent(entry -> {
+                // update items
+                updateState(CHANNEL_INDEX, new DecimalType(entry.getIndex()));
+                updateState(CHANNEL_PREV_INDEX, new DecimalType(entry.getPrevIndex()));
+                updateState(CHANNEL_TIMESTAMP, new DateTimeType(entry.getTimestamp()));
+                updateState(CHANNEL_DESCRIPTION, new StringType(entry.getDescription()));
+                updateState(CHANNEL_DETAILS, new StringType(entry.getDetails()));
+            }));
         }
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
+    public void incomingEvent(ConnectionStatusEvent event) {
         logger.trace("Handling incoming event: {}", event);
-        if (event instanceof ConnectionStatusEvent) {
-            ConnectionStatusEvent statusEvent = (ConnectionStatusEvent) event;
-            // we have just connected, change thing's status
-            if (statusEvent.isConnected()) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+        // we have just connected, change thing's status
+        if (event.isConnected()) {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
-    private void readEvent(int eventIndex) {
-        getEventDescription(eventIndex).ifPresent(eventDesc -> {
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(SatelEventLogActions.class);
+    }
+
+    /**
+     * Reads one record from the event log.
+     *
+     * @param eventIndex record index
+     * @return record data or {@linkplain Optional#empty()} if there is no record under given index
+     */
+    public Optional<EventLogEntry> readEvent(int eventIndex) {
+        return getEventDescription(eventIndex).flatMap(eventDesc -> {
             ReadEventCommand readEventCmd = eventDesc.readEventCmd;
             int currentIndex = readEventCmd.getCurrentIndex();
-            String eventText = eventDesc.eventText;
+            String eventText = eventDesc.getText();
+            boolean upperZone = getBridgeHandler().getIntegraType() == IntegraType.I256_PLUS
+                    && readEventCmd.getUserControlNumber() > 0;
             String eventDetails;
 
-            switch (eventDesc.descKind) {
+            switch (eventDesc.getKind()) {
                 case 0:
                     eventDetails = "";
                     break;
                 case 1:
                     eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
-                            + DETAILS_SEPARATOR + getDeviceDescription(DeviceType.ZONE, readEventCmd.getSource());
+                            + DETAILS_SEPARATOR + getZoneExpanderKeypadDescription(readEventCmd.getSource(), upperZone);
                     break;
                 case 2:
                     eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
-                            + DETAILS_SEPARATOR + getDeviceDescription(DeviceType.USER, readEventCmd.getSource());
+                            + DETAILS_SEPARATOR + getUserDescription(readEventCmd.getSource());
+                    break;
+                case 3:
+                    eventDetails = getDeviceDescription(DeviceType.EXPANDER, readEventCmd.getPartitionKeypad())
+                            + DETAILS_SEPARATOR + getUserDescription(readEventCmd.getSource());
                     break;
                 case 4:
-                    if (readEventCmd.getSource() == 0) {
-                        eventDetails = "mainboard";
-                    } else if (readEventCmd.getSource() <= 128) {
-                        eventDetails = getDeviceDescription(DeviceType.ZONE, readEventCmd.getSource());
-                    } else if (readEventCmd.getSource() <= 192) {
-                        eventDetails = getDeviceDescription(DeviceType.EXPANDER, readEventCmd.getSource());
-                    } else {
-                        eventDetails = getDeviceDescription(DeviceType.KEYPAD, readEventCmd.getSource());
-                    }
+                    eventDetails = getZoneExpanderKeypadDescription(readEventCmd.getSource(), upperZone);
                     break;
                 case 5:
                     eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition());
                     break;
                 case 6:
                     eventDetails = getDeviceDescription(DeviceType.KEYPAD, readEventCmd.getPartition())
-                            + DETAILS_SEPARATOR + getDeviceDescription(DeviceType.USER, readEventCmd.getSource());
+                            + DETAILS_SEPARATOR + getUserDescription(readEventCmd.getSource());
                     break;
                 case 7:
-                    eventDetails = getDeviceDescription(DeviceType.USER, readEventCmd.getSource());
+                    eventDetails = getUserDescription(readEventCmd.getSource());
+                    break;
+                case 8:
+                    eventDetails = getDeviceDescription(DeviceType.EXPANDER, readEventCmd.getSource());
+                    break;
+                case 9:
+                    eventDetails = getTelephoneDescription(readEventCmd.getSource());
+                    break;
+                case 11:
+                    eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
+                            + DETAILS_SEPARATOR + getDataBusDescription(readEventCmd.getSource());
+                    break;
+                case 12:
+                    if (readEventCmd.getSource() <= getBridgeHandler().getIntegraType().getOnMainboard()) {
+                        eventDetails = getOutputExpanderDescription(readEventCmd.getSource(), upperZone);
+                    } else {
+                        eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
+                                + DETAILS_SEPARATOR + getOutputExpanderDescription(readEventCmd.getSource(), upperZone);
+                    }
+                    break;
+                case 13:
+                    if (readEventCmd.getSource() <= 128) {
+                        eventDetails = getOutputExpanderDescription(readEventCmd.getSource(), upperZone);
+                    } else {
+                        eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
+                                + DETAILS_SEPARATOR + getOutputExpanderDescription(readEventCmd.getSource(), upperZone);
+                    }
+                    break;
+                case 14:
+                    eventDetails = getTelephoneDescription(readEventCmd.getPartition()) + DETAILS_SEPARATOR
+                            + getUserDescription(readEventCmd.getSource());
                     break;
                 case 15:
                     eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
@@ -155,40 +277,36 @@ public class SatelEventLogHandler extends SatelThingHandler {
                             + (readEventCmd.getObject() * 32 + readEventCmd.getUserControlNumber());
                     Optional<EventDescription> eventDescNext = getEventDescription(readEventCmd.getNextIndex());
                     if (!eventDescNext.isPresent()) {
-                        return;
+                        return Optional.empty();
                     }
-                    if (eventDescNext.get().descKind != 30) {
-                        logger.info("Unexpected event record kind {} at index {}", eventDescNext.get().descKind,
+                    final EventDescription eventDescNextItem = eventDescNext.get();
+                    if (eventDescNextItem.getKind() != 30) {
+                        logger.info("Unexpected event record kind {} at index {}", eventDescNextItem.getKind(),
                                 readEventCmd.getNextIndex());
-                        return;
+                        return Optional.empty();
                     }
-                    readEventCmd = eventDescNext.get().readEventCmd;
-                    eventText = eventDescNext.get().eventText;
+                    readEventCmd = eventDescNextItem.readEventCmd;
+                    eventText = eventDescNextItem.getText();
                     eventDetails = getDeviceDescription(DeviceType.KEYPAD, readEventCmd.getPartition())
                             + DETAILS_SEPARATOR + "ip: " + readEventCmd.getSource() + "."
                             + (readEventCmd.getObject() * 32 + readEventCmd.getUserControlNumber()) + eventDetails;
                     break;
                 default:
-                    logger.info("Unsupported device kind code {} at index {}", eventDesc.descKind,
+                    logger.info("Unsupported device kind code {} at index {}", eventDesc.getKind(),
                             readEventCmd.getCurrentIndex());
-                    eventDetails = String.join(DETAILS_SEPARATOR, "kind=" + eventDesc.descKind,
+                    eventDetails = String.join(DETAILS_SEPARATOR, "kind=" + eventDesc.getKind(),
                             "partition=" + readEventCmd.getPartition(), "source=" + readEventCmd.getSource(),
                             "object=" + readEventCmd.getObject(), "ucn=" + readEventCmd.getUserControlNumber());
             }
 
-            // update items
-            updateState(CHANNEL_INDEX, new DecimalType(currentIndex));
-            updateState(CHANNEL_PREV_INDEX, new DecimalType(readEventCmd.getNextIndex()));
-            updateState(CHANNEL_TIMESTAMP,
-                    new DateTimeType(readEventCmd.getTimestamp().atZone(bridgeHandler.getZoneId())));
-            updateState(CHANNEL_DESCRIPTION, new StringType(eventText));
-            updateState(CHANNEL_DETAILS, new StringType(eventDetails));
+            return Optional.of(new EventLogEntry(currentIndex, readEventCmd.getNextIndex(),
+                    readEventCmd.getTimestamp().atZone(getBridgeHandler().getZoneId()), eventText, eventDetails));
         });
     }
 
     private Optional<EventDescription> getEventDescription(int eventIndex) {
         ReadEventCommand readEventCmd = new ReadEventCommand(eventIndex);
-        if (!bridgeHandler.sendCommand(readEventCmd, false)) {
+        if (!getBridgeHandler().sendCommand(readEventCmd, false)) {
             logger.info("Unable to read event record for given index: {}", eventIndex);
             return Optional.empty();
         } else if (readEventCmd.isEmpty()) {
@@ -199,36 +317,86 @@ public class SatelEventLogHandler extends SatelThingHandler {
         }
     }
 
-    private static class EventDescription {
-        ReadEventCommand readEventCmd;
-        String eventText;
-        int descKind;
+    private static class EventDescriptionCacheEntry {
+        private final String eventText;
+        private final int descKind;
 
-        EventDescription(ReadEventCommand readEventCmd, String eventText, int descKind) {
-            this.readEventCmd = readEventCmd;
+        EventDescriptionCacheEntry(String eventText, int descKind) {
             this.eventText = eventText;
             this.descKind = descKind;
         }
 
+        String getText() {
+            return eventText;
+        }
+
+        int getKind() {
+            return descKind;
+        }
+    }
+
+    private static class EventDescription extends EventDescriptionCacheEntry {
+        private final ReadEventCommand readEventCmd;
+
+        EventDescription(ReadEventCommand readEventCmd, String eventText, int descKind) {
+            super(eventText, descKind);
+            this.readEventCmd = readEventCmd;
+        }
     }
 
     private EventDescription readEventDescription(ReadEventCommand readEventCmd) {
         int eventCode = readEventCmd.getEventCode();
         boolean restore = readEventCmd.isRestore();
         String mapKey = String.format("%d_%b", eventCode, restore);
-        EventDescription mapValue = eventDescriptions.computeIfAbsent(mapKey, k -> {
+        EventDescriptionCacheEntry mapValue = eventDescriptions.computeIfAbsent(mapKey, k -> {
             ReadEventDescCommand cmd = new ReadEventDescCommand(eventCode, restore, true);
-            if (!bridgeHandler.sendCommand(cmd, false)) {
-                logger.debug("Unable to read event description: {}, {}", eventCode, restore);
+            if (!getBridgeHandler().sendCommand(cmd, false)) {
+                logger.info("Unable to read event description: {}, {}", eventCode, restore);
                 return null;
             }
-            return new EventDescription(null, cmd.getText(bridgeHandler.getEncoding()), cmd.getKind());
+            return new EventDescriptionCacheEntry(cmd.getText(encoding), cmd.getKind());
         });
         if (mapValue == null) {
             return new EventDescription(readEventCmd, NOT_AVAILABLE_TEXT, 0);
         } else {
-            return new EventDescription(readEventCmd, mapValue.eventText, mapValue.descKind);
+            return new EventDescription(readEventCmd, mapValue.getText(), mapValue.getKind());
         }
+    }
+
+    private String getOutputExpanderDescription(int deviceNumber, boolean upperOutput) {
+        if (deviceNumber == 0) {
+            return "mainboard";
+        } else if (deviceNumber <= 128) {
+            return getDeviceDescription(DeviceType.OUTPUT, upperOutput ? 128 + deviceNumber : deviceNumber);
+        } else if (deviceNumber <= 192) {
+            return getDeviceDescription(DeviceType.EXPANDER, deviceNumber);
+        } else {
+            return "invalid output|expander device: " + deviceNumber;
+        }
+    }
+
+    private String getZoneExpanderKeypadDescription(int deviceNumber, boolean upperZone) {
+        if (deviceNumber == 0) {
+            return "mainboard";
+        } else if (deviceNumber <= 128) {
+            return getDeviceDescription(DeviceType.ZONE, upperZone ? 128 + deviceNumber : deviceNumber);
+        } else if (deviceNumber <= 192) {
+            return getDeviceDescription(DeviceType.EXPANDER, deviceNumber);
+        } else {
+            return getDeviceDescription(DeviceType.KEYPAD, deviceNumber);
+        }
+    }
+
+    private String getUserDescription(int deviceNumber) {
+        return deviceNumber == 0 ? "user: unknown" : getDeviceDescription(DeviceType.USER, deviceNumber);
+    }
+
+    private String getDataBusDescription(int deviceNumber) {
+        return "data bus: " + deviceNumber;
+    }
+
+    private String getTelephoneDescription(int deviceNumber) {
+        return deviceNumber == 0 ? "telephone: unknown" : getDeviceDescription(DeviceType.TELEPHONE, deviceNumber);
     }
 
     private String getDeviceDescription(DeviceType deviceType, int deviceNumber) {
@@ -239,13 +407,12 @@ public class SatelEventLogHandler extends SatelThingHandler {
         String cacheKey = String.format("%s_%d", deviceType, deviceNumber);
         String result = deviceNameCache.computeIfAbsent(cacheKey, k -> {
             ReadDeviceInfoCommand cmd = new ReadDeviceInfoCommand(deviceType, deviceNumber);
-            if (!bridgeHandler.sendCommand(cmd, false)) {
-                logger.debug("Unable to read device info: {}, {}", deviceType, deviceNumber);
+            if (!getBridgeHandler().sendCommand(cmd, false)) {
+                logger.info("Unable to read device info: {}, {}", deviceType, deviceNumber);
                 return null;
             }
-            return cmd.getName(bridgeHandler.getEncoding());
+            return cmd.getName(encoding);
         });
         return result == null ? NOT_AVAILABLE_TEXT : result;
     }
-
 }

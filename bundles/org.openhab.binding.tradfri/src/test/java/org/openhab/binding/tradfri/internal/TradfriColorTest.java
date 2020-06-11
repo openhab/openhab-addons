@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,16 +14,17 @@ package org.openhab.binding.tradfri.internal;
 
 import static org.junit.Assert.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.junit.Test;
-import org.openhab.binding.tradfri.internal.TradfriColor;
 
 /**
  * Tests for {@link TradfriColor}.
  *
  * @author Holger Reichert - Initial contribution
  */
+@NonNullByDefault
 public class TradfriColorTest {
 
     @Test
@@ -185,5 +186,4 @@ public class TradfriColorTest {
         PercentType mixed2 = new TradfriColor(1000000, 0, null).getColorTemperature();
         assertEquals(100, mixed2.intValue());
     }
-
 }

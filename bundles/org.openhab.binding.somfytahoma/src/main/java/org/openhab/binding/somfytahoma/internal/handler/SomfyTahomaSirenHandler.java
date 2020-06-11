@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,11 +41,11 @@ public class SomfyTahomaSirenHandler extends SomfyTahomaBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         }
 
-        //it is possible only to disable the siren
+        // it is possible only to disable the siren
         if (ONOFF_STATE.equals(channelUID.getId()) && command.equals(OnOffType.OFF)) {
             sendCommand(COMMAND_OFF);
         }
@@ -54,6 +54,5 @@ public class SomfyTahomaSirenHandler extends SomfyTahomaBaseThingHandler {
         if (MEMORIZED_VOLUME.equals(channelUID.getId()) && command instanceof StringType) {
             sendCommand("setMemorizedSimpleVolume", "[\"" + command.toString().toLowerCase() + "\"]");
         }
-
     }
 }

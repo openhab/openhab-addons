@@ -6,482 +6,482 @@
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-dc-power">
 		<item-type>Number:Energy</item-type>
 		<label>DC Power</label>
 		<description>Current DC power of the inverter</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-battery">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Battery</label>
 		<description>Current home consumption obtained from the battery</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-grid">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Grid</label>
 		<description>Current home consumption obtained from the grid</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ownconsumption">
 		<item-type>Number:Energy</item-type>
 		<label>Own Consumption</label>
 		<description>Current own comsumption</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-pv">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption PV</label>
 		<description>Current home consumption obtained from photovoltaic</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-total">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption</label>
 		<description>Current total homeconsumption</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-limit-evu-absolute">
 		<item-type>Number:Energy</item-type>
 		<label>Feed-in Limit</label>
 		<description>Permitted feed-in quantity as absolute value as specified by the energy supplier </description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-limit-evu-relativ">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Feed-in Limit Relative</label>
 		<description>Permitted feed-in quantity as relative value as specified by the energy supplier </description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-worktime">
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
 		<description>Uptime of the inverter</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>P1 Amperage</label>
 		<description>Amperage of phase 1</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-power">
 		<item-type>Number:Energy</item-type>
 		<label>P1 Power</label>
 		<description>Power of phase 1</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>P1 Voltage</label>
 		<description>Voltage of phase 1</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>P2 Amperage</label>
 		<description>Amperage of phase 2</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-power">
 		<item-type>Number:Energy</item-type>
 		<label>P2 Power</label>
 		<description>Power of phase 2</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>P2 Voltage</label>
 		<description>Voltage of phase 2</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>P3 Amperage</label>
 		<description>Amperage of phase 3</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-power">
 		<item-type>Number:Energy</item-type>
 		<label>P3 Power</label>
 		<description>Power of phase 3</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>P3 Voltage</label>
 		<description>Voltage of phase 3</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-current-power">
 		<item-type>Number:Energy</item-type>
 		<label>AC Power</label>
 		<description>Current AC power of the inverter</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-loading-cycles">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Loading Cycles</label>
 		<description>Amount of loading cycles done by the battery</description>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="device-local-battery-full-charge-capacity">
 		<item-type>Number:ElectricCharge</item-type>
 		<label>Battery Capacity</label>
 		<description>Capacity of the battery if charged fully</description>
 		<category>BatteryLevel</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Battery Amperage</label>
 		<description>Current amperage of the battery</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-power">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Power</label>
 		<description>Current battery charge</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-state-of-charge">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge</label>
 		<description>Current battery charge status</description>
 		<category>BatteryLevel</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Current voltage of the battery</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>PV Str1 Amperage</label>
 		<description>Current amperage of photovoltaic string 1</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-power">
 		<item-type>Number:Energy</item-type>
 		<label>PV Str1 Power</label>
 		<description>Current power of photovoltaic string 1</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PV Str1 Voltage</label>
 		<description>Current voltage of photovoltaic string 1</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>PV Str2 Amperage</label>
 		<description>Current amperage of photovoltaic string 2</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-power">
 		<item-type>Number:Energy</item-type>
 		<label>PV Str2 Power</label>
 		<description>Current power of photovoltaic string 2</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PV Str2 Voltage</label>
 		<description>Current voltage of photovoltaic string 2</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>PV Str3 Amperage</label>
 		<description>Current amperage of photovoltaic string 3</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-power">
 		<item-type>Number:Energy</item-type>
 		<label>PV Str3 Power</label>
-		<description>Current power  of photovoltaic string 3</description>
+		<description>Current power of photovoltaic string 3</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PV Str3 Voltage</label>
 		<description>Current voltage of photovoltaic string 3</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="scb-event-error-count-mc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>MC Errors</label>
 		<description>Number of errors reported by the main controller</description>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="scb-event-error-count-sfh">
 		<item-type>Number:Dimensionless</item-type>
 		<label>SFH Errors</label>
 		<description>Number of errors reported by the grid interface controller</description>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="scb-event-error-count-scb">
 		<item-type>Number:Dimensionless</item-type>
 		<label>SCB Errors</label>
 		<description>Number of errors reported by the smart communication board</description>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="scb-event-warning-count-scb">
 		<item-type>Number:Dimensionless</item-type>
 		<label>SCB Warnings</label>
 		<description>Number of warnings reported by the smart communication board</description>
-		<state readOnly="true" pattern="%.0f" />
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="statistic-autarky-day">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky Day</label>
 		<description>Autarky ratio of this day</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autarky-month">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky Month</label>
 		<description>Autarky ratio of this month</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autarky-total">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky Total</label>
 		<description>Autarky ratio overall</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autarky-year">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Autarky Year</label>
 		<description>Autarky ratio of this year</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-day">
 		<item-type>Number:Mass</item-type>
 		<label>CO2 Savings Day</label>
 		<description>Savings in Co2 emissions today</description>
 		<category>CarbonDioxide</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-month">
 		<item-type>Number:Mass</item-type>
 		<label>CO2 Savings Month</label>
 		<description>Savings in Co2 emissions this month</description>
 		<category>CarbonDioxide</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-total">
 		<item-type>Number:Mass</item-type>
 		<label>CO2 Savings Total</label>
 		<description>Savings in Co2 emissions overall</description>
 		<category>CarbonDioxide</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-year">
 		<item-type>Number:Mass</item-type>
 		<label>CO2 Savings Year</label>
 		<description>Savings in Co2 emissions this year</description>
 		<category>CarbonDioxide</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-day">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Day</label>
 		<description>Home consumption today</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-month">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Month</label>
 		<description>Home consumption this month</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-total">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Total</label>
 		<description>Home consumption overall</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-year">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Year</label>
 		<description>Home consumption this year</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-day">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Battery Day</label>
 		<description>Home consumption obtained from the battery today</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-month">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Battery Month</label>
 		<description>Home consumption obtained from the battery this month</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-total">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Battery Total</label>
 		<description>Home consumption obtained from the battery overall</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-year">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Battery Year</label>
 		<description>Home consumption obtained from the battery this year</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-day">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Grid Day</label>
 		<description>Home consumption obtained from the grid today</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-month">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Grid Month</label>
 		<description>Home consumption obtained from the grid this month</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-total">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Grid Total</label>
 		<description>Home consumption obtained from the grid overall</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-year">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption Grid Year</label>
 		<description>Home consumption obtained from the grid this year</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-day">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption PV Day</label>
 		<description>Home consumption obtained from the photovoltaic plant today</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-month">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption PV Month</label>
 		<description>Home consumption obtained from the photovoltaic plant this month</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-total">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption PV Total</label>
 		<description>Home consumption obtained from the photovoltaic plant overall</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-year">
 		<item-type>Number:Energy</item-type>
 		<label>Home Consumption PV Year</label>
 		<description>Home consumption obtained from the photovoltaic plant this year</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-day">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Own Consumption Day</label>
 		<description>Percentage of electricity demand covered by photovoltaics today</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-month">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Own Consumption Month</label>
 		<description>Percentage of electricity demand covered by photovoltaics this month</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-total">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Own Consumption Total</label>
 		<description>Percentage of electricity demand covered by photovoltaics overall</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-year">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Own Consumption Year</label>
 		<description>Percentage of electricity demand covered by photovoltaics this year</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-day">
 		<item-type>Number:Energy</item-type>
 		<label>Yield Day</label>
 		<description>Yield of the photovoltaic plant today</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-month">
 		<item-type>Number:Energy</item-type>
 		<label>Yield Month</label>
 		<description>Yield of the photovoltaic plant this month</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-total">
 		<item-type>Number:Energy</item-type>
 		<label>Yield Total</label>
 		<description>Yield of the photovoltaic plant overall</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-year">
 		<item-type>Number:Energy</item-type>
 		<label>Yield Year</label>
 		<description>Yield of the photovoltaic plant this year</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public final class DailyJobMoon extends AbstractJob {
     public void run() {
         handler.publishDailyInfo();
         String thingUID = getThingUID();
-        LOGGER.info("Scheduled Astro event-jobs for thing {}", thingUID);
+        LOGGER.debug("Scheduled Astro event-jobs for thing {}", thingUID);
 
         Planet planet = handler.getPlanet();
         if (planet == null) {
@@ -79,5 +79,4 @@ public final class DailyJobMoon extends AbstractJob {
     public String toString() {
         return "Daily job moon " + getThingUID();
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,7 +100,7 @@ public class MelCloudConnection {
             String response = HttpUtil.executeUrl("GET", DEVICE_LIST_URL, getHeaderProperties(), null, null,
                     TIMEOUT_MILLISECONDS);
             logger.debug("Device list response: {}", response);
-            List<Device> devices = new ArrayList<Device>();
+            List<Device> devices = new ArrayList<>();
             ListDevicesResponse[] buildings = gson.fromJson(response, ListDevicesResponse[].class);
             Arrays.asList(buildings).forEach(building -> {
                 if (building.getStructure().getDevices() != null) {
@@ -185,7 +185,6 @@ public class MelCloudConnection {
             setConnected(false);
             throw new MelCloudCommException("Error occurred during heatpump device command sending", e);
         }
-
     }
 
     public synchronized boolean isConnected() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.openhab.binding.sinope.internal.util.ByteUtil;
 
 /**
  * The Class SinopeAuthenticationKeyRequest.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeAuthenticationKeyRequest extends SinopeRequest {
@@ -58,9 +58,7 @@ public class SinopeAuthenticationKeyRequest extends SinopeRequest {
      */
     @Override
     public SinopeAuthenticationKeyAnswer getReplyAnswer(InputStream r) throws IOException {
-
         return new SinopeAuthenticationKeyAnswer(r);
-
     }
 
     /**
@@ -71,5 +69,4 @@ public class SinopeAuthenticationKeyRequest extends SinopeRequest {
     public byte[] getId() {
         return id;
     }
-
 }

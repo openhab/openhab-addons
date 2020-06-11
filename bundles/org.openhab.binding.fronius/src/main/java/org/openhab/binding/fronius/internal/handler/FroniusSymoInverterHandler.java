@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import com.google.gson.JsonSyntaxException;
  * sent to one of the channels.
  *
  * @author Thomas Rokohl - Initial contribution
+ * @author Peter Schraffl - Added device status and error status channels
  */
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
@@ -115,6 +116,10 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 return inverterRealtimeResponse.getBody().getData().getUac();
             case FroniusBindingConstants.InverterDataChannelUdc:
                 return inverterRealtimeResponse.getBody().getData().getUdc();
+            case FroniusBindingConstants.InverterDataChannelDeviceStatusErrorCode:
+                return inverterRealtimeResponse.getBody().getData().getDeviceStatus().getErrorCode();
+            case FroniusBindingConstants.InverterDataChannelDeviceStatusStatusCode:
+                return inverterRealtimeResponse.getBody().getData().getDeviceStatus().getStatusCode();
         }
         if (powerFlowResponse == null) {
             return null;
@@ -211,5 +216,4 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         location = location.replace("%DEVICEID%", Integer.toString(deviceId));
         return collectDataFormUrl(InverterRealtimeResponse.class, location);
     }
-
 }

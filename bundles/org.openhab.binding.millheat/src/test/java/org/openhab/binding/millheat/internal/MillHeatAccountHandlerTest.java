@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,6 @@ public class MillHeatAccountHandlerTest {
 
     @Test
     public void testUpdateModel() throws InterruptedException, IOException, MillheatCommunicationException {
-
         final String getHomesResponse = IOUtils.toString(getClass().getResourceAsStream("/select_home_list_ok.json"));
         final String getRoomsByHomeResponse = IOUtils
                 .toString(getClass().getResourceAsStream("/get_rooms_by_home_ok.json"));

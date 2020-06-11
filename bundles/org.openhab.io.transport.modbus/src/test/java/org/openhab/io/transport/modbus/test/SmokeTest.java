@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -250,12 +250,10 @@ public class SmokeTest extends IntegrationTestSupport {
         assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveIOException);
     }
 
-    /**
-     *
-     * @throws InterruptedException
-     */
-    @Test
-    public void testOneOffReadWithCoil() throws InterruptedException {
+    public void testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode functionCode, int count)
+            throws InterruptedException {
+        assertThat(functionCode, is(anyOf(equalTo(ModbusReadFunctionCode.READ_INPUT_DISCRETES),
+                equalTo(ModbusReadFunctionCode.READ_COILS))));
         generateData();
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
@@ -263,8 +261,10 @@ public class SmokeTest extends IntegrationTestSupport {
         CountDownLatch callbackCalled = new CountDownLatch(1);
         AtomicReference<Object> lastData = new AtomicReference<>();
 
+        final int offset = 1;
+
         BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint,
-                new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_COILS, 1, 15, 1),
+                new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID, functionCode, offset, count, 1),
                 new ModbusReadCallback() {
 
                     @Override
@@ -289,50 +289,70 @@ public class SmokeTest extends IntegrationTestSupport {
         callbackCalled.await(5, TimeUnit.SECONDS);
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         BitArray bits = (BitArray) lastData.get();
-        assertThat(bits.size(), is(equalTo(15)));
-        testCoilValues(bits, 1);
+        assertThat(bits.size(), is(equalTo(count)));
+        if (functionCode == ModbusReadFunctionCode.READ_INPUT_DISCRETES) {
+            testDiscreteValues(bits, offset);
+        } else {
+            testCoilValues(bits, offset);
+        }
     }
 
-    /**
-     *
-     * @throws InterruptedException
-     */
     @Test
-    public void testOneOffReadWithDiscrete() throws InterruptedException {
-        generateData();
-        ModbusSlaveEndpoint endpoint = getEndpoint();
+    public void testOneOffReadWithDiscrete1() throws InterruptedException {
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 1);
+    }
 
-        AtomicInteger unexpectedCount = new AtomicInteger();
-        CountDownLatch callbackCalled = new CountDownLatch(1);
-        AtomicReference<Object> lastData = new AtomicReference<>();
+    @Test
+    public void testOneOffReadWithDiscrete7() throws InterruptedException {
+        // less than byte
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 7);
+    }
 
-        BasicPollTaskImpl task = new BasicPollTaskImpl(endpoint, new BasicModbusReadRequestBlueprint(SLAVE_UNIT_ID,
-                ModbusReadFunctionCode.READ_INPUT_DISCRETES, 1, 15, 1), new ModbusReadCallback() {
+    @Test
+    public void testOneOffReadWithDiscrete8() throws InterruptedException {
+        // exactly one byte
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 8);
+    }
 
-                    @Override
-                    public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-                        unexpectedCount.incrementAndGet();
-                        callbackCalled.countDown();
-                    }
+    @Test
+    public void testOneOffReadWithDiscrete13() throws InterruptedException {
+        // larger than byte, less than word (16 bit)
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 13);
+    }
 
-                    @Override
-                    public void onError(ModbusReadRequestBlueprint request, Exception error) {
-                        unexpectedCount.incrementAndGet();
-                        callbackCalled.countDown();
-                    }
+    @Test
+    public void testOneOffReadWithDiscrete18() throws InterruptedException {
+        // larger than word (16 bit)
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_INPUT_DISCRETES, 18);
+    }
 
-                    @Override
-                    public void onBits(ModbusReadRequestBlueprint request, BitArray bits) {
-                        lastData.set(bits);
-                        callbackCalled.countDown();
-                    }
-                });
-        modbusManager.submitOneTimePoll(task);
-        callbackCalled.await(5, TimeUnit.SECONDS);
-        assertThat(unexpectedCount.get(), is(equalTo(0)));
-        BitArray bits = (BitArray) lastData.get();
-        assertThat(bits.size(), is(equalTo(15)));
-        testDiscreteValues(bits, 1);
+    @Test
+    public void testOneOffReadWithCoils1() throws InterruptedException {
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 1);
+    }
+
+    @Test
+    public void testOneOffReadWithCoils7() throws InterruptedException {
+        // less than byte
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 7);
+    }
+
+    @Test
+    public void testOneOffReadWithCoils8() throws InterruptedException {
+        // exactly one byte
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 8);
+    }
+
+    @Test
+    public void testOneOffReadWithCoils13() throws InterruptedException {
+        // larger than byte, less than word (16 bit)
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 13);
+    }
+
+    @Test
+    public void testOneOffReadWithCoils18() throws InterruptedException {
+        // larger than word (16 bit)
+        testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode.READ_COILS, 18);
     }
 
     /**
@@ -365,7 +385,6 @@ public class SmokeTest extends IntegrationTestSupport {
 
                     @Override
                     public void onBits(ModbusReadRequestBlueprint request, BitArray bits) {
-
                         unexpectedCount.incrementAndGet();
 
                         callbackCalled.countDown();
@@ -885,7 +904,6 @@ public class SmokeTest extends IntegrationTestSupport {
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         assertThat(expectedCount.get(), is(equalTo(2)));
         assertThat(callbackCalled.getCount(), is(equalTo(0L)));
-
     }
 
     @Test
@@ -903,6 +921,5 @@ public class SmokeTest extends IntegrationTestSupport {
         modbusManager.unregisterRegularPoll(task);
         assertThat(modbusManager.getRegisteredRegularPolls(),
                 is(equalTo(Stream.of(task2).collect(Collectors.toSet()))));
-
     }
 }

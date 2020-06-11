@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,8 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
             logger.debug("player added {} : {} ", player.getMacAddress(), player.getName());
 
             Map<String, Object> properties = new HashMap<>(1);
-            properties.put("mac", player.getMacAddress());
+            String representationPropertyName = "mac";
+            properties.put(representationPropertyName, player.getMacAddress());
 
             // Added other properties
             properties.put("modelId", player.getModel());
@@ -100,14 +101,15 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
             properties.put("ip", player.getIpAddr());
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeUID).withLabel(player.getName()).build();
+                    .withRepresentationProperty(representationPropertyName).withBridge(bridgeUID)
+                    .withLabel(player.getName()).build();
 
             thingDiscovered(discoveryResult);
         }
     }
 
     private boolean playerThingExists(ThingUID newThingUID) {
-        return squeezeBoxServerHandler.getThingByUID(newThingUID) != null ? true : false;
+        return squeezeBoxServerHandler.getThing().getThing(newThingUID) != null ? true : false;
     }
 
     /**
@@ -199,5 +201,9 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
 
     @Override
     public void updateFavoritesListEvent(List<Favorite> favorites) {
+    }
+
+    @Override
+    public void sourceChangeEvent(String mac, String source) {
     }
 }

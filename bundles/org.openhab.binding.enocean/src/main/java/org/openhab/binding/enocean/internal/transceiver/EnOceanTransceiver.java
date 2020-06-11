@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,12 +27,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
+import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.EnOceanException;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
-import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +46,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Daniel Weber - Initial contribution
  */
-public abstract class EnOceanTransceiver {
+public abstract class EnOceanTransceiver implements SerialPortEventListener {
+
+    public static final int ENOCEAN_MAX_DATA = 65790;
 
     // Thread management
-    private Future<?> readingTask = null;
+    protected Future<?> readingTask = null;
     private Future<?> timeOut = null;
 
-    private Logger logger = LoggerFactory.getLogger(EnOceanTransceiver.class);
+    protected Logger logger = LoggerFactory.getLogger(EnOceanTransceiver.class);
+
+    private SerialPortManager serialPortManager;
+    private static final int ENOCEAN_DEFAULT_BAUD = 57600;
+    protected String path;
+    SerialPort serialPort;
 
     class Request {
-        ESP3Packet RequestPacket;
+        BasePacket RequestPacket;
 
         Response ResponsePacket;
         ResponseListener<? extends Response> ResponseListener;
@@ -83,18 +95,17 @@ public abstract class EnOceanTransceiver {
 
         private synchronized void send() throws IOException {
             if (!queue.isEmpty()) {
-
                 currentRequest = queue.peek();
                 try {
                     if (currentRequest != null && currentRequest.RequestPacket != null) {
                         synchronized (currentRequest) {
-
                             logger.debug("Sending data, type {}, payload {}{}",
                                     currentRequest.RequestPacket.getPacketType().name(),
                                     HexUtils.bytesToHex(currentRequest.RequestPacket.getPayload()),
                                     HexUtils.bytesToHex(currentRequest.RequestPacket.getOptionalPayload()));
 
-                            byte[] b = currentRequest.RequestPacket.serialize();
+                            byte[] b = serializePacket(currentRequest.RequestPacket);
+                            logger.trace("Sending raw data: {}", HexUtils.bytesToHex(b));
                             outputStream.write(b);
                             outputStream.flush();
 
@@ -126,48 +137,65 @@ public abstract class EnOceanTransceiver {
     RequestQueue requestQueue;
     Request currentRequest = null;
 
-    protected Map<Long, HashSet<ESP3PacketListener>> listeners;
-    protected ESP3PacketListener teachInListener;
+    protected Map<Long, HashSet<PacketListener>> listeners;
+    protected PacketListener teachInListener;
 
-    // Input and output streams, must be created by transceiver implementations
     protected InputStream inputStream;
     protected OutputStream outputStream;
 
     private byte[] filteredDeviceId;
     TransceiverErrorListener errorListener;
 
-    enum ReadingState {
-        WaitingForSyncByte,
-        ReadingHeader,
-        ReadingData
-    }
-
-    public EnOceanTransceiver(TransceiverErrorListener errorListener, ScheduledExecutorService scheduler) {
-
+    public EnOceanTransceiver(String path, TransceiverErrorListener errorListener, ScheduledExecutorService scheduler,
+            SerialPortManager serialPortManager) {
         requestQueue = new RequestQueue(scheduler);
+
         listeners = new HashMap<>();
         teachInListener = null;
+
         this.errorListener = errorListener;
+        this.serialPortManager = serialPortManager;
+        this.path = path;
     }
 
-    public abstract void Initialize()
-            throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException;
+    public void Initialize()
+            throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
+        SerialPortIdentifier id = serialPortManager.getIdentifier(path);
+        if (id == null) {
+            throw new IOException("Could not find a gateway on given path '" + path + "', "
+                    + serialPortManager.getIdentifiers().count() + " ports available.");
+        }
+
+        serialPort = id.open(EnOceanBindingConstants.BINDING_ID, 1000);
+        serialPort.setSerialPortParams(ENOCEAN_DEFAULT_BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                SerialPort.PARITY_NONE);
+
+        try {
+            serialPort.enableReceiveThreshold(1);
+            serialPort.enableReceiveTimeout(100); // In ms. Small values mean faster shutdown but more cpu usage.
+        } catch (UnsupportedCommOperationException e) {
+            // rfc connections do not allow a ReceiveThreshold
+        }
+
+        inputStream = serialPort.getInputStream();
+        outputStream = serialPort.getOutputStream();
+
+        logger.info("EnOceanSerialTransceiver initialized");
+    }
 
     public void StartReceiving(ScheduledExecutorService scheduler) {
-
         if (readingTask == null || readingTask.isCancelled()) {
             readingTask = scheduler.submit(new Runnable() {
-
                 @Override
                 public void run() {
                     receivePackets();
                 }
-
             });
         }
     }
 
     public void ShutDown() {
+        logger.debug("shutting down transceiver");
         logger.debug("Interrupt rx Thread");
 
         if (timeOut != null) {
@@ -187,212 +215,55 @@ public abstract class EnOceanTransceiver {
         listeners.clear();
         teachInListener = null;
         errorListener = null;
+
+        if (outputStream != null) {
+            logger.debug("Closing serial output stream");
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
+            }
+        }
+        if (inputStream != null) {
+            logger.debug("Closeing serial input stream");
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
+        }
+
+        if (serialPort != null) {
+            logger.debug("Closing serial port");
+            serialPort.close();
+        }
+
+        serialPort = null;
+        outputStream = null;
+        inputStream = null;
+
+        logger.info("Transceiver shutdown");
     }
 
     private void receivePackets() {
         byte[] buffer = new byte[1];
 
         while (readingTask != null && !readingTask.isCancelled()) {
-
             int bytesRead = read(buffer, 1);
             if (bytesRead > 0) {
-                // if byte == sync byte => processMessage
                 processMessage(buffer[0]);
             }
         }
     }
 
-    protected abstract int read(byte[] buffer, int length);
+    protected abstract void processMessage(byte firstByte);
 
-    byte[] dataBuffer = new byte[Helper.ENOCEAN_MAX_DATA];
-    ReadingState state = ReadingState.WaitingForSyncByte; // we already received sync byte when we get called
-    int currentPosition = 0;
-    int dataLength = -1;
-    int optionalLength = -1;
-    byte packetType = -1;
-
-    private void processMessage(byte firstByte) {
-
-        byte[] readingBuffer = new byte[Helper.ENOCEAN_MAX_DATA];
-        int bytesRead = -1;
-        byte _byte;
-
+    protected int read(byte[] buffer, int length) {
         try {
-
-            readingBuffer[0] = firstByte;
-
-            bytesRead = this.inputStream.read(readingBuffer, 1, inputStream.available());
-            if (bytesRead == -1) {
-                throw new IOException("could not read from inputstream");
-            }
-
-            if (readingTask == null || readingTask.isCancelled()) {
-                return;
-            }
-
-            bytesRead++;
-            for (int p = 0; p < bytesRead; p++) {
-                _byte = readingBuffer[p];
-
-                switch (state) {
-                    case WaitingForSyncByte:
-                        if (_byte == Helper.ENOCEAN_SYNC_BYTE) {
-                            state = ReadingState.ReadingHeader;
-                            logger.trace("Received Sync Byte");
-                        }
-                        break;
-                    case ReadingHeader:
-                        if (currentPosition == Helper.ENOCEAN_HEADER_LENGTH) {
-                            if (Helper.checkCRC8(dataBuffer, Helper.ENOCEAN_HEADER_LENGTH, _byte)
-                                    && ((dataBuffer[0] & 0xFF) << 8) + (dataBuffer[1] & 0xFF)
-                                            + (dataBuffer[2] & 0xFF) > 0) {
-
-                                state = ReadingState.ReadingData;
-
-                                dataLength = ((dataBuffer[0] & 0xFF << 8) | (dataBuffer[1] & 0xFF));
-                                optionalLength = dataBuffer[2] & 0xFF;
-                                packetType = dataBuffer[3];
-                                currentPosition = 0;
-
-                                if (packetType == 3) {
-                                    logger.trace("Received sub_msg");
-                                }
-
-                                logger.trace(">> Received header, data length {} optional length {} packet type {}",
-                                        dataLength, optionalLength, packetType);
-                            } else {
-                                // check if we find a sync byte in current buffer
-                                int copyFrom = -1;
-                                for (int i = 0; i < Helper.ENOCEAN_HEADER_LENGTH; i++) {
-                                    if (dataBuffer[i] == Helper.ENOCEAN_SYNC_BYTE) {
-                                        copyFrom = i + 1;
-                                        break;
-                                    }
-                                }
-
-                                if (copyFrom != -1) {
-                                    System.arraycopy(dataBuffer, copyFrom, dataBuffer, 0,
-                                            Helper.ENOCEAN_HEADER_LENGTH - copyFrom);
-                                    state = ReadingState.ReadingHeader;
-                                    currentPosition = Helper.ENOCEAN_HEADER_LENGTH - copyFrom;
-                                    dataBuffer[currentPosition++] = _byte;
-                                } else {
-                                    currentPosition = 0;
-                                    state = _byte == Helper.ENOCEAN_SYNC_BYTE ? ReadingState.ReadingHeader
-                                            : ReadingState.WaitingForSyncByte;
-                                }
-                                logger.trace("CrC8 header check not successful");
-                            }
-                        } else {
-                            dataBuffer[currentPosition++] = _byte;
-                        }
-                        break;
-                    case ReadingData:
-                        if (currentPosition == dataLength + optionalLength) {
-                            if (Helper.checkCRC8(dataBuffer, dataLength + optionalLength, _byte)) {
-                                state = ReadingState.WaitingForSyncByte;
-                                ESP3Packet packet = ESP3PacketFactory.BuildPacket(dataLength, optionalLength,
-                                        packetType, dataBuffer);
-
-                                if (packet != null) {
-                                    switch (packet.getPacketType()) {
-                                        case COMMON_COMMAND:
-                                            break;
-                                        case EVENT:
-                                            break;
-                                        case RADIO_ERP1: {
-                                            ERP1Message msg = (ERP1Message) packet;
-
-                                            byte[] d = new byte[dataLength + optionalLength];
-                                            System.arraycopy(dataBuffer, 0, d, 0, d.length);
-
-                                            logger.debug("{} with RORG {} for {} payload {} received",
-                                                    packet.getPacketType().name(), msg.getRORG().name(),
-                                                    HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(d));
-
-                                            informListeners(msg);
-                                        }
-                                            break;
-                                        case RADIO_ERP2:
-                                            break;
-                                        case RADIO_MESSAGE:
-                                            break;
-                                        case RADIO_SUB_TEL:
-                                            break;
-                                        case REMOTE_MAN_COMMAND:
-                                            break;
-                                        case RESPONSE: {
-                                            byte[] d = new byte[dataLength + optionalLength];
-                                            System.arraycopy(dataBuffer, 0, d, 0, d.length);
-
-                                            logger.debug("{} with code {} payload {} received",
-                                                    packet.getPacketType().name(),
-                                                    ((Response) packet).getResponseType().name(),
-                                                    HexUtils.bytesToHex(d));
-
-                                            if (currentRequest != null) {
-                                                if (currentRequest.ResponseListener != null) {
-                                                    currentRequest.ResponsePacket = (Response) packet;
-                                                    try {
-                                                        currentRequest.ResponseListener
-                                                                .handleResponse(currentRequest.ResponsePacket);
-                                                    } catch (Exception e) {
-                                                    }
-
-                                                    logger.trace("Response handled");
-                                                } else {
-                                                    logger.trace("Response without listener");
-                                                }
-                                            }
-                                        }
-                                            break;
-                                        case SMART_ACK_COMMAND:
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                } else {
-                                    logger.trace("Unknown ESP3Packet");
-                                    byte[] d = new byte[dataLength + optionalLength];
-                                    System.arraycopy(dataBuffer, 0, d, 0, d.length);
-                                    logger.trace("{}", HexUtils.bytesToHex(d));
-                                }
-                            } else {
-                                state = _byte == Helper.ENOCEAN_SYNC_BYTE ? ReadingState.ReadingHeader
-                                        : ReadingState.WaitingForSyncByte;
-                                logger.trace("esp packet malformed");
-                            }
-
-                            currentPosition = 0;
-                            dataLength = optionalLength = packetType = -1;
-                        } else {
-                            dataBuffer[currentPosition++] = _byte;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        } catch (IOException ioexception) {
-            errorListener.ErrorOccured(ioexception);
-            return;
+            return this.inputStream.read(buffer, 0, length);
+        } catch (IOException e) {
+            return 0;
         }
-    }
-
-    public void sendESP3Packet(ESP3Packet packet, ResponseListener<? extends Response> responseCallback)
-            throws IOException {
-
-        if (packet == null) {
-            return;
-        }
-
-        logger.debug("Enqueue new send request with ESP3 type {} {} callback", packet.getPacketType().name(),
-                responseCallback == null ? "without" : "with");
-        Request r = new Request();
-        r.RequestPacket = packet;
-        r.ResponseListener = responseCallback;
-
-        requestQueue.enqueRequest(r);
     }
 
     protected void informListeners(ERP1Message msg) {
@@ -409,7 +280,7 @@ public abstract class EnOceanTransceiver {
                 if (teachInListener != null) {
                     if (msg.getIsTeachIn() || (msg.getRORG() == RORG.RPS)) {
                         logger.info("Received teach in message from {}", HexUtils.bytesToHex(msg.getSenderId()));
-                        teachInListener.espPacketReceived(msg);
+                        teachInListener.packetReceived(msg);
                         return;
                     }
                 } else {
@@ -421,9 +292,9 @@ public abstract class EnOceanTransceiver {
                 }
 
                 long s = Long.parseLong(HexUtils.bytesToHex(senderId), 16);
-                HashSet<ESP3PacketListener> pl = listeners.get(s);
+                HashSet<PacketListener> pl = listeners.get(s);
                 if (pl != null) {
-                    pl.forEach(l -> l.espPacketReceived(msg));
+                    pl.forEach(l -> l.packetReceived(msg));
                 }
             }
         } catch (Exception e) {
@@ -431,15 +302,50 @@ public abstract class EnOceanTransceiver {
         }
     }
 
-    public void addPacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
+    protected void handleResponse(Response response) throws IOException {
+        if (currentRequest != null) {
+            if (currentRequest.ResponseListener != null) {
+                currentRequest.ResponsePacket = response;
+                try {
+                    currentRequest.ResponseListener.handleResponse(response);
+                } catch (Exception e) {
+                    logger.debug("Exception during response handling");
+                } finally {
+                    logger.trace("Response handled");
+                }
+            } else {
+                logger.trace("Response without listener");
+            }
+        } else {
+            logger.trace("Response without request");
+        }
+    }
 
+    public void sendBasePacket(BasePacket packet, ResponseListener<? extends Response> responseCallback)
+            throws IOException {
+        if (packet == null) {
+            return;
+        }
+
+        logger.debug("Enqueue new send request with ESP3 type {} {} callback", packet.getPacketType().name(),
+                responseCallback == null ? "without" : "with");
+        Request r = new Request();
+        r.RequestPacket = packet;
+        r.ResponseListener = responseCallback;
+
+        requestQueue.enqueRequest(r);
+    }
+
+    protected abstract byte[] serializePacket(BasePacket packet) throws EnOceanException;
+
+    public void addPacketListener(PacketListener listener, long senderIdToListenTo) {
         if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>()).add(listener)) {
             logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }
 
-    public void removePacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
-        HashSet<ESP3PacketListener> pl = listeners.get(senderIdToListenTo);
+    public void removePacketListener(PacketListener listener, long senderIdToListenTo) {
+        HashSet<PacketListener> pl = listeners.get(senderIdToListenTo);
         if (pl != null) {
             pl.remove(listener);
             if (pl.isEmpty()) {
@@ -448,7 +354,7 @@ public abstract class EnOceanTransceiver {
         }
     }
 
-    public void startDiscovery(ESP3PacketListener teachInListener) {
+    public void startDiscovery(PacketListener teachInListener) {
         this.teachInListener = teachInListener;
     }
 
@@ -459,6 +365,15 @@ public abstract class EnOceanTransceiver {
     public void setFilteredDeviceId(byte[] filteredDeviceId) {
         if (filteredDeviceId != null) {
             System.arraycopy(filteredDeviceId, 0, filteredDeviceId, 0, filteredDeviceId.length);
+        }
+    }
+
+    @Override
+    public void serialEvent(SerialPortEvent event) {
+        if (event.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+            synchronized (this) {
+                this.notify();
+            }
         }
     }
 }

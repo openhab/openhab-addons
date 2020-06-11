@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,13 +21,11 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.homematic.internal.handler.SimplePortPool;
 
 /**
- * Tests for {@link SimplePortPool}.
- * 
- * @author Florian Stolte - Initial Contribution
+ * Tests for {@link org.openhab.binding.homematic.internal.handler.SimplePortPool}.
  *
+ * @author Florian Stolte - Initial Contribution
  */
 public class SimplePortPoolTest {
 

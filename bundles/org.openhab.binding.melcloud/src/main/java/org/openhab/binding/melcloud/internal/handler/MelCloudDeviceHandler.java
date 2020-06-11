@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -271,7 +271,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SET_TEMPERATURE:
                 updateState(CHANNEL_SET_TEMPERATURE,
-                        new QuantityType<Temperature>(deviceStatus.getSetTemperature(), SIUnits.CELSIUS));
+                        new QuantityType<>(deviceStatus.getSetTemperature(), SIUnits.CELSIUS));
                 break;
             case CHANNEL_FAN_SPEED:
                 updateState(CHANNEL_FAN_SPEED, new StringType(deviceStatus.getSetFanSpeed().toString()));

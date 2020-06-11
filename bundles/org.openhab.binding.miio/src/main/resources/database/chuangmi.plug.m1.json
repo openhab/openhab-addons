@@ -28,6 +28,20 @@
 				"refresh": true,
 				"ChannelGroup": "",
 				"actions": []
+			},
+			{
+				"property": "wifi_led",
+				"friendlyName": "Indicator light",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_wifi_led",
+						"parameterType": "ONOFF"
+					}
+				]
 			}
 		]
 	}

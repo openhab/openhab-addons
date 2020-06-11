@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.sinope.internal.core.appdata;
 
 /**
  * The Class SinopeRoomTempData.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeHeatLevelData extends SinopeAppData {
@@ -23,7 +23,6 @@ public class SinopeHeatLevelData extends SinopeAppData {
      * Instantiates a new sinope set point temp data.
      */
     public SinopeHeatLevelData() {
-
         super(new byte[] { 0x00, 0x00, 0x02, 0x20 }, new byte[] { 0 });
     }
 
@@ -51,5 +50,4 @@ public class SinopeHeatLevelData extends SinopeAppData {
         }
         return sb.toString();
     }
-
 }

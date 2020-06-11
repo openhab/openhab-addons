@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import org.eclipse.smarthome.io.net.http.HttpClientInitializationException;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link UniFiThingHandlerFactory} is responsible for creating things and thing
@@ -73,5 +72,4 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
     public void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         // nop
     }
-
 }

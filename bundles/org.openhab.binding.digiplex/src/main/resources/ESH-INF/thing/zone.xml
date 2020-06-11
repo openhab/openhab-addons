@@ -6,18 +6,18 @@
 
 	<thing-type id="zone" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Zone</label>
 		<description>Zone</description>
 		<channels>
-			<channel typeId="status" id="status" />
-			<channel typeId="extended_status" id="extended_status" />
-			<channel typeId="alarm" id="alarm" />
-			<channel typeId="fire_alarm" id="fire_alarm" />
-			<channel typeId="supervision_lost" id="supervision_lost" />
-			<channel typeId="low_battery" id="low_battery" />
-			<channel typeId="last_triggered" id="last_triggered" />
+			<channel typeId="status" id="status"/>
+			<channel typeId="extended_status" id="extended_status"/>
+			<channel typeId="alarm" id="alarm"/>
+			<channel typeId="fire_alarm" id="fire_alarm"/>
+			<channel typeId="supervision_lost" id="supervision_lost"/>
+			<channel typeId="low_battery" id="low_battery"/>
+			<channel typeId="last_triggered" id="last_triggered"/>
 		</channels>
 	</thing-type>
 
@@ -99,7 +99,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Triggered Time</label>
 		<description>Indicates when the zone has been triggered for the last time</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

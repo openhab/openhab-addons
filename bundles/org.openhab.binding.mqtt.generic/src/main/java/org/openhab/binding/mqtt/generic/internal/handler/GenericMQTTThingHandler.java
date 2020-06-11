@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.binding.mqtt.generic.ChannelStateTransformation;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
+import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.generic.values.ValueFactory;
 import org.slf4j.Logger;
@@ -83,11 +84,8 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
      */
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
-        List<CompletableFuture<@Nullable Void>> futures = channelStateByChannelUID.values().stream()
-                .map(c -> c.start(connection, scheduler, 0)).collect(Collectors.toList());
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()])).thenRun(() -> {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        });
+        return channelStateByChannelUID.values().stream().map(c -> c.start(connection, scheduler, 0))
+                .collect(FutureCollector.allOf()).thenRun(this::calculateThingStatus);
     }
 
     @Override
@@ -100,14 +98,15 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         // Remove all state descriptions of this handler
         channelStateByChannelUID.forEach((uid, state) -> stateDescProvider.remove(uid));
         super.dispose();
-        // there is a design flaw, we can't clean up our stuff because it is needed by the super-class on disposal for unsubscribing
+        // there is a design flaw, we can't clean up our stuff because it is needed by the super-class on disposal for
+        // unsubscribing
         channelStateByChannelUID.clear();
     }
 
     @Override
     public CompletableFuture<Void> unsubscribeAll() {
-        return CompletableFuture.allOf(channelStateByChannelUID.values().stream().map(ChannelState::stop)
-                .toArray(CompletableFuture[]::new));
+        return CompletableFuture.allOf(
+                channelStateByChannelUID.values().stream().map(ChannelState::stop).toArray(CompletableFuture[]::new));
     }
 
     /**
@@ -126,13 +125,13 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         // Incoming value transformations
         transformations = channelConfig.transformationPattern.split("∩");
-        Stream.of(transformations).filter(t -> StringUtils.isNotBlank(t))
+        Stream.of(transformations).filter(StringUtils::isNotBlank)
                 .map(t -> new ChannelStateTransformation(t, transformationServiceProvider))
                 .forEach(t -> state.addTransformation(t));
 
         // Outgoing value transformations
         transformations = channelConfig.transformationPatternOut.split("∩");
-        Stream.of(transformations).filter(t -> StringUtils.isNotBlank(t))
+        Stream.of(transformations).filter(StringUtils::isNotBlank)
                 .map(t -> new ChannelStateTransformation(t, transformationServiceProvider))
                 .forEach(t -> state.addTransformationOut(t));
 
@@ -141,6 +140,16 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
     @Override
     public void initialize() {
+        GenericThingConfiguration config = getConfigAs(GenericThingConfiguration.class);
+
+        String availabilityTopic = config.availabilityTopic;
+
+        if (availabilityTopic != null) {
+            addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable);
+        } else {
+            clearAllAvailabilityTopics();
+        }
+
         List<ChannelUID> configErrors = new ArrayList<>();
         for (Channel channel : thing.getChannels()) {
             final ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
@@ -153,9 +162,12 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 Value value = ValueFactory.createValueState(channelConfig, channelTypeUID.getId());
                 ChannelState channelState = createChannelState(channelConfig, channel.getUID(), value);
                 channelStateByChannelUID.put(channel.getUID(), channelState);
-                StateDescription description = value.createStateDescription(channelConfig.unit,
-                        StringUtils.isBlank(channelConfig.commandTopic));
-                stateDescProvider.setDescription(channel.getUID(), description);
+                StateDescription description = value
+                        .createStateDescription(StringUtils.isBlank(channelConfig.commandTopic)).build()
+                        .toStateDescription();
+                if (description != null) {
+                    stateDescProvider.setDescription(channel.getUID(), description);
+                }
             } catch (IllegalArgumentException e) {
                 logger.warn("Channel configuration error", e);
                 configErrors.add(channel.getUID());
@@ -164,11 +176,20 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         // If some channels could not start up, put the entire thing offline and display the channels
         // in question to the user.
-        if (configErrors.isEmpty()) {
-            super.initialize();
-        } else {
+        if (!configErrors.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Remove and recreate: "
-                    + configErrors.stream().map(e -> e.getAsString()).collect(Collectors.joining(",")));
+                    + configErrors.stream().map(ChannelUID::getAsString).collect(Collectors.joining(",")));
+            return;
+        }
+        super.initialize();
+    }
+
+    @Override
+    protected void updateThingStatus(boolean messageReceived, boolean availibilityTopicsSeen) {
+        if (messageReceived || availibilityTopicsSeen) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
         }
     }
 }

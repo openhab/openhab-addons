@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,7 +137,6 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
         } else {
             logger.warn("Cannot send to {}", device);
         }
-
     }
 
     private void increaseDecrease(Device dev, IncreaseDecreaseType increaseDecreaseType) throws TellstickException {
@@ -273,7 +272,6 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     @Override
     public void onRequest(TellstickDeviceEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
-
     }
 
     <T> T callRestMethod(String uri, Class<T> response) throws TelldusLiveException {

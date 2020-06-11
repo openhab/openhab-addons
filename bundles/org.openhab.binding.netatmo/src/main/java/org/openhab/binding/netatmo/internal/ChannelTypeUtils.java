@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
  * This class holds various channel values conversion methods
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
+ *
  */
 @NonNullByDefault
 public class ChannelTypeUtils {
@@ -44,6 +46,10 @@ public class ChannelTypeUtils {
     public static ZonedDateTime toZonedDateTime(Integer netatmoTS) {
         Instant i = Instant.ofEpochSecond(netatmoTS);
         return ZonedDateTime.ofInstant(i, ZoneId.systemDefault());
+    }
+
+    public static State toDateTimeType(@Nullable Float netatmoTS) {
+        return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toZonedDateTime(netatmoTS.intValue()));
     }
 
     public static State toDateTimeType(@Nullable Integer netatmoTS) {
@@ -87,7 +93,11 @@ public class ChannelTypeUtils {
     }
 
     public static State toOnOffType(@Nullable Integer value) {
-        return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.NULL;
+        return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF;
+    }
+
+    public static State toOnOffType(@Nullable Boolean value) {
+        return value != null ? (value ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF;
     }
 
     public static State toQuantityType(@Nullable Float value, Unit<?> unit) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * A runtime exception used in the internal code of this bundle.
  *
  * @author Kai Kreuzer - Initial contribution
  *
  */
+@NonNullByDefault
 public class BlueGigaException extends RuntimeException {
 
     private static final long serialVersionUID = 58882813509800169L;
@@ -33,5 +36,4 @@ public class BlueGigaException extends RuntimeException {
     public BlueGigaException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

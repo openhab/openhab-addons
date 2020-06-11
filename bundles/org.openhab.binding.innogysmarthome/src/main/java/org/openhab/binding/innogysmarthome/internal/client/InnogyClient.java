@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
+import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.StateActionSetter;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.CapabilityState;
@@ -241,13 +242,13 @@ public class InnogyClient {
 
                     switch (error.getCode()) {
                         case ErrorResponse.ERR_SESSION_EXISTS:
-                            logger.debug("Session exists: {}", error.toString());
+                            logger.debug("Session exists: {}", error);
                             throw new SessionExistsException(error.getDescription());
                         case ErrorResponse.ERR_SESSION_NOT_FOUND:
-                            logger.debug("Session not found: {}", error.toString());
+                            logger.debug("Session not found: {}", error);
                             throw new SessionNotFoundException(error.getDescription());
                         case ErrorResponse.ERR_CONTROLLER_OFFLINE:
-                            logger.debug("Controller offline: {}", error.toString());
+                            logger.debug("Controller offline: {}", error);
                             throw new ControllerOfflineException(error.getDescription());
                         case ErrorResponse.ERR_REMOTE_ACCESS_NOT_ALLOWED:
                             logger.debug(
@@ -258,8 +259,8 @@ public class InnogyClient {
                             logger.debug("Invalid action triggered. Message: {}", error.getMessages());
                             throw new InvalidActionTriggeredException(error.getDescription());
                         default:
-                            logger.debug("Unknown error: {}", error.toString());
-                            throw new ApiException("Unknown error: " + error.toString());
+                            logger.debug("Unknown error: {}", error);
+                            throw new ApiException("Unknown error: " + error);
                     }
                 } catch (final JsonSyntaxException e) {
                     throw new ApiException("Invalid JSON syntax in error response: " + content);
@@ -300,11 +301,27 @@ public class InnogyClient {
      * @param rollerShutterLevel
      * @throws IOException
      * @throws ApiException
+     * @throws AuthenticationException
      */
     public void setRollerShutterActuatorState(final String capabilityId, final int rollerShutterLevel)
             throws IOException, ApiException, AuthenticationException {
         executePost(API_URL_ACTION,
                 new StateActionSetter(capabilityId, Capability.TYPE_ROLLERSHUTTERACTUATOR, rollerShutterLevel));
+    }
+
+    /**
+     * Starts or stops moving a RollerShutterActuator
+     *
+     * @param capabilityId
+     * @param rollerShutterAction
+     * @throws IOException
+     * @throws ApiException
+     * @throws AuthenticationException
+     */
+    public void setRollerShutterAction(final String capabilityId,
+            final ShutterAction.ShutterActions rollerShutterAction)
+            throws IOException, ApiException, AuthenticationException {
+        executePost(API_URL_ACTION, new ShutterAction(capabilityId, rollerShutterAction));
     }
 
     /**
@@ -435,7 +452,7 @@ public class InnogyClient {
                 if (deviceMessageMap.containsKey(deviceId)) {
                     ml = deviceMessageMap.get(deviceId);
                 } else {
-                    ml = new ArrayList<Message>();
+                    ml = new ArrayList<>();
                 }
                 ml.add(m);
                 deviceMessageMap.put(deviceId, ml);

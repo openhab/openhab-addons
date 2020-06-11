@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,10 +17,12 @@ import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -28,13 +30,14 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.satel.internal.command.ClearTroublesCommand;
 import org.openhab.binding.satel.internal.command.IntegraStatusCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.command.SetClockCommand;
 import org.openhab.binding.satel.internal.event.IntegraStatusEvent;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.types.StateType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class SatelSystemHandler extends SatelStateThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SYSTEM);
@@ -62,48 +66,47 @@ public class SatelSystemHandler extends SatelStateThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (bridgeHandler != null && CHANNEL_USER_CODE.equals(channelUID.getId()) && command instanceof StringType) {
-            bridgeHandler.setUserCode(command.toFullString());
+        if (CHANNEL_USER_CODE.equals(channelUID.getId()) && command instanceof StringType) {
+            withBridgeHandlerPresent(bridgeHandler -> {
+                bridgeHandler.setUserCode(command.toFullString());
+            });
         } else {
             super.handleCommand(channelUID, command);
         }
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
-        if (event instanceof IntegraStatusEvent) {
-            logger.trace("Handling incoming event: {}", event);
-            IntegraStatusEvent statusEvent = (IntegraStatusEvent) event;
-            if (thingConfig.isCommandOnly()) {
-                return;
-            }
-            updateState(CHANNEL_DATE_TIME,
-                    new DateTimeType(statusEvent.getIntegraTime().atZone(bridgeHandler.getZoneId())));
-            updateSwitch(CHANNEL_SERVICE_MODE, statusEvent.inServiceMode());
-            updateSwitch(CHANNEL_TROUBLES, statusEvent.troublesPresent());
-            updateSwitch(CHANNEL_TROUBLES_MEMORY, statusEvent.troublesMemory());
-            updateSwitch(CHANNEL_ACU100_PRESENT, statusEvent.isAcu100Present());
-            updateSwitch(CHANNEL_INTRX_PRESENT, statusEvent.isIntRxPresent());
-            updateSwitch(CHANNEL_GRADE23_SET, statusEvent.isGrade23Set());
-        } else {
-            super.incomingEvent(event);
+    public void incomingEvent(IntegraStatusEvent event) {
+        logger.trace("Handling incoming event: {}", event);
+        if (getThingConfig().isCommandOnly()) {
+            return;
         }
+        updateState(CHANNEL_DATE_TIME,
+                event.getIntegraTime().map(dt -> (State) new DateTimeType(dt.atZone(getBridgeHandler().getZoneId())))
+                        .orElse(UnDefType.UNDEF));
+        updateSwitch(CHANNEL_SERVICE_MODE, event.inServiceMode());
+        updateSwitch(CHANNEL_TROUBLES, event.troublesPresent());
+        updateSwitch(CHANNEL_TROUBLES_MEMORY, event.troublesMemory());
+        updateSwitch(CHANNEL_ACU100_PRESENT, event.isAcu100Present());
+        updateSwitch(CHANNEL_INTRX_PRESENT, event.isIntRxPresent());
+        updateSwitch(CHANNEL_GRADE23_SET, event.isGrade23Set());
     }
 
     @Override
     protected StateType getStateType(String channelId) {
-        return null;
+        return StateType.NONE;
     }
 
     @Override
-    protected SatelCommand convertCommand(ChannelUID channel, Command command) {
+    protected Optional<SatelCommand> convertCommand(ChannelUID channel, Command command) {
+        final SatelBridgeHandler bridgeHandler = getBridgeHandler();
         switch (channel.getId()) {
             case CHANNEL_TROUBLES:
             case CHANNEL_TROUBLES_MEMORY:
                 if (command == OnOffType.ON) {
-                    return null;
+                    return Optional.empty();
                 } else {
-                    return new ClearTroublesCommand(bridgeHandler.getUserCode());
+                    return Optional.of(new ClearTroublesCommand(bridgeHandler.getUserCode()));
                 }
             case CHANNEL_DATE_TIME:
                 DateTimeType dateTime = null;
@@ -113,9 +116,9 @@ public class SatelSystemHandler extends SatelStateThingHandler {
                     dateTime = (DateTimeType) command;
                 }
                 if (dateTime != null) {
-                    return new SetClockCommand(dateTime.getZonedDateTime()
+                    return Optional.of(new SetClockCommand(dateTime.getZonedDateTime()
                             .withZoneSameInstant(bridgeHandler.getZoneId()).toLocalDateTime(),
-                            bridgeHandler.getUserCode());
+                            bridgeHandler.getUserCode()));
                 }
                 break;
             default:
@@ -123,7 +126,7 @@ public class SatelSystemHandler extends SatelStateThingHandler {
                 break;
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -140,5 +143,4 @@ public class SatelSystemHandler extends SatelStateThingHandler {
 
         return result;
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,7 +167,6 @@ public class KodiClientSocket {
             logger.trace("Error occured: {}", error.getMessage());
             onClose(0, error.getMessage());
         }
-
     }
 
     private void sendMessage(String str) throws IOException {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ICLOUD)) {
@@ -80,8 +80,8 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
         ICloudDeviceDiscovery discoveryService = new ICloudDeviceDiscovery(bridgeHandler, bundleContext.getBundle(),
                 i18nProvider, localeProvider);
         discoveryService.activate();
-        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDeviceDiscoveryService(ICloudAccountBridgeHandler bridgeHandler) {
@@ -115,5 +115,4 @@ public class ICloudHandlerFactory extends BaseThingHandlerFactory {
     public void unsetTranslationProvider(TranslationProvider i18nProvider) {
         this.i18nProvider = null;
     }
-
 }

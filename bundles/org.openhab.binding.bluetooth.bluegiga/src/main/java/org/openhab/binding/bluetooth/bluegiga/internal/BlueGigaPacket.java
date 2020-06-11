@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Base class from which both commands and responses (and events) are derived.
  *
  * @author Chris Jackson - Initial contribution and API
  *
  */
-abstract public class BlueGigaPacket {
+@NonNullByDefault
+public abstract class BlueGigaPacket {
 
 }

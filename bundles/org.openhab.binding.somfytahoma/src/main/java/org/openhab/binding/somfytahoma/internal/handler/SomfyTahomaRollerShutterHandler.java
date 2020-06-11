@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,20 +42,22 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
-                return;
+        if (command instanceof RefreshType) {
+            return;
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_MY.equals(cmd)) {
+                sendCommand(COMMAND_MY);
+            } else if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //Check if the roller shutter is moving and MY is sent => STOP it
+                    // Check if the roller shutter is moving and STOP is sent => STOP it
                     cancelExecution(executionId);
                 } else {
                     sendCommand(COMMAND_MY);
                 }
             } else {
-                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }
@@ -71,9 +73,11 @@ public class SomfyTahomaRollerShutterHandler extends SomfyTahomaBaseThingHandler
             case "UP":
             case "OPEN":
                 return COMMAND_UP;
+            case "MOVE":
             case "MY":
-            case "STOP":
                 return COMMAND_MY;
+            case "STOP":
+                return COMMAND_STOP;
             default:
                 return COMMAND_SET_CLOSURE;
         }

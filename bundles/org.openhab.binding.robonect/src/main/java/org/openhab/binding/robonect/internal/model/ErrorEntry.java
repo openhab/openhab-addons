@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,18 +19,18 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Marco Meyer - Initial contribution
  */
-public class ErrorEntry  {
-    
-    private String date; 
-    
+public class ErrorEntry {
+
+    private String date;
+
     @SerializedName("error_code")
     private Integer errorCode;
-    
+
     @SerializedName("error_message")
     private String errorMessage;
 
     private String time;
-    
+
     private String unix;
 
     /**
@@ -48,7 +48,7 @@ public class ErrorEntry  {
     }
 
     /**
-     * @return - The localized error message from the mower. 
+     * @return - The localized error message from the mower.
      */
     public String getErrorMessage() {
         return errorMessage;

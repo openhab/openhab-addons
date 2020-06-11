@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,11 +35,8 @@ public interface ModbusReadRequestBlueprint extends ModbusRequestBlueprint {
     public int getReference();
 
     /**
-     * Returns the length of the data appended
-     * after the protocol header.
-     * <p>
+     * Returns the number of registers/coils/discrete inputs
      *
-     * @return the data length as <tt>int</tt>.
      */
     public int getDataLength();
 
@@ -58,5 +55,4 @@ public interface ModbusReadRequestBlueprint extends ModbusRequestBlueprint {
      * @see net.wimpi.modbus.Modbus
      */
     public ModbusReadFunctionCode getFunctionCode();
-
 }

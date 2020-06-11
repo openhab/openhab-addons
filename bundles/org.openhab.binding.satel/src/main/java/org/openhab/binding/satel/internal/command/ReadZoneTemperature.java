@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.ZoneTemperatureEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class ReadZoneTemperature extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -44,29 +46,14 @@ public class ReadZoneTemperature extends SatelCommandBase {
      * @return zone temperature
      */
     public float getTemperature() {
-        int temp = ((response.getPayload()[1] & 0xff) << 8) + (response.getPayload()[2] & 0xff);
+        final byte[] payload = getResponse().getPayload();
+        int temp = ((payload[1] & 0xff) << 8) + (payload[2] & 0xff);
         return (temp - 110) / 2.0f;
-    }
-
-    @Override
-    public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
-        if (super.handleResponse(eventDispatcher, response)) {
-            // dispatch temperature event
-            int zoneNbr = response.getPayload()[0];
-            eventDispatcher.dispatchEvent(new ZoneTemperatureEvent(zoneNbr == 0 ? 256 : zoneNbr, getTemperature()));
-            return true;
-        } else {
-            return false;
-        }
     }
 
     @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length != 3) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
@@ -74,4 +61,10 @@ public class ReadZoneTemperature extends SatelCommandBase {
         return true;
     }
 
+    @Override
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+        // dispatch temperature event
+        int zoneNbr = getResponse().getPayload()[0];
+        eventDispatcher.dispatchEvent(new ZoneTemperatureEvent(zoneNbr == 0 ? 256 : zoneNbr, getTemperature()));
+    }
 }

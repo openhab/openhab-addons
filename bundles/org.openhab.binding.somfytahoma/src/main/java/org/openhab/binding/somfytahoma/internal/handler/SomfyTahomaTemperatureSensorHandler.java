@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class SomfyTahomaTemperatureSensorHandler extends SomfyTahomaBaseThingHan
         super(thing);
         stateNames.put(TEMPERATURE, "core:TemperatureState");
 
-        //override state type because the cloud sends both percent & decimal
+        // override state type because the cloud sends both percent & decimal
         cacheStateType("core:TemperatureState", TYPE_DECIMAL);
     }
 }

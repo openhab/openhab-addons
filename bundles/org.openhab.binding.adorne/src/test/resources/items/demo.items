@@ -1,0 +1,5 @@
+Switch LightBathroom {channel="adorne:switch:home:bathroom:power"}
+Switch LightBedroomSwitch1 {channel="adorne:dimmer:home:bedroom1:power"}
+Dimmer LightBedroomDimmer1 {channel="adorne:dimmer:home:bedroom1:brightness"}
+Switch LightBedroomSwitch2 {channel="adorne:dimmer:home:bedroom2:power"}
+Dimmer LightBedroomDimmer2 {channel="adorne:dimmer:home:bedroom2:brightness"}

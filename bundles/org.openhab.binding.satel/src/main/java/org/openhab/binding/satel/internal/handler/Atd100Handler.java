@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,12 +15,13 @@ package org.openhab.binding.satel.internal.handler;
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Temperature;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,7 +33,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.satel.internal.command.ReadZoneTemperature;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.config.Atd100Config;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.event.ZoneTemperatureEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +43,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class Atd100Handler extends WirelessChannelsHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ATD100);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public Atd100Handler(Thing thing) {
         super(thing);
@@ -59,25 +60,30 @@ public class Atd100Handler extends WirelessChannelsHandler {
     public void initialize() {
         super.initialize();
 
-        if (pollingJob == null || pollingJob.isCancelled()) {
-            Atd100Config config = getConfigAs(Atd100Config.class);
-            Runnable pollingCommand = () -> {
-                if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
-                    bridgeHandler.sendCommand(new ReadZoneTemperature(thingConfig.getId()), true);
-                }
-            };
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingCommand, 0, config.getRefresh(), TimeUnit.MINUTES);
-        }
+        withBridgeHandlerPresent(bridgeHandler -> {
+            final ScheduledFuture<?> pollingJob = this.pollingJob;
+            if (pollingJob == null || pollingJob.isCancelled()) {
+                Atd100Config config = getConfigAs(Atd100Config.class);
+                Runnable pollingCommand = () -> {
+                    if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+                        bridgeHandler.sendCommand(new ReadZoneTemperature(getThingConfig().getId()), true);
+                    }
+                };
+                this.pollingJob = scheduler.scheduleWithFixedDelay(pollingCommand, 0, config.getRefresh(),
+                        TimeUnit.MINUTES);
+            }
+        });
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing thing handler.");
 
+        final ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
-            pollingJob = null;
         }
+        this.pollingJob = null;
     }
 
     @Override
@@ -86,7 +92,9 @@ public class Atd100Handler extends WirelessChannelsHandler {
             logger.debug("New command for {}: {}", channelUID, command);
 
             if (command == RefreshType.REFRESH) {
-                bridgeHandler.sendCommand(new ReadZoneTemperature(thingConfig.getId()), true);
+                withBridgeHandlerPresent(bridgeHandler -> {
+                    bridgeHandler.sendCommand(new ReadZoneTemperature(getThingConfig().getId()), true);
+                });
             }
         } else {
             super.handleCommand(channelUID, command);
@@ -94,16 +102,10 @@ public class Atd100Handler extends WirelessChannelsHandler {
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
-        if (event instanceof ZoneTemperatureEvent) {
-            logger.trace("Handling incoming event: {}", event);
-            ZoneTemperatureEvent statusEvent = (ZoneTemperatureEvent) event;
-            if (statusEvent.getZoneNbr() == thingConfig.getId()) {
-                updateState(CHANNEL_TEMPERATURE,
-                        new QuantityType<Temperature>(statusEvent.getTemperature(), SIUnits.CELSIUS));
-            }
-        } else {
-            super.incomingEvent(event);
+    public void incomingEvent(ZoneTemperatureEvent event) {
+        logger.trace("Handling incoming event: {}", event);
+        if (event.getZoneNbr() == getThingConfig().getId()) {
+            updateState(CHANNEL_TEMPERATURE, new QuantityType<>(event.getTemperature(), SIUnits.CELSIUS));
         }
     }
 
@@ -113,9 +115,8 @@ public class Atd100Handler extends WirelessChannelsHandler {
     }
 
     @Override
-    protected SatelCommand convertCommand(ChannelUID channel, Command command) {
+    protected Optional<SatelCommand> convertCommand(@Nullable ChannelUID channel, @Nullable Command command) {
         // no commands supported
-        return null;
+        return Optional.empty();
     }
-
 }

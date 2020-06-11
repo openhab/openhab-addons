@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,15 +22,16 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class PJLinkDeviceConfiguration {
-  public @Nullable String ipAddress;
-  public int tcpPort;
+    public @Nullable String ipAddress;
+    public int tcpPort;
 
-  public @Nullable String adminPassword;
+    public @Nullable String adminPassword;
 
-  public int refreshInterval;
-  public boolean refreshPower;
-  public boolean refreshMute;
-  public boolean refreshInputChannel;
+    public int refreshInterval;
+    public boolean refreshPower;
+    public boolean refreshMute;
+    public boolean refreshInputChannel;
+    public boolean refreshLampState;
 
-  public int autoReconnectInterval;
+    public int autoReconnectInterval;
 }

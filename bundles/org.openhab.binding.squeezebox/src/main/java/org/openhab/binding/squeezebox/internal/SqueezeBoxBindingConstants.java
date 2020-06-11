@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,6 +44,7 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_PREV = "prev";
     public static final String CHANNEL_CONTROL = "control";
     public static final String CHANNEL_STREAM = "stream";
+    public static final String CHANNEL_SOURCE = "source";
     public static final String CHANNEL_SYNC = "sync";
     public static final String CHANNEL_UNSYNC = "unsync";
     public static final String CHANNEL_PLAYLIST_INDEX = "playListIndex";

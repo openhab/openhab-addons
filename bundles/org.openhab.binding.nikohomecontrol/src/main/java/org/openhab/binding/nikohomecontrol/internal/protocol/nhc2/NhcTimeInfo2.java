@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
 public class NhcTimeInfo2 {
     @SerializedName(value = "GMTOffset")
     String gmtOffset = "";
-    String timeZone = "";
+    String timezone = "";
     String isDST = "";
     @SerializedName(value = "UTCTime")
     String utcTime = "";
@@ -40,8 +40,8 @@ public class NhcTimeInfo2 {
     /**
      * @return the timeZone
      */
-    public String getTimeZone() {
-        return timeZone;
+    public String getTimezone() {
+        return timezone;
     }
 
     /**

@@ -18,7 +18,7 @@
 
 		<config-description-ref uri="thing-type:gpstracker:tracker"/>
 	</thing-type>
-	
+
 	<!-- Channel Types -->
 	<channel-type id="regionDistance">
 		<item-type>Number:Length</item-type>
@@ -42,7 +42,8 @@
 	<channel-type id="regionTrigger">
 		<kind>trigger</kind>
 		<label>Region Trigger</label>
-		<description>Trigger channel for entering/leaving regions. Payload is the region name with prefix &gt; for entering and &lt; for leaving.</description>
+		<description>Trigger channel for entering/leaving regions. Payload is the region name with prefix &gt; for entering
+			and &lt; for leaving.</description>
 		<event/>
 	</channel-type>
 </thing:thing-descriptions>

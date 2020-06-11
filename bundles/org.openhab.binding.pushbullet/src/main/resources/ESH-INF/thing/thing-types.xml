@@ -9,9 +9,9 @@
 		<description>Bot to send messages with.</description>
 
 		<channels>
-			<channel id="recipient" typeId="recipient-channel" />
-			<channel id="title" typeId="title-channel" />
-			<channel id="message" typeId="message-channel" />
+			<channel id="recipient" typeId="recipient-channel"/>
+			<channel id="title" typeId="title-channel"/>
+			<channel id="message" typeId="message-channel"/>
 		</channels>
 
 		<config-description>

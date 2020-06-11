@@ -8,14 +8,14 @@
 		<label>Zone</label>
 		<description>Hydrawise zone</description>
 		<channels>
-			<channel id="name" typeId="name" />
-			<channel id="icon" typeId="icon" />
-			<channel id="time" typeId="time" />
-			<channel id="type" typeId="type" />
-			<channel id="runcustom" typeId="runcustom" />
-			<channel id="run" typeId="run" />
-			<channel id="nextruntime" typeId="nextruntime" />
-			<channel id="timeleft" typeId="timeleft" />
+			<channel id="name" typeId="name"/>
+			<channel id="icon" typeId="icon"/>
+			<channel id="time" typeId="time"/>
+			<channel id="type" typeId="type"/>
+			<channel id="runcustom" typeId="runcustom"/>
+			<channel id="run" typeId="run"/>
+			<channel id="nextruntime" typeId="nextruntime"/>
+			<channel id="timeleft" typeId="timeleft"/>
 		</channels>
 	</channel-group-type>
 
@@ -23,22 +23,22 @@
 		<label>All Zones</label>
 		<description>Commands that control all Hydrawise zones</description>
 		<channels>
-			<channel id="runcustom" typeId="runcustom" />
-			<channel id="run" typeId="run" />
+			<channel id="runcustom" typeId="runcustom"/>
+			<channel id="run" typeId="run"/>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="sensor">
 		<label>Sensor</label>
 		<description>Hydrawise sensor</description>
 		<channels>
-			<channel id="name" typeId="name" />
-			<channel id="input" typeId="input" />
-			<channel id="mode" typeId="mode" />
-			<channel id="timer" typeId="timer" />
-			<channel id="offtimer" typeId="offtimer" />
-			<channel id="offlevel" typeId="offlevel" />
-			<channel id="active" typeId="active" />
+			<channel id="name" typeId="name"/>
+			<channel id="input" typeId="input"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="timer" typeId="timer"/>
+			<channel id="offtimer" typeId="offtimer"/>
+			<channel id="offlevel" typeId="offlevel"/>
+			<channel id="active" typeId="active"/>
 		</channels>
 	</channel-group-type>
 
@@ -46,12 +46,12 @@
 		<label>Weather Forecast</label>
 		<description>Hydrawise weather forecast</description>
 		<channels>
-			<channel id="temperaturehigh" typeId="temperaturehigh" />
-			<channel id="temperaturelow" typeId="temperaturelow" />
-			<channel id="conditions" typeId="conditions" />
-			<channel id="day" typeId="day" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="wind" typeId="wind" />
+			<channel id="temperaturehigh" typeId="temperaturehigh"/>
+			<channel id="temperaturelow" typeId="temperaturelow"/>
+			<channel id="conditions" typeId="conditions"/>
+			<channel id="day" typeId="day"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="wind" typeId="wind"/>
 		</channels>
 	</channel-group-type>
 
@@ -173,7 +173,7 @@
 		<label>High temperature</label>
 		<description>High temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="temperaturelow">
@@ -181,7 +181,7 @@
 		<label>Low Temperature</label>
 		<description>Low Temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="conditions">
@@ -210,7 +210,7 @@
 		<label>Humidity</label>
 		<description>Humidity percentage</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%d%%" />
+		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
 
 	<channel-type id="wind">
@@ -218,6 +218,6 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

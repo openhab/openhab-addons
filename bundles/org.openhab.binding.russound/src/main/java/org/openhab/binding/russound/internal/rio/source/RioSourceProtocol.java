@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -632,7 +632,6 @@ class RioSourceProtocol extends AbstractRioProtocol {
         } else {
             logger.warn("Invalid Source Notification response: '{}'", resp);
         }
-
     }
 
     /**
@@ -763,5 +762,4 @@ class RioSourceProtocol extends AbstractRioProtocol {
             this.value = value;
         }
     }
-
 }

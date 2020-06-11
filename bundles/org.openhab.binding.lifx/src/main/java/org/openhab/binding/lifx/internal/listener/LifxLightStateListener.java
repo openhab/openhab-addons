@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.binding.lifx.internal.LifxLightState;
 import org.openhab.binding.lifx.internal.fields.HSBK;
+import org.openhab.binding.lifx.internal.protocol.Effect;
 import org.openhab.binding.lifx.internal.protocol.PowerState;
 import org.openhab.binding.lifx.internal.protocol.SignalStrength;
-import org.openhab.binding.lifx.internal.protocol.Effect;
 
 /**
  * The {@link LifxLightStateListener} is notified when the properties of a {@link LifxLightState} change.

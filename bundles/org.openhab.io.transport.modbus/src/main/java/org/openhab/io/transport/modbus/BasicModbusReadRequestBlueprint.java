@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,5 +104,4 @@ public class BasicModbusReadRequestBlueprint implements ModbusReadRequestBluepri
         return new EqualsBuilder().append(slaveId, rhs.slaveId).append(functionCode, rhs.functionCode)
                 .append(start, rhs.start).append(length, rhs.length).isEquals();
     }
-
 }

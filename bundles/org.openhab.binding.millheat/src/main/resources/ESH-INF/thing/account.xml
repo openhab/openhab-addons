@@ -7,7 +7,7 @@
 	<bridge-type id="account">
 		<label>Mill Heating API</label>
 		<description>This bridge represents the gateway to Mill Heating API</description>
-		<config-description-ref uri="thing-type:millheat:account" />
+		<config-description-ref uri="thing-type:millheat:account"/>
 	</bridge-type>
 
 </thing:thing-descriptions>

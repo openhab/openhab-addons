@@ -144,16 +144,10 @@ As an alternative to the automatic discovery process and graphical configuration
 The innogy SmartHome Controller (SHC) can be configured using the following syntax:
 
 ```
-Bridge innogysmarthome:bridge:<bridge-id> [ refreshtoken="<refresh-token>" ]
+Bridge innogysmarthome:bridge:<bridge-id> []
 ```
 
-The easiest way is to retrieve the refresh-token using the Paper UI as described above.
-But you can do it manually by:
-
-1. Changing the log level to TRACE, as the refresh-token is not written into the logs in lower log levels*
-2. Retrieving the auth-code (see description above)
-3. Saving it once in the Bridge configuration like shown below
-4. Fishing the refresh-code from the openhab.log file.
+Then the required authcode is retrieved and set **automatically**:
 
 ```
 Bridge innogysmarthome:bridge:<bridge-id> [ authcode="<authcode>" ]

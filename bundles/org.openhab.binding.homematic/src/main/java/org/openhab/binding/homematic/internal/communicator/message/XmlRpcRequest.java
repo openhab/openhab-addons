@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
     public XmlRpcRequest(String methodName, TYPE type) {
         this.methodName = methodName;
         this.type = type;
-        parms = new ArrayList<Object>();
+        parms = new ArrayList<>();
     }
 
     @Override

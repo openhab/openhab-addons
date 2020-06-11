@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,15 @@
  */
 package org.openhab.binding.satel.internal.event;
 
+import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,17 +30,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class EventDispatcher {
 
     private final Logger logger = LoggerFactory.getLogger(EventDispatcher.class);
 
     private final Set<SatelEventListener> eventListeners = new CopyOnWriteArraySet<>();
 
+    @SuppressWarnings("unchecked")
+    private final Map<Class<? extends SatelEvent>, @Nullable Method> eventHandlers = Stream
+            .of(SatelEventListener.class.getDeclaredMethods())
+            .filter(m -> m.getParameterCount() == 1 && SatelEvent.class.isAssignableFrom(m.getParameterTypes()[0]))
+            .collect(Collectors.toMap(m -> (Class<SatelEvent>) m.getParameterTypes()[0], m -> m));
+
     /**
      * Add a listener for Satel events.
      *
-     * @param eventListener
-     *            the event listener to add.
+     * @param eventListener the event listener to add.
      */
     public void addEventListener(SatelEventListener eventListener) {
         this.eventListeners.add(eventListener);
@@ -43,8 +55,7 @@ public class EventDispatcher {
     /**
      * Remove a listener for Satel events.
      *
-     * @param eventListener
-     *            the event listener to remove.
+     * @param eventListener the event listener to remove.
      */
     public void removeEventListener(SatelEventListener eventListener) {
         this.eventListeners.remove(eventListener);
@@ -53,14 +64,22 @@ public class EventDispatcher {
     /**
      * Dispatch incoming event to all listeners.
      *
-     * @param event
-     *            the event to distribute.
+     * @param event the event to distribute.
      */
     public void dispatchEvent(SatelEvent event) {
-        logger.debug("Distributing event: {}", event);
-        for (SatelEventListener listener : eventListeners) {
-            logger.trace("Distributing to {}", listener);
-            listener.incomingEvent(event);
+        final Method m = eventHandlers.get(event.getClass());
+        if (m == null) {
+            logger.warn("Missing event handler for event {}. Event discarded.", event.getClass().getName());
+        } else {
+            logger.debug("Distributing event: {}", event);
+            eventListeners.forEach(listener -> {
+                logger.trace("Distributing to {}", listener);
+                try {
+                    m.invoke(listener, event);
+                } catch (ReflectiveOperationException e) {
+                    logger.warn("Unable to distribute {} to {}", event.getClass().getName(), listener, e);
+                }
+            });
         }
     }
 }

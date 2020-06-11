@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enigma2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="device">
+		<label>Enigma2</label>
+		<description>The Thing represents an Enigma2 device</description>
+		<channels>
+			<channel id="power" typeId="powerType" />
+			<channel id="mute" typeId="muteType" />
+			<channel id="volume" typeId="volumeType" />
+			<channel id="channel" typeId="channelType" />
+			<channel id="title" typeId="titleType" />
+			<channel id="description" typeId="descriptionType" />
+			<channel id="mediaPlayer" typeId="mediaPlayerType" />
+			<channel id="mediaStop" typeId="mediaStopType" />
+			<channel id="answer" typeId="answerType" />
+		</channels>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host Address</label>
+				<description>Hostname or IP address of the Enigma2 device.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" min="1" max="3600" unit="s">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in seconds.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="timeout" type="integer" required="false" min="1" max="300" unit="s">
+				<label>Timeout</label>
+				<description>The timeout for reading from the device in seconds.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="user" type="text" required="false">
+				<label>Username</label>
+				<description>The Username of the Enigma2 Web API.</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>The Password of the Enigma2 Web API.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="powerType">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Setting the power to on/off.</description>
+	</channel-type>
+	<channel-type id="muteType">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Current Mute Setting</description>
+		<category>SoundVolume</category>
+	</channel-type>
+	<channel-type id="volumeType">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Current Volume Setting</description>
+		<category>SoundVolume</category>
+		<state min="0" max="100" step="5"></state>
+	</channel-type>
+	<channel-type id="channelType">
+		<item-type>String</item-type>
+		<label>Channel</label>
+		<description>Current Channel</description>
+	</channel-type>
+	<channel-type id="titleType">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Current Title of the current Channel</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="descriptionType">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Current Description of the current Channel</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="mediaPlayerType">
+		<item-type>Player</item-type>
+		<label>Media Control</label>
+		<description>Control media (e.g. audio or video) playback</description>
+		<category>MediaControl</category>
+	</channel-type>
+	<channel-type id="mediaStopType">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stop Playback</description>
+	</channel-type>
+	<channel-type id="answerType">
+		<item-type>String</item-type>
+		<label>Answer</label>
+		<description>Receives an answer to a send question of the device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

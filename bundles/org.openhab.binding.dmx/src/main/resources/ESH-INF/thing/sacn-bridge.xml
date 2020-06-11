@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- sACN/E1.31 Bridge -->
 	<bridge-type id="sacn-bridge">
 		<label>sACN/E1.31 Bridge</label>
@@ -21,7 +23,8 @@
 			</parameter>
 			<parameter name="address" type="text">
 				<label>Receiver Address(es)</label>
-				<description>Network addresses of sACN/E1.31 receivers, format: address[:port][, address[:port], ...]. Default port is 5568.</description>
+				<description>Network addresses of sACN/E1.31 receivers, format: address[:port][, address[:port], ...]. Default port
+					is 5568.</description>
 				<required>false</required>
 			</parameter>
 			<parameter name="localaddress" type="text">
@@ -53,7 +56,7 @@
 				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refreshrate"  type="decimal" min="0" max="100">
+			<parameter name="refreshrate" type="decimal" min="0" max="100">
 				<description>DMX refresh rate in Hz</description>
 				<required>false</required>
 				<default>30</default>

@@ -6,12 +6,12 @@
 
 	<thing-type id="environmentalSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Environmental Sensor</label>
 		<description>Sensor for different environmental sensors like a weather station (EEP: A5-13)</description>
-		
+
 		<config-description>
 			<parameter name="enoceanId" type="text">
 				<label>EnOceanId</label>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public class ValueFactory {
                 value = new LocationValue();
                 break;
             case MqttBindingConstants.NUMBER:
-                value = new NumberValue(config.min, config.max, config.step);
+                value = new NumberValue(config.min, config.max, config.step, config.unit);
                 break;
             case MqttBindingConstants.DIMMER:
                 value = new PercentageValue(config.min, config.max, config.step, config.on, config.off);
@@ -67,10 +67,13 @@ public class ValueFactory {
             case MqttBindingConstants.ROLLERSHUTTER:
                 value = new RollershutterValue(config.on, config.off, config.stop);
                 break;
+            case MqttBindingConstants.TRIGGER:
+                config.trigger = true;
+                value = new TextValue();
+                break;
             default:
                 throw new IllegalArgumentException("ChannelTypeUID not recognised: " + channelTypeID);
         }
         return value;
     }
-
 }

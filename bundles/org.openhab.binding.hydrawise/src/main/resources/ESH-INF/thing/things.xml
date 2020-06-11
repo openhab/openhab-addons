@@ -9,7 +9,7 @@
 		<label>Hydrawise Cloud Thing</label>
 		<description>Hydrawise cloud connected irrigation system</description>
 
-		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list all possible channel groups. 
+		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list all possible channel groups.
 			Once this is fixed we can dynamically add them to the thing and not list them here. -->
 		<channel-groups>
 			<channel-group id="sensor1" typeId="sensor">
@@ -46,7 +46,7 @@
 				<description>Day 4 weather forecast</description>
 			</channel-group>
 
-			<channel-group id="allzones" typeId="allzones" />
+			<channel-group id="allzones" typeId="allzones"/>
 
 			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>

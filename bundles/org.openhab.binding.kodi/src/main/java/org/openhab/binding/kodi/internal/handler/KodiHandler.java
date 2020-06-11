@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -348,7 +347,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         int httpPort = config.getHttpPort();
         String httpUser = config.getHttpUser();
         String httpPassword = config.getHttpPassword();
-        String userInfo = (StringUtils.isEmpty(httpUser) || StringUtils.isEmpty(httpPassword)) ? null
+        String userInfo = httpUser == null || httpUser.isEmpty() || httpPassword == null || httpPassword.isEmpty()
+                ? null
                 : String.format("%s:%s", httpUser, httpPassword);
         return new URI("http", userInfo, host, httpPort, "/image/", null, null);
     }
@@ -366,9 +366,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         if (favorite != null) {
             String path = favorite.getPath();
             String windowParameter = favorite.getWindowParameter();
-            if (StringUtils.isNotEmpty(path)) {
+            if (path != null && !path.isEmpty()) {
                 connection.playURI(path);
-            } else if (StringUtils.isNotEmpty(windowParameter)) {
+            } else if (windowParameter != null && !windowParameter.isEmpty()) {
                 String[] windowParameters = { windowParameter };
                 connection.activateWindow(favorite.getWindow(), windowParameters);
             } else {
@@ -813,7 +813,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateUserRating(double rating) {
-        updateState(CHANNEL_RATING, new DecimalType(rating));
+        updateState(CHANNEL_USERRATING, new DecimalType(rating));
     }
 
     @Override

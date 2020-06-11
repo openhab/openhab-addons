@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ public class Sink extends AbstractAudioDeviceConfig {
     }
 
     public boolean isCombinedSink() {
-        return combinedSinkNames.size() > 0;
+        return !combinedSinkNames.isEmpty();
     }
 
     public List<String> getCombinedSinkNames() {
@@ -58,5 +58,4 @@ public class Sink extends AbstractAudioDeviceConfig {
             this.combinedSinks.add(sink);
         }
     }
-
 }

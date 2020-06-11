@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.identification;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The response part of {@link IdentificationCommand}
@@ -24,13 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class IdentificationResponse extends PrefixedResponse<String> {
-  public IdentificationResponse(IdentificationCommand command, String response) throws ResponseException {
-    super(command.getIdentificationProperty().getPJLinkCommandPrefix() + "=", response);
-  }
+    public IdentificationResponse(IdentificationCommand command, String response) throws ResponseException {
+        super(command.getIdentificationProperty().getPJLinkCommandPrefix() + "=", response);
+    }
 
-  @Override
-  protected String parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-    return responseWithoutPrefix;
-  }
-
+    @Override
+    protected String parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
+        return responseWithoutPrefix;
+    }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,7 +96,7 @@ public class MacTTSService implements TTSService {
      * @return The voices of this instance
      */
     private final Set<Voice> initVoices() {
-        Set<Voice> voices = new HashSet<Voice>();
+        Set<Voice> voices = new HashSet<>();
         InputStreamReader inputStreamReader = null;
         BufferedReader bufferedReader = null;
         try {
@@ -136,5 +136,4 @@ public class MacTTSService implements TTSService {
     public String getLabel(Locale locale) {
         return "macOS TTS";
     }
-
 }

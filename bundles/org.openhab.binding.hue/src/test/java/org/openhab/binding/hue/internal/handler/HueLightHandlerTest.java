@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -371,6 +371,8 @@ public class HueLightHandlerTest {
         HueClient mockClient = mock(HueClient.class);
         when(mockClient.getLightById(any())).thenReturn(light);
 
+        long fadeTime = 400;
+
         HueLightHandler hueLightHandler = new HueLightHandler(mockThing) {
             @Override
             protected synchronized HueClient getHueClient() {
@@ -390,7 +392,8 @@ public class HueLightHandlerTest {
         hueLightHandler.handleCommand(new ChannelUID(new ThingUID("hue::test"), channel), command);
 
         ArgumentCaptor<StateUpdate> captorStateUpdate = ArgumentCaptor.forClass(StateUpdate.class);
-        verify(mockClient).updateLightState(any(FullLight.class), captorStateUpdate.capture());
+        verify(mockClient).updateLightState(any(LightStatusListener.class), any(FullLight.class),
+                captorStateUpdate.capture(), eq(fadeTime));
         assertJson(expectedReply, captorStateUpdate.getValue().toJson());
     }
 
@@ -400,5 +403,4 @@ public class HueLightHandlerTest {
         JsonElement jsonActual = parser.parse(actual);
         assertEquals(jsonExpected, jsonActual);
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.openhab.binding.sinope.internal.util.ByteUtil;
 
 /**
  * The Class SinopeAppData.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeAppData {
@@ -48,10 +48,8 @@ public class SinopeAppData {
      * @param data the data
      */
     public SinopeAppData(byte[] dataId, byte[] data) {
-
         this.dataId = dataId;
         this.data = data;
-
     }
 
     /**
@@ -72,7 +70,6 @@ public class SinopeAppData {
 
                 this.data = new byte[len];
                 bb.get(this.data);
-
             }
         }
     }
@@ -134,7 +131,5 @@ public class SinopeAppData {
      */
     public void cleanData() {
         this.data = null;
-
     }
-
 }

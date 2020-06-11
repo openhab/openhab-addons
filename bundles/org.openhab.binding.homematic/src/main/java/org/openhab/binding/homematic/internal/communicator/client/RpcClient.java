@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 public abstract class RpcClient<T> {
     private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
     protected static final int MAX_RPC_RETRY = 1;
+    protected static final int RESP_BUFFER_SIZE = 8192;
 
     protected HomematicConfig config;
 
@@ -462,5 +463,4 @@ public abstract class RpcClient<T> {
     private boolean isConfigurationChannel(HmChannel channel) {
         return channel.getNumber() == CONFIGURATION_CHANNEL_NUMBER;
     }
-
 }

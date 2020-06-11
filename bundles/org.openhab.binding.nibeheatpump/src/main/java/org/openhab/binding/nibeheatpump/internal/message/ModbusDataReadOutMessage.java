@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,6 @@ public class ModbusDataReadOutMessage extends NibeHeatPumpBaseMessage {
     }
 
     private byte[] createDataReadOutPdu(List<ModbusValue> values) {
-
         byte datalen = (byte) (values.size() * 4);
         byte msglen = (byte) (6 + datalen);
 

@@ -6,7 +6,7 @@
 
 	<thing-type id="sensor_cube">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Mi Smart Cube</label>
 		<description>Multifunctional controller equipped with an accelerometer and a gyroscope. Triggers the following
@@ -16,10 +16,10 @@
 			<channel id="lastAction" typeId="lastAction"></channel>
 			<channel id="rotationAngle" typeId="rotationAngle"></channel>
 			<channel id="rotationTime" typeId="rotationTime"></channel>
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 
 	<channel-type id="cubeAction">

@@ -16,7 +16,8 @@ Successfully tested are internet radios:
  * [Revo SuperConnect](https://revo.co.uk/products/)
  * [Sangean WFR-28C](http://sg.sangean.com.tw/products/product_category.asp?cid=2)
  * [Roku SoundBridge M1001](https://soundbridge.roku.com/soundbridge/index.php)
- * [Dual IR 3a](https://www.dual.de/produkte/digitalradio/radio-station-ir-3a/) 
+ * [Dual IR 3a](https://www.dual.de/produkte/digitalradio/radio-station-ir-3a/)
+ * [Teufel 3sixty](https://www.teufel.de/stereo/radio-3sixty-p16568.html)
 
 But in principle, all internet radios based on the [Frontier Silicon chipset](https://www.frontier-silicon.com/) should be supported because they share the same API.
 So It is very likely that other internet radio models of the same manufacturers do also work.
@@ -33,7 +34,7 @@ If your radio is not discovered, please try to access its API via: `http://<radi
 If you get a 404 error, maybe a different port than the standard port 80 is used by your radio; try scanning the open ports of your radio.<br/>
 If you get a result like `FS_OK 1902014387`, your radio is supported.
 
-If this is the case, please [add your model to this documentation](https://github.com/openhab/openhab2-addons/edit/master/bundles/org.openhab.binding.fsinternetradio/README.md) and/or provide discovery information in [this thread](https://community.openhab.org/t/internet-radio-i-need-your-help/2131).
+If this is the case, please [add your model to this documentation](https://github.com/openhab/openhab-addons/edit/master/bundles/org.openhab.binding.fsinternetradio/README.md) and/or provide discovery information in [this thread](https://community.openhab.org/t/internet-radio-i-need-your-help/2131).
 
 ## Binding Configuration
 
@@ -75,6 +76,7 @@ This list is just an example how the mapping looks like for some of the devices,
 | Dual IR 3a               | Internet Radio | Spotify                 | -         | Music Player | DAB Radio | FM Radio | Bluetooth    | -         | -         | -      |
 | Silvercrest SIRD 14 C2   | Internet Radio | TIDAL                   | Deezer    | Qobuz        | Spotify   | -        | Music Player | DAB Radio | FM Radio  | AUX in |
 | Auna KR200 Kitchen Radio | Internet Radio | Spotify                 | -         | Music Player | DAB Radio | FM Radio | AUX in       | -         | -         | -      |
+| Hama DIR3505MSCBT        | Internet Radio | Amazon Music            | Spotify   | -            | Player    | DAB      | FM Radio     | AUX in    | Bluetooth | CD     |
 
 
 ## Full Example

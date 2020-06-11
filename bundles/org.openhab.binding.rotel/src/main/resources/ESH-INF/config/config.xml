@@ -8,6 +8,7 @@
 	<config-description uri="thing-type:rotel:serial">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>
@@ -25,17 +26,20 @@
 	<config-description uri="thing-type:rotel:serialandip">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP)</description>
+			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
+				(serial over IP)</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port 9590</description>
+			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
+				9590</description>
 			<default>9590</default>
 		</parameter>
 	</config-description>
@@ -43,17 +47,20 @@
 	<config-description uri="thing-type:rotel:serialandip2">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP)</description>
+			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
+				(serial over IP)</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port 9590</description>
+			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
+				9590</description>
 			<default>9596</default>
 		</parameter>
 	</config-description>
@@ -61,17 +68,20 @@
 	<config-description uri="thing-type:rotel:serialandipandprotocol">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
 			<label>Address</label>
-			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP)</description>
+			<description>Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device
+				(serial over IP)</description>
 		</parameter>
 		<parameter name="port" type="integer" required="false">
 			<label>Port</label>
-			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port 9590</description>
+			<description>Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port
+				9590</description>
 			<default>9590</default>
 		</parameter>
 		<parameter name="protocol" type="text" required="false">
@@ -90,6 +100,7 @@
 	<config-description uri="thing-type:rotel:serialandprotocol">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>
@@ -118,6 +129,7 @@
 	<config-description uri="thing-type:rotel:serial2">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>
@@ -155,6 +167,7 @@
 	<config-description uri="thing-type:rotel:serial3">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>
@@ -204,6 +217,7 @@
 	<config-description uri="thing-type:rotel:serial4">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>
@@ -257,6 +271,7 @@
 	<config-description uri="thing-type:rotel:serial5">
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Serial port to use for connecting to the Rotel device</description>
 		</parameter>

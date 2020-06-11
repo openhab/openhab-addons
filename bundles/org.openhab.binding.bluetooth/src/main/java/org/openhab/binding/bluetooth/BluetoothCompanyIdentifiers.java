@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -850,7 +850,7 @@ public class BluetoothCompanyIdentifiers {
         CIC.put(817, "3flares Technologies Inc.");
         CIC.put(818, "Electrocompaniet A.S.");
         CIC.put(819, "Mul-T-Lock");
-        CIC.put(820, "Corentium AS");
+        CIC.put(820, "Corentium/Airthings AS");
         CIC.put(821, "Enlighted Inc");
         CIC.put(822, "GISTIC");
         CIC.put(823, "AJP2 Holdings, LLC");

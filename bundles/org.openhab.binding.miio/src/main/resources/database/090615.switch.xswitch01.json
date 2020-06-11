@@ -1,0 +1,39 @@
+{
+	"deviceMapping": {
+		"id": [
+			"090615.switch.xswitch01"
+		],
+		"propertyMethod": "get_prop",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "switch1",
+				"friendlyName": "Switch 1",
+				"channel": "switch1state",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "SetSwitch1",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "switchname1",
+				"friendlyName": "Switch Name 1",
+				"channel": "switch1name",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "SetSwtichname1",
+						"parameterType": "STRING"
+					}
+				]
+			}
+		]
+	}
+}

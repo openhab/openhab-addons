@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -89,6 +89,8 @@ public class SonyAudioBindingConstants {
     public static final String CHANNEL_RADIO_FREQ = "radio#broadcastFreq";
     public static final String CHANNEL_RADIO_STATION = "radio#broadcastStation";
     public static final String CHANNEL_RADIO_SEEK_STATION = "radio#broadcastSeekStation";
+
+    public static final String CHANNEL_NIGHTMODE = "nightMode";
 
     // Used for Discovery service
     public static final String MANUFACTURER = "SONY";

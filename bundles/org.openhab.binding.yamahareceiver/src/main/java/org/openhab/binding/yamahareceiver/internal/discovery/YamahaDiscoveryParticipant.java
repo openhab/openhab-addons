@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(YamahaDiscoveryParticipant.class);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_THING_TYPE);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {

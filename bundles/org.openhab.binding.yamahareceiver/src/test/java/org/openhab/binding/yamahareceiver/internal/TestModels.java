@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,5 +22,4 @@ public class TestModels {
     public static final String RX_S601D = "RX-S601D";
     public static final String RX_V3900 = "RX-V3900";
     public static final String HTR_4069 = "HTR-4069";
-
 }

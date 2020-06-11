@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,8 @@ import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusUnexpectedResponseFunctionCodeException;
+import org.openhab.io.transport.modbus.ModbusUnexpectedResponseSizeException;
 import org.openhab.io.transport.modbus.ModbusUnexpectedTransactionIdException;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
@@ -102,35 +104,77 @@ public class ModbusManagerImpl implements ModbusManager {
          * @param timer aggregate stop watch for performance profiling
          * @param task task to execute
          * @param connection connection to use
-         * @throws Exception on IO errors, slave exception responses, and when transaction IDs of the request and
+         *
+         * @throws IIOException on generic IO errors
+         * @throws ModbusException on Modbus protocol errors (e.g. ModbusIOException on I/O, ModbusSlaveException on
+         *             slave exception responses)
+         * @throws ModbusUnexpectedTransactionIdException when transaction IDs of the request and
          *             response do not match
+         * @throws ModbusUnexpectedResponseFunctionCodeException when response function code does not match the request
+         *             (ill-behaving slave)
+         * @throws ModbusUnexpectedResponseSizeException when data length of the response and request do not match
          */
         public void accept(AggregateStopWatch timer, T task, ModbusSlaveConnection connection)
-                throws ModbusException, IIOException, ModbusUnexpectedTransactionIdException;
-
+                throws ModbusException, IIOException, ModbusUnexpectedTransactionIdException,
+                ModbusUnexpectedResponseFunctionCodeException, ModbusUnexpectedResponseSizeException;
     }
 
     /**
      * Check that transaction id of the response and request match
      *
-     * @param response
-     * @param libRequest
-     * @param task
-     * @param operationId
-     * @throws ModbusUnexpectedTransactionIdException
+     * @param response response from the slave corresponding to request
+     * @param libRequest modbus request
+     * @param operationId operation id for logging
+     * @throws ModbusUnexpectedTransactionIdException when transaction IDs of the request and
+     *             response do not match
      */
-    private <R> void checkTransactionId(ModbusResponse response, ModbusRequest libRequest,
-            TaskWithEndpoint<R, ? extends ModbusCallback> task, String operationId)
+    private <R> void checkTransactionId(ModbusResponse response, ModbusRequest libRequest, String operationId)
             throws ModbusUnexpectedTransactionIdException {
         // Compare request and response transaction ID. NOTE: ModbusTransaction.getTransactionID() is static and
         // not safe to use
         if ((response.getTransactionID() != libRequest.getTransactionID()) && !response.isHeadless()) {
-            logger.warn(
-                    "Transaction id of the response ({}) does not match request ({}) {}. Endpoint {}. Ignoring response. [operation ID {}]",
-                    response.getTransactionID(), libRequest.getTransactionID(), task.getRequest(), task.getEndpoint(),
-                    operationId);
             throw new ModbusUnexpectedTransactionIdException(libRequest.getTransactionID(),
                     response.getTransactionID());
+        }
+    }
+
+    /**
+     * Check that function code of the response and request match
+     *
+     * @param response response from the slave corresponding to request
+     * @param libRequest modbus request
+     * @param operationId operation id for logging
+     * @throws ModbusUnexpectedResponseFunctionCodeException when response function code does not match the request
+     *             (ill-behaving slave)
+     */
+    private <R> void checkFunctionCode(ModbusResponse response, ModbusRequest libRequest, String operationId)
+            throws ModbusUnexpectedResponseFunctionCodeException {
+        if ((response.getFunctionCode() != libRequest.getFunctionCode())) {
+            throw new ModbusUnexpectedResponseFunctionCodeException(libRequest.getTransactionID(),
+                    response.getTransactionID());
+        }
+    }
+
+    /**
+     * Check that number of bits/registers/discrete inputs is not less than what was requested.
+     *
+     * According to modbus protocol, we should get always get always equal amount of registers data back as response.
+     * With coils and discrete inputs, we can get more since responses are in 8 bit chunks.
+     *
+     * However, in no case we expect less items in response.
+     *
+     * This is to identify clearly invalid responses which might cause problems downstream when using the data.
+     *
+     * @param response response response from the slave corresponding to request
+     * @param request modbus request
+     * @param operationId operation id for logging
+     * @throws ModbusUnexpectedResponseSizeException when data length of the response and request do not match
+     */
+    private <R> void checkResponseSize(ModbusResponse response, ModbusReadRequestBlueprint request, String operationId)
+            throws ModbusUnexpectedResponseSizeException {
+        final int responseCount = ModbusLibraryWrapper.getNumberOfItemsInResponse(response, request);
+        if (responseCount < request.getDataLength()) {
+            throw new ModbusUnexpectedResponseSizeException(request.getDataLength(), responseCount);
         }
     }
 
@@ -143,7 +187,8 @@ public class ModbusManagerImpl implements ModbusManager {
     private class PollOperation implements ModbusOperation<PollTask> {
         @Override
         public void accept(AggregateStopWatch timer, PollTask task, ModbusSlaveConnection connection)
-                throws ModbusException, ModbusUnexpectedTransactionIdException {
+                throws ModbusException, ModbusUnexpectedTransactionIdException,
+                ModbusUnexpectedResponseFunctionCodeException, ModbusUnexpectedResponseSizeException {
             ModbusSlaveEndpoint endpoint = task.getEndpoint();
             ModbusReadRequestBlueprint request = task.getRequest();
             ModbusReadCallback callback = task.getCallback();
@@ -161,7 +206,9 @@ public class ModbusManagerImpl implements ModbusManager {
             ModbusResponse response = transaction.getResponse();
             logger.trace("Response for read request (FC={}, transaction ID={}): {} [operation ID {}]",
                     response.getFunctionCode(), response.getTransactionID(), response.getHexMessage(), operationId);
-            checkTransactionId(response, libRequest, task, operationId);
+            checkTransactionId(response, libRequest, operationId);
+            checkFunctionCode(response, libRequest, operationId);
+            checkResponseSize(response, request, operationId);
             if (callback != null) {
                 timer.callback.timeRunnable(
                         () -> ModbusLibraryWrapper.invokeCallbackWithResponse(request, callback, response));
@@ -178,7 +225,8 @@ public class ModbusManagerImpl implements ModbusManager {
     private class WriteOperation implements ModbusOperation<WriteTask> {
         @Override
         public void accept(AggregateStopWatch timer, WriteTask task, ModbusSlaveConnection connection)
-                throws ModbusException, ModbusUnexpectedTransactionIdException {
+                throws ModbusException, ModbusUnexpectedTransactionIdException,
+                ModbusUnexpectedResponseFunctionCodeException {
             ModbusSlaveEndpoint endpoint = task.getEndpoint();
             ModbusWriteRequestBlueprint request = task.getRequest();
             ModbusWriteCallback callback = task.getCallback();
@@ -197,8 +245,8 @@ public class ModbusManagerImpl implements ModbusManager {
             ModbusResponse response = transaction.getResponse();
             logger.trace("Response for write request (FC={}, transaction ID={}): {} [operation ID {}]",
                     response.getFunctionCode(), response.getTransactionID(), response.getHexMessage(), operationId);
-
-            checkTransactionId(response, libRequest, task, operationId);
+            checkTransactionId(response, libRequest, operationId);
+            checkFunctionCode(response, libRequest, operationId);
             if (callback != null) {
                 timer.callback.timeRunnable(
                         () -> invokeCallbackWithResponse(request, callback, new ModbusResponseImpl(response)));
@@ -225,14 +273,11 @@ public class ModbusManagerImpl implements ModbusManager {
      * here https://community.openhab.org/t/connection-pooling-in-modbus-binding/5246/111?u=ssalonen
      */
     public static final long DEFAULT_SERIAL_INTER_TRANSACTION_DELAY_MILLIS = 35;
+
     /**
      * Thread naming for modbus read & write requests. Also used by the monitor thread
      */
     private static final String MODBUS_POLLER_THREAD_POOL_NAME = "modbusManagerPollerThreadPool";
-    /**
-     * Thread naming for executing callbacks
-     */
-    private static final String MODBUS_POLLER_CALLBACK_THREAD_POOL_NAME = "modbusManagerCallbackThreadPool";
 
     /**
      * Log message with WARN level if the task queues exceed this limit.
@@ -318,10 +363,10 @@ public class ModbusManagerImpl implements ModbusManager {
             @Override
             public void onSwallowException(@Nullable Exception e) {
                 LoggerFactory.getLogger(ModbusManagerImpl.class).error(
-                        "Connection pool swallowed unexpected exception: {}",
-                        Optional.ofNullable(e).map(ex -> ex.getMessage()).orElse("<null>"));
+                        "Connection pool swallowed unexpected exception:{} {}",
+                        Optional.ofNullable(e).map(ex -> ex.getClass().getSimpleName()).orElse(""),
+                        Optional.ofNullable(e).map(ex -> ex.getMessage()).orElse("<null>"), e);
             }
-
         });
         connectionPool = genericKeyedObjectPool;
         this.connectionFactory = connectionFactory;
@@ -622,16 +667,17 @@ public class ModbusManagerImpl implements ModbusManager {
                                 tryIndex, request, e.getClass().getName(), e.getMessage(), operationId);
                     }
                     continue;
-                } catch (ModbusUnexpectedTransactionIdException e) {
+                } catch (ModbusUnexpectedTransactionIdException | ModbusUnexpectedResponseFunctionCodeException
+                        | ModbusUnexpectedResponseSizeException e) {
                     lastError.set(e);
                     // transaction error details already logged
                     if (willRetry) {
                         logger.warn(
-                                "Try {} out of {} failed when executing request ({}). Will try again soon. The response transaction ID did not match the request. Reseting the connection. Error details: {} {} [operation ID {}]",
+                                "Try {} out of {} failed when executing request ({}). Will try again soon. The response did not match the request. Reseting the connection. Error details: {} {} [operation ID {}]",
                                 tryIndex, maxTries, request, e.getClass().getName(), e.getMessage(), operationId);
                     } else {
                         logger.error(
-                                "Last try {} failed when executing request ({}). Aborting. The response transaction ID did not match the request. Reseting the connection. Error details: {} {} [operation ID {}]",
+                                "Last try {} failed when executing request ({}). Aborting. The response did not match the request. Reseting the connection. Error details: {} {} [operation ID {}]",
                                 tryIndex, request, e.getClass().getName(), e.getMessage(), operationId);
                     }
                     // Invalidate connection, and empty (so that new connection is acquired before new retry)
@@ -720,7 +766,16 @@ public class ModbusManagerImpl implements ModbusManager {
                 long started = System.currentTimeMillis();
                 logger.debug("Executing scheduled ({}ms) poll task {}. Current millis: {}", pollPeriodMillis, task,
                         started);
-                executeOperation(task, false, pollOperation);
+                try {
+                    executeOperation(task, false, pollOperation);
+                } catch (Exception e) {
+                    // We want to catch all unexpected exceptions since all unhandled exceptions make
+                    // ScheduledExecutorService halt the polling. It is better to print out the exception, and try again
+                    // (on next poll cycle)
+                    logger.warn(
+                            "Execution of scheduled ({}ms) poll task {} failed unexpectedly. Ignoring exception, polling again according to poll interval.",
+                            pollPeriodMillis, task, e);
+                }
                 long finished = System.currentTimeMillis();
                 logger.debug(
                         "Execution of scheduled ({}ms) poll task {} finished at {}. Was started at millis: {} (=duration of {} millis)",
@@ -902,5 +957,4 @@ public class ModbusManagerImpl implements ModbusManager {
             pollMonitorLogger.trace("</POLL MONITOR>");
         }
     }
-
 }

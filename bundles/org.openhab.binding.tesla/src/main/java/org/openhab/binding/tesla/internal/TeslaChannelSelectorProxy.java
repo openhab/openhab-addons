@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -355,18 +355,6 @@ public class TeslaChannelSelectorProxy {
         FAST_CHARGER_TYPE("fast_charger_type", "fastchargertype", StringType.class, true),
         FAST_CHARGER_BRAND("fast_charger_brand", "fastchargerbrand", StringType.class, true),
         FLASH(null, "flashlights", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
-        FORCE_REFRESH(null, "forcerefresh", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 if (s.equals("true") || s.equals("1")) {
@@ -1099,5 +1087,4 @@ public class TeslaChannelSelectorProxy {
     public State getState(String s, TeslaChannelSelector selector, Map<String, String> properties) {
         return selector.getState(s, this, properties);
     }
-
 }

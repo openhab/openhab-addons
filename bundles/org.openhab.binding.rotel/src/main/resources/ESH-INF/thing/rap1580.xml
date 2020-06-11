@@ -10,19 +10,19 @@
 		<description>Connection to the Rotel RAP-1580 surround amplified processor</description>
 
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="source" typeId="source" />
-			<channel id="dsp" typeId="dsp" />
-			<channel id="volume" typeId="system.volume" />
-			<channel id="mute" typeId="system.mute" />
-			<channel id="brightness" typeId="brightness" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="dsp" typeId="dsp"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
 		<properties>
 			<property name="protocol">ASCII_V1</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:rotel:serialandip2" />
+		<config-description-ref uri="thing-type:rotel:serialandip2"/>
 	</thing-type>
 
 </thing:thing-descriptions>

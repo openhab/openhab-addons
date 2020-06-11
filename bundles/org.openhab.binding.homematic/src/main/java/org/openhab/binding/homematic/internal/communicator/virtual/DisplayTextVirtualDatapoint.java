@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
     private static final String BEEPCOUNT_END = "0x1D";
     private static final String BEEPINTERVAL_END = "0x16";
 
-    private static Map<String, String> replaceMap = new HashMap<String, String>();
+    private static Map<String, String> replaceMap = new HashMap<>();
 
     // replace special chars while encoding
     static {
@@ -321,7 +321,7 @@ public class DisplayTextVirtualDatapoint extends AbstractVirtualDatapointHandler
             HmChannel channel = dp.getChannel();
             boolean isEp = isEpDisplay(channel.getDevice());
 
-            List<String> message = new ArrayList<String>();
+            List<String> message = new ArrayList<>();
             message.add(START);
             if (isEp) {
                 message.add(LF);

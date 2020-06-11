@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,6 @@ public class Tx22SensorDefinition extends SensorDefinition<Tx22Reading> {
 
     @Override
     public JeeLinkSensorHandler<Tx22Reading> createHandler(Thing thing) {
-        return new Tx22SensorHandler(thing);
+        return new Tx22SensorHandler(thing, type);
     }
 }

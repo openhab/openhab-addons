@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,9 +64,7 @@ public class LiveDataUpdateMeterless extends AbstractCommandCallback implements 
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
             }
-
         } else {
-
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
@@ -75,5 +73,4 @@ public class LiveDataUpdateMeterless extends AbstractCommandCallback implements 
             }
         }
     }
-
 }

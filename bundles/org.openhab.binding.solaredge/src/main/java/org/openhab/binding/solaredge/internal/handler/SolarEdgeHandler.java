@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,9 +35,9 @@ public interface SolarEdgeHandler extends ThingHandler {
      * Called from {@link WebInterface#authenticate()} to update
      * the thing status because updateStatus is protected.
      *
-     * @param status       Bridge status
+     * @param status Bridge status
      * @param statusDetail Bridge status detail
-     * @param description  Bridge status description
+     * @param description Bridge status description
      */
     void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, String description);
 

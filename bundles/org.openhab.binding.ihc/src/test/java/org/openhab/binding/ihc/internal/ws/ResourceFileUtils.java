@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @author Pauli Anttila - Initial contribution
  */
 public class ResourceFileUtils {
-    static public String getFileContent(String resourceFile) {
+    public static String getFileContent(String resourceFile) {
         try (InputStream inputStream = ResourceFileUtils.class.getClassLoader().getResourceAsStream(resourceFile);
                 Reader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {

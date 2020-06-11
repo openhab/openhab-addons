@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic.GattCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
@@ -53,7 +54,7 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     private ScheduledFuture<?> connectionJob;
 
     // internal flag for the service resolution status
-    protected volatile Boolean resolved = false;
+    protected volatile boolean resolved = false;
 
     protected final Set<BluetoothCharacteristic> deviceCharacteristics = new CopyOnWriteArraySet<>();
 
@@ -136,11 +137,9 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             case DISCOVERED:
                 // The device is now known on the Bluetooth network, so we can do something...
                 scheduler.submit(() -> {
-                    synchronized (connectionJob) {
-                        if (device.getConnectionState() != ConnectionState.CONNECTED) {
-                            if (!device.connect()) {
-                                logger.debug("Error connecting to device after discovery.");
-                            }
+                    if (device.getConnectionState() != ConnectionState.CONNECTED) {
+                        if (!device.connect()) {
+                            logger.debug("Error connecting to device after discovery.");
                         }
                     }
                 });
@@ -148,12 +147,8 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             case CONNECTED:
                 updateStatus(ThingStatus.ONLINE);
                 scheduler.submit(() -> {
-                    synchronized (resolved) {
-                        if (!resolved) {
-                            if (!device.discoverServices()) {
-                                logger.debug("Error while discovering services");
-                            }
-                        }
+                    if (!resolved && !device.discoverServices()) {
+                        logger.debug("Error while discovering services");
                     }
                 });
                 break;
@@ -170,17 +165,11 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
         if (!resolved) {
             resolved = true;
             logger.debug("Service discovery completed for '{}'", address);
-            for (BluetoothService service : device.getServices()) {
-                for (BluetoothCharacteristic characteristic : service.getCharacteristics()) {
-                    if (characteristic.getGattCharacteristic() != null) {
-                        if (characteristic.getGattCharacteristic().equals(GattCharacteristic.BATTERY_LEVEL)) {
-                            activateChannel(characteristic,
-                                    DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID());
-                            continue;
-                        }
-                        logger.debug("Added GATT characteristic '{}'", characteristic.getGattCharacteristic().name());
-                    }
-                }
+            BluetoothCharacteristic characteristic = device
+                    .getCharacteristic(GattCharacteristic.BATTERY_LEVEL.getUUID());
+            if (characteristic != null) {
+                activateChannel(characteristic, DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_BATTERY_LEVEL.getUID());
+                logger.debug("Added GATT characteristic '{}'", characteristic.getGattCharacteristic().name());
             }
         }
     }
@@ -191,26 +180,41 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
             if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
                 updateBatteryLevel(characteristic);
             } else {
-                logger.debug("Characteristic {} from {} has been read - value {}", characteristic.getUuid(), address,
-                        characteristic.getValue());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Characteristic {} from {} has been read - value {}", characteristic.getUuid(),
+                            address, HexUtils.bytesToHex(characteristic.getByteValue()));
+                }
             }
         } else {
             logger.debug("Characteristic {} from {} has been read - ERROR", characteristic.getUuid(), address);
-            return;
         }
     }
 
     @Override
     public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
             BluetoothCompletionStatus status) {
-        logger.debug("Wrote {} to characteristic {} of device {}: {}", characteristic.getByteValue(),
-                characteristic.getUuid(), address, status);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Wrote {} to characteristic {} of device {}: {}",
+                    HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address, status);
+        }
     }
 
     @Override
     public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Recieved update {} to characteristic {} of device {}",
+                    HexUtils.bytesToHex(characteristic.getByteValue()), characteristic.getUuid(), address);
+        }
         if (GattCharacteristic.BATTERY_LEVEL.equals(characteristic.getGattCharacteristic())) {
             updateBatteryLevel(characteristic);
+        }
+    }
+
+    @Override
+    public void onDescriptorUpdate(BluetoothDescriptor descriptor) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Received update {} to descriptor {} of device {}", HexUtils.bytesToHex(descriptor.getValue()),
+                    descriptor.getUuid(), address);
         }
     }
 
@@ -250,5 +254,4 @@ public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
     protected void activateChannel(@Nullable BluetoothCharacteristic characteristic, ChannelTypeUID channelTypeUID) {
         activateChannel(characteristic, channelTypeUID, null);
     }
-
 }

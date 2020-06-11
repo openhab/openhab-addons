@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,5 +45,4 @@ public class HarmonyHubBindingConstants {
     public static final String HUB_PROPERTY_ID = "id";
     public static final String HUB_PROPERTY_HOST = "host";
     public static final String HUB_PROPERTY_NAME = "name";
-
 }

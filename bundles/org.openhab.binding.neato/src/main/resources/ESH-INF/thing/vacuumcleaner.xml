@@ -6,7 +6,7 @@
 
 	<bridge-type id="neatoaccount">
 		<label>Neato Account</label>
-		<description>Access to Neato Account.  Used to discover robots tied to account.</description>
+		<description>Access to Neato Account. Used to discover robots tied to account.</description>
 
 		<config-description>
 			<parameter name="email" type="text">
@@ -27,7 +27,7 @@
 
 	<thing-type id="vacuumcleaner">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="neatoaccount" />
+			<bridge-type-ref id="neatoaccount"/>
 		</supported-bridge-type-refs>
 
 		<label>Neato Vacuum Cleaner</label>
@@ -35,19 +35,19 @@
 
 		<channels>
 			<channel id="battery-level" typeId="system.battery-level"/>
-			<channel id="state" typeId="state" />
-			<channel id="action" typeId="action" />
-			<channel id="dock-has-been-seen" typeId="dock-has-been-seen" />
-			<channel id="is-docked" typeId="is-docked" />
-			<channel id="is-scheduled" typeId="is-scheduled" />
-			<channel id="is-charging" typeId="is-charging" />
-			<channel id="error" typeId="error" />
-			<channel id="command" typeId="command" />
-			<channel id="cleaning-category" typeId="cleaning-category" />
-			<channel id="cleaning-mode" typeId="cleaning-mode" />
-			<channel id="cleaning-modifier" typeId="cleaning-modifier" />
-			<channel id="cleaning-spotwidth" typeId="cleaning-spotwidth" />
-			<channel id="cleaning-spotheight" typeId="cleaning-spotheight" />
+			<channel id="state" typeId="state"/>
+			<channel id="action" typeId="action"/>
+			<channel id="dock-has-been-seen" typeId="dock-has-been-seen"/>
+			<channel id="is-docked" typeId="is-docked"/>
+			<channel id="is-scheduled" typeId="is-scheduled"/>
+			<channel id="is-charging" typeId="is-charging"/>
+			<channel id="error" typeId="error"/>
+			<channel id="command" typeId="command"/>
+			<channel id="cleaning-category" typeId="cleaning-category"/>
+			<channel id="cleaning-mode" typeId="cleaning-mode"/>
+			<channel id="cleaning-modifier" typeId="cleaning-modifier"/>
+			<channel id="cleaning-spotwidth" typeId="cleaning-spotwidth"/>
+			<channel id="cleaning-spotheight" typeId="cleaning-spotheight"/>
 		</channels>
 
 		<config-description>
@@ -114,35 +114,35 @@
 		<item-type>Switch</item-type>
 		<label>Dock Has Been Seen</label>
 		<description>True or False value if the dock has been seen</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="is-docked">
 		<item-type>Switch</item-type>
 		<label>Is Docked</label>
 		<description>Is the vacuum cleaner in the docking station?</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="is-scheduled">
 		<item-type>Switch</item-type>
 		<label>Is Scheduled Enabled</label>
 		<description>True or False value if the vacuum cleaner is scheduled for cleaning.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="is-charging">
 		<item-type>Switch</item-type>
 		<label>Is Charging</label>
 		<description>Is the vacuum cleaner currently charging?</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="error">
 		<item-type>String</item-type>
 		<label>Error</label>
 		<description>Last error message in system.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="command">
@@ -203,13 +203,13 @@
 		<item-type>Number</item-type>
 		<label>Spot Width</label>
 		<description>Current or Last cleaning, width of spot. 100-400cm.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="cleaning-spotheight">
 		<item-type>Number</item-type>
 		<label>Spot Height</label>
 		<description>Current or Last cleaning, height of spot. 100-400cm.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 </thing:thing-descriptions>

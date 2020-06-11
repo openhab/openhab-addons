@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,12 +20,12 @@ import java.util.List;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class Attributes {
+public class Attributes extends VocAnswer {
     public String vehicleType;
     public String registrationNumber;
     public Boolean carLocatorSupported;
     public Boolean honkAndBlinkSupported;
-    public List<String> honkAndBlinkVersionsSupported = null;
+    public List<String> honkAndBlinkVersionsSupported;
     public Boolean remoteHeaterSupported;
     public Boolean unlockSupported;
     public Boolean lockSupported;
@@ -75,5 +75,4 @@ public class Attributes {
      * private @Nullable List<String> sendPOIToVehicleVersionsSupported = null;
      * private @Nullable List<String> climatizationCalendarVersionsSupported = null;
      */
-
 }

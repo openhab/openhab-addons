@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -341,7 +341,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
 
     private StateDescription getStageDescription(String channelID, Locale locale) {
         if (channelID.contains(STAGE.toLowerCase())) {
-            List<StateOption> stateOptions = new ArrayList<StateOption>();
+            List<StateOption> stateOptions = new ArrayList<>();
             if (channelID.contains(LIGHT)) {
                 stateOptions.add(new StateOption(DigitalSTROMBindingConstants.OPTION_COMBINED_BOTH_OFF, getText(
                         getStageChannelOption(LIGHT, DigitalSTROMBindingConstants.OPTION_COMBINED_BOTH_OFF), locale)));

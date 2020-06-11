@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,5 +40,4 @@ public class UInt64Field extends Field<Long> {
     protected ByteBuffer bytesInternal(Long value) {
         return ByteBuffer.allocate(8).putLong(value);
     }
-
 }

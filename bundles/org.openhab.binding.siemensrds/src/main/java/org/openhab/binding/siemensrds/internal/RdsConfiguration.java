@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RdsConfiguration} class contains the thing configuration
  * parameters for RDS thermostats
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-
+@NonNullByDefault
 public class RdsConfiguration {
 
-        public String plantId;
-
+    public String plantId = "";
 }

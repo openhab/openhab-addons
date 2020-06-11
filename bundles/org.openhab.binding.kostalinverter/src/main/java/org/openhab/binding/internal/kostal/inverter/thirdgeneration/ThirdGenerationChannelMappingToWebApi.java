@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,10 +28,10 @@ class ThirdGenerationChannelMappingToWebApi {
     /**
      * Constructor of {@link ThirdGenerationChannelMappingToWebApi}
      *
-     * @param channelUID    The channel UUID
-     * @param moduleId      module id (as defined by the web api)
+     * @param channelUID The channel UUID
+     * @param moduleId module id (as defined by the web api)
      * @param processdataId process data id (as defined by the web api)
-     * @param dataType      data type of this channel
+     * @param dataType data type of this channel
      */
     ThirdGenerationChannelMappingToWebApi(String channelUID, String moduleId, String processdataId,
             ThirdGenerationChannelDatatypes dataType) {

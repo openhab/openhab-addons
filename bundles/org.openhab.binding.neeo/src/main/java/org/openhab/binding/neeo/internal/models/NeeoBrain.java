@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,5 +136,4 @@ public class NeeoBrain {
         return "NeeoBrain [name=" + name + ", version=" + version + ", label=" + label + ", configured=" + configured
                 + ", key=" + key + ", airkey=" + airkey + ", lastchange=" + lastchange + ", rooms=" + rooms + "]";
     }
-
 }

@@ -68,7 +68,7 @@
 		<label>Window Reduction Active</label>
 		<description>Thermostat temperature reduced, if window is open.</description>
 		<category>Temperature</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- TemperatureSensor -->
@@ -85,7 +85,7 @@
 		<label>Frost Warning</label>
 		<description>Warns, if temperature drop below a threshold (configured in innogy app)</description>
 		<category>Temperature</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- HumiditySensor -->
@@ -102,7 +102,7 @@
 		<label>Mold Warning</label>
 		<description>Active, if humidity is over a threshold (configured in innogy app)</description>
 		<category>Humidity</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- WindowDoorSensor Channel -->

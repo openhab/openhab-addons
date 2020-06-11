@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,5 +21,4 @@ public interface PowerStateValues {
     public static final String ON_VALUE = "0";
     public static final String OFF_VALUE = "1";
     public static final String NETWORK_STANDBY_VALUE = "2";
-
 }

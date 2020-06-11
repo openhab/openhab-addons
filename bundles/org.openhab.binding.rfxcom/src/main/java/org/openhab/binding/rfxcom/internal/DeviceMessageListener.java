@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ public interface DeviceMessageListener {
     /**
      * This method is called whenever the message is received from the bridge.
      *
-     * @param bridge  The RFXCom bridge where message is received.
+     * @param bridge The RFXCom bridge where message is received.
      * @param message The message which received.
      */
     void onDeviceMessageReceived(ThingUID bridge, RFXComDeviceMessage message) throws RFXComException;

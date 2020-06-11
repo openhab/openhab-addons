@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This command is used for retrieving the currently selected input of the device as described in
@@ -27,17 +26,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InputQueryCommand extends AbstractCommand<InputQueryRequest, InputQueryResponse> {
 
-  public InputQueryCommand(PJLinkDevice pjLinkDevice) {
-    super(pjLinkDevice);
-  }
+    public InputQueryCommand(PJLinkDevice pjLinkDevice) {
+        super(pjLinkDevice);
+    }
 
-  @Override
-  public InputQueryRequest createRequest() {
-    return new InputQueryRequest();
-  }
+    @Override
+    public InputQueryRequest createRequest() {
+        return new InputQueryRequest();
+    }
 
-  @Override
-  public InputQueryResponse parseResponse(String response) throws ResponseException {
-    return new InputQueryResponse(response);
-  }
+    @Override
+    public InputQueryResponse parseResponse(String response) throws ResponseException {
+        return new InputQueryResponse(response);
+    }
 }

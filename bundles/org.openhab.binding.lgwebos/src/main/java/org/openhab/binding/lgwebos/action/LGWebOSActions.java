@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVMouseSocket.ButtonType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.State;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.AppInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
@@ -133,7 +134,6 @@ public class LGWebOSActions implements ThingActions {
             return Collections.emptyList();
         }
         return appInfos;
-
     }
 
     public List<Application> getApplications() {
@@ -152,7 +152,6 @@ public class LGWebOSActions implements ThingActions {
             logger.warn("Device with ThingID {} does not support any app with id: {}.",
                     getLGWebOSHandler().getThing().getUID(), appId);
         }
-
     }
 
     @RuleAction(label = "@text/actionLaunchApplicationWithParamsLabel", description = "@text/actionLaunchApplicationWithParamsDesc")
@@ -237,11 +236,17 @@ public class LGWebOSActions implements ThingActions {
         getConnectedSocket().ifPresent(control -> control.channelDown(createResponseListener()));
     }
 
+    @RuleAction(label = "@text/actionSendRCButtonLabel", description = "@text/actionSendRCButtonDesc")
+    public void sendRCButton(
+            @ActionInput(name = "text", label = "@text/actionSendRCButtonInputTextLabel", description = "@text/actionSendRCButtonInputTextDesc") String rcButton) {
+        getConnectedSocket().ifPresent(control -> control.executeMouse(s -> s.button(rcButton)));
+    }
+
     private Optional<LGWebOSTVSocket> getConnectedSocket() {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
         final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
 
-        if (!socket.isConnected()) {
+        if (socket.getState() != State.REGISTERED) {
             logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
             return Optional.empty();
         }
@@ -356,6 +361,14 @@ public class LGWebOSActions implements ThingActions {
     public static void decreaseChannel(@Nullable ThingActions actions) {
         if (actions instanceof LGWebOSActions) {
             ((LGWebOSActions) actions).decreaseChannel();
+        } else {
+            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+        }
+    }
+
+    public static void sendRCButton(@Nullable ThingActions actions, String rcButton) {
+        if (actions instanceof LGWebOSActions) {
+            ((LGWebOSActions) actions).sendRCButton(rcButton);
         } else {
             throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
         }

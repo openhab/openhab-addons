@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,6 @@ public class ZoneBControlXML extends ZoneControlXML {
 
     public ZoneBControlXML(AbstractConnection con, YamahaZoneConfig zoneSettings, ZoneControlStateListener observer,
             DeviceInformationState deviceInformationState, Supplier<InputConverter> inputConverterSupplier) {
-
         // Commands will need to be send to Main_Zone
         super(con, Zone.Main_Zone, zoneSettings, observer, deviceInformationState, inputConverterSupplier);
 

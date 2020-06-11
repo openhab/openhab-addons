@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="dmx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- Dimmer -->
 	<thing-type id="chaser">
 		<supported-bridge-type-refs>
@@ -10,8 +12,8 @@
 		<label>DMX Chaser</label>
 		<description>A single/multi-channel chaser</description>
 		<channels>
-			<channel id="switch" typeId="switch" />
-			<channel id="control" typeId="control" />
+			<channel id="switch" typeId="switch"/>
+			<channel id="control" typeId="control"/>
 		</channels>
 		<config-description>
 			<parameter name="dmxid" type="text">

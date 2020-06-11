@@ -60,7 +60,7 @@ Referenced scale file `uvindex.scale` in the `transform` folder:
 ]3..6]=2
 ]6..8]=3
 ]8..10]=4
-[10..100]=5
+]10..100]=5
 ```
 
 Each value the item receives, will be categorized to one of the five given ranges.

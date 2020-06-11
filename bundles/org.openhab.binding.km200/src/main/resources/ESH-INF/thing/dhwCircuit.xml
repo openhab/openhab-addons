@@ -6,7 +6,7 @@
 
 	<thing-type id="dhwCircuit" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="kmdevice" />
+			<bridge-type-ref id="kmdevice"/>
 		</supported-bridge-type-refs>
 		<label>Hot Water Circuit</label>
 		<description>This thing is representing a hot water circuit.</description>

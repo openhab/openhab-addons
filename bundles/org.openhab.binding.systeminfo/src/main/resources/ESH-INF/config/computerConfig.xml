@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<!-- The thing updates at intervals the High and Medium priority channels, defined in channel configuration file. This parameters 
+	<!-- The thing updates at intervals the High and Medium priority channels, defined in channel configuration file. This parameters
 		specify how often (time in seconds) these channels should be updated. -->
 
 	<config-description uri="thing-type:systeminfo:computerConfig">
@@ -20,7 +21,7 @@
 			<default>60</default>
 		</parameter>
 
-		<!-- Parameter "interval_low" is not needed, because channels with priority set to low are not updated periodically. They 
+		<!-- Parameter "interval_low" is not needed, because channels with priority set to low are not updated periodically. They
 			are updated only at initializing or at REFRESH command. -->
 	</config-description>
 </config-description:config-descriptions>

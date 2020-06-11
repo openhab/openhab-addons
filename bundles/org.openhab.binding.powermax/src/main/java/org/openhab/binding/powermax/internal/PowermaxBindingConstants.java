@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -25,6 +26,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxBindingConstants {
 
     public static final String BINDING_ID = "powermax";
@@ -63,5 +65,4 @@ public class PowermaxBindingConstants {
     public static final String EVENT_LOG = "event_log_%s";
     public static final String UPDATE_EVENT_LOGS = "update_event_logs";
     public static final String DOWNLOAD_SETUP = "download_setup";
-
 }

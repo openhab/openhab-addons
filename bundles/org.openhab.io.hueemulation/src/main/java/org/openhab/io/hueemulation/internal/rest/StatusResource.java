@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -249,7 +249,6 @@ public class StatusResource implements RegistryListener {
     @NonNullByDefault({})
     @Override
     public void localDeviceRemoved(Registry registry, LocalDevice device) {
-
     }
 
     @NonNullByDefault({})
@@ -261,5 +260,4 @@ public class StatusResource implements RegistryListener {
     public void afterShutdown() {
         selfTestUpnpFound = upnpStatus.service_not_registered;
     }
-
 }

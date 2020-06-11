@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,21 +64,21 @@ public class Radiation {
      * Returns the total radiation.
      */
     public QuantityType<Intensity> getTotal() {
-        return new QuantityType<Intensity>(total, SmartHomeUnits.IRRADIANCE);
+        return new QuantityType<>(total, SmartHomeUnits.IRRADIANCE);
     }
 
     /**
      * Returns the direct radiation.
      */
     public QuantityType<Intensity> getDirect() {
-        return new QuantityType<Intensity>(direct, SmartHomeUnits.IRRADIANCE);
+        return new QuantityType<>(direct, SmartHomeUnits.IRRADIANCE);
     }
 
     /**
      * Returns the diffuse radiation.
      */
     public QuantityType<Intensity> getDiffuse() {
-        return new QuantityType<Intensity>(diffuse, SmartHomeUnits.IRRADIANCE);
+        return new QuantityType<>(diffuse, SmartHomeUnits.IRRADIANCE);
     }
 
     @Override

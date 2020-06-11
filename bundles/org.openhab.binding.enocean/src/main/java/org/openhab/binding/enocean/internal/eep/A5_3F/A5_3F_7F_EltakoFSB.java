@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.eep.A5_3F;
+
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
 
 import java.util.function.Function;
 
@@ -49,7 +51,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         int shutTime = 0xFF;
         if (config != null) {
             shutTime = Math.min(255, config.as(EnOceanChannelRollershutterConfig.class).shutTime);
@@ -60,9 +61,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
             PercentType target = (PercentType) command;
             if (target.intValue() == PercentType.ZERO.intValue()) {
-                setData(Zero, (byte) shutTime, MoveUp, TeachInBit); // => move completely up
+                setData(ZERO, (byte) shutTime, MoveUp, TeachInBit); // => move completely up
             } else if (target.intValue() == PercentType.HUNDRED.intValue()) {
-                setData(Zero, (byte) shutTime, MoveDown, TeachInBit); // => move completely down
+                setData(ZERO, (byte) shutTime, MoveDown, TeachInBit); // => move completely down
             } else if (channelState != null) {
                 PercentType current = channelState.as(PercentType.class);
                 if (config != null && current != null) {
@@ -72,20 +73,20 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                                 (Math.abs(current.intValue() - target.intValue()) * shutTime)
                                         / PercentType.HUNDRED.intValue());
 
-                        setData(Zero, duration, direction, TeachInBit);
+                        setData(ZERO, duration, direction, TeachInBit);
                     }
                 }
             }
 
         } else if (command instanceof UpDownType) {
             if ((UpDownType) command == UpDownType.UP) {
-                setData(Zero, (byte) shutTime, MoveUp, TeachInBit); // => 0 percent
+                setData(ZERO, (byte) shutTime, MoveUp, TeachInBit); // => 0 percent
             } else if ((UpDownType) command == UpDownType.DOWN) {
-                setData(Zero, (byte) shutTime, MoveDown, TeachInBit); // => 100 percent
+                setData(ZERO, (byte) shutTime, MoveDown, TeachInBit); // => 100 percent
             }
         } else if (command instanceof StopMoveType) {
             if ((StopMoveType) command == StopMoveType.STOP) {
-                setData(Zero, (byte) 0xFF, Stop, TeachInBit);
+                setData(ZERO, (byte) 0xFF, Stop, TeachInBit);
             }
         }
     }

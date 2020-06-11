@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class SocketHandler {
     private final Logger logger = LoggerFactory.getLogger(SocketHandler.class);
 
-    private Map<Integer, SocketInfo> socketsPerPort = new HashMap<Integer, SocketInfo>();
+    private Map<Integer, SocketInfo> socketsPerPort = new HashMap<>();
     private HomematicConfig config;
 
     public SocketHandler(HomematicConfig config) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.eep.Base;
+
+import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
@@ -32,7 +34,7 @@ public abstract class _VLDMessage extends EEP {
     @Override
     protected int getDataLength() {
         if (packet != null) {
-            return packet.getPayload().length - SenderIdLength - RORGLength - StatusLength;
+            return packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
         } else {
             return bytes.length;
         }
@@ -42,5 +44,4 @@ public abstract class _VLDMessage extends EEP {
     protected boolean validateData(byte[] bytes) {
         return true;
     }
-
 }

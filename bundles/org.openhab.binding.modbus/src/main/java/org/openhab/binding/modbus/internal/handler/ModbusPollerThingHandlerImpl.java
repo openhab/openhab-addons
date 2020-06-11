@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -296,6 +296,11 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
 
     @Override
     public synchronized void initialize() {
+        if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            // If the bridge was online then first change it to offline.
+            // this ensures that children will be notified about the change
+            updateStatus(ThingStatus.OFFLINE);
+        }
         this.callbackDelegator.resetCache();
         disposed = false;
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
@@ -448,5 +453,4 @@ public class ModbusPollerThingHandlerImpl extends BaseBridgeHandler implements M
             managerRef.get().submitOneTimePoll(pollTask);
         }
     }
-
 }

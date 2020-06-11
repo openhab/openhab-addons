@@ -27,6 +27,7 @@ Once the XmlTV bridge to a file is created, you can add all known channels by se
 |-------------------------|----------|-----------------------------------------------------|---------|
 | filePath                | X        | Full path (including filename) to an Xml TV file    |         |
 | refresh                 | X        | XMLTV file reload interval in hours                 | 24h     |
+| encoding                | X        | XMLTV file encoding                                 | UTF8    |
 
 ## Thing Configuration
 

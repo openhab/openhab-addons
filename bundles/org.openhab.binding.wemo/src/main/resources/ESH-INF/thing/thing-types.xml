@@ -9,7 +9,7 @@
 		<description>This is a standard WeMo Switch</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
+			<channel id="state" typeId="state"/>
 		</channels>
 
 		<config-description>
@@ -27,18 +27,18 @@
 		<description>This is a WeMo Insight Switch with energy measurement</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="lastChangedAt" typeId="lastChangedAt" />
-			<channel id="lastOnFor" typeId="lastOnFor" />
-			<channel id="onToday" typeId="onToday" />
-			<channel id="onTotal" typeId="onTotal" />
-			<channel id="timespan" typeId="timespan" />
-			<channel id="averagePower" typeId="averagePower" />
-			<channel id="currentPower" typeId="currentPower" />
-			<channel id="energyToday" typeId="energyToday" />
-			<channel id="energyTotal" typeId="energyTotal" />
-			<channel id="standByLimit" typeId="standByLimit" />
-			<channel id="onStandBy" typeId="onStandBy" />
+			<channel id="state" typeId="state"/>
+			<channel id="lastChangedAt" typeId="lastChangedAt"/>
+			<channel id="lastOnFor" typeId="lastOnFor"/>
+			<channel id="onToday" typeId="onToday"/>
+			<channel id="onTotal" typeId="onTotal"/>
+			<channel id="timespan" typeId="timespan"/>
+			<channel id="averagePower" typeId="averagePower"/>
+			<channel id="currentPower" typeId="currentPower"/>
+			<channel id="energyToday" typeId="energyToday"/>
+			<channel id="energyTotal" typeId="energyTotal"/>
+			<channel id="standByLimit" typeId="standByLimit"/>
+			<channel id="onStandBy" typeId="onStandBy"/>
 
 		</channels>
 
@@ -56,7 +56,7 @@
 		<description>This is a WeMo LightSwitch</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
+			<channel id="state" typeId="state"/>
 		</channels>
 
 		<config-description>
@@ -73,8 +73,8 @@
 		<description>This is a WeMo MotionSensor</description>
 
 		<channels>
-			<channel id="motionDetection" typeId="motionDetection" />
-			<channel id="lastMotionDetected" typeId="lastMotionDetected" />
+			<channel id="motionDetection" typeId="motionDetection"/>
+			<channel id="lastMotionDetected" typeId="lastMotionDetected"/>
 		</channels>
 
 		<config-description>
@@ -89,15 +89,15 @@
 	<!-- Standard WeMo Bulb with E27 socket -->
 	<thing-type id="MZ100">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>WeMo LED Light</label>
 		<description>This is a standard WeMo light bulb with E27 socket </description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="brightness" typeId="brightness" />
+			<channel id="state" typeId="state"/>
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
 		<properties>
@@ -119,8 +119,8 @@
 		<description>This is a WeMo Maker</description>
 
 		<channels>
-			<channel id="relay" typeId="relay" />
-			<channel id="sensor" typeId="sensor" />
+			<channel id="relay" typeId="relay"/>
+			<channel id="sensor" typeId="sensor"/>
 		</channels>
 
 		<config-description>
@@ -137,15 +137,15 @@
 		<description>This is a WeMo enabled coffee maker</description>
 
 		<channels>
-			<channel id="state" typeId="state" />
-			<channel id="coffeeMode" typeId="coffeeMode" />
-			<channel id="modeTime" typeId="modeTime" />
-			<channel id="timeRemaining" typeId="timeRemaining" />
-			<channel id="waterLevelReached" typeId="waterLevelReached" />
-			<channel id="cleanAdvise" typeId="cleanAdvise" />
-			<channel id="filterAdvise" typeId="filterAdvise" />
-			<channel id="brewed" typeId="brewed" />
-			<channel id="lastCleaned" typeId="lastCleaned" />
+			<channel id="state" typeId="state"/>
+			<channel id="coffeeMode" typeId="coffeeMode"/>
+			<channel id="modeTime" typeId="modeTime"/>
+			<channel id="timeRemaining" typeId="timeRemaining"/>
+			<channel id="waterLevelReached" typeId="waterLevelReached"/>
+			<channel id="cleanAdvise" typeId="cleanAdvise"/>
+			<channel id="filterAdvise" typeId="filterAdvise"/>
+			<channel id="brewed" typeId="brewed"/>
+			<channel id="lastCleaned" typeId="lastCleaned"/>
 		</channels>
 
 		<config-description>
@@ -168,14 +168,14 @@
 		<description>This is a WeMo DimmerSwitch</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<channel id="faderCountDownTime" typeId="faderCountDownTime" />
-			<channel id="faderEnabled" typeId="faderEnabled" />
-			<channel id="timerStart" typeId="timerStart" />
-			<channel id="nightMode" typeId="nightMode" />
-			<channel id="startTime" typeId="startTime" />
-			<channel id="endTime" typeId="endTime" />
-			<channel id="nightModeBrightness" typeId="nightModeBrightness" />
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="faderCountDownTime" typeId="faderCountDownTime"/>
+			<channel id="faderEnabled" typeId="faderEnabled"/>
+			<channel id="timerStart" typeId="timerStart"/>
+			<channel id="nightMode" typeId="nightMode"/>
+			<channel id="startTime" typeId="startTime"/>
+			<channel id="endTime" typeId="endTime"/>
+			<channel id="nightModeBrightness" typeId="nightModeBrightness"/>
 		</channels>
 
 		<config-description>
@@ -219,28 +219,28 @@
 		<item-type>Number</item-type>
 		<label>Last Activity (s)</label>
 		<description>Duration the device has been switched on for</description>
-		<state pattern="%.1f s" />
+		<state pattern="%.1f s"/>
 	</channel-type>
 
 	<channel-type id="onToday" advanced="true">
 		<item-type>Number</item-type>
 		<label>Today's Activity (s)</label>
 		<description>How long has the device been switched on today</description>
-		<state pattern="%.1f s" />
+		<state pattern="%.1f s"/>
 	</channel-type>
 
 	<channel-type id="onTotal" advanced="true">
 		<item-type>Number</item-type>
 		<label>Total Activity (s)</label>
 		<description>How long has the device been switched on totally</description>
-		<state pattern="%.1f s" />
+		<state pattern="%.1f s"/>
 	</channel-type>
 
 	<channel-type id="timespan" advanced="true">
 		<item-type>Number</item-type>
 		<label>Usage Timespan (s)</label>
 		<description>Time used to measure average usage</description>
-		<state pattern="%.1f s" />
+		<state pattern="%.1f s"/>
 	</channel-type>
 
 	<channel-type id="averagePower" advanced="true">
@@ -248,7 +248,7 @@
 		<label>Average Power</label>
 		<description>The average power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f W" />
+		<state pattern="%.1f W"/>
 	</channel-type>
 
 	<channel-type id="currentPower">
@@ -256,7 +256,7 @@
 		<label>Power</label>
 		<description>The current power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f W" />
+		<state pattern="%.1f W"/>
 	</channel-type>
 
 	<channel-type id="energyToday" advanced="true">
@@ -264,7 +264,7 @@
 		<label>Energy Today</label>
 		<description>Todays power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f Wh" />
+		<state pattern="%.1f Wh"/>
 	</channel-type>
 
 	<channel-type id="energyTotal" advanced="true">
@@ -272,7 +272,7 @@
 		<label>Energy Total</label>
 		<description>Total power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f Wh" />
+		<state pattern="%.1f Wh"/>
 	</channel-type>
 
 	<channel-type id="standByLimit" advanced="true">
@@ -280,7 +280,7 @@
 		<label>StandBy Limit</label>
 		<description>Total power consumption</description>
 		<category>Energy</category>
-		<state pattern="%.1f W" />
+		<state pattern="%.1f W"/>
 	</channel-type>
 
 	<channel-type id="onStandBy" advanced="true">
@@ -288,7 +288,7 @@
 		<label>On Standby</label>
 		<description>Appliance on standby</description>
 		<category>Energy</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 
 	</channel-type>
 
@@ -297,7 +297,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>The brightness channel allows to control the brightness of a light.
-			It is also possible to switch the light on and off.
+			It is also possible to switch the
+			light on and off.
 		</description>
 		<category>DimmableLight</category>
 	</channel-type>
@@ -384,7 +385,7 @@
 		<item-type>Number</item-type>
 		<label>Fader CountDown Time</label>
 		<description>The fading duration time in minutes</description>
-		<state min="1" max="30" step="1.0" pattern="%d min" readOnly="false" />
+		<state min="1" max="30" step="1.0" pattern="%d min" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="faderEnabled" advanced="true">
@@ -410,14 +411,14 @@
 		<item-type>DateTime</item-type>
 		<label>NightMode Start Time</label>
 		<description>Time when the Night Mode starts</description>
-		<state pattern="%1$tR" readOnly="true" />
+		<state pattern="%1$tR" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="endTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>NightMode End Time</label>
 		<description>Time when the Night Mode ends</description>
-		<state pattern="%1$tR" readOnly="true" />
+		<state pattern="%1$tR" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="nightModeBrightness" advanced="true">

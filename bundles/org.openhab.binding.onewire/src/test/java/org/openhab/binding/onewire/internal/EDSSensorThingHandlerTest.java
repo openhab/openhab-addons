@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,25 +13,26 @@
 package org.openhab.binding.onewire.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.*;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.openhab.binding.onewire.internal.OwException;
-import org.openhab.binding.onewire.internal.OwPageBuffer;
-import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.test.AbstractThingHandlerTest;
 
 /**
@@ -39,6 +40,7 @@ import org.openhab.binding.onewire.test.AbstractThingHandlerTest;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
     private static final String TEST_ID = "00.000000000000";
     private static final ThingUID THING_UID = new ThingUID(THING_TYPE_EDS_ENV, "testthing");
@@ -54,6 +56,12 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
 
         initializeBridge();
 
+        final Bridge bridge = this.bridge;
+        if (bridge == null) {
+            Assert.fail("bridge is null");
+            return;
+        }
+
         thingConfiguration.put(CONFIG_ID, TEST_ID);
 
         channels.add(ChannelBuilder.create(CHANNEL_UID_TEMPERATURE, "Number:Temperature").build());
@@ -65,9 +73,15 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
                 .withConfiguration(new Configuration(thingConfiguration)).withProperties(thingProperties)
                 .withBridge(bridge.getUID()).build();
 
+        final Thing thing = this.thing;
+        if (thing == null) {
+            Assert.fail("thing is null");
+            return;
+        }
+
         thingHandler = new EDSSensorThingHandler(thing, stateProvider) {
             @Override
-            protected Bridge getBridge() {
+            protected @Nullable Bridge getBridge() {
                 return bridge;
             }
         };
@@ -81,6 +95,12 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
 
     @Test
     public void testInitializationEndsWithUnknown() {
+        final ThingHandler thingHandler = this.thingHandler;
+        if (thingHandler == null) {
+            Assert.fail("thingHandler is null");
+            return;
+        }
+
         thingHandler.initialize();
 
         waitForAssert(() -> assertEquals(ThingStatus.UNKNOWN, thingHandler.getThing().getStatusInfo().getStatus()));
@@ -88,6 +108,13 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
 
     @Test
     public void testRefresh() throws OwException {
+        final OwBaseThingHandler thingHandler = this.thingHandler;
+        final InOrder inOrder = this.inOrder;
+        if (thingHandler == null || inOrder == null) {
+            Assert.fail("prerequisite is null");
+            return;
+        }
+
         thingHandler.initialize();
 
         // needed to determine initialization is finished

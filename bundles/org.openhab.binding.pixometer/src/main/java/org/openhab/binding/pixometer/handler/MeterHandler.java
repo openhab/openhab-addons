@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ public class MeterHandler extends BaseThingHandler {
         PixometerMeterConfiguration config = getConfigAs(PixometerMeterConfiguration.class);
         setRessourceID(config.resourceId);
 
-        cache = new ExpiringCache<@Nullable MeterState>(Duration.ofMinutes(60), this::refreshCache);
+        cache = new ExpiringCache<>(Duration.ofMinutes(60), this::refreshCache);
 
         Bridge b = this.getBridge();
         if (b == null) {

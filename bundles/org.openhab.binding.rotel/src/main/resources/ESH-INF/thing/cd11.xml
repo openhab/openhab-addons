@@ -10,17 +10,17 @@
 		<description>Connection to the Rotel CD11 CD player</description>
 
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="playControl" typeId="system.media-control" />
-			<channel id="track" typeId="track" />
-			<channel id="brightness" typeId="brightness" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="playControl" typeId="system.media-control"/>
+			<channel id="track" typeId="track"/>
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
 		<properties>
 			<property name="protocol">ASCII_V2</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:rotel:serial" />
+		<config-description-ref uri="thing-type:rotel:serial"/>
 	</thing-type>
 
 </thing:thing-descriptions>

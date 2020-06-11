@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,20 +40,20 @@ public class SomfyTahomaWindowHandler extends SomfyTahomaRollerShutterHandler {
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
+        if (command instanceof RefreshType) {
             return;
         } else {
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_STOP.equals(cmd)) {
-                //Check if the window is not moving
+                // Check if the window is not moving
                 String executionId = getCurrentExecutions();
                 if (executionId != null) {
-                    //STOP command should be interpreted if window is moving
-                    //otherwise do nothing
+                    // STOP command should be interpreted if window is moving
+                    // otherwise do nothing
                     cancelExecution(executionId);
                 }
             } else {
-                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
+                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
                 sendCommand(cmd, param);
             }
         }

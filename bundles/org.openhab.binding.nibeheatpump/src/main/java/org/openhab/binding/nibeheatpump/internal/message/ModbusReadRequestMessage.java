@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,6 @@ public class ModbusReadRequestMessage extends NibeHeatPumpBaseMessage {
     }
 
     private byte[] createModbus40ReadPdu(int coilAddress) {
-
         byte[] data = new byte[6];
         data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_TO_NIBE;
         data[1] = NibeHeatPumpProtocol.CMD_MODBUS_READ_REQ;

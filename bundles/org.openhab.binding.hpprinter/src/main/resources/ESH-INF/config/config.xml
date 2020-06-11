@@ -11,15 +11,15 @@
 			<description>The IP or host name of the HP Printer</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="usageInterval" type="integer" min="4" required="true">
+		<parameter name="usageInterval" type="integer" min="4">
 			<label>Usage Interval</label>
 			<description>The refresh interval in seconds for polling the printer usage information</description>
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="statusInterval" type="integer" min="4" required="true">
+		<parameter name="statusInterval" type="integer" min="4">
 			<label>Status Interval</label>
-			<description>The refresh interval in seconds for polling the printer status</description>
+			<description>The refresh interval in seconds for polling status information</description>
 			<default>4</default>
 			<advanced>true</advanced>
 		</parameter>

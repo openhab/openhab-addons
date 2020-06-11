@@ -6,7 +6,7 @@
 
 	<thing-type id="roomOperatingPanel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Room Operating Panel</label>
@@ -47,7 +47,8 @@
 					<option value="A5_10_19">A5-10-19 temperature and humidity sensor, set point, fan speed and occupancy control</option>
 					<option value="A5_10_1A">A5-10-1A supply voltage, temperature sensor, set point, fan speed and occupancy control</option>
 					<option value="A5_10_1B">A5-10-1B supply voltage, illumination and temperature sensor, fan speed and occupancy control</option>
-					<option value="A5_10_1C">A5-10-1C illumination and temperature sensor, illumination set point, fan speed and occupancy control</option>
+					<option value="A5_10_1C">A5-10-1C illumination and temperature sensor, illumination set point, fan speed and occupancy
+						control</option>
 					<option value="A5_10_1D">A5-10-1D temperature and humidity sensor, humidity set point, fan speed and occupancy control</option>
 					<option value="A5_10_1E">A5-10-1E supply voltage, illumination and temperature sensor, fan speed and occupancy control</option>
 					<option value="A5_10_1F">A5-10-1F temperature sensor, set point, fan speed, occupancy and unoccupancy control</option>

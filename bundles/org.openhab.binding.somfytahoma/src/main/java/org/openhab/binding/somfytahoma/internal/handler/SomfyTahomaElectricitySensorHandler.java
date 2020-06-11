@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ public class SomfyTahomaElectricitySensorHandler extends SomfyTahomaBaseThingHan
     public SomfyTahomaElectricitySensorHandler(Thing thing) {
         super(thing);
         stateNames.put(ENERGY_CONSUMPTION, ENERGY_CONSUMPTION_STATE);
-        //override state type because the cloud sends consumption in percent
+        // override state type because the cloud sends consumption in percent
         cacheStateType(ENERGY_CONSUMPTION_STATE, TYPE_DECIMAL);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -249,7 +250,6 @@ public class RobonectHandler extends BaseThingHandler {
         } else {
             logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
         }
-
     }
 
     private void clearErrorInfo() {
@@ -300,8 +300,9 @@ public class RobonectHandler extends BaseThingHandler {
     private void refreshLastErrorInfo() {
         ErrorList errorList = robonectClient.errorList();
         if (errorList.isSuccessful()) {
-            if (errorList.getErrors() != null && errorList.getErrors().size() > 0) {
-                ErrorEntry lastErrorEntry = errorList.getErrors().get(0);
+            List<ErrorEntry> errors = errorList.getErrors();
+            if (errors != null && !errors.isEmpty()) {
+                ErrorEntry lastErrorEntry = errors.get(0);
                 updateLastErrorChannels(lastErrorEntry);
             }
         } else {
@@ -338,7 +339,6 @@ public class RobonectHandler extends BaseThingHandler {
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
         int pollInterval = robonectConfig.getPollInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
-
     }
 
     @Override

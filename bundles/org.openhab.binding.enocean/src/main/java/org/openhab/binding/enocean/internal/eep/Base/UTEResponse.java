@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.enocean.internal.eep.Base;
+
+import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
@@ -26,10 +28,9 @@ public class UTEResponse extends _VLDMessage {
     public static final byte TeachIn_NotSpecified = 0x20;
 
     public UTEResponse(ERP1Message packet) {
+        int dataLength = packet.getPayload().length - ESP3_SENDERID_LENGTH - ESP3_RORG_LENGTH - ESP3_STATUS_LENGTH;
 
-        int dataLength = packet.getPayload().length - SenderIdLength - RORGLength - StatusLength;
-
-        setData(packet.getPayload(RORGLength, dataLength));
+        setData(packet.getPayload(ESP3_RORG_LENGTH, dataLength));
         bytes[0] = (byte) 0x91; // bidirectional communication, teach in accepted, teach in response
 
         setStatus((byte) 0x80);

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 				https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:zoneminderserver:config">
 		<parameter-group name="basic">
 			<context>basic</context>
-				<label>Basic</label>
+			<label>Basic</label>
 		</parameter-group>
 		<parameter-group name="credentials">
 			<context>credentials</context>
@@ -62,15 +65,18 @@
 			<default>6802</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="refresh_interval" type="integer" required="false" min="1" max="65535" groupName="refreshConfig">
+		<parameter name="refresh_interval" type="integer" required="false" min="1" max="65535"
+			groupName="refreshConfig">
 			<label>API Polling Interval</label>
 			<description>Seconds between each call to ZoneMinder Server API to refresh values in openHAB</description>
 			<default>10</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="refresh_interval_disk_usage" type="integer" required="false" min="0" max="65335" groupName="refreshConfig">
+		<parameter name="refresh_interval_disk_usage" type="integer" required="false" min="0" max="65335"
+			groupName="refreshConfig">
 			<label>Refresh Interval for Disk Usage</label>
-			<description>Minutes between each call to ZoneMinder Server to refresh Server DiskUsage in ZoneMinder. Default value is '0' (Disabled)</description>
+			<description>Minutes between each call to ZoneMinder Server to refresh Server DiskUsage in ZoneMinder. Default value
+				is '0' (Disabled)</description>
 			<default>0</default>
 			<advanced>true</advanced>
 		</parameter>

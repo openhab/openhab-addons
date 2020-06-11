@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,7 +173,7 @@ class KeContactTransceiver {
                         handlers.size());
             }
 
-            if (handlers.size() == 0) {
+            if (handlers.isEmpty()) {
                 stop();
             }
         }
@@ -398,7 +398,7 @@ class KeContactTransceiver {
                 } else {
                     return;
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | ClosedSelectorException e) {
                 Thread.currentThread().interrupt();
                 return;
             }

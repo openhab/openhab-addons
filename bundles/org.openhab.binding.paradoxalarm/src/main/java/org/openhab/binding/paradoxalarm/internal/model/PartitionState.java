@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,71 +50,8 @@ public class PartitionState {
         if (isInAlarm) {
             return "InAlarm";
         } else {
-            return isArmed ? "Armed" : "Disarmed";
+            return isArmed || isArmedInAway || isArmedInStay || isArmedInNoEntry ? "Armed" : "Disarmed";
         }
-    }
-
-    public String getAdditionalState() {
-        StringBuilder sb = new StringBuilder();
-        if (isInAlarm) {
-            append(sb, "In alarm");
-        } else if (isInSilentAlarm) {
-            append(sb, "Silent alarm");
-        } else if (isInAudibleAlarm) {
-            append(sb, "Audible alarm");
-        } else if (isInFireAlarm) {
-            append(sb, "Fire alarm");
-        }
-
-        if (isReadyToArm) {
-            append(sb, "Ready to arm");
-        }
-        if (isInTrouble) {
-            append(sb, "Trouble");
-        }
-        if (hasAlarmInMemory) {
-            append(sb, "Alarm in memory");
-        }
-        if (isInZoneBypass) {
-            append(sb, "Zone bypassed");
-        }
-
-        if (hasZoneInTamperTrouble) {
-            append(sb, "Tamper trouble");
-        }
-        if (hasZoneInLowBatteryTrouble) {
-            append(sb, "Low battery trouble");
-        }
-        if (hasZoneInFireLoopTrouble) {
-            append(sb, "Fire Loop trouble");
-        }
-        if (hasZoneInSupervisionTrouble) {
-            append(sb, "Supervision trouble");
-        }
-
-        if (isStayInstantReady) {
-            append(sb, "Stay instant ready");
-        }
-        if (isForceReady) {
-            append(sb, "Force ready");
-        }
-        if (isBypassReady) {
-            append(sb, "Bypass ready");
-        }
-        if (isInhibitReady) {
-            append(sb, "Inhibit ready");
-        }
-
-        if (areAllZoneclosed) {
-            append(sb, "All zones closed");
-        }
-
-        return sb.toString();
-    }
-
-    public void append(StringBuilder sb, String value) {
-        sb.append(value);
-        sb.append(";");
     }
 
     @Override

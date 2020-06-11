@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,7 +72,7 @@ public class SocketSession {
     /**
      * The responses read from the {@link #_responseReader}
      */
-    private final BlockingQueue<Object> _responses = new ArrayBlockingQueue<Object>(50);
+    private final BlockingQueue<Object> _responses = new ArrayBlockingQueue<>(50);
 
     /**
      * The dispatcher of responses from {@link #_responses}
@@ -82,7 +82,7 @@ public class SocketSession {
     /**
      * The {@link SocketSessionCallback} that the {@link #_dispatcher} will call
      */
-    private AtomicReference<SocketSessionCallback> _callback = new AtomicReference<SocketSessionCallback>(null);
+    private AtomicReference<SocketSessionCallback> _callback = new AtomicReference<>(null);
 
     /**
      * Creates the socket session from the given host and port

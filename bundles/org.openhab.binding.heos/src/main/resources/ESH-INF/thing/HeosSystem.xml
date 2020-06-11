@@ -11,7 +11,7 @@
 			<channel typeId="reboot" id="Reboot"></channel>
 			<channel typeId="buildGroup" id="BuildGroup"></channel>
 		</channels>
-		<representation-property>Role</representation-property>
+		<representation-property>vendor</representation-property>
 		<config-description>
 			<parameter name="ipAddress" type="text">
 				<context>network-address</context>
@@ -30,7 +30,7 @@
 				<description>Password for login to the HEOS account</description>
 				<required>false</required>
 			</parameter>
-			<parameter name="heartbeat" type="integer" min="0" max="3600" unit="s">
+			<parameter name="heartbeat" type="integer" min="3" max="3600" unit="s">
 				<required>false</required>
 				<unitLabel>seconds</unitLabel>
 				<label>Heartbeat</label>
@@ -41,4 +41,3 @@
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>
-

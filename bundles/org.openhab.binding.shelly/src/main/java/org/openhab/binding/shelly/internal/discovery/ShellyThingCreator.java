@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJson.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,14 +21,12 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 
 /**
- * The {@link ShellyThingCreator} implements some helper functions for Thing creation (used by Discovery and Thing
- * handler).
+ * The {@link ShellyThingCreator} maps the device id into the thing type id
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public class ShellyThingCreator {
-
     public static ThingUID getThingUID(String serviceName, String mode, boolean unknown) {
         String devid = StringUtils.substringAfterLast(serviceName, "-");
         return new ThingUID(!unknown ? getThingTypeUID(serviceName, mode)
@@ -43,9 +41,18 @@ public class ShellyThingCreator {
         return new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR);
     }
 
-    public static String getThingType(String name, String mode) {
+    public static String getThingType(String hostname, String mode) {
+        String name = hostname.toLowerCase();
+        String devid = StringUtils.substringAfterLast(name, "-");
+        if (devid == null) {
+            throw new IllegalArgumentException("Invalid device name format: " + hostname);
+        }
+
         if (name.startsWith(THING_TYPE_SHELLY1PN_STR)) {
             return THING_TYPE_SHELLY1PN_STR;
+        }
+        if (name.startsWith(THING_TYPE_SHELLYEM3_STR)) {
+            return THING_TYPE_SHELLYEM3_STR;
         }
         if (name.startsWith(THING_TYPE_SHELLYEM_STR)) {
             return THING_TYPE_SHELLYEM_STR;
@@ -73,6 +80,9 @@ public class ShellyThingCreator {
         if (name.startsWith(THING_TYPE_SHELLYDIMMER_STR)) {
             return THING_TYPE_SHELLYDIMMER_STR;
         }
+        if (name.startsWith(THING_TYPE_SHELLYDUO_STR)) {
+            return THING_TYPE_SHELLYDUO_STR;
+        }
         if (name.startsWith(THING_TYPE_SHELLYBULB_STR)) {
             return THING_TYPE_SHELLYBULB_STR;
         }
@@ -88,6 +98,9 @@ public class ShellyThingCreator {
         if (name.startsWith(THING_TYPE_SHELLYFLOOD_STR)) {
             return THING_TYPE_SHELLYFLOOD_STR;
         }
+        if (name.startsWith(THING_TYPE_SHELLYDOORWIN_STR)) {
+            return THING_TYPE_SHELLYDOORWIN_STR;
+        }
         if (name.startsWith(THING_TYPE_SHELLYSENSE_STR)) {
             return THING_TYPE_SHELLYSENSE_STR;
         }
@@ -100,5 +113,4 @@ public class ShellyThingCreator {
 
         return THING_TYPE_UNKNOWN_STR;
     }
-
 }

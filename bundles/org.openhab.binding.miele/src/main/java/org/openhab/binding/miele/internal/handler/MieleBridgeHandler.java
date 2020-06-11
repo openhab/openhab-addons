@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -429,7 +429,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     public JsonElement invokeOperation(String UID, String modelID, String methodName, String protocol) {
-
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             Object[] args = new Object[4];
             args[0] = protocol + UID;

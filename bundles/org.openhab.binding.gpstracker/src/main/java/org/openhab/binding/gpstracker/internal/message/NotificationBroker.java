@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ public class NotificationBroker {
 
     public void sendNotification(LocationMessage msg) {
         String trackerId = msg.getTrackerId();
-        handlers.entrySet().stream().filter(e->!e.getKey().equals(trackerId))
-                .forEach(e->e.getValue().handleNotification(msg));
+        handlers.entrySet().stream().filter(e -> !e.getKey().equals(trackerId))
+                .forEach(e -> e.getValue().handleNotification(msg));
     }
 }

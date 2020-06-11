@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -246,7 +246,6 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
             if ((handler != null) && (handler instanceof PLCBridgeHandler)) {
                 return (PLCBridgeHandler) handler;
             }
-
         }
         return null;
     }
@@ -283,5 +282,4 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
     protected static String getBlockFromChannel(final @Nullable Channel channel) {
         return channel == null ? NOT_SUPPORTED : channel.getProperties().get(BLOCK_PROPERTY);
     }
-
 }

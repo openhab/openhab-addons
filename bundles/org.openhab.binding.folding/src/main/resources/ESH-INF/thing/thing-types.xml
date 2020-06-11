@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="folding" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="folding"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -8,8 +9,8 @@
 		<description>Folding@home client daemon (represented as bridge).</description>
 
 		<channels>
-			<channel id="run" typeId="run" />
-			<channel id="finish" typeId="finish" />
+			<channel id="run" typeId="run"/>
+			<channel id="finish" typeId="finish"/>
 		</channels>
 
 		<config-description>
@@ -49,17 +50,17 @@
 
 	<thing-type id="slot">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="client" />
+			<bridge-type-ref id="client"/>
 		</supported-bridge-type-refs>
 
 		<label>Slot</label>
 		<description>Folding client compute slot.</description>
 
 		<channels>
-			<channel id="description" typeId="description" />
-			<channel id="run" typeId="run" />
-			<channel id="finish" typeId="finish" />
-			<channel id="status" typeId="status" />
+			<channel id="description" typeId="description"/>
+			<channel id="run" typeId="run"/>
+			<channel id="finish" typeId="finish"/>
+			<channel id="status" typeId="status"/>
 		</channels>
 
 		<config-description>
@@ -75,13 +76,13 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Description of the Folding@home slot.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Current status</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ class Debouncer {
         if (delaySurpassed) {
             if (pending.compareAndSet(true, false)) {
                 int foldedCalls = calls.getAndSet(0);
-                logger.debug("Debouncer action {} invoked after delay {}  ({} calls)", name, delayMs, foldedCalls);
+                logger.trace("Debouncer action {} invoked after delay {}  ({} calls)", name, delayMs, foldedCalls);
                 try {
                     action.run();
                 } catch (Exception e) {

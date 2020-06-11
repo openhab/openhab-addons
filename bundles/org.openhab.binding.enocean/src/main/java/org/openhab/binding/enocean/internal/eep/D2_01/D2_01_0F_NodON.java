@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,9 +42,7 @@ public class D2_01_0F_NodON extends D2_01 {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (channelId.equalsIgnoreCase(CHANNEL_REPEATERMODE)) {
-
             if (command instanceof RefreshType) {
                 senderId = null; // make this message invalid as we do not support refresh of repeter status
             } else if (command instanceof StringType) {

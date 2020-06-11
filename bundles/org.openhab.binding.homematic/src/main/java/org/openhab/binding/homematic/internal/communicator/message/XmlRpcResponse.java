@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -170,6 +170,5 @@ public class XmlRpcResponse implements RpcResponse {
         public void characters(char[] ch, int start, int length) throws SAXException {
             tagValue.append(new String(ch, start, length));
         }
-
     }
 }

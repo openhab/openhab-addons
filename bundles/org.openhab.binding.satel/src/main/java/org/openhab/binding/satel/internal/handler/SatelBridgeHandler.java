@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -28,7 +30,6 @@ import org.openhab.binding.satel.internal.command.NewStatesCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.config.SatelBridgeConfig;
 import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.event.SatelEventListener;
 import org.openhab.binding.satel.internal.protocol.SatelModule;
 import org.openhab.binding.satel.internal.types.IntegraType;
@@ -40,14 +41,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler implements SatelEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(SatelBridgeHandler.class);
 
-    private SatelBridgeConfig config;
-    private SatelModule satelModule;
-    private ScheduledFuture<?> pollingJob;
-    private String userCodeOverride;
+    private SatelBridgeConfig config = new SatelBridgeConfig();
+    private @Nullable SatelModule satelModule;
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private String userCodeOverride = "";
     private final ZoneId integraZone = ZoneId.systemDefault();
 
     public SatelBridgeHandler(Bridge bridge) {
@@ -55,16 +57,15 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
-        if (event instanceof ConnectionStatusEvent) {
-            ConnectionStatusEvent statusEvent = (ConnectionStatusEvent) event;
+    public void incomingEvent(ConnectionStatusEvent event) {
+        final SatelModule satelModule = this.satelModule;
+        if (satelModule != null) {
             // update bridge status and get new states from the system
-            if (statusEvent.isConnected()) {
+            if (event.isConnected()) {
                 updateStatus(ThingStatus.ONLINE);
-                satelModule.sendCommand(new NewStatesCommand(satelModule.getIntegraType().hasExtPayload()));
+                satelModule.sendCommand(new NewStatesCommand(satelModule.hasExtPayloadSupport()));
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        statusEvent.getReason());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, event.getReason());
             }
         }
     }
@@ -78,27 +79,27 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
     protected void initialize(final SatelModule satelModule) {
         logger.debug("Initializing bridge handler");
 
-        this.config = getConfigAs(SatelBridgeConfig.class);
+        final SatelBridgeConfig config = getConfigAs(SatelBridgeConfig.class);
+        this.config = config;
         this.satelModule = satelModule;
-        this.satelModule.addEventListener(this);
-        this.satelModule.open();
+        satelModule.addEventListener(this);
+        satelModule.open();
         logger.debug("Satel module opened");
 
-        if (satelModule != null) {
-            if (pollingJob == null || pollingJob.isCancelled()) {
-                Runnable pollingCommand = () -> {
-                    if (!satelModule.isInitialized()) {
-                        logger.debug("Module not initialized yet, skipping refresh");
-                        return;
-                    }
+        final ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob == null || pollingJob.isCancelled()) {
+            Runnable pollingCommand = () -> {
+                if (!satelModule.isInitialized()) {
+                    logger.debug("Module not initialized yet, skipping refresh");
+                    return;
+                }
 
-                    // get list of states that have changed
-                    logger.trace("Sending 'get new states' command");
-                    satelModule.sendCommand(new NewStatesCommand(satelModule.getIntegraType().hasExtPayload()));
-                };
-                pollingJob = scheduler.scheduleWithFixedDelay(pollingCommand, 0, config.getRefresh(),
-                        TimeUnit.MILLISECONDS);
-            }
+                // get list of states that have changed
+                logger.trace("Sending 'get new states' command");
+                satelModule.sendCommand(new NewStatesCommand(satelModule.hasExtPayloadSupport()));
+            };
+            this.pollingJob = scheduler.scheduleWithFixedDelay(pollingCommand, 0, config.getRefresh(),
+                    TimeUnit.MILLISECONDS);
         }
     }
 
@@ -106,13 +107,16 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
     public void dispose() {
         logger.debug("Disposing bridge handler.");
 
+        final ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
+
+        final SatelModule satelModule = this.satelModule;
         if (satelModule != null) {
             satelModule.close();
-            satelModule = null;
+            this.satelModule = null;
             logger.debug("Satel module closed.");
         }
     }
@@ -123,6 +127,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
      * @param listener listener object to add
      */
     public void addEventListener(SatelEventListener listener) {
+        final SatelModule satelModule = this.satelModule;
         if (satelModule != null) {
             satelModule.addEventListener(listener);
         }
@@ -134,6 +139,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
      * @param listener listener object to remove
      */
     public void removeEventListener(SatelEventListener listener) {
+        final SatelModule satelModule = this.satelModule;
         if (satelModule != null) {
             satelModule.removeEventListener(listener);
         }
@@ -141,6 +147,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
 
     @Override
     public boolean isInitialized() {
+        final SatelModule satelModule = this.satelModule;
         return satelModule != null && satelModule.isInitialized();
     }
 
@@ -149,10 +156,8 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
      * @see IntegraType
      */
     public IntegraType getIntegraType() {
-        if (satelModule != null) {
-            return satelModule.getIntegraType();
-        }
-        return null;
+        final SatelModule satelModule = this.satelModule;
+        return satelModule != null ? satelModule.getIntegraType() : IntegraType.UNKNOWN;
     }
 
     /**
@@ -177,7 +182,12 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
      * @return encoding for texts
      */
     public Charset getEncoding() {
-        return config.getEncoding();
+        try {
+            return config.getEncoding();
+        } catch (Exception e) {
+            logger.info("Invalid or unsupported encoding configured for {}", getThing().getUID());
+            return Charset.defaultCharset();
+        }
     }
 
     /**
@@ -191,11 +201,12 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
      * Sends given command to communication module.
      *
      * @param command a command to send
-     * @param async   if <code>false</code> method waits for the response
+     * @param async if <code>false</code> method waits for the response
      * @return <code>true</code> if send succeeded
      */
     public boolean sendCommand(SatelCommand command, boolean async) {
-        if (this.satelModule == null) {
+        final SatelModule satelModule = this.satelModule;
+        if (satelModule == null) {
             return false;
         }
         if (async) {
@@ -209,7 +220,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
             // wait for command state change
             try {
                 synchronized (command) {
-                    command.wait(this.satelModule.getTimeout());
+                    command.wait(satelModule.getTimeout());
                 }
             } catch (InterruptedException e) {
                 // ignore, we will leave the loop on next interruption state check
@@ -227,5 +238,4 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
         }
         return false;
     }
-
 }

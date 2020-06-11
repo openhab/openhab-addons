@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="serial">
@@ -9,8 +10,8 @@
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Serial port to use, for example /dev/ttyS0 or COM1</description>
-				<default>/dev/ttyS0</default>
 			</parameter>
 
 			<parameter name="id" type="integer">
@@ -81,14 +82,15 @@
 			</parameter>
 			<parameter name="enableDiscovery" type="boolean">
 				<label>Discovery Enabled</label>
-				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the supported devices.</description>
+				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the
+					supported devices.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="echo" type="boolean">
 				<label>RS485 Echo Mode</label>
 				<description><![CDATA[Flag for setting the RS485 echo mode
 				<br/>
-				<br/>This controls whether we should try to read back whatever we send on the line, before reading the response.			
+				<br/>This controls whether we should try to read back whatever we send on the line, before reading the response.
 				]]></description>
 				<default>false</default>
 				<advanced>true</advanced>

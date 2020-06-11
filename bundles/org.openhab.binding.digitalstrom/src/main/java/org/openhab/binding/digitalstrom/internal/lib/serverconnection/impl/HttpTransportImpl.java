@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -581,12 +581,10 @@ public class HttpTransportImpl implements HttpTransport {
 
             @Override
             public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-
             }
 
             @Override
             public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-
             }
         } };
 

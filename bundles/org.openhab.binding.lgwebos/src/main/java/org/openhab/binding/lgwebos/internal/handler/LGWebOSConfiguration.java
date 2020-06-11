@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,8 @@ public class LGWebOSConfiguration {
     int port = 3000; // 3001 for TLS
     @Nullable
     String key; // name has to match LGWebOSBindingConstants.CONFIG_KEY
+    @Nullable
+    String macAddress; // name has to match LGWebOSBindingConstants.CONFIG_MAC_ADDRESS
 
     public String getHost() {
         String h = host;
@@ -43,9 +45,14 @@ public class LGWebOSConfiguration {
         return port;
     }
 
-    @Override
-    public String toString() {
-        return "WebOSConfiguration [host=" + host + ", port=" + port + ", key.length=" + getKey().length() + "]";
+    public String getMacAddress() {
+        String m = macAddress;
+        return m == null ? "" : m;
     }
 
+    @Override
+    public String toString() {
+        return "WebOSConfiguration [host=" + host + ", port=" + port + ", key.length=" + getKey().length()
+                + ", macAddress=" + macAddress + "]";
+    }
 }

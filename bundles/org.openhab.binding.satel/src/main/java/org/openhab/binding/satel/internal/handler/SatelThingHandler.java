@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.satel.internal.handler;
 
+import java.util.function.Consumer;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -28,10 +32,11 @@ import org.openhab.binding.satel.internal.event.SatelEventListener;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public abstract class SatelThingHandler extends BaseThingHandler implements SatelEventListener {
 
-    protected SatelThingConfig thingConfig;
-    protected SatelBridgeHandler bridgeHandler;
+    private @Nullable SatelThingConfig thingConfig;
+    private @Nullable SatelBridgeHandler bridgeHandler;
 
     public SatelThingHandler(Thing thing) {
         super(thing);
@@ -39,6 +44,7 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
 
     @Override
     public void dispose() {
+        final SatelBridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler != null) {
             bridgeHandler.removeEventListener(this);
         }
@@ -48,12 +54,12 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
     public void initialize() {
         thingConfig = getConfig().as(SatelThingConfig.class);
 
-        Bridge bridge = getBridge();
+        final Bridge bridge = getBridge();
         if (bridge != null) {
-            ThingHandler handler = bridge.getHandler();
+            final ThingHandler handler = bridge.getHandler();
             if (handler != null && handler instanceof SatelBridgeHandler) {
-                bridgeHandler = (SatelBridgeHandler) handler;
-                bridgeHandler.addEventListener(this);
+                this.bridgeHandler = (SatelBridgeHandler) handler;
+                this.bridgeHandler.addEventListener(this);
             }
             if (bridge.getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
@@ -61,11 +67,34 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         }
     }
 
+    protected SatelThingConfig getThingConfig() {
+        final SatelThingConfig thingConfig = this.thingConfig;
+        if (thingConfig != null) {
+            return thingConfig;
+        }
+        throw new IllegalStateException("Thing handler is not initialized yet for thing " + getThing().getUID());
+    }
+
+    protected void withBridgeHandlerPresent(Consumer<SatelBridgeHandler> action) {
+        final SatelBridgeHandler bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler != null) {
+            action.accept(bridgeHandler);
+        }
+    }
+
+    protected SatelBridgeHandler getBridgeHandler() {
+        final SatelBridgeHandler bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler != null) {
+            return bridgeHandler;
+        }
+        throw new IllegalStateException("Bridge handler is not set for thing " + getThing().getUID());
+    }
+
     /**
      * Updates switch channel with given state.
      *
      * @param channelID channel ID
-     * @param switchOn  if <code>true</code> the channel is updated with ON state, with OFF state otherwise
+     * @param switchOn if <code>true</code> the channel is updated with ON state, with OFF state otherwise
      */
     protected void updateSwitch(String channelID, boolean switchOn) {
         ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), channelID);
@@ -76,7 +105,7 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
      * Updates switch channel with given state.
      *
      * @param channelUID channel UID
-     * @param switchOn   if <code>true</code> the channel is updated with ON state, with OFF state otherwise
+     * @param switchOn if <code>true</code> the channel is updated with ON state, with OFF state otherwise
      */
     protected void updateSwitch(ChannelUID channelUID, boolean switchOn) {
         State state = switchOn ? OnOffType.ON : OnOffType.OFF;
@@ -87,7 +116,7 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
      * Creates bitset of given size with particular bits set to 1.
      *
      * @param size bitset size in bytes
-     * @param ids  bits to set, first bit is 1
+     * @param ids bits to set, first bit is 1
      * @return bitset as array of bytes
      */
     protected byte[] getObjectBitset(int size, int... ids) {
@@ -98,5 +127,4 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
         }
         return bitset;
     }
-
 }

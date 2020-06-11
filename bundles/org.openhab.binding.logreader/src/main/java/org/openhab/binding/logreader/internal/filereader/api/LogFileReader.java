@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.logreader.internal.filereader.api;
-
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Interface for log file readers.
@@ -42,10 +40,9 @@ public interface LogFileReader {
      *
      * @param filePath file to read.
      * @param refreshRate how often file is read.
-     * @param scheduler executor service to use.
      * @throws FileReaderException
      */
-    void start(String filePath, long refreshRate, ScheduledExecutorService scheduler) throws FileReaderException;
+    void start(String filePath, long refreshRate) throws FileReaderException;
 
     /**
      * Stop log file reader.
