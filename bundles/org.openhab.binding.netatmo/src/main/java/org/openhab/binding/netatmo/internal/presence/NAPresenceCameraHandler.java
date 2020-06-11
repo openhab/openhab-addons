@@ -45,7 +45,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANN
 public class NAPresenceCameraHandler extends CameraHandler {
 
     private static final String PING_URL_PATH = "/command/ping";
-    private static final String FLOODLIGHT_GET_URL_PATH = "/command/floodlight_get_config";
     private static final String FLOODLIGHT_SET_URL_PATH = "/command/floodlight_set_config";
 
     private final Logger logger = LoggerFactory.getLogger(NAPresenceCameraHandler.class);
@@ -62,9 +61,19 @@ public class NAPresenceCameraHandler extends CameraHandler {
         String channelId = channelUID.getId();
         switch (channelId) {
             case CHANNEL_CAMERA_FLOODLIGHT:
-                switchFloodlight(OnOffType.ON.equals(command));
+                if(OnOffType.ON.equals(command)) {
+                    switchFloodlight(true);
+                } else if(OnOffType.OFF.equals(command)) {
+                    switchFloodlight(false);
+                }
+                break;
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
-                switchFloodlightAutoMode(OnOffType.ON.equals(command));
+                if(OnOffType.ON.equals(command)) {
+                    switchFloodlightAutoMode(true);
+                } else if(OnOffType.OFF.equals(command)) {
+                    switchFloodlightAutoMode(false);
+                }
+                break;
         }
         super.handleCommand(channelUID, command);
     }
