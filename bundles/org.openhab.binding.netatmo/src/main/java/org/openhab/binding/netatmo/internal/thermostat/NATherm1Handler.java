@@ -137,7 +137,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 String currentPlanning = "-";
                 if (module != null) {
                     for (NAThermProgram program : module.getThermProgramList()) {
-                        if (program.isSelected() == Boolean.TRUE) {
+                        if (program.getSelected() == Boolean.TRUE) {
                             currentPlanning = program.getProgramId();
                         }
                     }
@@ -162,7 +162,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
             String currentMode = setPoint.getSetpointMode();
 
             NAThermProgram currentProgram = module.getThermProgramList().stream()
-                    .filter(p -> p.isSelected() != null && p.isSelected()).findFirst().get();
+                    .filter(p -> p.getSelected() != null && p.getSelected()).findFirst().get();
             switch (currentMode) {
                 case CHANNEL_SETPOINT_MODE_MANUAL:
                     return toDecimalType(setPoint.getSetpointTemp());
@@ -205,7 +205,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         long diff = (now.getTimeInMillis() - getNetatmoProgramBaseTime()) / 1000 / 60;
 
         Optional<NAThermProgram> currentProgram = thermProgramList.stream()
-                .filter(p -> p.isSelected() != null && p.isSelected()).findFirst();
+                .filter(p -> p.getSelected() != null && p.getSelected()).findFirst();
 
         if (currentProgram.isPresent()) {
             Stream<NATimeTableItem> pastPrograms = currentProgram.get().getTimetable().stream()
@@ -223,7 +223,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         int result = -1;
 
         for (NAThermProgram thermProgram : thermProgramList) {
-            if (thermProgram.isSelected() != null && thermProgram.isSelected()) {
+            if (thermProgram.getSelected() != null && thermProgram.getSelected()) {
                 // By default we'll use the first slot of next week - this case will be true if
                 // we are in the last schedule of the week so below loop will not exit by break
                 int next = thermProgram.getTimetable().get(0).getMOffset() + (7 * 24 * 60);

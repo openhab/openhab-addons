@@ -87,11 +87,11 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
                 logger.debug("welcome home '{}' calculate Persons at home count", getId());
                 result.getPersons().forEach(person -> {
-                    iPersons += person.isOutOfSight() ? 0 : 1;
+                    iPersons += person.getOutOfSight() ? 0 : 1;
                     if (person.getPseudo() != null) {
                         childs.put(person.getId(), person);
                     } else {
-                        iUnknowns += person.isOutOfSight() ? 0 : 1;
+                        iUnknowns += person.getOutOfSight() ? 0 : 1;
                     }
                 });
 
@@ -157,7 +157,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             case CHANNEL_WELCOME_EVENT_VIDEOSTATUS:
                 return lastEvent.map(e -> toStringType(e.getVideoStatus())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_ISARRIVAL:
-                return lastEvent.map(e -> toOnOffType(e.isIsArrival())).orElse(UnDefType.UNDEF);
+                return lastEvent.map(e -> toOnOffType(e.getIsArrival())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_MESSAGE:
                 return findEventMessage().map(m -> (State) new StringType(m.replace("<b>", "").replace("</b>", "")))
                         .orElse(UnDefType.UNDEF);
