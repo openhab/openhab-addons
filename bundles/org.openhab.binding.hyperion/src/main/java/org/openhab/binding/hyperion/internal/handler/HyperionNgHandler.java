@@ -173,10 +173,12 @@ public class HyperionNgHandler extends BaseThingHandler {
     protected void handleServerInfoResponse(NgResponse response) {
         NgInfo info = response.getInfo();
         if (info != null) {
-            // update Hyperion
-            Hyperion hyperion = info.getHyperion();
-            updateHyperion(hyperion);
-
+            // update Hyperion, older API compatibility
+            if(info.getHyperion() != null) {
+                Hyperion hyperion = info.getHyperion();
+                updateHyperion(hyperion);
+            }
+            
             // populate the effect states
             List<Effect> effects = info.getEffects();
             populateEffects(effects);
@@ -294,6 +296,9 @@ public class HyperionNgHandler extends BaseThingHandler {
                     break;
                 case COMPONENT_LEDDEVICE:
                     updateState(CHANNEL_LEDDEVICE, componentState);
+                    break;
+                case COMPONENT_ALL:
+                    updateState(CHANNEL_HYPERION_ENABLED, componentState);
                     break;
                 default:
                     logger.debug("Unknown component: {}", componentName);
