@@ -105,7 +105,7 @@ etc.). OFF = the module settings are aligned to the module status only upon modu
 			<default>false</default>
 		</parameter>
 
-		<parameter name="programsRefreshPeriod" groupName="advancedset" type="integer" min="1" unit="min">
+		<parameter name="programsRefreshPeriod" groupName="advancedset" type="integer" min="1" unit="h">
 			<label>Programs Refresh Period (hours)</label>
 			<description>This is the frequency the Smarther API gateway is called to refresh Programs list used in "automatic" mode. There are limits to the
 number of requests that can be sent to the Smarther API gateway. The more often you poll, the faster locations are updated - at the risk of running out of your

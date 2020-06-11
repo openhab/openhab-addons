@@ -76,13 +76,15 @@ public class SmartherModuleHandler extends BaseThingHandler {
     private final ChannelUID programChannelUID;
     private final ChannelUID endDateChannelUID;
 
+    // Module configuration
+    private SmartherModuleConfiguration config;
+
     // Field members assigned in initialize method
-    private @NonNullByDefault({}) ScheduledCompletableFuture<Void> jobFuture;
-    private @NonNullByDefault({}) Future<?> pollFuture;
-    private @NonNullByDefault({}) SmartherBridgeHandler bridgeHandler;
-    private @NonNullByDefault({}) SmartherModuleConfiguration config;
-    private @NonNullByDefault({}) ExpiringCache<List<Program>> programCache;
-    private @NonNullByDefault({}) ModuleSettings moduleSettings;
+    private @Nullable ScheduledCompletableFuture<Void> jobFuture;
+    private @Nullable Future<?> pollFuture;
+    private @Nullable SmartherBridgeHandler bridgeHandler;
+    private @Nullable ExpiringCache<List<Program>> programCache;
+    private @Nullable ModuleSettings moduleSettings;
 
     // Chronothermostat local status
     private @Nullable Chronothermostat chronothermostat;
@@ -104,7 +106,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
         this.dynamicStateDescriptionProvider = provider;
         this.programChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_PROGRAM);
         this.endDateChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_ENDDATE);
-        this.chronothermostat = null;
+        this.config = getConfigAs(SmartherModuleConfiguration.class);
     }
 
     // ===========================================================================
@@ -117,21 +119,22 @@ public class SmartherModuleHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Module[{}] Initialize handler", thing.getUID());
 
-        Bridge bridge = getBridge();
-        if (bridge == null) {
+        final Bridge localBridge = getBridge();
+        if (localBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
-        bridgeHandler = (SmartherBridgeHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
+        final SmartherBridgeHandler localBridgeHandler = (SmartherBridgeHandler) localBridge.getHandler();
+        this.bridgeHandler = localBridgeHandler;
+        if (localBridgeHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                     "Missing configuration from the Smarther Bridge (UID:%s). Fix configuration or report if this problem remains.",
-                    bridge.getBridgeUID()));
+                    localBridge.getBridgeUID()));
             return;
         }
 
-        config = getConfigAs(SmartherModuleConfiguration.class);
+        this.config = getConfigAs(SmartherModuleConfiguration.class);
         if (StringUtil.isBlank(config.getPlantId())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Plant Id' property is not set or empty. If you have an older thing please recreate it.");
@@ -153,9 +156,14 @@ public class SmartherModuleHandler extends BaseThingHandler {
             return;
         }
 
-        programCache = new ExpiringCache<>(Duration.ofHours(config.getProgramsRefreshPeriod()),
-                this::programCacheAction);
-        moduleSettings = new ModuleSettings(config.getPlantId(), config.getModuleId());
+        // Initialize automatic mode programs local cache
+        final ExpiringCache<List<Program>> localProgramCache = new ExpiringCache<>(
+                Duration.ofHours(config.getProgramsRefreshPeriod()), this::programCacheAction);
+        this.programCache = localProgramCache;
+
+        // Initialize module local settings
+        final ModuleSettings localModuleSettings = new ModuleSettings(config.getPlantId(), config.getModuleId());
+        this.moduleSettings = localModuleSettings;
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -194,51 +202,59 @@ public class SmartherModuleHandler extends BaseThingHandler {
      */
     private void handleCommandInternal(ChannelUID channelUID, Command command)
             throws SmartherIllegalPropertyValueException, SmartherGatewayException {
+        final ModuleSettings localModuleSettings = this.moduleSettings;
+        if (localModuleSettings == null) {
+            return;
+        }
+
         switch (channelUID.getId()) {
             case CHANNEL_SETTINGS_MODE:
                 if (command instanceof StringType) {
-                    moduleSettings.setMode(Mode.fromValue(command.toString()));
+                    localModuleSettings.setMode(Mode.fromValue(command.toString()));
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_TEMPERATURE:
-                if (changeTemperature(command)) {
+                if (changeTemperature(command, localModuleSettings)) {
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_PROGRAM:
                 if (command instanceof DecimalType) {
-                    moduleSettings.setProgram(((DecimalType) command).intValue());
+                    localModuleSettings.setProgram(((DecimalType) command).intValue());
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_BOOSTTIME:
                 if (command instanceof DecimalType) {
-                    moduleSettings.setBoostTime(BoostTime.fromValue(((DecimalType) command).intValue()));
+                    localModuleSettings.setBoostTime(BoostTime.fromValue(((DecimalType) command).intValue()));
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_ENDDATE:
                 if (command instanceof StringType) {
-                    moduleSettings.setEndDate(command.toString());
+                    localModuleSettings.setEndDate(command.toString());
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_ENDHOUR:
-                if (changeTimeHour(command)) {
+                if (changeTimeHour(command, localModuleSettings)) {
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_ENDMINUTE:
-                if (changeTimeMinute(command)) {
+                if (changeTimeMinute(command, localModuleSettings)) {
                     return;
                 }
                 break;
             case CHANNEL_SETTINGS_POWER:
                 if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
-                        // Send change to the remote module
-                        applyModuleSettings();
+                        // Apply module settings to the remote module
+                        if (getBridgeHandler().setModuleStatus(localModuleSettings)) {
+                            // Change applied, update module status
+                            logger.debug("Module[{}] New settings applied!", thing.getUID());
+                        }
                         updateChannelState(CHANNEL_SETTINGS_POWER, OnOffType.OFF);
                     }
                     return;
@@ -250,7 +266,6 @@ public class SmartherModuleHandler extends BaseThingHandler {
                         logger.debug("Module[{}] Manually triggered channel to refresh the Module config",
                                 thing.getUID());
                         expireCache();
-                        programCache.getValue();
                         updateChannelState(CHANNEL_FETCH_CONFIG, OnOffType.OFF);
                     }
                     return;
@@ -268,20 +283,6 @@ public class SmartherModuleHandler extends BaseThingHandler {
     }
 
     /**
-     * Remotely applies the new settings to the Chronothermostat associated to this handler.
-     *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API
-     */
-    private void applyModuleSettings() throws SmartherGatewayException {
-        // Send change to the remote module
-        if (bridgeHandler.setModuleStatus(moduleSettings)) {
-            // Change applied, update module status
-            logger.debug("Module[{}] New settings applied!", thing.getUID());
-        }
-    }
-
-    /**
      * Changes the "temperature" in module settings, based on the received Command.
      * The new value is checked against the temperature limits allowed by the device.
      *
@@ -290,7 +291,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
      *
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
-    private boolean changeTemperature(Command command) {
+    private boolean changeTemperature(Command command, final ModuleSettings settings) {
         if (!(command instanceof QuantityType)) {
             return false;
         }
@@ -303,7 +304,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
             // Only tenth degree increments are allowed
             double newTemperature = Math.round(newMeasure.doubleValue() * 10) / 10.0;
 
-            moduleSettings.setSetPointTemperature(QuantityType.valueOf(newTemperature, SIUnits.CELSIUS));
+            settings.setSetPointTemperature(QuantityType.valueOf(newTemperature, SIUnits.CELSIUS));
             return true;
         }
         return false;
@@ -318,11 +319,11 @@ public class SmartherModuleHandler extends BaseThingHandler {
      *
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
-    private boolean changeTimeHour(Command command) {
+    private boolean changeTimeHour(Command command, final ModuleSettings settings) {
         if (command instanceof DecimalType) {
             int endHour = ((DecimalType) command).intValue();
             if (endHour >= 0 && endHour <= 23) {
-                moduleSettings.setEndHour(endHour);
+                settings.setEndHour(endHour);
                 return true;
             }
         }
@@ -338,13 +339,13 @@ public class SmartherModuleHandler extends BaseThingHandler {
      *
      * @return {@code true} if the change succeeded, {@code false} otherwise
      */
-    private boolean changeTimeMinute(Command command) {
+    private boolean changeTimeMinute(Command command, final ModuleSettings settings) {
         if (command instanceof DecimalType) {
             int endMinute = ((DecimalType) command).intValue();
             if (endMinute >= 0 && endMinute <= 59) {
                 // Only 15 min increments are allowed
                 endMinute = Math.round(endMinute / 15) * 15;
-                moduleSettings.setEndMinute(endMinute);
+                settings.setEndMinute(endMinute);
                 return true;
             }
         }
@@ -363,7 +364,10 @@ public class SmartherModuleHandler extends BaseThingHandler {
             if (notificationChrono != null) {
                 this.chronothermostat = notificationChrono;
                 if (config.isSettingsAutoupdate()) {
-                    moduleSettings.updateFromChronothermostat(notificationChrono);
+                    final ModuleSettings localModuleSettings = this.moduleSettings;
+                    if (localModuleSettings != null) {
+                        localModuleSettings.updateFromChronothermostat(notificationChrono);
+                    }
                 }
                 logger.debug("Module[{}] Handle notification: [{}]", thing.getUID(), this.chronothermostat);
                 updateModuleStatus();
@@ -400,7 +404,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
         stopPoll(true);
         stopJob(true);
         try {
-            bridgeHandler.unregisterNotification(config.getPlantId());
+            getBridgeHandler().unregisterNotification(config.getPlantId());
         } catch (SmartherGatewayException e) {
             logger.warn("Module[{}] API Gateway error during disposing: {}", thing.getUID(), e.getMessage());
         }
@@ -421,7 +425,8 @@ public class SmartherModuleHandler extends BaseThingHandler {
      */
     private @Nullable List<Program> programCacheAction() {
         try {
-            final List<Program> programs = bridgeHandler.getModulePrograms(config.getPlantId(), config.getModuleId());
+            final List<Program> programs = getBridgeHandler().getModulePrograms(config.getPlantId(),
+                    config.getModuleId());
             logger.debug("Module[{}] Available programs: {}", thing.getUID(), programs);
 
             return programs;
@@ -437,7 +442,10 @@ public class SmartherModuleHandler extends BaseThingHandler {
      */
     private void expireCache() {
         logger.debug("Module[{}] Invalidating program cache", thing.getUID());
-        programCache.invalidateValue();
+        final ExpiringCache<List<Program>> localProgramCache = this.programCache;
+        if (localProgramCache != null) {
+            localProgramCache.invalidateValue();
+        }
     }
 
     // ===========================================================================
@@ -451,10 +459,14 @@ public class SmartherModuleHandler extends BaseThingHandler {
      */
     private synchronized void scheduleJob() {
         stopJob(false);
+
         // Schedule daily job to start daily, at midnight
-        jobFuture = cronScheduler.schedule(this::dailyJob, DAILY_MIDNIGHT);
+        final ScheduledCompletableFuture<Void> localJobFuture = cronScheduler.schedule(this::dailyJob, DAILY_MIDNIGHT);
+        this.jobFuture = localJobFuture;
+
         logger.debug("Module[{}] Scheduled recurring job {} to start at midnight", thing.getUID(),
-                Integer.toHexString(jobFuture.hashCode()));
+                Integer.toHexString(localJobFuture.hashCode()));
+
         // Execute daily job immediately at startup
         this.dailyJob();
     }
@@ -467,9 +479,12 @@ public class SmartherModuleHandler extends BaseThingHandler {
      *            tasks are allowed to complete
      */
     private synchronized void stopJob(boolean mayInterruptIfRunning) {
-        if (jobFuture != null && !jobFuture.isCancelled()) {
-            jobFuture.cancel(mayInterruptIfRunning);
-            jobFuture = null;
+        final ScheduledCompletableFuture<Void> localJobFuture = this.jobFuture;
+        if (localJobFuture != null) {
+            if (!localJobFuture.isCancelled()) {
+                localJobFuture.cancel(mayInterruptIfRunning);
+            }
+            this.jobFuture = null;
         }
     }
 
@@ -481,9 +496,10 @@ public class SmartherModuleHandler extends BaseThingHandler {
         // Refresh the end dates list for "manual" mode
         dynamicStateDescriptionProvider.setEndDates(endDateChannelUID, config.getNumberOfEndDays());
         // If expired, update EndDate in module settings
-        if (moduleSettings.isEndDateExpired()) {
-            moduleSettings.refreshEndDate();
-            updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
+        final ModuleSettings localModuleSettings = this.moduleSettings;
+        if (localModuleSettings != null && localModuleSettings.isEndDateExpired()) {
+            localModuleSettings.refreshEndDate();
+            updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(localModuleSettings.getEndDate()));
         }
     }
 
@@ -498,9 +514,12 @@ public class SmartherModuleHandler extends BaseThingHandler {
      */
     private void schedulePoll() {
         stopPoll(false);
+
         // Schedule poll to start after POLL_INITIAL_DELAY sec and run periodically based on status refresh period
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, POLL_INITIAL_DELAY,
+        final Future<?> localPollFuture = scheduler.scheduleWithFixedDelay(this::poll, POLL_INITIAL_DELAY,
                 config.getStatusRefreshPeriod() * 60, TimeUnit.SECONDS);
+        this.pollFuture = localPollFuture;
+
         logger.debug("Module[{}] Scheduled poll for {} sec out, then every {} min", thing.getUID(), POLL_INITIAL_DELAY,
                 config.getStatusRefreshPeriod());
     }
@@ -513,9 +532,12 @@ public class SmartherModuleHandler extends BaseThingHandler {
      *            tasks are allowed to complete
      */
     private synchronized void stopPoll(boolean mayInterruptIfRunning) {
-        if (pollFuture != null && !pollFuture.isCancelled()) {
-            pollFuture.cancel(mayInterruptIfRunning);
-            pollFuture = null;
+        final Future<?> localPollFuture = this.pollFuture;
+        if (localPollFuture != null) {
+            if (!localPollFuture.isCancelled()) {
+                localPollFuture.cancel(mayInterruptIfRunning);
+            }
+            this.pollFuture = null;
         }
     }
 
@@ -530,13 +552,16 @@ public class SmartherModuleHandler extends BaseThingHandler {
             if (bridge != null) {
                 final ThingStatusInfo bridgeStatusInfo = bridge.getStatusInfo();
                 if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-                    ModuleStatus moduleStatus = bridgeHandler.getModuleStatus(config.getPlantId(),
+                    ModuleStatus moduleStatus = getBridgeHandler().getModuleStatus(config.getPlantId(),
                             config.getModuleId());
 
                     final Chronothermostat statusChrono = moduleStatus.toChronothermostat();
                     if (statusChrono != null) {
                         if ((this.chronothermostat == null) || config.isSettingsAutoupdate()) {
-                            moduleSettings.updateFromChronothermostat(statusChrono);
+                            final ModuleSettings localModuleSettings = this.moduleSettings;
+                            if (localModuleSettings != null) {
+                                localModuleSettings.updateFromChronothermostat(statusChrono);
+                            }
                         }
                         this.chronothermostat = statusChrono;
                         logger.debug("Module[{}] Status: [{}]", thing.getUID(), this.chronothermostat);
@@ -545,14 +570,17 @@ public class SmartherModuleHandler extends BaseThingHandler {
                     }
 
                     // Refresh the programs list for "automatic" mode
-                    final List<Program> programs = programCache.getValue();
-                    if (programs != null) {
-                        dynamicStateDescriptionProvider.setPrograms(programChannelUID, programs);
+                    final ExpiringCache<List<Program>> localProgramCache = this.programCache;
+                    if (localProgramCache != null) {
+                        final List<Program> programs = localProgramCache.getValue();
+                        if (programs != null) {
+                            dynamicStateDescriptionProvider.setPrograms(programChannelUID, programs);
+                        }
                     }
 
                     updateModuleStatus();
 
-                    bridgeHandler.registerNotification(config.getPlantId());
+                    getBridgeHandler().registerNotification(config.getPlantId());
 
                     // Everything is ok > set the Thing state to Online
                     updateStatus(ThingStatus.ONLINE);
@@ -594,6 +622,22 @@ public class SmartherModuleHandler extends BaseThingHandler {
     // Chronothermostat convenience methods
     //
     // ===========================================================================
+
+    /**
+     * Convenience method to check and get the Smarther Bridge handler instance for this Module.
+     *
+     * @return the Smarther Bridge handler instance
+     *
+     * @throws {@link SmartherGatewayException}
+     *             in case the Smarther Bridge handler instance is {@code null}
+     */
+    private SmartherBridgeHandler getBridgeHandler() throws SmartherGatewayException {
+        final SmartherBridgeHandler localBridgeHandler = this.bridgeHandler;
+        if (localBridgeHandler == null) {
+            throw new SmartherGatewayException("Smarther Bridge handler instance is null");
+        }
+        return localBridgeHandler;
+    }
 
     /**
      * Returns this Chronothermostat plant identifier
@@ -652,33 +696,38 @@ public class SmartherModuleHandler extends BaseThingHandler {
      *             if at least one of the module properties cannot be mapped to any valid enum value
      */
     private void updateModuleStatus() throws SmartherIllegalPropertyValueException {
-        if (this.chronothermostat != null) {
-            final Chronothermostat c = this.chronothermostat;
+        final Chronothermostat localChrono = this.chronothermostat;
+        if (localChrono != null) {
             // Update the Measures channels
-            updateChannelState(CHANNEL_MEASURES_TEMPERATURE, c.getThermometer().toState());
-            updateChannelState(CHANNEL_MEASURES_HUMIDITY, c.getHygrometer().toState());
+            updateChannelState(CHANNEL_MEASURES_TEMPERATURE, localChrono.getThermometer().toState());
+            updateChannelState(CHANNEL_MEASURES_HUMIDITY, localChrono.getHygrometer().toState());
             // Update the Status channels
-            updateChannelState(CHANNEL_STATUS_STATE, (c.isActive() ? OnOffType.ON : OnOffType.OFF));
+            updateChannelState(CHANNEL_STATUS_STATE, (localChrono.isActive() ? OnOffType.ON : OnOffType.OFF));
             updateChannelState(CHANNEL_STATUS_FUNCTION,
-                    new StringType(StringUtil.capitalize(c.getFunction().toLowerCase())));
-            updateChannelState(CHANNEL_STATUS_MODE, new StringType(StringUtil.capitalize(c.getMode().toLowerCase())));
-            updateChannelState(CHANNEL_STATUS_TEMPERATURE, c.getSetPointTemperature().toState());
-            updateChannelState(CHANNEL_STATUS_ENDTIME, new StringType(c.getActivationTimeLabel()));
-            updateChannelState(CHANNEL_STATUS_TEMP_FORMAT, new StringType(c.getTemperatureFormat()));
-            final Program program = c.getProgram();
-            if (program != null) {
-                updateChannelState(CHANNEL_STATUS_PROGRAM, new StringType("" + program.getNumber()));
+                    new StringType(StringUtil.capitalize(localChrono.getFunction().toLowerCase())));
+            updateChannelState(CHANNEL_STATUS_MODE,
+                    new StringType(StringUtil.capitalize(localChrono.getMode().toLowerCase())));
+            updateChannelState(CHANNEL_STATUS_TEMPERATURE, localChrono.getSetPointTemperature().toState());
+            updateChannelState(CHANNEL_STATUS_ENDTIME, new StringType(localChrono.getActivationTimeLabel()));
+            updateChannelState(CHANNEL_STATUS_TEMP_FORMAT, new StringType(localChrono.getTemperatureFormat()));
+            final Program localProgram = localChrono.getProgram();
+            if (localProgram != null) {
+                updateChannelState(CHANNEL_STATUS_PROGRAM, new StringType("" + localProgram.getNumber()));
             }
         }
-        // Update the Settings channels
-        updateChannelState(CHANNEL_SETTINGS_MODE, new StringType(moduleSettings.getMode().getValue()));
-        updateChannelState(CHANNEL_SETTINGS_TEMPERATURE, moduleSettings.getSetPointTemperature());
-        updateChannelState(CHANNEL_SETTINGS_PROGRAM, new DecimalType(moduleSettings.getProgram()));
-        updateChannelState(CHANNEL_SETTINGS_BOOSTTIME, new DecimalType(moduleSettings.getBoostTime().getValue()));
-        updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(moduleSettings.getEndDate()));
-        updateChannelState(CHANNEL_SETTINGS_ENDHOUR, new DecimalType(moduleSettings.getEndHour()));
-        updateChannelState(CHANNEL_SETTINGS_ENDMINUTE, new DecimalType(moduleSettings.getEndMinute()));
-        updateChannelState(CHANNEL_SETTINGS_POWER, OnOffType.OFF);
+
+        final ModuleSettings localSettings = this.moduleSettings;
+        if (localSettings != null) {
+            // Update the Settings channels
+            updateChannelState(CHANNEL_SETTINGS_MODE, new StringType(localSettings.getMode().getValue()));
+            updateChannelState(CHANNEL_SETTINGS_TEMPERATURE, localSettings.getSetPointTemperature());
+            updateChannelState(CHANNEL_SETTINGS_PROGRAM, new DecimalType(localSettings.getProgram()));
+            updateChannelState(CHANNEL_SETTINGS_BOOSTTIME, new DecimalType(localSettings.getBoostTime().getValue()));
+            updateChannelState(CHANNEL_SETTINGS_ENDDATE, new StringType(localSettings.getEndDate()));
+            updateChannelState(CHANNEL_SETTINGS_ENDHOUR, new DecimalType(localSettings.getEndHour()));
+            updateChannelState(CHANNEL_SETTINGS_ENDMINUTE, new DecimalType(localSettings.getEndMinute()));
+            updateChannelState(CHANNEL_SETTINGS_POWER, OnOffType.OFF);
+        }
     }
 
 }

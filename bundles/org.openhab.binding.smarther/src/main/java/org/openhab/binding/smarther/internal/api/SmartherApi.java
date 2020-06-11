@@ -18,6 +18,7 @@ import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,11 +112,11 @@ public class SmartherApi {
      * @param httpClient
      *            the http client to be used to make http calls to the API gateway
      */
-    public SmartherApi(OAuthClientService clientService, String subscriptionKey, ScheduledExecutorService scheduler,
-            HttpClient httpClient) {
+    public SmartherApi(final OAuthClientService clientService, final String subscriptionKey,
+            final ScheduledExecutorService scheduler, final HttpClient httpClient) {
         this.oAuthClientService = clientService;
         this.oAuthSubscriptionKey = subscriptionKey;
-        connector = new SmartherApiConnector(scheduler, httpClient);
+        this.connector = new SmartherApiConnector(scheduler, httpClient);
     }
 
     /**
@@ -245,7 +246,7 @@ public class SmartherApi {
                 ModuleStatus.class);
 
         final Chronothermostat chronothermostat = moduleStatus.toChronothermostat();
-        return (chronothermostat != null) ? chronothermostat.getPrograms() : new ArrayList<>();
+        return (chronothermostat != null) ? chronothermostat.getPrograms() : Collections.emptyList();
     }
 
     /**

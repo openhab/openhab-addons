@@ -64,22 +64,25 @@ public class SmartherAccountService {
 
     private final List<SmartherAccountHandler> handlers = new ArrayList<>();
 
-    private @NonNullByDefault({}) HttpService httpService;
-    private @NonNullByDefault({}) BundleContext bundleContext;
+    private @Nullable HttpService httpService;
+    private @Nullable BundleContext bundleContext;
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
         try {
-            bundleContext = componentContext.getBundleContext();
+            this.bundleContext = componentContext.getBundleContext();
 
-            // Register the authorization servlet
-            httpService.registerServlet(AUTH_SERVLET_ALIAS, createAuthorizationServlet(), new Hashtable<>(),
-                    httpService.createDefaultHttpContext());
-            httpService.registerResources(AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS, IMAGE_PATH, null);
+            final HttpService localHttpService = this.httpService;
+            if (localHttpService != null) {
+                // Register the authorization servlet
+                localHttpService.registerServlet(AUTH_SERVLET_ALIAS, createAuthorizationServlet(), new Hashtable<>(),
+                        localHttpService.createDefaultHttpContext());
+                localHttpService.registerResources(AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS, IMAGE_PATH, null);
 
-            // Register the notification servlet
-            httpService.registerServlet(NOTIFY_SERVLET_ALIAS, createNotificationServlet(), new Hashtable<>(),
-                    httpService.createDefaultHttpContext());
+                // Register the notification servlet
+                localHttpService.registerServlet(NOTIFY_SERVLET_ALIAS, createNotificationServlet(), new Hashtable<>(),
+                        localHttpService.createDefaultHttpContext());
+            }
         } catch (NamespaceException | ServletException | IOException e) {
             logger.warn("Error during Smarther servlet startup", e);
         }
@@ -87,12 +90,15 @@ public class SmartherAccountService {
 
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
-        // Unregister the authorization servlet
-        httpService.unregister(AUTH_SERVLET_ALIAS);
-        httpService.unregister(AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS);
+        final HttpService localHttpService = this.httpService;
+        if (localHttpService != null) {
+            // Unregister the authorization servlet
+            localHttpService.unregister(AUTH_SERVLET_ALIAS);
+            localHttpService.unregister(AUTH_SERVLET_ALIAS + IMG_SERVLET_ALIAS);
 
-        // Unregister the notification servlet
-        httpService.unregister(NOTIFY_SERVLET_ALIAS);
+            // Unregister the notification servlet
+            localHttpService.unregister(NOTIFY_SERVLET_ALIAS);
+        }
     }
 
     /**
@@ -128,15 +134,20 @@ public class SmartherAccountService {
      *             in case of issues reading the template from file
      */
     private String readTemplate(String templateName) throws IOException {
-        final URL index = bundleContext.getBundle().getEntry(templateName);
+        final BundleContext localBundleContext = this.bundleContext;
+        if (localBundleContext != null) {
+            final URL index = localBundleContext.getBundle().getEntry(templateName);
 
-        if (index == null) {
-            throw new FileNotFoundException(
-                    String.format("Cannot find template '%s' - failed to initialize Smarther servlet", templateName));
-        } else {
-            try (InputStream input = index.openStream()) {
-                return StringUtil.streamToString(input);
+            if (index == null) {
+                throw new FileNotFoundException(String
+                        .format("Cannot find template '%s' - failed to initialize Smarther servlet", templateName));
+            } else {
+                try (InputStream input = index.openStream()) {
+                    return StringUtil.streamToString(input);
+                }
             }
+        } else {
+            throw new IOException("Cannot get template, bundle context is null");
         }
     }
 
@@ -160,7 +171,6 @@ public class SmartherAccountService {
             throws SmartherGatewayException {
         // Searches the SmartherAccountHandler instance that matches the given state
         final SmartherAccountHandler listener = getAccountListenerByUID(state);
-
         if (listener == null) {
             logger.debug(
                     "BTicino/Legrand API redirected with state '{}' but no matching bridge was found. Possible bridge has been removed.",
@@ -191,7 +201,6 @@ public class SmartherAccountService {
         final Sender sender = notification.getSender();
         if (sender != null) {
             final SmartherAccountHandler listener = getAccountListenerByLocation(sender.getPlant().getId());
-
             if (listener == null) {
                 logger.warn("C2C notification [{}]: no matching bridge was found. Possible bridge has been removed.",
                         notification.getId());

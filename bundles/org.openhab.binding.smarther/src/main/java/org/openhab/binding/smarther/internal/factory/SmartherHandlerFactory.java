@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smarther.internal.factory;
 
+import java.lang.invoke.MethodHandles;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -29,8 +31,11 @@ import org.openhab.binding.smarther.internal.account.SmartherAccountService;
 import org.openhab.binding.smarther.internal.handler.SmartherBridgeHandler;
 import org.openhab.binding.smarther.internal.handler.SmartherDynamicStateDescriptionProvider;
 import org.openhab.binding.smarther.internal.handler.SmartherModuleHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@code SmartherHandlerFactory} class is responsible for creating things and thing handlers.
@@ -41,11 +46,24 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class SmartherHandlerFactory extends BaseThingHandlerFactory {
 
-    private @NonNullByDefault({}) OAuthFactory oAuthFactory;
-    private @NonNullByDefault({}) SmartherAccountService authService;
-    private @NonNullByDefault({}) HttpClient httpClient;
-    private @NonNullByDefault({}) CronScheduler cronScheduler;
-    private @NonNullByDefault({}) SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private final OAuthFactory oAuthFactory;
+    private final SmartherAccountService authService;
+    private final HttpClient httpClient;
+    private final CronScheduler cronScheduler;
+    private final SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
+
+    @Activate
+    public SmartherHandlerFactory(@Reference OAuthFactory oAuthFactory, @Reference SmartherAccountService authService,
+            @Reference HttpClientFactory httpClientFactory, @Reference CronScheduler cronScheduler,
+            @Reference SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
+        this.oAuthFactory = oAuthFactory;
+        this.authService = authService;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.cronScheduler = cronScheduler;
+        this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -58,13 +76,14 @@ public class SmartherHandlerFactory extends BaseThingHandlerFactory {
 
         if (SmartherBindingConstants.THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             final SmartherBridgeHandler handler = new SmartherBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
-            authService.addSmartherAccountHandler(handler);
+            this.authService.addSmartherAccountHandler(handler);
             return handler;
         } else if (SmartherBindingConstants.THING_TYPE_MODULE.equals(thingTypeUID)) {
             return new SmartherModuleHandler(thing, cronScheduler, dynamicStateDescriptionProvider);
+        } else {
+            logger.debug("Unsupported thing {}", thing.getThingTypeUID());
+            return null;
         }
-
-        return null;
     }
 
     @Override
@@ -72,51 +91,6 @@ public class SmartherHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof SmartherBridgeHandler) {
             authService.removeSmartherAccountHandler((SmartherBridgeHandler) thingHandler);
         }
-    }
-
-    @Reference
-    protected void setOAuthFactory(OAuthFactory oAuthFactory) {
-        this.oAuthFactory = oAuthFactory;
-    }
-
-    protected void unsetOAuthFactory(OAuthFactory oAuthFactory) {
-        this.oAuthFactory = null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
-    @Reference
-    protected void setAuthService(SmartherAccountService service) {
-        this.authService = service;
-    }
-
-    protected void unsetAuthService(SmartherAccountService service) {
-        this.authService = null;
-    }
-
-    @Reference
-    protected void setCronScheduler(CronScheduler scheduler) {
-        this.cronScheduler = scheduler;
-    }
-
-    protected void unsetCronScheduler(CronScheduler scheduler) {
-        this.cronScheduler = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(SmartherDynamicStateDescriptionProvider provider) {
-        this.dynamicStateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(SmartherDynamicStateDescriptionProvider provider) {
-        this.dynamicStateDescriptionProvider = null;
     }
 
 }

@@ -16,7 +16,7 @@ import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -86,7 +86,7 @@ public class Chronothermostat {
      * @return the list of registered programs, or an empty list in case of no programs available
      */
     public List<Program> getPrograms() {
-        return (programs != null) ? programs : new ArrayList<>();
+        return (programs != null) ? programs : Collections.emptyList();
     }
 
     /**

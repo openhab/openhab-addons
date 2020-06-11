@@ -16,6 +16,7 @@ import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +36,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.smarther.internal.account.SmartherAccountHandler;
 import org.openhab.binding.smarther.internal.api.dto.Location;
 import org.openhab.binding.smarther.internal.api.dto.Module;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Fabio Possieri - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.smarther")
 @NonNullByDefault
 public class SmartherModuleDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
@@ -62,9 +61,8 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService imp
 
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private @NonNullByDefault({}) SmartherAccountHandler bridgeHandler;
-    private @NonNullByDefault({}) ThingUID bridgeUID;
-
+    private @Nullable SmartherAccountHandler bridgeHandler;
+    private @Nullable ThingUID bridgeUID;
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
     /**
@@ -88,48 +86,60 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService imp
 
     @Override
     public void deactivate() {
-        super.deactivate();
+        removeOlderResults(new Date().getTime());
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof SmartherAccountHandler) {
-            bridgeHandler = (SmartherAccountHandler) handler;
-            bridgeUID = bridgeHandler.getUID();
+            final SmartherAccountHandler localBridgeHandler = (SmartherAccountHandler) handler;
+            this.bridgeHandler = localBridgeHandler;
+            this.bridgeUID = localBridgeHandler.getUID();
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+        return this.bridgeHandler;
     }
 
     @Override
     protected synchronized void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
         if (BACKGROUND_SCAN_ENABLED) {
-            backgroundFuture = scheduler.scheduleWithFixedDelay(this::startScan, BACKGROUND_SCAN_REFRESH_MINUTES,
+            this.backgroundFuture = scheduler.scheduleWithFixedDelay(this::startScan, BACKGROUND_SCAN_REFRESH_MINUTES,
                     BACKGROUND_SCAN_REFRESH_MINUTES, TimeUnit.MINUTES);
         }
     }
 
     @Override
     protected synchronized void stopBackgroundDiscovery() {
-        if (backgroundFuture != null) {
-            backgroundFuture.cancel(true);
-            backgroundFuture = null;
+        final ScheduledFuture<?> localBackgroundFuture = this.backgroundFuture;
+        if (localBackgroundFuture != null) {
+            if (!localBackgroundFuture.isCancelled()) {
+                localBackgroundFuture.cancel(true);
+            }
+            this.backgroundFuture = null;
         }
     }
 
     @Override
     protected void startScan() {
-        // If the bridge is not online no other thing devices can be found, so no reason to scan at this moment.
-        removeOlderResults(getTimestampOfLastScan());
-        if (bridgeHandler != null && bridgeHandler.isOnline()) {
-            logger.debug("Starting modules discovery for bridge {}", bridgeUID);
-            bridgeHandler.getLocations()
-                    .forEach(l -> bridgeHandler.getLocationModules(l).forEach(m -> thingDiscovered(l, m)));
+        final SmartherAccountHandler localBridgeHandler = this.bridgeHandler;
+        if (localBridgeHandler != null) {
+            // If the bridge is not online no other thing devices can be found, so no reason to scan at this moment
+            if (localBridgeHandler.isOnline()) {
+                logger.debug("Starting modules discovery for bridge {}", this.bridgeUID);
+                localBridgeHandler.getLocations()
+                        .forEach(l -> localBridgeHandler.getLocationModules(l).forEach(m -> thingDiscovered(l, m)));
+            }
         }
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan());
     }
 
     /**
@@ -149,7 +159,7 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService imp
         properties.put(PROPERTY_DEVICE_TYPE, module.getDeviceType());
         ThingUID thing = new ThingUID(THING_TYPE_MODULE, bridgeUID, getThingIdFromModule(module));
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing).withBridge(bridgeUID)
+        final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing).withBridge(this.bridgeUID)
                 .withProperties(properties).withRepresentationProperty(PROPERTY_MODULE_ID).withLabel(module.getName())
                 .build();
 

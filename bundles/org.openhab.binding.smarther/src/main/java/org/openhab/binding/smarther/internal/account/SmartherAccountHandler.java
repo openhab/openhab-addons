@@ -15,7 +15,6 @@ package org.openhab.binding.smarther.internal.account;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.smarther.internal.api.dto.Location;
@@ -202,7 +201,7 @@ public interface SmartherAccountHandler extends ThingHandler {
     String authorize(String redirectUrl, String reqCode, String notificationUrl) throws SmartherGatewayException;
 
     /**
-     * Compares this Smarther account handler instance to a given {@link Thing} UID.
+     * Compares this Smarther account handler instance to a given Thing UID.
      *
      * @param thingUID
      *            the Thing UID the account handler is compared to
