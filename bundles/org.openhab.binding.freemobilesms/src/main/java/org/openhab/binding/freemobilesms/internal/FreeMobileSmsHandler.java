@@ -13,6 +13,7 @@
 package org.openhab.binding.freemobilesms.internal;
 
 import static org.openhab.binding.freemobilesms.internal.FreeMobileSmsBindingConstants.*;
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -81,6 +82,10 @@ public class FreeMobileSmsHandler extends BaseThingHandler {
             scheduler.execute(() -> {
                 sendMessage(command.toString());
             });
+        } else if (REFRESH == command) {
+            logger.debug("Refreshing {}", channelUID);
+            // Nothing to do as service is disconnected,
+            // except avoid a warning
         } else {
             logger.warn("Unsupported Command type");
         }
