@@ -45,11 +45,9 @@ public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        System.out.println(thingTypeUID);
         if (thingTypeUID.equals(LuftdatenInfoBindingConstants.THING_TYPE_PARTICULATE)
                 || thingTypeUID.equals(LuftdatenInfoBindingConstants.THING_TYPE_CONDITIONS)
                 || thingTypeUID.equals(LuftdatenInfoBindingConstants.THING_TYPE_NOISE)) {
-            System.out.println("found");
             return true;
         } else {
             return false;
@@ -59,6 +57,7 @@ public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         // one handler for all
+        System.out.println("Request: " + thing.getThingTypeUID());
         if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_PARTICULATE)) {
             return new PMHandler(thing);
         } else if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_CONDITIONS)) {
@@ -66,6 +65,7 @@ public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
         } else if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_NOISE)) {
             return new NoiseHandler(thing);
         }
+        System.out.println("Handler for " + thing.getThingTypeUID() + " not found");
         return null;
     }
 }
