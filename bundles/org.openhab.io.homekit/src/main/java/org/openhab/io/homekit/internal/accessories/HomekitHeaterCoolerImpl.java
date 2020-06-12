@@ -141,7 +141,8 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     }
 
     public void setTemperatureDisplayUnit(final TemperatureDisplayUnitEnum value) throws Exception {
-        // TODO: add support for display unit change
+        // temperature unit set globally via binding setting and cannot be changed at item level.
+        // this method is intentionally empty.
     }
 
     @Override
@@ -185,10 +186,12 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     }
 
     public void subscribeTemperatureDisplayUnit(final HomekitCharacteristicChangeCallback callback) {
-        // TODO: add support for display unit change
+        // temperature unit set globally via binding setting and cannot be changed at item level.
+        // this method is intentionally empty
     }
 
     public void unsubscribeTemperatureDisplayUnit() {
-        // TODO: add support for display unit change
+        // temperature unit set globally via binding setting and cannot be changed at item level.
+        // this method is intentionally empty
     }
 }
