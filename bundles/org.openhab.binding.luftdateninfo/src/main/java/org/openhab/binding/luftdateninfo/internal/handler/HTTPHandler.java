@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.luftdateninfo.internal.handler;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -24,6 +25,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorData;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
+import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,19 +86,45 @@ public class HTTPHandler {
         }
     }
 
-    public static @Nullable List<SensorDataValue> getValues(String response) {
+    public static @Nullable List<SensorDataValue> getLatestValues(String response) {
         Gson gson = new Gson();
         SensorData[] valueArray = gson.fromJson(response, SensorData[].class);
-        if (valueArray.length > 0) {
+        if (valueArray.length == 0) {
+            return null;
+        } else if (valueArray.length == 1) {
             SensorData v = valueArray[0];
-            List<SensorDataValue> l = v.getSensordatavalues();
-            return l;
+            return v.getSensordatavalues();
+        } else if (valueArray.length > 1) {
+            // declare first item as latest
+            SensorData latestData = valueArray[0];
+            String latestTimeStr = latestData.getTimeStamp();
+            Date latestTime = DateTimeUtils.toDate(latestTimeStr);
+            for (int i = 1; i < valueArray.length; i++) {
+                SensorData iterData = valueArray[i];
+                String iterTimeStr = iterData.getTimeStamp();
+                Date iterTime = DateTimeUtils.toDate(iterTimeStr);
+                if (iterTime != null && latestTime != null) {
+                    if (latestTime.before(iterTime)) {
+                        // found item is newer - take it as latest
+                        latestTime = iterTime;
+                        latestData = iterData;
+                    } else {
+                        // found item is older - nothing to do
+                    }
+                } else {
+                    logger.warn("One or two dates cannot be decoded 1) {} 2) {}", iterTimeStr, latestTimeStr);
+                }
+            }
+            return latestData.getSensordatavalues();
         } else {
             return null;
         }
     }
 
-    public static boolean isParticulate(List<SensorDataValue> valueList) {
+    public static boolean isParticulate(@Nullable List<SensorDataValue> valueList) {
+        if (valueList == null) {
+            return false;
+        }
         Iterator<SensorDataValue> iter = valueList.iterator();
         while (iter.hasNext()) {
             SensorDataValue v = iter.next();
@@ -109,7 +137,10 @@ public class HTTPHandler {
         return true;
     }
 
-    public static boolean isCondition(List<SensorDataValue> valueList) {
+    public static boolean isCondition(@Nullable List<SensorDataValue> valueList) {
+        if (valueList == null) {
+            return false;
+        }
         Iterator<SensorDataValue> iter = valueList.iterator();
         while (iter.hasNext()) {
             SensorDataValue v = iter.next();
@@ -124,7 +155,10 @@ public class HTTPHandler {
         return true;
     }
 
-    public static boolean isNoise(List<SensorDataValue> valueList) {
+    public static boolean isNoise(@Nullable List<SensorDataValue> valueList) {
+        if (valueList == null) {
+            return false;
+        }
         Iterator<SensorDataValue> iter = valueList.iterator();
         while (iter.hasNext()) {
             SensorDataValue v = iter.next();

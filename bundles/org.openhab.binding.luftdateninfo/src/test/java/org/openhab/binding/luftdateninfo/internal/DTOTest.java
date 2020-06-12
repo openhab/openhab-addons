@@ -43,6 +43,12 @@ public class DTOTest {
         assertEquals("Array size", 2, valueArray.length);
 
         SensorData d = valueArray[0];
+        // Assure latest data is taken
+        String dateStr = d.getTimeStamp();
+        if (dateStr.equals("2020-06-09 06:38:08")) {
+            // take newer one
+            d = valueArray[1];
+        }
         List<SensorDataValue> sensorDataVaueList = d.getSensordatavalues();
         Iterator<SensorDataValue> iter = sensorDataVaueList.iterator();
         while (iter.hasNext()) {
@@ -51,7 +57,7 @@ public class DTOTest {
             if (v.getValue_type().equals(HTTPHandler.TEMPERATURE)) {
                 assertEquals("Temperature", "22.70", v.getValue());
             } else if (v.getValue_type().equals(HTTPHandler.HUMIDITY)) {
-                assertEquals("Humidiry", "61.00", v.getValue());
+                assertEquals("Humidity", "61.00", v.getValue());
             }
         }
     }
