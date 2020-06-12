@@ -45,8 +45,8 @@ public class ConditionHandlerTest {
         if (pmJson != null) {
             int result = condHandler.updateChannels(pmJson);
             assertEquals("Valid update", 0, result);
-            assertEquals("Temperature", new DecimalType("22.70"), condHandler.getTemperature());
-            assertEquals("Humidity", new DecimalType("61.00"), condHandler.getHumidity());
+            assertEquals("Temperature", new DecimalType("22.7"), condHandler.getTemperature());
+            assertEquals("Humidity", new DecimalType("61.0"), condHandler.getHumidity());
             assertEquals("Pressure", new DecimalType(-1), condHandler.getPressure());
             assertEquals("Pressure Sea", new DecimalType(-1), condHandler.getPressureSea());
         } else {
@@ -68,10 +68,10 @@ public class ConditionHandlerTest {
         if (pmJson != null) {
             int result = condHandler.updateChannels(pmJson);
             assertEquals("Valid update", 0, result);
-            assertEquals("Temperature", new DecimalType("16.72"), condHandler.getTemperature());
-            assertEquals("Humidity", new DecimalType("74.84"), condHandler.getHumidity());
-            assertEquals("Pressure", new DecimalType("996.53"), condHandler.getPressure());
-            assertEquals("Pressure Sea", new DecimalType("1014.42"), condHandler.getPressureSea());
+            assertEquals("Temperature", new DecimalType("16.7"), condHandler.getTemperature());
+            assertEquals("Humidity", new DecimalType("74.8"), condHandler.getHumidity());
+            assertEquals("Pressure", new DecimalType("996.5"), condHandler.getPressure());
+            assertEquals("Pressure Sea", new DecimalType("1014.4"), condHandler.getPressureSea());
         } else {
             assertTrue(false);
         }
