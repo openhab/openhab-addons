@@ -13,7 +13,7 @@
 				<label>Control</label>
 			</channel-group>
 			<channel-group id="program" typeId="program">
-				<label>Program information</label>
+				<label>Program Information</label>
 			</channel-group>
 			<channel-group id="status" typeId="status">
 				<label>Play Status</label>
@@ -29,7 +29,7 @@
 			</parameter>
 			<parameter name="modelId" type="text">
 				<label>Receiver Model</label>
-				<description>Model type (MR4xx)</description>
+				<description>Model type (MR4xx/ MR2xx)</description>
 				<required>true</required>
 				<options>
 					<option value="Auto">AUTO</option>
@@ -39,8 +39,8 @@
 				</options>
 			</parameter>
 			<parameter name="ipAddress" type="text">
-				<label>Receiver IP address</label>
-				<description>IP address of the receiver</description>
+				<label>Media Receiver's IP Address</label>
+				<description>IP Address of the receiver</description>
 				<required>true</required>
 				<context>network-address</context>
 			</parameter>
@@ -50,13 +50,13 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="accountName" type="text">
-				<label>Account name</label>
-				<description>Credentials: Login name (xxx@t-online.de)</description>
+				<label>Account Name</label>
+				<description>Credentials: Login name (xxx@t-online.de, same as for the Telekom Kundencenter)</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="accountPassword" type="text">
-				<label>Account password</label>
-				<description>Credentials: Account password</description>
+				<label>Account Password</label>
+				<description>Credentials: Account Password (same as for the Telekom Kundencenter)</description>
 				<context>password</context>
 				<required>true</required>
 			</parameter>
@@ -125,8 +125,8 @@
 	</channel-type>
 	<channel-type id="playMode">
 		<item-type>String</item-type>
-		<label>Play mode</label>
-		<description>Play mode for running program</description>
+		<label>Play Mode</label>
+		<description>Play Mode for running program</description>
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
@@ -161,14 +161,14 @@
 	<channel-type id="programPosition">
 		<item-type>Number:Time</item-type>
 		<label>Play Position</label>
-		<description>Play position since program started</description>
+		<description>Play Position since program started</description>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="key">
 		<item-type>String</item-type>
 		<label>Key</label>
-		<description>Send Key</description>
+		<description>Send Key to the Media Receive (POWER/MENU/INFO... - see documentation)</description>
 		<state>
 			<options>
 				<option value="POWER">POWER</option>

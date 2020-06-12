@@ -120,52 +120,6 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /**
-     * Remove handler of things.
-     */
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof MagentaTVHandler) {
-        }
-    }
-
-    /**
-     * A device was discovered by UPnP. A new device gets inserted into the
-     * deviceList table, otherwise the properties will be updated.
-     *
-     * @param discoveryProperties Properties discoverd by UPnP
-     */
-    public void deviceDiscoverd(Map<String, String> discoveryProperties) {
-        if (!discoveryProperties.containsKey(PROPERTY_UDN)) {
-            return;
-        }
-        String discoveredUDN = discoveryProperties.get(PROPERTY_UDN);
-        discoveredUDN = discoveredUDN.toUpperCase();
-        logger.trace("Discovered device with UDN {}", discoveredUDN);
-        try {
-            MagentaTVDevice dev = null;
-            synchronized (deviceList) {
-                if (deviceList.containsKey(discoveredUDN)) {
-                    dev = deviceList.get(discoveredUDN);
-                    logger.trace("Known device with UDN {}, update properties", discoveredUDN);
-                    dev.properties = discoveryProperties;
-                    deviceList.replace(discoveredUDN, dev);
-                    if (dev.thingHandler != null) {
-                        // we know the device
-                        dev.thingHandler.onWakeup(dev.properties);
-                    }
-                } else {
-                    // new device
-                    String mac = StringUtils.substringAfterLast(discoveredUDN, "-");
-                    String ipAddress = discoveryProperties.get(PROPERTY_IP).toString();
-                    addNewDevice(discoveredUDN, "", ipAddress, mac, discoveryProperties, null);
-                }
-            }
-        } catch (MagentaTVException e) {
-            logger.debug("Unable to process discovered device, UDN={} - {}", discoveredUDN, e.toString());
-        }
-    }
-
-    /**
      * Add a device to the device table
      *
      * @param udn UDN for the device

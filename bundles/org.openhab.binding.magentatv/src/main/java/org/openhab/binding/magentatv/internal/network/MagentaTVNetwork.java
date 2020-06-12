@@ -172,7 +172,7 @@ public class MagentaTVNetwork {
                 bytes[i] = (byte) Integer.parseInt(hex[i], 16);
             }
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid hex digit in MAC address.");
+            throw new IllegalArgumentException("Invalid hex digit in MAC address.", e);
         }
         return bytes;
     }

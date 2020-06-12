@@ -24,7 +24,6 @@ import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Properties;
@@ -92,8 +91,7 @@ public class MagentaTVHttp {
             }
 
             logger.trace("POST {} - SoapAction={}, Data = {}", url, postData, soapAction);
-            InputStream dataStream = new ByteArrayInputStream(
-                    postData.getBytes(Charset.forName(StandardCharsets.UTF_8.name())));
+            InputStream dataStream = new ByteArrayInputStream(postData.getBytes(StandardCharsets.UTF_8));
             httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
             logger.trace("POST {} - Response = {}", url, httpResponse);
             return httpResponse;
@@ -116,8 +114,6 @@ public class MagentaTVHttp {
         String errorMessage = "";
 
         try (Socket socket = new Socket()) {
-            // logger.trace("Sending data to {}:{}: {}", remoteIp, remotePort, data);
-            ;
             socket.setSoTimeout(NETWORK_TIMEOUT_MS); // set read timeout
             socket.connect(new InetSocketAddress(remoteIp, Integer.parseInt(remotePort)), NETWORK_TIMEOUT_MS);
 
@@ -126,7 +122,7 @@ public class MagentaTVHttp {
             ps.println(data);
 
             InputStream in = socket.getInputStream();
-            BufferedReader buff = new BufferedReader(new InputStreamReader(in));
+            BufferedReader buff = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
             // wait until somthing to read is available or socket I/O fails (IOException)
             String line = "";

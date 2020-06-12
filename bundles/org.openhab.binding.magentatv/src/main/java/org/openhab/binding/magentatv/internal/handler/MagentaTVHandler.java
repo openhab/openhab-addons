@@ -390,9 +390,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     public void setOnlineState(ThingStatus newStatus, String errorMessage) {
         ThingStatus status = this.getThing().getStatus();
         if (status != newStatus) {
-            if (newStatus == ThingStatus.INITIALIZING) {
-                logger.debug("{}: Invalid new thing state: {}", thingId, newStatus);
-            }
             if (newStatus == ThingStatus.ONLINE) {
                 updateStatus(newStatus);
                 updateState(CHANNEL_POWER, OnOffType.ON);
