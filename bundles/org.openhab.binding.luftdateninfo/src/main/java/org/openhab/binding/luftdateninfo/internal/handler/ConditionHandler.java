@@ -54,18 +54,18 @@ public class ConditionHandler extends BaseSensorHandler {
                     while (iter.hasNext()) {
                         SensorDataValue v = iter.next();
                         if (v.getValue_type().equals(TEMPERATURE)) {
-                            temperatureCache = new DecimalType(v.getValue());
+                            temperatureCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
                             updateState(TEMPERATURE_CHANNEL, temperatureCache);
                         } else if (v.getValue_type().equals(HUMIDITY)) {
-                            humidityCache = new DecimalType(v.getValue());
+                            humidityCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
                             updateState(HUMIDITY_CHANNEL, humidityCache);
                         } else if (v.getValue_type().equals(PRESSURE)) {
-                            double pressure = Double.parseDouble(v.getValue()) / 100;
-                            pressureCache = new DecimalType(NumberUtils.round(pressure, 2));
+                            double pressure = NumberUtils.convert(v.getValue()) / 100;
+                            pressureCache = new DecimalType(NumberUtils.round(pressure, 1));
                             updateState(PRESSURE_CHANNEL, pressureCache);
                         } else if (v.getValue_type().equals(PRESSURE_SEALEVEL)) {
-                            double pressureSea = Double.parseDouble(v.getValue()) / 100;
-                            pressureSeaCache = new DecimalType(NumberUtils.round(pressureSea, 2));
+                            double pressureSea = NumberUtils.convert(v.getValue()) / 100;
+                            pressureSeaCache = new DecimalType(NumberUtils.round(pressureSea, 1));
                             updateState(PRESSURE_SEA_CHANNEL, pressureSeaCache);
                         }
                     }

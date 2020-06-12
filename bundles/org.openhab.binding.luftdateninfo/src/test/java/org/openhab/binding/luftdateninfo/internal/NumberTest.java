@@ -46,13 +46,14 @@ public class NumberTest {
         assertEquals("Double 1.94, 1 place ", "1.9", Double.toString(d1r1));
     }
 
+    @Test
     public void testStringNumbers() {
         String d1 = "1.94";
         double d1r2 = NumberUtils.round(d1, 2);
         assertEquals("Double 1.94, 2 places ", "1.94", Double.toString(d1r2));
-        System.out.println("D1R2 " + d1r2);
+        // System.out.println("D1R2 " + d1r2);
         double d1r1 = NumberUtils.round(d1, 1);
-        System.out.println("D1R1 " + d1r1);
+        // System.out.println("D1R1 " + d1r1);
         assertEquals("Double 1.94, 1 place ", "1.9", Double.toString(d1r1));
     }
 }

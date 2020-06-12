@@ -48,9 +48,9 @@ public class NoiseHandlerTest {
         if (pmJson != null) {
             int result = noiseHandler.updateChannels(pmJson);
             assertEquals("Valid update", 0, result);
-            assertEquals("Noise EQ", new DecimalType("50.95"), noiseHandler.getNoiseEQCache());
-            assertEquals("Noise Min", new DecimalType("47.20"), noiseHandler.getNoiseMinCache());
-            assertEquals("Noise Max", new DecimalType("56.95"), noiseHandler.getNoiseMaxCache());
+            assertEquals("Noise EQ", new DecimalType("51.0"), noiseHandler.getNoiseEQCache());
+            assertEquals("Noise Min", new DecimalType("47.2"), noiseHandler.getNoiseMinCache());
+            assertEquals("Noise Max", new DecimalType("57.0"), noiseHandler.getNoiseMaxCache());
         } else {
             assertTrue(false);
         }
