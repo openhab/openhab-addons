@@ -22,8 +22,6 @@ import org.junit.Test;
 import org.openhab.binding.luftdateninfo.internal.mock.ConditionHandlerExtension;
 import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ConditionHandlerTest} Test Condition Handler updates
@@ -32,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ConditionHandlerTest {
-    private static final Logger logger = LoggerFactory.getLogger(PMHandlerTest.class);
 
     @Test
     public void testValidNoPressureUpdate() {

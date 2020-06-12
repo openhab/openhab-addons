@@ -79,13 +79,13 @@
 	</channel-type>
 	<channel-type id="pressure-channel">
 		<item-type>Number</item-type>
-		<label>Pressure</label>
-		<description>Pressure from the selected Sensor ID</description>
+		<label>Atmospheric Pressure</label>
+		<description>Atmospheric Pressure from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="pressure-sea-channel">
 		<item-type>Number</item-type>
-		<label>Pressure sea level</label>
-		<description>Pressure at sea level from the selected Sensor ID</description>
+		<label>Atmospheric Pressure sea level</label>
+		<description>Atmospheric Pressure at sea level from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="noise-eq-channel">
 		<item-type>Number</item-type>
