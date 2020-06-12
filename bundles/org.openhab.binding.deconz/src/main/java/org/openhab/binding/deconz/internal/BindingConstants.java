@@ -107,4 +107,7 @@ public class BindingConstants {
     public static final String CONFIG_APIKEY = "apikey";
 
     public static final String UNIQUE_ID = "uid";
+
+    public static final String PROPERTY_CT_MIN = "ctmin";
+    public static final String PROPERTY_CT_MAX = "ctmax";
 }

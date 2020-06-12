@@ -14,6 +14,8 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -109,10 +111,16 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             return;
         }
 
+        Map<String, Object> properties = new HashMap<>();
         if (light.uniqueid.isEmpty()) {
             logger.warn("No unique id reported for light {} ({})", light.modelid, light.name);
             return;
         }
+
+        if (light.ctmax != null)
+            properties.put(PROPERTY_CT_MAX, Integer.toString(light.ctmax));
+        if (light.ctmin != null)
+            properties.put(PROPERTY_CT_MIN, Integer.toString(light.ctmin));
 
         switch (lightType) {
             case ON_OFF_LIGHT:
@@ -147,8 +155,12 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, light.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(light.name + " (" + light.manufacturername + ")").withProperty("id", lightID)
-                .withProperty(UNIQUE_ID, light.uniqueid).withRepresentationProperty(UNIQUE_ID).build();
+                .withLabel(light.name + " (" + light.manufacturername + ")")
+                .withProperty("id", lightID)
+                .withProperty(UNIQUE_ID, light.uniqueid)
+                .withProperties(properties)
+                .withRepresentationProperty(UNIQUE_ID)
+                .build();
         thingDiscovered(discoveryResult);
     }
 
