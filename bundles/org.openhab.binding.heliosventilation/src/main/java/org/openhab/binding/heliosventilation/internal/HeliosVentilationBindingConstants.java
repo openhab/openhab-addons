@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,7 +40,7 @@ public class HeliosVentilationBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_HELIOS_VENTILATION = new ThingTypeUID(BINDING_ID, "ventilation");
 
-    public static final HashMap<Byte, HeliosVentilationDataPoint> DATAPOINTS;
+    public static final Map<Byte, HeliosVentilationDataPoint> DATAPOINTS;
 
     private static final Logger LOGGER;
     static {
@@ -54,7 +55,7 @@ public class HeliosVentilationBindingConstants {
      * parse datapoints from properties
      *
      */
-    private static HashMap<Byte, HeliosVentilationDataPoint> readChannelProperties() {
+    private static Map<Byte, HeliosVentilationDataPoint> readChannelProperties() {
         HashMap<Byte, HeliosVentilationDataPoint> result = new HashMap<Byte, HeliosVentilationDataPoint>();
 
         URL resource = Thread.currentThread().getContextClassLoader().getResource(DATAPOINT_FILE);

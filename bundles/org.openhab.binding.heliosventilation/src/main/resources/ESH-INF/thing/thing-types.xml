@@ -45,7 +45,7 @@
 				<description>The serial port name for the RS485 interfaces. Valid values are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
 			</parameter>
 
-			<parameter name="pollPeriod" type="integer" min="0">
+			<parameter name="pollPeriod" type="integer" min="0" unit="s">
 				<label>Poll Period</label>
 				<description>The poll period in seconds use 0 for no polling.</description>
 				<default>60</default>

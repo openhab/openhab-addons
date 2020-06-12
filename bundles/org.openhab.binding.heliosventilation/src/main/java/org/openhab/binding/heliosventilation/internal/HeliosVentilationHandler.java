@@ -64,7 +64,8 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     /** Logger Instance */
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private @NonNullByDefault({}) HeliosVentilationConfiguration config;
+    /* init to default to avoid NPE in case handleCommand() is called before initialize() */
+    private HeliosVentilationConfiguration config = new HeliosVentilationConfiguration();
 
     private SerialPortManager serialPortManager;
 
@@ -95,9 +96,16 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
         } else {
-            updateStatus(ThingStatus.UNKNOWN);
-            if (this.config.pollPeriod > 0) {
-                startPolling();
+            SerialPortIdentifier portId = serialPortManager.getIdentifier(config.serialPort);
+            if (portId == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Port " + config.serialPort + " is not known!");
+                serialPort = null;
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+                if (this.config.pollPeriod > 0) {
+                    startPolling();
+                }
             }
         }
 
@@ -249,7 +257,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     }
 
     private void poll(HeliosVentilationDataPoint v) {
-        byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_MAINBOARD, 0x00, v.address(), 0x00 };
+        byte[] txFrame = { 0x01, BUSMEMBER_ME, BUSMEMBER_MAINBOARD, 0x00, v.address(), 0x00 };
         txFrame[5] = (byte) checksum(txFrame);
 
         tx(txFrame);
@@ -298,30 +306,27 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 // we get here if data has been received
 
                 try {
-                    // Wait roughly a frame length to increase the likelihood that the complete frame is already
-                    // buffered. This improves the robustness for RS485/USB converters which sometimes duplicate bytes
-                    // otherwise
+                    // Wait roughly a frame length to ensure that the complete frame is already buffered. This improves
+                    // the robustness for RS485/USB converters which sometimes duplicate bytes otherwise.
                     Thread.sleep(8);
                 } catch (InterruptedException e) {
                     // ignore interruption
                 }
 
-                byte frame[] = { 0, 0, 0, 0, 0, 0 };
+                byte[] frame = { 0, 0, 0, 0, 0, 0 };
                 InputStream in = inputStream;
                 if (in != null) {
                     try {
                         do {
                             int cnt = 0;
-                            do {
-                                // read data from serial device
-                                while (cnt < 6 && in.available() > 0) {
-                                    final int bytes = in.read(frame, cnt, 1);
-                                    if (cnt > 0 || frame[0] == 0x01) {
-                                        // only proceed if the first byte was 0x01
-                                        cnt += bytes;
-                                    }
+                            // read data from serial device
+                            while (cnt < 6 && in.available() > 0) {
+                                final int bytes = in.read(frame, cnt, 1);
+                                if (cnt > 0 || frame[0] == 0x01) {
+                                    // only proceed if the first byte was 0x01
+                                    cnt += bytes;
                                 }
-                            } while (in.available() > 0 && cnt < 6);
+                            }
                             int sum = checksum(frame);
                             if (sum == (frame[5] & 0xff)) {
                                 if (logger.isTraceEnabled()) {
@@ -374,7 +379,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             do {
                 if (channelUID.getThingUID().equals(thing.getUID()) && v.getName().equals(channelUID.getId())) {
                     if (v.isWritable()) {
-                        byte txFrame[] = { 0x01, BUSMEMBER_ME, BUSMEMBER_CONTROLBOARDS, v.address(), 0x00, 0x00 };
+                        byte[] txFrame = { 0x01, BUSMEMBER_ME, BUSMEMBER_CONTROLBOARDS, v.address(), 0x00, 0x00 };
                         txFrame[4] = v.getTransmitDataFor((State) command);
                         if (v.requiresReadModifyWrite()) {
                             txFrame[4] |= memory.get(v.address()) & ~v.bitMask();
