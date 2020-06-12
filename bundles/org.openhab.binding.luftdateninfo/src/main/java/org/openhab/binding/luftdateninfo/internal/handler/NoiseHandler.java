@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
+import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 
 /**
  * The {@link NoiseHandler} is responsible for handling commands, which are
@@ -51,13 +52,13 @@ public class NoiseHandler extends BaseSensorHandler {
                     while (iter.hasNext()) {
                         SensorDataValue v = iter.next();
                         if (v.getValue_type().equals(NOISE_EQ)) {
-                            noiseEQCache = new DecimalType(v.getValue());
+                            noiseEQCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
                             updateState(NOISE_EQ_CHANNEL, noiseEQCache);
                         } else if (v.getValue_type().equals(NOISE_MIN)) {
-                            noiseMinCache = new DecimalType(v.getValue());
+                            noiseMinCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
                             updateState(NOISE_MIN_CHANNEL, noiseMinCache);
                         } else if (v.getValue_type().equals(NOISE_MAX)) {
-                            noiseMaxCache = new DecimalType(v.getValue());
+                            noiseMaxCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
                             updateState(NOISE_MAX_CHANNEL, noiseMaxCache);
                         }
                     }

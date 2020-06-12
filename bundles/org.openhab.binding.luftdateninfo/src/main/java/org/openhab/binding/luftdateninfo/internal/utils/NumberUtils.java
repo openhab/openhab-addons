@@ -22,15 +22,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class NumberUtils {
     public static double round(Object o, int places) {
-        // LOGGER.info("Round "+o);
+        double value = convert(o);
+
+        // for negative places return plain number
         if (places < 0) {
-            throw new IllegalArgumentException();
-        }
-        Double value = null;
-        if (o instanceof Integer) {
-            value = (double) ((Integer) o).intValue();
-        } else {
-            value = (Double) o;
+            return value;
         }
 
         long factor = (long) Math.pow(10, places);
@@ -39,4 +35,15 @@ public class NumberUtils {
         return (double) tmp / factor;
     }
 
+    public static double convert(Object o) {
+        Double value = null;
+        if (o instanceof Integer) {
+            value = (double) ((Integer) o).intValue();
+        } else if (o instanceof String) {
+            value = Double.parseDouble(o.toString());
+        } else {
+            value = (Double) o;
+        }
+        return value;
+    }
 }

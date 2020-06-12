@@ -106,8 +106,8 @@ public class PMHandlerTest {
         if (pmJson != null) {
             int result = pmHandler.updateChannels(pmJson);
             assertEquals("Valid update", 0, result);
-            assertEquals("PM25", new DecimalType("2.87"), pmHandler.getPM25Cache());
-            assertEquals("PM100", new DecimalType("5.15"), pmHandler.getPM100Cache());
+            assertEquals("PM25", new DecimalType("2.9"), pmHandler.getPM25Cache());
+            assertEquals("PM100", new DecimalType("5.2"), pmHandler.getPM100Cache());
         } else {
             assertTrue(false);
         }

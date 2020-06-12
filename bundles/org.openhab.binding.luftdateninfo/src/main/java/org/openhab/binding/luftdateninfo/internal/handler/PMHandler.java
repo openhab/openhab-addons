@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
+import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 
 /**
  * The {@link PMHandler} is responsible for handling commands, which are
@@ -46,15 +47,14 @@ public class PMHandler extends BaseSensorHandler {
             List<SensorDataValue> valueList = HTTPHandler.getLatestValues(json);
             if (valueList != null) {
                 if (HTTPHandler.isParticulate(valueList)) {
-
                     Iterator<SensorDataValue> iter = valueList.iterator();
                     while (iter.hasNext()) {
                         SensorDataValue v = iter.next();
                         if (v.getValue_type().equals(P1)) {
-                            pm100Cache = new DecimalType(v.getValue());
+                            pm100Cache = new DecimalType(NumberUtils.round(v.getValue(), 1));
                             updateState(PM100_CHANNEL, pm100Cache);
                         } else if (v.getValue_type().equals(P2)) {
-                            pm25Cache = new DecimalType(v.getValue());
+                            pm25Cache = new DecimalType(NumberUtils.round(v.getValue(), 1));
                             updateState(PM25_CHANNEL, pm25Cache);
                         }
                     }
