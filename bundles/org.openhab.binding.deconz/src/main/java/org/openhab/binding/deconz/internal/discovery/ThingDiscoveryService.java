@@ -138,6 +138,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case COLOR_DIMMABLE_LIGHT:
                 thingTypeUID = THING_TYPE_COLOR_LIGHT;
                 break;
+            case COLOR_LIGHT:
+                 thingTypeUID = (light.ctmin != null) ?THING_TYPE_EXTENDED_COLOR_LIGHT :THING_TYPE_COLOR_LIGHT;
+                 break;
             case EXTENDED_COLOR_LIGHT:
                 thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
                 break;
