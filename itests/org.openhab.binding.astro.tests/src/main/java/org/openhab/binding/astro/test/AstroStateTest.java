@@ -110,7 +110,7 @@ public class AstroStateTest {
         switch (thingID) {
             case (TEST_SUN_THING_ID):
                 SunCalc sunCalc = new SunCalc();
-                return sunCalc.getSunInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE, null);
+                return sunCalc.getSunInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE, null, false);
             case (TEST_MOON_THING_ID):
                 MoonCalc moonCalc = new MoonCalc();
                 return moonCalc.getMoonInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE);

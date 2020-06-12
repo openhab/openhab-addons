@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +50,7 @@ import org.slf4j.LoggerFactory;
 public class AstroDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
-
+    private static final Set<String> METEO_BASED_COUNTRIES = new HashSet<>(Arrays.asList("NZ", "AU"));
     private static final ThingUID SUN_THING = new ThingUID(THING_TYPE_SUN, LOCAL);
     private static final ThingUID MOON_THING = new ThingUID(THING_TYPE_MOON, LOCAL);
 
@@ -110,10 +111,13 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
 
     public void createResults(PointType location) {
         String propGeolocation;
+        String country = localeProvider.getLocale().getCountry();
         propGeolocation = String.format("%s,%s,%s", location.getLatitude(), location.getLongitude(),
                 location.getAltitude());
         thingDiscovered(DiscoveryResultBuilder.create(SUN_THING).withLabel("Local Sun")
-                .withProperty("geolocation", propGeolocation).withRepresentationProperty("geolocation").build());
+                .withProperty("geolocation", propGeolocation)
+                .withProperty("useMeteorologicalSeason", METEO_BASED_COUNTRIES.contains(country))
+                .withRepresentationProperty("geolocation").build());
         thingDiscovered(DiscoveryResultBuilder.create(MOON_THING).withLabel("Local Moon")
                 .withProperty("geolocation", propGeolocation).withRepresentationProperty("geolocation").build());
     }
