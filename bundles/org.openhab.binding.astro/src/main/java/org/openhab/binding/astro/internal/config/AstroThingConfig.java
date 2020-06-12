@@ -29,6 +29,7 @@ public class AstroThingConfig {
     public @Nullable Double altitude;
     public @Nullable Double latitude;
     public @Nullable Double longitude;
+    public boolean useMeteorologicalSeason;
     public int interval = 300;
     private @Nullable String thingUid;
 
@@ -66,6 +67,6 @@ public class AstroThingConfig {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("thing", thingUid)
                 .append("geolocation", geolocation).append("altitude", altitude).append("interval", interval)
-                .toString();
+                .append("useMeteorologicalSeason", useMeteorologicalSeason).toString();
     }
 }
