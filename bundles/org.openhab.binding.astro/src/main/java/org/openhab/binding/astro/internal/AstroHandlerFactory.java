@@ -85,7 +85,7 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
         ASTRO_THING_HANDLERS.remove(thing.getUID().toString());
     }
 
-    public static AstroThingHandler getHandler(String thingUid) {
+    public static @Nullable AstroThingHandler getHandler(String thingUid) {
         return ASTRO_THING_HANDLERS.get(thingUid);
     }
 }
