@@ -51,6 +51,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private Optional<String> localCameraURL = Optional.empty();
     private boolean isLocalCameraURLLoaded;
+    private Optional<State> floodlightAutoModeState = Optional.empty();
 
     public NAPresenceCameraHandler(Thing thing) {
         super(thing);
@@ -84,7 +85,10 @@ public class NAPresenceCameraHandler extends CameraHandler {
             case CHANNEL_CAMERA_FLOODLIGHT:
                 return getFloodlightState();
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
-                return getFloodlightAutoModeState();
+                if(!floodlightAutoModeState.isPresent() || UnDefType.UNDEF.equals(floodlightAutoModeState.get())) {
+                    floodlightAutoModeState = Optional.of(getFloodlightAutoModeState());
+                }
+                return floodlightAutoModeState.get();
         }
         return super.getNAThingProperty(channelId);
     }
@@ -99,27 +103,23 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private State getFloodlightAutoModeState() {
         if (module != null) {
-            return toOnOffType(isFloodlightAutoMode());
+            return toOnOffType(NAWelcomeCamera.LightModeStatusEnum.AUTO.equals(module.getLightModeStatus()));
         }
         return UnDefType.UNDEF;
-    }
-
-    private boolean isFloodlightAutoMode() {
-        if (module != null) {
-            return NAWelcomeCamera.LightModeStatusEnum.AUTO.equals(module.getLightModeStatus());
-        }
-        return false;
     }
 
     private void switchFloodlight(boolean isOn) {
         if (isOn) {
             changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.ON);
         } else {
-            switchFloodlightAutoMode(isFloodlightAutoMode());
+            final boolean isAutoMode = floodlightAutoModeState.isPresent()
+                    && OnOffType.ON.equals(floodlightAutoModeState.get());
+            switchFloodlightAutoMode(isAutoMode);
         }
     }
 
     private void switchFloodlightAutoMode(boolean isAutoMode) {
+        floodlightAutoModeState = Optional.of(toOnOffType(isAutoMode));
         if (isAutoMode) {
             changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.AUTO);
         } else {
