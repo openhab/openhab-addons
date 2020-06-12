@@ -530,6 +530,8 @@ So to get a refreshed picture, you need to use the refresh parameter in your sit
 | cameraLivePicture           | Image     | Camera Live Snapshot                                     |
 | cameraLivePictureUrl        | String    | Url of the live snapshot for this camera                 |
 | cameraLiveStreamUrl         | String    | Url of the live stream for this camera                   |
+| cameraFloodlightAutoMode    | Switch    | indicates whether the floodlight is switched to off or auto-mode |
+| cameraFloodlight            | Switch    | Switch for the floodlight                                |
 
 
 ### Welcome Person
