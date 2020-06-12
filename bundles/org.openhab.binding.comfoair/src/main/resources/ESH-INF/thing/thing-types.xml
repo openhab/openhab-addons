@@ -19,7 +19,7 @@
 			<channel-group id="heater" typeId="heater" />
 			<channel-group id="cookerhood" typeId="cookerhood" />
 			<channel-group id="enthalpy" typeId="enthalpy" />
-			<channel-group id="options" typeId="options" />
+<!--			<channel-group id="options" typeId="options" /> -->
 			<channel-group id="menuP1" typeId="menuP1" />
 			<channel-group id="menuP2" typeId="menuP2" />
 			<channel-group id="menuP9" typeId="menuP9" />
@@ -160,7 +160,7 @@
 			<channel id="enthalpyTime" typeId="enthalpy_time" />
 		</channels>
 	</channel-group-type>
-
+<!--
 	<channel-group-type id="options">
 		<label>Option States</label>
 		<channels>
@@ -175,7 +175,7 @@
 			<channel id="isEWT" typeId="is_ewt" />
 		</channels>
 	</channel-group-type>
-
+-->
 	<channel-group-type id="menuP1">
 		<label>Menu P1: Control States</label>
 		<channels>
@@ -864,7 +864,7 @@
 		<category>Time</category>
 		<state readOnly="true" />
 	</channel-type>
-
+<!--
 	<channel-type id="is_preheater" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Preheater</label>
@@ -958,7 +958,7 @@
 			</options>
 		</state>
 	</channel-type>
-
+-->
 	<channel-type id="is_L1_switch" advanced="true">
 		<item-type>Switch</item-type>
 		<label>L1 Switch</label>
