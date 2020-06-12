@@ -14,7 +14,10 @@ package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
+import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +75,8 @@ public class RobonectHandler extends BaseThingHandler {
 
     private HttpClient httpClient;
     private TimeZoneProvider timeZoneProvider;
+
+    private ZoneId timeZone = ZoneId.of("Europe/Berlin");
 
     private RobonectClient robonectClient;
 
@@ -279,8 +284,17 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private State convertUnixToDateTimeType(String unixTimeSec) {
-        Instant ns = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(ns, timeZoneProvider.getTimeZone());
+        // the value in unixTimeSec represents the time on the robot in its configured timezone. However, it does not
+        // provide which zone this is. Thus we have to add the zone information from the Thing configuration in order to
+        // provide correct results.
+        Instant rawInstant = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
+
+        ZoneOffset offsetToConfiguredZone = timeZone.getRules().getOffset(rawInstant);
+        long adjustedTime = rawInstant.getEpochSecond() - offsetToConfiguredZone.getTotalSeconds();
+        Instant adjustedInstant = Instant.ofEpochMilli(adjustedTime * 1000);
+
+        // we provide the time in the format as configured in the openHAB settings
+        ZonedDateTime zdt = adjustedInstant.atZone(timeZoneProvider.getTimeZone());
         return new DateTimeType(zdt);
     }
 
@@ -331,6 +345,15 @@ public class RobonectHandler extends BaseThingHandler {
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
+
+        String timeZoneString = robonectConfig.getTimezone();
+        try {
+            timeZone = ZoneId.of(timeZoneString);
+        } catch (DateTimeException e) {
+            logger.warn("Error setting time zone '{}', falling back to the default 'Europe/Berlin' time zone:",
+                    timeZoneString, e);
+        }
+
         try {
             httpClient.start();
             robonectClient = new RobonectClient(httpClient, endpoint);

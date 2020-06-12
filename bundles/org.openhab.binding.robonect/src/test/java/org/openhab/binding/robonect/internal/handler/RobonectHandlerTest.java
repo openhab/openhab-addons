@@ -82,7 +82,7 @@ public class RobonectHandlerTest {
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
 
-        Mockito.when(timezoneProvider.getTimeZone()).thenReturn(ZoneId.of("UTC"));
+        Mockito.when(timezoneProvider.getTimeZone()).thenReturn(ZoneId.of("Europe/Berlin"));
     }
 
     @Test
