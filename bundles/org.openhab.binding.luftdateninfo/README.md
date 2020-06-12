@@ -1,13 +1,8 @@
 # LuftdatenInfo Binding
 <img style="float: right;" src="doc/logo-rund.png">
-_abc_
-
-
 _Binding for the Sensor Community [luftdaten.info](https://luftdaten.info/). The community provides instructions to build sensors on your own and they can be integrated into the database._
 _Binding for the Sensor Community [luftdaten.info](https://luftdaten.info/). The community provides instructions to build sensors on your own and they can be integrated into the database._
 _With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openhab_
-_abc_
-_def_
 ## Supported Things
 
 _Three Things are supported_
