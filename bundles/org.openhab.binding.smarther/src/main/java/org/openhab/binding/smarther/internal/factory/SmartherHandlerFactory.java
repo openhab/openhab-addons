@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.smarther.internal.factory;
 
-import java.lang.invoke.MethodHandles;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -46,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SmartherHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherHandlerFactory.class);
 
     private final OAuthFactory oAuthFactory;
     private final SmartherAccountService authService;

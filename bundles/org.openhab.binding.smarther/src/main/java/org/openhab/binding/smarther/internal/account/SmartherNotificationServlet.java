@@ -13,7 +13,6 @@
 package org.openhab.binding.smarther.internal.account;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,7 @@ public class SmartherNotificationServlet extends HttpServlet {
     private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
     private static final String OK_RESULT_MSG = "{\"result\":0}";
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherNotificationServlet.class);
 
     private final SmartherAccountService accountService;
 

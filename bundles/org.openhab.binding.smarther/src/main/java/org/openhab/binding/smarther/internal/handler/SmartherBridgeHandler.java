@@ -15,7 +15,6 @@ package org.openhab.binding.smarther.internal.handler;
 import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -89,7 +88,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
     private static final long POLL_INITIAL_DELAY = 5;
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherBridgeHandler.class);
 
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
@@ -118,7 +117,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
-        this.config = getConfigAs(SmartherBridgeConfiguration.class);
+        this.config = new SmartherBridgeConfiguration();
     }
 
     @Override
@@ -355,20 +354,17 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
             updateStatus(ThingStatus.ONLINE);
             return true;
-
         } catch (SmartherAuthorizationException e) {
             logger.warn("Bridge[{}] Authorization error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            schedulePoll();
-            return false;
         } catch (RuntimeException e) {
             // All other exceptions apart from Authorization and Gateway issues
             logger.warn("Bridge[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-            schedulePoll();
-            return false;
         }
+        schedulePoll();
+        return false;
     }
 
     @Override
@@ -475,7 +471,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     public List<Location> getLocations() {
         final ExpiringCache<List<Location>> localLocationCache = this.locationCache;
         final List<Location> locations = (localLocationCache != null) ? localLocationCache.getValue() : null;
-        return (locations != null) ? locations : new ArrayList<>();
+        return (locations != null) ? locations : Collections.emptyList();
     }
 
     @Override
@@ -601,11 +597,10 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             if (localOAuthService != null) {
                 return localOAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
             }
-            return "";
         } catch (OAuthException e) {
             logger.warn("Bridge[{}] Error constructing AuthorizationUrl: ", thing.getUID());
-            return "";
         }
+        return "";
     }
 
     // ===========================================================================

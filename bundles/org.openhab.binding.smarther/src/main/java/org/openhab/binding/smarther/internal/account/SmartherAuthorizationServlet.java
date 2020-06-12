@@ -13,11 +13,10 @@
 package org.openhab.binding.smarther.internal.account;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -79,7 +78,7 @@ public class SmartherAuthorizationServlet extends HttpServlet {
     private static final String APPLICATION_AUTHORIZED_CLASS = "application.authorized";
     private static final String APPLICATION_AUTHORIZE = "application.authorize";
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherAuthorizationServlet.class);
 
     private final SmartherAccountService accountService;
     private final String indexTemplate;
@@ -204,7 +203,7 @@ public class SmartherAuthorizationServlet extends HttpServlet {
      * @return a string containing the html formatted text
      */
     private String formatApplications(String applicationTemplate, String servletBaseURL) {
-        final List<SmartherAccountHandler> applications = accountService.getSmartherAccountHandlers();
+        final Set<SmartherAccountHandler> applications = accountService.getSmartherAccountHandlers();
 
         return applications.isEmpty() ? HTML_EMPTY_APPLICATIONS
                 : applications.stream().map(p -> formatApplication(applicationTemplate, p, servletBaseURL))

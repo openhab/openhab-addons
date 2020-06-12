@@ -14,7 +14,6 @@ package org.openhab.binding.smarther.internal.discovery;
 
 import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService imp
 
     private static final String ID_SEPARATOR = "-";
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherModuleDiscoveryService.class);
 
     private @Nullable SmartherAccountHandler bridgeHandler;
     private @Nullable ThingUID bridgeUID;

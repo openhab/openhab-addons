@@ -14,7 +14,6 @@ package org.openhab.binding.smarther.internal.api;
 
 import static org.eclipse.jetty.http.HttpStatus.*;
 
-import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -83,7 +82,7 @@ public class SmartherApiConnector {
     // Set Chronothermostat Status > Busy visual user interface
     private static final int BUSY_VISUAL_UI_486 = 486;
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherApiConnector.class);
 
     private final JsonParser parser = new JsonParser();
     private final HttpClient httpClient;

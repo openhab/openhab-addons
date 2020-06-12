@@ -16,7 +16,6 @@ import static org.eclipse.jetty.http.HttpMethod.*;
 import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -93,7 +92,7 @@ public class SmartherApi {
     private static final String PATH_SUBSCRIBE = PATH_PLANTS + "/%s/subscription";
     private static final String PATH_UNSUBSCRIBE = PATH_SUBSCRIBE + "/%s";
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherApi.class);
 
     private final OAuthClientService oAuthClientService;
     private final String oAuthSubscriptionKey;

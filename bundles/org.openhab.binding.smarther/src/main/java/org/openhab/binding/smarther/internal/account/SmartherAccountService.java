@@ -17,13 +17,12 @@ import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.invoke.MethodHandles;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -60,9 +59,9 @@ public class SmartherAccountService {
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
     private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' doesn't match any Bridges. Has the bridge been removed?";
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherAccountService.class);
 
-    private final List<SmartherAccountHandler> handlers = new ArrayList<>();
+    private final Set<SmartherAccountHandler> handlers = new HashSet<>();
 
     private @Nullable HttpService httpService;
     private @Nullable BundleContext bundleContext;
@@ -226,10 +225,10 @@ public class SmartherAccountService {
     }
 
     /**
-     * Adds a {@link SmartherAccountHandler} handler to the account service handlers list.
+     * Adds a {@link SmartherAccountHandler} handler to the set of account service handlers.
      *
      * @param handler
-     *            the handler to add to the handlers list
+     *            the handler to add to the handlers set
      */
     public void addSmartherAccountHandler(SmartherAccountHandler handler) {
         if (!handlers.contains(handler)) {
@@ -238,21 +237,21 @@ public class SmartherAccountService {
     }
 
     /**
-     * Removes a {@link SmartherAccountHandler} handler from the account service handlers list.
+     * Removes a {@link SmartherAccountHandler} handler from the set of account service handlers.
      *
      * @param handler
-     *            the handler to remove from the handlers list
+     *            the handler to remove from the handlers set
      */
     public void removeSmartherAccountHandler(SmartherAccountHandler handler) {
         handlers.remove(handler);
     }
 
     /**
-     * Returns all the account service {@link SmartherAccountHandler} handlers list.
+     * Returns all the {@link SmartherAccountHandler} account service handlers.
      *
-     * @return the account service handlers list
+     * @return a set containing all the account service handlers
      */
-    public List<SmartherAccountHandler> getSmartherAccountHandlers() {
+    public Set<SmartherAccountHandler> getSmartherAccountHandlers() {
         return handlers;
     }
 

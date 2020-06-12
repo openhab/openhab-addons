@@ -14,7 +14,6 @@ package org.openhab.binding.smarther.internal.handler;
 
 import static org.openhab.binding.smarther.internal.SmartherBindingConstants.*;
 
-import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -69,7 +68,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
     private static final String DAILY_MIDNIGHT = "1 0 0 * * ? *";
     private static final long POLL_INITIAL_DELAY = 5;
 
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(SmartherModuleHandler.class);
 
     private final CronScheduler cronScheduler;
     private final SmartherDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
@@ -106,7 +105,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
         this.dynamicStateDescriptionProvider = provider;
         this.programChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_PROGRAM);
         this.endDateChannelUID = new ChannelUID(thing.getUID(), CHANNEL_SETTINGS_ENDDATE);
-        this.config = getConfigAs(SmartherModuleConfiguration.class);
+        this.config = new SmartherModuleConfiguration();
     }
 
     // ===========================================================================
@@ -595,26 +594,20 @@ public class SmartherModuleHandler extends BaseThingHandler {
         } catch (SmartherIllegalPropertyValueException e) {
             logger.debug("Module[{}] Illegal property value error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-            schedulePoll();
-            return false;
         } catch (SmartherSubscriptionAlreadyExistsException e) {
             logger.debug("Module[{}] Subscription error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-            schedulePoll();
-            return false;
         } catch (SmartherGatewayException e) {
             logger.warn("Module[{}] API Gateway error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            schedulePoll();
-            return false;
         } catch (RuntimeException e) {
             // All other exceptions apart from Subscription and Gateway issues
             logger.warn("Module[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-            schedulePoll();
-            return false;
         }
+        schedulePoll();
+        return false;
     }
 
     // ===========================================================================
@@ -712,7 +705,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_STATUS_TEMP_FORMAT, new StringType(localChrono.getTemperatureFormat()));
             final Program localProgram = localChrono.getProgram();
             if (localProgram != null) {
-                updateChannelState(CHANNEL_STATUS_PROGRAM, new StringType("" + localProgram.getNumber()));
+                updateChannelState(CHANNEL_STATUS_PROGRAM, new StringType(String.valueOf(localProgram.getNumber())));
             }
         }
 
