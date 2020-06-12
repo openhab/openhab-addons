@@ -1,56 +1,45 @@
 # LuftdatenInfo Binding
+![Luftdaten.info Logo](doc/logo-rund.png)
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
-
+_Binding for the Sensor Community [luftdaten.info](https://luftdaten.info/). The community provides instructions to build sensors on your own and they can be integrated into the database._
+ 
+ _With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openhab_
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+_Three Things are supported_
+* _Particulate Sensor - measure particulate matter PM2.5 and PM10_
+* _Conditions Sensor - measures environment conditions like temperature, humidity and some also provides atmospheric pressure_
+* _Noise Sensor - measures noise exposures in the environment_
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+_There's no auto discovery. See Thing configuration how to setup a Sensor._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+_Perform the following steps to get the appropriate Sensor ID_
+* _Go to to [luftdaten.info map](https://deutschland.maps.sensor.community/)_
+* _Choose your wanted value in bottom list - now only the Sensors are displayed which are supporting this_
+* _Click on your / any Sensor and the ID is displayed in the top left corner.Note: Sensor ID is just the number without beginning hash #_
+* _Enter this Sensor ID into the thing configuration_
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+![Luftdaten.info Logo](doc/LuftdatenInfo-Map.png)
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### Particulate Sensor 
+* PM25 - [ultrafine particulates](https://en.wikipedia.org/wiki/Particulates#Size,_shape_and_solubility_matter) microgram per cubic meter
+* PM100 - [coarse particulate matter](https://en.wikipedia.org/wiki/Particulates#Size,_shape_and_solubility_matter) microgram per cubic meter 
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+### Conditions Sensor 
+* Temperature - current temperature in degrees
+* Humidity - current humidity percent
+* Pressure - Atmospheric Pressure in hpa, not supported by all sensors
+* Pressure sea level - Atmospheric Pressure on sea level in hpa, not supported by all sensors
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+### Noise Sensor 
+Currently in [beta phase of the community](https://luftdaten.info/einfuehrung-zum-laermsensor/)
+* Noise EQ - average noise in dbA
+* Min Noise - minimum noise covered in the last 2.5 minutes in dbA
+* Max Noise - maximum noise covered in the last 2.5 minutes in dbA
 
-## Full Example
-
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
