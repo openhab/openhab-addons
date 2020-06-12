@@ -29,22 +29,9 @@ public class ComfoAirBindingConstants {
     public static final ThingTypeUID THING_TYPE_COMFOAIR_GENERIC = new ThingTypeUID(BINDING_ID, "comfoair");
 
     // Thing properties
-    // General properties
     public static final String PROPERTY_SOFTWARE_MAIN_VERSION = "softwareMainVersion";
     public static final String PROPERTY_SOFTWARE_MINOR_VERSION = "softwareMinorVersion";
     public static final String PROPERTY_DEVICE_NAME = "deviceName";
-    // Installed options
-    public static final String PROPERTY_OPTION_PREHEATER = "isPreheater";
-    public static final String PROPERTY_OPTION_BYPASS = "isBypass";
-    public static final String PROPERTY_OPTION_RECU_TYPE = "recuType";
-    public static final String PROPERTY_OPTION_RECU_SIZE = "recuSize";
-    public static final String PROPERTY_OPTION_CHIMNEY = "isChimney";
-    public static final String PROPERTY_OPTION_COOKERHOOD = "isCookerhood";
-    public static final String PROPERTY_OPTION_HEATER = "isHeater";
-    public static final String PROPERTY_OPTION_ENTHALPY = "isEnthalpy";
-    public static final String PROPERTY_OPTION_EWT = "isEWT";
-    // Common option states
-    public static final String[] COMMON_OPTION_STATES = { "Not installed", "Installed" };
 
     // Channel groups
     public static final String CG_CONTROL_PREFIX = "bindingControl#";
@@ -134,6 +121,16 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_ENTHALPY_HUMIDITY = "enthalpyHumidity";
     public static final String CHANNEL_ENTHALPY_LEVEL = "enthalpyLevel";
     public static final String CHANNEL_ENTHALPY_TIME = "enthalpyTime";
+    // Options channels
+    public static final String CHANNEL_OPTION_PREHEATER = "isPreheater";
+    public static final String CHANNEL_OPTION_BYPASS = "isBypass";
+    public static final String CHANNEL_OPTION_RECU_TYPE = "recuType";
+    public static final String CHANNEL_OPTION_RECU_SIZE = "recuSize";
+    public static final String CHANNEL_OPTION_CHIMNEY = "isChimney";
+    public static final String CHANNEL_OPTION_COOKERHOOD = "isCookerhood";
+    public static final String CHANNEL_OPTION_HEATER = "isHeater";
+    public static final String CHANNEL_OPTION_ENTHALPY = "isEnthalpy";
+    public static final String CHANNEL_OPTION_EWT = "isEWT";
     // Menu P1 channels
     public static final String CHANNEL_MENU20_MODE = "menu20Mode";
     public static final String CHANNEL_MENU21_MODE = "menu21Mode";
