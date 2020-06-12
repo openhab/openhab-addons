@@ -138,6 +138,7 @@
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @mkatter
+/bundles/org.openhab.binding.nzwateralerts/ @cossey
 /bundles/org.openhab.binding.oceanic/ @kgoderis
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert
 /bundles/org.openhab.binding.onebusaway/ @sdwilsh

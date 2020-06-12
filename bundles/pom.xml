@@ -174,6 +174,7 @@
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
+    <module>org.openhab.binding.nzwateralerts</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.omnikinverter</module>
     <module>org.openhab.binding.onebusaway</module>
