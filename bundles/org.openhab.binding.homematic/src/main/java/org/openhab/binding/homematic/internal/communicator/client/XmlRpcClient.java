@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
@@ -68,57 +69,67 @@ public class XmlRpcClient extends RpcClient<String> {
         if (logger.isTraceEnabled()) {
             logger.trace("Client XmlRpcRequest (port {}):\n{}", port, request);
         }
-        return sendMessage(port, request, 0);
+        Exception reason = null;
+        for (int rpcRetryCounter = 1; rpcRetryCounter <= MAX_RPC_RETRY; rpcRetryCounter++) {
+            try {
+                byte[] response = send(port, request);
+                Object[] data = new XmlRpcResponse(new ByteArrayInputStream(response), config.getEncoding())
+                        .getResponseData();
+                return new RpcResponseParser(request).parse(data);
+            } catch (UnknownRpcFailureException | UnknownParameterSetException ex) {
+                throw ex;
+            } catch (Exception ex) {
+                reason = ex;
+                if ("init".equals(request.getMethodName())) { // no retries for "init" request
+                    break;
+                }
+                logger.debug("XmlRpcMessage failure, sending message again {}/{}", rpcRetryCounter, MAX_RPC_RETRY);
+            }
+        }
+        throw new IOException(reason.getMessage(), reason); // can't be null here because logic in for loop
     }
 
-    /**
-     * Sends the message, retries if there was an error.
-     */
-    private synchronized Object[] sendMessage(int port, RpcRequest<String> request, int rpcRetryCounter)
-            throws IOException {
+    private byte[] send(int port, RpcRequest<String> request) throws Exception {
+        byte[] ret = new byte[0];
+        BytesContentProvider content = new BytesContentProvider(request.createMessage().getBytes(config.getEncoding()));
+        String url = String.format("http://%s:%s", config.getGatewayAddress(), port);
+        if (port == config.getGroupPort()) {
+            url += "/groups";
+        }
+        Request req = httpClient.POST(url).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
+                .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding());
         try {
-            BytesContentProvider content = new BytesContentProvider(
-                    request.createMessage().getBytes(config.getEncoding()));
-            String url = String.format("http://%s:%s", config.getGatewayAddress(), port);
-            if (port == config.getGroupPort()) {
-                url += "/groups";
-            }
+            ret = req.send().getContent();
+        } catch (IllegalArgumentException e) { // Returned buffer too large
+            logger.info("Blocking XmlRpcRequest failed: {}, trying non-blocking request", e.getMessage());
             InputStreamResponseListener respListener = new InputStreamResponseListener();
-            httpClient.POST(url).content(content)
-                    .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding()).send(respListener);
+            req.send(respListener);
             Response resp = respListener.get(config.getTimeout(), TimeUnit.SECONDS);
             ByteArrayOutputStream respData = new ByteArrayOutputStream(RESP_BUFFER_SIZE);
+
             int httpStatus = resp.getStatus();
             if (httpStatus == HttpStatus.OK_200) {
                 byte[] recvBuffer = new byte[RESP_BUFFER_SIZE];
-                InputStream input = respListener.getInputStream();
-                while (true) {
-                    int read = input.read(recvBuffer);
-                    if (read == -1) {
-                        break;
+                try (InputStream input = respListener.getInputStream()) {
+                    while (true) {
+                        int read = input.read(recvBuffer);
+                        if (read == -1) {
+                            break;
+                        }
+                        respData.write(recvBuffer, 0, read);
                     }
-                    respData.write(recvBuffer, 0, read);
+                    ret = respData.toByteArray();
                 }
             } else {
-                logger.warn("XmlRpcRequest failure, status code: {} / request was: {}", httpStatus, request);
+                logger.warn("Non-blocking XmlRpcRequest failed, status code: {} / request: {}", httpStatus, request);
                 resp.abort(new Exception());
             }
-            if (logger.isTraceEnabled()) {
-                logger.trace("Client XmlRpcResponse: (port {}):\n{}", port, respData.toString(config.getEncoding()));
-            }
-            Object[] data = new XmlRpcResponse(new ByteArrayInputStream(respData.toByteArray()), config.getEncoding())
-                    .getResponseData();
-            return new RpcResponseParser(request).parse(data);
-        } catch (UnknownRpcFailureException | UnknownParameterSetException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            if ("init".equals(request.getMethodName()) || rpcRetryCounter >= MAX_RPC_RETRY) {
-                throw new IOException(ex.getMessage(), ex);
-            } else {
-                rpcRetryCounter++;
-                logger.debug("XmlRpcMessage failure, sending message again {}/{}", rpcRetryCounter, MAX_RPC_RETRY);
-                return sendMessage(port, request, rpcRetryCounter);
-            }
         }
+
+        if (logger.isTraceEnabled()) {
+            String result = new String(ret, config.getEncoding());
+            logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
+        }
+        return ret;
     }
 }
