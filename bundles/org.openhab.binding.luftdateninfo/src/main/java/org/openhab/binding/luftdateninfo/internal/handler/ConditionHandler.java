@@ -47,7 +47,7 @@ public class ConditionHandler extends BaseSensorHandler {
     @Override
     public int updateChannels(@Nullable String json) {
         if (json != null) {
-            List<SensorDataValue> valueList = HTTPHandler.getValues(json);
+            List<SensorDataValue> valueList = HTTPHandler.getLatestValues(json);
             if (valueList != null) {
                 if (HTTPHandler.isCondition(valueList)) {
                     Iterator<SensorDataValue> iter = valueList.iterator();

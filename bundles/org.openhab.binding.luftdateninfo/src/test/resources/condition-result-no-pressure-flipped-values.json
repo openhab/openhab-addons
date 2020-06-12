@@ -1,19 +1,19 @@
 [
 	{
-		"id": 731094694,
+		"id": 731117559,
 		"sensordatavalues": [
 			{
-				"id": 1573610869,
+				"id": 1573660194,
 				"value_type": "temperature",
-				"value": "22.50"
+				"value": "22.70"
 			},
 			{
-				"id": 1573610870,
+				"id": 1573660195,
 				"value_type": "humidity",
-				"value": "62.00"
+				"value": "61.00"
 			}
 		],
-		"timestamp": "2020-06-09 06:38:08",
+		"timestamp": "2020-06-09 06:40:34",
 		"sampling_rate": null,
 		"location": {
 			"id": 11447,
@@ -35,21 +35,22 @@
 		}
 	},
 	{
-		"id": 731117559,
+		"id": 731094694,
 		"sensordatavalues": [
 			{
-				"id": 1573660194,
+				"id": 1573610869,
 				"value_type": "temperature",
-				"value": "22.70"
+				"value": "22.50"
 			},
 			{
-				"id": 1573660195,
+				"id": 1573610870,
 				"value_type": "humidity",
-				"value": "61.00"
+				"value": "62.00"
 			}
 		],
-		"timestamp": "2020-06-09 06:40:34",
-		"sampling_rate": null,
+		"timestamp": "2020-06-09 06:38:08",
+		"sampling_ra
+		te": null,
 		"location": {
 			"id": 11447,
 			"country": "DE",
