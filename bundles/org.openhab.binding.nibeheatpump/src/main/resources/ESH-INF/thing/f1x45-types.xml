@@ -4600,6 +4600,34 @@
 		<description>Whether to allow cooling (only valid for operational mode Manual or Add. heat only)</description>
 		<state readOnly="false"></state>
 	</channel-type>
+	<channel-type id="f1x45-47374" advanced="true">
+		<item-type>Number</item-type>
+		<label>Start Temperature Cooling</label>
+		<description>Start temperature for cooling</description>
+		<state min="-200" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-47375" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Heating</label>
+		<description>Stop temperature for heating</description>
+		<state min="-200" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-47376" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stop Temperature Additive</label>
+		<description>Stop temperature for additive</description>
+		<state min="-250" max="400" step="1" pattern="%.1f °C" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-47377" advanced="true">
+		<item-type>Number</item-type>
+		<label>Outdoor Filter Time</label>
+		<description>Filter time in hours</description>
+		<state min="0" max="48" step="1" pattern="%d h" readOnly="false">
+		</state>
+	</channel-type>
 	<channel-type id="f1x45-47378" advanced="true">
 		<item-type>Number</item-type>
 		<label>Max Diff. Comp.</label>
@@ -4851,6 +4879,38 @@
 				<option value="0">Auto</option>
 				<option value="1">Manual</option>
 				<option value="2">Add. heat only</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-48043" advanced="true">
+		<item-type>String</item-type>
+		<label>Holiday - Activated</label>
+		<description>0=inactive, 10=active</description>
+		<state min="0" max="10" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">inactive</option>
+				<option value="10">active</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-48046" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heat Offset Holiday</label>
+		<description>Offset of the heat curve, Holiday</description>
+		<state min="-10" max="10" step="1" pattern="%d" readOnly="false">
+		</state>
+	</channel-type>
+	<channel-type id="f1x45-48047" advanced="true">
+		<item-type>String</item-type>
+		<label>Hot water mode Holiday</label>
+		<description>Hot water comfort mode Holiday, -1 = off, 0 = economy, 1 = normal, 2 = luxury
+		</description>
+		<state min="-1" max="2" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="-1">off</option>
+				<option value="0">economy</option>
+				<option value="1">normal</option>
+				<option value="2">luxury</option>
 			</options>
 		</state>
 	</channel-type>
