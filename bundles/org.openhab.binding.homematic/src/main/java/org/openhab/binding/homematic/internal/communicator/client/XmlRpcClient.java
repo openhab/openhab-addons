@@ -133,7 +133,7 @@ public class XmlRpcClient extends RpcClient<String> {
                 } else {
                     logger.warn("Non-blocking XmlRpcRequest failed, status code: {} / request: {}", httpStatus,
                             request);
-                    resp.abort(new Exception());
+                    resp.abort(new IOException());
                 }
             }
             if (logger.isTraceEnabled()) {
