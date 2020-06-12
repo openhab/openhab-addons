@@ -192,6 +192,7 @@
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.nuvo</module>
+    <module>org.openhab.binding.nzwateralerts</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.ojelectronics</module>
     <module>org.openhab.binding.omnikinverter</module>
