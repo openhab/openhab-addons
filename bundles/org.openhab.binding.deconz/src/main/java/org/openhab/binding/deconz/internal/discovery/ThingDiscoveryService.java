@@ -28,6 +28,7 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -112,10 +113,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         Map<String, Object> properties = new HashMap<>();
-        if (light.uniqueid.isEmpty()) {
-            logger.warn("No unique id reported for light {} ({})", light.modelid, light.name);
-            return;
-        }
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
+        properties.put(Thing.PROPERTY_VENDOR, light.manufacturername);
+        properties.put(Thing.PROPERTY_MODEL_ID, light.modelid);
 
         if (light.ctmax != null)
             properties.put(PROPERTY_CT_MAX, Integer.toString(light.ctmax));
