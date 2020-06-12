@@ -1,9 +1,13 @@
 # LuftdatenInfo Binding
-![Luftdaten.info Logo](doc/logo-rund.png)
+<img style="float: right;" src="doc/logo-rund.png">
+_abc_
+
 
 _Binding for the Sensor Community [luftdaten.info](https://luftdaten.info/). The community provides instructions to build sensors on your own and they can be integrated into the database._
- 
- _With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openhab_
+_Binding for the Sensor Community [luftdaten.info](https://luftdaten.info/). The community provides instructions to build sensors on your own and they can be integrated into the database._
+_With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openhab_
+_abc_
+_def_
 ## Supported Things
 
 _Three Things are supported_
@@ -20,7 +24,7 @@ _There's no auto discovery. See Thing configuration how to setup a Sensor._
 _Perform the following steps to get the appropriate Sensor ID_
 * _Go to to [luftdaten.info map](https://deutschland.maps.sensor.community/)_
 * _Choose your wanted value in bottom list - now only the Sensors are displayed which are supporting this_
-* _Click on your / any Sensor and the ID is displayed in the top left corner.Note: Sensor ID is just the number without beginning hash #_
+* _Click on your / any Sensor and the ID is displayed in the top right corner.Note: Sensor ID is just the number without beginning hash #_
 * _Enter this Sensor ID into the thing configuration_
 
 ![Luftdaten.info Logo](doc/LuftdatenInfo-Map.png)
