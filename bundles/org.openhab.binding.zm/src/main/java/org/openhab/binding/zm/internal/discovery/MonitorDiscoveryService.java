@@ -65,12 +65,10 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void activate() {
-        logger.debug("Discovery: Activating Zoneminder monitor discovery service for {}", getBridgeUID());
     }
 
     @Override
     public void deactivate() {
-        logger.debug("Discovery: Deactivating Zoneminder monitor discovery service for {}", getBridgeUID());
     }
 
     @Override
@@ -90,16 +88,6 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
         discoverMonitors();
     }
 
-    @Override
-    public synchronized void abortScan() {
-        super.abortScan();
-    }
-
-    @Override
-    protected synchronized void stopScan() {
-        super.stopScan();
-    }
-
     private String getBridgeUID() {
         ZmBridgeHandler localBridgeHandler = bridgeHandler;
         return localBridgeHandler != null ? localBridgeHandler.getThing().getUID().toString() : "unknown";
@@ -115,7 +103,7 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
                 Integer imageRefreshInterval = localBridgeHandler.getDefaultImageRefreshInterval();
                 ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
                 ThingUID thingUID = new ThingUID(UID_MONITOR, monitor.getId());
-                Map<String, Object> properties = new HashMap<>(0);
+                Map<String, Object> properties = new HashMap<>();
                 properties.put(CONFIG_MONITOR_ID, id);
                 properties.put(CONFIG_ALARM_DURATION, alarmDuration);
                 if (imageRefreshInterval != null) {

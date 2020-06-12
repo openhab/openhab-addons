@@ -30,7 +30,7 @@
 			<description>Specifies time in seconds in which the binding will attempt to discover monitors</description>
 			<default>300</default>
 		</parameter>
-		<parameter name="defaultAlarmDuration" type="integer" required="false" groupName="config-info">
+		<parameter name="defaultAlarmDuration" type="integer" unit="s" required="false" groupName="config-info">
 			<label>Default Alarm Duration</label>
 			<description>Duration in seconds after which the alarm will be turned off</description>
 			<default>60</default>
@@ -42,7 +42,7 @@
 		<parameter name="host" type="text" required="true" groupName="url-info">
 			<label>Server</label>
 			<description>Zoneminder server name or IP address</description>
-			<context>network</context>
+			<context>network-address</context>
 		</parameter>
 		<parameter name="portNumber" type="text" required="false" groupName="url-info">
 			<label>Port Number</label>
@@ -73,11 +73,11 @@
 			<label>Monitor Id</label>
 			<description>Id of the monitor</description>
 		</parameter>
-		<parameter name="imageRefreshInterval" type="integer" required="false">
+		<parameter name="imageRefreshInterval" type="integer" unit="s" required="false">
 			<label>Image Refresh Interval</label>
 			<description>Interval in seconds with which monitor image is refreshed</description>
 		</parameter>
-		<parameter name="alarmDuration" type="integer" required="false">
+		<parameter name="alarmDuration" type="integer" unit="s" required="false">
 			<label>Alarm Duration</label>
 			<description>Duration in seconds after which the alarm will be turned off</description>
 		</parameter>

@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.quantity.Time;
 
@@ -81,7 +79,6 @@ public class ZmMonitorHandler extends BaseThingHandler {
     public void initialize() {
         ZmMonitorConfig config = getConfigAs(ZmMonitorConfig.class);
         monitorId = config.monitorId;
-        logger.debug("Monitor {}: Handler initializing", monitorId);
         imageRefreshInterval = config.imageRefreshInterval;
         Integer value = config.alarmDuration;
         alarmDuration = value != null ? value : DEFAULT_ALARM_DURATION_SECONDS;
@@ -91,7 +88,6 @@ public class ZmMonitorHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Monitor {}: Handler disposing", monitorId);
         stopAlarmOffJob();
         turnAlarmOff();
         stopImageRefreshJob();
@@ -157,7 +153,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.unmodifiableList(Stream.of(ZmActions.class).collect(Collectors.toList()));
+        return Collections.singleton(ZmActions.class);
     }
 
     public String getId() {

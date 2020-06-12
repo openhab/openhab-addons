@@ -139,7 +139,6 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Bridge: Handler initializing");
         ZmBridgeConfig config = getConfigAs(ZmBridgeConfig.class);
         host = config.host;
 
@@ -176,7 +175,6 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         cancelRefreshJob();
-        logger.debug("Bridge: Handler disposing");
     }
 
     @Override
@@ -289,7 +287,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
             return null;
         }
         // Call should timeout just before the refresh interval
-        int timeout = (localRefreshInterval * 1000) - 500;
+        int timeout = Math.min((localRefreshInterval * 1000) - 500, API_TIMEOUT_MSEC);
         Request request = httpClient.newRequest(buildStreamUrl(id, STREAM_IMAGE));
         request.method(HttpMethod.GET);
         request.timeout(timeout, TimeUnit.MILLISECONDS);
@@ -304,7 +302,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                 errorMsg = String.format("HTTP GET failed: %d, %s", response.getStatus(), response.getReason());
             }
         } catch (TimeoutException e) {
-            errorMsg = String.format("TimeoutException: Call to Doorbird API timed out after {} msec", timeout);
+            errorMsg = String.format("TimeoutException: Call to Zoneminder API timed out after {} msec", timeout);
         } catch (ExecutionException e) {
             errorMsg = String.format("ExecutionException: %s", e.getMessage());
         } catch (InterruptedException e) {
@@ -516,7 +514,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                 return true;
             }
         } else {
-            logger.warn("Bridge: Can't get version information from server");
+            logger.info("Bridge: Can't get version information from server");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't get version information");
         }
         return false;
