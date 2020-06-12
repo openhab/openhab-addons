@@ -15,7 +15,6 @@ package org.openhab.binding.robonect.internal.handler;
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -71,12 +71,14 @@ public class RobonectHandler extends BaseThingHandler {
     private ScheduledFuture<?> pollingJob;
 
     private HttpClient httpClient;
+    private TimeZoneProvider timeZoneProvider;
 
     private RobonectClient robonectClient;
 
-    public RobonectHandler(Thing thing, HttpClient httpClient) {
+    public RobonectHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -278,7 +280,7 @@ public class RobonectHandler extends BaseThingHandler {
 
     private State convertUnixToDateTimeType(String unixTimeSec) {
         Instant ns = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(ns, ZoneId.of("UTC"));
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(ns, timeZoneProvider.getTimeZone());
         return new DateTimeType(zdt);
     }
 
