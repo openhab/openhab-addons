@@ -61,8 +61,12 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
-            .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
-                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING)
+            .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, 
+                    THING_TYPE_DIMMABLE_LIGHT, 
+                    THING_TYPE_COLOR_LIGHT,
+                    THING_TYPE_EXTENDED_COLOR_LIGHT, 
+                    THING_TYPE_ONOFF_LIGHT, 
+                    THING_TYPE_WINDOW_COVERING)
             .collect(Collectors.toSet());
 
     private static final double HUE_FACTOR = 65535 / 360.0;

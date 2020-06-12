@@ -53,7 +53,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES,
+            .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS,
+                    SensorThingHandler.SUPPORTED_THING_TYPES,
                     SensorThermostatThingHandler.SUPPORTED_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
