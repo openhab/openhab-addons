@@ -502,36 +502,38 @@ All these channels are read only.
 
 ### Welcome and Presence Camera
 
-All these channels are read only.
-
-Warning : the URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding.
+Warning: The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding.
 So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
 
 **Supported channels for the Welcome Camera thing:**
 
-| Channel ID                  | Item Type | Description                                              |
-|-----------------------------|-----------|----------------------------------------------------------|
-| welcomeCameraStatus         | Switch    | State of the camera                                      |
-| welcomeCameraSdStatus       | Switch    | State of the SD card                                     |
-| welcomeCameraAlimStatus     | Switch    | State of the power connector                             |
-| welcomeCameraIsLocal        | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
-| welcomeCameraLivePicture    | Image     | Camera Live Snapshot                                     |
-| welcomeCameraLivePictureUrl | String    | Url of the live snapshot for this camera                 |
-| welcomeCameraLiveStreamUrl  | String    | Url of the live stream for this camera                   |
+| Channel ID                  | Item Type | Read/Write | Description                                                  |
+|-----------------------------|-----------|------------|--------------------------------------------------------------|
+| welcomeCameraStatus         | Switch    | Read-only  | State of the camera                                          |
+| welcomeCameraSdStatus       | Switch    | Read-only  | State of the SD card                                         |
+| welcomeCameraAlimStatus     | Switch    | Read-only  | State of the power connector                                 |
+| welcomeCameraIsLocal        | Switch    | Read-only  | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| welcomeCameraLivePicture    | Image     | Read-only  | Camera Live Snapshot                                         |
+| welcomeCameraLivePictureUrl | String    | Read-only  | Url of the live snapshot for this camera                     |
+| welcomeCameraLiveStreamUrl  | String    | Read-only  | Url of the live stream for this camera                       |
 
 **Supported channels for the Presence Camera thing:**
 
-| Channel ID                  | Item Type | Description                                              |
-|-----------------------------|-----------|----------------------------------------------------------|
-| cameraStatus                | Switch    | State of the camera                                      |
-| cameraSdStatus              | Switch    | State of the SD card                                     |
-| cameraAlimStatus            | Switch    | State of the power connector                             |
-| cameraIsLocal               | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
-| cameraLivePicture           | Image     | Camera Live Snapshot                                     |
-| cameraLivePictureUrl        | String    | Url of the live snapshot for this camera                 |
-| cameraLiveStreamUrl         | String    | Url of the live stream for this camera                   |
-| cameraFloodlightAutoMode    | Switch    | indicates whether the floodlight is switched to off or auto-mode |
-| cameraFloodlight            | Switch    | Switch for the floodlight                                |
+Warning: The floodlight auto-mode (cameraFloodlightAutoMode) isn't updated. It is determined initially but never updated
+when the mode is changed by another application. Therefore the binding handles its own state of the auto-mode.
+This has the advantage that the user can define its own floodlight switch off behaviour.
+
+| Channel ID                  | Item Type | Read/Write | Description                                                  |
+|-----------------------------|-----------|------------|--------------------------------------------------------------|
+| cameraStatus                | Switch    | Read-only  | State of the camera                                          |
+| cameraSdStatus              | Switch    | Read-only  | State of the SD card                                         |
+| cameraAlimStatus            | Switch    | Read-only  | State of the power connector                                 |
+| cameraIsLocal               | Switch    | Read-only  | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| cameraLivePicture           | Image     | Read-only  | Camera Live Snapshot                                         |
+| cameraLivePictureUrl        | String    | Read-only  | Url of the live snapshot for this camera                     |
+| cameraLiveStreamUrl         | String    | Read-only  | Url of the live stream for this camera                       |
+| cameraFloodlightAutoMode    | Switch    | Read-write | When set the floodlight gets switched to auto instead of off |
+| cameraFloodlight            | Switch    | Read-write | Switch for the floodlight                                    |
 
 
 ### Welcome Person
