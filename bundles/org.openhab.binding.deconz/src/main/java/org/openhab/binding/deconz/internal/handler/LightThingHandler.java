@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -78,8 +79,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
 
+    private final int CT_MAX;
+    private final int CT_MIN;
+
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
+        CT_MAX = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MAX), 500);
+        CT_MIN = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MIN), 153);
     }
 
     @Override
@@ -315,12 +321,12 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         }
     }
 
-    private int unscaleColorTemperature(double ct) {
-        return (int) (ct / 100.0 * (500 - 153) + 153);
+    private int unscaleColorTemperature(final double ct) {
+        return (int) (ct / 100.0 * (CT_MAX - CT_MIN) + CT_MIN);
     }
 
-    private double scaleColorTemperature(int ct) {
-        return 100.0 * (ct - 153) / (500 - 153);
+    private double scaleColorTemperature    (final int ct) {
+        return 100.0 * (ct - CT_MIN) / (CT_MAX - CT_MIN);
     }
 
     private PercentType toPercentType(int val) {
