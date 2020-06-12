@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
@@ -39,8 +40,8 @@ import io.swagger.client.model.NAStationModule;
 public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
-    public NAModule3Handler(Thing thing) {
-        super(thing);
+    public NAModule3Handler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
                     case CHANNEL_SUM_RAIN24:
                         return toQuantityType(dashboardData.getSumRain24(), API_RAIN_UNIT);
                     case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc());
+                        return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
                 }
             }
         }

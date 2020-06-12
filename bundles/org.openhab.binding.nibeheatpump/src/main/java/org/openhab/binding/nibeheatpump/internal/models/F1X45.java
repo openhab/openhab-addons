@@ -660,6 +660,10 @@ public class F1X45 {
                     put(47370, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Allow Additive Heating"));
                     put(47371, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Allow Heating"));
                     put(47372, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Allow Cooling"));
+                    put(47374, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Start Temperature Cooling"));
+                    put(47375, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Stop Temperature Heating"));
+                    put(47376, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Stop Temperature Additive"));
+                    put(47377, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Outdoor Filter Time"));
                     put(47378, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Max diff. comp."));
                     put(47379, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Max diff. add."));
                     put(47380, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Low brine out autoreset"));
@@ -695,6 +699,9 @@ public class F1X45 {
                     put(47540, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "Heat DM diff"));
                     put(47543, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "Cooling DM diff"));
                     put(47570, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Operational mode"));
+                    put(48043, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Holiday - Activated"));
+                    put(48046, new VariableInformation(   1, NibeDataType.S8 , Type.SETTING , "Heat Offset Holiday"));
+                    put(48047, new VariableInformation(   1, NibeDataType.S8 , Type.SETTING , "Hot water mode Holiday"));
                     put(48053, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "FLM 2 speed 4"));
                     put(48054, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "FLM 2 speed 3"));
                     put(48055, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "FLM 2 speed 2"));
