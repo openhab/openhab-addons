@@ -29,6 +29,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ThingMock} Thing Mock
@@ -37,6 +39,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 @NonNullByDefault
 public class ThingMock implements Thing {
+    private static final Logger logger = LoggerFactory.getLogger(Thing.class);
 
     private Configuration config = new Configuration(); // = new HashMap<String, Object>();
 

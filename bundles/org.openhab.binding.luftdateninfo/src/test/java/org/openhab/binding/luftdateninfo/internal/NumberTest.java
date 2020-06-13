@@ -14,6 +14,7 @@ package org.openhab.binding.luftdateninfo.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 
@@ -22,6 +23,7 @@ import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class NumberTest {
 
     @Test

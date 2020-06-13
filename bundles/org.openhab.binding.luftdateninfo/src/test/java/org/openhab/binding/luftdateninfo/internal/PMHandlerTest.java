@@ -102,6 +102,7 @@ public class PMHandlerTest {
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        pmHandler.initialize();
         String pmJson = FileReader.readFileInString("src/test/resources/pm-result.json");
         if (pmJson != null) {
             int result = pmHandler.updateChannels(pmJson);
