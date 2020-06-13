@@ -232,8 +232,8 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param <T> type of the result derived from
      * @return key for the value
      */
-    protected <T extends java.lang.Enum<T>> T getKeyFromMapping(final HomekitCharacteristicType characteristicType,
-            Map<T, String> mapping, final T defaultValue) {
+    protected <T> T getKeyFromMapping(final HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+            final T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
             final State state = c.get().getItem().getState();
