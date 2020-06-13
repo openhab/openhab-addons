@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Forecast implements Comparable<Forecast> {
-    protected final ZonedDateTime validTime;
+    private final ZonedDateTime validTime;
     private final Map<String, @Nullable BigDecimal> parameters;
 
     public Forecast(ZonedDateTime validTime, Map<String, @Nullable BigDecimal> parameters) {

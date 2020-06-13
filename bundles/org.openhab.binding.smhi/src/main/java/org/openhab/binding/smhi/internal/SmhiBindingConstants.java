@@ -69,5 +69,5 @@ public class SmhiBindingConstants {
     public static final String POINT_FORECAST_URL = BASE_URL
             + "/api/category/pmp3g/version/2/geotype/point/lon/%.6f/lat/%.6f/data.json";
 
-    public static final BigDecimal OCTAS_TO_PERCENT = BigDecimal.valueOf(0.08);
+    public static final BigDecimal OCTAS_TO_PERCENT = BigDecimal.valueOf(12.5);
 }

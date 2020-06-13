@@ -39,7 +39,6 @@ import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
@@ -62,7 +61,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmhiHandler.class);
 
-    private @NonNullByDefault({}) SmhiConfiguration config;
+    private @NonNullByDefault({}) SmhiConfiguration config = new SmhiConfiguration();
 
     private final HttpClient httpClient;
     private @Nullable SmhiConnector connection;
@@ -92,24 +91,14 @@ public class SmhiHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            synchronized (this) {
-                Future<?> localRef = instantUpdate;
-                if (localRef == null || localRef.isDone()) {
-                    instantUpdate = scheduler.schedule(this::getUpdatedForecast, 5, TimeUnit.SECONDS);
-                } else {
-                    logger.debug("Already waiting for scheduled refresh");
-                }
-            }
+            updateNow();
         }
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(SmhiConfiguration.class);
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
-        }
+
         connection = new SmhiConnector(httpClient);
 
         // Check which channel groups are selected in the config.
@@ -119,14 +108,7 @@ public class SmhiHandler extends BaseThingHandler {
 
         startPolling();
         updateStatus(ThingStatus.ONLINE);
-        synchronized (this) {
-            Future<?> localRef = instantUpdate;
-            if (localRef == null || localRef.isDone()) {
-                instantUpdate = scheduler.schedule(this::getUpdatedForecast, 5, TimeUnit.SECONDS);
-            } else {
-                logger.debug("Already waiting for scheduled refresh");
-            }
-        }
+        updateNow();
     }
 
     /**
@@ -248,7 +230,7 @@ public class SmhiHandler extends BaseThingHandler {
                 case MEDIUM_CLOUD_COVER:
                 case LOW_CLOUD_COVER:
                 case TOTAL_CLOUD_COVER:
-                    newState = new QuantityType<>(value.divide(OCTAS_TO_PERCENT), SmartHomeUnits.PERCENT);
+                    newState = new QuantityType<>(value.multiply(OCTAS_TO_PERCENT), SmartHomeUnits.PERCENT);
                     break;
                 case PRECIPITATION_MAX:
                 case PRECIPITATION_MEAN:
@@ -295,6 +277,18 @@ public class SmhiHandler extends BaseThingHandler {
         }
         if (!hasLatestForecast && isForecastUpdated()) {
             getUpdatedForecast();
+        }
+    }
+
+    /**
+     * Schedules an imminent update, making it wait 5 seconds to catch any bursts of calls before executing.
+     */
+    private synchronized void updateNow() {
+        Future<?> localRef = instantUpdate;
+        if (localRef == null || localRef.isDone()) {
+            instantUpdate = scheduler.schedule(this::getUpdatedForecast, 5, TimeUnit.SECONDS);
+        } else {
+            logger.debug("Already waiting for scheduled refresh");
         }
     }
 
@@ -400,22 +394,55 @@ public class SmhiHandler extends BaseThingHandler {
         for (int i : hours) {
             ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), "hour_" + i);
             CHANNEL_IDS.forEach(id -> {
-                ChannelUID channelUID = new ChannelUID(groupUID, id);
-                Channel channel = ChannelBuilder.create(channelUID, "Number")
-                        .withType(new ChannelTypeUID(BINDING_ID, id)).build();
-                channels.add(channel);
+                channels.add(createChannel(groupUID, id));
             });
         }
 
         for (int i : days) {
             ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), "day_" + i);
             CHANNEL_IDS.forEach(id -> {
-                ChannelUID channelUID = new ChannelUID(groupUID, id);
-                Channel channel = ChannelBuilder.create(channelUID, "Number")
-                        .withType(new ChannelTypeUID(BINDING_ID, id)).build();
-                channels.add(channel);
+                channels.add(createChannel(groupUID, id));
             });
         }
         return channels;
+    }
+
+    private Channel createChannel(ChannelGroupUID channelGroupUID, String channelID) {
+        ChannelUID channelUID = new ChannelUID(channelGroupUID, channelID);
+        String itemType = "Number";
+        switch (channelID) {
+            case TEMPERATURE:
+                itemType += ":Temperature";
+                break;
+            case PRESSURE:
+                itemType += ":Pressure";
+                break;
+            case VISIBILITY:
+                itemType += ":Length";
+                break;
+            case WIND_DIRECTION:
+                itemType += ":Angle";
+            case WIND_SPEED:
+            case GUST:
+            case PRECIPITATION_MAX:
+            case PRECIPITATION_MEAN:
+            case PRECIPITATION_MEDIAN:
+            case PRECIPITATION_MIN:
+                itemType += ":Speed";
+                break;
+            case RELATIVE_HUMIDITY:
+            case PERCENT_FROZEN:
+            case TOTAL_CLOUD_COVER:
+            case HIGH_CLOUD_COVER:
+            case MEDIUM_CLOUD_COVER:
+            case LOW_CLOUD_COVER:
+            case THUNDER_PROBABILITY:
+                itemType += ":Dimensionless";
+                break;
+
+        }
+        Channel channel = ChannelBuilder.create(channelUID, itemType)
+                .withType(new ChannelTypeUID(BINDING_ID, channelID)).build();
+        return channel;
     }
 }

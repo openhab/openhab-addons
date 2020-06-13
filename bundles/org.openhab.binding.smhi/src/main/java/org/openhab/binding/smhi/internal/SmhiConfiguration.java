@@ -26,8 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 public class SmhiConfiguration {
     public double latitude;
     public double longitude;
-    @Nullable
-    public List<Integer> hourlyForecasts;
-    @Nullable
-    public List<Integer> dailyForecasts;
+    public @Nullable List<Integer> hourlyForecasts;
+    public @Nullable List<Integer> dailyForecasts;
 }
