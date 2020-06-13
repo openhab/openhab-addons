@@ -34,11 +34,11 @@ import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 @NonNullByDefault
 public class ConditionHandler extends BaseSensorHandler {
 
-    protected @Nullable DecimalType temperatureCache;
-    protected @Nullable DecimalType humidityCache;
-    protected @Nullable DecimalType pressureCache;
-    protected @Nullable DecimalType pressureSeaCache;
     protected static final DecimalType UNDEF = new DecimalType(-1);
+    protected DecimalType temperatureCache = UNDEF;
+    protected DecimalType humidityCache = UNDEF;
+    protected DecimalType pressureCache = UNDEF;
+    protected DecimalType pressureSeaCache = UNDEF;
 
     public ConditionHandler(Thing thing) {
         super(thing);
