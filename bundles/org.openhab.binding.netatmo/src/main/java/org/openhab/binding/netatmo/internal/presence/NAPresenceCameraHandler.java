@@ -52,7 +52,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private Optional<String> localCameraURL = Optional.empty();
     private boolean isLocalCameraURLLoaded;
-    private Optional<State> floodlightAutoModeState = Optional.empty();
+    private State floodlightAutoModeState = UnDefType.UNDEF;
 
     public NAPresenceCameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
@@ -86,10 +86,10 @@ public class NAPresenceCameraHandler extends CameraHandler {
             case CHANNEL_CAMERA_FLOODLIGHT:
                 return getFloodlightState();
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
-                if(!floodlightAutoModeState.isPresent() || UnDefType.UNDEF.equals(floodlightAutoModeState.get())) {
-                    floodlightAutoModeState = Optional.of(getFloodlightAutoModeState());
+                if(UnDefType.UNDEF.equals(floodlightAutoModeState)) {
+                    floodlightAutoModeState = getFloodlightAutoModeState();
                 }
-                return floodlightAutoModeState.get();
+                return floodlightAutoModeState;
         }
         return super.getNAThingProperty(channelId);
     }
@@ -113,14 +113,12 @@ public class NAPresenceCameraHandler extends CameraHandler {
         if (isOn) {
             changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.ON);
         } else {
-            final boolean isAutoMode = floodlightAutoModeState.isPresent()
-                    && OnOffType.ON.equals(floodlightAutoModeState.get());
-            switchFloodlightAutoMode(isAutoMode);
+            switchFloodlightAutoMode(OnOffType.ON.equals(floodlightAutoModeState));
         }
     }
 
     private void switchFloodlightAutoMode(boolean isAutoMode) {
-        floodlightAutoModeState = Optional.of(toOnOffType(isAutoMode));
+        floodlightAutoModeState = toOnOffType(isAutoMode);
         if (isAutoMode) {
             changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.AUTO);
         } else {
