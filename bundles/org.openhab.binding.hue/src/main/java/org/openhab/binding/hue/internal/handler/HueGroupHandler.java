@@ -173,6 +173,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                         groupState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
                     } else {
                         groupState = LightStateConverter.toColorLightState(hsbCommand, group.getState());
+                        groupState.setOn(true);
                         if (groupState != null) {
                             groupState.setTransitionTime(fadeTime);
                         }
@@ -340,8 +341,10 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     public boolean onGroupStateChanged(FullGroup group) {
         logger.trace("onGroupStateChanged() was called for group {}", group.getId());
 
+        State state = group.getState();
+
         final FullGroup lastState = lastFullGroup;
-        if (lastState == null || !Objects.equals(lastState.getState(), group.getState())) {
+        if (lastState == null || !Objects.equals(lastState.getState(), state)) {
             lastFullGroup = group;
         } else {
             return true;
@@ -353,8 +356,6 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         lastSentBrightness = null;
 
         updateStatus(ThingStatus.ONLINE);
-
-        State state = group.getState();
 
         logger.debug("onGroupStateChanged Group {}: on {} bri {} hue {} sat {} temp {} mode {} XY {}", group.getName(),
                 state.isOn(), state.getBrightness(), state.getHue(), state.getSaturation(), state.getColorTemperature(),
