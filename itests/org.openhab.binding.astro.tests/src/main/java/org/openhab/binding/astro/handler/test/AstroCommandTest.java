@@ -17,7 +17,10 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.THING_TYPE_SUN;
 import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
 
+import java.time.ZoneId;
+
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -60,7 +63,9 @@ public class AstroCommandTest {
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         CronScheduler cronScheduler = mock(CronScheduler.class);
-        AstroThingHandler sunHandler = spy(new SunHandler(thing, cronScheduler));
+        TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
+        when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
+        AstroThingHandler sunHandler = spy(new SunHandler(thing, cronScheduler, timeZoneProvider));
 
         // Required from the AstroThingHandler to send the status update
         doReturn(true).when(callback).isChannelLinked(eq(channelUID));

@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.State;
@@ -72,13 +71,6 @@ public class AstroStateTest {
 
     @Test
     public void testParametrized() {
-        // Anonymous implementation of the service to adapt the time zone to the tested longitude and latitude
-        PropertyUtils.setTimeZoneProvider(new TimeZoneProvider() {
-            @Override
-            public ZoneId getTimeZone() {
-                return ZONE_ID;
-            }
-        });
         try {
             assertStateUpdate(thingID, channelId, expectedState);
         } catch (Exception e) {
@@ -88,7 +80,7 @@ public class AstroStateTest {
 
     private void assertStateUpdate(String thingID, String channelId, State expectedState) throws Exception {
         ChannelUID testItemChannelUID = new ChannelUID(getThingUID(thingID), channelId);
-        State state = PropertyUtils.getState(testItemChannelUID, new AstroChannelConfig(), getPlanet(thingID));
+        State state = PropertyUtils.getState(testItemChannelUID, new AstroChannelConfig(), getPlanet(thingID), ZONE_ID);
         assertEquals(expectedState, state);
     }
 
