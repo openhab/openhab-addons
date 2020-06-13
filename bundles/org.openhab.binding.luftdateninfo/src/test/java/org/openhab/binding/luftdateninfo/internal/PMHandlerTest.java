@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PMHandlerTest {
-    private static final Logger logger = LoggerFactory.getLogger(PMHandlerTest.class);
+    private Logger logger = LoggerFactory.getLogger(PMHandlerTest.class);
 
     @Test
     public void testValidConfigStatus() {

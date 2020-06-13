@@ -36,28 +36,28 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class BaseSensorHandler extends BaseThingHandler {
 
-    protected static final Logger logger = LoggerFactory.getLogger(BaseSensorHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(BaseSensorHandler.class);
 
     protected @Nullable LuftdatenInfoConfiguration config;
     protected @Nullable ScheduledFuture<?> refreshJob;
     protected int refreshInterval = 5;
 
     protected int configStatus = -1;
-    protected final static int CONFIG_OK = 0;
-    protected final static int CONFIG_IS_NULL = 1;
-    protected final static int CONFIG_SENSOR_IS_NULL = 2;
-    protected final static int CONFIG_SENSOR_NUMBER = 3;
+    protected static final int CONFIG_OK = 0;
+    protected static final int CONFIG_IS_NULL = 1;
+    protected static final int CONFIG_SENSOR_IS_NULL = 2;
+    protected static final int CONFIG_SENSOR_NUMBER = 3;
 
     protected int updateStatus = -1;
-    protected final static int UPDATE_OK = 0;
-    protected final static int UPDATE_CONNECTION_ERROR = 1;
-    protected final static int UPDATE_VALUE_ERROR = 2;
-    protected final static int UPDATE_VALUE_EMPTY = 3;
+    protected static final int UPDATE_OK = 0;
+    protected static final int UPDATE_CONNECTION_ERROR = 1;
+    protected static final int UPDATE_VALUE_ERROR = 2;
+    protected static final int UPDATE_VALUE_EMPTY = 3;
 
-    protected int LC_UNKNOWN = -1;
-    protected int LC_RUNNING = 0;
-    protected int LC_INITIALIZING = 1;
-    protected int LC_DISPOSED = 2;
+    protected static final int LC_UNKNOWN = -1;
+    protected static final int LC_RUNNING = 0;
+    protected static final int LC_INITIALIZING = 1;
+    protected static final int LC_DISPOSED = 2;
     protected int lifecycleStatus = LC_UNKNOWN;
 
     public BaseSensorHandler(Thing thing) {
@@ -109,7 +109,6 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
             }
             lifecycleStatus = LC_RUNNING;
         });
-
     }
 
     @Override

@@ -22,8 +22,6 @@ import org.junit.Test;
 import org.openhab.binding.luftdateninfo.internal.mock.NoiseHandlerExtension;
 import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NoiseHandlerTest} Test Noise Handler updates
@@ -32,7 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NoiseHandlerTest {
-    private static final Logger logger = LoggerFactory.getLogger(PMHandlerTest.class);
 
     @Test
     public void testValidUpdate() {

@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class DateTimeUtils {
     private static SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd hh:mm:ss");
 
-    public static @Nullable Date toDate(String dateTime) {
+    public static synchronized @Nullable Date toDate(String dateTime) {
         try {
             return sdf.parse(dateTime);
         } catch (ParseException | NumberFormatException e) {

@@ -28,7 +28,6 @@ public class ConditionHandlerExtension extends ConditionHandler {
 
     public ConditionHandlerExtension(Thing thing) {
         super(thing);
-        // TODO Auto-generated constructor stub
     }
 
     public int getConfigStatus() {

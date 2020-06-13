@@ -28,7 +28,6 @@ public class NoiseHandlerExtension extends NoiseHandler {
 
     public NoiseHandlerExtension(Thing thing) {
         super(thing);
-        // TODO Auto-generated constructor stub
     }
 
     public int getConfigStatus() {

@@ -42,17 +42,17 @@ public class HTTPHandler {
     private static String sensorUrl = "http://data.sensor.community/airrohr/v1/sensor/";
     private static @Nullable HttpClient commonHttpClient;
 
-    public final static String P1 = "P1";
-    public final static String P2 = "P2";
+    public static final String P1 = "P1";
+    public static final String P2 = "P2";
 
-    public final static String TEMPERATURE = "temperature";
-    public final static String HUMIDITY = "humidity";
-    public final static String PRESSURE = "pressure";
-    public final static String PRESSURE_SEALEVEL = "pressure_at_sealevel";
+    public static final String TEMPERATURE = "temperature";
+    public static final String HUMIDITY = "humidity";
+    public static final String PRESSURE = "pressure";
+    public static final String PRESSURE_SEALEVEL = "pressure_at_sealevel";
 
-    public final static String NOISE_EQ = "noise_LAeq";
-    public final static String NOISE_MIN = "noise_LA_min";
-    public final static String NOISE_MAX = "noise_LA_max";
+    public static final String NOISE_EQ = "noise_LAeq";
+    public static final String NOISE_MIN = "noise_LA_min";
+    public static final String NOISE_MAX = "noise_LA_max";
 
     public static void init(HttpClient httpClient) {
         commonHttpClient = httpClient;
@@ -108,9 +108,8 @@ public class HTTPHandler {
                         // found item is newer - take it as latest
                         latestTime = iterTime;
                         latestData = iterData;
-                    } else {
-                        // found item is older - nothing to do
-                    }
+                    } // else - found item is older - nothing to do
+
                 } else {
                     logger.warn("One or two dates cannot be decoded 1) {} 2) {}", iterTimeStr, latestTimeStr);
                 }
@@ -128,9 +127,7 @@ public class HTTPHandler {
         Iterator<SensorDataValue> iter = valueList.iterator();
         while (iter.hasNext()) {
             SensorDataValue v = iter.next();
-            if (v.getValue_type().equals(P1) || v.getValue_type().equals(P2)) {
-                // continue
-            } else {
+            if (!(v.getValue_type().equals(P1) || v.getValue_type().equals(P2))) {
                 return false;
             }
         }
@@ -145,10 +142,8 @@ public class HTTPHandler {
         while (iter.hasNext()) {
             SensorDataValue v = iter.next();
             // check for temperature and humidty - prssure is optinoal for some sensors
-            if (v.getValue_type().equals(TEMPERATURE) || v.getValue_type().equals(HUMIDITY)
-                    || v.getValue_type().equals(PRESSURE) || v.getValue_type().equals(PRESSURE_SEALEVEL)) {
-                // continue
-            } else {
+            if (!(v.getValue_type().equals(TEMPERATURE) || v.getValue_type().equals(HUMIDITY)
+                    || v.getValue_type().equals(PRESSURE) || v.getValue_type().equals(PRESSURE_SEALEVEL))) {
                 return false;
             }
         }
@@ -162,10 +157,8 @@ public class HTTPHandler {
         Iterator<SensorDataValue> iter = valueList.iterator();
         while (iter.hasNext()) {
             SensorDataValue v = iter.next();
-            if (v.getValue_type().equals(NOISE_EQ) || v.getValue_type().equals(NOISE_MAX)
-                    || v.getValue_type().equals(NOISE_MIN)) {
-                // continue
-            } else {
+            if (!(v.getValue_type().equals(NOISE_EQ) || v.getValue_type().equals(NOISE_MAX)
+                    || v.getValue_type().equals(NOISE_MIN))) {
                 return false;
             }
         }
