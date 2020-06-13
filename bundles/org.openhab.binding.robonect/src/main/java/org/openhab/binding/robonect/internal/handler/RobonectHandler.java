@@ -348,7 +348,13 @@ public class RobonectHandler extends BaseThingHandler {
 
         String timeZoneString = robonectConfig.getTimezone();
         try {
-            timeZone = ZoneId.of(timeZoneString);
+            if (timeZoneString != null) {
+                timeZone = ZoneId.of(timeZoneString);
+            } else {
+                logger.warn("No timezone provided, falling back to the default timezone configured in openHAB: '{}'",
+                        timeZoneProvider.getTimeZone());
+                timeZone = timeZoneProvider.getTimeZone();
+            }
         } catch (DateTimeException e) {
             logger.warn("Error setting timezone '{}', falling back to the default timezone configured in openHAB: '{}'",
                     timeZoneString, timeZoneProvider.getTimeZone(), e);
