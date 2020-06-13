@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 import io.swagger.client.model.NAWelcomeCamera;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -53,8 +54,8 @@ public class NAPresenceCameraHandler extends CameraHandler {
     private boolean isLocalCameraURLLoaded;
     private Optional<State> floodlightAutoModeState = Optional.empty();
 
-    public NAPresenceCameraHandler(Thing thing) {
-        super(thing);
+    public NAPresenceCameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
