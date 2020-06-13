@@ -46,17 +46,16 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaRollerShut
         } else {
             String cmd = getTahomaCommand(command.toString());
             switch (cmd) {
-                case COMMAND_MY:
-                    sendCommand(COMMAND_MY);
-                    break;
                 case COMMAND_STOP:
                     String executionId = getCurrentExecutions();
                     if (executionId != null) {
                         // Check if the roller shutter is moving and STOP is sent => STOP it
                         cancelExecution(executionId);
-                    } else {
-                        sendCommand(COMMAND_MY);
+                        break;
                     }
+                    // fall through
+                case COMMAND_MY:
+                    sendCommand(COMMAND_MY);
                     break;
                 case COMMAND_SET_CLOSURE:
                     if (CONTROL_SILENT.equals(channelUID.getId())) {
@@ -68,14 +67,17 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaRollerShut
                         sendCommand(cmd, param);
                     }
                     break;
-                default:
-                    if (CONTROL_SILENT.equals(channelUID.getId()) && (COMMAND_UP.equals(cmd) || COMMAND_DOWN.equals(cmd))) {
+                case COMMAND_UP:
+                case COMMAND_DOWN:
+                    if (CONTROL_SILENT.equals(channelUID.getId())) {
                         // move the roller shutter to the specific position at low speed
                         String param = "[" + (COMMAND_UP.equals(cmd) ? 0 : 100) + ", \"lowspeed\"]";
                         sendCommand(COMMAND_SET_CLOSURESPEED, param);
-                    } else {
-                        sendCommand(cmd);
+                        break;
                     }
+                    // fall through
+                default:
+                    sendCommand(cmd);
             }
         }
     }
