@@ -86,6 +86,9 @@ public class NAPresenceCameraHandler extends CameraHandler {
             case CHANNEL_CAMERA_FLOODLIGHT:
                 return getFloodlightState();
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
+                //The auto-mode state shouldn't be updated, because this isn't a dedicated information. When the
+                // floodlight is switched on the state within the Netatmo API is "on" and the information if the previous
+                // state was "auto" instead of "off" is lost... Therefore the binding handles its own auto-mode state.
                 if(UnDefType.UNDEF.equals(floodlightAutoModeState)) {
                     floodlightAutoModeState = getFloodlightAutoModeState();
                 }
@@ -142,8 +145,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
         if (!isLocalCameraURLLoaded) {
             String vpnUrl = getVpnUrl();
             if (vpnUrl != null) {
-                String pingURL = vpnUrl + PING_URL_PATH;
-                Optional<JSONObject> json = executeGETRequestJSON(pingURL);
+                Optional<JSONObject> json = executeGETRequestJSON(vpnUrl + PING_URL_PATH);
                 localCameraURL = json.map(j -> j.getString("local_url"));
                 isLocalCameraURLLoaded = true;
             }
