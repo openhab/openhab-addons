@@ -519,9 +519,12 @@ So to get a refreshed picture, you need to use the refresh parameter in your sit
 
 **Supported channels for the Presence Camera thing:**
 
-Warning: The floodlight auto-mode (cameraFloodlightAutoMode) isn't updated. It is determined initially but never updated
-when the mode is changed by another application. Therefore the binding handles its own state of the auto-mode.
-This has the advantage that the user can define its own floodlight switch off behaviour.
+Warnings:
+- Some features like the floodlight are accessed via the local network, so it may be helpful to set a static IP address
+for the Presence camera within your local network.
+- The floodlight auto-mode (cameraFloodlightAutoMode) isn't updated it is changed by another application. Therefore the
+binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight
+switch off behaviour.
 
 | Channel ID                  | Item Type | Read/Write | Description                                                  |
 |-----------------------------|-----------|------------|--------------------------------------------------------------|
