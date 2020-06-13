@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pilight"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Pilight Switch</label>
+		<description>Pilight Switch</description>
+
+		<channels>
+			<channel id="state" typeId="switch-state"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:pilight:device"/>
+	</thing-type>
+
+	<thing-type id="contact">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Pilight Contact</label>
+		<description>Pilight Contact</description>
+
+		<channels>
+			<channel id="state" typeId="contact-state"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:pilight:device"/>
+	</thing-type>
+
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Pilight Dimmer</label>
+		<description>Pilight Dimmer</description>
+
+		<channels>
+			<channel id="dimlevel" typeId="dimlevel"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:pilight:device"/>
+	</thing-type>
+
+	<thing-type id="generic" extensible="string,number">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Pilight Generic Device</label>
+		<description>Pilight Generic Device</description>
+
+		<config-description-ref uri="thing-type:pilight:device"/>
+	</thing-type>
+
+	<channel-type id="contact-state">
+		<item-type>Contact</item-type>
+		<label>State of contact</label>
+		<description>State of pilight contact.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dimlevel">
+		<item-type>Dimmer</item-type>
+		<label>Dim level</label>
+		<description>Dim level of pilight dimmer.</description>
+	</channel-type>
+
+	<channel-type id="switch-state">
+		<item-type>Switch</item-type>
+		<label>State of switch</label>
+		<description>State of pilight switch.</description>
+	</channel-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Text Value</label>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="property" type="text">
+				<label>Property</label>
+				<description>The property of the device.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number Value</label>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="property" type="text">
+				<label>Property</label>
+				<description>The property of the device.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
