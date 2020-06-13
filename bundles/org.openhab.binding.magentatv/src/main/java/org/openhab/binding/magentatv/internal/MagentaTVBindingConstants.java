@@ -55,8 +55,6 @@ public class MagentaTVBindingConstants {
     public static final String PROPERTY_LOCAL_MAC = "localMAC";
     public static final String PROPERTY_TERMINALID = "terminalID";
     public static final String PROPERTY_WAKEONLAN = "wakeOnLAN";
-    public static final String PROPERTY_SERVERAGENT = "serverAgent";
-    public static final String PROPERTY_EPGHTTPSURL = "epgurl";
 
     /**
      * Channel names

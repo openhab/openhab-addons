@@ -52,7 +52,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.magentatv.internal.MagentaTVConfiguration;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEvent;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEventInstanceCreator;
@@ -66,6 +65,8 @@ import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAutenhicateR
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenResponse;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentials;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
+import org.openhab.binding.magentatv.internal.config.MagentaTVDynamicConfig;
+import org.openhab.binding.magentatv.internal.config.MagentaTVThingConfiguration;
 import org.openhab.binding.magentatv.internal.network.MagentaTVNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     private static final String EMPTY_CRED = "***";
     private static final DecimalType ZERO = new DecimalType(0);
 
-    protected final MagentaTVConfiguration thingConfig = new MagentaTVConfiguration();
+    protected MagentaTVDynamicConfig config = new MagentaTVDynamicConfig();
     private final Gson gson;
     protected final MagentaTVNetwork network;
     protected final MagentaTVHandlerFactory handlerFactory;
@@ -124,14 +125,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         // The framework requires you to return from this method quickly. For that the initialization itself is executed
         // asynchronously
         String label = getThing().getLabel();
-        thingId = label != null ? label : "";
+        thingId = label != null ? label : getThing().getUID().toString();
         resetEventChannels();
         updateStatus(ThingStatus.UNKNOWN);
-
-        thingConfig.fromProperties(getThing().getProperties());
-        thingConfig.initializeConfig(getConfig().getProperties());
-        thingId = thingConfig.getFriendlyName();
-
+        config = new MagentaTVDynamicConfig(getConfigAs(MagentaTVThingConfiguration.class));
         try {
             initializeJob = scheduler.schedule(() -> {
                 initializeThing();
@@ -144,32 +141,31 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     private void initializeThing() {
         String errorMessage = "";
         try {
-            if (thingConfig.getUDN().isEmpty()) {
+            if (config.getUDN().isEmpty()) {
                 // get UDN from device name
                 String uid = this.getThing().getUID().getAsString();
-                thingConfig.setUDN(StringUtils.substringAfterLast(uid, ":"));
+                config.setUDN(StringUtils.substringAfterLast(uid, ":"));
             }
-            if (thingConfig.getMacAddress().isEmpty()) {
+            if (config.getMacAddress().isEmpty()) {
                 // get MAC address from UDN (last 12 digits)
-                String macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "_");
+                String macAddress = StringUtils.substringAfterLast(config.getUDN(), "_");
                 if (macAddress.isEmpty()) {
-                    macAddress = StringUtils.substringAfterLast(thingConfig.getUDN(), "-");
+                    macAddress = StringUtils.substringAfterLast(config.getUDN(), "-");
                 }
-                thingConfig.setMacAddress(macAddress);
+                config.setMacAddress(macAddress);
             }
-            control = new MagentaTVControl(thingConfig, network);
+            control = new MagentaTVControl(config, network);
+            config.updateNetwork(control.getConfig()); // get network parameters from control
 
             // Check for emoty credentials (e.g. missing in .things file)
-            String account = thingConfig.getAccountName();
-            if (thingConfig.getUserID().isEmpty()
-                    && (thingConfig.getAccountName().isEmpty() || account.equals(EMPTY_CRED))) {
+            String account = config.getAccountName();
+            if (config.getUserID().isEmpty() && (config.getAccountName().isEmpty() || account.equals(EMPTY_CRED))) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Missing credentials for login!");
                 return;
             }
 
             logger.info("{}: Authenticate account {}", thingId, account);
-            thingConfig.updateConfig(control.getConfig().getProperties()); // get network parameters from control
             authenticateUser();
             connectReceiver(); // throws MagentaTVException on error
 
@@ -206,7 +202,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             String newAccount = (String) configurationParameters.get(PROPERTY_ACCT_NAME);
             if (!newAccount.equals(EMPTY_CRED)) {
                 // new account info, need to renew userId
-                thingConfig.setUserID("");
+                config.setUserID("");
             }
         }
 
@@ -235,7 +231,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                 connectReceiver(); // reconnect to MR, throws an exception if this fails
             }
 
-            logger.debug("{}: Channel command for device {}: {} for channel {}", thingId, thingConfig.getFriendlyName(),
+            logger.debug("{}: Channel command for device {}: {} for channel {}", thingId, config.getFriendlyName(),
                     command, channelUID.getId());
             switch (channelUID.getId()) {
                 case CHANNEL_POWER: // toggle power
@@ -328,19 +324,15 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      */
     protected void connectReceiver() throws MagentaTVException {
         if (control.checkDev()) {
-            thingConfig.updateConfig(control.getConfig().getProperties()); // get description data
-            updateThingProperties(thingConfig.getProperties());
-            handlerFactory.registerDevice(thingConfig.getUDN(), thingConfig.getTerminalID(), thingConfig.getIpAddress(),
-                    this);
+            handlerFactory.registerDevice(config.getUDN(), config.getTerminalID(), config.getIpAddress(), this);
             control.subscribeEventChannel();
             control.sendPairingRequest();
-            updateThingProperties(thingConfig.getProperties());
 
             // check for pairing timeout
             final int iRefresh = ++idRefresh;
             pairingWatchdogJob = scheduler.schedule(() -> {
                 if (iRefresh == idRefresh) { // Make a best effort to not run multiple deferred refresh
-                    if (thingConfig.getVerificationCode().isEmpty()) {
+                    if (config.getVerificationCode().isEmpty()) {
                         setOnlineState(ThingStatus.OFFLINE, "Timeout on pairing request!");
                     }
                 }
@@ -355,10 +347,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @throws MagentaTVException
      */
     private void authenticateUser() throws MagentaTVException {
-        String userId = thingConfig.getUserID();
+        String userId = config.getUserID();
         if (userId.isEmpty()) {
             // run OAuth authentication, this finally provides the userID
-            userId = control.authenticateUser(thingConfig.getAccountName(), thingConfig.getAccountPassword());
+            userId = control.authenticateUser(config.getAccountName(), config.getAccountPassword());
 
             // Update thing configuration (persistent) - remove credentials, add userID
             Configuration configuration = this.getConfig();
@@ -369,13 +361,13 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             configuration.put(PROPERTY_ACCT_PWD, EMPTY_CRED);
             configuration.put(PROPERTY_USERID, userId);
             this.updateConfiguration(configuration);
-            thingConfig.setAccountName(EMPTY_CRED);
-            thingConfig.setAccountPassword(EMPTY_CRED);
+            config.setAccountName(EMPTY_CRED);
+            config.setAccountPassword(EMPTY_CRED);
         } else {
-            logger.debug("{}: Skip OAuth, use existing userID {}", thingId, thingConfig.getUserID());
+            logger.debug("{}: Skip OAuth, use existing userID {}", thingId, config.getUserID());
         }
         if (!userId.isEmpty()) {
-            thingConfig.setUserID(userId);
+            config.setUserID(userId);
         } else {
             logger.warn("{}: Unable to obtain userId from OAuth", thingId);
         }
@@ -412,11 +404,11 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      */
     @Override
     public void onWakeup(Map<String, String> discoveredProperties) throws MagentaTVException {
-        if ((this.getThing().getStatus() == ThingStatus.OFFLINE) || thingConfig.getVerificationCode().isEmpty()) {
+        if ((this.getThing().getStatus() == ThingStatus.OFFLINE) || config.getVerificationCode().isEmpty()) {
             // Device sent a UPnP discovery information, trigger to reconnect
             connectReceiver();
         } else {
-            logger.debug("{}: Refesh device status for {} (UDN={}", thingId, deviceName(), thingConfig.getUDN());
+            logger.debug("{}: Refesh device status for {} (UDN={}", thingId, deviceName(), config.getUDN());
             setOnlineState(ThingStatus.ONLINE, "");
         }
     }
@@ -431,23 +423,22 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @Override
     public void onPairingResult(String pairingCode) throws MagentaTVException {
         if (control.isInitialized()) {
-            thingConfig.updateConfig(control.getConfig().getProperties()); // get description data
-
             if (control.generateVerificationCode(pairingCode)) {
-                thingConfig.setPairingCode(pairingCode);
+                config.setPairingCode(pairingCode);
                 logger.debug(
                         "{}: Pairing code received (UDN {}, terminalID {}, pairingCode={}, verificationCode={}, userID={})",
-                        thingId, thingConfig.getUDN(), thingConfig.getTerminalID(), thingConfig.getPairingCode(),
-                        thingConfig.getVerificationCode(), thingConfig.getUserID());
+                        thingId, config.getUDN(), config.getTerminalID(), config.getPairingCode(),
+                        config.getVerificationCode(), config.getUserID());
 
                 // verify pairing completes the pairing process
                 if (control.verifyPairing()) {
                     logger.debug("{}: Pairing completed for device {} ({}), Thing now ONLINE", thingId,
-                            thingConfig.getFriendlyName(), thingConfig.getTerminalID());
+                            config.getFriendlyName(), config.getTerminalID());
                     setOnlineState(ThingStatus.ONLINE, "");
                     cancelPairingCheck(); // stop timeout check
                 }
             }
+            updateThingProperties(); // persist pairing and verification code
         } else {
             logger.debug("{}: control not yet initialized!", thingId);
         }
@@ -487,7 +478,6 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                             String tsLocal = ps.startTime.replace('/', '-').replace(" ", "T") + "Z";
                             Instant timestamp = Instant.parse(tsLocal);
                             ZonedDateTime localTime = timestamp.atZone(ZoneId.of("Europe/Berlin"));
-                            String ts = localTime.toString();
                             tsLocal = StringUtils.substringBeforeLast(localTime.toString(), "[");
                             tsLocal = StringUtils.substringBefore(tsLocal.replace('-', '/').replace('T', ' '), "+");
 
@@ -623,7 +613,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
 
         try {
             // when pairing is completed re-new event channel subscription
-            if ((this.getThing().getStatus() != ThingStatus.OFFLINE) && !thingConfig.getVerificationCode().isEmpty()) {
+            if ((this.getThing().getStatus() != ThingStatus.OFFLINE) && !config.getVerificationCode().isEmpty()) {
                 logger.debug("{}: Renew MR event subscription for device {}", thingId, deviceName());
                 control.subscribeEventChannel();
             }
@@ -634,7 +624,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         // another try: if the above SUBSCRIBE fails, try a re-connect immediatly
         try {
             if ((this.getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)
-                    && !thingConfig.getUserID().isEmpty()) {
+                    && !config.getUserID().isEmpty()) {
                 // if we have no userID the OAuth is not completed or pairing process got stuck
                 logger.debug("{}: Reconnect media receiver", deviceName());
                 connectReceiver(); // throws MagentaTVException on error
@@ -644,16 +634,18 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         }
     }
 
-    public void updateThingProperties(Map<String, String> properties) {
-        // copy all attributes except thos, which begin with $
-        Map<String, String> map = new HashMap<String, String>();
-        for (String key : properties.keySet()) {
-            if ((key.charAt(0) != '$') && !key.contains("component.")) {
-                String prop = properties.get(key);
-                map.put(key, prop != null ? prop : "");
-            }
-        }
-        this.updateProperties(map);
+    public void updateThingProperties() {
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put(PROPERTY_FRIENDLYNAME, config.getFriendlyName());
+        properties.put(PROPERTY_MODEL_NUMBER, config.getModel());
+        properties.put(PROPERTY_DESC_URL, config.getDescriptionUrl());
+        properties.put(PROPERTY_PAIRINGCODE, config.getPairingCode());
+        properties.put(PROPERTY_VERIFICATIONCODE, config.getVerificationCode());
+        properties.put(PROPERTY_LOCAL_IP, config.getLocalIP());
+        properties.put(PROPERTY_TERMINALID, config.getLocalIP());
+        properties.put(PROPERTY_LOCAL_MAC, config.getLocalMAC());
+        properties.put(PROPERTY_WAKEONLAN, config.getWakeOnLAN());
+        updateProperties(properties);
     }
 
     public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
@@ -661,7 +653,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     private String deviceName() {
-        return thingConfig.getFriendlyName() + "(" + thingConfig.getTerminalID() + ")";
+        return config.getFriendlyName() + "(" + config.getTerminalID() + ")";
     }
 
     private void cancelJob(@Nullable ScheduledFuture<?> job) {
@@ -691,7 +683,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @Override
     public void dispose() {
         cancelAllJobs();
-        handlerFactory.removeDevice(thingConfig.getTerminalID());
+        handlerFactory.removeDevice(config.getTerminalID());
         super.dispose();
     }
 }
