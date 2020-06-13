@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -60,6 +60,29 @@ public class DTOTest {
                 assertEquals("Humidity", "61.00", v.getValue());
             }
         }
+    }
+
+    @Test
+    public void testDecoding() {
+        String result = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
+        Gson gson = new Gson();
+        SensorData[] valueArray = gson.fromJson(result, SensorData[].class);
+        // System.out.println(valueArray.length);
+        assertEquals("Array size", 2, valueArray.length);
+
+        SensorData d = valueArray[0];
+        // Assure latest data is taken
+        String dateStr = d.getTimeStamp();
+        if (dateStr.equals("2020-06-09 06:38:08")) {
+            // take newer one
+            d = valueArray[1];
+        }
+
+        // test decoding a small part
+        String json = gson.toJson(d);
+        // System.out.println(json);
+        // check if correct timestamp is included
+        assertTrue(json.contains("\"timestamp\":\"2020-06-09 06:40:34\""));
     }
 
 }
