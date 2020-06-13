@@ -33,9 +33,9 @@ import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
  */
 @NonNullByDefault
 public class NoiseHandler extends BaseSensorHandler {
-    protected @Nullable DecimalType noiseEQCache;
-    protected @Nullable DecimalType noiseMinCache;
-    protected @Nullable DecimalType noiseMaxCache;
+    protected DecimalType noiseEQCache = UNDEF;
+    protected DecimalType noiseMinCache = UNDEF;
+    protected DecimalType noiseMaxCache = UNDEF;
 
     public NoiseHandler(Thing thing) {
         super(thing);

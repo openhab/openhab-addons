@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -59,6 +60,8 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected static final int LC_INITIALIZING = 1;
     protected static final int LC_DISPOSED = 2;
     protected int lifecycleStatus = LC_UNKNOWN;
+
+    protected static final DecimalType UNDEF = new DecimalType(-1);
 
     public BaseSensorHandler(Thing thing) {
         super(thing);

@@ -34,8 +34,8 @@ import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 @NonNullByDefault
 public class PMHandler extends BaseSensorHandler {
 
-    protected @Nullable DecimalType pm25Cache;
-    protected @Nullable DecimalType pm100Cache;
+    protected DecimalType pm25Cache = UNDEF;
+    protected DecimalType pm100Cache = UNDEF;
 
     public PMHandler(Thing thing) {
         super(thing);
