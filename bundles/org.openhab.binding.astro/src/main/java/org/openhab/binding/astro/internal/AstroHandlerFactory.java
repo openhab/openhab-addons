@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.handler.MoonHandler;
 import org.openhab.binding.astro.internal.handler.SunHandler;
-import org.openhab.binding.astro.internal.util.PropertyUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -51,12 +50,13 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
             .collect(Collectors.toSet());
     private static final Map<String, AstroThingHandler> ASTRO_THING_HANDLERS = new HashMap<>();
     private final CronScheduler scheduler;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public AstroHandlerFactory(final @Reference CronScheduler scheduler,
             final @Reference TimeZoneProvider timeZoneProvider) {
         this.scheduler = scheduler;
-        PropertyUtils.setTimeZoneProvider(timeZoneProvider);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -69,9 +69,9 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         AstroThingHandler thingHandler = null;
         if (thingTypeUID.equals(THING_TYPE_SUN)) {
-            thingHandler = new SunHandler(thing, scheduler);
+            thingHandler = new SunHandler(thing, scheduler, timeZoneProvider);
         } else if (thingTypeUID.equals(THING_TYPE_MOON)) {
-            thingHandler = new MoonHandler(thing, scheduler);
+            thingHandler = new MoonHandler(thing, scheduler, timeZoneProvider);
         }
         if (thingHandler != null) {
             ASTRO_THING_HANDLERS.put(thing.getUID().toString(), thingHandler);
