@@ -1,10 +1,13 @@
 # LuftdatenInfo Binding
+
 <img style="float: right;" src="doc/logo-rund.png">
 Binding for the Sensor<i>Community <a href=https://luftdaten.info/>luftdaten.info</a>. The community provides instructions to build sensors on your own and they can be integrated into the database.
 With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openhab.
+
 ## Supported Things
 
 Three Things are supported
+
 * Particulate Sensor - measure particulate matter PM2.5 and PM10
 * Conditions Sensor - measures environment conditions like temperature, humidity and some also provides atmospheric pressure
 * Noise Sensor - measures noise exposures in the environment
@@ -20,6 +23,7 @@ There's no auto discovery. See Thing configuration how to setup a Sensor.
 | sensorid        | Sensor ID obtained from https://deutschland.maps.sensor.community/   |
 
 Perform the following steps to get the appropriate Sensor ID
+
 * Go to to [luftdaten.info map](https://deutschland.maps.sensor.community/)
 * Choose your wanted value in bottom list - now only the Sensors are displayed which are supporting this
 * Click on your / any Sensor and the ID is displayed in the top right corner.Note: Sensor ID is just the number without beginning hash #
@@ -47,6 +51,7 @@ Perform the following steps to get the appropriate Sensor ID
 
 
 ### Noise Sensor 
+
 Currently in [beta phase of the community](https://luftdaten.info/einfuehrung-zum-laermsensor/)
 
 | Channel ID           | Item Type            | Description                              |
@@ -57,7 +62,9 @@ Currently in [beta phase of the community](https://luftdaten.info/einfuehrung-zu
 
 
 ## Full Example
+
 ### Things
+
 luftdaten.things
 
 ```perl
@@ -67,7 +74,9 @@ Thing luftdateninfo:noise:noise_sensor      "Noise Sensor"      [ sensorid="3974
 ```
 
 ### Items
+
 luftdaten.items
+
 ```perl
 
 Number PM_25          "PM2.5 [%.0f ug/m3]"                { channel="luftdateninfo:particulate:pm_sensor:pm25"  } 
@@ -84,7 +93,9 @@ Number NOISE_MAX      "Noise max [%.0f dbA]"              { channel="luftdatenin
 ```
 
 ### Sitemap
+
 LuftdatenInfo.sitemap
+
 ```perl
 sitemap LuftdatenInfo label="LuftdatenInfo" {
 		Text item=PM_25           label="Particulate Matter 2.5 [%s ug/m3]" 	
