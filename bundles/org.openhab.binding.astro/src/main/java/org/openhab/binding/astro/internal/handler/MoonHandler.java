@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -49,8 +50,8 @@ public class MoonHandler extends AstroThingHandler {
     /**
      * Constructor
      */
-    public MoonHandler(Thing thing, CronScheduler scheduler) {
-        super(thing, scheduler);
+    public MoonHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider) {
+        super(thing, scheduler, timeZoneProvider);
     }
 
     @Override
