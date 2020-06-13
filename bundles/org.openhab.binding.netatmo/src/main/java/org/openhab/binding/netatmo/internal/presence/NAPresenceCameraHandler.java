@@ -50,11 +50,10 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NAPresenceCameraHandler.class);
 
-    private Optional<String> localCameraURL = Optional.empty();
-    private boolean isLocalCameraURLLoaded;
-    private Optional<State> floodlightAutoModeState = Optional.empty();
+    private Optional<CameraAddress> cameraAddress = Optional.empty();
+    private State floodlightAutoModeState = UnDefType.UNDEF;
 
-    public NAPresenceCameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public NAPresenceCameraHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
     }
 
@@ -86,10 +85,13 @@ public class NAPresenceCameraHandler extends CameraHandler {
             case CHANNEL_CAMERA_FLOODLIGHT:
                 return getFloodlightState();
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
-                if(!floodlightAutoModeState.isPresent() || UnDefType.UNDEF.equals(floodlightAutoModeState.get())) {
-                    floodlightAutoModeState = Optional.of(getFloodlightAutoModeState());
+                //The auto-mode state shouldn't be updated, because this isn't a dedicated information. When the
+                // floodlight is switched on the state within the Netatmo API is "on" and the information if the previous
+                // state was "auto" instead of "off" is lost... Therefore the binding handles its own auto-mode state.
+                if(UnDefType.UNDEF.equals(floodlightAutoModeState)) {
+                    floodlightAutoModeState = getFloodlightAutoModeState();
                 }
-                return floodlightAutoModeState.get();
+                return floodlightAutoModeState;
         }
         return super.getNAThingProperty(channelId);
     }
@@ -113,14 +115,12 @@ public class NAPresenceCameraHandler extends CameraHandler {
         if (isOn) {
             changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.ON);
         } else {
-            final boolean isAutoMode = floodlightAutoModeState.isPresent()
-                    && OnOffType.ON.equals(floodlightAutoModeState.get());
-            switchFloodlightAutoMode(isAutoMode);
+            switchFloodlightAutoMode(OnOffType.ON.equals(floodlightAutoModeState));
         }
     }
 
     private void switchFloodlightAutoMode(boolean isAutoMode) {
-        floodlightAutoModeState = Optional.of(toOnOffType(isAutoMode));
+        floodlightAutoModeState = toOnOffType(isAutoMode);
         if (isAutoMode) {
             changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.AUTO);
         } else {
@@ -141,29 +141,27 @@ public class NAPresenceCameraHandler extends CameraHandler {
     }
 
     private Optional<String> getLocalCameraURL() {
-        if (!isLocalCameraURLLoaded) {
-            String vpnUrl = getVpnUrl();
-            if (vpnUrl != null) {
-                String pingURL = vpnUrl + PING_URL_PATH;
-                Optional<JSONObject> json = executeGETRequestJSON(pingURL);
-                localCameraURL = json.map(j -> j.getString("local_url"));
-                isLocalCameraURLLoaded = true;
+        String vpnURL = getVpnUrl();
+        if (vpnURL != null) {
+            //The local address is (re-)requested when it wasn't already determined or when the vpn address was changed.
+            if (!cameraAddress.isPresent() || cameraAddress.get().isVpnURLChanged(vpnURL)) {
+                Optional<JSONObject> json = executeGETRequestJSON(vpnURL + PING_URL_PATH);
+                cameraAddress = json.map(j -> j.getString("local_url"))
+                        .map(localURL -> new CameraAddress(vpnURL, localURL));
             }
         }
-        return localCameraURL;
+        return cameraAddress.map(CameraAddress::getLocalURL);
     }
 
     private Optional<JSONObject> executeGETRequestJSON(String url) {
-        Optional<String> content = executeGETRequest(url);
-        if (content.isPresent()) {
-            return Optional.of(new JSONObject(content.get()));
+        Optional<JSONObject> jsonContent = executeGETRequest(url).map(JSONObject::new);
+        if(!jsonContent.isPresent()) {
+            logger.error("The request-result could not get retrieved!");
         }
-
-        logger.error("The request-result could not get retrieved!");
-        return Optional.empty();
+        return jsonContent;
     }
 
-    private Optional<String> executeGETRequest(String url) {
+    Optional<String> executeGETRequest(String url) {
         try {
             String content = HttpUtil.executeUrl("GET", url, 5000);
             if (content != null && !content.isEmpty()) {
