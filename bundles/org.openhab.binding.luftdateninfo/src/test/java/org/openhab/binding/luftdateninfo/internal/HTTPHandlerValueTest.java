@@ -37,7 +37,6 @@ public class HTTPHandlerValueTest {
      */
     @Test
     public void testValueDecoding() {
-
         String resource1 = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         assertNotNull(resource1);
         List<SensorDataValue> l = HTTPHandler.getLatestValues(resource1);

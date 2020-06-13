@@ -38,7 +38,7 @@ public class ConditionHandler extends BaseSensorHandler {
     protected @Nullable DecimalType humidityCache;
     protected @Nullable DecimalType pressureCache;
     protected @Nullable DecimalType pressureSeaCache;
-    protected DecimalType UNDEF = new DecimalType(-1);
+    protected static final DecimalType UNDEF = new DecimalType(-1);
 
     public ConditionHandler(Thing thing) {
         super(thing);
