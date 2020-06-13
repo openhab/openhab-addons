@@ -85,7 +85,8 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
                     if (refreshJob != null) {
                         refreshJob.cancel(true);
                     }
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::update, 0, refreshInterval, TimeUnit.MINUTES);
+                    refreshJob = scheduler.scheduleWithFixedDelay(this::update, 5, refreshInterval * 60,
+                            TimeUnit.SECONDS);
                 } else {
                     switch (updateStatus) {
                         case UPDATE_CONNECTION_ERROR:
