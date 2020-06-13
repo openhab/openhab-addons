@@ -99,10 +99,16 @@ public class HTTPHandler {
             SensorData latestData = valueArray[0];
             String latestTimeStr = latestData.getTimeStamp();
             Date latestTime = DateTimeUtils.toDate(latestTimeStr);
+            if (latestTime == null) {
+                logDateConversionError(response, latestData);
+            }
             for (int i = 1; i < valueArray.length; i++) {
                 SensorData iterData = valueArray[i];
                 String iterTimeStr = iterData.getTimeStamp();
                 Date iterTime = DateTimeUtils.toDate(iterTimeStr);
+                if (iterTime == null) {
+                    logDateConversionError(response, latestData);
+                }
                 if (iterTime != null && latestTime != null) {
                     if (latestTime.before(iterTime)) {
                         // found item is newer - take it as latest
@@ -118,6 +124,14 @@ public class HTTPHandler {
         } else {
             return null;
         }
+    }
+
+    public static void logDateConversionError(final String response, final Object dto) {
+        logger.warn("Unable to get timestamp");
+        logger.warn("Response: {}", response);
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        logger.warn("GSon: {}", json);
     }
 
     public static boolean isParticulate(@Nullable List<SensorDataValue> valueList) {
