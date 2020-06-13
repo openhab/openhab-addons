@@ -137,7 +137,6 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     deviceLog += "\n| SERIAL #     : " + serialNumber;
                     deviceLog += "\n| BASE URL     : " + details.getBaseURL();
                     deviceLog += "\n| UPC          : " + details.getUpc();
-                    // deviceLog += "\n| PRES. URI : " + details.getPresentationURI();
                 }
             }
             deviceLog += "\n+==================================================";
@@ -153,10 +152,10 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        logger.info("==OWN:UPnP== --- Found device # {}", device.getType());
+        logger.info("Found device {}", device.getType());
         DeviceInfo devInfo = new DeviceInfo(device);
         if (!devInfo.manufacturer.matches("<unknown>")) {
-            logger.info("==OWN:UPnP==                  |- {} ({})", devInfo.modelName, devInfo.manufacturer);
+            logger.info("                              |- {} ({})", devInfo.modelName, devInfo.manufacturer);
         }
         ThingUID thingId = generateThingUID(devInfo);
         if (thingId != null) {
@@ -166,7 +165,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                 String label = "BUS Gateway (" + thingId.getId().split("-")[0] + ")";
                 try {
                     label = ((devInfo.friendlyName != null && !("".equals(devInfo.friendlyName))) ? devInfo.friendlyName
-                            : "NO_FRIENDLY_NAME");
+                            : "NO_NAME");
                     label = label + " (" + devInfo.modelName + ", " + devInfo.modelNumber + ", " + devInfo.host + ")";
                 } catch (Exception e) {
                     logger.warn("==OWN:UPnP== Exception while getting devInfo for device UDN={}. Exception={}",
@@ -179,11 +178,11 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingId).withProperties(properties)
                         .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_SERIAL_NO).withLabel(label)
                         .build();
-                logger.info("==OWN:UPnP== Created a DiscoveryResult for gateway '{}' (UDN={})", devInfo.friendlyName,
+                logger.info("Created a DiscoveryResult for gateway '{}' (UDN={})", devInfo.friendlyName,
                         devInfo.udn.getIdentifierString());
                 return result;
             } else {
-                logger.warn("==OWN:UPnP== Could not get host for device (UDN={})", devInfo.udn);
+                logger.warn("Could not get host for device (UDN={})", devInfo.udn);
                 return null;
             }
         } else {
@@ -193,7 +192,6 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
-        // logger.debug("==OWN:UPnP== getThingUID()");
         return generateThingUID(new DeviceInfo(device));
     }
 
@@ -208,7 +206,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
             String idString = devInfo.udn.getIdentifierString();
             BusGatewayId gwId = BusGatewayId.fromValue(idString.split("-")[1]);
             if (gwId != null) {
-                logger.debug("==OWN:UPnP== '{}' is a supported gateway", gwId);
+                logger.debug("'{}' is a supported gateway", gwId);
                 String mac = idString.split("-")[3];
                 String normalizedMac = mac.toLowerCase().replaceAll("[^a-f0-9]", "");
                 if (!normalizedMac.equals("")) {
@@ -216,8 +214,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                             gwId.getThingId() + "_" + normalizedMac);
                 }
             } else {
-                logger.warn("==OWN:UPnP== this BTicino device is not a OpenWebNet gateway or is not supported (UDN={})",
-                        idString);
+                logger.warn("This BTicino device is not a OpenWebNet gateway or is not supported (UDN={})", idString);
             }
         }
         return null;

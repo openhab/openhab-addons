@@ -58,14 +58,13 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("==OWN:ThingHandler== initialize() thing={}", thing.getUID());
+        logger.debug("initialize() thing={}", thing.getUID());
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() != null) {
             bridgeHandler = (OpenWebNetBridgeHandler) bridge.getHandler();
             deviceWhere = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
             if (deviceWhere == null) {
-                logger.warn("==OWN:ThingHandler== WHERE parameter in configuration is null or invalid for thing {}",
-                        thing.getUID());
+                logger.warn("WHERE parameter in configuration is null or invalid for thing {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "WHERE parameter in configuration is null or invalid");
                 return;
@@ -78,14 +77,13 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                 updateProperties(properties);
 
                 bridgeHandler.registerDevice(oid, this);
-                logger.debug("==OWN:ThingHandler== associated thing to bridge with ownId={}", ownId);
+                logger.debug("associated thing to bridge with ownId={}", ownId);
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
                 // TODO handleCommand(REFRESH) : is it called automatically ? otherwise do here a:
                 // bridgeHandler.requestDeviceState(getThing().getUID());
             }
         } else {
-            logger.warn(
-                    "==OWN:ThingHandler== No bridge associated, please assign a bridge in thing configuration. thing={}",
+            logger.warn("No bridge associated, please assign a bridge in thing configuration. thing={}",
                     thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No bridge associated, please assign a bridge in thing configuration.");
@@ -94,31 +92,28 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channel, Command command) {
-        logger.debug("==OWN:ThingHandler== handleCommand() (command={} - channel={})", command, channel);
+        logger.debug("handleCommand() (command={} - channel={})", command, channel);
         if (bridgeHandler == null || bridgeHandler.gateway == null) {
-            logger.info("==OWN:ThingHandler== Thing {} is not associated to any gateway, skipping command",
-                    getThing().getUID());
+            logger.info("Thing {} is not associated to any gateway, skipping command", getThing().getUID());
             return;
         }
         if (!bridgeHandler.gateway.isConnected()) {
-            logger.warn("==OWN:ThingHandler== Gateway is NOT connected, setting thing={} to OFFLINE", thing.getUID());
+            logger.warn("Gateway is NOT connected, setting thing={} to OFFLINE", thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         if (command instanceof RefreshType) {
-            logger.debug("==OWN:ThingHandler== Refreshing channel {}", channel);
+            logger.debug("Refreshing channel {}", channel);
             // TODO move to a refreshChannel() method that subclasses can implement to disable setting the thing offline
             requestChannelState(channel);
             // set a schedule to put device OFFLINE if no answer is received after THING_STATE_REQ_TIMEOUT
             scheduler.schedule(() -> {
                 // if state is still unknown after timer ends, set the thing OFFLINE
                 if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
-                    logger.info(
-                            "==OWN:ThingHandler== Thing state request timer expired, still unknown. Setting thing={} to OFFLINE",
+                    logger.info("Thing state request timer expired, still unknown. Setting thing={} to OFFLINE",
                             thing.getUID());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not get channel state");
-                    logger.debug("==OWN:ThingHandler== Thing OFFLINE");
                 }
             }, THING_STATE_REQ_TIMEOUT, TimeUnit.SECONDS);
             return;
@@ -158,7 +153,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("==OWN:ThingHandler== dispose() for {}", getThing().getUID());
+        logger.debug("dispose() for {}", getThing().getUID());
         if (bridgeHandler != null && ownId != null) {
             String id = ownId;
             bridgeHandler.unregisterDevice(id);

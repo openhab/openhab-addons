@@ -58,28 +58,26 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        logger.debug("==OWN:HandlerFactory== createHandler()");
         if (OpenWebNetBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("==OWN:HandlerFactory== creating NEW BRIDGE Handler");
+            logger.debug("creating NEW BRIDGE Handler");
             OpenWebNetBridgeHandler handler = new OpenWebNetBridgeHandler((Bridge) thing);
             registerDiscoveryService(handler);
             return handler;
         } else if (OpenWebNetGenericHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("==OWN:HandlerFactory== creating NEW GENERIC Handler");
+            logger.debug("creating NEW GENERIC Handler");
             return new OpenWebNetGenericHandler(thing);
         } else if (OpenWebNetLightingHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("==OWN:HandlerFactory== creating NEW LIGHTING Handler");
+            logger.debug("creating NEW LIGHTING Handler");
             return new OpenWebNetLightingHandler(thing);
         }
-        logger.warn("==OWN:HandlerFactory== ThingType: {} is not supported by this binding", thing.getThingTypeUID());
+        logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());
         return null;
     }
 
     private void registerDiscoveryService(OpenWebNetBridgeHandler bridgeHandler) {
-        logger.debug("==OWN:HandlerFactory== registerDiscoveryService()");
         OpenWebNetDeviceDiscoveryService deviceDiscoveryService = new OpenWebNetDeviceDiscoveryService(bridgeHandler);
         bridgeHandler.deviceDiscoveryService = deviceDiscoveryService;
-        deviceDiscoveryService.activate();
+        // deviceDiscoveryService.activate();
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext.registerService(
                 DiscoveryService.class.getName(), deviceDiscoveryService, new Hashtable<String, Object>()));
     }
@@ -92,9 +90,9 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
                 // remove discovery service, if bridge handler is removed
                 OpenWebNetDeviceDiscoveryService service = (OpenWebNetDeviceDiscoveryService) bundleContext
                         .getService(serviceReg.getReference());
-                if (service != null) {
-                    service.deactivate();
-                }
+                // if (service != null) {
+                // service.deactivate();
+                // }
                 serviceReg.unregister();
                 discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }

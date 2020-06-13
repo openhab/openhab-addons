@@ -60,18 +60,15 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
 
     public ZigBeeGatewayDiscoveryService() {
         super(OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT, false);
-        logger.debug(
-                "\n#############################################################################################\n==OWN:ZigBeeGatewayDiscoveryService== constructor()");
     }
 
     public ZigBeeGatewayDiscoveryService(int timeout) throws IllegalArgumentException {
         super(timeout);
-        logger.debug("==OWN:BridgeDiscovery== constructor(timeout)");
     }
 
     @Override
     protected void startScan() {
-        logger.info("==OWN:BridgeDiscovery== ------ startScan() - SEARCHING for bridges...");
+        logger.info("------ startScan() - SEARCHING for bridges...");
         startZigBeeScan();
     }
 
@@ -80,21 +77,21 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
      */
     private void startZigBeeScan() {
         if (zbgateway == null) {
-            logger.debug("==OWN:BridgeDiscovery:ZB== Gateway NULL, creating a new one ...");
+            logger.debug("Gateway NULL, creating a new one ...");
             zbgateway = OpenWebNet.gatewayZigBeeAsSingleton();
             zbgateway.subscribe(this);
         }
         if (!zbgateway.isConnected()) {
-            logger.debug("==OWN:BridgeDiscovery:ZB== ... trying to connect gateway ...");
+            logger.debug("... trying to connect gateway ...");
             zbgateway.connect();
         } else { // gw is already connected
-            logger.debug("==OWN:BridgeDiscovery:ZB== ... gateway is already connected ...");
+            logger.debug("... gateway is already connected ...");
             if (gatewayZigBeeId != 0) {
                 // a gw was already discovered, notify new gateway thing to inbox
-                logger.debug("==OWN:BridgeDiscovery:ZB== ... gateway ZigBeeId is: {}", gatewayZigBeeId);
+                logger.debug("... gateway ZigBeeId is: {}", gatewayZigBeeId);
                 notifyNewZBGatewayThing(gatewayZigBeeId);
             } else {
-                logger.debug("==OWN:BridgeDiscovery:ZB== ... requesting again MACAddress ...");
+                logger.debug("... requesting again MACAddress ...");
                 zbgateway.send(GatewayManagement.requestMACAddress());
             }
         }
@@ -102,7 +99,6 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        logger.debug("==OWN:BridgeDiscovery== getSupportedThingTypes()");
         return OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
     }
 
@@ -122,14 +118,13 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
                 .withLabel(OpenWebNetBindingConstants.THING_LABEL_ZB_GATEWAY + " (" + zbgateway.getConnectedPort()
                         + ", " + zbgateway.getFirmwareVersion() + ")")
                 .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_ZIGBEEID).build();
-        logger.info("==OWN:BridgeDiscovery== --- ZIGBEE USB GATEWAY thing discovered: {}", discoveryResult.getLabel());
+        logger.info("--- ZIGBEE USB GATEWAY thing discovered: {}", discoveryResult.getLabel());
         thingDiscovered(discoveryResult);
     }
 
     @Override
     public void onConnected() {
-        logger.info("==OWN:BridgeDiscovery:ZB== onConnected() FOUND ZIGBEE USB GATEWAY: CONNECTED port={}",
-                zbgateway.getConnectedPort());
+        logger.info("onConnected() FOUND ZIGBEE USB GATEWAY: CONNECTED port={}", zbgateway.getConnectedPort());
         gatewayZigBeeId = 0; // reset gatewayZigBeeId
         zbgateway.send(GatewayManagement.requestFirmwareVersion());
         zbgateway.send(GatewayManagement.requestMACAddress());
@@ -138,9 +133,9 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
     @Override
     public void onConnectionError(OpenError error, String errMsg) {
         if (error == OpenError.NO_SERIAL_PORTS_ERROR) {
-            logger.info("==OWN:BridgeDiscovery== No serial ports found");
+            logger.info("No serial ports found");
         } else {
-            logger.warn("==OWN:BridgeDiscovery== onConnectionError() - CONNECTION ERROR: {} - {}", error, errMsg);
+            logger.warn("onConnectionError() - CONNECTION ERROR: {} - {}", error, errMsg);
         }
         stopScan();
         // TODO handle other gw connection problems
@@ -148,19 +143,19 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onConnectionClosed() {
-        logger.debug("==OWN:BridgeDiscovery== recevied onConnectionClosed()");
+        logger.debug("recevied onConnectionClosed()");
         stopScan();
     }
 
     @Override
     public void onDisconnected() {
-        logger.warn("==OWN:BridgeDiscovery== received onDisconnected()");
+        logger.warn("received onDisconnected()");
         stopScan();
     }
 
     @Override
     public void onReconnected() {
-        logger.warn("==OWN:BridgeDiscovery== received onReconnected()");
+        logger.warn("received onReconnected()");
     }
 
     @Override
@@ -186,7 +181,6 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof OpenWebNetBridgeHandler) {
             bridgeHandler = (OpenWebNetBridgeHandler) handler;
-            // gatewayUID = bridgeHandler.getUID();
         }
     }
 

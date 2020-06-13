@@ -54,31 +54,30 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
         super(SEARCH_TIME);
         bridgeHandler = handler;
         bridgeUID = handler.getThing().getUID();
-        logger.debug("==OWN:DeviceDiscovery== constructor for bridge: '{}'", bridgeUID);
+        logger.debug("Constructor for bridge: '{}'", bridgeUID);
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        logger.debug("==OWN:DeviceDiscovery== getSupportedThingTypes()");
         return OpenWebNetDeviceDiscoveryService.SUPPORTED_THING_TYPES;
     }
 
     @Override
     protected void startScan() {
-        logger.info("==OWN:DeviceDiscovery== ------ startScan() - SEARCHING for DEVICES on bridge '{}' ({}) ...",
+        logger.info("------ startScan() - SEARCHING for DEVICES on bridge '{}' ({}) ...",
                 bridgeHandler.getThing().getLabel(), bridgeUID);
         bridgeHandler.searchDevices(this);
     }
 
     @Override
     protected void stopScan() {
-        logger.debug("==OWN:DeviceDiscovery== ------ stopScan() on bridge '{}'", bridgeUID);
+        logger.debug("------ stopScan() on bridge '{}'", bridgeUID);
         bridgeHandler.scanStopped();
     }
 
     @Override
     public void abortScan() {
-        logger.debug("==OWN:DeviceDiscovery== ------ abortScan() on bridge '{}'", bridgeUID);
+        logger.debug("------ abortScan() on bridge '{}'", bridgeUID);
         bridgeHandler.scanStopped();
     }
 
@@ -89,11 +88,11 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
             if (where != null && deviceType != null) {
                 newDiscoveryResult(where, deviceType, msg);
             } else {
-                logger.warn("==OWN:DeviceDiscovery== onNewDevice with null where/deviceType msg={}", msg);
+                logger.warn("onNewDevice with null where/deviceType msg={}", msg);
             }
         } catch (Exception e) {
-            logger.warn("==OWN:DeviceDiscovery== Exception while discovering new device WHERE={}, deviceType={}: {}",
-                    where, deviceType, e.getMessage());
+            logger.warn("Exception while discovering new device WHERE={}, deviceType={}: {}", where, deviceType,
+                    e.getMessage());
         }
     }
 
@@ -105,7 +104,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
      * @param message the OWN message received that identified the device (optional)
      */
     public void newDiscoveryResult(String where, OpenDeviceType deviceType, @Nullable BaseOpenMessage baseMsg) {
-        logger.info("==OWN:DeviceDiscovery== newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
+        logger.info("newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
         ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_DEVICE; // generic device
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_DEVICE;
         Who deviceWho = Who.DEVICE_DIAGNOSTIC; // TODO change to another Who (unknown?)
@@ -135,9 +134,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
                 break;
             }
             default:
-                logger.warn(
-                        "==OWN:DeviceDiscovery== device type {} is not supported, default to generic device (WHERE={})",
-                        deviceType, where);
+                logger.warn("Device type {} is not supported, default to generic device (WHERE={})", deviceType, where);
         }
         String tId = bridgeHandler.thingIdFromWhere(where);
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
@@ -146,22 +143,20 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
 
         String whereLabel = where;
         if (BaseOpenMessage.UNIT_02.equals(OpenMessageFactory.getUnit(where))) {
-            logger.debug("==OWN:DeviceDiscovery== UNIT=02 found (WHERE={})", where);
-            logger.debug("==OWN:DeviceDiscovery== will remove previous result if exists");
+            logger.debug("UNIT=02 found (WHERE={})", where);
+            logger.debug("will remove previous result if exists");
             thingRemoved(thingUID); // remove previously discovered thing
             // re-create thingUID with new type
             thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS;
             thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_ON_OFF_SWITCH_2UNITS;
             thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
             whereLabel = whereLabel.replace("02#", "00#"); // replace unit '02' with all unit '00'
-            logger.debug("==OWN:DeviceDiscovery== UNIT=02, switching type from {} to {}",
+            logger.debug("UNIT=02, switching type from {} to {}",
                     OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH,
                     OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS);
         }
         Map<String, Object> properties = new HashMap<>(2);
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, bridgeHandler.normalizeWhere(where));
-        // properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID,
-        // bridgeHandler.ownIdFromWhoWhere(bridgeHandler.normalizeWhere(where), deviceWho.value().toString()));
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID,
                 bridgeHandler.ownIdFromWhoWhere(where, deviceWho.value().toString()));
         if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) {
@@ -174,15 +169,6 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService i
                 .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID).withBridge(bridgeUID)
                 .withLabel(thingLabel).build();
         thingDiscovered(discoveryResult);
-    }
-
-    public void activate() {
-        logger.debug("==OWN:DeviceDiscovery== activate()");
-    }
-
-    @Override
-    public void deactivate() {
-        logger.debug("==OWN:DeviceDiscovery== deactivate()");
     }
 
 }

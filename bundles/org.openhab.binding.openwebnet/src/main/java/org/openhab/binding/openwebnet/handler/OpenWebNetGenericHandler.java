@@ -14,7 +14,7 @@ package org.openhab.binding.openwebnet.handler;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -31,33 +31,32 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
+@NonNullByDefault
 public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetGenericHandler.class);
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.GENERIC_SUPPORTED_THING_TYPES;
 
-    public OpenWebNetGenericHandler(@NonNull Thing thing) {
+    public OpenWebNetGenericHandler(Thing thing) {
         super(thing);
-        logger.debug("==OWN:GenericHandler== constructor");
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        logger.debug("==OWN:GenericHandler== initialize() thing={}", thing.getUID());
     }
 
     @Override
     protected void requestChannelState(ChannelUID channel) {
         // do nothing
-        logger.warn("==OWN:GenericHandler== There are no channels here!");
+        logger.warn("There are no channels");
     }
 
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
         // do nothing
-        logger.warn("==OWN:GenericHandler== There are no channels here!");
+        logger.warn("There are no channels");
     }
 
     @Override
@@ -69,7 +68,7 @@ public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
         // do nothing
-        logger.warn("==OWN:GenericHandler== Nothing to do!");
+        logger.warn("handleMessage(): Nothing to do!");
     }
 
 } // class
