@@ -51,7 +51,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NAPresenceCameraHandler.class);
 
-    private Optional<AbstractMap.SimpleEntry<String, String>> localCameraURLEntry = Optional.empty();
+    private Optional<AbstractMap.SimpleImmutableEntry<String, String>> localCameraURLEntry = Optional.empty();
     private State floodlightAutoModeState = UnDefType.UNDEF;
 
     public NAPresenceCameraHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
@@ -147,10 +147,11 @@ public class NAPresenceCameraHandler extends CameraHandler {
             //The local address is (re-)requested when it wasn't already determined or when the vpn address was changed.
             if (!localCameraURLEntry.isPresent() || !vpnUrl.equals(localCameraURLEntry.get().getKey())) {
                 Optional<JSONObject> json = executeGETRequestJSON(vpnUrl + PING_URL_PATH);
-                localCameraURLEntry = json.map(j -> j.getString("local_url")).map(localURL -> new AbstractMap.SimpleEntry<>(vpnUrl, localURL));
+                localCameraURLEntry = json.map(j -> j.getString("local_url"))
+                        .map(localURL -> new AbstractMap.SimpleImmutableEntry<>(vpnUrl, localURL));
             }
         }
-        return localCameraURLEntry.map(AbstractMap.SimpleEntry::getValue);
+        return localCameraURLEntry.map(AbstractMap.SimpleImmutableEntry::getValue);
     }
 
     private Optional<JSONObject> executeGETRequestJSON(String url) {
