@@ -31,7 +31,7 @@ public class DateTimeUtils {
     public static @Nullable Date toDate(String dateTime) {
         try {
             return sdf.parse(dateTime);
-        } catch (ParseException e) {
+        } catch (ParseException | NumberFormatException e) {
             return null;
         }
     }
