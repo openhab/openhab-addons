@@ -114,8 +114,6 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NAWelcomeCameraHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
             return new NAPresenceCameraHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
-            return new NAPresenceCameraHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing, timeZoneProvider);
         } else {
