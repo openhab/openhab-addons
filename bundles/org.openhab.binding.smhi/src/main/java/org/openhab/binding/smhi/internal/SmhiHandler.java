@@ -34,11 +34,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelGroupUID;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
@@ -106,9 +102,8 @@ public class SmhiHandler extends BaseThingHandler {
         channels.addAll(createChannels());
         updateThing(editThing().withChannels(channels).build());
 
-        startPolling();
-        updateStatus(ThingStatus.ONLINE);
         updateNow();
+        startPolling();
     }
 
     /**
@@ -116,6 +111,20 @@ public class SmhiHandler extends BaseThingHandler {
      */
     private synchronized void startPolling() {
         forecastUpdater = scheduler.scheduleWithFixedDelay(this::waitForForecast, 1, 1, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Cancels all jobs.
+     */
+    private synchronized void cancelPolling() {
+        Future<?> localRef = forecastUpdater;
+        if (localRef != null) {
+            localRef.cancel(false);
+        }
+        localRef = instantUpdate;
+        if (localRef != null) {
+            localRef.cancel(false);
+        }
     }
 
     @Override
@@ -135,6 +144,7 @@ public class SmhiHandler extends BaseThingHandler {
             updateConfiguration(configuration);
             config = configuration.as(SmhiConfiguration.class);
             updateThing(editThing().withChannels(createChannels()).build());
+            updateNow();
         } else {
             // persist new configuration and notify Thing Manager
             updateConfiguration(configuration);
@@ -250,14 +260,7 @@ public class SmhiHandler extends BaseThingHandler {
      * Dispose the {@link org.eclipse.smarthome.core.thing.binding.ThingHandler}. Cancel scheduled jobs
      */
     public void dispose() {
-        Future<?> localRef = forecastUpdater;
-        if (localRef != null) {
-            localRef.cancel(false);
-        }
-        localRef = instantUpdate;
-        if (localRef != null) {
-            localRef.cancel(false);
-        }
+        cancelPolling();
     }
 
     /**
@@ -332,9 +335,16 @@ public class SmhiHandler extends BaseThingHandler {
             try {
                 forecast = apiConnection.getForecast(config.latitude, config.longitude);
             } catch (SmhiException e) {
-                logger.warn("Failed to get new forecast: {}", e.getCause().getMessage());
+                logger.debug("Failed to get new forecast: {}", e.getCause().getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getCause().getMessage());
+                return;
+            } catch (PointOutOfBoundsException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Coordinates outside valid area");
+                cancelPolling();
                 return;
             }
+            updateStatus(ThingStatus.ONLINE);
             referenceTime = forecast.getReferenceTime();
             updateChannels(forecast);
             if (referenceTime.isEqual(currentHour) || referenceTime.isAfter(currentHour)) {

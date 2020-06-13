@@ -69,7 +69,7 @@ public class SmhiConnector {
      * @param lon Longitude
      * @return A {@link TimeSeries} object containing the published forecasts.
      */
-    public TimeSeries getForecast(double lat, double lon) throws SmhiException {
+    public TimeSeries getForecast(double lat, double lon) throws SmhiException, PointOutOfBoundsException {
         logger.debug("Fetching new forecast");
         String url = String.format(POINT_FORECAST_URL, lon, lat);
         Request req = httpClient.newRequest(url);
@@ -79,6 +79,10 @@ public class SmhiConnector {
             resp = req.send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new SmhiException(e);
+        }
+        logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());
+        if (resp.getStatus() == 400 || resp.getStatus() == 404) {
+            throw new PointOutOfBoundsException();
         }
         return Parser.parseTimeSeries(resp.getContentAsString());
     }
