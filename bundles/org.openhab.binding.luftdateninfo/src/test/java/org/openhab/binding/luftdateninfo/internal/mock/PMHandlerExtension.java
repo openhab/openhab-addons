@@ -28,7 +28,6 @@ public class PMHandlerExtension extends PMHandler {
 
     public PMHandlerExtension(Thing thing) {
         super(thing);
-        // TODO Auto-generated constructor stub
     }
 
     public int getConfigStatus() {

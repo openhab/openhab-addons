@@ -47,7 +47,6 @@ public class NoiseHandler extends BaseSensorHandler {
             List<SensorDataValue> valueList = HTTPHandler.getLatestValues(json);
             if (valueList != null) {
                 if (HTTPHandler.isNoise(valueList)) {
-
                     Iterator<SensorDataValue> iter = valueList.iterator();
                     while (iter.hasNext()) {
                         SensorDataValue v = iter.next();

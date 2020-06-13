@@ -29,8 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ThingMock} Thing Mock
@@ -39,86 +37,67 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ThingMock implements Thing {
-    private static final Logger logger = LoggerFactory.getLogger(Thing.class);
-
     private Configuration config = new Configuration(); // = new HashMap<String, Object>();
 
     @Override
     public @Nullable String getLabel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setLabel(@Nullable String label) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public List<Channel> getChannels() {
-        // TODO Auto-generated method stub
         return new ArrayList<Channel>();
     }
 
     @Override
     public List<Channel> getChannelsOfGroup(String channelGroupId) {
-        // TODO Auto-generated method stub
         return new ArrayList<Channel>();
     }
 
     @Override
     public @Nullable Channel getChannel(String channelId) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public @Nullable Channel getChannel(ChannelUID channelUID) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public ThingStatus getStatus() {
-        // TODO Auto-generated method stub
         return ThingStatus.UNKNOWN;
     }
 
     @Override
     public ThingStatusInfo getStatusInfo() {
-        // TODO Auto-generated method stub
         return new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "");
     }
 
     @Override
     public void setStatusInfo(ThingStatusInfo status) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void setHandler(@Nullable ThingHandler thingHandler) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public @Nullable ThingHandler getHandler() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public @Nullable ThingUID getBridgeUID() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setBridgeUID(@Nullable ThingUID bridgeUID) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -147,31 +126,24 @@ public class ThingMock implements Thing {
 
     @Override
     public @Nullable String setProperty(String name, @Nullable String value) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setProperties(Map<String, String> properties) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public @Nullable String getLocation() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setLocation(@Nullable String location) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public boolean isEnabled() {
-        // TODO Auto-generated method stub
         return false;
     }
 
