@@ -54,7 +54,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
     private boolean isLocalCameraURLLoaded;
     private State floodlightAutoModeState = UnDefType.UNDEF;
 
-    public NAPresenceCameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public NAPresenceCameraHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
     }
 
@@ -152,13 +152,11 @@ public class NAPresenceCameraHandler extends CameraHandler {
     }
 
     private Optional<JSONObject> executeGETRequestJSON(String url) {
-        Optional<String> content = executeGETRequest(url);
-        if (content.isPresent()) {
-            return Optional.of(new JSONObject(content.get()));
+        Optional<JSONObject> jsonContent = executeGETRequest(url).map(JSONObject::new);
+        if(!jsonContent.isPresent()) {
+            logger.error("The request-result could not get retrieved!");
         }
-
-        logger.error("The request-result could not get retrieved!");
-        return Optional.empty();
+        return jsonContent;
     }
 
     private Optional<String> executeGETRequest(String url) {
