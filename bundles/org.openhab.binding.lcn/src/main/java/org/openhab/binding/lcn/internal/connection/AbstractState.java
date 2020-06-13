@@ -16,55 +16,61 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Base class for usage for states with {@link StateMachine}.
+ * Base class for all states used with {@link AbstractStateMachine}.
+ *
+ * @param <T> type of the state machine implementation
+ * @param <U> type of the state implementation
  *
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-public abstract class AbstractState {
+public abstract class AbstractState<T extends AbstractStateMachine<T, U>, U extends AbstractState<T, U>> {
     private final List<ScheduledFuture<?>> usedTimers = Collections.synchronizedList(new ArrayList<>());
-    protected final StateContext context;
+    protected final T context;
 
-    public AbstractState(StateContext context) {
+    public AbstractState(T context) {
         this.context = context;
     }
 
     /**
-     * Must be invoked when the State shall start its actions.
+     * Invoked when the State shall start its operation.
      */
-    abstract void startWorking();
+    protected abstract void startWorking();
 
     /**
      * Stops all timers, the State has been started.
      */
-    void cancelAllTimers() {
+    protected void cancelAllTimers() {
         synchronized (usedTimers) {
             usedTimers.forEach(t -> t.cancel(true));
         }
     }
 
     /**
-     * When a state starts a timer, its ScheduledFuture must be added by this method. All timers added by this method,
-     * are canceled when the StateMachine leaves this State.
+     * When a state starts a timer, its ScheduledFuture must be registered by this method. All timers added by this
+     * method, are canceled when the StateMachine leaves this State.
      *
      * @param timer the new timer
      */
-    void addTimer(ScheduledFuture<?> timer) {
+    protected void addTimer(ScheduledFuture<?> timer) {
         usedTimers.add(timer);
     }
 
     /**
      * Sets a new State. The current state is torn down gracefully.
      *
-     * @param newStateClass the class of the new State
+     * @param newStateFactory the lambda returning the new State
      */
-    synchronized void nextState(Class<? extends AbstractConnectionState> newStateClass) {
-        if (context.isStateActive(this)) {
-            context.setState(newStateClass);
+    protected void nextState(Function<T, U> newStateFactory) {
+        synchronized (context) {
+            if (context.isStateActive(this)) {
+                context.setState(newStateFactory);
+            }
         }
     }
 }

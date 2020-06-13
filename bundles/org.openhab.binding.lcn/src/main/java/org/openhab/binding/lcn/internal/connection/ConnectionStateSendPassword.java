@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
 
@@ -24,8 +22,8 @@ import org.openhab.binding.lcn.internal.common.LcnDefs;
  */
 @NonNullByDefault
 public class ConnectionStateSendPassword extends AbstractConnectionStateSendCredentials {
-    public ConnectionStateSendPassword(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateSendPassword(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
@@ -37,7 +35,7 @@ public class ConnectionStateSendPassword extends AbstractConnectionStateSendCred
     public void onPckMessageReceived(String data) {
         if (data.equals(LcnDefs.AUTH_PASSWORD)) {
             connection.queueDirectlyPlainText(connection.getSettings().getPassword());
-            nextState(ConnectionStateWaitForLcnBusConnected.class);
+            nextState(ConnectionStateWaitForLcnBusConnected::new);
         }
     }
 }

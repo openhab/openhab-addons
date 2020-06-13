@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,15 +26,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ConnectionStateGracePeriodBeforeReconnect extends AbstractConnectionState {
     private static final int RECONNECT_GRACE_PERIOD_SEC = 5;
 
-    public ConnectionStateGracePeriodBeforeReconnect(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateGracePeriodBeforeReconnect(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
     public void startWorking() {
         closeSocketChannel();
 
-        addTimer(scheduler.schedule(() -> nextState(ConnectionStateConnecting.class), RECONNECT_GRACE_PERIOD_SEC,
+        addTimer(getScheduler().schedule(() -> nextState(ConnectionStateConnecting::new), RECONNECT_GRACE_PERIOD_SEC,
                 TimeUnit.SECONDS));
     }
 

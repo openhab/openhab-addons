@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,14 +39,14 @@ public class ConnectionStateSegmentScan extends AbstractConnectionState {
             .compile("=M(?<segId>\\d{3})(?<modId>\\d{3})\\.SK(?<id>\\d+)");
     private final RequestStatus statusSegmentScan = new RequestStatus(-1, 3, "Segment Scan");
 
-    public ConnectionStateSegmentScan(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateSegmentScan(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
     public void startWorking() {
         statusSegmentScan.refresh();
-        addTimer(scheduler.scheduleWithFixedDelay(this::update, 0, 500, TimeUnit.MILLISECONDS));
+        addTimer(getScheduler().scheduleWithFixedDelay(this::update, 0, 500, TimeUnit.MILLISECONDS));
     }
 
     private void update() {
@@ -61,7 +60,7 @@ public class ConnectionStateSegmentScan extends AbstractConnectionState {
             // Give up. Probably no segments available.
             connection.setLocalSegId(0);
             logger.debug("No segment couplers detected");
-            nextState(ConnectionStateConnected.class);
+            nextState(ConnectionStateConnected::new);
         }
     }
 
@@ -75,7 +74,7 @@ public class ConnectionStateSegmentScan extends AbstractConnectionState {
                 // local segment coupler answered
                 connection.setLocalSegId(Integer.parseInt(matcher.group("id")));
                 logger.debug("Local segment ID is {}", connection.getLocalSegId());
-                nextState(ConnectionStateConnected.class);
+                nextState(ConnectionStateConnected::new);
             }
         }
         parseLcnBusDiconnectMessage(data);

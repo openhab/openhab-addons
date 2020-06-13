@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.common.PckGenerator;
 
@@ -24,8 +22,8 @@ import org.openhab.binding.lcn.internal.common.PckGenerator;
  */
 @NonNullByDefault
 public class ConnectionStateSendDimMode extends AbstractConnectionState {
-    public ConnectionStateSendDimMode(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateSendDimMode(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
@@ -33,7 +31,7 @@ public class ConnectionStateSendDimMode extends AbstractConnectionState {
         connection.queueDirectlyPlainText(PckGenerator.setOperationMode(connection.getSettings().getDimMode(),
                 connection.getSettings().getStatusMode()));
 
-        nextState(ConnectionStateSegmentScan.class);
+        nextState(ConnectionStateSegmentScan::new);
     }
 
     @Override

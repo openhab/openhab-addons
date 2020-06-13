@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,19 +29,19 @@ public class ConnectionStateConnected extends AbstractConnectionState {
     private static final int PING_INTERVAL_SEC = 60;
     private int pingCounter;
 
-    public ConnectionStateConnected(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateConnected(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
     public void startWorking() {
         // send periodic keep-alives to keep the connection open
-        addTimer(scheduler.scheduleWithFixedDelay(
+        addTimer(getScheduler().scheduleWithFixedDelay(
                 () -> connection.queueDirectlyPlainText(PckGenerator.ping(++pingCounter)), PING_INTERVAL_SEC,
                 PING_INTERVAL_SEC, TimeUnit.SECONDS));
 
         // run ModInfo.update() for every LCN module
-        addTimer(scheduler.scheduleWithFixedDelay(connection::updateModInfos, 0, 1, TimeUnit.SECONDS));
+        addTimer(getScheduler().scheduleWithFixedDelay(connection::updateModInfos, 0, 1, TimeUnit.SECONDS));
 
         connection.sendOfflineQueue();
     }

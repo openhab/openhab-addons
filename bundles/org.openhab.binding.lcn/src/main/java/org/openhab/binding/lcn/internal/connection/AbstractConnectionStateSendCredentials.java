@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.common.LcnException;
 
 /**
- * Base class for sends username or password.
+ * Base class for sending username or password.
  *
  * @author Fabian Wolter - Initial Contribution
  */
@@ -27,13 +26,13 @@ import org.openhab.binding.lcn.internal.common.LcnException;
 public abstract class AbstractConnectionStateSendCredentials extends AbstractConnectionState {
     private static final int AUTH_TIMEOUT_SEC = 10;
 
-    public AbstractConnectionStateSendCredentials(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public AbstractConnectionStateSendCredentials(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
     public void startWorking() {
-        addTimer(scheduler.schedule(() -> nextState(ConnectionStateConnecting.class), AUTH_TIMEOUT_SEC,
+        addTimer(getScheduler().schedule(() -> nextState(ConnectionStateConnecting::new), AUTH_TIMEOUT_SEC,
                 TimeUnit.SECONDS));
     }
 
@@ -41,7 +40,7 @@ public abstract class AbstractConnectionStateSendCredentials extends AbstractCon
      * Starts a timeout when the PCK gateway does not answer to the credentials.
      */
     protected void startTimeoutTimer() {
-        addTimer(scheduler.schedule(
+        addTimer(getScheduler().schedule(
                 () -> context.handleConnectionFailed(
                         new LcnException("Network timeout in state " + getClass().getSimpleName())),
                 connection.getSettings().getTimeout(), TimeUnit.MILLISECONDS));

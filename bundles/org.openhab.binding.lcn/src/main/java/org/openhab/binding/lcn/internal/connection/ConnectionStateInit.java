@@ -12,24 +12,22 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This is the starting state of the {@link Connection} {@link StateMachine}.
+ * This is the initial state of the {@link ConnectionStateMachine}.
  *
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
 public class ConnectionStateInit extends AbstractConnectionState {
-    public ConnectionStateInit(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateInit(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
     public void startWorking() {
-        nextState(ConnectionStateConnecting.class);
+        nextState(ConnectionStateConnecting::new);
     }
 
     @Override

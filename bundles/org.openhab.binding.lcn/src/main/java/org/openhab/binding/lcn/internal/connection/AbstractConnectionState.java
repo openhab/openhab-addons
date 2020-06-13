@@ -21,21 +21,18 @@ import org.openhab.binding.lcn.internal.common.LcnAddr;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
 
 /**
- * Base class for representing LCN-PCK gateway connection states
+ * Base class representing LCN-PCK gateway connection states.
  *
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-public abstract class AbstractConnectionState extends AbstractState {
+public abstract class AbstractConnectionState extends AbstractState<ConnectionStateMachine, AbstractConnectionState> {
     /** The PCK gateway's Connection */
     protected final Connection connection;
-    /** An openHAB scheduler */
-    protected final ScheduledExecutorService scheduler;
 
-    public AbstractConnectionState(StateContext context, ScheduledExecutorService scheduler) {
+    public AbstractConnectionState(ConnectionStateMachine context) {
         super(context);
         this.connection = context.getConnection();
-        this.scheduler = scheduler;
     }
 
     /**
@@ -44,6 +41,15 @@ public abstract class AbstractConnectionState extends AbstractState {
      * @param data the received PCK message without line termination character
      */
     public abstract void onPckMessageReceived(String data);
+
+    /**
+     * Gets the framework's scheduler.
+     *
+     * @return the scheduler
+     */
+    public ScheduledExecutorService getScheduler() {
+        return context.getScheduler();
+    }
 
     /**
      * Enqueues a PCK message to be sent. When the connection is offline, the message will be buffered and sent when the
@@ -62,7 +68,7 @@ public abstract class AbstractConnectionState extends AbstractState {
      * Shuts the Connection down finally. A shut-down connection cannot re-used.
      */
     public void shutdownFinally() {
-        nextState(ConnectionStateShutdown.class);
+        nextState(ConnectionStateShutdown::new);
     }
 
     /**
@@ -74,7 +80,7 @@ public abstract class AbstractConnectionState extends AbstractState {
     protected void parseLcnBusDiconnectMessage(String pck) {
         if (pck.equals(LcnDefs.LCNCONNSTATE_DISCONNECTED)) {
             connection.getCallback().onOffline("LCN bus not connected to LCN-PCHK/PKE");
-            nextState(ConnectionStateWaitForLcnBusConnectedAfterDisconnected.class);
+            nextState(ConnectionStateWaitForLcnBusConnectedAfterDisconnected::new);
         }
     }
 

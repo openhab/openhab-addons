@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -31,8 +30,8 @@ import org.openhab.binding.lcn.internal.common.LcnException;
 public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionState {
     private @Nullable ScheduledFuture<?> legacyTimer;
 
-    public ConnectionStateWaitForLcnBusConnected(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateWaitForLcnBusConnected(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
@@ -40,9 +39,9 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
         // Legacy support for LCN-PCHK 2.2 and earlier:
         // There was no explicit "LCN connected" notification after successful authentication.
         // Only "LCN disconnected" would be reported immediately. That means "LCN connected" used to be the default.
-        ScheduledFuture<?> localLegacyTimer = legacyTimer = scheduler.schedule(() -> {
+        ScheduledFuture<?> localLegacyTimer = legacyTimer = getScheduler().schedule(() -> {
             connection.getCallback().onOnline();
-            nextState(ConnectionStateSendDimMode.class);
+            nextState(ConnectionStateSendDimMode::new);
         }, connection.getSettings().getTimeout(), TimeUnit.MILLISECONDS);
         addTimer(localLegacyTimer);
     }
@@ -60,7 +59,7 @@ public class ConnectionStateWaitForLcnBusConnected extends AbstractConnectionSta
                 localLegacyTimer.cancel(true);
             }
             connection.getCallback().onOnline();
-            nextState(ConnectionStateSendDimMode.class);
+            nextState(ConnectionStateSendDimMode::new);
         } else if (data.equals(LcnDefs.INSUFFICIENT_LICENSES)) {
             context.handleConnectionFailed(
                     new LcnException("LCN-PCHK/PKE has not enough licenses to handle this connection"));

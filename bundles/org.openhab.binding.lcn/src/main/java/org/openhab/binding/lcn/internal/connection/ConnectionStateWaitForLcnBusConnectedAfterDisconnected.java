@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,9 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConnectionStateWaitForLcnBusConnectedAfterDisconnected extends ConnectionStateWaitForLcnBusConnected {
-    public ConnectionStateWaitForLcnBusConnectedAfterDisconnected(StateContext context,
-            ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateWaitForLcnBusConnectedAfterDisconnected(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override

@@ -17,7 +17,6 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,8 +34,8 @@ import org.slf4j.LoggerFactory;
 public class ConnectionStateConnecting extends AbstractConnectionState {
     private final Logger logger = LoggerFactory.getLogger(ConnectionStateConnecting.class);
 
-    public ConnectionStateConnecting(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateConnecting(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class ConnectionStateConnecting extends AbstractConnectionState {
                 @Override
                 public void completed(@Nullable Void result, @Nullable Void attachment) {
                     connection.readAndProcess();
-                    nextState(ConnectionStateSendUsername.class);
+                    nextState(ConnectionStateSendUsername::new);
                 }
 
                 @Override

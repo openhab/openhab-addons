@@ -74,7 +74,7 @@ public class Connection {
     private final Map<LcnAddr, ModInfo> modData = Collections.synchronizedMap(new HashMap<>());
     private volatile boolean writeInProgress;
     private final ScheduledExecutorService scheduler;
-    private final StateMachine stateMachine;
+    private final ConnectionStateMachine connectionStateMachine;
 
     /**
      * Constructs a clean (disconnected) connection with the given settings.
@@ -90,8 +90,7 @@ public class Connection {
         this.scheduler = scheduler;
         this.clearRuntimeData();
 
-        stateMachine = new StateMachine(this, scheduler);
-        stateMachine.startWorking();
+        connectionStateMachine = new ConnectionStateMachine(this, scheduler);
     }
 
     /** Clears all runtime data. */
@@ -169,7 +168,7 @@ public class Connection {
                     synchronized (Connection.this) {
                         if (transmittedByteCount == null || transmittedByteCount == -1) {
                             String msg = "Connection was closed by foreign host.";
-                            stateMachine.handleConnectionFailed(new LcnException(msg));
+                            connectionStateMachine.handleConnectionFailed(new LcnException(msg));
                         } else {
                             // read data chunks from socket and separate frames
                             readBuffer.flip();
@@ -182,7 +181,7 @@ public class Connection {
                                     logger.trace("Received: '{}'", data);
                                 }
                                 scheduler.submit(() -> {
-                                    stateMachine.onInputReceived(data);
+                                    connectionStateMachine.onInputReceived(data);
                                     callback.onPckMessageReceived(data);
                                 });
                                 // Seek position in input array
@@ -204,11 +203,11 @@ public class Connection {
                 @Override
                 public void failed(@Nullable Throwable e, @Nullable Void attachment) {
                     logger.debug("Lost connection");
-                    stateMachine.handleConnectionFailed(e);
+                    connectionStateMachine.handleConnectionFailed(e);
                 }
             });
         } else {
-            stateMachine.handleConnectionFailed(new LcnException("Socket not open"));
+            connectionStateMachine.handleConnectionFailed(new LcnException("Socket not open"));
         }
     }
 
@@ -267,7 +266,7 @@ public class Connection {
                                                 exc.getMessage());
                                     }
                                     writeInProgress = false;
-                                    stateMachine.handleConnectionFailed(new LcnException("write() failed"));
+                                    connectionStateMachine.handleConnectionFailed(new LcnException("write() failed"));
                                 }
                             }
                         });
@@ -363,7 +362,7 @@ public class Connection {
      * @param pck the pure PCK command (without address header)
      */
     public void queue(LcnAddr addr, boolean wantsAck, byte[] pck) {
-        stateMachine.queue(addr, wantsAck, pck);
+        connectionStateMachine.queue(addr, wantsAck, pck);
     }
 
     /**
@@ -441,7 +440,7 @@ public class Connection {
      * Invoked when this Connection shall be shut-down finally.
      */
     public void shutdown() {
-        stateMachine.shutdownFinally();
+        connectionStateMachine.shutdownFinally();
     }
 
     /**

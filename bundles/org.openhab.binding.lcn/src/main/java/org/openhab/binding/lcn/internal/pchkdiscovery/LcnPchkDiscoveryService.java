@@ -18,7 +18,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,6 +35,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.lcn.internal.LcnBindingConstants;
+import org.openhab.binding.lcn.internal.common.LcnDefs;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,46 +103,42 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
                     socket.setSoTimeout(INTERFACE_TIMEOUT_SEC * 1000);
                     socket.joinGroup(multicastAddress);
 
-                    byte[] requestData = DISCOVER_REQUEST.getBytes("UTF-8");
+                    byte[] requestData = DISCOVER_REQUEST.getBytes(LcnDefs.LCN_ENCODING);
                     DatagramPacket request = new DatagramPacket(requestData, requestData.length, multicastAddress,
                             PCHK_DISCOVERY_PORT);
                     socket.send(request);
 
-                    try {
-                        do {
-                            byte[] rxbuf = new byte[8192];
-                            DatagramPacket packet = new DatagramPacket(rxbuf, rxbuf.length);
-                            socket.receive(packet);
+                    do {
+                        byte[] rxbuf = new byte[8192];
+                        DatagramPacket packet = new DatagramPacket(rxbuf, rxbuf.length);
+                        socket.receive(packet);
 
-                            InetAddress addr = packet.getAddress();
-                            String response = new String(packet.getData());
+                        InetAddress addr = packet.getAddress();
+                        String response = new String(packet.getData(), LcnDefs.LCN_ENCODING);
 
-                            if (response.contains("ServicesRequest")) {
-                                continue;
-                            }
+                        if (response.contains("ServicesRequest")) {
+                            continue;
+                        }
 
-                            ServicesResponse deserialized = xmlToServiceResponse(response);
+                        ServicesResponse deserialized = xmlToServiceResponse(response);
 
-                            String macAddress = deserialized.getServer().getMachineId().replace(":", "");
-                            ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_PCK_GATEWAY, macAddress);
+                        String macAddress = deserialized.getServer().getMachineId().replace(":", "");
+                        ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_PCK_GATEWAY, macAddress);
 
-                            Map<String, Object> properties = new HashMap<>(3);
-                            properties.put(HOSTNAME, addr.getHostAddress());
-                            properties.put(PORT, deserialized.getExtServices().getExtService().getLocalPort());
-                            properties.put(MAC_ADDRESS, macAddress);
+                        Map<String, Object> properties = new HashMap<>(3);
+                        properties.put(HOSTNAME, addr.getHostAddress());
+                        properties.put(PORT, deserialized.getExtServices().getExtService().getLocalPort());
+                        properties.put(MAC_ADDRESS, macAddress);
 
-                            DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
-                                    .withProperties(properties).withRepresentationProperty(MAC_ADDRESS)
-                                    .withLabel(deserialized.getServer().getContent() + " ("
-                                            + deserialized.getServer().getMachineName() + ")");
+                        DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
+                                .withProperties(properties).withRepresentationProperty(MAC_ADDRESS)
+                                .withLabel(deserialized.getServer().getContent() + " ("
+                                        + deserialized.getServer().getMachineName() + ")");
 
-                            thingDiscovered(discoveryResult.build());
-                        } while (true); // left by SocketTimeoutException
-                    } catch (SocketTimeoutException e) {
-                        // nothing
-                    }
+                        thingDiscovered(discoveryResult.build());
+                    } while (true); // left by SocketTimeoutException
                 } catch (IOException e) {
-                    logger.warn("Discovery failed for {}: {}", localInterfaceAddress, e.getMessage());
+                    logger.debug("Discovery failed for {}: {}", localInterfaceAddress, e.getMessage());
                 }
             });
         } catch (UnknownHostException e) {

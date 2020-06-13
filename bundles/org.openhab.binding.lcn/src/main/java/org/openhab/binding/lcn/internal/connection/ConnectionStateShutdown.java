@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lcn.internal.connection;
 
-import java.util.concurrent.ScheduledExecutorService;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lcn.internal.common.LcnAddr;
 
@@ -24,8 +22,8 @@ import org.openhab.binding.lcn.internal.common.LcnAddr;
  */
 @NonNullByDefault
 public class ConnectionStateShutdown extends AbstractConnectionState {
-    public ConnectionStateShutdown(StateContext context, ScheduledExecutorService scheduler) {
-        super(context, scheduler);
+    public ConnectionStateShutdown(ConnectionStateMachine context) {
+        super(context);
     }
 
     @Override
