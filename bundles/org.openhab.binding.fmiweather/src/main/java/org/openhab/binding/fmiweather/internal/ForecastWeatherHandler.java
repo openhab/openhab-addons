@@ -93,6 +93,8 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
             Object location = getConfig().get(BindingConstants.LOCATION);
             if (location == null) {
                 logger.warn("Location not set for thing {} -- aborting initialization.", getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        String.format("location parameter not set %s %s", e.getClass().getName(), e.getMessage()));
                 return;
             }
             String latlon = location.toString();
@@ -104,13 +106,9 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
             }
             this.location = new LatLon(new BigDecimal(split[0].trim()), new BigDecimal(split[1].trim()));
             super.initialize();
-        } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("location parameter not set %s %s", e.getClass().getName(), e.getMessage()));
-        } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("location parameter should be in format LATITUDE,LONGITUDE. Error: %s %s",
-                            e.getClass().getName(), e.getMessage()));
+        } catch (NumberFormatException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                    "location parameter should be in format LATITUDE,LONGITUDE. Error details: %s", e.getMessage()));
         }
     }
 
