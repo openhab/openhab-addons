@@ -197,7 +197,7 @@ public class SmokeTest extends IntegrationTestSupport {
      */
     @Test
     public void testIOError() throws Exception {
-        artificialServerWait = 30000;
+        artificialServerWait = 60000;
         ModbusSlaveEndpoint endpoint = getEndpoint();
 
         AtomicInteger okCount = new AtomicInteger();
@@ -218,10 +218,10 @@ public class SmokeTest extends IntegrationTestSupport {
                         }
                     });
             callbackCalled.await(15, TimeUnit.SECONDS);
+            assertThat(okCount.get(), is(equalTo(0)));
+            assertThat(lastError.toString(), errorCount.get(), is(equalTo(1)));
+            assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveIOException);
         }
-        assertThat(okCount.get(), is(equalTo(0)));
-        assertThat(lastError.toString(), errorCount.get(), is(equalTo(1)));
-        assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveIOException);
     }
 
     public void testOneOffReadWithDiscreteOrCoils(ModbusReadFunctionCode functionCode, int count) throws Exception {
