@@ -33,6 +33,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class FMIResponse {
 
+    private Map<Location, Map<String, Data>> dataByLocationByParameter;
+
     /**
      * Builder class for FMIResponse
      *
@@ -89,8 +91,6 @@ public class FMIResponse {
             out.get(location).put(parameter, dataValues);
         }
     }
-
-    private Map<Location, Map<String, Data>> dataByLocationByParameter;
 
     public FMIResponse(Map<Location, Map<String, Data>> dataByLocationByParameter) {
         this.dataByLocationByParameter = dataByLocationByParameter;
