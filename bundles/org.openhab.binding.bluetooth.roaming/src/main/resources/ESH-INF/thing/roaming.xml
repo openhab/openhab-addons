@@ -12,7 +12,7 @@
 				<label>Address</label>
 				<description>The unique Bluetooth address of the device in format XX:XX:XX:XX:XX:XX</description>
 			</parameter>
-			<parameter name="discovery" type="boolean">
+			<parameter name="backgroundDiscovery" type="boolean">
 				<label>Device Discovery</label>
 				<description>Whether this adapter participates in Bluetooth device discovery</description>
 				<advanced>true</advanced>
