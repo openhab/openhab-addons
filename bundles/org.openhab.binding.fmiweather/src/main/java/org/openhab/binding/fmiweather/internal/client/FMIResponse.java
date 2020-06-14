@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,21 +63,30 @@ public class FMIResponse {
 
         public FMIResponse build() {
             Map<Location, Map<String, Data>> out = new HashMap<>(timestampsByLocationByParameter.size());
-
             timestampsByLocationByParameter.entrySet().forEach(entry -> {
-                Location location = entry.getKey();
-                Map<String, List<Long>> timestampsByParameter = entry.getValue();
-                out.put(location, new HashMap<String, Data>(timestampsByParameter.size()));
-                timestampsByParameter.entrySet().stream().forEach(entry2 -> {
-                    String parameter = entry2.getKey();
-                    long[] timestamps = entry2.getValue().stream().mapToLong(Long::longValue).toArray();
-                    BigDecimal[] values = valuesByLocationByParameter.get(location).get(parameter)
-                            .toArray(new @Nullable BigDecimal[0]);
-                    Data dataValues = new Data(timestamps, values);
-                    out.get(location).put(parameter, dataValues);
-                });
+                collectParametersForLocation(out, entry);
             });
             return new FMIResponse(out);
+        }
+
+        private void collectParametersForLocation(Map<Location, Map<String, Data>> out,
+                Entry<Location, Map<String, List<Long>>> locationEntry) {
+            Location location = locationEntry.getKey();
+            Map<String, List<Long>> timestampsByParameter = locationEntry.getValue();
+            out.put(location, new HashMap<String, Data>(timestampsByParameter.size()));
+            timestampsByParameter.entrySet().stream().forEach(parameterEntry -> {
+                collectValuesForParameter(out, location, parameterEntry);
+            });
+        }
+
+        private void collectValuesForParameter(Map<Location, Map<String, Data>> out, Location location,
+                Entry<String, List<Long>> parameterEntry) {
+            String parameter = parameterEntry.getKey();
+            long[] timestamps = parameterEntry.getValue().stream().mapToLong(Long::longValue).toArray();
+            BigDecimal[] values = valuesByLocationByParameter.get(location).get(parameter)
+                    .toArray(new @Nullable BigDecimal[0]);
+            Data dataValues = new Data(timestamps, values);
+            out.get(location).put(parameter, dataValues);
         }
     }
 
