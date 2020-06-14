@@ -1,17 +1,18 @@
 # NovaFineDust Binding
 
-This binding is for the fine dust sensor (PM Sensor) from Nova Fitness. Currently only one model is supported, the SDS011.
+This binding is for the fine dust sensor (PM Sensor) from Nova Fitness.
+Currently only one model is supported, the SDS011.
 
 It basically implements the protocol specified in [this document](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
 One can measure the PM 2.5 and PM 10 values with this device. It comes very handy for detecting air pollution like neighbors firing their oven with wet wood etc. so one can deactivate the ventilation system. 
 
 ## Supported Things
 
-There is only one Thing for this binding is `SDS011`.
+There is only one Thing type for this binding, which is `SDS011`.
 
 ## Discovery
 
-There is no automatic discovery. The Thing has to be added manually via the `.things` configuration file or via (Paper) UI.
+There is no automatic discovery.
 
 ## Thing Configuration
 
@@ -75,4 +76,4 @@ sitemap demo label="Main Menu"
 
 ## Limitations
 
-In theory once can have multiple sensors connected and distinguish them via their device ID. However, this is currently not implemented and the binding always configures any device and accepts data reportings from any device too.
+In theory one can have multiple sensors connected and distinguish them via their device ID. However, this is currently not implemented and the binding always configures any device and accepts data reportings from any device too.
