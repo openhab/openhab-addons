@@ -360,7 +360,7 @@ public class GreeHandler extends BaseThingHandler {
         logger.debug("Automatic refresh started ({} second interval)", config.refresh);
     }
 
-    private void publishChannel(ChannelUID channelUID) throws GreeException {
+    private void publishChannel(ChannelUID channelUID) {
         try {
             String channelID = channelUID.getId();
             State state = null;

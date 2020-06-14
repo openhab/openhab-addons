@@ -58,11 +58,13 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
 
     @Activate
     public GreeDiscoveryService(@Reference NetworkAddressService networkAddressService,
-            @Reference GreeTranslationProvider translationProvider) {
+            @Reference GreeTranslationProvider translationProvider,
+            @Nullable Map<String, @Nullable Object> configProperties) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SEC);
         messages = translationProvider;
         String ip = networkAddressService.getConfiguredBroadcastAddress();
         broadcastAddress = ip != null ? ip : "";
+        activate(configProperties);
     }
 
     @Override
