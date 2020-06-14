@@ -92,7 +92,8 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         try {
             Object location = getConfig().get(BindingConstants.LOCATION);
             if (location == null) {
-                throw new IllegalStateException();
+                logger.warn("Location not set for thing {} -- aborting initialization.", getThing().getUID());
+                return;
             }
             String latlon = location.toString();
             String[] split = latlon.split(",");
