@@ -39,6 +39,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Data;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,20 +202,23 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     /**
      * Unwrap optional value and log with ERROR if value is not present
      *
+     * This should be used only when we expect value to be present, and the reason for missing value corresponds to
+     * description of {@link FMIUnexpectedResponseException}.
+     *
      * @param optional optional to unwrap
      * @param messageIfNotPresent logging message
      * @param args arguments to logging
-     * @throws IllegalStateException when value is not present
+     * @throws FMIUnexpectedResponseException when value is not present
      * @return unwrapped value of the optional
      */
-    protected <T> T unwrap(Optional<T> optional, String messageIfNotPresent, Object... args) {
+    protected <T> T unwrap(Optional<T> optional, String messageIfNotPresent, Object... args)
+            throws FMIUnexpectedResponseException {
         if (optional.isPresent()) {
             return optional.get();
         } else {
             // logger.error(messageIfNotPresent, args) avoided due to static analyzer
             String formattedMessage = String.format(messageIfNotPresent, args);
-            logger.error("Unwrapping error: {}", formattedMessage);
-            throw new IllegalStateException("unwrapping");
+            throw new FMIUnexpectedResponseException(formattedMessage);
         }
     }
 

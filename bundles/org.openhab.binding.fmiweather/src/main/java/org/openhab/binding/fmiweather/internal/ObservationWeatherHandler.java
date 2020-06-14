@@ -191,10 +191,11 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
                 }
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (IllegalStateException e) {
-            // IllegalStateException: Unexpected (possibly bug) issue with response
+        } catch (FMIUnexpectedResponseException e) {
+            // Unexpected (possibly bug) issue with response
+            logger.warn("Unexpected response encountered: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("%s: %s", e.getClass().getName(), e.getMessage()));
+                    String.format("Unexpected API response: %s", e.getMessage()));
         }
     }
 
