@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.presence;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.swagger.client.model.NAWelcomeCamera;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.internal.i18n.I18nProviderImpl;
@@ -43,7 +42,7 @@ public class NAPresenceCameraHandlerTest {
 
     private static final String DUMMY_VPN_URL = "https://dummytestvpnaddress.net/restricted/10.255.89.96/9826069dc689e8327ac3ed2ced4ff089/MTU5MTgzMzYwMDrQ7eHHhG0_OJ4TgmPhGlnK7QQ5pZ,,";
     private static final String DUMMY_LOCAL_URL = "http://192.168.178.76/9826069dc689e8327ac3ed2ced4ff089";
-    private static final Optional<String> DUMMY_PING_RESPONSE = Optional.of("{\"local_url\":\"" + DUMMY_LOCAL_URL + "\",\"product_name\":\"Welcome Netatmo\"}");
+    private static final Optional<String> DUMMY_PING_RESPONSE = createPingResponseContent(DUMMY_LOCAL_URL);
 
     @Mock
     private RequestExecutor requestExecutorMock;
@@ -127,7 +126,7 @@ public class NAPresenceCameraHandlerTest {
 
         final String newDummyVPNURL = DUMMY_VPN_URL + "2";
         final String newDummyLocalURL = DUMMY_LOCAL_URL + "2";
-        final Optional<String> newDummyPingResponse = Optional.of("{\"local_url\":\"" + newDummyLocalURL + "\",\"product_name\":\"Welcome Netatmo\"}");
+        final Optional<String> newDummyPingResponse = createPingResponseContent(newDummyLocalURL);
 
         when(requestExecutorMock.executeGETRequest(newDummyVPNURL + "/command/ping")).thenReturn(newDummyPingResponse);
 
@@ -304,6 +303,10 @@ public class NAPresenceCameraHandlerTest {
     public void testGetNAThingProperty_FloodlightAutoMode_Module_NULL() {
         NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl());
         assertEquals(UnDefType.UNDEF, handlerWithoutModule.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
+    }
+
+    private static Optional<String> createPingResponseContent(final String localURL) {
+        return Optional.of("{\"local_url\":\"" + localURL + "\",\"product_name\":\"Welcome Netatmo\"}");
     }
 
     private interface RequestExecutor {
