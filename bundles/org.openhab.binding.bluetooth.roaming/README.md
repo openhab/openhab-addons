@@ -21,7 +21,7 @@ Devices which use a `roaming` adapter as their bridge also gain the following ch
 
 ## Discovery
 
-A default roaming adapter is discovered automatically, although you can still configure it textually if you want.
+Roaming adapters cannot be discovered, they can only be created manually.
 There can be only a single roaming adapter on a system.
 
 ## Bridge Configuration
