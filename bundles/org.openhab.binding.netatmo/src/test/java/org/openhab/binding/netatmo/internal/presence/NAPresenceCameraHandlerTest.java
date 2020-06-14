@@ -89,7 +89,7 @@ public class NAPresenceCameraHandlerTest {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, OnOffType.OFF);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch on
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
         verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
     }
 
@@ -103,8 +103,32 @@ public class NAPresenceCameraHandlerTest {
 
         handler.handleCommand(floodlightChannelUID, OnOffType.OFF);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch on
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
         verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22auto%22%7D");
+    }
+
+    @Test
+    public void testHandleCommand_Switch_FloodlightAutoMode_on() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+
+        handler.handleCommand(floodlightAutoModeChannelUID, OnOffType.ON);
+
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch auto-mode on
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22auto%22%7D");
+    }
+
+    @Test
+    public void testHandleCommand_Switch_FloodlightAutoMode_off() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+
+        handler.handleCommand(floodlightAutoModeChannelUID, OnOffType.OFF);
+
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
     }
 
     /**
