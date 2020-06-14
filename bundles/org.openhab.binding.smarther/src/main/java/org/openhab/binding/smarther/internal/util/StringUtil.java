@@ -15,6 +15,7 @@ package org.openhab.binding.smarther.internal.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Fabio Possieri - Initial contribution
  */
 @NonNullByDefault
-public class StringUtil {
+public final class StringUtil {
 
     private static final int EOF = -1;
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
@@ -127,16 +128,14 @@ public class StringUtil {
     }
 
     /**
-     * Get the contents of an {@link InputStream} as a string using the default character encoding of the platform.
-     * This method buffers the input internally, so there is no need to use a {@code BufferedInputStream}.
+     * Get the contents of an {@link InputStream} stream as a string using the default character encoding of the
+     * platform. This method buffers the input internally, so there is no need to use a {@code BufferedInputStream}.
      *
      * @param input
      *            the {@code InputStream} to read from
      *
-     * @return the requested string
+     * @return the string read from stream
      *
-     * @throws {@link NullPointerException}
-     *             if the input is {@code null}
      * @throws {@link IOException}
      *             if an I/O error occurs
      */
@@ -147,8 +146,31 @@ public class StringUtil {
         char[] buffer = new char[DEFAULT_BUFFER_SIZE];
 
         int n = 0;
-        while (EOF != (n = reader.read(buffer))) {
+        while ((n = reader.read(buffer)) != EOF) {
             writer.write(buffer, 0, n);
+        }
+
+        return writer.toString();
+    }
+
+    /**
+     * Get the contents of a {@link Reader} stream as a string using the default character encoding of the platform.
+     * This method doesn't buffer the input internally, so eventually {@code BufferedReder} needs to be used externally.
+     *
+     * @param reader
+     *            the {@code Reader} to read from
+     *
+     * @return the string read from stream
+     *
+     * @throws {@link IOException}
+     *             if an I/O error occurs
+     */
+    public static String readerToString(Reader reader) throws IOException {
+        final StringWriter writer = new StringWriter();
+
+        int c;
+        while ((c = reader.read()) != EOF) {
+            writer.write(c);
         }
 
         return writer.toString();

@@ -18,7 +18,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.openhab.binding.smarther.internal.api.dto.Notification;
 import org.openhab.binding.smarther.internal.api.dto.Sender;
 import org.openhab.binding.smarther.internal.api.exception.SmartherGatewayException;
@@ -61,7 +61,7 @@ public class SmartherAccountService {
 
     private final Logger logger = LoggerFactory.getLogger(SmartherAccountService.class);
 
-    private final Set<SmartherAccountHandler> handlers = new HashSet<>();
+    private final Set<SmartherAccountHandler> handlers = new ConcurrentHashSet<>();
 
     private @Nullable HttpService httpService;
     private @Nullable BundleContext bundleContext;
@@ -169,21 +169,20 @@ public class SmartherAccountService {
     public String dispatchAuthorization(String servletBaseURL, String state, String code)
             throws SmartherGatewayException {
         // Searches the SmartherAccountHandler instance that matches the given state
-        final SmartherAccountHandler listener = getAccountListenerByUID(state);
-        if (listener == null) {
-            logger.debug(
-                    "BTicino/Legrand API redirected with state '{}' but no matching bridge was found. Possible bridge has been removed.",
-                    state);
+        final SmartherAccountHandler accountHandler = getAccountHandlerByUID(state);
+        if (accountHandler != null) {
+            // Generates the notification URL from servletBaseURL
+            final String notificationUrl = servletBaseURL.replace(AUTH_SERVLET_ALIAS, NOTIFY_SERVLET_ALIAS);
+
+            logger.debug("API authorization: calling authorize on {}", accountHandler.getUID());
+
+            // Passes the authorization to the handler
+            return accountHandler.authorize(servletBaseURL, code, notificationUrl);
+        } else {
+            logger.trace("API authorization: request redirected with state '{}'", state);
+            logger.warn("API authorization: no matching bridge was found. Possible bridge has been removed.");
             throw new SmartherGatewayException(ERROR_UKNOWN_BRIDGE);
         }
-
-        // Generates the notification URL from servletBaseURL
-        final String notificationUrl = servletBaseURL.replace(AUTH_SERVLET_ALIAS, NOTIFY_SERVLET_ALIAS);
-
-        logger.debug("Calling authorize on {}", listener.getUID());
-
-        // Passes the authorization to the handler
-        return listener.authorize(servletBaseURL, code, notificationUrl);
     }
 
     /**
@@ -196,20 +195,20 @@ public class SmartherAccountService {
      *             in case of communication issues with the Smarther API or no notification handler found
      */
     public void dispatchNotification(Notification notification) throws SmartherGatewayException {
-        // Searches the SmartherAccountHandler instance that matches the given location
         final Sender sender = notification.getSender();
         if (sender != null) {
-            final SmartherAccountHandler listener = getAccountListenerByLocation(sender.getPlant().getId());
-            if (listener == null) {
+            // Searches the SmartherAccountHandler instance that matches the given location
+            final SmartherAccountHandler accountHandler = getAccountHandlerByLocation(sender.getPlant().getId());
+            if (accountHandler == null) {
                 logger.warn("C2C notification [{}]: no matching bridge was found. Possible bridge has been removed.",
                         notification.getId());
                 throw new SmartherGatewayException(ERROR_UKNOWN_BRIDGE);
-            } else if (listener.isOnline()) {
-                final SmartherNotificationHandler handler = (SmartherNotificationHandler) listener;
+            } else if (accountHandler.isOnline()) {
+                final SmartherNotificationHandler notificationHandler = (SmartherNotificationHandler) accountHandler;
 
-                if (handler.useNotifications()) {
+                if (notificationHandler.useNotifications()) {
                     // Passes the notification to the handler
-                    handler.handleNotification(notification);
+                    notificationHandler.handleNotification(notification);
                 } else {
                     logger.debug(
                             "C2C notification [{}]: notification discarded as bridge does not handle notifications.",
@@ -231,9 +230,7 @@ public class SmartherAccountService {
      *            the handler to add to the handlers set
      */
     public void addSmartherAccountHandler(SmartherAccountHandler handler) {
-        if (!handlers.contains(handler)) {
-            handlers.add(handler);
-        }
+        handlers.add(handler);
     }
 
     /**
@@ -263,10 +260,10 @@ public class SmartherAccountService {
      *
      * @return the handler matching the given Thing UID, or {@code null} if none matches
      */
-    private @Nullable SmartherAccountHandler getAccountListenerByUID(String thingUID) {
-        final Optional<SmartherAccountHandler> maybeListener = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
+    private @Nullable SmartherAccountHandler getAccountHandlerByUID(String thingUID) {
+        final Optional<SmartherAccountHandler> maybeHandler = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
                 .findFirst();
-        return (maybeListener.isPresent()) ? maybeListener.get() : null;
+        return (maybeHandler.isPresent()) ? maybeHandler.get() : null;
     }
 
     /**
@@ -277,10 +274,10 @@ public class SmartherAccountService {
      *
      * @return the handler matching the given location plant, or {@code null} if none matches
      */
-    private @Nullable SmartherAccountHandler getAccountListenerByLocation(String plantId) {
-        final Optional<SmartherAccountHandler> maybeListener = handlers.stream().filter(l -> l.hasLocation(plantId))
+    private @Nullable SmartherAccountHandler getAccountHandlerByLocation(String plantId) {
+        final Optional<SmartherAccountHandler> maybeHandler = handlers.stream().filter(l -> l.hasLocation(plantId))
                 .findFirst();
-        return (maybeListener.isPresent()) ? maybeListener.get() : null;
+        return (maybeHandler.isPresent()) ? maybeHandler.get() : null;
     }
 
     @Reference

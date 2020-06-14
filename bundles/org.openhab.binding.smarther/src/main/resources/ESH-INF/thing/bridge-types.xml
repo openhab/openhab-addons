@@ -73,21 +73,21 @@
 
 	<!-- Channel types -->
 	<channel-type id="status-apicallshandled">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>API Calls Handled</label>
 		<description>Total number of API calls handled by the bridge</description>
 		<state readOnly="true" min="0" pattern="%d" />
 	</channel-type>
 
 	<channel-type id="status-notifsreceived">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Notifications Received</label>
 		<description>Total number of C2C notifications received by the bridge</description>
 		<state readOnly="true" min="0" pattern="%d" />
 	</channel-type>
 
 	<channel-type id="status-notifsrejected">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Notifications Rejected</label>
 		<description>Total number of C2C notifications rejected by the bridge</description>
 		<state readOnly="true" min="0" pattern="%d" />

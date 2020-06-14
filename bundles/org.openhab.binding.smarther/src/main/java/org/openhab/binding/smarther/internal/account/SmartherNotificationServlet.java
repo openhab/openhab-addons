@@ -14,7 +14,6 @@ package org.openhab.binding.smarther.internal.account;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -31,6 +30,7 @@ import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -46,6 +46,7 @@ public class SmartherNotificationServlet extends HttpServlet {
 
     private static final String CONTENT_TYPE = "application/json;charset=UTF-8";
     private static final String OK_RESULT_MSG = "{\"result\":0}";
+    private static final String KO_RESULT_MSG = "{\"result\":1}";
 
     private final Logger logger = LoggerFactory.getLogger(SmartherNotificationServlet.class);
 
@@ -68,7 +69,7 @@ public class SmartherNotificationServlet extends HttpServlet {
             logger.debug("Notification callback servlet received POST request {}", request.getRequestURI());
 
             // Handle the received data
-            final String requestBody = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            final String requestBody = StringUtil.readerToString(request.getReader());
             final String responseBody = dispatchNotifications(requestBody);
 
             // Build a http 200 (Success) response for the caller
@@ -96,17 +97,22 @@ public class SmartherNotificationServlet extends HttpServlet {
      * @return a string containing the response to the notification service
      */
     private String dispatchNotifications(@Nullable String payload) {
-        logger.trace("C2C listener received payload: {}", payload);
-        if (!StringUtil.isBlank(payload)) {
-            List<Notification> notifications = ModelUtil.gsonInstance().fromJson(payload,
-                    new TypeToken<List<Notification>>() {
-                    }.getType());
+        try {
+            logger.trace("C2C listener received payload: {}", payload);
+            if (!StringUtil.isBlank(payload)) {
+                List<Notification> notifications = ModelUtil.gsonInstance().fromJson(payload,
+                        new TypeToken<List<Notification>>() {
+                        }.getType());
 
-            if (notifications != null) {
-                notifications.forEach(n -> handleSmartherNotification(n));
+                if (notifications != null) {
+                    notifications.forEach(n -> handleSmartherNotification(n));
+                }
             }
+            return OK_RESULT_MSG;
+        } catch (JsonSyntaxException e) {
+            logger.warn("C2C payload parsing error: {} ", e.getMessage());
+            return KO_RESULT_MSG;
         }
-        return OK_RESULT_MSG;
     }
 
     /**
@@ -117,7 +123,7 @@ public class SmartherNotificationServlet extends HttpServlet {
      */
     private void handleSmartherNotification(Notification notification) {
         try {
-            accountService.dispatchNotification(notification);
+            this.accountService.dispatchNotification(notification);
         } catch (SmartherGatewayException e) {
             logger.warn("C2C notification {}: not applied: {}", notification.getId(), e.getMessage());
         }

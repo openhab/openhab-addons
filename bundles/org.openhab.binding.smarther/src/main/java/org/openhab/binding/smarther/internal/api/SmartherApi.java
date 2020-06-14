@@ -58,6 +58,7 @@ import org.openhab.binding.smarther.internal.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -127,11 +128,15 @@ public class SmartherApi {
      *             in case of communication issues with the API gateway
      */
     public List<Plant> getPlants() throws SmartherGatewayException {
-        final ContentResponse response = requestBasic(GET, PATH_PLANTS);
-        if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
-            return new ArrayList<>();
-        } else {
-            return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Plants.class).getPlants();
+        try {
+            final ContentResponse response = requestBasic(GET, PATH_PLANTS);
+            if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
+                return new ArrayList<>();
+            } else {
+                return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Plants.class).getPlants();
+            }
+        } catch (JsonSyntaxException e) {
+            throw new SmartherGatewayException(e.getMessage());
         }
     }
 
@@ -147,9 +152,13 @@ public class SmartherApi {
      *             in case of communication issues with the API gateway
      */
     public List<Module> getPlantModules(String plantId) throws SmartherGatewayException {
-        final ContentResponse response = requestBasic(GET, String.format(PATH_TOPOLOGY, plantId));
-        final Topology topology = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Topology.class);
-        return topology.getModules();
+        try {
+            final ContentResponse response = requestBasic(GET, String.format(PATH_TOPOLOGY, plantId));
+            final Topology topology = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Topology.class);
+            return topology.getModules();
+        } catch (JsonSyntaxException e) {
+            throw new SmartherGatewayException(e.getMessage());
+        }
     }
 
     /**
@@ -166,8 +175,12 @@ public class SmartherApi {
      *             in case of communication issues with the API gateway
      */
     public ModuleStatus getModuleStatus(String plantId, String moduleId) throws SmartherGatewayException {
-        final ContentResponse response = requestModule(GET, plantId, moduleId, null);
-        return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), ModuleStatus.class);
+        try {
+            final ContentResponse response = requestModule(GET, plantId, moduleId, null);
+            return ModelUtil.gsonInstance().fromJson(response.getContentAsString(), ModuleStatus.class);
+        } catch (JsonSyntaxException e) {
+            throw new SmartherGatewayException(e.getMessage());
+        }
     }
 
     /**
@@ -183,7 +196,7 @@ public class SmartherApi {
      */
     public boolean setModuleStatus(ModuleSettings settings) throws SmartherGatewayException {
         // Prepare request payload
-        Map<String, Object> rootMap = new IdentityHashMap<String, Object>();
+        Map<String, Object> rootMap = new IdentityHashMap<>();
         rootMap.put(ATTR_FUNCTION, settings.getFunction().getValue());
         rootMap.put(ATTR_MODE, settings.getMode().getValue());
         switch (settings.getMode()) {
@@ -240,12 +253,16 @@ public class SmartherApi {
      *             in case of communication issues with the API gateway
      */
     public List<Program> getModulePrograms(String plantId, String moduleId) throws SmartherGatewayException {
-        final ContentResponse response = requestModule(GET, plantId, moduleId, PATH_PROGRAMS, null);
-        final ModuleStatus moduleStatus = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
-                ModuleStatus.class);
+        try {
+            final ContentResponse response = requestModule(GET, plantId, moduleId, PATH_PROGRAMS, null);
+            final ModuleStatus moduleStatus = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
+                    ModuleStatus.class);
 
-        final Chronothermostat chronothermostat = moduleStatus.toChronothermostat();
-        return (chronothermostat != null) ? chronothermostat.getPrograms() : Collections.emptyList();
+            final Chronothermostat chronothermostat = moduleStatus.toChronothermostat();
+            return (chronothermostat != null) ? chronothermostat.getPrograms() : Collections.emptyList();
+        } catch (JsonSyntaxException e) {
+            throw new SmartherGatewayException(e.getMessage());
+        }
     }
 
     /**
@@ -258,13 +275,17 @@ public class SmartherApi {
      *             in case of communication issues with the API gateway
      */
     public List<Subscription> getSubscriptions() throws SmartherGatewayException {
-        final ContentResponse response = requestBasic(GET, PATH_SUBSCRIPTIONS);
-        if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
-            return new ArrayList<>();
-        } else {
-            return ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
-                    new TypeToken<List<Subscription>>() {
-                    }.getType());
+        try {
+            final ContentResponse response = requestBasic(GET, PATH_SUBSCRIPTIONS);
+            if (response.getStatus() == HttpStatus.NO_CONTENT_204) {
+                return new ArrayList<>();
+            } else {
+                return ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
+                        new TypeToken<List<Subscription>>() {
+                        }.getType());
+            }
+        } catch (JsonSyntaxException e) {
+            throw new SmartherGatewayException(e.getMessage());
         }
     }
 
@@ -282,16 +303,20 @@ public class SmartherApi {
      *             in case of communication issues with the API gateway
      */
     public String subscribePlant(String plantId, String notificationUrl) throws SmartherGatewayException {
-        // Prepare request payload
-        Map<String, Object> rootMap = new IdentityHashMap<String, Object>();
-        rootMap.put(ATTR_ENDPOINT_URL, notificationUrl);
-        final String jsonPayload = ModelUtil.gsonInstance().toJson(rootMap);
-        // Send request to server
-        final ContentResponse response = requestBasic(POST, String.format(PATH_SUBSCRIBE, plantId), jsonPayload);
-        // Handle response payload
-        final Subscription subscription = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
-                Subscription.class);
-        return subscription.getSubscriptionId();
+        try {
+            // Prepare request payload
+            Map<String, Object> rootMap = new IdentityHashMap<String, Object>();
+            rootMap.put(ATTR_ENDPOINT_URL, notificationUrl);
+            final String jsonPayload = ModelUtil.gsonInstance().toJson(rootMap);
+            // Send request to server
+            final ContentResponse response = requestBasic(POST, String.format(PATH_SUBSCRIBE, plantId), jsonPayload);
+            // Handle response payload
+            final Subscription subscription = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
+                    Subscription.class);
+            return subscription.getSubscriptionId();
+        } catch (JsonSyntaxException e) {
+            throw new SmartherGatewayException(e.getMessage());
+        }
     }
 
     /**

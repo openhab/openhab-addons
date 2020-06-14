@@ -350,7 +350,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             onAccessTokenResponse(getAccessTokenResponse());
 
             expireCache();
-            locationCacheAction();
+            getLocations();
 
             updateStatus(ThingStatus.ONLINE);
             return true;
@@ -598,7 +598,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
                 return localOAuthService.getAuthorizationUrl(redirectUri, null, thing.getUID().getAsString());
             }
         } catch (OAuthException e) {
-            logger.warn("Bridge[{}] Error constructing AuthorizationUrl: ", thing.getUID());
+            logger.warn("Bridge[{}] Error constructing AuthorizationUrl: {}", thing.getUID(), e.getMessage());
         }
         return "";
     }
@@ -682,6 +682,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
                 if (config.isUseNotifications() && maybeModuleHandler.isPresent()) {
                     maybeModuleHandler.get().handleNotification(notification);
                 } else {
+                    logger.debug("Bridge[{}] Notification rejected: no module handler available", thing.getUID());
                     updateChannelState(CHANNEL_NOTIFS_REJECTED,
                             new DecimalType(localBridgeStatus.incrementNotificationsRejected()));
                 }

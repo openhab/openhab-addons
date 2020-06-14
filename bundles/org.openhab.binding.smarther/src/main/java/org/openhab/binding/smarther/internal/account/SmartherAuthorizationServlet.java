@@ -181,7 +181,7 @@ public class SmartherAuthorizationServlet extends HttpServlet {
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
-                    logger.debug("Received from authorization - state:[{}] code:[{}]", reqState, reqCode);
+                    logger.trace("Received from authorization - state:[{}] code:[{}]", reqState, reqCode);
                     replaceMap.put(KEY_AUTHORIZED_BRIDGE, String.format(HTML_BRIDGE_AUTHORIZED,
                             accountService.dispatchAuthorization(servletBaseURL, reqState, reqCode)));
                 } catch (SmartherGatewayException e) {

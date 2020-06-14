@@ -151,20 +151,20 @@ The channels on the bridge are the ones used to get details of current communica
 
 The following channels represent the current operational status of the bridge and must all be referenced with the `status#` prefix.
 
-| Channel Type ID   | Item Type | Read/Write | Description                                                                            | Type     |
-|-------------------|-----------|------------|----------------------------------------------------------------------------------------|----------|
-| apiCallsHandled   | Number    | Read-only  | The total number of API calls handled by the bridge                                    | Common   |
-| notifsReceived    | Number    | Read-only  | The total number of push notifications received by the bridge                          | Common   |
-| notifsRejected    | Number    | Read-only  | The total number of push notifications rejected by the bridge                          | Common   |
+| Channel Type ID   | Item Type            | Read/Write | Description                                                                            | Type     |
+|-------------------|----------------------|------------|----------------------------------------------------------------------------------------|----------|
+| apiCallsHandled   | Number               | Read-only  | The total number of API calls handled by the bridge                                    | Common   |
+| notifsReceived    | Number               | Read-only  | The total number of push notifications received by the bridge                          | Common   |
+| notifsRejected    | Number               | Read-only  | The total number of push notifications rejected by the bridge                          | Common   |
 
 **Configuration Channels:**
 
 The following channels represent convenience configuration channels for the bridge and must all be referenced with the `config#` prefix.
 
-| Channel Type ID   | Item Type | Read/Write | Description                                                                            | Type     |
-|-------------------|-----------|------------|----------------------------------------------------------------------------------------|----------|
-| fetchConfig       | Switch    | Read-write | Trigger to manually fetch updated bridge configuration from Smarther API               | Advanced |
-| accessToken       | String    | Read-only  | The current accessToken used in communication with Smarther API                        | Advanced |
+| Channel Type ID   | Item Type            | Read/Write | Description                                                                            | Type     |
+|-------------------|----------------------|------------|----------------------------------------------------------------------------------------|----------|
+| fetchConfig       | Switch               | Read-write | Trigger to manually fetch updated bridge configuration from Smarther API               | Advanced |
+| accessToken       | String               | Read-only  | The current accessToken used in communication with Smarther API                        | Advanced |
 
 ### Devices
 
@@ -174,39 +174,39 @@ The temperature channels have dimension `Number:Temperature` and a precision of 
 
 The following channels represent the measures taken from the module on-board sensors and must all be referenced with the `measures#` prefix.
 
-| Channel Type ID   | Item Type | Read/Write | Description                                                                            | Type     |
-|-------------------|-----------|------------|----------------------------------------------------------------------------------------|----------|
-| temperature       | Number    | Read-only  | Indoor temperature as measured by the sensor                                           | Common   |
-| humidity          | Number    | Read-only  | Indoor humidity as measured by the sensor (in percentage)                              | Common   |
+| Channel Type ID   | Item Type            | Read/Write | Description                                                                            | Type     |
+|-------------------|----------------------|------------|----------------------------------------------------------------------------------------|----------|
+| temperature       | Number:Temperature   | Read-only  | Indoor temperature as measured by the sensor                                           | Common   |
+| humidity          | Number:Dimensionless | Read-only  | Indoor humidity as measured by the sensor (in percentage)                              | Common   |
 
 **Status Channels:**
 
 The following channels represent the current operational status of the module and must all be referenced with the `status#` prefix.
 
-| Channel Type ID   | Item Type | Read/Write | Description                                                                            | Type     |
-|-------------------|-----------|------------|----------------------------------------------------------------------------------------|----------|
-| state             | Switch    | Read-only  | Current operational state of the module                                                | Common   |
-| function          | String    | Read-only  | Current operational function set on the module (HEATING, COOLING)                      | Advanced |
-| mode              | String    | Read-only  | Current operational mode set on the module (AUTOMATIC, MANUAL, BOOST, OFF, PROTECTION) | Common   |
-| temperature       | Number    | Read-only  | Current operational target temperature set on the module                               | Common   |
-| program           | String    | Read-only  | Current operational program set on the module (valid only for "Automatic" mode)        | Common   |
-| endTime           | String    | Read-only  | Current operational end time set on the module                                         | Common   |
-| temperatureFormat | String    | Read-only  | Current operational temperature format of the module                                   | Advanced |
+| Channel Type ID   | Item Type            | Read/Write | Description                                                                            | Type     |
+|-------------------|----------------------|------------|----------------------------------------------------------------------------------------|----------|
+| state             | Switch               | Read-only  | Current operational state of the module                                                | Common   |
+| function          | String               | Read-only  | Current operational function set on the module (HEATING, COOLING)                      | Advanced |
+| mode              | String               | Read-only  | Current operational mode set on the module (AUTOMATIC, MANUAL, BOOST, OFF, PROTECTION) | Common   |
+| temperature       | Number:Temperature   | Read-only  | Current operational target temperature set on the module                               | Common   |
+| program           | String               | Read-only  | Current operational program set on the module (valid only for "Automatic" mode)        | Common   |
+| endTime           | String               | Read-only  | Current operational end time set on the module                                         | Common   |
+| temperatureFormat | String               | Read-only  | Current operational temperature format of the module                                   | Advanced |
 
 **Settings Channels:**
 
 The following channels represent the new operational settings to be applied to the module and must all be referenced with the `settings#` prefix.
 
-| Channel Type ID   | Item Type | Read/Write | Description                                                                            | Type     |
-|-------------------|-----------|------------|----------------------------------------------------------------------------------------|----------|
-| mode              | String    | Read-write | New operational mode to be set (AUTOMATIC, MANUAL, BOOST, OFF, PROTECTION)             | Common   |
-| temperature       | Number    | Read-write | New operational set-point temperature to be set (valid only for "Manual" mode)         | Common   |
-| program           | Number    | Read-write | New operational program to be set (valid only for "Automatic" mode)                    | Common   |
-| boostTime         | Number    | Read-write | New operational boost time to be set (valid only for "Boost" mode)                     | Common   |
-| endDate           | String    | Read-write | New operational end date to be set (valid only for "Manual" mode)                      | Common   |
-| endHour           | Number    | Read-write | New operational end hour to be set (valid only for "Manual" mode)                      | Common   |
-| endMinute         | Number    | Read-write | New operational end minute to be set (valid only for "Manual" mode)                    | Common   |
-| power             | Switch    | Read-write | Power on, send new operational settings to the module                                  | Common   |
+| Channel Type ID   | Item Type            | Read/Write | Description                                                                            | Type     |
+|-------------------|----------------------|------------|----------------------------------------------------------------------------------------|----------|
+| mode              | String               | Read-write | New operational mode to be set (AUTOMATIC, MANUAL, BOOST, OFF, PROTECTION)             | Common   |
+| temperature       | Number:Temperature   | Read-write | New operational set-point temperature to be set (valid only for "Manual" mode)         | Common   |
+| program           | Number               | Read-write | New operational program to be set (valid only for "Automatic" mode)                    | Common   |
+| boostTime         | Number               | Read-write | New operational boost time to be set (valid only for "Boost" mode)                     | Common   |
+| endDate           | String               | Read-write | New operational end date to be set (valid only for "Manual" mode)                      | Common   |
+| endHour           | Number               | Read-write | New operational end hour to be set (valid only for "Manual" mode)                      | Common   |
+| endMinute         | Number               | Read-write | New operational end minute to be set (valid only for "Manual" mode)                    | Common   |
+| power             | Switch               | Read-write | Power on, send new operational settings to the module                                  | Common   |
 
 _**Note:**_ The `program` and `endDate` channels are Selection channels.
 They are dynamically populated by the binding, respectively with the module specific set programs and the next N days (starting from _"Today"_, N driven by the `numberOfEndDays` device configuration option).
@@ -215,9 +215,9 @@ They are dynamically populated by the binding, respectively with the module spec
 
 The following channels represent convenience configuration channels for the module and must all be referenced with the `config#` prefix.
 
-| Channel Type ID   | Item Type | Read/Write | Description                                                                            | Type     |
-|-------------------|-----------|------------|----------------------------------------------------------------------------------------|----------|
-| fetchConfig       | Switch    | Read-write | Trigger to manually fetch updated bridge configuration from Smarther API               | Advanced |
+| Channel Type ID   | Item Type            | Read/Write | Description                                                                            | Type     |
+|-------------------|----------------------|------------|----------------------------------------------------------------------------------------|----------|
+| fetchConfig       | Switch               | Read-write | Trigger to manually fetch updated bridge configuration from Smarther API               | Advanced |
 
 ## Full Example
 

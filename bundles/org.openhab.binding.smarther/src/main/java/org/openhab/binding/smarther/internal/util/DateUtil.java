@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Fabio Possieri - Initial contribution
  */
 @NonNullByDefault
-public class DateUtil {
+public final class DateUtil {
 
     private static final String RANGE_FORMAT = "%s/%s";
 
