@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.Optional;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT;
@@ -51,7 +50,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NAPresenceCameraHandler.class);
 
-    private Optional<AbstractMap.SimpleImmutableEntry<String, String>> localCameraURLEntry = Optional.empty();
+    private Optional<CameraAddress> cameraAddress = Optional.empty();
     private State floodlightAutoModeState = UnDefType.UNDEF;
 
     public NAPresenceCameraHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
@@ -142,16 +141,16 @@ public class NAPresenceCameraHandler extends CameraHandler {
     }
 
     private Optional<String> getLocalCameraURL() {
-        String vpnUrl = getVpnUrl();
-        if (vpnUrl != null) {
+        String vpnURL = getVpnUrl();
+        if (vpnURL != null) {
             //The local address is (re-)requested when it wasn't already determined or when the vpn address was changed.
-            if (!localCameraURLEntry.isPresent() || !vpnUrl.equals(localCameraURLEntry.get().getKey())) {
-                Optional<JSONObject> json = executeGETRequestJSON(vpnUrl + PING_URL_PATH);
-                localCameraURLEntry = json.map(j -> j.getString("local_url"))
-                        .map(localURL -> new AbstractMap.SimpleImmutableEntry<>(vpnUrl, localURL));
+            if (!cameraAddress.isPresent() || !vpnURL.equals(cameraAddress.get().getVpnURL())) {
+                Optional<JSONObject> json = executeGETRequestJSON(vpnURL + PING_URL_PATH);
+                cameraAddress = json.map(j -> j.getString("local_url"))
+                        .map(localURL -> new CameraAddress(vpnURL, localURL));
             }
         }
-        return localCameraURLEntry.map(AbstractMap.SimpleImmutableEntry::getValue);
+        return cameraAddress.map(CameraAddress::getLocalURL);
     }
 
     private Optional<JSONObject> executeGETRequestJSON(String url) {
