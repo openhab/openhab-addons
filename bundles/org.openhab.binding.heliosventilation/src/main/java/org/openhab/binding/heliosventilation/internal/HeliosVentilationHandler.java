@@ -64,10 +64,17 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     /** Logger Instance */
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    /* init to default to avoid NPE in case handleCommand() is called before initialize() */
-    private HeliosVentilationConfiguration config = new HeliosVentilationConfiguration();
+    /**
+     * store received data for read-modify-write operations on bitlevel
+     */
+    private final Map<Byte, Byte> memory = new HashMap<Byte, Byte>();
 
-    private SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
+
+    /**
+     * init to default to avoid NPE in case handleCommand() is called before initialize()
+     */
+    private HeliosVentilationConfiguration config = new HeliosVentilationConfiguration();
 
     private @Nullable SerialPort serialPort;
     private @Nullable InputStream inputStream;
@@ -75,11 +82,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
 
     private @Nullable ScheduledFuture<?> pollingTask;
     private int pollCounter;
-
-    /**
-     * store received data for read-modify-write operations on bitlevel
-     */
-    private Map<Byte, Byte> memory = new HashMap<Byte, Byte>();
 
     public HeliosVentilationHandler(Thing thing, final SerialPortManager serialPortManager) {
         super(thing);
@@ -397,7 +399,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                         tx(txFrame);
                     }
                 }
-                v = v.link();
+                v = v.next();
             } while (v != null);
         });
 
@@ -445,7 +447,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
 
                         updateState(datapoint.getName(), datapoint.asState(val));
                     }
-                    datapoint = datapoint.link();
+                    datapoint = datapoint.next();
                 } while (datapoint != null);
 
             } else {

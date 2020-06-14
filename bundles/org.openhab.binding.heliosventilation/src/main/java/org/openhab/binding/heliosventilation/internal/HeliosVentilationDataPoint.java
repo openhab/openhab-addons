@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 
 /**
- * The {@link HeliosVentilationDataPoint} is a description of a datapoint in the Helios ventilation system.
+ * The {@next HeliosVentilationDataPoint} is a description of a datapoint in the Helios ventilation system.
  *
  * @author Raphael Mack - Initial contribution
  */
@@ -42,7 +42,7 @@ public class HeliosVentilationDataPoint {
     /**
      * mapping from temperature byte values to °C
      */
-    private static final int TEMP_MAP[] = { -74, -70, -66, -62, -59, -56, -54, -52, -50, -48, -47, -46, -44, -43, -42,
+    private static final int[] TEMP_MAP = { -74, -70, -66, -62, -59, -56, -54, -52, -50, -48, -47, -46, -44, -43, -42,
             -41, -40, -39, -38, -37, -36, -35, -34, -33, -33, -32, -31, -30, -30, -29, -28, -28, -27, -27, -26, -25,
             -25, -24, -24, -23, -23, -22, -22, -21, -21, -20, -20, -19, -19, -19, -18, -18, -17, -17, -16, -16, -16,
             -15, -15, -14, -14, -14, -13, -13, -12, -12, -12, -11, -11, -11, -10, -10, -9, -9, -9, -8, -8, -8, -7, -7,
@@ -57,7 +57,7 @@ public class HeliosVentilationDataPoint {
     /**
      * mapping from human readable fanspeed to raw value
      */
-    private static final int FANSPEED_MAP[] = { 0, 1, 3, 7, 15, 31, 63, 127, 255 };
+    private static final int[] FANSPEED_MAP = { 0, 1, 3, 7, 15, 31, 63, 127, 255 };
 
     private static final int BYTE_PERCENT_OFFSET = 52;
 
@@ -68,7 +68,7 @@ public class HeliosVentilationDataPoint {
     private int bitStart;
     private int bitLength;
 
-    private @Nullable HeliosVentilationDataPoint link;
+    private @Nullable HeliosVentilationDataPoint next;
 
     /**
      * parse fullSpec in the properties format to declare a datapoint
@@ -174,33 +174,36 @@ public class HeliosVentilationDataPoint {
      */
     public State asState(byte b) {
         int val = b & 0xff;
-        if (datatype == DataType.TEMPERATURE) {
-            return new QuantityType<>(TEMP_MAP[val], SIUnits.CELSIUS);
-        } else if (datatype == DataType.BYTE_PERCENT) {
-            return new QuantityType<>((int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)),
-                    SmartHomeUnits.PERCENT);
-        } else if (datatype == DataType.SWITCH && bitLength == 1) {
-            if ((b & (1 << bitStart)) != 0) {
-                return OnOffType.ON;
-            } else {
-                return OnOffType.OFF;
-            }
-        } else if (datatype == DataType.NUMBER) {
-            int value = (b & bitMask()) >> bitStart;
-            return new DecimalType(value);
-        } else if (datatype == DataType.PERCENT) {
-            return new QuantityType<>(val, SmartHomeUnits.PERCENT);
-        } else if (datatype == DataType.FANSPEED) {
-            int i = 1;
-            while (i < FANSPEED_MAP.length && FANSPEED_MAP[i] < val) {
-                i++;
-            }
-            return new DecimalType(i);
-        } else if (datatype == DataType.HYSTERESIS) {
-            return new QuantityType<>(val / 3, SIUnits.CELSIUS);
+        switch (datatype) {
+            case TEMPERATURE:
+                return new QuantityType<>(TEMP_MAP[val], SIUnits.CELSIUS);
+            case BYTE_PERCENT:
+                return new QuantityType<>((int) ((val - BYTE_PERCENT_OFFSET) * 100.0 / (255 - BYTE_PERCENT_OFFSET)),
+                        SmartHomeUnits.PERCENT);
+            case SWITCH:
+                if (bitLength != 1) {
+                    return UnDefType.UNDEF;
+                } else if ((b & (1 << bitStart)) != 0) {
+                    return OnOffType.ON;
+                } else {
+                    return OnOffType.OFF;
+                }
+            case NUMBER:
+                int value = (b & bitMask()) >> bitStart;
+                return new DecimalType(value);
+            case PERCENT:
+                return new QuantityType<>(val, SmartHomeUnits.PERCENT);
+            case FANSPEED:
+                int i = 1;
+                while (i < FANSPEED_MAP.length && FANSPEED_MAP[i] < val) {
+                    i++;
+                }
+                return new DecimalType(i);
+            case HYSTERESIS:
+                return new QuantityType<>(val / 3, SIUnits.CELSIUS);
+            default:
+                return UnDefType.UNDEF;
         }
-
-        return UnDefType.UNDEF;
     }
 
     /**
@@ -234,51 +237,58 @@ public class HeliosVentilationDataPoint {
              * if value is not convertible to a numeric type we cannot do anything reasonable with it, let's use the
              * initial value for it
              */
-        } else if (datatype == DataType.TEMPERATURE) {
-            QuantityType<?> quantvalue = ((QuantityType<?>) val);
-            quantvalue = quantvalue.toUnit(SIUnits.CELSIUS);
-            if (quantvalue != null) {
-                value = quantvalue.as(DecimalType.class);
-                if (value != null) {
-                    int temp = (int) Math.round(value.doubleValue());
-                    int i = 0;
-                    while (i < TEMP_MAP.length && TEMP_MAP[i] < temp) {
-                        i++;
+        } else {
+            QuantityType<?> quantvalue;
+            switch (datatype) {
+                case TEMPERATURE:
+                    quantvalue = ((QuantityType<?>) val);
+                    quantvalue = quantvalue.toUnit(SIUnits.CELSIUS);
+                    if (quantvalue != null) {
+                        value = quantvalue.as(DecimalType.class);
+                        if (value != null) {
+                            int temp = (int) Math.round(value.doubleValue());
+                            int i = 0;
+                            while (i < TEMP_MAP.length && TEMP_MAP[i] < temp) {
+                                i++;
+                            }
+                            result = (byte) i;
+                        }
                     }
-                    result = (byte) i;
-                }
+                    break;
+                case FANSPEED:
+                    int i = value.intValue();
+                    if (i < 0) {
+                        i = 0;
+                    } else if (i > 8) {
+                        i = 8;
+                    }
+                    result = (byte) FANSPEED_MAP[i];
+                    break;
+                case BYTE_PERCENT:
+                    result = (byte) ((value.doubleValue() / 100.0) * (255 - BYTE_PERCENT_OFFSET) + BYTE_PERCENT_OFFSET);
+                    break;
+                case PERCENT:
+                    double d = (Math.round(value.doubleValue()));
+                    if (d < 0.0) {
+                        d = 0.0;
+                    } else if (d > 100.0) {
+                        d = 100.0;
+                    }
+                    result = (byte) d;
+                    break;
+                case HYSTERESIS:
+                    quantvalue = ((QuantityType<?>) val).toUnit(SIUnits.CELSIUS);
+                    if (quantvalue != null) {
+                        result = (byte) (quantvalue.intValue() * 3);
+                    }
+                    break;
+                case SWITCH:
+                case NUMBER:
+                    // those are the types supporting bit level specification
+                    // output only the relevant bits
+                    result = (byte) (value.intValue() << bitStart);
+                    break;
             }
-        } else if (datatype == DataType.FANSPEED) {
-            int i = value.intValue();
-            if (i < 0) {
-                i = 0;
-            } else if (i > 8) {
-                i = 8;
-            }
-            result = (byte) FANSPEED_MAP[i];
-        } else if (datatype == DataType.BYTE_PERCENT) {
-            result = (byte) ((value.doubleValue() / 100.0) * (255 - BYTE_PERCENT_OFFSET) + BYTE_PERCENT_OFFSET);
-        } else if (datatype == DataType.PERCENT) {
-            double d = (Math.round(value.doubleValue()));
-            if (d < 0.0) {
-                d = 0.0;
-            } else if (d > 100.0) {
-                d = 100.0;
-            }
-            result = (byte) d;
-        } else if (datatype == DataType.HYSTERESIS) {
-            QuantityType<?> quantvalue = ((QuantityType<?>) val);
-            quantvalue = quantvalue.toUnit(SIUnits.CELSIUS);
-            if (quantvalue != null) {
-                value = quantvalue.as(DecimalType.class);
-                if (value != null) {
-                    result = (byte) (value.intValue() * 3);
-                }
-            }
-        } else if (datatype == DataType.SWITCH || datatype == DataType.NUMBER) {
-            // those are the types supporting bit level specification
-            // output only the relevant bits
-            result = (byte) (value.intValue() << bitStart);
         }
 
         return result;
@@ -289,25 +299,25 @@ public class HeliosVentilationDataPoint {
      *
      * @return sister datapoint
      */
-    public @Nullable HeliosVentilationDataPoint link() {
-        return link;
+    public @Nullable HeliosVentilationDataPoint next() {
+        return next;
     }
 
     /**
-     * Add a link to a datapoint on the same address.
+     * Add a next to a datapoint on the same address.
      * Caller has to ensure that identical datapoints are not added several times.
      *
-     * @param link is the sister datapoint
+     * @param next is the sister datapoint
      */
-    public void append(HeliosVentilationDataPoint link) {
-        HeliosVentilationDataPoint existing = this.link;
-        if (this == link) {
+    public void append(HeliosVentilationDataPoint next) {
+        HeliosVentilationDataPoint existing = this.next;
+        if (this == next) {
             // this datapoint is already there, so we do nothing and return
             return;
         } else if (existing != null) {
-            existing.append(link);
+            existing.append(next);
         } else {
-            this.link = link;
+            this.next = next;
         }
     }
 
@@ -319,6 +329,6 @@ public class HeliosVentilationDataPoint {
          * the address either has multiple datapoints linked to it or is a bit-level point
          * this means we need to do read-modify-write on udpate and therefore we store the data in memory
          */
-        return (bitMask() != (byte) 0xFF || link != null);
+        return (bitMask() != (byte) 0xFF || next != null);
     }
 }
