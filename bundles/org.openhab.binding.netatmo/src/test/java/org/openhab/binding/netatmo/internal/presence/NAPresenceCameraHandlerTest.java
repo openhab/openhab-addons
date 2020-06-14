@@ -72,7 +72,7 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_Switch_Floodlight_On() {
+    public void testHandleCommand_Switch_Floodlight_on() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
@@ -80,6 +80,31 @@ public class NAPresenceCameraHandlerTest {
 
         verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch on
         verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+    }
+
+    @Test
+    public void testHandleCommand_Switch_Floodlight_off() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(floodlightChannelUID, OnOffType.OFF);
+
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch on
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
+    }
+
+    @Test
+    public void testHandleCommand_Switch_Floodlight_off_with_AutoMode_on() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.AUTO);
+        assertEquals(OnOffType.ON, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
+
+        handler.handleCommand(floodlightChannelUID, OnOffType.OFF);
+
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch on
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22auto%22%7D");
     }
 
     /**
