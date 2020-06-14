@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,9 +33,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.UpgradeRequest;
+import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.websocket.client.io.UpgradeListener;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +68,9 @@ public class WebSocketConnection {
     Listener listener;
     boolean closed;
     IWebSocketCommandHandler webSocketCommandHandler;
+    private long messageCounter = 0;
+    private long messageReceived = 0;
+    private @Nullable Future<Session> future;
 
     public WebSocketConnection(String amazonSite, List<HttpCookie> sessionCookies,
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
@@ -114,7 +121,7 @@ public class WebSocketConnection {
             request.setCookies(cookiesForWs);
 
             initPongTimeoutTimer();
-            webSocketClient.connect(listener, uri, request);
+            future = webSocketClient.connect(listener, uri, request);
 
         } catch (URISyntaxException e) {
             logger.debug("Initialize web socket failed", e);
@@ -155,8 +162,14 @@ public class WebSocketConnection {
                 logger.debug("Closing sessing failed", e);
             }
         }
+        logger.trace("Connect future = {}", future);
+        if (!future.isDone()) {
+            future.cancel(true);
+        }
         try {
-            webSocketClient.stop();
+            if (webSocketClient.isStarted()) {
+                webSocketClient.stop();
+            }
         } catch (InterruptedException e) {
             // Just ignore
         } catch (Exception e) {
@@ -169,6 +182,7 @@ public class WebSocketConnection {
         Timer pongTimeoutTimer = this.pongTimeoutTimer;
         this.pongTimeoutTimer = null;
         if (pongTimeoutTimer != null) {
+            logger.trace("Cancelling pong timeout");
             pongTimeoutTimer.cancel();
         }
     }
@@ -177,20 +191,24 @@ public class WebSocketConnection {
         clearPongTimeoutTimer();
         Timer pongTimeoutTimer = new Timer();
         this.pongTimeoutTimer = pongTimeoutTimer;
+        logger.trace("Scheduling pong timeout");
         pongTimeoutTimer.schedule(new TimerTask() {
 
             @Override
             public void run() {
+                logger.trace("Pong timeout reached. Closing connection.");
                 close();
             }
         }, 60000);
     }
 
-    class Listener implements WebSocketListener {
+    class Listener implements WebSocketListener, UpgradeListener {
+        private final Logger logger = LoggerFactory.getLogger(Listener.class);
         int msgCounter = -1;
         int messageId;
 
         Listener() {
+            logger.trace("Initialized listener");
             this.messageId = ThreadLocalRandom.current().nextInt(0, Short.MAX_VALUE);
         }
 
@@ -203,6 +221,7 @@ public class WebSocketConnection {
         }
 
         void sendMessage(byte[] buffer) {
+            WebSocketConnection.this.messageCounter++;
             try {
                 logger.debug("Send message with length {}", buffer.length);
                 Session session = WebSocketConnection.this.session;
@@ -374,6 +393,7 @@ public class WebSocketConnection {
 
         @Override
         public void onWebSocketBinary(byte @Nullable [] data, int offset, int len) {
+            WebSocketConnection.this.messageReceived++;
             if (data == null) {
                 return;
             }
@@ -424,7 +444,22 @@ public class WebSocketConnection {
         @Override
         public void onWebSocketError(@Nullable Throwable error) {
             logger.info("Web Socket error", error);
-            WebSocketConnection.this.close();
+            if (!closed) {
+                WebSocketConnection.this.close();
+            }
+        }
+
+        @Override
+        public void onHandshakeResponse(@Nullable UpgradeResponse response) {
+            if (response == null) {
+                logger.trace("Received null response in onHandshakeResponse");
+                return;
+            }
+            logger.trace("UpgradeResponse: {}", response);
+        }
+
+        @Override
+        public void onHandshakeRequest(@Nullable UpgradeRequest request) {
         }
 
         public void sendPing() {
