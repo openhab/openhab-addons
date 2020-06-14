@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.internal.ThingImpl;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,6 +109,14 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
+    public void testHandleCommand_Switch_Floodlight_unknown_command() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(floodlightChannelUID, RefreshType.REFRESH);
+
+        verify(requestExecutorMock, never()).executeGETRequest(any()); //nothing should get executed on a refresh command
+    }
+
+    @Test
     public void testHandleCommand_Switch_FloodlightAutoMode_on() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
@@ -129,6 +138,14 @@ public class NAPresenceCameraHandlerTest {
 
         verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
         verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
+    }
+
+    @Test
+    public void testHandleCommand_Switch_FloodlightAutoMode_unknown_command() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(floodlightAutoModeChannelUID, RefreshType.REFRESH);
+
+        verify(requestExecutorMock, never()).executeGETRequest(any()); //nothing should get executed on a refresh command
     }
 
     /**
