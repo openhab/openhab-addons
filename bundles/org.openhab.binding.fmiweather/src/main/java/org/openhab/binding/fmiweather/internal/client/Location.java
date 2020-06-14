@@ -42,7 +42,6 @@ public class Location {
      * @param longitude longitude of the location
      */
     public Location(String name, String id, BigDecimal latitude, BigDecimal longitude) {
-        super();
         this.name = name;
         this.id = id;
         this.latitude = latitude;
