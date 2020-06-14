@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LatLon implements QueryParameter {
 
-    private String latlon;
+    private final String latlon;
 
     public LatLon(BigDecimal latitude, BigDecimal longitude) {
         this.latlon = String.format("%s,%s", latitude.toPlainString(), longitude.toPlainString());
