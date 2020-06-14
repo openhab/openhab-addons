@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Massimo Valla - Initial contribution
  */
-
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.openwebent")
 public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
         implements OpenListener, ThingHandlerService {
@@ -52,11 +53,11 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
     private final static int DISCOVERY_TIMEOUT = 30; // seconds
 
     // TODO support multiple gateways at the same time
-    private OpenGatewayZigBee zbgateway;
+    private @Nullable OpenGatewayZigBee zbgateway;
     private int gatewayZigBeeId = 0;
-    private OpenWebNetBridgeHandler bridgeHandler;
+    private @Nullable OpenWebNetBridgeHandler bridgeHandler;
 
-    private ThingUID gatewayUID = null;
+    private @Nullable ThingUID gatewayUID = null;
 
     public ZigBeeGatewayDiscoveryService() {
         super(OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT, false);
@@ -108,13 +109,15 @@ public class ZigBeeGatewayDiscoveryService extends AbstractDiscoveryService
      * @param gatewayZigBeeId the discovered gateway ZigBee ID
      */
     private void notifyNewZBGatewayThing(int gatewayZigBeeId) {
-        gatewayUID = new ThingUID(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY, Integer.toString(gatewayZigBeeId));
+        ThingUID gwThingUID = new ThingUID(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY,
+                Integer.toString(gatewayZigBeeId));
+        gatewayUID = gwThingUID;
         Map<String, Object> gwProperties = new HashMap<>(3);
         gwProperties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_SERIAL_PORT, zbgateway.getConnectedPort());
         gwProperties.put(OpenWebNetBindingConstants.PROPERTY_FIRMWARE_VERSION, zbgateway.getFirmwareVersion());
         gwProperties.put(OpenWebNetBindingConstants.PROPERTY_ZIGBEEID, String.valueOf(gatewayZigBeeId));
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(gatewayUID).withProperties(gwProperties)
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(gwThingUID).withProperties(gwProperties)
                 .withLabel(OpenWebNetBindingConstants.THING_LABEL_ZB_GATEWAY + " (" + zbgateway.getConnectedPort()
                         + ", " + zbgateway.getFirmwareVersion() + ")")
                 .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_ZIGBEEID).build();

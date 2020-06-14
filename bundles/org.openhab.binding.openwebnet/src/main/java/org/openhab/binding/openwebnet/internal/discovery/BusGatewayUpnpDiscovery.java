@@ -25,7 +25,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.config.discovery.upnp.internal.UpnpDiscoveryService;
-//import org.eclipse.smarthome.config.discovery.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
@@ -117,7 +116,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     this.manufacturer = manufacturerDetails.getManufacturer();
                     deviceLog += "\n| MANUFACTURER : " + manufacturer + " (" + manufacturerDetails.getManufacturerURI()
                             + ")";
-                    if (manufacturer != null && manufacturer.toUpperCase().contains("BTICINO")) {
+                    if (manufacturer.toUpperCase().contains("BTICINO")) {
                         this.isBTicino = true;
                     }
                 }
@@ -164,8 +163,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                 Map<String, Object> properties = new HashMap<>(4);
                 String label = "BUS Gateway (" + thingId.getId().split("-")[0] + ")";
                 try {
-                    label = ((devInfo.friendlyName != null && !("".equals(devInfo.friendlyName))) ? devInfo.friendlyName
-                            : "NO_NAME");
+                    label = ((!("".equals(devInfo.friendlyName))) ? devInfo.friendlyName : "NO_NAME");
                     label = label + " (" + devInfo.modelName + ", " + devInfo.modelNumber + ", " + devInfo.host + ")";
                 } catch (Exception e) {
                     logger.warn("==OWN:UPnP== Exception while getting devInfo for device UDN={}. Exception={}",
