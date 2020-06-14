@@ -72,15 +72,13 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private ExpiringCache<Set<Location>> stationsCache = new ExpiringCache<>(STATIONS_CACHE_MILLIS, () -> {
         try {
             return new Client().queryWeatherStations(STATIONS_TIMEOUT_MILLIS);
+        } catch (FMIUnexpectedResponseException e) {
+            logger.warn("Unexpected error with the response, potentially API format has changed. Printing out details",
+                    e);
         } catch (FMIResponseException e) {
-            if (e instanceof FMIUnexpectedResponseException) {
-                logger.warn(
-                        "Unexpected error with the response, potentially API format has changed. Printing out details",
-                        e);
-            } else {
-                logger.warn("Error when querying stations, {}: {}", e.getClass().getSimpleName(), e.getMessage());
-            }
+            logger.warn("Error when querying stations, {}: {}", e.getClass().getSimpleName(), e.getMessage());
         }
+        // Return empty set on errors
         return Collections.emptySet();
     });
 
