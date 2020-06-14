@@ -34,7 +34,12 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.*;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelGroupUID;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
@@ -57,7 +62,7 @@ public class SmhiHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmhiHandler.class);
 
-    private @NonNullByDefault({}) SmhiConfiguration config = new SmhiConfiguration();
+    private SmhiConfiguration config = new SmhiConfiguration();
 
     private final HttpClient httpClient;
     private @Nullable SmhiConnector connection;
@@ -102,14 +107,15 @@ public class SmhiHandler extends BaseThingHandler {
         channels.addAll(createChannels());
         updateThing(editThing().withChannels(channels).build());
 
-        updateNow();
         startPolling();
+        updateNow();
     }
 
     /**
      * Start polling for updated weather forecast.
      */
     private synchronized void startPolling() {
+        logger.debug("Start polling");
         forecastUpdater = scheduler.scheduleWithFixedDelay(this::waitForForecast, 1, 1, TimeUnit.MINUTES);
     }
 
@@ -117,6 +123,7 @@ public class SmhiHandler extends BaseThingHandler {
      * Cancels all jobs.
      */
     private synchronized void cancelPolling() {
+        logger.debug("Cancelling polling");
         Future<?> localRef = forecastUpdater;
         if (localRef != null) {
             localRef.cancel(false);
@@ -144,6 +151,9 @@ public class SmhiHandler extends BaseThingHandler {
             updateConfiguration(configuration);
             config = configuration.as(SmhiConfiguration.class);
             updateThing(editThing().withChannels(createChannels()).build());
+            if (!isPollingStarted()) {
+                startPolling();
+            }
             updateNow();
         } else {
             // persist new configuration and notify Thing Manager
@@ -382,6 +392,16 @@ public class SmhiHandler extends BaseThingHandler {
     }
 
     /**
+     * Checks whether the polling job is running
+     *
+     * @return True if the polling is running, false otherwise.
+     */
+    private synchronized boolean isPollingStarted() {
+        Future<?> localRef = forecastUpdater;
+        return localRef != null && !localRef.isDone();
+    }
+
+    /**
      * Creates channels based on selections in thing configuration
      * 
      * @return
@@ -417,6 +437,13 @@ public class SmhiHandler extends BaseThingHandler {
         return channels;
     }
 
+    /**
+     * Create a channel with the correct item type based on the channel ID
+     *
+     * @param channelGroupUID Channel group the channel belongs to
+     * @param channelID ID of the channel (without group ID)
+     * @return The created channel
+     */
     private Channel createChannel(ChannelGroupUID channelGroupUID, String channelID) {
         ChannelUID channelUID = new ChannelUID(channelGroupUID, channelID);
         String itemType = "Number";
