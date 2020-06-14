@@ -58,19 +58,16 @@ import com.google.gson.JsonSyntaxException;
 public class WebSocketConnection {
     private final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
     private final Gson gson = new Gson();
-    WebSocketClient webSocketClient;
-    @Nullable
-    Session session;
-    @Nullable
-    Timer pingTimer;
-    @Nullable
-    Timer pongTimeoutTimer;
-    Listener listener;
-    boolean closed;
-    IWebSocketCommandHandler webSocketCommandHandler;
-    private long messageCounter = 0;
-    private long messageReceived = 0;
-    private @Nullable Future<Session> future;
+    private final WebSocketClient webSocketClient;
+    private final IWebSocketCommandHandler webSocketCommandHandler;
+    private final Listener listener;
+
+    private @Nullable Session session;
+    private @Nullable Timer pingTimer;
+    private @Nullable Timer pongTimeoutTimer;
+    private @Nullable Future<?> sessionFuture;
+
+    private boolean closed;
 
     public WebSocketConnection(String amazonSite, List<HttpCookie> sessionCookies,
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
@@ -121,7 +118,7 @@ public class WebSocketConnection {
             request.setCookies(cookiesForWs);
 
             initPongTimeoutTimer();
-            future = webSocketClient.connect(listener, uri, request);
+            sessionFuture = webSocketClient.connect(listener, uri, request);
 
         } catch (URISyntaxException e) {
             logger.debug("Initialize web socket failed", e);
@@ -162,9 +159,10 @@ public class WebSocketConnection {
                 logger.debug("Closing sessing failed", e);
             }
         }
-        logger.trace("Connect future = {}", future);
-        if (!future.isDone()) {
-            future.cancel(true);
+        logger.trace("Connect future = {}", sessionFuture);
+        final Future<?> sessionFuture = this.sessionFuture;
+        if (!sessionFuture.isDone()) {
+            sessionFuture.cancel(true);
         }
         try {
             if (webSocketClient.isStarted()) {
@@ -221,7 +219,6 @@ public class WebSocketConnection {
         }
 
         void sendMessage(byte[] buffer) {
-            WebSocketConnection.this.messageCounter++;
             try {
                 logger.debug("Send message with length {}", buffer.length);
                 Session session = WebSocketConnection.this.session;
@@ -393,7 +390,6 @@ public class WebSocketConnection {
 
         @Override
         public void onWebSocketBinary(byte @Nullable [] data, int offset, int len) {
-            WebSocketConnection.this.messageReceived++;
             if (data == null) {
                 return;
             }
