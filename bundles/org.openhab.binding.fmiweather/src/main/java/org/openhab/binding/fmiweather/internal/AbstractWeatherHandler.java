@@ -80,16 +80,18 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
             ScheduledFuture<?> newFuture = updateChannelsFutureRef
                     .updateAndGet(fut -> fut == null || fut.isDone() ? submitUpdateChannelsThrottled() : fut);
             assert newFuture != null; // invariant
-            long delayRemainingMillis = newFuture.getDelay(TimeUnit.MILLISECONDS);
-            if (delayRemainingMillis <= 0) {
-                logger.trace("REFRESH received. Channels are updated");
-            } else {
-                logger.trace("REFRESH received. Delaying by {} ms to avoid throttle excessive REFRESH",
-                        delayRemainingMillis);
-            }
-            if (prevFuture == newFuture) {
-                logger.trace("REFRESH received. Previous refresh ongoing, will wait for it to complete in {} ms",
-                        lastRefreshMillis + REFRESH_THROTTLE_MILLIS - System.currentTimeMillis());
+            if (logger.isTraceEnabled()) {
+                long delayRemainingMillis = newFuture.getDelay(TimeUnit.MILLISECONDS);
+                if (delayRemainingMillis <= 0) {
+                    logger.trace("REFRESH received. Channels are updated");
+                } else {
+                    logger.trace("REFRESH received. Delaying by {} ms to avoid throttle excessive REFRESH",
+                            delayRemainingMillis);
+                }
+                if (prevFuture == newFuture) {
+                    logger.trace("REFRESH received. Previous refresh ongoing, will wait for it to complete in {} ms",
+                            lastRefreshMillis + REFRESH_THROTTLE_MILLIS - System.currentTimeMillis());
+                }
             }
         }
     }
