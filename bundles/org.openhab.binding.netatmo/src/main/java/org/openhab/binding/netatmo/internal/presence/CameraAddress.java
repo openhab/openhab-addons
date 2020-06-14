@@ -41,6 +41,15 @@ public class CameraAddress {
         return localURL;
     }
 
+    /**
+     * Checks if the VPN URL was changed / isn't equal to the given VPN-URL.
+     * @param vpnURL old / known VPN URL
+     * @return true, when the VPN URL isn't equal given VPN URL, otherwise false
+     */
+    public boolean isVpnURLChanged(String vpnURL) {
+        return !getVpnURL().equals(vpnURL);
+    }
+
     @Override
     public boolean equals(@Nullable Object object) {
         if (this == object) return true;
