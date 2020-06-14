@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.presence;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.swagger.client.model.NAWelcomeCamera;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.internal.i18n.I18nProviderImpl;
@@ -106,6 +107,37 @@ public class NAPresenceCameraHandlerTest {
 
         verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
         verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22auto%22%7D");
+    }
+
+    @Test
+    public void testHandleCommand_Switch_Floodlight_on_address_changed() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(floodlightChannelUID, OnOffType.ON);
+        //1.) execute ping + 2.) execute switch on
+        verify(requestExecutorMock, times(2)).executeGETRequest(any());
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+
+        handler.handleCommand(floodlightChannelUID, OnOffType.OFF);
+        //1.) execute ping + 2.) execute switch on + 3.) execute switch off
+        verify(requestExecutorMock, times(3)).executeGETRequest(any());
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
+
+        final String newDummyVPNURL = DUMMY_VPN_URL + "2";
+        final String newDummyLocalURL = DUMMY_LOCAL_URL + "2";
+        final Optional<String> newDummyPingResponse = Optional.of("{\"local_url\":\"" + newDummyLocalURL + "\",\"product_name\":\"Welcome Netatmo\"}");
+
+        when(requestExecutorMock.executeGETRequest(newDummyVPNURL + "/command/ping")).thenReturn(newDummyPingResponse);
+
+        presenceCamera.setVpnUrl(newDummyVPNURL);
+        handler.handleCommand(floodlightChannelUID, OnOffType.ON);
+        //1.) execute ping + 2.) execute switch on + 3.) execute switch off + 4.) execute ping + 5.) execute switch on
+        verify(requestExecutorMock, times(5)).executeGETRequest(any());
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
+        verify(requestExecutorMock).executeGETRequest(newDummyLocalURL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
     }
 
     @Test
