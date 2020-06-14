@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fmiweather.internal;
 
+import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -32,6 +34,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -39,6 +42,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Data;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
+import org.openhab.binding.fmiweather.internal.client.Request;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,9 +127,29 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
         }
     }
 
-    protected abstract void update(int retry);
-
     protected abstract void updateChannels();
+
+    protected abstract Request getRequest();
+
+    protected void update(int retry) {
+        if (retry < RETRIES) {
+            try {
+                response = client.query(getRequest(), TIMEOUT_MILLIS);
+            } catch (FMIUnexpectedResponseException e) {
+                handleError(e, retry);
+                return;
+            } catch (FMIResponseException e) {
+                handleError(e, retry);
+                return;
+            }
+        } else {
+            logger.trace("Query failed. Retries exhausted, not trying again until next poll.");
+        }
+        // Update channel (if we have received a response)
+        updateChannels();
+        // Channels updated successfully or exhausted all retries. Reschedule new update
+        rescheduleUpdate(pollIntervalSeconds * 1000, false);
+    }
 
     @Override
     public void dispose() {
@@ -220,6 +245,16 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
             String formattedMessage = String.format(messageIfNotPresent, args);
             throw new FMIUnexpectedResponseException(formattedMessage);
         }
+    }
+
+    protected void handleError(FMIResponseException e, int retry) {
+        response = null;
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
+        logger.trace("Query failed. Increase retry count {} and try again. Error: {} {}", retry, e.getClass().getName(),
+                e.getMessage());
+        // Try again, with increased retry count
+        rescheduleUpdate(RETRY_DELAY_MILLIS, false, retry + 1);
     }
 
     protected void rescheduleUpdate(long delayMillis, boolean mayInterruptIfRunning) {

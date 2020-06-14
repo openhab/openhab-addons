@@ -39,7 +39,7 @@ import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.ForecastRequest;
 import org.openhab.binding.fmiweather.internal.client.LatLon;
 import org.openhab.binding.fmiweather.internal.client.Location;
-import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
+import org.openhab.binding.fmiweather.internal.client.Request;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,39 +119,11 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
     }
 
     @Override
-    protected void update(int retry) {
-        if (location == null) {
-            return;
-        }
-        if (retry < RETRIES) {
-            try {
-                long now = Instant.now().getEpochSecond();
-                response = client.query(new ForecastRequest(location, floorToEvenMinutes(now, QUERY_RESOLUTION_MINUTES),
-                        ceilToEvenMinutes(now + TimeUnit.HOURS.toSeconds(FORECAST_HORIZON_HOURS),
-                                QUERY_RESOLUTION_MINUTES),
-                        QUERY_RESOLUTION_MINUTES), TIMEOUT_MILLIS);
-            } catch (FMIResponseException e) {
-                if (e instanceof FMIUnexpectedResponseException) {
-                    logger.warn(
-                            "Unexpected error with the response, potentially API format has changed. Printing out details",
-                            e);
-                }
-                response = null;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("%s: %s", e.getClass().getSimpleName(), e.getMessage()));
-                logger.trace("Query failed. Increase retry count {} and try again. Error: {} {}", retry,
-                        e.getClass().getName(), e.getMessage());
-                // Try again, with increased retry count
-                rescheduleUpdate(RETRY_DELAY_MILLIS, false, retry + 1);
-                return;
-            }
-        } else {
-            logger.trace("Query failed. Retries exhausted, not trying again until next poll.");
-        }
-        // Update channel (if we have received a response)
-        updateChannels();
-        // Channels updated successfully or exhausted all retries. Reschedule new update
-        rescheduleUpdate(pollIntervalSeconds * 1000, false);
+    protected Request getRequest() {
+        long now = Instant.now().getEpochSecond();
+        return new ForecastRequest(location, floorToEvenMinutes(now, QUERY_RESOLUTION_MINUTES),
+                ceilToEvenMinutes(now + TimeUnit.HOURS.toSeconds(FORECAST_HORIZON_HOURS), QUERY_RESOLUTION_MINUTES),
+                QUERY_RESOLUTION_MINUTES);
     }
 
     @Override

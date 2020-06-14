@@ -44,7 +44,7 @@ import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.FMISID;
 import org.openhab.binding.fmiweather.internal.client.Location;
 import org.openhab.binding.fmiweather.internal.client.ObservationRequest;
-import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
+import org.openhab.binding.fmiweather.internal.client.Request;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,35 +117,11 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     }
 
     @Override
-    protected void update(int retry) {
-        if (retry < RETRIES) {
-            try {
-                long now = Instant.now().getEpochSecond();
-                response = client.query(new ObservationRequest(new FMISID(fmisid),
-                        floorToEvenMinutes(now - OBSERVATION_LOOK_BACK_SECONDS, STEP_MINUTES),
-                        ceilToEvenMinutes(now, STEP_MINUTES), STEP_MINUTES), TIMEOUT_MILLIS);
-            } catch (FMIResponseException e) {
-                if (e instanceof FMIUnexpectedResponseException) {
-                    logger.warn(
-                            "Unexpected error with the response, potentially API format has changed. Printing out details",
-                            e);
-                }
-                response = null;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("%s: %s", e.getClass().getName(), e.getMessage()));
-                // Try again, with increased retry count
-                logger.trace("Query failed. Increase retry count {} and try again. Error: {} {}", retry,
-                        e.getClass().getName(), e.getMessage());
-                rescheduleUpdate(RETRY_DELAY_MILLIS, false, retry + 1);
-                return;
-            }
-        } else {
-            logger.trace("Query failed. Retries exhausted, not trying again until next poll.");
-        }
-        // Update channel (if we have received a response)
-        updateChannels();
-        // Channels updated successfully or exhausted all retries. Reschedule new update
-        rescheduleUpdate(pollIntervalSeconds * 1000, false);
+    protected Request getRequest() {
+        long now = Instant.now().getEpochSecond();
+        return new ObservationRequest(new FMISID(fmisid),
+                floorToEvenMinutes(now - OBSERVATION_LOOK_BACK_SECONDS, STEP_MINUTES),
+                ceilToEvenMinutes(now, STEP_MINUTES), STEP_MINUTES);
     }
 
     @Override
