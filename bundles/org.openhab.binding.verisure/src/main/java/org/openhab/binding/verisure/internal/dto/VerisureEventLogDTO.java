@@ -89,7 +89,7 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
 
     public static class PagedList {
 
-        private Device device = new Device();
+        private @Nullable Device device;
         private @Nullable String gatewayArea;
         private @Nullable String eventType;
         private @Nullable String eventCategory;
@@ -104,7 +104,7 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
         private @Nullable String eventCount;
         private @Nullable String typename;
 
-        public Device getDevice() {
+        public @Nullable Device getDevice() {
             return device;
         }
 

@@ -17,6 +17,8 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.joda.time.DateTime;
 import org.openhab.binding.verisure.internal.DeviceStatusListener;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
@@ -155,78 +158,98 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
         updateState(CHANNEL_INSTALLATION_NAME, new StringType(thing.getSiteName()));
     }
 
-    protected void updateTriggerChannel(@Nullable String deviceId, @Nullable String eventType) {
+    protected void updateTriggerChannel(ArrayList<Event> newEvents) {
         VerisureSession session = getSession();
-        if (session != null && deviceId != null && eventType != null) {
-            String deviceIdTransformed = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
-            @Nullable
-            T thing = session.getVerisureThing(deviceIdTransformed);
-            if (thing != null) {
-                logger.debug("Trigger event {} on thing {}", eventType, thing);
-                VerisureThingHandler<?> vth = session.getVerisureThinghandler(deviceIdTransformed);
-                if (vth == null) {
-                    logger.debug("No VerisureThingHandler found for thing {}", thing);
-                    return;
+        int delay = 1;
+        for (Event newEvent : newEvents) {
+            String deviceId = newEvent.getDeviceId();
+            String eventType = newEvent.getEventType();
+            logger.debug("Trigger event type {} for thing {}", eventType, deviceId);
+            if (session != null && eventType != null && deviceId != null) {
+                String deviceIdTransformed = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+                @Nullable
+                T thing = session.getVerisureThing(deviceIdTransformed);
+                if (thing != null) {
+                    logger.debug("Trigger event {} on deviceId {} on  thing {}", eventType, deviceIdTransformed, thing);
+                    VerisureThingHandler<?> vth = session.getVerisureThinghandler(deviceIdTransformed);
+                    if (vth == null) {
+                        logger.debug("No VerisureThingHandler found for thing {}", thing);
+                        return;
+                    }
+                    String eventTranslation = "UNKNOWN_EVENT_TYPE";
+                    switch (eventType) {
+                        case "FA":
+                            eventTranslation = TRIGGER_EVENT_FIRE;
+                            break;
+                        case "XT":
+                            eventTranslation = TRIGGER_EVENT_BATTERY_LOW;
+                            break;
+                        case "XR":
+                            eventTranslation = TRIGGER_EVENT_BATTERY_RESTORED;
+                            break;
+                        case "SB":
+                        case "BP":
+                            eventTranslation = TRIGGER_EVENT_COM_TEST;
+                            break;
+                        case "YC":
+                            eventTranslation = TRIGGER_EVENT_COM_FAILURE;
+                            break;
+                        case "YK":
+                            eventTranslation = TRIGGER_EVENT_COM_RESTORED;
+                            break;
+                        case "TA":
+                            eventTranslation = TRIGGER_EVENT_SABOTAGE_ALARM;
+                            break;
+                        case "TR":
+                            eventTranslation = TRIGGER_EVENT_SABOTAGE_RESTORED;
+                            break;
+                        case "CO":
+                        case "CL":
+                            eventTranslation = TRIGGER_EVENT_ARM;
+                            break;
+                        case "OP":
+                        case "OO":
+                            eventTranslation = TRIGGER_EVENT_DISARM;
+                            break;
+                        case "LM":
+                        case "LO":
+                            eventTranslation = TRIGGER_EVENT_LOCK;
+                            break;
+                        case "FK":
+                            eventTranslation = TRIGGER_EVENT_LOCK_FAILURE;
+                            break;
+                        case "UA":
+                        case "DC":
+                        case "DO":
+                            eventTranslation = TRIGGER_EVENT_UNLOCK;
+                            break;
+                        case "WA":
+                            eventTranslation = TRIGGER_EVENT_WATER;
+                            break;
+                        case "IA":
+                            eventTranslation = TRIGGER_EVENT_MICE;
+                            break;
+                        case "DOORWINDOW_STATE_CHANGE_OPENED":
+                            eventTranslation = TRIGGER_EVENT_DOORWINDOW_OPENED;
+                            break;
+                        case "DOORWINDOW_STATE_CHANGE_CLOSED":
+                            eventTranslation = TRIGGER_EVENT_DOORWINDOW_CLOSED;
+                            break;
+                        case "LOCATION_HOME":
+                            eventTranslation = TRIGGER_EVENT_LOCATION_HOME;
+                            break;
+                        case "LOCATION_AWAY":
+                            eventTranslation = TRIGGER_EVENT_LOCATION_AWAY;
+                            break;
+                        default:
+                            logger.debug("Unhandled event type: {}", eventType);
+                    }
+                    logger.debug("Schedule vth {} and event {} with delay {}", vth, eventTranslation, delay);
+                    scheduler.schedule(new EventTrigger(vth, eventTranslation), delay, TimeUnit.MILLISECONDS);
+                    delay = delay + config.getEventTriggerDelay();
+                } else {
+                    logger.warn("Thing is null!");
                 }
-                String eventTranslation = "UNKNOWN_EVENT_TYPE";
-                switch (eventType) {
-                    case "FA":
-                        eventTranslation = TRIGGER_EVENT_FIRE;
-                        break;
-                    case "XT":
-                        eventTranslation = TRIGGER_EVENT_BATTERY_LOW;
-                        break;
-                    case "XR":
-                        eventTranslation = TRIGGER_EVENT_BATTERY_RESTORED;
-                        break;
-                    case "SB":
-                    case "BP":
-                        eventTranslation = TRIGGER_EVENT_COM_TEST;
-                        break;
-                    case "YC":
-                        eventTranslation = TRIGGER_EVENT_COM_FAILURE;
-                        break;
-                    case "YK":
-                        eventTranslation = TRIGGER_EVENT_COM_RESTORED;
-                        break;
-                    case "TA":
-                        eventTranslation = TRIGGER_EVENT_SABOTAGE_ALARM;
-                        break;
-                    case "TR":
-                        eventTranslation = TRIGGER_EVENT_SABOTAGE_RESTORED;
-                        break;
-                    case "CO":
-                    case "CL":
-                        eventTranslation = TRIGGER_EVENT_ARM;
-                        break;
-                    case "OP":
-                    case "OO":
-                        eventTranslation = TRIGGER_EVENT_DISARM;
-                        break;
-                    case "LM":
-                    case "LO":
-                        eventTranslation = TRIGGER_EVENT_LOCK;
-                        break;
-                    case "FK":
-                        eventTranslation = TRIGGER_EVENT_LOCK_FAILURE;
-                        break;
-                    case "UA":
-                    case "DC":
-                    case "DO":
-                        eventTranslation = TRIGGER_EVENT_UNLOCK;
-                        break;
-                    case "WA":
-                        eventTranslation = TRIGGER_EVENT_WATER;
-                        break;
-                    case "IA":
-                        eventTranslation = TRIGGER_EVENT_MICE;
-                        break;
-                    default:
-                        logger.debug("Unhandled event type: {}", eventType);
-                }
-                vth.updateTriggerChannel(eventTranslation);
-            } else {
-                logger.warn("Thing is null!");
             }
         }
     }
@@ -243,7 +266,6 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                 logger.debug("Parsing date {} for channel {}", lastUpdatedTimeStamp, cuid);
                 ZonedDateTime zdt = ZonedDateTime.parse(lastUpdatedTimeStamp);
                 ZonedDateTime zdtLocal = zdt.withZoneSameInstant(ZoneId.systemDefault());
-
                 logger.trace("Parsing datetime successful. Using date. {}", new DateTimeType(zdtLocal));
                 updateState(cuid, new DateTimeType(zdtLocal));
             } catch (IllegalArgumentException e) {
@@ -290,4 +312,43 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
             }
         }
     }
+
+    private class EventTrigger implements Runnable {
+        private @Nullable VerisureThingHandler<?> vth;
+        private @Nullable String event;
+
+        public EventTrigger(@Nullable VerisureThingHandler<?> vth, @Nullable String event) {
+            this.vth = vth;
+            this.event = event;
+        }
+
+        @Override
+        public void run() {
+            logger.debug("Trigger Event {} on {} at time {}", event, vth, DateTime.now());
+            String localEvent = event;
+            if (vth != null && localEvent != null) {
+                vth.updateTriggerChannel(localEvent);
+            }
+        }
+    }
+
+    protected class Event {
+        private @Nullable String deviceId;
+        private @Nullable String eventType;
+
+        public Event(@Nullable String deviceId, @Nullable String eventType) {
+            this.deviceId = deviceId;
+            this.eventType = eventType;
+        }
+
+        public @Nullable String getDeviceId() {
+            return deviceId;
+        }
+
+        public @Nullable String getEventType() {
+            return eventType;
+        }
+
+    }
+
 }

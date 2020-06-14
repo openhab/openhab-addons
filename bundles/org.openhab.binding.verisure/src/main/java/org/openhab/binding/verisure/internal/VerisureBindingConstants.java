@@ -121,6 +121,10 @@ public class VerisureBindingConstants {
     public static final String TRIGGER_EVENT_COM_TEST = "COM_TEST";
     public static final String TRIGGER_EVENT_SABOTAGE_ALARM = "SABOTAGE_ALARM";
     public static final String TRIGGER_EVENT_SABOTAGE_RESTORED = "SABOTAGE_RESTORED";
+    public static final String TRIGGER_EVENT_DOORWINDOW_OPENED = "DOORWINDOW_OPENED";
+    public static final String TRIGGER_EVENT_DOORWINDOW_CLOSED = "DOORWINDOW_CLOSED";
+    public static final String TRIGGER_EVENT_LOCATION_HOME = "LOCATION_HOME";
+    public static final String TRIGGER_EVENT_LOCATION_AWAY = "LOCATION_AWAY";
 
     // REST URI constants
     public static final String USERNAME = "username";

@@ -38,7 +38,6 @@
 				<context>password</context>
 			</parameter>
 		</config-description>
-
 	</bridge-type>
 
 	<thing-type id="alarm">
@@ -435,6 +434,18 @@
 				<label>Device Id</label>
 				<description>Unique Id.</description>
 			</parameter>
+			<parameter name="numberOfEvents" type="integer">
+				<label>Number of Events</label>
+				<description>Number of events to fetch each poll.</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="eventTriggerDelay" type="integer">
+				<label>Event Trigger Delay</label>
+				<description>Specifies the event trigger delay in milliseconds.</description>
+				<default>2000</default>
+			</parameter>
+
+
 		</config-description>
 	</thing-type>
 
@@ -494,6 +505,10 @@
 				<option value="COM_TEST">Communication test</option>
 				<option value="SABOTAGE_ALARM">Sabotage alarm</option>
 				<option value="SABOTAGE_RESTORED">Sabotage alarm restored</option>
+				<option value="DOORWINDOW_OPENED">Door/Window opened</option>
+				<option value="DOORWINDOW_CLOSED">Door/Window closed</option>
+				<option value="LOCATION_AWAY">Location away</option>
+				<option value="LOCATION_HOME">Location away</option>
 			</options>
 		</event>
 	</channel-type>

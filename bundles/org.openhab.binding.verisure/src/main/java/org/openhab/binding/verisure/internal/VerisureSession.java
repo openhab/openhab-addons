@@ -76,21 +76,22 @@ public class VerisureSession {
 
     @NonNullByDefault({})
     private final Map<String, VerisureThingDTO> verisureThings = new ConcurrentHashMap<>();
-    private final Map<String, VerisureThingHandler> verisureHandlers = new ConcurrentHashMap<>();
+    private final Map<String, VerisureThingHandler<?>> verisureHandlers = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(VerisureSession.class);
     private final Gson gson = new Gson();
     private final List<DeviceStatusListener<VerisureThingDTO>> deviceStatusListeners = new CopyOnWriteArrayList<>();
     private final Map<BigDecimal, VerisureInstallation> verisureInstallations = new ConcurrentHashMap<>();
     private static final List<String> APISERVERLIST = Arrays.asList("https://m-api01.verisure.com",
             "https://m-api02.verisure.com");
+    private static final String PASSWORD = "vid";
     private int apiServerInUseIndex = 0;
+    private int numberOfEvents = 15;
     private String apiServerInUse = APISERVERLIST.get(apiServerInUseIndex);
     private String authstring = "";
     private @Nullable String csrf;
     private @Nullable String pinCode;
     private HttpClient httpClient;
     private @Nullable String userName = "";
-    private String passwordName = "vid";
     private @Nullable String password = "";
 
     public VerisureSession(HttpClient httpClient) {
@@ -212,6 +213,10 @@ public class VerisureSession {
         return APISERVERLIST.get(apiServerInUseIndex);
     }
 
+    public void setNumberOfEvents(int numberOfEvents) {
+        this.numberOfEvents = numberOfEvents;
+    }
+
     public void configureInstallationInstance(BigDecimal installationId) {
         logger.debug("Attempting to fetch CSRF and configure installation instance");
         try {
@@ -254,7 +259,7 @@ public class VerisureSession {
         List<HttpCookie> cookies = c.get(URI.create("http://verisure.com"));
         cookies.forEach(cookie -> {
             logger.debug("Response Cookie: {}", cookie);
-            if (cookie.getName().equals(passwordName)) {
+            if (cookie.getName().equals(PASSWORD)) {
                 password = cookie.getValue();
                 logger.debug("Fetching vid {} from cookie", password);
             }
@@ -865,9 +870,10 @@ public class VerisureSession {
         String url = START_GRAPHQL;
         String operation = "EventLog";
         int offset = 0;
-        int numberOfEvents = 15;
+        int numberOfEvents = this.numberOfEvents;
         List<String> eventCategories = new ArrayList<>(Arrays.asList("INTRUSION", "FIRE", "SOS", "WATER", "ANIMAL",
-                "TECHNICAL", "WARNING", "ARM", "DISARM", "LOCK", "UNLOCK", "PICTURE", "CLIMATE", "CAMERA_SETTINGS"));
+                "TECHNICAL", "WARNING", "ARM", "DISARM", "LOCK", "UNLOCK", "PICTURE", "CLIMATE", "CAMERA_SETTINGS",
+                "DOORWINDOW_STATE_OPENED", "DOORWINDOW_STATE_CLOSED", "USERTRACKING"));
         VariablesDTO variables = new VariablesDTO();
         variables.setGiid(installationId.toString());
         variables.setHideNotifications(true);
