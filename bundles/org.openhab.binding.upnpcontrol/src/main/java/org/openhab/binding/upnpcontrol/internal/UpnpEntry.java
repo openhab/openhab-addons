@@ -30,6 +30,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class UpnpEntry {
 
+    private static final String DIRECTORY_ROOT = "0";
+
     private String id;
     private String refId;
     private String parentId;
@@ -129,7 +131,7 @@ public class UpnpEntry {
      * @return the unique identifier of the parent of this entry.
      */
     public String getParentId() {
-        return parentId;
+        return parentId.isEmpty() ? DIRECTORY_ROOT : parentId;
     }
 
     /**

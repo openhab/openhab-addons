@@ -62,6 +62,8 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private NetworkAddressService networkAddressService;
     @NonNullByDefault(value = {})
     private UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
+    @NonNullByDefault(value = {})
+    private UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
 
     private String callbackUrl = "";
 
@@ -97,7 +99,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     private UpnpServerHandler addServer(Thing thing) {
         UpnpServerHandler handler = new UpnpServerHandler(thing, upnpIOService, upnpRenderers,
-                upnpStateDescriptionProvider);
+                upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
         String key = thing.getUID().toString();
         upnpServers.put(key, handler);
         logger.debug("Media server handler created for {}", thing.getLabel());
@@ -197,5 +199,14 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     protected void unsetDynamicStateDescriptionProvider(UpnpDynamicStateDescriptionProvider provider) {
         this.upnpStateDescriptionProvider = null;
+    }
+
+    @Reference
+    protected void setDynamicCommandDescriptionProvider(UpnpDynamicCommandDescriptionProvider provider) {
+        this.upnpCommandDescriptionProvider = provider;
+    }
+
+    protected void unsetDynamicCommandDescriptionProvider(UpnpDynamicCommandDescriptionProvider provider) {
+        this.upnpCommandDescriptionProvider = null;
     }
 }

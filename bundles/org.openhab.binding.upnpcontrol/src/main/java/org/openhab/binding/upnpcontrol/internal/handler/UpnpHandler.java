@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
+import org.openhab.binding.upnpcontrol.internal.config.UpnpControlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected volatile int connectionId;
     protected volatile int avTransportId;
     protected volatile int rcsId;
+    protected UpnpControlConfiguration config = getConfigAs(UpnpControlConfiguration.class);
 
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService) {
         super(thing);
@@ -52,12 +54,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public void initialize() {
-        if (service.isRegistered(this)) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication cannot be established with " + thing.getLabel());
-        }
+        service.registerParticipant(this);
     }
 
     @Override
@@ -136,7 +133,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public String getUDN() {
-        return getThing().getProperties().get("udn");
+        return config.udn;
     }
 
     /**
@@ -151,11 +148,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected void invokeAction(String serviceId, String actionId, Map<String, String> inputs) {
         scheduler.submit(() -> {
-            logger.debug("Upnp device {} invoke upnp action {} on service {} with inputs {}", thing.getLabel(),
-                    actionId, serviceId, inputs);
             Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
-            logger.debug("Upnp device {} invoke upnp action {} on service {} reply {}", thing.getLabel(), actionId,
-                    serviceId, result);
+            if (logger.isDebugEnabled() && !"GetPositionInfo".equals(actionId)) {
+                // don't log position info refresh every second
+                logger.debug("Upnp device {} invoke upnp action {} on service {} with inputs {}", thing.getLabel(),
+                        actionId, serviceId, inputs);
+                logger.debug("Upnp device {} invoke upnp action {} on service {} reply {}", thing.getLabel(), actionId,
+                        serviceId, result);
+            }
             for (String variable : result.keySet()) {
                 onValueReceived(variable, result.get(variable), serviceId);
             }

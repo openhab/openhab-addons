@@ -36,7 +36,7 @@ public class UpnpControlBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_RENDERER, THING_TYPE_SERVER)
             .collect(Collectors.toSet());
 
-    // List of thing parameters names
+    // List of thing parameter names
     public static final String HOST_PARAMETER = "ipAddress";
     public static final String TCP_PORT_PARAMETER = "port";
     public static final String UDN_PARAMETER = "udn";
@@ -59,9 +59,7 @@ public class UpnpControlBindingConstants {
     public static final String TRACK_POSITION = "trackposition";
 
     public static final String UPNPRENDERER = "upnprenderer";
-    public static final String CURRENTTITLE = "currenttitle";
-    public static final String SELECT = "select";
-    public static final String SEARCHCRITERIA = "searchcriteria";
+    public static final String BROWSE = "browse";
     public static final String SEARCH = "search";
     public static final String SERVE = "serve";
 
