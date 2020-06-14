@@ -28,7 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class FMISID implements QueryParameter {
 
-    private String fmisid;
+    private final String fmisid;
 
     public FMISID(String fmisid) {
         this.fmisid = fmisid;
