@@ -14,10 +14,10 @@ It defines the following bridge type:
 
 Devices which use a `roaming` adapter as their bridge also gain the following channels:
 
-| Channel ID       | Item Type | Description                                                     |
-|------------------|-----------|-----------------------------------------------------------------|
-| adapter-uid      | String    | The thingUID of the adapter that is nearest to this device      |
-| adapter-location | String    | The value of the `Location` specified for the nearest adapter    |
+| Channel ID       | Item Type | Description                                                                          |
+|------------------|-----------|--------------------------------------------------------------------------------------|
+| adapter-uid      | String    | The thingUID of the adapter that is nearest to this device                           |
+| adapter-location | String    | The nearest adapter's `Location` value as specified in the adapter's thing properties |
 
 ## Discovery
 
@@ -26,7 +26,7 @@ There can be only a single roaming adapter on a system.
 
 ## Bridge Configuration
 
-The roaming bridge requires an `address` parameter which mearly servers as an identifier for the virtual adapter, its value doesn't really matter. 
+The roaming bridge requires an `address` parameter which merely serves as an identifier for the virtual adapter, its value does not matter.  
 It is advised to make sure it is set to a value outside of the normal bluetooth mac address range, for example: "FF:FF:FF:FF:FF:FF".
 
 Additionally, the parameter `discovery` can be set to `true` or `false`. 

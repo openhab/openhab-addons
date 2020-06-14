@@ -13,6 +13,9 @@
 
 		<label>Bluetooth Device</label>
 		<description>A generic Bluetooth device in beacon-mode</description>
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
 
 		<config-description>
 			<parameter name="address" type="text">

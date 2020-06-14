@@ -20,14 +20,10 @@ import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
-import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.osgi.service.component.annotations.Component;
@@ -44,18 +40,12 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
  * @author Connor Petty - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = { DiscoveryService.class,
-        BluetoothDiscoveryParticipant.class }, configurationPid = "discovery.roaming")
-public class RoamingBluetoothDiscoveryParticipant extends AbstractDiscoveryService
-        implements BluetoothDiscoveryParticipant {
+@Component(immediate = true, service = { BluetoothDiscoveryParticipant.class })
+public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
 
     private Optional<RoamingBluetoothAdapter> roamingAdapter = Optional.empty();
-
-    public RoamingBluetoothDiscoveryParticipant() {
-        super(RoamingBindingConstants.SUPPORTED_THING_TYPES_UIDS, 0);
-    }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
     protected void setRoamingBluetoothAdapter(RoamingBluetoothAdapter roamingAdapter) {
@@ -83,18 +73,6 @@ public class RoamingBluetoothDiscoveryParticipant extends AbstractDiscoveryServi
         roamingAdapter.ifPresent(ra -> {
             ra.removeBluetoothAdapter(adapter);
         });
-    }
-
-    @Override
-    protected void startScan() {
-        thingDiscovered(createDefaultRoamingAdapterDiscoveryResult());
-    }
-
-    private DiscoveryResult createDefaultRoamingAdapterDiscoveryResult() {
-        return DiscoveryResultBuilder.create(new ThingUID(RoamingBindingConstants.THING_TYPE_ROAMING, "ctrl"))
-                .withProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS, "FF:FF:FF:FF:FF:FF")
-                .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
-                .withLabel("Bluetooth Roaming Controller").build();
     }
 
     @Override

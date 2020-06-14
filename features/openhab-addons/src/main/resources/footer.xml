@@ -1,4 +1,4 @@
-	<!-- aggregated features -->
+    <!-- aggregated features -->
 <feature name="openhab-binding-bluetooth" description="Bluetooth Binding" version="${project.version}">
 	<feature>openhab-runtime-base</feature>
 	<feature>openhab-transport-serial</feature>

@@ -15,6 +15,7 @@
 		<description>A RuuviTag SmartBeacon</description>
 
 		<channels>
+			<channel id="rssi" typeId="rssi"/>
 			<channel id="accelerationx" typeId="ruuvitag_accelerationx"/>
 			<channel id="accelerationy" typeId="ruuvitag_accelerationy"/>
 			<channel id="accelerationz" typeId="ruuvitag_accelerationz"/>

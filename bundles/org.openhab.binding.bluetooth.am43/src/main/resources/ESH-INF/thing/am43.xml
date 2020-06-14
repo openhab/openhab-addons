@@ -15,6 +15,7 @@
 		<category>Blinds</category>
 
 		<channels>
+			<channel id="rssi" typeId="rssi"/>
 			<channel id="direction" typeId="am43_direction"/>
 			<channel id="topLimitSet" typeId="am43_topLimitSet"/>
 			<channel id="bottomLimitSet" typeId="am43_bottomLimitSet"/>

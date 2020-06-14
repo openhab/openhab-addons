@@ -15,6 +15,7 @@
 		<description>A Blukii SmartBeacon</description>
 
 		<channels>
+			<channel id="rssi" typeId="rssi"/>
 			<channel id="battery" typeId="system.battery-level"/>
 
 			<channel id="temperature" typeId="blukii_temperature"/>
