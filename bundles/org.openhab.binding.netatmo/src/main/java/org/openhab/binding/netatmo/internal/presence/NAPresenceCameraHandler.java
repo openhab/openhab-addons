@@ -161,7 +161,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
         return jsonContent;
     }
 
-    private Optional<String> executeGETRequest(String url) {
+    Optional<String> executeGETRequest(String url) {
         try {
             String content = HttpUtil.executeUrl("GET", url, 5000);
             if (content != null && !content.isEmpty()) {
