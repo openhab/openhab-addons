@@ -222,8 +222,9 @@ public class GreeHandler extends BaseThingHandler {
                     break;
                 case MODE_ON:
                 case MODE_OFF:
+                    logger.debug("Turn unit {}", modeStr);
                     device.setDevicePower(socket, modeStr.equals(MODE_ON) ? 1 : 0);
-                    break;
+                    return;
                 default:
                     // fallback: mode number, pass transparent
                     // if string is not parsable parseInt() throws an exception
@@ -256,6 +257,7 @@ public class GreeHandler extends BaseThingHandler {
                 device.setDevicePwrSaving(socket, 1);
                 break;
             case MODE_TURBO:
+                logger.debug("Turn on Turbo Mode");
                 device.setDeviceTurbo(socket, 1);
                 break;
         }
@@ -329,9 +331,7 @@ public class GreeHandler extends BaseThingHandler {
     }
 
     private void startAutomaticRefresh() {
-
         Runnable refresher = () -> {
-
             try {
                 logger.debug("Executing automatic update of values");
                 // safeguard for multiple REFRESH commands
@@ -446,7 +446,7 @@ public class GreeHandler extends BaseThingHandler {
                     modeStr = MODE_DRY;
                     break;
                 case GREE_MODE_FAN:
-                    boolean turbo = device.getIntStatusVal("Tur") == 1;
+                    boolean turbo = device.getIntStatusVal(GREE_PROP_TURBO) == 1;
                     modeStr = !turbo ? MODE_FAN : MODE_TURBO;
                     break;
                 case GREE_MODE_HEAT:

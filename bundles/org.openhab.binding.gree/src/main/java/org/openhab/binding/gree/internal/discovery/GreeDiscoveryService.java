@@ -15,8 +15,8 @@ package org.openhab.binding.gree.internal.discovery;
 
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
-import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,9 +102,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (GreeException e) {
             logger.warn("Discovery failed: {}", e.toString());
-        } catch (IOException e) {
-            logger.debug("Discovery failed: {}", e.toString());
-        } catch (RuntimeException e) {
+        } catch (SocketException | RuntimeException e) {
             logger.warn("Discovery failed", e);
         }
     }

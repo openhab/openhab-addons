@@ -85,6 +85,7 @@ public class GreeBindingConstants {
 
     public static final String GREE_CID = "app";
     public static final String GREE_CMDT_BIND = "bind";
+    public static final String GREE_CMDT_SCAN = "scan";
     public static final String GREE_CMDT_STATUS = "status";
     public static final String GREE_CMDT_CMD = "cmd";
     public static final String GREE_CMDT_PACK = "pack";

@@ -59,23 +59,25 @@ public class GreeDeviceFinder {
         ipAddress = InetAddress.getLoopbackAddress(); // dummy
     }
 
-    public GreeDeviceFinder(String broadcastAddress) throws UnknownHostException {
-        ipAddress = InetAddress.getByName(broadcastAddress);
+    public GreeDeviceFinder(String broadcastAddress) throws GreeException {
+        try {
+            ipAddress = InetAddress.getByName(broadcastAddress);
+        } catch (UnknownHostException e) {
+            throw new GreeException("Unknown host or invalid IP address", e);
+        }
     }
 
     public void scan(DatagramSocket clientSocket, boolean scanNetwork) throws GreeException {
-        byte[] sendData = new byte[1024];
-        byte[] receiveData = new byte[1024];
-
-        // Send the Scan message
-        GreeScanRequestDTO scanGson = new GreeScanRequestDTO();
-        scanGson.t = "scan";
-
-        String scanReq = gson.toJson(scanGson);
-        sendData = scanReq.getBytes();
-
-        logger.trace("Sending scan packet to {}", ipAddress.getHostAddress());
         try {
+            byte[] sendData = new byte[1024];
+            byte[] receiveData = new byte[1024];
+
+            // Send the Scan message
+            GreeScanRequestDTO scanGson = new GreeScanRequestDTO();
+            scanGson.t = GREE_CMDT_SCAN;
+            String scanReq = gson.toJson(scanGson);
+            sendData = scanReq.getBytes(StandardCharsets.UTF_8);
+            logger.trace("Sending scan packet to {}", ipAddress.getHostAddress());
             clientSocket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, DISCOVERY_TIMEOUT_MS);
             clientSocket.send(sendPacket);

@@ -68,14 +68,79 @@ public class GreeAirDevice {
     private int port = 0;
     private String encKey = "";
     private Optional<GreeScanResponseDTO> scanResponseGson = Optional.empty();
-    private Optional<GreeBindResponseDTO> bindResponseGson = Optional.empty();
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
 
-    public void bindWithDevice(DatagramSocket clientSocket) throws GreeException {
-        byte[] sendData = new byte[1024];
-        byte[] receiveData = new byte[347];
+    public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
+        try {
+            // Set the values in the HashMap
+            ArrayList<String> columns = new ArrayList<>();
+            columns.add(GREE_PROP_POWER);
+            columns.add(GREE_PROP_MODE);
+            columns.add(GREE_PROP_SETTEMP);
+            columns.add(GREE_PROP_WINDSPEED);
+            columns.add(GREE_PROP_AIR);
+            columns.add(GREE_PROP_DRY);
+            columns.add(GREE_PROP_HEALTH);
+            columns.add(GREE_PROP_SLEEP);
+            columns.add(GREE_PROP_LIGHT);
+            columns.add(GREE_PROP_SWINGLEFTRIGHT);
+            columns.add(GREE_PROP_SWINGUPDOWN);
+            columns.add(GREE_PROP_QUIET);
+            columns.add(GREE_PROP_TURBO);
+            columns.add(GREE_PROP_TEMPUNIT);
+            columns.add(GREE_PROP_HEAT);
+            columns.add(GREE_PROP_HEATCOOL);
+            columns.add(GREE_PROP_TEMPREC);
+            columns.add(GREE_PROP_PWR_SAVING);
+            columns.add("NoiseSet");
 
+            // Convert the parameter map values to arrays
+            String[] colArray = columns.toArray(new String[0]);
+
+            // Prep the Command Request pack
+            GreeReqStatusPackDTO reqStatusPackGson = new GreeReqStatusPackDTO();
+            reqStatusPackGson.t = GREE_CMDT_STATUS;
+            reqStatusPackGson.cols = colArray;
+            reqStatusPackGson.mac = getId();
+            String reqStatusPackStr = gson.toJson(reqStatusPackGson);
+
+            // Encrypt the Binding Request pack
+            // Prep and send Status Request
+            String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), reqStatusPackStr);
+            DatagramPacket sendPacket = createPackRequest(0,
+                    new String(encryptedStatusReqPacket.getBytes(), UTF8_CHARSET));
+            clientSocket.send(sendPacket);
+
+            // Recieve a response
+            JsonReader receivedData = receiveResponse(clientSocket);
+
+            // Keep a copy of the old response to be used to check if values have changed
+            // If first time running, there will not be a previous GreeStatusResponsePack4Gson
+            if (statusResponseGson.isPresent() && statusResponseGson.get().packJson != null) {
+                prevStatusResponsePackGson = Optional
+                        .of(new GreeStatusResponsePackDTO(statusResponseGson.get().packJson));
+            }
+
+            // Read the response
+            GreeStatusResponseDTO resp = gson.fromJson(receivedData, GreeStatusResponseDTO.class);
+            resp.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(), resp.pack);
+            logger.trace("Response from device: {}", resp.decryptedPack);
+
+            // Create the JSON to hold the response values
+            resp.packJson = gson.fromJson(new JsonReader(new StringReader(resp.decryptedPack)),
+                    GreeStatusResponsePackDTO.class);
+
+            // save the results
+            statusResponseGson = Optional.of(resp);
+            updateTempFtoC();
+        } catch (IOException e) {
+            throw new GreeException("I/O exception while receiving data", e);
+        }
+    }
+
+    public void bindWithDevice(DatagramSocket clientSocket) throws GreeException {
+        byte[] receiveData = new byte[347];
         try {
             // Prep the Binding Request pack
             GreeBindRequestPackDTO bindReqPackGson = new GreeBindRequestPackDTO();
@@ -88,40 +153,23 @@ public class GreeAirDevice {
             String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
                     bindReqPackStr);
 
-            // Prep the Binding Request
-            GreeRequestDTO bindReqGson = new GreeRequestDTO();
-            bindReqGson.cid = GREE_CID;
-            bindReqGson.i = 1;
-            bindReqGson.t = GREE_CMDT_PACK;
-            bindReqGson.uid = 0;
-            bindReqGson.tcid = getId();
-            bindReqGson.pack = new String(encryptedBindReqPacket.getBytes(), UTF8_CHARSET);
-            String bindReqStr = gson.toJson(bindReqGson);
-            sendData = bindReqStr.getBytes();
-
-            // Now Send the request
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
+            // Create and send bind request
+            DatagramPacket sendPacket = createPackRequest(1,
+                    new String(encryptedBindReqPacket.getBytes(), UTF8_CHARSET));
             clientSocket.send(sendPacket);
 
             // Recieve a response
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData(), UTF8_CHARSET);
-
-            // Read the response
-            StringReader stringReader = new StringReader(modifiedSentence);
-            GreeBindResponseDTO resp = gson.fromJson(new JsonReader(stringReader), GreeBindResponseDTO.class);
+            GreeBindResponseDTO resp = gson.fromJson(receiveResponse(clientSocket), GreeBindResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
 
             // Create the JSON to hold the response values
-            stringReader = new StringReader(resp.decryptedPack);
-            resp.packJson = gson.fromJson(new JsonReader(stringReader), GreeBindResponsePackDTO.class);
+            resp.packJson = gson.fromJson(new JsonReader(new StringReader(resp.decryptedPack)),
+                    GreeBindResponsePackDTO.class);
 
             // Now set the key and flag to indicate the bind was succesful
             encKey = resp.packJson.key;
 
             // save the outcome
-            bindResponseGson = Optional.of(resp);
             setIsBound(true);
         } catch (IOException e) {
             throw new GreeException("Unable to bind to device", e);
@@ -141,7 +189,6 @@ public class GreeAirDevice {
     }
 
     public void setDeviceSwingUpDown(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound and values are valid
         // Only values 0,1,2,3,4,5,6,10,11 allowed
         if ((value < 0 || value > 11) || (value > 6 && value < 10)) {
             throw new GreeException("SwingUpDown value out of range!");
@@ -151,12 +198,8 @@ public class GreeAirDevice {
     }
 
     public void setDeviceSwingLeftRight(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only values 0,1,2,3,4,5,6 allowed
-        if ((value < 0) || (value > 6)) {
-            throw new GreeException("Device not bound or value out of range!");
-        }
         // Set the values in the HashMap
-        setCommandValue(clientSocket, GREE_PROP_SWINGLEFTRIGHT, value);
+        setCommandValue(clientSocket, GREE_PROP_SWINGLEFTRIGHT, value, 0, 6);
     }
 
     /**
@@ -170,8 +213,8 @@ public class GreeAirDevice {
      * 5 : High
      */
     public void setDeviceWindspeed(DatagramSocket clientSocket, int value) throws GreeException {
-        if (!getIsBound() || (value < 0 || value > 5)) {
-            throw new GreeException("Device not bound or value out of range!");
+        if (value < 0 || value > 5) {
+            throw new GreeException("Value out of range!");
         }
 
         // Set the values in the HashMap
@@ -185,22 +228,13 @@ public class GreeAirDevice {
 
     public void setDeviceTurbo(DatagramSocket clientSocket, int value) throws GreeException {
         // Only allow this to happen if this device has been bound and values are valid
-        if ((value < 0 || value > 1)) {
-            throw new GreeException("Value out of range!");
-        }
-
         // Set the values in the HashMap
-        setCommandValue(clientSocket, GREE_PROP_TURBO, value);
+        setCommandValue(clientSocket, GREE_PROP_TURBO, value, 0, 1);
     }
 
     public void setQuietMode(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound and values are valid
-        if (value < 0 || value > 2) {
-            throw new GreeException("Value out of range!");
-        }
-
         // Set the values in the HashMap
-        setCommandValue(clientSocket, GREE_PROP_QUIET, value);
+        setCommandValue(clientSocket, GREE_PROP_QUIET, value, 0, 2);
     }
 
     public int getDeviceTurbo() {
@@ -212,75 +246,9 @@ public class GreeAirDevice {
     }
 
     /**
-     * Create Hash Look Up for C and F
-     * Temperature Ranges for gree A/C units (f_range = {86,61}, c_range={16,30}
+     * @param value set temperature in degrees Celsius or Fahrenheit
      */
-    private static HashMap<String, HashMap<String, Integer>> createTempRangeMap() {
-        HashMap<String, HashMap<String, Integer>> tempRanges = new HashMap<>();
-        HashMap<String, Integer> hmf = new HashMap<>();
-        HashMap<String, Integer> hmc = new HashMap<>();
-
-        hmf.put("min", 61); // F
-        hmf.put("max", 86);
-        tempRanges.put("F", hmf);
-
-        hmc.put("min", 16); // C
-        hmc.put("max", 30);
-        tempRanges.put("C", hmc);
-
-        return tempRanges;
-    }
-
-    /**
-     * Checks input ranges for validity and TempUn for validity
-     * Uses newVal as priority and tries to validate and determine intent
-     * For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
-     */
-    private int[] validateTemperatureRangeForTempSet(int newValIn, @Nullable Integer CorFIn) {
-        final String[] minMaxLUT = { "max", "min" }; // looks up 0 = C = max, 1 = F = min
-        final String[] tempScaleLUT = { "C", "F" }; // Look Up Table used to convert TempUn integer 0,1 to "C" to "F"
-                                                    // string for hashmap
-        HashMap<String, Integer> nullCorFLUT = new HashMap<>(); // simple look up table for logic
-        nullCorFLUT.put("C", 0);
-        nullCorFLUT.put("F", 1);
-        nullCorFLUT.put("INVALID", 0);
-
-        String validRangeCorF; // stores if the input range is a valid C or F temperature
-
-        // force to global min/max
-        int newVal = (Math.max(newValIn, Math.min(tempRanges.get("C").get("min"), tempRanges.get("F").get("min"))));
-        newVal = Math.min(newVal, Math.max(tempRanges.get("C").get("max"), tempRanges.get("F").get("max")));
-
-        if ((newVal >= tempRanges.get("C").get("min")) && (newVal <= tempRanges.get("C").get("max"))) {
-            validRangeCorF = "C";
-        } else if ((newVal >= tempRanges.get("F").get("min")) && (newVal <= tempRanges.get("F").get("max"))) {
-            validRangeCorF = "F";
-        } else {
-            logger.warn("Input Temp request {} is invalid", newVal);
-            validRangeCorF = "INVALID";
-        }
-
-        // if CorF wasnt initialized or is null set it from lookup
-        Integer CorF = CorFIn != null ? CorFIn : nullCorFLUT.get(validRangeCorF);
-
-        if ((CorF == 1) && validRangeCorF.equals("C")) {
-            CorF = 0; // input temp takes priority
-        } else if ((CorF == 0) && validRangeCorF.equals("F")) {
-            CorF = 1; // input temp takes priority
-        } else if (validRangeCorF.equals("INVALID")) {
-            // force min or max temp based on CorF scale to be used
-            newVal = tempRanges.get(tempScaleLUT[CorF]).get(minMaxLUT[CorF]);
-        }
-
-        return new int[] { newVal, CorF };
-    }
-
     public void setDeviceTempSet(DatagramSocket clientSocket, int value) throws GreeException {
-        // **value** : set temperature in degrees celsius or Fahrenheit
-        // Only allow this to happen if this device has been bound
-        if (!getIsBound()) {
-            throw new GreeException("Device is not bound!");
-        }
         int newVal = value;
         int outVal = value;
         // Get Celsius or Fahrenheit from status message
@@ -333,11 +301,6 @@ public class GreeAirDevice {
     }
 
     public void setDevicePwrSaving(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound
-        if (!getIsBound()) {
-            throw new GreeException("Device is not bound!");
-        }
-
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
         parameters.put(GREE_PROP_PWR_SAVING, value);
@@ -374,10 +337,8 @@ public class GreeAirDevice {
          * "SvSt": Power Saving
          */
         // Find the valueName in the Returned Status object
-        String[] columns = statusResponseGson.get().packJson.cols;
-        Integer[] values = statusResponseGson.get().packJson.dat;
-        List<String> colList = Arrays.asList(columns);
-        List<Integer> valList = Arrays.asList(values);
+        List<String> colList = Arrays.asList(statusResponseGson.get().packJson.cols);
+        List<Integer> valList = Arrays.asList(statusResponseGson.get().packJson.dat);
         int valueArrayposition = colList.indexOf(valueName);
         if (valueArrayposition == -1) {
             return -1;
@@ -393,36 +354,30 @@ public class GreeAirDevice {
             return true; // update value if there is no previous one
         }
         // Find the valueName in the Current Status object
-        String currcolumns[] = statusResponseGson.get().packJson.cols;
-        Integer currvalues[] = statusResponseGson.get().packJson.dat;
-        List<String> currcolList = Arrays.asList(currcolumns);
-        List<Integer> currvalList = Arrays.asList(currvalues);
+        List<String> currcolList = Arrays.asList(statusResponseGson.get().packJson.cols);
+        List<Integer> currvalList = Arrays.asList(statusResponseGson.get().packJson.dat);
         int currvalueArrayposition = currcolList.indexOf(valueName);
         if (currvalueArrayposition == -1) {
             throw new GreeException("Unable to decode device status");
         }
-        // Now get the Corresponding value
-        int currvalue = currvalList.get(currvalueArrayposition);
 
         // Find the valueName in the Previous Status object
-        String prevcolumns[] = prevStatusResponsePackGson.get().cols;
-        Integer prevvalues[] = prevStatusResponsePackGson.get().dat;
-        List<String> prevcolList = Arrays.asList(prevcolumns);
-        List<Integer> prevvalList = Arrays.asList(prevvalues);
+        List<String> prevcolList = Arrays.asList(prevStatusResponsePackGson.get().cols);
+        List<Integer> prevvalList = Arrays.asList(prevStatusResponsePackGson.get().dat);
         int prevvalueArrayposition = prevcolList.indexOf(valueName);
         if (prevvalueArrayposition == -1) {
             throw new GreeException("Unable to get status value");
         }
-        // Now get the Corresponding value
-        int prevvalue = prevvalList.get(prevvalueArrayposition);
 
         // Finally Compare the values
-        return currvalue != prevvalue;
+        return currvalList.get(currvalueArrayposition) != prevvalList.get(prevvalueArrayposition);
     }
 
     protected void executeCommand(DatagramSocket clientSocket, Map<String, Integer> parameters) throws GreeException {
-        byte[] sendData = new byte[1024];
-        byte[] receiveData = new byte[1024];
+        // Only allow this to happen if this device has been bound
+        if (!getIsBound()) {
+            throw new GreeException("Device is not bound!");
+        }
 
         try {
             // Convert the parameter map values to arrays
@@ -442,127 +397,123 @@ public class GreeAirDevice {
             // encryptedCommandReqPacket);
 
             // Prep the Command Request
-            GreeRequestDTO execCmdGson = new GreeRequestDTO();
-            execCmdGson.cid = GREE_CID;
-            execCmdGson.i = 0;
-            execCmdGson.t = GREE_CMDT_PACK;
-            execCmdGson.uid = 0;
-            execCmdGson.tcid = getId();
-            execCmdGson.pack = new String(encryptedCommandReqPacket.getBytes(), UTF8_CHARSET);
-            String execCmdStr = gson.toJson(execCmdGson);
-            sendData = execCmdStr.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
+            DatagramPacket sendPacket = createPackRequest(0,
+                    new String(encryptedCommandReqPacket.getBytes(), UTF8_CHARSET));
             clientSocket.send(sendPacket);
 
-            // Recieve a response
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData(), UTF8_CHARSET);
-
-            // Read the response
-            StringReader stringReader = new StringReader(modifiedSentence);
-            GreeExecResponseDTO execResponseGson = gson.fromJson(new JsonReader(stringReader),
+            GreeExecResponseDTO execResponseGson = gson.fromJson(receiveResponse(clientSocket),
                     GreeExecResponseDTO.class);
             execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(),
                     execResponseGson.pack);
 
             // Create the JSON to hold the response values
-            stringReader = new StringReader(execResponseGson.decryptedPack);
-            execResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeExecResponsePackDTO.class);
+            execResponseGson.packJson = gson.fromJson(new JsonReader(new StringReader(execResponseGson.decryptedPack)),
+                    GreeExecResponsePackDTO.class);
         } catch (IOException e) {
             throw new GreeException("Exception on command execution", e);
         }
     }
 
     private void setCommandValue(DatagramSocket clientSocket, String command, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound
-        if (!getIsBound()) {
-            throw new GreeException("Device is not bound!");
+        executeCommand(clientSocket, Collections.singletonMap(command, value));
+    }
+
+    private void setCommandValue(DatagramSocket clientSocket, String command, int value, int min, int max)
+            throws GreeException {
+        // Only values 0,1,2,3,4,5,6 allowed
+        if ((value < min) || (value > max)) {
+            throw new GreeException("Command value out of range!");
         }
         executeCommand(clientSocket, Collections.singletonMap(command, value));
     }
 
-    public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
-        byte[] sendData = new byte[1024];
-        byte[] receiveData = new byte[1024];
+    private DatagramPacket createPackRequest(int i, String pack) {
+        GreeRequestDTO request = new GreeRequestDTO();
+        request.cid = GREE_CID;
+        request.i = i;
+        request.t = GREE_CMDT_PACK;
+        request.uid = 0;
+        request.tcid = getId();
+        request.pack = pack;
+        byte[] sendData = gson.toJson(request).getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
+        return sendPacket;
+    }
+
+    private JsonReader receiveResponse(DatagramSocket clientSocket) throws GreeException {
         try {
-            // Set the values in the HashMap
-            ArrayList<String> columns = new ArrayList<>();
-            columns.add(GREE_PROP_POWER);
-            columns.add(GREE_PROP_MODE);
-            columns.add(GREE_PROP_SETTEMP);
-            columns.add(GREE_PROP_WINDSPEED);
-            columns.add(GREE_PROP_AIR);
-            columns.add(GREE_PROP_DRY);
-            columns.add(GREE_PROP_HEALTH);
-            columns.add(GREE_PROP_SLEEP);
-            columns.add(GREE_PROP_LIGHT);
-            columns.add(GREE_PROP_SWINGLEFTRIGHT);
-            columns.add(GREE_PROP_SWINGUPDOWN);
-            columns.add(GREE_PROP_QUIET);
-            columns.add(GREE_PROP_TURBO);
-            columns.add(GREE_PROP_TEMPUNIT);
-            columns.add(GREE_PROP_HEAT);
-            columns.add(GREE_PROP_HEATCOOL);
-            columns.add(GREE_PROP_TEMPREC);
-            columns.add(GREE_PROP_PWR_SAVING);
-            columns.add("NoiseSet");
-
-            // Convert the parameter map values to arrays
-            String[] colArray = columns.toArray(new String[0]);
-
-            // Prep the Command Request pack
-            GreeReqStatusPackDTO reqStatusPackGson = new GreeReqStatusPackDTO();
-            reqStatusPackGson.t = GREE_CMDT_STATUS;
-            reqStatusPackGson.cols = colArray;
-            reqStatusPackGson.mac = getId();
-            String reqStatusPackStr = gson.toJson(reqStatusPackGson);
-
-            // Now Encrypt the Binding Request pack
-            String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), reqStatusPackStr);
-
-            // Prep the Status Request
-            GreeRequestDTO reqStatusGson = new GreeRequestDTO();
-            reqStatusGson.cid = GREE_CID;
-            reqStatusGson.i = 0;
-            reqStatusGson.t = GREE_CMDT_PACK;
-            reqStatusGson.uid = 0;
-            reqStatusGson.tcid = getId();
-            reqStatusGson.pack = new String(encryptedStatusReqPacket.getBytes(), UTF8_CHARSET);
-            String execCmdStr = gson.toJson(reqStatusGson);
-            sendData = execCmdStr.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
-            clientSocket.send(sendPacket);
-
-            // Recieve a response
+            byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData(), UTF8_CHARSET);
-
-            // Keep a copy of the old response to be used to check if values have changed
-            // If first time running, there will not be a previous GreeStatusResponsePack4Gson
-            if (statusResponseGson.isPresent() && statusResponseGson.get().packJson != null) {
-                prevStatusResponsePackGson = Optional
-                        .of(new GreeStatusResponsePackDTO(statusResponseGson.get().packJson));
-            }
-
-            // Read the response
-            StringReader stringReader = new StringReader(modifiedSentence);
-            GreeStatusResponseDTO resp = gson.fromJson(new JsonReader(stringReader), GreeStatusResponseDTO.class);
-            resp.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(), resp.pack);
-            logger.trace("Response from device: {}", resp.decryptedPack);
-
-            // Create the JSON to hold the response values
-            stringReader = new StringReader(resp.decryptedPack);
-
-            resp.packJson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponsePackDTO.class);
-
-            // save the results
-            statusResponseGson = Optional.of(resp);
-            updateTempFtoC();
+            String data = new String(receivePacket.getData(), UTF8_CHARSET);
+            return new JsonReader(new StringReader(data));
         } catch (IOException e) {
-            throw new GreeException("I/O exception while receiving data", e);
+            throw new GreeException("Unable to receive response", e);
         }
+    }
+
+    /**
+     * Checks input ranges for validity and TempUn for validity
+     * Uses newVal as priority and tries to validate and determine intent
+     * For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
+     */
+    private int[] validateTemperatureRangeForTempSet(int newValIn, @Nullable Integer CorFIn) {
+        final String[] minMaxLUT = { "max", "min" }; // looks up 0 = C = max, 1 = F = min
+        final String[] tempScaleLUT = { "C", "F" }; // Look Up Table used to convert TempUn integer 0,1 to "C" to "F"
+                                                    // string for hashmap
+        HashMap<String, Integer> nullCorFLUT = new HashMap<>(); // simple look up table for logic
+        nullCorFLUT.put("C", 0);
+        nullCorFLUT.put("F", 1);
+        nullCorFLUT.put("INVALID", 0);
+
+        String validRangeCorF; // stores if the input range is a valid C or F temperature
+
+        // force to global min/max
+        int newVal = (Math.max(newValIn, Math.min(tempRanges.get("C").get("min"), tempRanges.get("F").get("min"))));
+        newVal = Math.min(newVal, Math.max(tempRanges.get("C").get("max"), tempRanges.get("F").get("max")));
+
+        if ((newVal >= tempRanges.get("C").get("min")) && (newVal <= tempRanges.get("C").get("max"))) {
+            validRangeCorF = "C";
+        } else if ((newVal >= tempRanges.get("F").get("min")) && (newVal <= tempRanges.get("F").get("max"))) {
+            validRangeCorF = "F";
+        } else {
+            logger.warn("Input Temp request {} is invalid", newVal);
+            validRangeCorF = "INVALID";
+        }
+
+        // if CorF wasnt initialized or is null set it from lookup
+        Integer CorF = CorFIn != null ? CorFIn : nullCorFLUT.get(validRangeCorF);
+
+        if ((CorF == 1) && validRangeCorF.equals("C")) {
+            CorF = 0; // input temp takes priority
+        } else if ((CorF == 0) && validRangeCorF.equals("F")) {
+            CorF = 1; // input temp takes priority
+        } else if (validRangeCorF.equals("INVALID")) {
+            // force min or max temp based on CorF scale to be used
+            newVal = tempRanges.get(tempScaleLUT[CorF]).get(minMaxLUT[CorF]);
+        }
+
+        return new int[] { newVal, CorF };
+    }
+
+    /**
+     * Create Hash Look Up for C and F
+     * Temperature Ranges for gree A/C units (f_range = {86,61}, c_range={16,30}
+     */
+    private static HashMap<String, HashMap<String, Integer>> createTempRangeMap() {
+        HashMap<String, HashMap<String, Integer>> tempRanges = new HashMap<>();
+        HashMap<String, Integer> hmf = new HashMap<>();
+        HashMap<String, Integer> hmc = new HashMap<>();
+
+        hmf.put("min", 61); // F
+        hmf.put("max", 86);
+        tempRanges.put("F", hmf);
+
+        hmc.put("min", 16); // C
+        hmc.put("max", 30);
+        tempRanges.put("C", hmc);
+
+        return tempRanges;
     }
 
     private void updateTempFtoC() {
@@ -644,19 +595,7 @@ public class GreeAirDevice {
                 : "";
     }
 
-    public GreeScanResponseDTO getScanResponseGson() {
-        return scanResponseGson.get();
-    }
-
     public void setScanResponseGson(GreeScanResponseDTO gson) {
         scanResponseGson = Optional.of(gson);
-    }
-
-    public GreeBindResponseDTO getBindResponseGson() {
-        return bindResponseGson.get();
-    }
-
-    public GreeStatusResponseDTO getGreeStatusResponse4Gson() {
-        return statusResponseGson.get();
     }
 }

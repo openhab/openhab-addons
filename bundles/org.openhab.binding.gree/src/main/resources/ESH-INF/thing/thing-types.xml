@@ -88,6 +88,7 @@
 				<option value="2">@text/channel-type.gree.windspeed.state.option.2</option>
 				<option value="3">@text/channel-type.gree.windspeed.state.option.3</option>
 				<option value="4">@text/channel-type.gree.windspeed.state.option.4</option>
+				<option value="5">@text/channel-type.gree.windspeed.state.option.5</option>
 			</options>
 		</state>
 	</channel-type>
