@@ -83,13 +83,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
 
-    private final int CT_MAX;
-    private final int CT_MIN;
+    private final int ct_max;
+    private final int ct_min;
 
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
-        CT_MAX = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MAX), 500);
-        CT_MIN = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MIN), 153);
+        ct_max = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MAX), 500);
+        ct_min = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MIN), 153);
     }
 
     @Override
@@ -326,11 +326,11 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     }
 
     private int unscaleColorTemperature(final double ct) {
-        return (int) (ct / 100.0 * (CT_MAX - CT_MIN) + CT_MIN);
+        return (int) (ct / 100.0 * (ct_max - ct_min) + ct_min);
     }
 
     private double scaleColorTemperature    (final int ct) {
-        return 100.0 * (ct - CT_MIN) / (CT_MAX - CT_MIN);
+        return 100.0 * (ct - ct_min) / (ct_max - ct_min);
     }
 
     private PercentType toPercentType(int val) {
