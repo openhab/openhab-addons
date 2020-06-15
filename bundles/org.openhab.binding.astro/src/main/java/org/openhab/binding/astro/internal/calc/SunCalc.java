@@ -135,11 +135,13 @@ public class SunCalc {
     /**
      * Calculates all sun rise and sets at the specified coordinates.
      */
-    public Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude) {
-        return getSunInfo(calendar, latitude, longitude, altitude, false);
+    public Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude,
+            boolean useMeteorologicalSeason) {
+        return getSunInfo(calendar, latitude, longitude, altitude, false, useMeteorologicalSeason);
     }
 
-    private Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude, boolean onlyAstro) {
+    private Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude, boolean onlyAstro,
+            boolean useMeteorologicalSeason) {
         double lw = -longitude * DEG2RAD;
         double phi = latitude * DEG2RAD;
         double j = DateTimeUtils.midnightDateToJulianDate(calendar) + 0.5;
@@ -201,7 +203,8 @@ public class SunCalc {
         sun.setDaylight(daylightRange);
 
         // morning night
-        Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true);
+        Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true,
+                useMeteorologicalSeason);
         Range morningNightRange = null;
         if (sunYesterday.getAstroDusk().getEnd() != null
                 && DateUtils.isSameDay(sunYesterday.getAstroDusk().getEnd(), calendar)) {
@@ -227,7 +230,8 @@ public class SunCalc {
         if (isSunUpAllDay) {
             sun.setNight(new Range());
         } else {
-            Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true);
+            Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true,
+                    useMeteorologicalSeason);
             sun.setNight(new Range(sun.getAstroDusk().getEnd(), sunTomorrow.getAstroDawn().getStart()));
         }
 
@@ -246,7 +250,7 @@ public class SunCalc {
         sun.setZodiac(zodiacCalc.getZodiac(calendar));
 
         SeasonCalc seasonCalc = new SeasonCalc();
-        sun.setSeason(seasonCalc.getSeason(calendar, latitude));
+        sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason));
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sun.getAllRanges().entrySet()) {
