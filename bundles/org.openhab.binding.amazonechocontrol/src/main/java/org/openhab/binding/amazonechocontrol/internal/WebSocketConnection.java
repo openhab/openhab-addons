@@ -33,8 +33,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.UpgradeRequest;
-import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -42,7 +40,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.client.io.UpgradeListener;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPushCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,8 +116,7 @@ public class WebSocketConnection {
 
             initPongTimeoutTimer();
 
-            sessionFuture = webSocketClient.connect(amazonEchoControlWebSocket, uri, request,
-                    amazonEchoControlWebSocket);
+            sessionFuture = webSocketClient.connect(amazonEchoControlWebSocket, uri, request);
         } catch (URISyntaxException e) {
             logger.debug("Initialize web socket failed", e);
         }
