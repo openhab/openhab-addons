@@ -75,20 +75,8 @@ public class NoiseHandler extends BaseSensorHandler {
 
     @Override
     protected void updateFromCache() {
-        if (noiseEQCache != null) {
-            updateState(NOISE_EQ_CHANNEL, noiseEQCache);
-        } else {
-            logger.debug("No cached values for Noise EQ available");
-        }
-        if (noiseMinCache != null) {
-            updateState(NOISE_MIN_CHANNEL, noiseMinCache);
-        } else {
-            logger.debug("No cached values for Noise Min available");
-        }
-        if (noiseMaxCache != null) {
-            updateState(NOISE_MAX_CHANNEL, noiseMaxCache);
-        } else {
-            logger.debug("No cached values for Noise Max available");
-        }
+        updateState(NOISE_EQ_CHANNEL, noiseEQCache);
+        updateState(NOISE_MIN_CHANNEL, noiseMinCache);
+        updateState(NOISE_MAX_CHANNEL, noiseMaxCache);
     }
 }
