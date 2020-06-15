@@ -128,6 +128,8 @@ public class PMHandlerTest {
         if (pmJson != null) {
             int result = pmHandler.updateChannels(pmJson);
             assertEquals("Valid update", 2, result);
+            assertEquals("Values undefined", new DecimalType(-1), pmHandler.getPM25Cache());
+            assertEquals("Values undefined", new DecimalType(-1), pmHandler.getPM100Cache());
         } else {
             assertTrue(false);
         }
