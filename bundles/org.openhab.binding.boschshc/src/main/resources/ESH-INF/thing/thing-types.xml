@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="boschshc" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="boschshc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
     <!-- Bosch Bridge -->
     <bridge-type id="shc">
@@ -133,6 +131,28 @@
             <parameter name="id" type="text" required="true">
                 <label>Device ID</label>
                 <description>Device ID of the shutter control</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+
+    </thing-type>
+
+    <thing-type id="thermostat">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="shc" />
+        </supported-bridge-type-refs>
+
+        <label>Thermostat</label>
+        <description>Bosch Thermostat</description>
+
+        <channels>
+            <channel id="temperature" typeId="temperature" />
+        </channels>
+
+        <config-description>
+            <parameter name="id" type="text" required="true">
+                <label>Device ID</label>
+                <description>Device ID of the thermostat</description>
                 <required>true</required>
             </parameter>
         </config-description>

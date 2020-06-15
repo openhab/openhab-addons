@@ -14,6 +14,7 @@ package org.openhab.binding.boschshc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -25,14 +26,15 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * The {@link BoschSHCHandler} represents Bosch Things. Each type of device inherits from this abstract thing handler.
+ * The {@link BoschSHCHandler} represents Bosch Things. Each type of device
+ * inherits from this abstract thing handler.
  *
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
 public abstract class BoschSHCHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
     private @Nullable BoschSHCConfiguration config;
 
     public BoschSHCHandler(Thing thing) {
@@ -67,4 +69,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     public abstract void processUpdate(String id, JsonElement state);
 
+    protected @Nullable BoschSHCBridgeHandler getBridgeHandler() {
+        Bridge bridge = this.getBridge();
+        if (bridge == null) {
+            return null;
+        }
+        return (BoschSHCBridgeHandler) bridge.getHandler();
+    }
 }

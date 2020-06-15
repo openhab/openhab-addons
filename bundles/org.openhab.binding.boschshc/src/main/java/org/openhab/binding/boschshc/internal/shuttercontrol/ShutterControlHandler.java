@@ -7,7 +7,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -89,14 +88,6 @@ public class ShutterControlHandler extends BoschSHCHandler {
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in Shutter Control: {}", state);
         }
-    }
-
-    private BoschSHCBridgeHandler getBridgeHandler() {
-        Bridge bridge = this.getBridge();
-        if (bridge == null) {
-            return null;
-        }
-        return (BoschSHCBridgeHandler) bridge.getHandler();
     }
 
     private @Nullable ShutterControlState getDeviceState() {
