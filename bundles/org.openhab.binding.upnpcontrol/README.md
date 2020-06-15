@@ -1,52 +1,161 @@
-# <bindingName> Binding
+# UpnpControl Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding acts as a universal UPnP control point to control UPnP AV media servers and media renderers as defined by the [UPnP Forum](https://openconnectivity.org/developer/specifications/upnp-resources/upnp/).
+It discovers UPnP media servers and renderers in the network.
+UPnP AV media servers generally allow selecting content from a content directory.
+UPnP AV media renderers take care of playback of the content.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+You can select a renderer to play the media served from a server.
+The full content hierarchy of the media on the server can be browsed hierarchically.
+Searching the media library is also supported using uPnP search syntax.
+
+Controls are available to control the playback of the media on the renderer.
+Each discovered renderer will also be registered as an openHAB audo sink.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+Two thing types are supported, a server thing, `upnpserver`, and a renderer thing, `upnprenderer`.
+
+The binding has been tested with the AV Media Server and AV Media Renderer from Intel Developer Tools for UPnP Technology, available [here](https://www.meshcommander.com/upnptools).
+A second test set included a [TVersity Media Server](http://tversity.com/).
+It complies with part of the UPnP AV Media standard, but has not be certified to cover the full specification.
+Tests have focused on the playback of audio, but if the server and renderer support it, other media types could play as well.
+
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+UPnP media servers and media renderers in the network will be discovered automatically.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters 
-# This may be changed by the user for security reasons.
-secret=EclipseSmartHome
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+Both the  `upnprenderer` and `upnpserver` thing require a configuration parameter, `udn` (Universal Device Name).
+This `udn` uniquely defines the UPnP device.
+It can be retrieved from the thing ID when using auto discovery.
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+An `upnpserver` device has the following additional optional configuration parameters:
+* `filter`: when true, only list content that is playable on the renderer, default is `false`.
+* `sortcriteria`: Sort criteria for the titles in the selection list and when sending for playing to a renderer.
+The criteria are defined in UPnP sort criteria format, examples: `+dc:title`, `-dc:creator`, `+upnp:album`.
+Supported sort criteria will depend on the media server.
+The default is to sort ascending on title, `+dc:title`.
+
+The full syntax for manual configuration is:
+
+```
+Thing upnpcontrol:upnpserver:<serverId> [udn="<udn of media server>"]
+Thing upnpcontrol:upnprenderer:<rendererId> [udn="<udn of media renderer>", filter=<true/false>, sortcriteria="<sort criteria string>" 
+```
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The `upnpserver` has the following channels:
+* `upnprenderer`: The renderer to send the media content to for playback.
+The channel allows selecting from all discovered media renderers.
+This list is dynamically adjusted as media renderers are being added/removed.
+* `currentid`: Current ID of media container or entry ready for playback.
+This channel can be used to skip to a specific container or entry in the content directory.
+This is especially useful in rules.
+* `browse`: Browse and serve media content.
+The browsing will start at the top of the content directory tree and allows you to go down and up (represented by ..) in the tree.
+The list of containers (directories) and media for selection on the level in the content hierarchy is updated dynamically when changing a level.
+All media in the selection list, playable on the current selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
+* `search`: Search for media content on the server.
+Search criteria are defined in UPnP search criteria format.
+Examples: `dc:title contains "song"`, `dc:creator contains "SpringSteen"`, `unp:class = "object.item.audioItem"`, `upnp:album contains "Born in"`.
+The search starts at the current level in the browse channel and searches down from there.
+When no level is selected, the search starts at the top.
+All media in the search result list, playable on the current selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+The `upnprenderer` has the following channels:
+* `volume`: playback volume
+* `mute`: mute playback
+* `control`: play, pause, next, previous control
+* `stop`: stop media playback
+* `title`: media title (read only)
+* `album`: media album (read only)
+* `albumart`: image for media album (read only)
+* `creator`: media creator (read only)
+* `artist`: media artist (read only)
+* `publisher`: media publisher (read only)
+* `genre`: media genre (read only)
+* `tracknumber`: track number of current track in album (read only)
+* `trackduration`: track duration of current track in album (read only)
+* `trackposition`: current position in track during playback or pause of media (read only)
+
+## Audio Support
+
+All configured media renderers are registered as an audio sink in the framework.
+`playSound`and `playStream`command can be used in rules to playback audio fragments or audio streams to a renderer.
+
+## Limitations
+
+The current version of BasicUI does not support dynamic refreshing of the selection list in the `upnpserver` channels `renderer` and `browse`.
+A refresh of the browser will be required to show the adjusted selection list.
+The `upnpserver` `search` channel requires input of a string to trigger a search.
+This cannot be done with BasicUI, but can be achieved with rules.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+.things:
 
-## Any custom content here!
+```
+Thing upnpcontrol:upnpserver:mymediaserver [udn="538cf6e8-d188-4aed-8545-73a1b905466e"]
+Thing upnpcontrol:upnprenderer:mymediarenderer [udn="0ec457ae-6c50-4e6e-9012-dee7bb25be2d", filter=true, sortcriteria="+dc:title"]
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+.items:
+
+```
+Group MediaServer <player>
+Group MediaRenderer <player>
+
+Dimmer Volume    "Volume [%.1f %%]" <soundvolume>      (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:volume"}
+Switch Mute      "Mute"             <soundvolume_mute> (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:mute"}
+Player Controls  "Controller"                          (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:control"}
+Switch Stop      "Stop"                                (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:stop"}
+String Title     "Now playing [%s]" <text>             (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:title"}
+String Album     "Album"            <text>             (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:album"}
+Image AlbumArt   "Album Art"                           (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:albumart"}
+String Creator   "Creator"          <text>             (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:creator"}
+String Artist    "Artist"           <text>             (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:artist"}
+String Publisher "Publisher"        <text>             (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:publisher"}
+String Genre     "Genre"            <text>             (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:genre"}
+Number TrackNumber "Track Number"                      (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:tracknumber"}
+String TrackDuration "Track Duration"                  (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:trackduration"}
+String TrackPosition "Track Position"                  (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:trackposition"}
+
+String Renderer  "Renderer [%s]"    <text>             (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:title"}
+String CurrentId "Current Entry [%s]" <text>           (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:currentid"}
+String Browse   "Browse"                               (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:browse"}
+```
+
+.sitemap:
+
+```
+Slider  item=Volume
+Switch  item=Mute
+Default item=Controls
+Switch  item=Stop mappings=[ON="STOP"]
+Text    item=Title     
+Text    item=Album
+Default item=AlbumArt
+Text    item=Creator
+Text    item=Artist
+Text    item=Publisher
+Text    item=Genre
+Text    item=TrackNumber
+Text    item=TrackDuration
+Text    item=TrackPosition
+
+Text    item=Renderer
+Text    item=CurrentId
+Text    item=Browse
+```
+
+Audio sink usage examples in rules:
+
+```
+playSound(“doorbell.mp3”)
+playStream("upnpcontrol:upnprenderer:mymediarenderer", "http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3”)
+```
