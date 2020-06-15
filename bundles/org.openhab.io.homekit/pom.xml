@@ -16,7 +16,7 @@
 
   <properties>
     <dep.noembedding>javax.json,javax.json-api,netty-common,netty-buffer,netty-transport,netty-handler,netty-codec,netty-codec-http,netty-resolver</dep.noembedding>
-    <netty.version>4.1.42.Final</netty.version>
+    <netty.version>4.1.50.Final</netty.version>
   </properties>
 
   <dependencies>
