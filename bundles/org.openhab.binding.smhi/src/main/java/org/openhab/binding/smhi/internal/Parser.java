@@ -82,12 +82,12 @@ public class Parser {
         ZonedDateTime validTime = ZonedDateTime.parse(object.get("validTime").getAsString());
         Map<String, @Nullable BigDecimal> parameters = new HashMap<>();
 
-        JsonArray par = object.get("parameters").getAsJsonArray();
+        JsonArray parameterArray = object.get("parameters").getAsJsonArray();
 
-        par.forEach(element -> {
-            JsonObject parObj = element.getAsJsonObject();
-            String name = parObj.get("name").getAsString().toLowerCase(Locale.ROOT);
-            BigDecimal value = parObj.get("values").getAsJsonArray().get(0).getAsBigDecimal();
+        parameterArray.forEach(element -> {
+            JsonObject parameterObj = element.getAsJsonObject();
+            String name = parameterObj.get("name").getAsString().toLowerCase(Locale.ROOT);
+            BigDecimal value = parameterObj.get("values").getAsJsonArray().get(0).getAsBigDecimal();
 
             parameters.put(name, value);
         });

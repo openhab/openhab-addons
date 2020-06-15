@@ -23,6 +23,10 @@ public class SmhiException extends Exception {
 
     private static final long serialVersionUID = 516565331L;
 
+    public SmhiException(String message) {
+        super(message);
+    }
+
     public SmhiException(Throwable cause) {
         super(cause);
     }

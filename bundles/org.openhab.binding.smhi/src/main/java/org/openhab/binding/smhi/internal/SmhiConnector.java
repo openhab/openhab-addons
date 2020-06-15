@@ -59,7 +59,12 @@ public class SmhiConnector {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new SmhiException(e);
         }
-        return Parser.parseApprovedTime(resp.getContentAsString());
+        logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());
+        if (resp.getStatus() == 200) {
+            return Parser.parseApprovedTime(resp.getContentAsString());
+        } else {
+            throw new SmhiException(resp.getReason());
+        }
     }
 
     /**
@@ -81,9 +86,14 @@ public class SmhiConnector {
             throw new SmhiException(e);
         }
         logger.debug("Received response with status {} - {}", resp.getStatus(), resp.getReason());
-        if (resp.getStatus() == 400 || resp.getStatus() == 404) {
-            throw new PointOutOfBoundsException();
+        switch (resp.getStatus()) {
+            case 200:
+                return Parser.parseTimeSeries(resp.getContentAsString());
+            case 400:
+            case 404:
+                throw new PointOutOfBoundsException();
+            default:
+                throw new SmhiException(resp.getReason());
         }
-        return Parser.parseTimeSeries(resp.getContentAsString());
     }
 }

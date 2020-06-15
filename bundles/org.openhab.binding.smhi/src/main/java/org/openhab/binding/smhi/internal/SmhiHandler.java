@@ -195,10 +195,14 @@ public class SmhiHandler extends BaseThingHandler {
             if (channels.isEmpty()) {
                 continue;
             }
-            Forecast forecast = timeSeries.getForecast(currentDay, 24 * i + 12);
+
+            int offset = 24 * i + 12;
+            Forecast forecast = timeSeries.getForecast(currentDay, offset);
 
             if (forecast == null) {
-                logger.debug("No forecast yet for {}", currentDay.plusHours(24 * i + 12));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No forecast yet for {}", currentDay.plusHours(offset));
+                }
                 channels.forEach(c -> {
                     updateState(c.getUID(), UnDefType.NULL);
                 });
@@ -345,8 +349,9 @@ public class SmhiHandler extends BaseThingHandler {
             try {
                 forecast = apiConnection.getForecast(config.latitude, config.longitude);
             } catch (SmhiException e) {
-                logger.debug("Failed to get new forecast: {}", e.getCause().getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getCause().getMessage());
+                String message = e.getCause() == null ? e.getMessage() : e.getCause().getMessage();
+                logger.debug("Failed to get new forecast: {}", message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
                 return;
             } catch (PointOutOfBoundsException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

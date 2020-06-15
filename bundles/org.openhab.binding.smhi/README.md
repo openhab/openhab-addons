@@ -1,11 +1,12 @@
 # Smhi Binding
 
-This binding gets hourly and daily forecast from SMHI - the Swedish Meteorological and Hydrological Institute. It can't 
-get forecasts for other countries than Sweden.
+This binding gets hourly and daily forecast from SMHI - the Swedish Meteorological and Hydrological Institute. 
+It can get forecasts for the nordic countries (Sweden, Norway, Denmark and Finland).
+
 ## Supported Things
 
-The binding support only one thing-type: forecast. The thing can be configured to get hourly forecasts for up to 24 
-hours, and daily forecasts for up to 10 days.
+The binding support only one thing-type: forecast. 
+The thing can be configured to get hourly forecasts for up to 24 hours, and daily forecasts for up to 10 days.
 
 
 ## Discovery
@@ -14,8 +15,8 @@ This binding does not support automatic discovery.
 
 ## Thing Configuration
 
-The forecast thing needs to be configured with the latitude and longitude for the location of the forecast. You can 
-also choose for which hours and which days you would like to get forecasts.
+The forecast thing needs to be configured with the latitude and longitude for the location of the forecast. 
+You can also choose for which hours and which days you would like to get forecasts.
 
 | Parameter | Description | Required |
 |-----------|-------------|----------|

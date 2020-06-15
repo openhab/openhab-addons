@@ -23,6 +23,4 @@ public class PointOutOfBoundsException extends Exception {
 
     private static final long serialVersionUID = 546566512L;
 
-    public PointOutOfBoundsException() {
-    }
 }
