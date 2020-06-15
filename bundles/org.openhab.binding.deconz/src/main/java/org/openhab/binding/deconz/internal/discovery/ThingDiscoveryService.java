@@ -114,14 +114,17 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         Map<String, Object> properties = new HashMap<>();
+        properties.put("id", lightType);
+        properties.put(UNIQUE_ID, light.uniqueid);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
         properties.put(Thing.PROPERTY_VENDOR, light.manufacturername);
         properties.put(Thing.PROPERTY_MODEL_ID, light.modelid);
 
-        if (light.ctmax != null)
+        if (light.ctmax != null && light.ctmin != null) {
             properties.put(PROPERTY_CT_MAX, Integer.toString(light.ctmax));
-        if (light.ctmin != null)
             properties.put(PROPERTY_CT_MIN, Integer.toString(light.ctmin));
+        }
 
         switch (lightType) {
             case ON_OFF_LIGHT:
@@ -160,8 +163,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, light.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
                 .withLabel(light.name + " (" + light.manufacturername + ")")
-                .withProperty("id", lightID)
-                .withProperty(UNIQUE_ID, light.uniqueid)
                 .withProperties(properties)
                 .withRepresentationProperty(UNIQUE_ID)
                 .build();
