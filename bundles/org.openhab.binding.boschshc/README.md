@@ -9,6 +9,7 @@ Binding for the Bosch Smart Home Controller:
  - Bosch TwinGuard smoke detector
  - Bosch Window/Door contacts
  - Bosch Motion Detector
+ - Bosch Shutter Control in-wall
 
 ## Limitations
 
