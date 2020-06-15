@@ -34,7 +34,6 @@ import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 @NonNullByDefault
 public class ConditionHandler extends BaseSensorHandler {
 
-    protected static final DecimalType UNDEF = new DecimalType(-1);
     protected DecimalType temperatureCache = UNDEF;
     protected DecimalType humidityCache = UNDEF;
     protected DecimalType pressureCache = UNDEF;
@@ -69,17 +68,6 @@ public class ConditionHandler extends BaseSensorHandler {
                             updateState(PRESSURE_SEA_CHANNEL, pressureSeaCache);
                         }
                     }
-                    // if optional pressure values are not deliverd put them to undefined
-                    if (pressureCache == null) {
-                        logger.info("Pressure Info not delivered by this sensor");
-                        pressureCache = UNDEF;
-                        updateState(PRESSURE_CHANNEL, pressureCache);
-                    }
-                    if (pressureSeaCache == null) {
-                        logger.info("Pressure Info not delivered by this sensor");
-                        pressureSeaCache = UNDEF;
-                        updateState(PRESSURE_SEA_CHANNEL, pressureSeaCache);
-                    }
                     return UPDATE_OK;
                 } else {
                     return UPDATE_VALUE_ERROR;
@@ -94,25 +82,9 @@ public class ConditionHandler extends BaseSensorHandler {
 
     @Override
     protected void updateFromCache() {
-        if (temperatureCache != null) {
-            updateState(TEMPERATURE_CHANNEL, temperatureCache);
-        } else {
-            logger.debug("No cached values for Temperature available");
-        }
-        if (humidityCache != null) {
-            updateState(HUMIDITY_CHANNEL, humidityCache);
-        } else {
-            logger.debug("No cached values for Humidity available");
-        }
-        if (pressureCache != null) {
-            updateState(PRESSURE_CHANNEL, pressureCache);
-        } else {
-            logger.debug("No cached values for Pressure available");
-        }
-        if (pressureSeaCache != null) {
-            updateState(PRESSURE_SEA_CHANNEL, pressureSeaCache);
-        } else {
-            logger.debug("No cached values for Pressure Sealevel available");
-        }
+        updateState(TEMPERATURE_CHANNEL, temperatureCache);
+        updateState(HUMIDITY_CHANNEL, humidityCache);
+        updateState(PRESSURE_CHANNEL, pressureCache);
+        updateState(PRESSURE_SEA_CHANNEL, pressureSeaCache);
     }
 }

@@ -67,6 +67,9 @@ public class NoiseHandlerTest {
         if (pmJson != null) {
             int result = noiseHandler.updateChannels(pmJson);
             assertEquals("Valid update", 2, result);
+            assertEquals("Values undefined", new DecimalType(-1), noiseHandler.getNoiseEQCache());
+            assertEquals("Values undefined", new DecimalType(-1), noiseHandler.getNoiseMinCache());
+            assertEquals("Values undefined", new DecimalType(-1), noiseHandler.getNoiseMaxCache());
         } else {
             assertTrue(false);
         }

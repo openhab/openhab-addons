@@ -72,15 +72,7 @@ public class PMHandler extends BaseSensorHandler {
 
     @Override
     protected void updateFromCache() {
-        if (pm25Cache != null) {
-            updateState(PM25_CHANNEL, pm25Cache);
-        } else {
-            logger.debug("No cached values for PM25 available");
-        }
-        if (pm100Cache != null) {
-            updateState(PM100_CHANNEL, pm100Cache);
-        } else {
-            logger.debug("No cached values for PM100 available");
-        }
+        updateState(PM25_CHANNEL, pm25Cache);
+        updateState(PM100_CHANNEL, pm100Cache);
     }
 }
