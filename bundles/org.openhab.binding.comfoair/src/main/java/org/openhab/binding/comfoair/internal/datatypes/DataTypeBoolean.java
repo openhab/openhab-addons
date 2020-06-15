@@ -67,11 +67,16 @@ public class DataTypeBoolean implements ComfoAirDataType {
         } else {
             DecimalType decimalValue = value.as(DecimalType.class);
             int[] possible_values = commandType.getPossibleValues();
+            int returnValue = 0x01;
 
-            if (possible_values != null && decimalValue != null) {
+            if (possible_values != null) {
+                returnValue = possible_values[0];
+            }
+
+            if (decimalValue != null) {
                 int[] template = commandType.getChangeDataTemplate();
 
-                template[commandType.getChangeDataPos()] = decimalValue.intValue() == 1 ? possible_values[0] : 0x00;
+                template[commandType.getChangeDataPos()] = decimalValue.intValue() == 1 ? returnValue : 0x00;
 
                 return template;
             } else {
