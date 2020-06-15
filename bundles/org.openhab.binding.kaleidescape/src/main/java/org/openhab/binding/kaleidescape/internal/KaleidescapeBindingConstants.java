@@ -80,6 +80,7 @@ public class KaleidescapeBindingConstants {
     public static final String CINEMASCAPE_MODE = "ui#cinemascape_mode";
     public static final String UI_STATE = "ui#ui_state";
     public static final String CHILD_MODE_STATE = "ui#child_mode_state";
+    public static final String SYSTEM_READINESS_STATE = "ui#readiness_state";
     public static final String HIGHLIGHTED_SELECTION = "ui#highlighted_selection";
     public static final String USER_DEFINED_EVENT = "ui#user_defined_event";
     public static final String USER_INPUT = "ui#user_input";
@@ -134,11 +135,10 @@ public class KaleidescapeBindingConstants {
                     DETAIL_RATING_REASON, DETAIL_SYNOPSIS, DETAIL_REVIEW, DETAIL_COLOR_DESCRIPTION, DETAIL_COUNTRY,
                     DETAIL_ASPECT_RATIO, DETAIL_DISC_LOCATION));
 
-    public static final String SYSTEM_READINESS_STATE = "system#readiness_state";
-    public static final String COMPONENT_TYPE = "system#component_type";
-    public static final String FRIENDLY_NAME = "system#friendly_name";
-    public static final String SERIAL_NUMBER = "system#serial_number";
-    public static final String CONTROL_PROTOCOL_ID = "system#control_protocol_id";
-    public static final String SYSTEM_VERSION = "system#system_version";
-    public static final String PROTOCOL_VERSION = "system#protocol_version";
+    public static final String PROPERTY_COMPONENT_TYPE = "Component Type";
+    public static final String PROPERTY_FRIENDLY_NAME = "Friendly Name";
+    public static final String PROPERTY_SERIAL_NUMBER = "Serial Number";
+    public static final String PROPERTY_CONTROL_PROTOCOL_ID = "Control Protocol ID";
+    public static final String PROPERTY_SYSTEM_VERSION = "System Version";
+    public static final String PROPERTY_PROTOCOL_VERSION = "Protocol Version";
 }

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EventObject;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -93,7 +92,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private long lastPollingUpdate = System.currentTimeMillis();
 
-    private Object sequenceLock = new Object();
+    protected Object sequenceLock = new Object();
 
     protected final HttpClient httpClient;
 
@@ -103,12 +102,16 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         this.httpClient = httpClient;
     }
 
-    public void updateChannel(String channelUID, State state) {
+    protected void updateChannel(String channelUID, State state) {
         this.updateState(channelUID, state);
     }
 
-    public void updateDetailChannel(String channelUID, State state) {
+    protected void updateDetailChannel(String channelUID, State state) {
         this.updateState(DETAIL + channelUID, state);
+    }
+
+    protected void updateThingProperty(String name, String value) {
+        thing.setProperty(name, value);
     }
 
     @SuppressWarnings("null")
@@ -172,7 +175,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
         } else {
             if (config.serialPort != null) {
-                connector = new KaleidescapeSerialConnector(serialPortManager, config.serialPort);
+                String serialPort = config.serialPort;
+                connector = new KaleidescapeSerialConnector(serialPortManager, serialPort);
             } else {
                 connector = new KaleidescapeIpConnector(config.host, config.port);
             }
@@ -310,8 +314,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     }
 
     @Override
-    public void onNewMessageEvent(EventObject event) {
-        KaleidescapeMessageEvent evt = (KaleidescapeMessageEvent) event;
+    public void onNewMessageEvent(KaleidescapeMessageEvent evt) {
         lastPollingUpdate = System.currentTimeMillis();
 
         // check if we are in standby

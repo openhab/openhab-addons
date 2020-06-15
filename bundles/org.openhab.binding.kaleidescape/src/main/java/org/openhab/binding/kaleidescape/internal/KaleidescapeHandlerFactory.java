@@ -16,8 +16,6 @@ import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConst
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,15 +41,16 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.kaleidescape", service = ThingHandlerFactory.class)
 public class KaleidescapeHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_PLAYER_ZONE).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER_ZONE);
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
     private final HttpClient httpClient;
 
     @Activate
-    public KaleidescapeHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+    public KaleidescapeHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference SerialPortManager serialPortManager) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -68,14 +67,5 @@ public class KaleidescapeHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 }

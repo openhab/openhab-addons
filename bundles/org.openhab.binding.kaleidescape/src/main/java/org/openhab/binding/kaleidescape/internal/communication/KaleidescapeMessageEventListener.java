@@ -13,7 +13,6 @@
 package org.openhab.binding.kaleidescape.internal.communication;
 
 import java.util.EventListener;
-import java.util.EventObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -29,5 +28,5 @@ public interface KaleidescapeMessageEventListener extends EventListener {
      *
      * @param event the event object
      */
-    public void onNewMessageEvent(EventObject event);
+    public void onNewMessageEvent(KaleidescapeMessageEvent event);
 }

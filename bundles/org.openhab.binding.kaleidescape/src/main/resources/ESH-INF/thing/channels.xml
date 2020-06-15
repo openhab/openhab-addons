@@ -24,11 +24,16 @@
 				<label>Content Details</label>
 				<description>Contains Metadata About a Selected Item</description>
 			</channel-group>
-			<channel-group id="system" typeId="system">
-				<label>System Details</label>
-				<description>Contains System Level Details About This Component</description>
-			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="Component Type">unknown</property>
+			<property name="Friendly Name">unknown</property>
+			<property name="Serial Number">unknown</property>
+			<property name="Control Protocol ID">unknown</property>
+			<property name="System Version">unknown</property>
+			<property name="Protocol Version">unknown</property>
+		</properties>
 
 		<config-description>
 			<parameter name="componentType" type="text" required="true">
@@ -48,7 +53,7 @@
 				<label>Address</label>
 				<description>Host Name or IP Address of the Kaleidescape Component.</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
 				<description>Communication Port for IP Connection to the Kaleidescape Component.</description>
 				<default>10000</default>
@@ -60,11 +65,12 @@
 				<description>(Optional) Serial Port to Use for Connecting Directly to an Individual Kaleidescape Component.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="updatePeriod" type="integer" min="0" max="1" required="false">
+			<parameter name="updatePeriod" type="integer" min="0" max="1" unit="s" required="false">
 				<label>Update Period</label>
 				<description>Tells the Component How Often Time Status Updates Should Be Sent; Values Greater Than 1 Are Not Yet
-					Implmented by the Protocol. Setting to 1 May Impact openHAB System Performance Due to Constant Updates While
-					Content Playing.</description>
+					Implmented by the Protocol. Setting to 1 May Impact openHAB System Performance Due
+					to Constant Updates While Content
+					Playing.</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="volumeEnabled" type="boolean" required="false">
@@ -74,7 +80,7 @@
 					Volume On This Zone.</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="initialVolume" type="integer" min="0" max="75" required="false">
+			<parameter name="initialVolume" type="integer" min="0" max="75" unit="%" required="false">
 				<label>Initial Volume Setting</label>
 				<description>When the Binding Starts Up, Set the Inital Volume Level to This Value (Default 25).</description>
 				<default>25</default>
@@ -117,6 +123,7 @@
 			<channel id="cinemascape_mode" typeId="cinemascape_mode"/>
 			<channel id="ui_state" typeId="ui_state"/>
 			<channel id="child_mode_state" typeId="child_mode_state"/>
+			<channel id="readiness_state" typeId="readiness_state"/>
 			<channel id="highlighted_selection" typeId="highlighted_selection"/>
 			<channel id="user_defined_event" typeId="user_defined_event"/>
 			<channel id="user_input" typeId="user_input"/>
@@ -169,20 +176,6 @@
 			<channel id="country" typeId="country"/>
 			<channel id="aspect_ratio" typeId="aspect_ratio"/>
 			<channel id="disc_location" typeId="disc_location"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="system">
-		<label>System Details</label>
-		<description>Contains System Level Details About This Component</description>
-		<channels>
-			<channel id="readiness_state" typeId="readiness_state"/>
-			<channel id="component_type" typeId="component_type"/>
-			<channel id="friendly_name" typeId="friendly_name"/>
-			<channel id="serial_number" typeId="serial_number"/>
-			<channel id="control_protocol_id" typeId="control_protocol_id"/>
-			<channel id="system_version" typeId="system_version"/>
-			<channel id="protocol_version" typeId="protocol_version"/>
 		</channels>
 	</channel-group-type>
 
@@ -379,6 +372,13 @@
 		<item-type>String</item-type>
 		<label>Child Mode State</label>
 		<description>Indicates If the On Screen Display Is Displaying the Child User Interface</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="readiness_state" advanced="true">
+		<item-type>String</item-type>
+		<label>System Readiness State</label>
+		<description>Indicates the System's Current Idle Mode</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -649,57 +649,6 @@
 		<item-type>String</item-type>
 		<label>Disc Location</label>
 		<description>Indicates Where the Disc for the Selected Item Is Currently Residing in the System (ie Vault, Tray, etc.)</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<!-- system channels -->
-
-	<channel-type id="readiness_state">
-		<item-type>String</item-type>
-		<label>System Readiness State</label>
-		<description>Indicates the System's Current Idle Mode</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="component_type">
-		<item-type>String</item-type>
-		<label>Component Type</label>
-		<description>The Type of Component, ie Player (Premiere), Cinema One, Alto, Strato</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="friendly_name">
-		<item-type>String</item-type>
-		<label>Friendly Name</label>
-		<description>The Friendly Name of the Zone Component</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="serial_number">
-		<item-type>String</item-type>
-		<label>Serial Number</label>
-		<description>The Serial Number of the Zone Component</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="control_protocol_id">
-		<item-type>String</item-type>
-		<label>Control Protocol ID</label>
-		<description>The Assigned Device Identifier (cpdid) of the Component</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="system_version">
-		<item-type>String</item-type>
-		<label>System Version</label>
-		<description>The Current kOS Version Number of the System Software</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="protocol_version">
-		<item-type>String</item-type>
-		<label>Protocol Version</label>
-		<description>The Current Control Protocol Version Number</description>
 		<state readOnly="true"/>
 	</channel-type>
 

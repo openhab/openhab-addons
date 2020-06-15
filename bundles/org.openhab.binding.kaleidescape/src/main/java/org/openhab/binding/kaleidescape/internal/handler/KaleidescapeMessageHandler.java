@@ -469,39 +469,48 @@ public enum KaleidescapeMessageHandler {
                     // so we respond to enable volume controls and set the initial volume and mute
                     case "VOLUME_QUERY":
                         if (handler.volumeEnabled) {
-                            handler.connector.sendCommand("SEND_EVENT:VOLUME_CAPABILITIES=15");
-                            handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
-                            handler.connector
-                                    .sendCommand("SEND_EVENT:MUTE_" + (handler.isMuted ? "ON" : "OFF") + "_FB");
+                            synchronized (handler.sequenceLock) {
+                                handler.connector.sendCommand("SEND_EVENT:VOLUME_CAPABILITIES=15");
+                                handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
+                                handler.connector
+                                        .sendCommand("SEND_EVENT:MUTE_" + (handler.isMuted ? "ON" : "OFF") + "_FB");
+                            }
                         }
                         break;
                     case "VOLUME_UP":
                         if (handler.volumeEnabled) {
-                            handler.volume++;
-                            handler.updateChannel(KaleidescapeBindingConstants.VOLUME,
-                                    new PercentType(BigDecimal.valueOf(handler.volume)));
-                            handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
+                            synchronized (handler.sequenceLock) {
+                                handler.volume++;
+                                handler.updateChannel(KaleidescapeBindingConstants.VOLUME,
+                                        new PercentType(BigDecimal.valueOf(handler.volume)));
+                                handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
+                            }
                         }
                         break;
                     case "VOLUME_DOWN":
                         if (handler.volumeEnabled) {
-                            handler.volume--;
-                            handler.updateChannel(KaleidescapeBindingConstants.VOLUME,
-                                    new PercentType(BigDecimal.valueOf(handler.volume)));
-                            handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
+                            synchronized (handler.sequenceLock) {
+                                handler.volume--;
+                                handler.updateChannel(KaleidescapeBindingConstants.VOLUME,
+                                        new PercentType(BigDecimal.valueOf(handler.volume)));
+                                handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
+                            }
                         }
                         break;
                     case "TOGGLE_MUTE":
                         State state = UnDefType.UNDEF;
-                        if (handler.isMuted) {
-                            state = OnOffType.OFF;
-                            handler.isMuted = false;
-                        } else {
-                            state = OnOffType.ON;
-                            handler.isMuted = true;
+                        synchronized (handler.sequenceLock) {
+                            if (handler.isMuted) {
+                                state = OnOffType.OFF;
+                                handler.isMuted = false;
+                            } else {
+                                state = OnOffType.ON;
+                                handler.isMuted = true;
+                            }
+                            handler.connector
+                                    .sendCommand("SEND_EVENT:MUTE_" + (handler.isMuted ? "ON" : "OFF") + "_FB");
+                            handler.updateChannel(KaleidescapeBindingConstants.MUTE, state);
                         }
-                        handler.connector.sendCommand("SEND_EVENT:MUTE_" + (handler.isMuted ? "ON" : "OFF") + "_FB");
-                        handler.updateChannel(KaleidescapeBindingConstants.MUTE, state);
                         break;
                     // the default is to just publish all other USER_DEFINED_EVENTs
                     default:
@@ -542,8 +551,8 @@ public enum KaleidescapeMessageHandler {
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.PROTOCOL_VERSION, new StringType(matcher.group(1)));
-                handler.updateChannel(KaleidescapeBindingConstants.SYSTEM_VERSION, new StringType(matcher.group(2)));
+                handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_PROTOCOL_VERSION, matcher.group(1));
+                handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_SYSTEM_VERSION, matcher.group(2));
             } else {
                 logger.debug("SYSTEM_VERSION - no match on message: {}", message);
             }
@@ -559,11 +568,11 @@ public enum KaleidescapeMessageHandler {
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.SERIAL_NUMBER,
-                        new StringType(matcher.group(2).replaceFirst("^0+(?!$)", ""))); // take off leading zeros
+                handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_SERIAL_NUMBER,
+                        matcher.group(2).replaceFirst("^0+(?!$)", "")); // take off leading zeros
 
-                handler.updateChannel(KaleidescapeBindingConstants.CONTROL_PROTOCOL_ID,
-                        new StringType(matcher.group(3)));
+                handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_CONTROL_PROTOCOL_ID,
+                        matcher.group(3));
             } else {
                 logger.debug("DEVICE_INFO - no match on message: {}", message);
             }
@@ -572,14 +581,14 @@ public enum KaleidescapeMessageHandler {
     DEVICE_TYPE_NAME {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: 'Player' or 'Strato'
-            handler.updateChannel(KaleidescapeBindingConstants.COMPONENT_TYPE, new StringType(message));
+            handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_COMPONENT_TYPE, message);
         }
     },
     FRIENDLY_NAME {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: 'Living Room'
             handler.friendlyName = message;
-            handler.updateChannel(KaleidescapeBindingConstants.FRIENDLY_NAME, new StringType(message));
+            handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_FRIENDLY_NAME, message);
         }
     };
 
