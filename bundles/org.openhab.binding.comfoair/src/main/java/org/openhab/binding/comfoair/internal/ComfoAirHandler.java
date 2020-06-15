@@ -86,7 +86,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                     affectedItemsPoller = scheduler.schedule(updateThread, 3, TimeUnit.SECONDS);
                 }
             } else {
-                logger.warn("Unhandled command type: {}", command.toString());
+                logger.warn("Unhandled command type: {}, channelId: {}", command.toString(), channelId);
             }
         }
     }
@@ -193,7 +193,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                         preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_FAN_LEVEL;
                         break;
                     case ComfoAirCommandType.Constants.REQUEST_SET_STATES:
-                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_SET_STATES;
+                        preRequestCmd = ComfoAirCommandType.Constants.REQUEST_GET_STATES;
                         preReplyCmd = ComfoAirCommandType.Constants.REPLY_GET_STATES;
                         break;
                     case ComfoAirCommandType.Constants.REQUEST_SET_EWT:
