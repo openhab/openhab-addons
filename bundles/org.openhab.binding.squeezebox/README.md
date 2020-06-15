@@ -115,6 +115,16 @@ All devices support some of the following channels:
 | numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |
 | playFavorite            | String    | ID of Favorite to play (channel's state options contains available favorites)          |
 
+## Example .Items File
+
+Add the items you want to the .items file. A few examples are shown below, the power, volume and album art channels are connected here to the items by copying across the channel discriptions from the Paper UI. Make suure each channel is linked for your needs See [openHAB New User Configuration documentation](https://www.openhab.org/docs/tutorial/configuration.html) for further details on linking and channels.
+
+```
+Switch YourPlayer_Power    "Squeezebox Power"  {channel="squeezebox:squeezeboxplayer:736549a3:00042016e7a0:power"}
+Dimmer YourPlayer_Volume   "Squeezebox Volume" {channel="squeezebox:squeezeboxplayer:736549a3:00042016e7a0:volume"}
+Image  YourPlayer_AlbumArt "Squeezebox Cover"  {channel="squeezebox:squeezeboxplayer:736549a3:00042016e7a0:coverartdata"}
+```
+
 ## Playing Favorites
 
 Using the **playFavorite** channel, you can play a favorite from the *Favorites* list on the Logitech Media Server (LMS).
@@ -128,7 +138,7 @@ Currently, only favorites from the root level of the LMS favorites list are expo
 -   Add some favorites to your favorites list in LMS (local music playlists, Pandora, Slacker, Internet radio, etc.).
 Keep all favorites at the root level (i.e. favorites in sub-folders will be ignored).
 
--   If you're on an older openHAB build, you may need to delete and readd your squeezebox server and player things to pick up the new channels.
+-   If you're on an older openHAB build, you may need to delete and read your squeezebox server and player things to pick up the new channels.
 
 -   Create a new item on each player
 
