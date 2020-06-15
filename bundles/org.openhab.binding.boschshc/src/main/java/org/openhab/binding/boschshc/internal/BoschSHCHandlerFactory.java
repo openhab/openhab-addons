@@ -26,13 +26,14 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.boschshc.internal.shuttercontrol.ShutterControlHandler;
+import org.openhab.binding.boschshc.internal.thermostat.ThermostatHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BoschSHCHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link BoschSHCHandlerFactory} is responsible for creating things and
+ * thing handlers.
  *
  * TODO Most of the things in here should actually be a Bridge?
  *
@@ -48,7 +49,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     // List of all supported Bosch devices.
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SHC,
             THING_TYPE_INWALL_SWITCH, THING_TYPE_TWINGUARD, THING_TYPE_WINDOW_CONTACT, THING_TYPE_MOTION_DETECTOR,
-            THING_TYPE_SHUTTER_CONTROL);
+            THING_TYPE_SHUTTER_CONTROL, THING_TYPE_THERMOSTAT);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -85,6 +86,10 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         else if (THING_TYPE_SHUTTER_CONTROL.equals(thingTypeUID)) {
             return new ShutterControlHandler(thing);
+        }
+
+        else if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {
+            return new ThermostatHandler(thing);
         }
 
         else {
