@@ -522,7 +522,7 @@
 	<channel-type id="dnd">
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb</label>
-		<description>A Switch That Controls if the Zone Should Ignore an Incoming Audio Page</description>
+		<description>Controls if the Zone Should Ignore an Incoming Audio Page</description>
 	</channel-type>
 
 	<channel-type id="page">

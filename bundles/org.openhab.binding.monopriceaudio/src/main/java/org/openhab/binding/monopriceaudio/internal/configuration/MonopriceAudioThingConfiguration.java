@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class MonopriceAudioThingConfiguration {
     public Integer numZones = 1;
     public Integer pollingInterval = 15;
-    public @NonNullByDefault({}) String serialPort;
+    public @Nullable String serialPort;
     public @Nullable String host;
     public @Nullable Integer port;
     public @Nullable String ignoreZones;

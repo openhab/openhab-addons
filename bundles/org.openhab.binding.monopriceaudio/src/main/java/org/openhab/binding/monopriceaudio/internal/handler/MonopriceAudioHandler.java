@@ -147,7 +147,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
         } else {
             if (config.serialPort != null) {
-                connector = new MonopriceAudioSerialConnector(serialPortManager, config.serialPort);
+                String serialPort = config.serialPort;
+                connector = new MonopriceAudioSerialConnector(serialPortManager, serialPort);
             } else {
                 connector = new MonopriceAudioIpConnector(config.host, config.port);
             }
@@ -159,8 +160,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             // If zones were specified to be ignored by the 'all*' commands, use the specified binding
             // zone ids to get the controller's internal zone ids and save those to a list
             if (config.ignoreZones != null) {
-                ArrayList<String> ignore = new ArrayList<String>(Arrays.asList(config.ignoreZones.split(",")));
-                ignore.forEach(zone -> {
+                Arrays.stream(config.ignoreZones.split(",")).forEach(zone -> {
                     try {
                         int zoneInt = Integer.parseInt(zone);
                         if (zoneInt >= ONE && zoneInt <= MAX_ZONES) {
@@ -185,7 +185,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             sourcesLabels.add(new StateOption("6", config.inputLabel6));
 
             // Put the source labels on all active zones
-            List<Integer> activeZones = IntStream.range((1), (numZones + 1)).boxed().collect(Collectors.toList());
+            List<Integer> activeZones = IntStream.range(1, numZones + 1).boxed().collect(Collectors.toList());
 
             stateDescriptionProvider.setStateOptions(
                     new ChannelUID(getThing().getUID(), ALL + CHANNEL_DELIMIT + CHANNEL_TYPE_ALLSOURCE), sourcesLabels);
@@ -198,7 +198,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             if (numZones < MAX_ZONES) {
                 List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
-                List<Integer> zonesToRemove = IntStream.range((numZones + 1), (MAX_ZONES + 1)).boxed()
+                List<Integer> zonesToRemove = IntStream.range(numZones + 1, MAX_ZONES + 1).boxed()
                         .collect(Collectors.toList());
 
                 zonesToRemove.forEach(zone -> {

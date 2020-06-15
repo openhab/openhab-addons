@@ -203,11 +203,7 @@ public abstract class MonopriceAudioConnector {
                 case TREBLE:
                 case BASS:
                 case BALANCE:
-                    if (value == 0) {
-                        messageStr += "00";
-                    } else {
-                        messageStr += String.format("%02d", value);
-                    }
+                    messageStr += String.format("%02d", value);
                     break;
                 default:
                     break;

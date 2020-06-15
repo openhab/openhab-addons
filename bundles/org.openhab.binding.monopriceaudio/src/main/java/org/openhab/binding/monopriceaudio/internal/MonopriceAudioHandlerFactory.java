@@ -16,8 +16,6 @@ import static org.openhab.binding.monopriceaudio.internal.MonopriceAudioBindingC
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,16 +40,17 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.monopriceaudio", service = ThingHandlerFactory.class)
 public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_AMP).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
 
     private @NonNullByDefault({}) MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
-    public MonopriceAudioHandlerFactory(final @Reference MonopriceAudioStateDescriptionOptionProvider provider) {
+    public MonopriceAudioHandlerFactory(final @Reference MonopriceAudioStateDescriptionOptionProvider provider,
+            final @Reference SerialPortManager serialPortManager) {
         this.stateDescriptionProvider = provider;
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -68,14 +67,5 @@ public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 }
