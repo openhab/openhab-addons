@@ -174,8 +174,9 @@ public class HyperionNgHandler extends BaseThingHandler {
         NgInfo info = response.getInfo();
         if (info != null) {
             // update Hyperion, older API compatibility
-            if(info.getHyperion() != null) {
-                Hyperion hyperion = info.getHyperion();
+            Hyperion hyperion = info.getHyperion();
+            if (hyperion != null) {
+                
                 updateHyperion(hyperion);
             }
             
