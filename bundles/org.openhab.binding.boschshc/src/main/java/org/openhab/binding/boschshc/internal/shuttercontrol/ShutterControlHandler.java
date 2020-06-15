@@ -3,6 +3,7 @@ package org.openhab.binding.boschshc.internal.shuttercontrol;
 import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
@@ -49,6 +50,10 @@ public class ShutterControlHandler extends BoschSHCHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             ShutterControlState state = this.getDeviceState();
+            if (state == null) {
+                logger.warn("Could not fetch device state, skipping refresh");
+                return;
+            }
             this.updateState(state);
         } else if (command instanceof UpDownType) {
             // Set full close/open as target state
@@ -94,7 +99,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
         return (BoschSHCBridgeHandler) bridge.getHandler();
     }
 
-    private ShutterControlState getDeviceState() {
+    private @Nullable ShutterControlState getDeviceState() {
         BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
         if (bridgeHandler == null) {
             return null;
@@ -114,7 +119,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
         bridgeHandler.putState(deviceId, ShutterControlServiceName, state);
     }
 
-    private void updateState(ShutterControlState state) {
+    private void updateState(@NonNull ShutterControlState state) {
         // Convert level to open ratio
         int openPercentage = DataConversion.levelToOpenPercentage(state.level);
         updateState(CHANNEL_LEVEL, new PercentType(openPercentage));
