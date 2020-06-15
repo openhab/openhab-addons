@@ -500,21 +500,33 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * @param stateName Name of the state to query
      * @param classOfT  Class to convert the resulting JSON to
      */
-
     public <T extends Object> T refreshState(@NonNull Thing thing, String stateName, Class<T> classOfT) {
-
         BoschSHCHandler handler = (BoschSHCHandler) thing.getHandler();
+        if (handler != null) {
+            return this.getState(handler.getBoschID(), stateName, classOfT);
+        }
 
-        if (this.httpClient != null && handler != null) {
+        return null;
+    }
+
+    /**
+     * Query the Bosch Smart Home Controller for the state of the given thing.
+     *
+     * @param deviceId  Id of device to get state for
+     * @param stateName Name of the state to query
+     * @param classOfT  Class to convert the resulting JSON to
+     */
+    public <T extends Object> T getState(String deviceId, String stateName, Class<T> stateClass) {
+
+        if (this.httpClient != null) {
 
             ContentResponse contentResponse;
             try {
 
-                String boschID = handler.getBoschID();
-                String url = "https://" + config.ipAddress + ":8444/smarthome/devices/" + boschID + "/services/"
+                String url = "https://" + config.ipAddress + ":8444/smarthome/devices/" + deviceId + "/services/"
                         + stateName + "/state";
 
-                logger.warn("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, boschID, url);
+                logger.warn("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
 
                 // GET request
                 // ----------------------------------------------------------------------------------
@@ -531,7 +543,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 // TODO Perhaps we should have only one single gson builder per thing?
                 Gson gson = new GsonBuilder().create();
 
-                T state = gson.fromJson(content, classOfT);
+                T state = gson.fromJson(content, stateClass);
                 return state;
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
