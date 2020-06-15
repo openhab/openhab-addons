@@ -35,7 +35,11 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
 import org.eclipse.jetty.websocket.api.UpgradeResponse;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.client.io.UpgradeListener;
@@ -60,7 +64,7 @@ public class WebSocketConnection {
     private final Gson gson = new Gson();
     private final WebSocketClient webSocketClient;
     private final IWebSocketCommandHandler webSocketCommandHandler;
-    private final Listener listener;
+    private final AmazonEchoControlWebSocket amazonEchoControlWebSocket;
 
     private @Nullable Session session;
     private @Nullable Timer pingTimer;
@@ -72,11 +76,10 @@ public class WebSocketConnection {
     public WebSocketConnection(String amazonSite, List<HttpCookie> sessionCookies,
             IWebSocketCommandHandler webSocketCommandHandler) throws IOException {
         this.webSocketCommandHandler = webSocketCommandHandler;
-        listener = new Listener();
+        amazonEchoControlWebSocket = new AmazonEchoControlWebSocket();
 
         SslContextFactory sslContextFactory = new SslContextFactory();
         webSocketClient = new WebSocketClient(sslContextFactory);
-
         try {
             String host;
             if (StringUtils.equalsIgnoreCase(amazonSite, "amazon.com")) {
@@ -110,16 +113,14 @@ public class WebSocketConnection {
             }
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
-            request.setHeader("host", host);
-            request.setHeader("Cache-Control", "no-cache");
-            request.setHeader("Pragma", "no-cache");
+            request.setHeader("Host", host);
             request.setHeader("Origin", "alexa." + amazonSite);
-
             request.setCookies(cookiesForWs);
 
             initPongTimeoutTimer();
-            sessionFuture = webSocketClient.connect(listener, uri, request);
 
+            sessionFuture = webSocketClient.connect(amazonEchoControlWebSocket, uri, request,
+                    amazonEchoControlWebSocket);
         } catch (URISyntaxException e) {
             logger.debug("Initialize web socket failed", e);
         }
@@ -134,7 +135,7 @@ public class WebSocketConnection {
 
             @Override
             public void run() {
-                listener.sendPing();
+                amazonEchoControlWebSocket.sendPing();
             }
         }, 180000, 180000);
     }
@@ -156,7 +157,7 @@ public class WebSocketConnection {
             try {
                 session.close();
             } catch (Exception e) {
-                logger.debug("Closing sessing failed", e);
+                logger.debug("Closing session failed", e);
             }
         }
         logger.trace("Connect future = {}", sessionFuture);
@@ -200,13 +201,13 @@ public class WebSocketConnection {
         }, 60000);
     }
 
-    class Listener implements WebSocketListener, UpgradeListener {
-        private final Logger logger = LoggerFactory.getLogger(Listener.class);
+    @WebSocket(maxTextMessageSize = 64 * 1024, maxBinaryMessageSize = 64 * 1024)
+    @SuppressWarnings("unused")
+    public class AmazonEchoControlWebSocket {
         int msgCounter = -1;
         int messageId;
 
-        Listener() {
-            logger.trace("Initialized listener");
+        AmazonEchoControlWebSocket() {
             this.messageId = ThreadLocalRandom.current().nextInt(0, Short.MAX_VALUE);
         }
 
@@ -377,7 +378,7 @@ public class WebSocketConnection {
             return message;
         }
 
-        @Override
+        @OnWebSocketConnect
         public void onWebSocketConnect(@Nullable Session session) {
             if (session != null) {
                 this.msgCounter = -1;
@@ -388,7 +389,7 @@ public class WebSocketConnection {
             }
         }
 
-        @Override
+        @OnWebSocketMessage
         public void onWebSocketBinary(byte @Nullable [] data, int offset, int len) {
             if (data == null) {
                 return;
@@ -427,35 +428,23 @@ public class WebSocketConnection {
             }
         }
 
-        @Override
+        @OnWebSocketMessage
         public void onWebSocketText(@Nullable String message) {
+            logger.trace("Received text message: '{}'", message);
         }
 
-        @Override
+        @OnWebSocketClose
         public void onWebSocketClose(int code, @Nullable String reason) {
             logger.info("Web Socket close {}. Reason: {}", code, reason);
             WebSocketConnection.this.close();
         }
 
-        @Override
+        @OnWebSocketError
         public void onWebSocketError(@Nullable Throwable error) {
             logger.info("Web Socket error", error);
             if (!closed) {
                 WebSocketConnection.this.close();
             }
-        }
-
-        @Override
-        public void onHandshakeResponse(@Nullable UpgradeResponse response) {
-            if (response == null) {
-                logger.trace("Received null response in onHandshakeResponse");
-                return;
-            }
-            logger.trace("UpgradeResponse: {}", response);
-        }
-
-        @Override
-        public void onHandshakeRequest(@Nullable UpgradeRequest request) {
         }
 
         public void sendPing() {
