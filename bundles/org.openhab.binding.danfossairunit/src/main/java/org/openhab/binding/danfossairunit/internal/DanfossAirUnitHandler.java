@@ -60,8 +60,8 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             updateAllChannels();
         } else {
             try {
-                if (hrv != null) {
-                    DanfossAirUnit danfossAirUnit = hrv;
+                DanfossAirUnit danfossAirUnit = hrv;
+                if (danfossAirUnit != null) {
                     Channel channel = Channel.getByName(channelUID.getIdWithoutGroup());
                     DanfossAirUnitWriteAccessor writeAccessor = channel.getWriteAccessor();
                     if (writeAccessor != null) {
@@ -95,7 +95,6 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                     pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 5, config.refreshInterval,
                             TimeUnit.SECONDS);
                     updateStatus(ThingStatus.ONLINE);
-
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 }
@@ -108,8 +107,8 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
     }
 
     private void updateAllChannels() {
-        if (hrv != null) {
-            DanfossAirUnit danfossAirUnit = hrv;
+        DanfossAirUnit danfossAirUnit = hrv;
+        if (danfossAirUnit != null) {
             logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
 
             for (Channel channel : Channel.values()) {
