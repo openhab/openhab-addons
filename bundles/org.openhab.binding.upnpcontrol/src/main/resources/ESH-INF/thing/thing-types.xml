@@ -27,7 +27,7 @@
 		<config-description>
 			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
-				<description>The UDN identifies the uPnP Renderer</description>
+				<description>The UDN identifies the UPnP Renderer</description>
 			</parameter>
 		</config-description>
 
@@ -37,13 +37,14 @@
 		<description>UPnP AV Server</description>
 		<channels>
 			<channel id="upnprenderer" typeId="upnprenderer" />
+			<channel id="currentid" typeId="currentid" />
 			<channel id="browse" typeId="browse" />
 			<channel id="search" typeId="search" />
 		</channels>
 		<config-description>
             <parameter name="udn" type="text" required="true">
                 <label>Unique Device Name</label>
-                <description>The UDN identifies the uPnP Media Server</description>
+                <description>The UDN identifies the UPnP Media Server</description>
             </parameter>
 			<parameter name="filter" type="boolean" required="false">
 				<label>Filter content</label>
@@ -150,6 +151,11 @@
 		<item-type>String</item-type>
 		<label>Renderer</label>
 		<description>Select AV renderer</description>
+	</channel-type>
+	<channel-type id="currentid">
+	   <item-type>String</item-type>
+	   <label>Current media id</label>
+	   <description>Current id of media entry or container</description>
 	</channel-type>
 	<channel-type id="browse">
 		<item-type>String</item-type>

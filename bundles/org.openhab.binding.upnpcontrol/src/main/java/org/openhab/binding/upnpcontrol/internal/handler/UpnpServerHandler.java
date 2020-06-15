@@ -153,6 +153,18 @@ public class UpnpServerHandler extends UpnpHandler {
                     updateState(channelUID, StringType.valueOf(currentRendererHandler.getThing().getLabel()));
                 }
                 break;
+            case CURRENTID:
+                String currentId = "";
+                if (command instanceof StringType) {
+                    currentId = String.valueOf(command);
+                } else if (command instanceof RefreshType) {
+                    currentId = currentEntry.getId();
+                    updateState(channelUID, StringType.valueOf(currentId));
+                }
+                logger.debug("Setting currentId to {}", currentId);
+                if (!currentId.isEmpty()) {
+                    browse(currentId, "BrowseDirectChildren", "*", "0", "0", getConfig().get(SORT_CRITERIA).toString());
+                }
             case BROWSE:
                 if (command instanceof StringType) {
                     String browseTarget = command.toString();
@@ -168,6 +180,7 @@ public class UpnpServerHandler extends UpnpHandler {
                         } else {
                             currentEntry = entryMap.get(browseTarget);
                         }
+                        updateState(thing.getChannel(CURRENTID).getUID(), StringType.valueOf(currentEntry.getId()));
                         logger.debug("Browse target {}", browseTarget);
                         browse(browseTarget, "BrowseDirectChildren", "*", "0", "0",
                                 getConfig().get(SORT_CRITERIA).toString());
@@ -188,7 +201,7 @@ public class UpnpServerHandler extends UpnpHandler {
                             // No parent found, so make it the root directory
                             searchContainer = DIRECTORY_ROOT;
                         }
-                        currentEntry = parentMap.get(searchContainer);
+                        updateState(thing.getChannel(CURRENTID).getUID(), StringType.valueOf(currentEntry.getId()));
                         logger.debug("Search container {} for {}", searchContainer, criteria);
                         search(searchContainer, criteria, "*", "0", "0", getConfig().get(SORT_CRITERIA).toString());
                     }
@@ -255,6 +268,12 @@ public class UpnpServerHandler extends UpnpHandler {
             }
             entryMap.put(value.getId(), value);
         });
+
+        // Set the currentId to the parent of the first entry in the list
+        if (!resultList.isEmpty()) {
+            updateState(thing.getChannel(CURRENTID).getUID(), StringType.valueOf(resultList.get(0).getId()));
+        }
+
         logger.debug("{} entries added to selection list on server {}", commandOptionList.size(), thing.getLabel());
         updateCommandDescription(currentTitleChannelUID, commandOptionList);
 

@@ -59,6 +59,7 @@ public class UpnpControlBindingConstants {
     public static final String TRACK_POSITION = "trackposition";
 
     public static final String UPNPRENDERER = "upnprenderer";
+    public static final String CURRENTID = "currentid";
     public static final String BROWSE = "browse";
     public static final String SEARCH = "search";
     public static final String SERVE = "serve";
