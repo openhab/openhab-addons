@@ -114,6 +114,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 }
                 if (lastBridgeConnectionState) {
                     doConnectedRun();
+                    if (thing.getStatus() != ThingStatus.ONLINE) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 }
             } catch (UnauthorizedException | IllegalStateException e) {
                 if (isReachable(hueBridge.getIPAddress())) {
@@ -662,7 +665,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
      * @throws IOException if the physical device could not be reached
      */
     private void onConnectionResumed() throws IOException, ApiException {
-        logger.debug("Bridge connection resumed. Updating thing status to ONLINE.");
+        logger.debug("Bridge connection resumed.");
 
         if (!propertiesInitializedSuccessfully) {
             FullConfig fullConfig = hueBridge.getFullConfig();
@@ -678,8 +681,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 propertiesInitializedSuccessfully = true;
             }
         }
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     /**
