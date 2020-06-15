@@ -4091,6 +4091,18 @@
 		<state min="0" max="180" step="1" pattern="%d min" readOnly="false">
 		</state>
 	</channel-type>
+	<channel-type id="f1x45-47137" advanced="true">
+		<item-type>String</item-type>
+		<label>Operational Mode</label>
+		<description>The operational mode of the heat pump 0=Auto 1=Manual 2=Add. heat only</description>
+		<state min="0" max="2" step="1" pattern="%d" readOnly="false">
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Manual</option>
+				<option value="2">Add. heat only</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="f1x45-47138" advanced="true">
 		<item-type>String</item-type>
 		<label>Operational Mode Heat Medium Pump</label>
