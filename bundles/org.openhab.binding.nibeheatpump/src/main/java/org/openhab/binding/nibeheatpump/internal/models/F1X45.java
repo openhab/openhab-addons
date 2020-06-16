@@ -586,6 +586,7 @@ public class F1X45 {
                     put(47134, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Period HW"));
                     put(47135, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Period Heat"));
                     put(47136, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Period Pool"));
+                    put(47137, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Operational mode"));
                     put(47138, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Operational mode heat medium pump"));
                     put(47139, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Operational mode brine medium pump"));
                     put(47206, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "DM start heating"));
