@@ -13,6 +13,7 @@
 package org.openhab.io.transport.modbus.internal;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -743,7 +744,7 @@ public class ModbusManagerImpl implements ModbusManager {
     private class ModbusCommunicationInterfaceImpl implements ModbusCommunicationInterface {
 
         private volatile ModbusSlaveEndpoint endpoint;
-        private volatile Set<PollTask> pollTasks = new ConcurrentHashSet<>();
+        private volatile Set<PollTask> pollTasksRegisteredByThisCommInterface = new ConcurrentHashSet<>();
         private volatile boolean closed;
         private @Nullable EndpointPoolConfiguration configuration;
 
@@ -813,7 +814,7 @@ public class ModbusManagerImpl implements ModbusManager {
                 }, initialDelayMillis, pollPeriodMillis, TimeUnit.MILLISECONDS);
 
                 scheduledPollTasks.put(task, future);
-                pollTasks.add(task);
+                pollTasksRegisteredByThisCommInterface.add(task);
                 logger.trace("Registered poll task {} with period {} using initial delay {}", task, pollPeriodMillis,
                         initialDelayMillis);
                 return task;
@@ -827,6 +828,7 @@ public class ModbusManagerImpl implements ModbusManager {
                 if (closed) {
                     throw new IllegalStateException("Communication interface is closed already!");
                 }
+                pollTasksRegisteredByThisCommInterface.remove(task);
                 ModbusSlaveConnectionFactoryImpl localConnectionFactory = connectionFactory;
                 Objects.requireNonNull(localConnectionFactory, "Not activated!");
 
@@ -889,7 +891,11 @@ public class ModbusManagerImpl implements ModbusManager {
                 if (closed) {
                     throw new IllegalStateException("Communication interface is closed already!");
                 }
-                for (PollTask task : pollTasks) {
+                // Iterate over all tasks registered by this communication interface, and unregister those
+                // We copy pollTasksRegisteredByThisCommInterface temporarily so that unregisterRegularPoll can
+                // remove entries from pollTasksRegisteredByThisCommInterface
+                Iterable<PollTask> tasksToUnregister = new LinkedList<>(pollTasksRegisteredByThisCommInterface);
+                for (PollTask task : tasksToUnregister) {
                     unregisterRegularPoll(task);
                 }
                 unregisterCommunicationInterface(this);
