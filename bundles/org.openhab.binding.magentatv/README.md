@@ -120,43 +120,48 @@ The player channel supports the following actions:
 
 | Key    | Description                                    |
 | -------|------------------------------------------------|
-| POWER  | Power on/off the receiver (check standby mode) |
-| 0..9   | Key 0..9                                       |
-| DELETE | Delete key (text edit)                         |
-| ENTER  | Enter/Select key                               |
-| RED    | Special Actions: red                           |
-| GREEN  | Special Actions: green                         |
-| YELLOW | Special Actions: yellow                        |
-| BLUE   | Special Actions: blue                          |
-| EPG    | Electronic Program Guide                       |
-| OPTION | Display options                                |
-| UP     | Up arrow                                       |
-| DOWN   | Down arrow                                     |
-| LEFT   | Left arrow                                     |
-| RIGHT  | Right arrow                                    |
-| OK     | OK button                                      |
-| BACK   | Return to last menu                            |
-| EXIT   | Exit menu                                      |
-| MENU   | Menu                                           |
-| INFO   | Display information                            |
-| FAV    | Display favorites                              |
-| VOLUP  | Volume up                                      |
-| VOLDOWN| Volume down                                    |
-| MUTE   | Mute speakers                                  |
-| CHUP   | Channel up                                     |
-| CHDOWN | Channel down                                   |
-| PLAY   | Play                                           | 
-| PAUSE  | Play                                           | 
-| STOP   | Stop playing                                   |
-| RECORD | Start recording                                |
-| REWIND | Rewind                                         |
-| FORWARD| Forward                                        |
-| LASTCH | Last chapter                                   |
-| NEXTCH | Next chapter                                   |
-| PIP    | Activate Program-in-Program                    |
-| PGUP   | Page up                                        |
-| PGDOWN | Page down                                      |
-| PAIR   | Re-pair with the receiver                      |
+| POWER    | Power on/off the receiver (check standby mode) |
+| 0..9     | Key 0..9                                       |
+| SPACE    | Space key                                      |
+| POUND    | # key                                          |
+| START    | * key                                          |
+| DELETE   | Delete key (text edit)                         |
+| ENTER    | Enter/Select key                               |
+| RED      | Special Actions: red                           |
+| GREEN    | Special Actions: green                         |
+| YELLOW   | Special Actions: yellow                        |
+| BLUE     | Special Actions: blue                          |
+| EPG      | Electronic Program Guide                       |
+| OPTION   | Display options                                |
+| SETTINGS | Display options                                |
+| UP       | Up arrow                                       |
+| DOWN     | Down arrow                                     |
+| PGUP     | Page up                                        |
+| PGDOWN   | Page down                                      |
+| LEFT     | Left arrow                                     |
+| RIGHT    | Right arrow                                    |
+| OK       | OK button                                      |
+| BACK     | Return to last menu                            |
+| EXIT     | Exit menu                                      |
+| MENU     | Menu                                           |
+| INFO     | Display information                            |
+| FAV      | Display favorites                              |
+| VOLUP    | Volume up                                      |
+| VOLDOWN  | Volume down                                    |
+| MUTE     | Mute speakers                                  |
+| CHUP     | Channel up                                     |
+| CHDOWN   | Channel down                                   |
+| PLAY     | Play                                           | 
+| PAUSE    | Play                                           | 
+| STOP     | Stop playing                                   |
+| RECORD   | Start recording                                |
+| REWIND   | Rewind                                         |
+| FORWARD  | Forward                                        |
+| LASTCH   | Last channel                                   |
+| NEXTCH   | Next channel                                   |
+| LASTCHAP | Last chapter                                   |
+| NEXTCHAP | Next chapter                                   |
+| PAIR     | Re-pair with the receiver                      |
 
 In addition you could send any key code in the 0xHHHH format., refer to
 [Key Codes for Magenta/Huawei Media Receiver](http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html)

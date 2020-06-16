@@ -521,14 +521,21 @@ public class MagentaTVControl {
 
     /**
      * Initialize key map (key name -> key code)
-     *
+     * "
      * for a list of valid key codes see
      * http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html
      */
     private static void initializeKeyMap() {
         keyMap.put("POWER", "0x0100");
-        keyMap.put("MEDIA", "0x0462");
+        keyMap.put("MENU", "0x0110");
+        keyMap.put("EPG", "0x0111");
+        keyMap.put("TVMENU", "0x0454");
+        keyMap.put("VODMENU", "0x0455");
+        keyMap.put("TVODMENU", "0x0456");
+        keyMap.put("NVODMENU", "0x0458");
+        keyMap.put("INFO", "0x010C");
         keyMap.put("TTEXT", "0x0560");
+        keyMap.put("0", "0x0030");
         keyMap.put("1", "0x0031");
         keyMap.put("2", "0x0032");
         keyMap.put("3", "0x0033");
@@ -538,8 +545,15 @@ public class MagentaTVControl {
         keyMap.put("7", "0x0037");
         keyMap.put("8", "0x0038");
         keyMap.put("9", "0x0039");
-        keyMap.put("0", "0x0030");
-        keyMap.put("SPACE", "0x0030");
+        keyMap.put("SPACE", "0x0020");
+        keyMap.put("POUND", "0x0069");
+        keyMap.put("STAR", "0x006A");
+        keyMap.put("UP", "0x0026");
+        keyMap.put("DOWN", "0x0028");
+        keyMap.put("LEFT", "0x0025");
+        keyMap.put("RIGHT", "0x0027");
+        keyMap.put("PGUP", "0x0021");
+        keyMap.put("PGDOWN", "0x0022");
         keyMap.put("DELETE", "0x0008");
         keyMap.put("ENTER", "0x000D");
         keyMap.put("SEARCH", "0x0451");
@@ -547,21 +561,16 @@ public class MagentaTVControl {
         keyMap.put("GREEN", "0x0114");
         keyMap.put("YELLOW", "0x0115");
         keyMap.put("BLUE", "0x0116");
-        keyMap.put("EPG", "0x0111");
         keyMap.put("OPTION", "0x0460");
-        keyMap.put("UP", "0x0026");
-        keyMap.put("DOWN", "0x0028");
-        keyMap.put("LEFT", "0x0025");
-        keyMap.put("RIGHT", "0x0027");
-        keyMap.put("PGUP", "0x0021");
-        keyMap.put("PGDOWN", "0x0022");
         keyMap.put("OK", "0x000D");
         keyMap.put("BACK", "0x0008");
         keyMap.put("EXIT", "0x045D");
-        keyMap.put("MENU", "0x0110");
+        keyMap.put("PORTAL", "0x0110");
         keyMap.put("VOLUP", "0x0103");
         keyMap.put("VOLDOWN", "0x0104");
-        keyMap.put("INFO", "0x010C");
+        keyMap.put("INTER", "0x010D");
+        keyMap.put("HELP", "0x011C");
+        keyMap.put("SETTINGS", "0x011D");
         keyMap.put("MUTE", "0x0105");
         keyMap.put("CHUP", "0x0101");
         keyMap.put("CHDOWN", "0x0102");
@@ -570,19 +579,43 @@ public class MagentaTVControl {
         keyMap.put("PAUSE", "0x0107");
         keyMap.put("FORWARD", "0x0108");
         keyMap.put("TRACK", "0x0106");
+        keyMap.put("LASTCH", "0x045E");
         keyMap.put("PREVCH", "0x010B");
         keyMap.put("NEXTCH", "0x0107");
         keyMap.put("RECORD", "0x0461");
         keyMap.put("STOP", "0x010E");
-        keyMap.put("SPACE", "0x0020");
-        keyMap.put("POUND", "0x0069");
-        keyMap.put("STAR", "0x006A");
+        keyMap.put("BEGIN", "0x010B");
+        keyMap.put("END", "0x010A");
+        keyMap.put("REPLAY", "0x045B");
+        keyMap.put("SKIP", "0x045C");
+        keyMap.put("SUBTITLE", "0x236");
+        keyMap.put("RECORDINGS", "0x045F");
         keyMap.put("FAV", "0x0119");
         keyMap.put("SOURCE", "0x0083");
+        keyMap.put("SWITCH", "0x0118");
+        keyMap.put("IPTV", "0x0081");
+        keyMap.put("PC", "0x0082");
         keyMap.put("PIP", "0x0084");
+        keyMap.put("MULTIVIEW", "0x0562");
         keyMap.put("F1", "0x0070");
         keyMap.put("F2", "0x0071");
-        keyMap.put("PORTAL", "0x0110");
+        keyMap.put("F3", "0x0072");
+        keyMap.put("F4", "0x0073");
+        keyMap.put("F5", "0x0074");
+        keyMap.put("F6", "0x0075");
+        keyMap.put("F7", "0x0076");
+        keyMap.put("F8", "0x0077");
+        keyMap.put("F9", "0x0078");
+        keyMap.put("F10", "0x0079");
+        keyMap.put("F11", "0x007A");
+        keyMap.put("F12", "0x007B");
+        keyMap.put("F13", "0x007C");
+        keyMap.put("F14", "0x007D");
+        keyMap.put("F15", "0x007E");
+        keyMap.put("F16", "0x007F");
+
+        keyMap.put("PVR", "0x0461");
+        keyMap.put("RADIO", "0x0462");
 
         // Those key codes are missing and not included in the spec
         // keyMap.put("TV", "0x");

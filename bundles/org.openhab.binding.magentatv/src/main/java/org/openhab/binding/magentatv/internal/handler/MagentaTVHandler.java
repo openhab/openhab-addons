@@ -324,6 +324,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      */
     protected void connectReceiver() throws MagentaTVException {
         if (control.checkDev()) {
+            updateThingProperties();
             handlerFactory.registerDevice(config.getUDN(), config.getTerminalID(), config.getIpAddress(), this);
             control.subscribeEventChannel();
             control.sendPairingRequest();
