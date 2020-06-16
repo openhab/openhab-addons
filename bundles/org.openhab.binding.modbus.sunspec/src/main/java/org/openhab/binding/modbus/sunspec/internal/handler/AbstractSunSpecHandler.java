@@ -40,7 +40,6 @@ import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConfiguration;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
@@ -92,19 +91,13 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     private volatile int slaveId;
 
     /**
-     * Reference to the modbus manager
-     */
-    protected final ModbusManager managerRef;
-
-    /**
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
      * @param managerRef the modbus manager
      */
-    public AbstractSunSpecHandler(Thing thing, ModbusManager managerRef) {
+    public AbstractSunSpecHandler(Thing thing) {
         super(thing);
-        this.managerRef = managerRef;
     }
 
     /**
