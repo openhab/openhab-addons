@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.monopriceaudio.internal.MonopriceAudioException;
 
 /**
  * Represents the different internal zone IDs of the Monoprice Whole House Amplifier
@@ -48,9 +49,22 @@ public enum MonopriceAudioZone {
 
     private String zoneId;
 
-    // make a list of all valid zone ids
-    public static final List<String> VALID_ZONES = Arrays.stream(values()).filter(z -> z != ALL).map(z -> z.getZoneId())
+    // make a list of all valid zone names
+    public static final List<String> VALID_ZONES = Arrays.stream(values()).filter(z -> z != ALL).map(z -> z.name())
             .collect(Collectors.toList());
+
+    // make a list of all valid zone ids
+    public static final List<String> VALID_ZONE_IDS = Arrays.stream(values()).filter(z -> z != ALL)
+            .map(z -> z.getZoneId()).collect(Collectors.toList());
+
+    public static MonopriceAudioZone fromZoneId(String zoneId) throws MonopriceAudioException {
+        for (MonopriceAudioZone z : MonopriceAudioZone.values()) {
+            if (z.zoneId.equalsIgnoreCase(zoneId)) {
+                return z;
+            }
+        }
+        throw new MonopriceAudioException("Invalid zoneId specified: " + zoneId);
+    }
 
     MonopriceAudioZone(String zoneId) {
         this.zoneId = zoneId;

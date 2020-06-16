@@ -71,7 +71,6 @@ import org.slf4j.LoggerFactory;
 public class MonopriceAudioHandler extends BaseThingHandler implements MonopriceAudioMessageEventListener {
     private static final long RECON_POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
     private static final long INITIAL_POLLING_DELAY = TimeUnit.SECONDS.toSeconds(5);
-    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(100);
     private static final Pattern PATTERN = Pattern
             .compile("^(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})");
 
@@ -110,8 +109,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private int initialAllVolume = 0;
     private Object sequenceLock = new Object();
 
-    // build a Map with a MonopriceAudioZoneDTO for each zone (1-18)
-    private static final Map<String, MonopriceAudioZoneDTO> ZONE_DATA_MAP = MonopriceAudioZone.VALID_ZONES.stream()
+    // build a Map with a MonopriceAudioZoneDTO for each zoneId
+    private static final Map<String, MonopriceAudioZoneDTO> ZONE_DATA_MAP = MonopriceAudioZone.VALID_ZONE_IDS.stream()
             .collect(Collectors.toMap(s -> s, s -> new MonopriceAudioZoneDTO()));
 
     public MonopriceAudioHandler(Thing thing, MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider,
@@ -164,7 +163,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     try {
                         int zoneInt = Integer.parseInt(zone);
                         if (zoneInt >= ONE && zoneInt <= MAX_ZONES) {
-                            ignoreZones.add(MonopriceAudioZone.valueOf(ZONE + zoneInt).getZoneId());
+                            ignoreZones.add(ZONE + String.valueOf(zoneInt));
                         } else {
                             logger.warn("Invalid ignore zone value: {}, value must be between {} and {}", zone, ONE,
                                     MAX_ZONES);
@@ -330,17 +329,15 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
                         break;
                     case CHANNEL_TYPE_ALLON:
-                        zoneStream.limit(numZones).forEach((zoneId) -> {
-                            if (!ignoreZones.contains(zoneId)) {
+                        zoneStream.limit(numZones).forEach((zoneName) -> {
+                            if (!ignoreZones.contains(zoneName)) {
                                 try {
-                                    connector.sendCommand(MonopriceAudioZone.valueOf(ZONE + zoneId),
+                                    connector.sendCommand(MonopriceAudioZone.valueOf(zoneName),
                                             MonopriceAudioCommand.POWER_ON);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD);
                                     // reset the volume of each zone to allVolume
-                                    connector.sendCommand(MonopriceAudioZone.valueOf(ZONE + zoneId),
+                                    connector.sendCommand(MonopriceAudioZone.valueOf(zoneName),
                                             MonopriceAudioCommand.VOLUME, allVolume);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD);
-                                } catch (MonopriceAudioException | InterruptedException e) {
+                                } catch (MonopriceAudioException e) {
                                     logger.warn("Error Turning All Zones On: {}", e.getMessage());
                                 }
                             }
@@ -355,12 +352,11 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         updateState(ALL + CHANNEL_DELIMIT + CHANNEL_TYPE_ALLVOLUME,
                                 new PercentType(BigDecimal.valueOf(allVolumePct)));
 
-                        zoneStream.limit(numZones).forEach((zoneId) -> {
+                        zoneStream.limit(numZones).forEach((zoneName) -> {
                             try {
-                                connector.sendCommand(MonopriceAudioZone.valueOf(ZONE + zoneId),
+                                connector.sendCommand(MonopriceAudioZone.valueOf(zoneName),
                                         MonopriceAudioCommand.POWER_OFF);
-                                Thread.sleep(SLEEP_BETWEEN_CMD);
-                            } catch (MonopriceAudioException | InterruptedException e) {
+                            } catch (MonopriceAudioException e) {
                                 logger.warn("Error Turning All Zones Off: {}", e.getMessage());
                             }
 
@@ -370,13 +366,12 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         if (command instanceof DecimalType) {
                             int value = ((DecimalType) command).intValue();
                             if (value >= ONE && value <= MAX_SRC) {
-                                zoneStream.limit(numZones).forEach((zoneId) -> {
-                                    if (!ignoreZones.contains(zoneId)) {
+                                zoneStream.limit(numZones).forEach((zoneName) -> {
+                                    if (!ignoreZones.contains(zoneName)) {
                                         try {
-                                            connector.sendCommand(MonopriceAudioZone.valueOf(ZONE + zoneId),
+                                            connector.sendCommand(MonopriceAudioZone.valueOf(zoneName),
                                                     MonopriceAudioCommand.SOURCE, value);
-                                            Thread.sleep(SLEEP_BETWEEN_CMD);
-                                        } catch (MonopriceAudioException | InterruptedException e) {
+                                        } catch (MonopriceAudioException e) {
                                             logger.warn("Error Setting Source for  All Zones: {}", e.getMessage());
                                         }
                                     }
@@ -390,13 +385,12 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                                     .round(((PercentType) command).doubleValue() / 100.0 * (MAX_VOLUME - MIN_VOLUME))
                                     + MIN_VOLUME;
                             allVolume = value;
-                            zoneStream.limit(numZones).forEach((zoneId) -> {
-                                if (!ignoreZones.contains(zoneId)) {
+                            zoneStream.limit(numZones).forEach((zoneName) -> {
+                                if (!ignoreZones.contains(zoneName)) {
                                     try {
-                                        connector.sendCommand(MonopriceAudioZone.valueOf(ZONE + zoneId),
+                                        connector.sendCommand(MonopriceAudioZone.valueOf(zoneName),
                                                 MonopriceAudioCommand.VOLUME, value);
-                                        Thread.sleep(SLEEP_BETWEEN_CMD);
-                                    } catch (MonopriceAudioException | InterruptedException e) {
+                                    } catch (MonopriceAudioException e) {
                                         logger.warn("Error Setting Volume for All Zones: {}", e.getMessage());
                                     }
                                 }
@@ -414,12 +408,11 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         }
 
                         if (cmd != null) {
-                            zoneStream.limit(numZones).forEach((zoneId) -> {
-                                if (!ignoreZones.contains(zoneId)) {
+                            zoneStream.limit(numZones).forEach((zoneName) -> {
+                                if (!ignoreZones.contains(zoneName)) {
                                     try {
-                                        connector.sendCommand(MonopriceAudioZone.valueOf(ZONE + zoneId), cmd);
-                                        Thread.sleep(SLEEP_BETWEEN_CMD);
-                                    } catch (MonopriceAudioException | InterruptedException e) {
+                                        connector.sendCommand(MonopriceAudioZone.valueOf(zoneName), cmd);
+                                    } catch (MonopriceAudioException e) {
                                         logger.warn("Error Setting Mute for All Zones: {}", e.getMessage());
                                     }
                                 }
@@ -491,8 +484,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 case MonopriceAudioConnector.KEY_ZONE_UPDATE:
                     String zoneId = updateData.substring(0, 2);
 
-                    if (MonopriceAudioZone.VALID_ZONES.contains(zoneId)) {
-                        MonopriceAudioZone targetZone = MonopriceAudioZone.valueOf(ZONE + zoneId);
+                    if (MonopriceAudioZone.VALID_ZONE_IDS.contains(zoneId)) {
+                        MonopriceAudioZone targetZone = MonopriceAudioZone.fromZoneId(zoneId);
                         processZoneUpdate(targetZone, ZONE_DATA_MAP.get(zoneId), updateData);
                     } else {
                         logger.warn("invalid event: {} for key: {}", evt.getValue(), key);
@@ -504,6 +497,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             }
         } catch (NumberFormatException e) {
             logger.warn("Invalid value {} for key {}", updateData, key);
+        } catch (MonopriceAudioException e) {
+            logger.warn("Error processing zone update: {}", e.getMessage());
         }
     }
 
@@ -524,14 +519,13 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         try {
                             long prevUpdateTime = lastPollingUpdate;
                             connector.queryZone(MonopriceAudioZone.ZONE1);
-                            Thread.sleep(SLEEP_BETWEEN_CMD);
 
                             // prevUpdateTime should have changed if a zone update was received
                             if (lastPollingUpdate == prevUpdateTime) {
                                 error = "Controller not responding to status requests";
                             }
 
-                        } catch (MonopriceAudioException | InterruptedException e) {
+                        } catch (MonopriceAudioException e) {
                             error = "First command after connection failed";
                             logger.warn("{}: {}", error, e.getMessage());
                             closeConnection();
@@ -576,11 +570,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     Stream<String> zoneStream = MonopriceAudioZone.VALID_ZONES.stream();
 
                     // poll each zone up to the number of zones specified in the configuration
-                    zoneStream.limit(numZones).forEach((zoneId) -> {
+                    zoneStream.limit(numZones).forEach((zoneName) -> {
                         try {
-                            connector.queryZone(MonopriceAudioZone.valueOf(ZONE + zoneId));
-                            Thread.sleep(SLEEP_BETWEEN_CMD);
-                        } catch (MonopriceAudioException | InterruptedException e) {
+                            connector.queryZone(MonopriceAudioZone.valueOf(zoneName));
+                        } catch (MonopriceAudioException e) {
                             logger.warn("Polling error: {}", e.getMessage());
                         }
                     });
