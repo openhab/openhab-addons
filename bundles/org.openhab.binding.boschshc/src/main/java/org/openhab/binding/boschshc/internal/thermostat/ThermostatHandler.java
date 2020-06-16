@@ -15,10 +15,14 @@ import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelServiceState;
+import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
+import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetServiceState;
 
 public class ThermostatHandler extends BoschSHCHandler {
 
     private TemperatureLevelService temperatureLevelService;
+
+    private ValveTappetService valveTappetService;
 
     public ThermostatHandler(Thing thing) {
         super(thing);
@@ -35,15 +39,20 @@ public class ThermostatHandler extends BoschSHCHandler {
 
         // Initialize services
         this.temperatureLevelService = new TemperatureLevelService(bridgeHandler);
+        this.valveTappetService = new ValveTappetService(bridgeHandler);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            TemperatureLevelServiceState temperaturelevelState = this.temperatureLevelService
+            TemperatureLevelServiceState temperatureLevelState = this.temperatureLevelService
                     .getState(this.getBoschID());
-            if (temperaturelevelState != null) {
-                this.updateChannels(temperaturelevelState);
+            if (temperatureLevelState != null) {
+                this.updateChannels(temperatureLevelState);
+            }
+            ValveTappetServiceState valveTappetServiceState = this.valveTappetService.getState(this.getBoschID());
+            if (valveTappetServiceState != null) {
+                this.updateChannels(valveTappetServiceState);
             }
         }
     }
@@ -52,6 +61,8 @@ public class ThermostatHandler extends BoschSHCHandler {
     public void processUpdate(String id, JsonElement state) {
         try {
             Gson gson = new Gson();
+            // TODO: Make sure that provided state is really of specific service state
+            // before doing cast (type should be checked)
             updateChannels(gson.fromJson(state, TemperatureLevelServiceState.class));
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in Thermostat: {}", state);
@@ -60,5 +71,9 @@ public class ThermostatHandler extends BoschSHCHandler {
 
     private void updateChannels(TemperatureLevelServiceState state) {
         super.updateState(CHANNEL_TEMPERATURE, new DecimalType(state.temperature));
+    }
+
+    private void updateChannels(ValveTappetServiceState state) {
+        super.updateState(CHANNEL_VALVE_TAPPET_POSITION, new DecimalType(state.position));
     }
 }
