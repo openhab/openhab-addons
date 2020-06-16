@@ -19,7 +19,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Future;
@@ -28,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.MetricPrefix;
@@ -41,7 +39,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -131,40 +128,6 @@ public class SmhiHandler extends BaseThingHandler {
         localRef = instantUpdate;
         if (localRef != null) {
             localRef.cancel(false);
-        }
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        if (!isModifyingCurrentConfig(configurationParameters)) {
-            return;
-        }
-
-        validateConfigurationParameters(configurationParameters);
-
-        Configuration configuration = editConfiguration();
-        for (Map.Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
-            configuration.put(configurationParameter.getKey(), configurationParameter.getValue());
-        }
-
-        if (isInitialized()) {
-            updateConfiguration(configuration);
-            config = configuration.as(SmhiConfiguration.class);
-            updateThing(editThing().withChannels(createChannels()).build());
-            if (!isPollingStarted()) {
-                startPolling();
-            }
-            updateNow();
-        } else {
-            // persist new configuration and notify Thing Manager
-            updateConfiguration(configuration);
-            ThingHandlerCallback callback = getCallback();
-            if (callback != null) {
-                callback.configurationUpdated(this.getThing());
-            } else {
-                logger.warn("Handler {} tried updating its configuration although the handler was already disposed.",
-                        this.getClass().getSimpleName());
-            }
         }
     }
 
@@ -394,16 +357,6 @@ public class SmhiHandler extends BaseThingHandler {
         int m = now.getMonth().getValue();
         int d = now.getDayOfMonth();
         return ZonedDateTime.of(y, m, d, 0, 0, 0, 0, ZoneOffset.UTC);
-    }
-
-    /**
-     * Checks whether the polling job is running
-     *
-     * @return True if the polling is running, false otherwise.
-     */
-    private synchronized boolean isPollingStarted() {
-        Future<?> localRef = forecastUpdater;
-        return localRef != null && !localRef.isDone();
     }
 
     /**
