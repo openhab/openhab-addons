@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="novafinedust"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="SDS011">
+		<label>Nova SDS011 Fine Dust Sensor</label>
+		<description>Nova SDS011 Fine Dust Sensor connected via USB</description>
+
+		<channels>
+			<channel id="pm10" typeId="pm10-type" />
+			<channel id="pm25" typeId="pm25-type" />
+		</channels>
+
+		<config-description>
+			<parameter name="port" type="text" required="true">
+				<context>serial-port</context>
+				<label>USB Port</label>
+				<description>USB port the device is connected to i.e. /dev/ttyUSB0</description>
+			</parameter>
+			<parameter name="reporting" type="boolean">
+				<default>true</default>
+				<label>Mode</label>
+				<options>
+					<option value="true">Reporting</option>
+					<option value="false">Polling</option>
+				</options>
+				<description>Reporting is strongly recommended to increase sensor lifetime</description>
+			</parameter>
+			<parameter name="reportingInterval" type="integer" min="0" max="30" unit="min">
+				<default>1</default>
+				<advanced>true</advanced>
+				<label>Reporting Interval</label>
+				<description>Device will report every x minutes and sleep for x*60 - 30 seconds afterwards, 0 = as fast as possible without sleep</description>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="3" max="3600" unit="s">
+				<default>10</default>
+				<advanced>true</advanced>
+				<label>Polling Interval</label>
+				<description>Device will be polled every x seconds (polling is not recommended)</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="pm25-type">
+		<item-type>Number:Density</item-type>
+		<label>PM 2.5</label>
+		<description>The PM 2.5 value</description>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="pm10-type">
+		<item-type>Number:Density</item-type>
+		<label>PM 10</label>
+		<description>The PM 10 value</description>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

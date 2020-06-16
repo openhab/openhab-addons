@@ -16,7 +16,10 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.THING_TYPE_SUN;
 import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
 
+import java.time.ZoneId;
+
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -143,7 +146,9 @@ public class AstroValidConfigurationTest {
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         CronScheduler cronScheduler = mock(CronScheduler.class);
-        ThingHandler sunHandler = new SunHandler(thing, cronScheduler);
+        TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
+        when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
+        ThingHandler sunHandler = new SunHandler(thing, cronScheduler, timeZoneProvider);
         sunHandler.setCallback(callback);
 
         sunHandler.initialize();
