@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link SecondGenerationBindingConstants} class defines constants, which are
+ * The {@link SecondGenerationBindingConstants} class defines channel constants, which are
  * used in the second generation part of the binding.
  *
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation
@@ -56,7 +56,7 @@ public class SecondGenerationBindingConstants {
     public static final String CHANNEL_DC3CURRENT = "dc3Current";
     public static final String CHANNEL_DC3POWER = "dc3Power";
 
-    public static final String CHANNEL_HOMECONSUMTIONSOLAR = "aktHomeConsumptionSolar";
+    public static final String CHANNEL_AKTHOMECONSUMTIONSOLAR = "aktHomeConsumptionSolar";
     public static final String CHANNEL_AKTHOMECONSUMPTIONBAT = "aktHomeConsumptionBat";
     public static final String CHANNEL_AKTHOMECONSUMPTIONGRID = "aktHomeConsumptionGrid";
     public static final String CHANNEL_PHASESELHOMECONSUMPL1 = "phaseSelHomeConsumpL1";
@@ -96,5 +96,4 @@ public class SecondGenerationBindingConstants {
     public static final String CHANNEL_SHADOWMANAGEMENT = "shadowManagement";
     public static final String CHANNEL_EXTERNALMODULECONTROL = "externalModuleControl";
     public static final String CHANNEL_INVERTERNAME = "inverterName";
-
 }

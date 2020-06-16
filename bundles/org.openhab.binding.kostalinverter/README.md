@@ -67,7 +67,7 @@ Channel Type ID                 Item Type                   Description
 -   gridOutputPower             Number:Power                WATT
 -   yieldDay                    Number:Power                WATT
 -   yieldTotal                  Number:Energy               KILOWATT_HOUR
--   operatingStatus             String
+-   operatingStatus             Number:Dimensionless        
 -   gridVoltageL1               Number:ElectricPotential    VOLT
 -   gridCurrentL1               Number:ElectricCurrent      AMPERE
 -   gridPowerL1                 Number:Power                WATT
@@ -105,14 +105,14 @@ Channel Type ID                 Item Type                   Description
 -   totalOperatingTime          Number:Time                 HOUR
 -   current                     Number:ElectricCurrent      AMPERE
 -   currentDir                  Number:ElectricCurrent      AMPERE
--   chargeCycles                String 
+-   chargeCycles                Number:Dimensionless        
 -   batteryTemperature          Number:Temperature          CELCIUS
 -   loginterval                 Number:Time                 MINUTE
--   s0InPulseCnt                String
+-   s0InPulseCnt                Number:Dimensionless        
 -   ownConsRateTotal            Number:Dimensionless        PERCENT
 -   autonomyDegreeTotal         Number:Dimensionless        PERCENT
 -   batteryVoltage              Number:ElectricPotential    VOLT
--   batStateOfCharge            Dimensionless               PERCENT
+-   batStateOfCharge            Number:Dimensionless        PERCENT
 
 The following Channels are changeable
 
@@ -286,9 +286,9 @@ Number SolarTotalEnergyMin              "Todays Mimimum [%.2f %unit%]"          
 Number SolarTotalEnergyChart            "Chart Period SolarTotalEnergy "
 DateTime SolarTotalEnergyTimestamp      "Last Update Total Energy  [%1$ta %1$tR]"   <clock>
 
-String SolarStatus                      "Status[%s]"                                <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:operatingStatus" }
-Number SolarStatusMax                   "Todays Maximum [%s]"                       <energy> (gGF) 
-Number SolarStatusMin                   "Todays Mimimum [%s]"                       <energy> (gGF) 
+Number:Temperature SolarStatus          "Status[%.0f]"                              <energy> (gGF) { channel="kostalinverter:kostalinverterpiko1020:inverter:operatingStatus" }
+Number SolarStatusMax                   "Todays Maximum [%.0f]"                     <energy> (gGF) 
+Number SolarStatusMin                   "Todays Mimimum [%.0f]"                     <energy> (gGF) 
 Number SolarStatusChart                 "Chart Period SolarStatus "
 DateTime SolarStatusTimestamp           "Last Update Solar Status  [%1$ta %1$tR]"   <clock>
 
@@ -329,10 +329,10 @@ Number:Energy                   OwnConsumptionTotal     "Own Consumption Total[%
 Number:Time                     OperatingTime           "Operating Time Total[%.2f %unit%]"     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:totalOperatingTime" }
 Number:ElectricCurrent          Current                 "Current[%.2f %unit%]"                  <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:current" }
 Number:ElectricCurrent          CurrentDir              "Current Dir[%.2f %unit%]"              <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:currentDir" }
-String                          ChargeCycles            "Charge Cycles[%s]"                     <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:chargeCycles" }
+Number:Temperature              ChargeCycles            "Charge Cycles[%.0f]"                   <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:chargeCycles" }
 Number:Temperature              Temperature             "Temperature[%.2f %unit%]"              <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:batteryTemperature" }
 Number:Time                     Loginterval             "Log Interval[%.2f %unit%]"             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:loginterval" }
-String                          S0InPulseCnt            "S0 In Pulse Counter[%s]"               <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:s0InPulseCnt" }
+Number:Temperature              S0InPulseCnt            "S0 In Pulse Counter[%.0f]"             <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:s0InPulseCnt" }
 Number:Dimensionless            OwnConsRateTotal        "Own Cons Rate Total[%.2f %unit%]"      <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:ownConsRateTotal" } 
 Number:Dimensionless            AutonomyDegreeTotal     "Autonomy Degree Total[%.2f %unit%]"    <energy>  { channel="kostalinverter:kostalinverterpiko1020:inverter:autonomyDegreeTotal" } 
 

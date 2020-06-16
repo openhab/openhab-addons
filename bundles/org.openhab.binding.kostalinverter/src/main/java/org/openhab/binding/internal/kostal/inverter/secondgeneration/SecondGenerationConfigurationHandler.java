@@ -133,8 +133,10 @@ public class SecondGenerationConfigurationHandler {
         // Method extractSessionId extracts sessionId from JsonObject
         String extractSessionId = "";
         JsonArray extractJsonArray = extractJsonObject.getAsJsonArray("session");
-        for (int i = 0; i < extractJsonArray.size(); i++) {
-            extractSessionId = extractJsonArray.get(i).getAsJsonObject().get("sessionId").getAsString();
+
+        int size = extractJsonArray.size();
+        if (size > 0) {
+            extractSessionId = extractJsonArray.get(size - 1).getAsJsonObject().get("sessionId").getAsString();
         }
         return extractSessionId;
     }

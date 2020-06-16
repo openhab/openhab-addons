@@ -3,10 +3,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
     xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+    
     <thing-type id="kostalinverterpiko1020">
         <label>KOSTAL PIKO 10-20</label>
         <description>Binding for the KOSTAL PIKO 10-20</description> 
         <category>Inverter</category>
+        
         <channels>
             <channel typeId="device-local-grid-output-power" id="gridOutputPower" />
             <channel typeId="statistic-yield-day" id="yieldDay" />
@@ -59,7 +61,7 @@
             <channel typeId="device-local-battery-voltage" id="batteryVoltage" />
             <channel typeId="device-local-bat-state-of-charge" id="batStateOfCharge" />
             <channel typeId="device-local-self-consumption" id="selfConsumption" />
-
+            
             <channel typeId="device-local-charge-time-end" id="chargetimeend" />
             <channel typeId="device-local-battery-type" id="batteryType" />
             <channel typeId="device-local-battery-usage-consumption" id="batteryUsageConsumption" />
@@ -76,6 +78,6 @@
         <properties>
             <property name="Vendor">KOSTAL Solar Electric GmbH</property>
         </properties>
-        <config-description-ref uri="thing-type:kostalpikonewgeneration_config" />
+        <config-description-ref uri="thing-type:kostalpikonewgeneration:config" />
     </thing-type>
 </thing:thing-descriptions>

@@ -24,9 +24,6 @@ public class SecondGenerationConfiguration {
 
     public static final long REFRESHINTERVAL = 60;
 
-    public String dxsEntriesCfgFile;
-    public String dxsEntriesCfgFileExt;
-    public String dxsEntriesCfgFileExtExt;
     public Object url;
     public String username;
     public String password;
