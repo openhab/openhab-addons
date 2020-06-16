@@ -198,6 +198,26 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
+    public void testHandleCommand_Ping_failed_NULL_Response() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(Optional.of(""));
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(floodlightChannelUID, OnOffType.ON);
+
+        verify(requestExecutorMock, times(1)).executeGETRequest(any()); //1.) execute ping
+    }
+
+    @Test
+    public void testHandleCommand_Ping_failed_empty_Response() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(Optional.of(""));
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(floodlightChannelUID, OnOffType.ON);
+
+        verify(requestExecutorMock, times(1)).executeGETRequest(any()); //1.) execute ping
+    }
+
+    @Test
     public void testHandleCommand_Module_NULL() {
         NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl());
         handlerWithoutModule.handleCommand(floodlightChannelUID, OnOffType.ON);

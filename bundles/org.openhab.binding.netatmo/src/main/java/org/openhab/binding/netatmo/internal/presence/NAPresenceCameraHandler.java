@@ -62,16 +62,16 @@ public class NAPresenceCameraHandler extends CameraHandler {
         String channelId = channelUID.getId();
         switch (channelId) {
             case CHANNEL_CAMERA_FLOODLIGHT:
-                if(OnOffType.ON.equals(command)) {
+                if (OnOffType.ON.equals(command)) {
                     switchFloodlight(true);
-                } else if(OnOffType.OFF.equals(command)) {
+                } else if (OnOffType.OFF.equals(command)) {
                     switchFloodlight(false);
                 }
                 break;
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
-                if(OnOffType.ON.equals(command)) {
+                if (OnOffType.ON.equals(command)) {
                     switchFloodlightAutoMode(true);
-                } else if(OnOffType.OFF.equals(command)) {
+                } else if (OnOffType.OFF.equals(command)) {
                     switchFloodlightAutoMode(false);
                 }
                 break;
@@ -88,7 +88,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
                 //The auto-mode state shouldn't be updated, because this isn't a dedicated information. When the
                 // floodlight is switched on the state within the Netatmo API is "on" and the information if the previous
                 // state was "auto" instead of "off" is lost... Therefore the binding handles its own auto-mode state.
-                if(UnDefType.UNDEF.equals(floodlightAutoModeState)) {
+                if (UnDefType.UNDEF.equals(floodlightAutoModeState)) {
                     floodlightAutoModeState = getFloodlightAutoModeState();
                 }
                 return floodlightAutoModeState;
@@ -154,11 +154,12 @@ public class NAPresenceCameraHandler extends CameraHandler {
     }
 
     private Optional<JSONObject> executeGETRequestJSON(String url) {
-        Optional<JSONObject> jsonContent = executeGETRequest(url).map(JSONObject::new);
-        if(!jsonContent.isPresent()) {
-            logger.error("The request-result could not get retrieved!");
+        try {
+            return executeGETRequest(url).map(JSONObject::new);
+        } catch (JSONException e) {
+            logger.warn("Error on parsing the content as JSON!", e);
         }
-        return jsonContent;
+        return Optional.empty();
     }
 
     Optional<String> executeGETRequest(String url) {
@@ -167,8 +168,8 @@ public class NAPresenceCameraHandler extends CameraHandler {
             if (content != null && !content.isEmpty()) {
                 return Optional.of(content);
             }
-        } catch (IOException | JSONException e) {
-            logger.error("Error on loading local camera url!", e);
+        } catch (IOException e) {
+            logger.warn("Error on accessing local camera url!", e);
         }
         return Optional.empty();
     }
