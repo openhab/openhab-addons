@@ -132,7 +132,8 @@ public class GreeAirDevice {
         } catch (IOException e) {
             throw new GreeException("I/O exception while receiving data", e);
         } catch (RuntimeException e) {
-            throw new GreeException("Exception while receiving data, JSON=" + statusResponseGson.get().packJson, e);
+            String json = statusResponseGson.isPresent() ? statusResponseGson.get().packJson.toString() : "n/a";
+            throw new GreeException("Exception while receiving data, JSON=" + json, e);
         }
     }
 
@@ -244,7 +245,7 @@ public class GreeAirDevice {
             throw new IllegalArgumentException("Temp Value out of Range");
         }
 
-        // Default for Celsiues
+        // Default for Celsius
         int outVal = newVal.intValue();
         int halfStep = TEMP_HALFSTEP_NO; // for whatever reason halfStep is not supported for Celsius
 
