@@ -95,6 +95,10 @@ public enum HomekitCharacteristicType {
 
     CURRENT_DOOR_STATE("CurrentDoorState"),
     TARGET_DOOR_STATE("TargetDoorState"),
+    TARGET_HEATER_COOLER_STATE("TargetHeaterCoolerState"),
+    CURRENT_HEATER_COOLER_STATE("CurrentHeaterCoolerState"),
+    COOLING_THRESHOLD_TEMPERATURE("CoolingThresholdTemperature"),
+    HEATING_THRESHOLD_TEMPERATURE("HeatingThresholdTemperature"),
 
     @Deprecated()
     OLD_BATTERY_LEVEL("homekit:BatteryLevel"),
