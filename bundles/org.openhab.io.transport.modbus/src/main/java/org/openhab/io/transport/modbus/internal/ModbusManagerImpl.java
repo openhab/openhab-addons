@@ -364,7 +364,7 @@ public class ModbusManagerImpl implements ModbusManager {
             @SuppressWarnings("null")
             @Override
             public void onSwallowException(@Nullable Exception e) {
-                LoggerFactory.getLogger(ModbusManagerImpl.class).error(
+                LoggerFactory.getLogger(ModbusManagerImpl.class).warn(
                         "Connection pool swallowed unexpected exception:{} {}",
                         Optional.ofNullable(e).map(ex -> ex.getClass().getSimpleName()).orElse(""),
                         Optional.ofNullable(e).map(ex -> ex.getMessage()).orElse("<null>"), e);
@@ -856,7 +856,7 @@ public class ModbusManagerImpl implements ModbusManager {
                         connectionPool.clear(task.getEndpoint());
                     }
                 } catch (Exception e) {
-                    logger.error("Could not clear poll task {} endpoint {}. Stack trace follows", task,
+                    logger.warn("Could not clear poll task {} endpoint {}. Stack trace follows", task,
                             task.getEndpoint(), e);
                     return false;
                 }
@@ -944,7 +944,7 @@ public class ModbusManagerImpl implements ModbusManager {
                     connectionPool.clear(endpoint);
                 }
             } catch (Exception e) {
-                logger.error("Could not clear endpoint {}. Stack trace follows", endpoint, e);
+                logger.warn("Could not clear endpoint {}. Stack trace follows", endpoint, e);
             }
 
         }
@@ -963,7 +963,7 @@ public class ModbusManagerImpl implements ModbusManager {
                         .getScheduledPool(MODBUS_POLLER_THREAD_POOL_NAME);
             }
             if (scheduledThreadPoolExecutor.isShutdown()) {
-                logger.error("Thread pool is shut down! Aborting activation of ModbusMangerImpl");
+                logger.warn("Thread pool is shut down! Aborting activation of ModbusMangerImpl");
                 throw new IllegalStateException("Thread pool(s) shut down! Aborting activation of ModbusMangerImpl");
             }
             monitorFuture = scheduledThreadPoolExecutor.scheduleWithFixedDelay(this::logTaskQueueInfo, 0,
@@ -981,7 +981,7 @@ public class ModbusManagerImpl implements ModbusManager {
                     try {
                         commInterface.close();
                     } catch (Exception e) {
-                        logger.error("Error when closing communication interface", e);
+                        logger.warn("Error when closing communication interface", e);
                     }
                 }
 
