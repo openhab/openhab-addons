@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -149,7 +150,11 @@ public class GreeHandler extends BaseThingHandler {
                         device.setDeviceLight(socket, getOnOff(command));
                         break;
                     case TEMP_CHANNEL:
-                        device.setDeviceTempSet(socket, getTemp(command));
+                        // Set value, read back effective one and update channel
+                        // e.g. 22.5C will result in 22.0, because the AC doesn't support half-steps for C
+                        device.setDeviceTempSet(socket, convertTemp(command));
+                        device.getDeviceStatus(clientSocket.get());
+                        publishChannel(channelUID);
                         break;
                     case SWINGUD_CHANNEL:
                         device.setDeviceSwingUpDown(socket, getNumber(command));
@@ -256,10 +261,6 @@ public class GreeHandler extends BaseThingHandler {
                 logger.debug("Turn on Power-Saving");
                 device.setDevicePwrSaving(socket, 1);
                 break;
-            case MODE_TURBO:
-                logger.debug("Turn on Turbo Mode");
-                device.setDeviceTurbo(socket, 1);
-                break;
         }
     }
 
@@ -307,15 +308,16 @@ public class GreeHandler extends BaseThingHandler {
         throw new IllegalArgumentException("Invalud Number type");
     }
 
-    private int getTemp(Command command) {
+    private QuantityType<?> convertTemp(Command command) {
         if (command instanceof DecimalType) {
-            // assume Celsius
-            return ((DecimalType) command).intValue();
+            // The Number alone doesn't specify the temp unit
+            // for this get current setting from the A/C unit
+            int unit = device.getIntStatusVal(GREE_PROP_TEMPUNIT);
+            return toQuantityType((DecimalType) command, DIGITS_TEMP,
+                    unit == TEMP_UNIT_CELSIUS ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT);
         }
         if (command instanceof QuantityType) {
-            QuantityType<?> q = (QuantityType<?>) command;
-            QuantityType<?> c = q.toUnit(SIUnits.CELSIUS);
-            return c != null ? c.intValue() : 0;
+            return (QuantityType<?>) command;
         }
         throw new IllegalArgumentException("Invalud Temp type");
     }
@@ -378,7 +380,7 @@ public class GreeHandler extends BaseThingHandler {
                     state = updateOnOff(GREE_PROP_LIGHT);
                     break;
                 case TEMP_CHANNEL:
-                    state = updateTemp(GREE_PROP_SETTEMP);
+                    state = updateTemp();
                     break;
                 case SWINGUD_CHANNEL:
                     state = updateNumber(GREE_PROP_SWINGUPDOWN);
@@ -446,8 +448,7 @@ public class GreeHandler extends BaseThingHandler {
                     modeStr = MODE_DRY;
                     break;
                 case GREE_MODE_FAN:
-                    boolean turbo = device.getIntStatusVal(GREE_PROP_TURBO) == 1;
-                    modeStr = !turbo ? MODE_FAN : MODE_TURBO;
+                    modeStr = MODE_FAN;
                     break;
                 case GREE_MODE_HEAT:
                     modeStr = MODE_HEAT;
@@ -478,16 +479,23 @@ public class GreeHandler extends BaseThingHandler {
         return null;
     }
 
-    private @Nullable State updateTemp(final String valueName) throws GreeException {
-        if (device.hasStatusValChanged(valueName)) {
-            return toQuantityType(device.getIntStatusVal(valueName), DIGITS_TEMP, SIUnits.CELSIUS);
+    private @Nullable State updateTemp() throws GreeException {
+        if (device.hasStatusValChanged(GREE_PROP_SETTEMP) || device.hasStatusValChanged(GREE_PROP_TEMPUNIT)) {
+            int unit = device.getIntStatusVal(GREE_PROP_TEMPUNIT);
+            return toQuantityType(device.getIntStatusVal(GREE_PROP_SETTEMP), DIGITS_TEMP,
+                    unit == TEMP_UNIT_CELSIUS ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT);
         }
         return null;
     }
 
     public static State toQuantityType(int value, int digits, Unit<?> unit) {
         BigDecimal bd = new BigDecimal(value);
-        return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_UP), unit);
+        return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN), unit);
+    }
+
+    public static QuantityType<?> toQuantityType(DecimalType value, int digits, Unit<?> unit) {
+        BigDecimal bd = new BigDecimal(value.doubleValue());
+        return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN), unit);
     }
 
     @Override

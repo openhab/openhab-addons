@@ -63,7 +63,6 @@ public class GreeBindingConstants {
     public static final String MODE_FAN2 = "fan-only";
     public static final String MODE_HEAT = "heat";
     public static final String MODE_ECO = "eco";
-    public static final String MODE_TURBO = "turbo";
     public static final String MODE_ON = "on";
     public static final String MODE_OFF = "off";
     public static final int GREE_MODE_AUTO = 0;
@@ -127,14 +126,23 @@ public class GreeBindingConstants {
     public static final String GREE_PROP_HEALTH = "Health";
     public static final String GREE_PROP_SLEEP = "SwhSlp";
     public static final String GREE_PROP_SLEEPMODE = "SlpMod";
-    public static final int TEMP_UNIT_CELSIUS = 0;
-    public static final int TEMP_UNIT_FAHRENHEIT = 1;
     public static final String GREE_PROP_PWR_SAVING = "SvSt";
     public static final String GREE_PROP_SETTEMP = "SetTem";
     public static final String GREE_PROP_TEMPUNIT = "TemUn";
     public static final String GREE_PROP_TEMPREC = "TemRec";
     public static final String GREE_PROP_HEAT = "StHt";
     public static final String GREE_PROP_HEATCOOL = "HeatCoolType";
+    public static final String GREE_PROP_NOISESET = "NoiseSet";
+
+    // Temperatur types and min/max ranges
+    public static final int TEMP_UNIT_CELSIUS = 0;
+    public static final int TEMP_UNIT_FAHRENHEIT = 1;
+    public static final int TEMP_MIN_C = 16;
+    public static final int TEMP_MAX_C = 30;
+    public static final int TEMP_MIN_F = 61;
+    public static final int TEMP_MAX_F = 86;
+    public static final int TEMP_HALFSTEP_NO = 0;
+    public static final int TEMP_HALFSTEP_YES = 1;
 
     // parameters.put("SvSt", value);
     // parameters.put("SwhSlp", 0);

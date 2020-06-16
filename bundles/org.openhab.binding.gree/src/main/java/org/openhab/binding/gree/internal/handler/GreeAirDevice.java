@@ -19,7 +19,6 @@ import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +29,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.gson.GreeBindRequestPackDTO;
@@ -60,8 +60,6 @@ import com.google.gson.stream.JsonReader;
 @NonNullByDefault
 public class GreeAirDevice {
     private final Logger logger = LoggerFactory.getLogger(GreeAirDevice.class);
-    private final static Charset UTF8_CHARSET = StandardCharsets.UTF_8;
-    private final static HashMap<String, HashMap<String, Integer>> tempRanges = createTempRangeMap();
     private final static Gson gson = new Gson();
     private boolean isBound = false;
     private InetAddress ipAddress = InetAddress.getLoopbackAddress();
@@ -93,7 +91,7 @@ public class GreeAirDevice {
             columns.add(GREE_PROP_HEATCOOL);
             columns.add(GREE_PROP_TEMPREC);
             columns.add(GREE_PROP_PWR_SAVING);
-            columns.add("NoiseSet");
+            columns.add(GREE_PROP_NOISESET);
 
             // Convert the parameter map values to arrays
             String[] colArray = columns.toArray(new String[0]);
@@ -105,11 +103,10 @@ public class GreeAirDevice {
             reqStatusPackGson.mac = getId();
             String reqStatusPackStr = gson.toJson(reqStatusPackGson);
 
-            // Encrypt the Binding Request pack
-            // Prep and send Status Request
+            // Encrypt and send the Status Request pack
             String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), reqStatusPackStr);
             DatagramPacket sendPacket = createPackRequest(0,
-                    new String(encryptedStatusReqPacket.getBytes(), UTF8_CHARSET));
+                    new String(encryptedStatusReqPacket.getBytes(), StandardCharsets.UTF_8));
             clientSocket.send(sendPacket);
 
             // Recieve a response
@@ -122,12 +119,10 @@ public class GreeAirDevice {
                         .of(new GreeStatusResponsePackDTO(statusResponseGson.get().packJson));
             }
 
-            // Read the response
+            // Read the response, create the JSON to hold the response values
             GreeStatusResponseDTO resp = gson.fromJson(receivedData, GreeStatusResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(), resp.pack);
-            logger.trace("Response from device: {}", resp.decryptedPack);
-
-            // Create the JSON to hold the response values
+            logger.debug("Response from device: {}", resp.decryptedPack);
             resp.packJson = gson.fromJson(new JsonReader(new StringReader(resp.decryptedPack)),
                     GreeStatusResponsePackDTO.class);
 
@@ -136,11 +131,12 @@ public class GreeAirDevice {
             updateTempFtoC();
         } catch (IOException e) {
             throw new GreeException("I/O exception while receiving data", e);
+        } catch (RuntimeException e) {
+            throw new GreeException("Exception while receiving data, JSON=" + statusResponseGson.get().packJson, e);
         }
     }
 
     public void bindWithDevice(DatagramSocket clientSocket) throws GreeException {
-        byte[] receiveData = new byte[347];
         try {
             // Prep the Binding Request pack
             GreeBindRequestPackDTO bindReqPackGson = new GreeBindRequestPackDTO();
@@ -149,20 +145,16 @@ public class GreeAirDevice {
             bindReqPackGson.uid = 0;
             String bindReqPackStr = gson.toJson(bindReqPackGson);
 
-            // Now Encrypt the Binding Request pack
+            // Encrypt and send the Binding Request pack
             String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
                     bindReqPackStr);
-
-            // Create and send bind request
             DatagramPacket sendPacket = createPackRequest(1,
-                    new String(encryptedBindReqPacket.getBytes(), UTF8_CHARSET));
+                    new String(encryptedBindReqPacket.getBytes(), StandardCharsets.UTF_8));
             clientSocket.send(sendPacket);
 
-            // Recieve a response
+            // Recieve a response, create the JSON to hold the response values
             GreeBindResponseDTO resp = gson.fromJson(receiveResponse(clientSocket), GreeBindResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
-
-            // Create the JSON to hold the response values
             resp.packJson = gson.fromJson(new JsonReader(new StringReader(resp.decryptedPack)),
                     GreeBindResponsePackDTO.class);
 
@@ -181,7 +173,6 @@ public class GreeAirDevice {
     }
 
     public void SetDeviceMode(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound and values are valid
         if ((value < 0 || value > 4)) {
             throw new GreeException("Device mode out of range!");
         }
@@ -193,12 +184,10 @@ public class GreeAirDevice {
         if ((value < 0 || value > 11) || (value > 6 && value < 10)) {
             throw new GreeException("SwingUpDown value out of range!");
         }
-        // Set the values in the HashMap
         setCommandValue(clientSocket, GREE_PROP_SWINGUPDOWN, value);
     }
 
     public void setDeviceSwingLeftRight(DatagramSocket clientSocket, int value) throws GreeException {
-        // Set the values in the HashMap
         setCommandValue(clientSocket, GREE_PROP_SWINGLEFTRIGHT, value, 0, 6);
     }
 
@@ -217,7 +206,6 @@ public class GreeAirDevice {
             throw new GreeException("Value out of range!");
         }
 
-        // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
         parameters.put(GREE_PROP_WINDSPEED, value);
         parameters.put(GREE_PROP_QUIET, 0);
@@ -227,13 +215,10 @@ public class GreeAirDevice {
     }
 
     public void setDeviceTurbo(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only allow this to happen if this device has been bound and values are valid
-        // Set the values in the HashMap
         setCommandValue(clientSocket, GREE_PROP_TURBO, value, 0, 1);
     }
 
     public void setQuietMode(DatagramSocket clientSocket, int value) throws GreeException {
-        // Set the values in the HashMap
         setCommandValue(clientSocket, GREE_PROP_QUIET, value, 0, 2);
     }
 
@@ -248,37 +233,40 @@ public class GreeAirDevice {
     /**
      * @param value set temperature in degrees Celsius or Fahrenheit
      */
-    public void setDeviceTempSet(DatagramSocket clientSocket, int value) throws GreeException {
-        int newVal = value;
-        int outVal = value;
-        // Get Celsius or Fahrenheit from status message
-        Integer CorF = getIntStatusVal(GREE_PROP_TEMPUNIT);
-        // TODO put a param in openhab to allow setting this from the config
-
+    public void setDeviceTempSet(DatagramSocket clientSocket, QuantityType<?> temp) throws GreeException {
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
         // temperature to use as celsius alone is ambigious
-        int halfStep = 0; // default to C
+        Double newVal = temp.doubleValue();
+        int CorF = temp.getUnit() == SIUnits.CELSIUS ? TEMP_UNIT_CELSIUS : TEMP_UNIT_FAHRENHEIT; // 0=Celsius,
+                                                                                                 // 1=Fahrenheit
+        if (((CorF == TEMP_UNIT_CELSIUS) && (newVal < TEMP_MIN_C || newVal > TEMP_MAX_C))
+                || ((CorF == TEMP_UNIT_FAHRENHEIT) && (newVal < TEMP_MIN_F || newVal > TEMP_MAX_F))) {
+            throw new IllegalArgumentException("Temp Value out of Range");
+        }
 
-        int[] retList = validateTemperatureRangeForTempSet(newVal, CorF);
-        newVal = retList[0];
-        CorF = retList[1];
+        // Default for Celsiues
+        int outVal = newVal.intValue();
+        int halfStep = TEMP_HALFSTEP_NO; // for whatever reason halfStep is not supported for Celsius
 
-        if (CorF == 1) { // If Fahrenheit,
-            // value argument is degrees F, convert Fahrenheit to Celsius,
-            // SetTem input to A/C always in Celsius despite passing in 1 to TemUn
+        // If value argument is degrees F, convert Fahrenheit to Celsius,
+        // SetTem input to A/C always in Celsius despite passing in 1 to TemUn
+        // ******************TempRec TemSet Mapping for setting Fahrenheit****************************
+        // F = [68...86]
+        // C = [20.0, 20.5, 21.1, 21.6, 22.2, 22.7, 23.3, 23.8, 24.4, 25.0, 25.5, 26.1, 26.6, 27.2, 27.7, 28.3,
+        // 28.8, 29.4, 30.0]
+        //
+        // TemSet = [20..30] or [68..86]
+        // TemRec = value - (value) > 0 ? 1 : 1 -> when xx.5 is request xx will become TemSet and halfStep the indicator
+        // for "half on top of TemSet"
+        // ******************TempRec TemSet Mapping for setting Fahrenheit****************************
+        // subtract the float version - the int version to get the fractional difference
+        // if the difference is positive set halfStep to 1, negative to 0
+        if (CorF == TEMP_UNIT_FAHRENHEIT) { // If Fahrenheit,
             outVal = (int) (Math.round((newVal - 32.) * 5.0 / 9.0)); // Integer Truncated
-            // ******************TempRec TemSet Mapping for setting Fahrenheit****************************
-            // F = [68. , 69. , 70. , 71. , 72. , 73. , 74. , 75. , 76. , 77. , 78. , 79. , 80. , 81. , 82. , 83. ,
-            // 84. , 85. , 86. ]
-            // C = [20.0, 20.5, 21.1, 21.6, 22.2, 22.7, 23.3, 23.8, 24.4, 25.0, 25.5, 26.1, 26.6, 27.2, 27.7, 28.3,
-            // 28.8, 29.4, 30.0]
-            // TemSet = [20, 21, 21, 22, 22, 23, 23, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30]
-            // TemRec = [ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
-            // ******************TempRec TemSet Mapping for setting Fahrenheit****************************
-            // subtract the float version - the int version to get the fractional difference
-            // if the difference is positive set halfStep to 1, negative to 0
             halfStep = ((((newVal - 32.) * 5.0 / 9.0) - outVal) > 0) ? 1 : 0;
         }
+        logger.debug("Converted temp from {}{} to temp={}, halfStep={}, unit={})", newVal, temp.getUnit(), outVal,
+                halfStep, CorF == TEMP_UNIT_CELSIUS ? "C" : "F");
 
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
@@ -391,14 +379,10 @@ public class GreeAirDevice {
             execCmdPackGson.t = GREE_CMDT_CMD;
             String execCmdPackStr = gson.toJson(execCmdPackGson);
 
-            // Now Encrypt the Binding Request pack
+            // Now encrypt and send the Command Request pack
             String encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), execCmdPackStr);
-            // String unencryptedCommandReqPacket = CryptoUtil.decryptPack(device.getKey().getBytes(),
-            // encryptedCommandReqPacket);
-
-            // Prep the Command Request
             DatagramPacket sendPacket = createPackRequest(0,
-                    new String(encryptedCommandReqPacket.getBytes(), UTF8_CHARSET));
+                    new String(encryptedCommandReqPacket.getBytes(), StandardCharsets.UTF_8));
             clientSocket.send(sendPacket);
 
             GreeExecResponseDTO execResponseGson = gson.fromJson(receiveResponse(clientSocket),
@@ -420,7 +404,6 @@ public class GreeAirDevice {
 
     private void setCommandValue(DatagramSocket clientSocket, String command, int value, int min, int max)
             throws GreeException {
-        // Only values 0,1,2,3,4,5,6 allowed
         if ((value < min) || (value > max)) {
             throw new GreeException("Command value out of range!");
         }
@@ -445,75 +428,11 @@ public class GreeAirDevice {
             byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            String data = new String(receivePacket.getData(), UTF8_CHARSET);
+            String data = new String(receivePacket.getData(), StandardCharsets.UTF_8);
             return new JsonReader(new StringReader(data));
         } catch (IOException e) {
             throw new GreeException("Unable to receive response", e);
         }
-    }
-
-    /**
-     * Checks input ranges for validity and TempUn for validity
-     * Uses newVal as priority and tries to validate and determine intent
-     * For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
-     */
-    private int[] validateTemperatureRangeForTempSet(int newValIn, @Nullable Integer CorFIn) {
-        final String[] minMaxLUT = { "max", "min" }; // looks up 0 = C = max, 1 = F = min
-        final String[] tempScaleLUT = { "C", "F" }; // Look Up Table used to convert TempUn integer 0,1 to "C" to "F"
-                                                    // string for hashmap
-        HashMap<String, Integer> nullCorFLUT = new HashMap<>(); // simple look up table for logic
-        nullCorFLUT.put("C", 0);
-        nullCorFLUT.put("F", 1);
-        nullCorFLUT.put("INVALID", 0);
-
-        String validRangeCorF; // stores if the input range is a valid C or F temperature
-
-        // force to global min/max
-        int newVal = (Math.max(newValIn, Math.min(tempRanges.get("C").get("min"), tempRanges.get("F").get("min"))));
-        newVal = Math.min(newVal, Math.max(tempRanges.get("C").get("max"), tempRanges.get("F").get("max")));
-
-        if ((newVal >= tempRanges.get("C").get("min")) && (newVal <= tempRanges.get("C").get("max"))) {
-            validRangeCorF = "C";
-        } else if ((newVal >= tempRanges.get("F").get("min")) && (newVal <= tempRanges.get("F").get("max"))) {
-            validRangeCorF = "F";
-        } else {
-            logger.warn("Input Temp request {} is invalid", newVal);
-            validRangeCorF = "INVALID";
-        }
-
-        // if CorF wasnt initialized or is null set it from lookup
-        Integer CorF = CorFIn != null ? CorFIn : nullCorFLUT.get(validRangeCorF);
-
-        if ((CorF == 1) && validRangeCorF.equals("C")) {
-            CorF = 0; // input temp takes priority
-        } else if ((CorF == 0) && validRangeCorF.equals("F")) {
-            CorF = 1; // input temp takes priority
-        } else if (validRangeCorF.equals("INVALID")) {
-            // force min or max temp based on CorF scale to be used
-            newVal = tempRanges.get(tempScaleLUT[CorF]).get(minMaxLUT[CorF]);
-        }
-
-        return new int[] { newVal, CorF };
-    }
-
-    /**
-     * Create Hash Look Up for C and F
-     * Temperature Ranges for gree A/C units (f_range = {86,61}, c_range={16,30}
-     */
-    private static HashMap<String, HashMap<String, Integer>> createTempRangeMap() {
-        HashMap<String, HashMap<String, Integer>> tempRanges = new HashMap<>();
-        HashMap<String, Integer> hmf = new HashMap<>();
-        HashMap<String, Integer> hmc = new HashMap<>();
-
-        hmf.put("min", 61); // F
-        hmf.put("max", 86);
-        tempRanges.put("F", hmf);
-
-        hmc.put("min", 16); // C
-        hmc.put("max", 30);
-        tempRanges.put("C", hmc);
-
-        return tempRanges;
     }
 
     private void updateTempFtoC() {

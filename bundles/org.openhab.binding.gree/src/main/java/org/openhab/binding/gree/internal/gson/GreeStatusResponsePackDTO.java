@@ -23,10 +23,15 @@ package org.openhab.binding.gree.internal.gson;
 public class GreeStatusResponsePackDTO {
 
     public GreeStatusResponsePackDTO(GreeStatusResponsePackDTO other) {
-        cols = new String[other.cols.length];
-        dat = new Integer[other.dat.length];
-        System.arraycopy(other.cols, 0, cols, 0, other.cols.length);
-        System.arraycopy(other.dat, 0, dat, 0, other.dat.length);
+        if (other.cols != null) {
+            cols = new String[other.cols.length];
+            dat = new Integer[other.dat.length];
+            System.arraycopy(other.cols, 0, cols, 0, other.cols.length);
+            System.arraycopy(other.dat, 0, dat, 0, other.dat.length);
+        } else {
+            cols = new String[0];
+            dat = new Integer[0];
+        }
     }
 
     public String t = null;

@@ -49,7 +49,6 @@
 				<option value="eco">@text/channel-type.gree.mode.state.option.eco</option>
 				<option value="dry">@text/channel-type.gree.mode.state.option.dry</option>
 				<option value="fan">@text/channel-type.gree.mode.state.option.fan</option>
-				<option value="turbo">@text/channel-type.gree.mode.state.option.turbo</option>
 				<option value="heat">@text/channel-type.gree.mode.state.option.heat</option>
 				<option value="on">@text/channel-type.gree.mode.state.option.on</option>
 				<option value="off">@text/channel-type.gree.mode.state.option.off</option>
@@ -60,7 +59,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>@text/channel-type.gree.temperature.label</label>
 		<description>@text/channel-type.gree.temperature.description</description>
-		<state step="1" pattern="%d %unit%"></state>
+		<state min="16" max="86" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="air">
 		<item-type>Switch</item-type>
