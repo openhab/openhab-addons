@@ -262,8 +262,11 @@ public class GreeAirDevice {
         // subtract the float version - the int version to get the fractional difference
         // if the difference is positive set halfStep to 1, negative to 0
         if (CorF == TEMP_UNIT_FAHRENHEIT) { // If Fahrenheit,
-            outVal = (int) (Math.round((newVal - 32.) * 5.0 / 9.0)); // Integer Truncated
-            halfStep = ((((newVal - 32.) * 5.0 / 9.0) - outVal) > 0) ? 1 : 0;
+            /*
+             * outVal = (int) (Math.round((newVal - 32.) * 5.0 / 9.0)); // Integer Truncated
+             * halfStep = ((((newVal - 32.) * 5.0 / 9.0) - outVal) > 0) ? 1 : 0;
+             */
+            halfStep = newVal - outVal > 0 ? TEMP_HALFSTEP_YES : TEMP_HALFSTEP_NO;
         }
         logger.debug("Converted temp from {}{} to temp={}, halfStep={}, unit={})", newVal, temp.getUnit(), outVal,
                 halfStep, CorF == TEMP_UNIT_CELSIUS ? "C" : "F");
