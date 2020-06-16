@@ -147,6 +147,7 @@
 
         <channels>
             <channel id="temperature" typeId="temperature" />
+            <channel id="valve-tappet-position" typeId="valve-tappet-position" />
         </channels>
 
         <config-description>
@@ -170,6 +171,7 @@
         <item-type>Number:Temperature</item-type>
         <label>Temperature</label>
         <description>Current measured temperature.</description>
+        <state min="0" max="40" step="0.5" pattern="%.1f °C" readOnly="true" />
     </channel-type>
 
     <channel-type id="temperature-rating">
@@ -242,6 +244,14 @@
         <item-type>Rollershutter</item-type>
         <label>Level</label>
         <description>Current open ratio (0 to 100).</description>
+        <state min="0" max="100" step="0.5" readOnly="false" />
+    </channel-type>
+
+    <channel-type id="valve-tappet-position">
+        <item-type>Number</item-type>
+        <label>Valve Tappet Position</label>
+        <description>Current open ratio (0 to 100).</description>
+        <state min="0" max="100" step="1" readOnly="true" />
     </channel-type>
 
 </thing:thing-descriptions>

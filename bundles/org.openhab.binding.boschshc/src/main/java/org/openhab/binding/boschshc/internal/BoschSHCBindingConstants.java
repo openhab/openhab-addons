@@ -52,4 +52,5 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_LATEST_MOTION = "latest-motion";
     public static final String CHANNEL_LEVEL = "level";
+    public static final String CHANNEL_VALVE_TAPPET_POSITION = "valve-tappet-position";
 }
