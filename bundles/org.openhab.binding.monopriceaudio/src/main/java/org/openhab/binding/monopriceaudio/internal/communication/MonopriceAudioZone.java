@@ -58,12 +58,8 @@ public enum MonopriceAudioZone {
             .map(z -> z.getZoneId()).collect(Collectors.toList());
 
     public static MonopriceAudioZone fromZoneId(String zoneId) throws MonopriceAudioException {
-        for (MonopriceAudioZone z : MonopriceAudioZone.values()) {
-            if (z.zoneId.equalsIgnoreCase(zoneId)) {
-                return z;
-            }
-        }
-        throw new MonopriceAudioException("Invalid zoneId specified: " + zoneId);
+        return Arrays.stream(values()).filter(z -> z.zoneId.equalsIgnoreCase(zoneId)).findFirst()
+                .orElseThrow(() -> new MonopriceAudioException("Invalid zoneId specified: " + zoneId));
     }
 
     MonopriceAudioZone(String zoneId) {

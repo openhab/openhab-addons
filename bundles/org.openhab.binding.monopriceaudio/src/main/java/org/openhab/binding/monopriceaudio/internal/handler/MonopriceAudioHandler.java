@@ -163,7 +163,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     try {
                         int zoneInt = Integer.parseInt(zone);
                         if (zoneInt >= ONE && zoneInt <= MAX_ZONES) {
-                            ignoreZones.add(ZONE + String.valueOf(zoneInt));
+                            ignoreZones.add(ZONE + zoneInt);
                         } else {
                             logger.warn("Invalid ignore zone value: {}, value must be between {} and {}", zone, ONE,
                                     MAX_ZONES);
