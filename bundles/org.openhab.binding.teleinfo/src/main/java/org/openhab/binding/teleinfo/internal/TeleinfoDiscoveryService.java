@@ -120,7 +120,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
         ThingUID thingUID = getThingUID(frameAdco);
 
         final Map<String, Object> properties = getThingProperties(thingUID.getThingTypeUID(), frameAdco);
-        final String representationProperty = getRepresentationProperty(thingUID.getThingTypeUID(), frameAdco);
+        final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withLabel("Teleinfo ADCO " + frameAdco.getAdco()).withThingType(getThingTypeUID(frameAdco))
                 .withBridge(controllerHandler.getThing().getUID()).withRepresentationProperty(representationProperty)
@@ -206,12 +206,4 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
         throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
     }
 
-    private String getRepresentationProperty(final ThingTypeUID thingTypeId, final Frame teleinfoFrame) {
-        if (teleinfoFrame instanceof FrameAdco == false) {
-            throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
-        }
-        final FrameAdco frameAdco = (FrameAdco) teleinfoFrame;
-
-        return frameAdco.getAdco() + AbstractUID.SEPARATOR + thingTypeId.getId();
-    }
 }

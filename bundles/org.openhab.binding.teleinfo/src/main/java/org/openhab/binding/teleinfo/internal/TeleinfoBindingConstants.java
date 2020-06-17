@@ -86,9 +86,11 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_CBETM_SHORT_ADIR2 = "adir2";
     public static final String CHANNEL_CBETM_SHORT_ADIR3 = "adir3";
 
+    public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+    
     public static final ThingTypeUID THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbemm_hc_electricitymeter");
-    public static final String THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+    public static final String THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO = THING_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbemm_base_electricitymeter");
@@ -104,7 +106,7 @@ public class TeleinfoBindingConstants {
 
     public static final ThingTypeUID THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbemm_evolution_icc_hc_electricitymeter");
-    public static final String THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+    public static final String THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO = THING_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbemm_evolution_icc_base_electricitymeter");
@@ -120,7 +122,7 @@ public class TeleinfoBindingConstants {
 
     public static final ThingTypeUID THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbetm_hc_electricitymeter");
-    public static final String THING_HC_CBETM_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
+    public static final String THING_HC_CBETM_ELECTRICITY_METER_PROPERTY_ADCO = THING_ELECTRICITY_METER_PROPERTY_ADCO;
 
     public static final ThingTypeUID THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbetm_base_electricitymeter");
