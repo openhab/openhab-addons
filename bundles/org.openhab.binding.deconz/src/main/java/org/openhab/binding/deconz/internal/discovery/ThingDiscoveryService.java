@@ -114,16 +114,18 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("id", lightType);
+        properties.put("id", lightID);
         properties.put(UNIQUE_ID, light.uniqueid);
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
         properties.put(Thing.PROPERTY_VENDOR, light.manufacturername);
         properties.put(Thing.PROPERTY_MODEL_ID, light.modelid);
 
         if (light.ctmax != null && light.ctmin != null) {
-            properties.put(PROPERTY_CT_MAX, Integer.toString(light.ctmax));
-            properties.put(PROPERTY_CT_MIN, Integer.toString(light.ctmin));
+            int ctmax = (light.ctmax > ZCL_CT_MAX) ? ZCL_CT_MAX : light.ctmax;
+            properties.put(PROPERTY_CT_MAX, Integer.toString(ctmax));
+            
+            int ctmin = (light.ctmin < ZCL_CT_MIN) ? ZCL_CT_MIN : light.ctmin;
+            properties.put(PROPERTY_CT_MIN, Integer.toString(ctmin));
         }
 
         switch (lightType) {
@@ -141,7 +143,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case COLOR_DIMMABLE_LIGHT:
             case COLOR_LIGHT:
                 thingTypeUID = THING_TYPE_COLOR_LIGHT;
-            break;
+                break;
             case EXTENDED_COLOR_LIGHT:
                 thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
                 break;
