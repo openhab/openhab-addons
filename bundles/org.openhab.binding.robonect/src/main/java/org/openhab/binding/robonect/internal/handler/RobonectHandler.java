@@ -76,7 +76,7 @@ public class RobonectHandler extends BaseThingHandler {
     private HttpClient httpClient;
     private TimeZoneProvider timeZoneProvider;
 
-    private ZoneId timeZone = ZoneId.of("Europe/Berlin");
+    private ZoneId timeZone;
 
     private RobonectClient robonectClient;
 
@@ -289,7 +289,11 @@ public class RobonectHandler extends BaseThingHandler {
         // provide correct results.
         Instant rawInstant = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
 
-        ZoneOffset offsetToConfiguredZone = timeZone.getRules().getOffset(rawInstant);
+        ZoneId timeZoneOfThing = timeZone;
+        if (timeZoneOfThing == null) {
+            timeZoneOfThing = timeZoneProvider.getTimeZone();
+        }
+        ZoneOffset offsetToConfiguredZone = timeZoneOfThing.getRules().getOffset(rawInstant);
         long adjustedTime = rawInstant.getEpochSecond() - offsetToConfiguredZone.getTotalSeconds();
         Instant adjustedInstant = Instant.ofEpochMilli(adjustedTime * 1000);
 
@@ -353,12 +357,10 @@ public class RobonectHandler extends BaseThingHandler {
             } else {
                 logger.warn("No timezone provided, falling back to the default timezone configured in openHAB: '{}'",
                         timeZoneProvider.getTimeZone());
-                timeZone = timeZoneProvider.getTimeZone();
             }
         } catch (DateTimeException e) {
             logger.warn("Error setting timezone '{}', falling back to the default timezone configured in openHAB: '{}'",
                     timeZoneString, timeZoneProvider.getTimeZone(), e);
-            timeZone = timeZoneProvider.getTimeZone();
         }
 
         try {
