@@ -13,6 +13,7 @@
 package org.openhab.binding.teleinfo.internal.handler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -27,7 +28,7 @@ import org.openhab.binding.teleinfo.internal.reader.Frame;
  */
 public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandler {
 
-    private List<TeleinfoControllerHandlerListener> listeners = new ArrayList<>();
+    private List<TeleinfoControllerHandlerListener> listeners = Collections.synchronizedList(new ArrayList<>());
 
     public TeleinfoAbstractControllerHandler(@NonNull Bridge bridge) {
         super(bridge);
