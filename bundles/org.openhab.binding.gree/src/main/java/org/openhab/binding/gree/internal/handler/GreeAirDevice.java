@@ -132,7 +132,7 @@ public class GreeAirDevice {
         } catch (IOException e) {
             throw new GreeException("I/O exception while receiving data", e);
         } catch (RuntimeException e) {
-            String json = statusResponseGson.isPresent() ? statusResponseGson.get().packJson.toString() : "n/a";
+            String json = statusResponseGson.map(r -> r.packJson.toString()).orElse("n/a");
             throw new GreeException("Exception while receiving data, JSON=" + json, e);
         }
     }
@@ -329,16 +329,22 @@ public class GreeAirDevice {
          * "SvSt": Power Saving
          */
         // Find the valueName in the Returned Status object
-        List<String> colList = Arrays.asList(statusResponseGson.get().packJson.cols);
-        List<Integer> valList = Arrays.asList(statusResponseGson.get().packJson.dat);
-        int valueArrayposition = colList.indexOf(valueName);
-        if (valueArrayposition == -1) {
-            return -1;
+        if (isStatusAvailable()) {
+            List<String> colList = Arrays.asList(statusResponseGson.get().packJson.cols);
+            List<Integer> valList = Arrays.asList(statusResponseGson.get().packJson.dat);
+            int valueArrayposition = colList.indexOf(valueName);
+            if (valueArrayposition != -1) {
+                // get the Corresponding value
+                Integer value = valList.get(valueArrayposition);
+                return value;
+            }
         }
 
-        // Now get the Corresponding value
-        Integer value = valList.get(valueArrayposition);
-        return value;
+        return -1;
+    }
+
+    public boolean isStatusAvailable() {
+        return statusResponseGson.isPresent();
     }
 
     public boolean hasStatusValChanged(String valueName) throws GreeException {

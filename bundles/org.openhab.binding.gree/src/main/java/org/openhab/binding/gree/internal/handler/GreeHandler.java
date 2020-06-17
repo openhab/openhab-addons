@@ -64,6 +64,7 @@ public class GreeHandler extends BaseThingHandler {
     private GreeAirDevice device = new GreeAirDevice();
     private Optional<DatagramSocket> clientSocket = Optional.empty();
     private final String thingId;
+    private boolean forceRefresh = false;
 
     private @Nullable ScheduledFuture<?> refreshTask;
     private long lastRefreshTime = 0;
@@ -127,7 +128,7 @@ public class GreeHandler extends BaseThingHandler {
             logger.warn("{}: Initialization failed", thingId, e);
         }
 
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Thing initialization failed!");
     }
 
     @Override
@@ -184,6 +185,9 @@ public class GreeHandler extends BaseThingHandler {
                         device.setDevicePwrSaving(socket, getOnOff(command));
                         break;
                 }
+
+                // force refresh on next status refresh cycle
+                forceRefresh = true;
             } catch (GreeException e) {
                 logger.debug("{}: Unable to execute command {} for channel {}: {}", thingId, command, channelId,
                         e.toString());
@@ -326,16 +330,6 @@ public class GreeHandler extends BaseThingHandler {
         throw new IllegalArgumentException("Invalud Temp type");
     }
 
-    private boolean isMinimumRefreshTimeExceeded() {
-        long currentTime = Instant.now().toEpochMilli();
-        long timeSinceLastRefresh = currentTime - lastRefreshTime;
-        if (timeSinceLastRefresh < config.refresh * 1000) {
-            return false;
-        }
-        lastRefreshTime = currentTime;
-        return true;
-    }
-
     private void startAutomaticRefresh() {
         Runnable refresher = () -> {
             try {
@@ -350,22 +344,33 @@ public class GreeHandler extends BaseThingHandler {
                     for (Channel channel : channels) {
                         publishChannel(channel.getUID());
                     }
-                } else {
-                    logger.trace(
-                            "{}: Skipped fetching status values from device because minimum refresh time not reached",
-                            thingId);
                 }
             } catch (GreeException e) {
                 if (!e.isTimeout()) {
-                    logger.warn("{}: Unable to perform auto-update: {}", thingId, e.toString());
+                    logger.warn("{}: Unable to perform auto-update: {} ({})", thingId, e.toString(),
+                            e.getCause().getMessage());
                 }
             } catch (RuntimeException e) {
                 logger.warn("{}: Unable to perform auto-update", thingId, e);
             }
         };
 
+        forceRefresh = false;
+        if ((refreshTask != null) && !refreshTask.isCancelled()) {
+            refreshTask.cancel(true);
+        }
         refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
         logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refresh);
+    }
+
+    private boolean isMinimumRefreshTimeExceeded() {
+        long currentTime = Instant.now().toEpochMilli();
+        long timeSinceLastRefresh = currentTime - lastRefreshTime;
+        lastRefreshTime = currentTime;
+        if (!forceRefresh && ((lastRefreshTime == 0) || (timeSinceLastRefresh < config.refresh * 1000))) {
+            return false;
+        }
+        return true;
     }
 
     private void publishChannel(ChannelUID channelUID) {
