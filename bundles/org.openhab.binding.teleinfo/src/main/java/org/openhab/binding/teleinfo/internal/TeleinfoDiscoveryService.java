@@ -168,32 +168,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
         Map<String, Object> properties = new HashMap<String, Object>();
         if (teleinfoFrame instanceof FrameAdco) {
             final FrameAdco frameAdco = (FrameAdco) teleinfoFrame;
-
-            if (THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_BASE_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_TEMPO_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_EJP_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_BASE_CBETM_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_HC_CBETM_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_TEMPO_CBETM_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            } else if (THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID.equals(thingTypeId)) {
-                properties.put(THING_EJP_CBETM_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
-            }
+            properties.put(THING_ELECTRICITY_METER_PROPERTY_ADCO, frameAdco.getAdco());
 
             return properties;
         }
