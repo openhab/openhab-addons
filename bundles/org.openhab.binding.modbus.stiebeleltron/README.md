@@ -12,9 +12,9 @@ A Internet Service Gateway (ISG) with an installed modbus extension is required 
 This bundle adds the following thing types to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
-| Thing                    | Description                                        |
-| ------------------------ | -------------------------------------------------- |
-| Stiebel Eltron ISG | A stiebel eltron heat pump connected through a ISG |
+| Thing              | ThingTypeID | Description                                        |
+| ------------------ | ----------- | -------------------------------------------------- |
+| Stiebel Eltron ISG | heatpump    | A stiebel eltron heat pump connected through a ISG |
 
 ## Discovery
 
@@ -59,13 +59,13 @@ This group contains general operational information about the heat pump.
 
 This group contains system paramters of the heat pump.
 
-| Channel ID                  | Item Type          | Read only | Description                                 |
-| --------------------------- | ------------------ | --------- | ------------------------------------------- |
-| operation-mode              | Number             | false     | The current operation mode of the heat pump |
-| comfort-temperature-heating | Number:Temperature | false     | The current heating comfort temperature     |
-| eco-temperature-heating     | Number:Temperature | false     | The current heating eco temperature         |
-| comfort-temperature-water   | Number:Temperature | false     | The current water comfort temperature       |
-| eco-temperature-water       | Number:Temperature | false     | The current water eco temperature           |
+| Channel ID                  | Item Type          | Read only | Description                                                                                                                                    |
+| --------------------------- | ------------------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| operation-mode              | Number             | false     | The current operation mode of the heat pump (1=ready mode, 2=program mode, 3=comfort mode, 4=eco mode, 5=heating water mode, 0=emergency mode) |
+| comfort-temperature-heating | Number:Temperature | false     | The current heating comfort temperature                                                                                                        |
+| eco-temperature-heating     | Number:Temperature | false     | The current heating eco temperature                                                                                                            |
+| comfort-temperature-water   | Number:Temperature | false     | The current water comfort temperature                                                                                                          |
+| eco-temperature-water       | Number:Temperature | false     | The current water eco temperature                                                                                                              |
 
 ### System Information Group 
 
@@ -92,14 +92,14 @@ This group contains about the energy consumption and delivery of the heat pump.
 
 | Channel ID              | Item Type     | Read only | Description                                      |
 | ----------------------- | ------------- | --------- | ------------------------------------------------ |
-| production_heat_today   | Number:Energy | true      | The heat quantity delivered today                |
-| production_heat_total   | Number:Energy | true      | The heat quantity delivered in total             |
-| production_water_today  | Number:Energy | true      | The water heat quantity delivered today          |
-| production_water_total  | Number:Energy | true      | The water heat quantity delivered in total       |
-| consumption_heat_today  | Number:Energy | true      | The power consumption for heating today          |
-| consumption_heat_total  | Number:Energy | true      | The power consumption for heating in total       |
-| consumption_water_today | Number:Energy | true      | The power consumption for water heating today    |
-| consumption_water_total | Number:Energy | true      | The power consumption for water heating in total |
+| production-heat-today   | Number:Energy | true      | The heat quantity delivered today                |
+| production-heat-total   | Number:Energy | true      | The heat quantity delivered in total             |
+| production-water-today  | Number:Energy | true      | The water heat quantity delivered today          |
+| production-water-total  | Number:Energy | true      | The water heat quantity delivered in total       |
+| consumption-heat-today  | Number:Energy | true      | The power consumption for heating today          |
+| consumption-heat-total  | Number:Energy | true      | The power consumption for heating in total       |
+| consumption-water-today | Number:Energy | true      | The power consumption for water heating today    |
+| consumption-water-total | Number:Energy | true      | The power consumption for water heating in total |
 
 
 

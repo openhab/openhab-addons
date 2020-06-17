@@ -47,14 +47,14 @@
 	<channel-group-type id="energy-information">
 		<label>Energy Information</label>
 		<channels>
-			<channel id="production_heat_today" typeId="production_heat_today-type" />
-			<channel id="production_heat_total" typeId="production_heat_total-type" />
-			<channel id="production_water_today" typeId="production_water_today-type" />
-			<channel id="production_water_total" typeId="production_water_total-type" />
-			<channel id="consumption_heat_today" typeId="consumption_heat_today-type" />
-			<channel id="consumption_heat_total" typeId="consumption_heat_total-type" />
-			<channel id="consumption_water_today" typeId="consumption_water_today-type" />
-			<channel id="consumption_water_total" typeId="consumption_water_total-type" />
+			<channel id="production-heat-today" typeId="production-heat-today-type" />
+			<channel id="production_heat-total" typeId="production-heat-total-type" />
+			<channel id="production-water-today" typeId="production-water-today-type" />
+			<channel id="production-water-total" typeId="production-water-total-type" />
+			<channel id="consumption-heat-today" typeId="consumption-heat-today-type" />
+			<channel id="consumption-heat-total" typeId="consumption-heat-total-type" />
+			<channel id="consumption-water-today" typeId="consumption-water-today-type" />
+			<channel id="consumption-water-total" typeId="consumption-water-total-type" />
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

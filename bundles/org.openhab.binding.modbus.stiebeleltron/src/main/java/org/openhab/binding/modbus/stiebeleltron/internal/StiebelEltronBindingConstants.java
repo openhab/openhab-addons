@@ -50,14 +50,14 @@ public class StiebelEltronBindingConstants {
     public static final String CHANNEL_WATER_TEMPERATURE = "water-temperature";
     public static final String CHANNEL_WATER_TEMPERATURE_SETPOINT = "water-temperature-setpoint";
 
-    public static final String CHANNEL_PRODUCTION_HEAT_TODAY = "production_heat_today";
-    public static final String CHANNEL_PRODUCTION_HEAT_TOTAL = "production_heat_total";
-    public static final String CHANNEL_PRODUCTION_WATER_TODAY = "production_water_today";
-    public static final String CHANNEL_PRODUCTION_WATER_TOTAL = "production_water_total";
-    public static final String CHANNEL_CONSUMPTION_HEAT_TODAY = "consumption_heat_today";
-    public static final String CHANNEL_CONSUMPTION_HEAT_TOTAL = "consumption_heat_total";
-    public static final String CHANNEL_CONSUMPTION_WATER_TODAY = "consumption_water_today";
-    public static final String CHANNEL_CONSUMPTION_WATER_TOTAL = "consumption_water_total";
+    public static final String CHANNEL_PRODUCTION_HEAT_TODAY = "production-heat-today";
+    public static final String CHANNEL_PRODUCTION_HEAT_TOTAL = "production-heat-total";
+    public static final String CHANNEL_PRODUCTION_WATER_TODAY = "production-water-today";
+    public static final String CHANNEL_PRODUCTION_WATER_TOTAL = "production-water-total";
+    public static final String CHANNEL_CONSUMPTION_HEAT_TODAY = "consumption-heat-today";
+    public static final String CHANNEL_CONSUMPTION_HEAT_TOTAL = "consumption-heat-total";
+    public static final String CHANNEL_CONSUMPTION_WATER_TODAY = "consumption-water-today";
+    public static final String CHANNEL_CONSUMPTION_WATER_TOTAL = "consumption-water-total";
 
     public static final String CHANNEL_IS_HEATING = "is-heating";
     public static final String CHANNEL_IS_HEATING_WATER = "is-heating-water";
