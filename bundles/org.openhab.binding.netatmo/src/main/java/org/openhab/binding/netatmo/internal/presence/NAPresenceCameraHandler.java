@@ -146,7 +146,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
             //The local address is (re-)requested when it wasn't already determined or when the vpn address was changed.
             if (!cameraAddress.isPresent() || cameraAddress.get().isVpnURLChanged(vpnURL)) {
                 Optional<JSONObject> json = executeGETRequestJSON(vpnURL + PING_URL_PATH);
-                cameraAddress = json.map(j -> j.getString("local_url"))
+                cameraAddress = json.map(j -> j.optString("local_url", null))
                         .map(localURL -> new CameraAddress(vpnURL, localURL));
             }
         }
