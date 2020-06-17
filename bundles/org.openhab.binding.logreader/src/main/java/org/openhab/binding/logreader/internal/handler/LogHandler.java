@@ -163,7 +163,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     @Override
     public void fileRotated() {
         logger.debug("Log rotated");
-        updateChannelIfLinked(CHANNEL_LOGROTATED, new DateTimeType(ZonedDateTime.now(ZoneId.systemDefault())));
+        updateChannelIfLinked(CHANNEL_LOGROTATED, new DateTimeType(ZonedDateTime.now()));
     }
 
     @Override
