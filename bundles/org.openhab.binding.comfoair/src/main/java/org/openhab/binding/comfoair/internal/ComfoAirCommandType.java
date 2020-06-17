@@ -581,45 +581,48 @@ public enum ComfoAirCommandType {
     /*
      * Possible values
      */
-    private int @Nullable [] possible_values;
+    private final int @Nullable [] possible_values;
 
     /*
      * Cmd code to change properties on the comfoair.
      */
-    private int change_command;
+    private final int change_command;
+
     /*
      * The size of the data block.
      */
-    private int change_data_size;
+    private final int change_data_size;
+
     /*
      * The byte inside the data block which holds the crucial value.
      */
-    private int change_data_pos;
+    private final int change_data_pos;
+
     /*
      * Affected commands which should be refreshed after a successful change
      * command call.
      */
-    private String @Nullable [] change_affected;
+    private final String @Nullable [] change_affected;
 
     /*
      * Command for reading properties.
      */
-    private int read_command;
+    private final int read_command;
 
     /*
      * ACK Command which identifies the matching response.
      */
-    private int read_reply_command;
+    private final int read_reply_command;
 
     /*
      * The byte position inside the response data.
      */
-    private int @Nullable [] read_reply_data_pos;
+    private final int @Nullable [] read_reply_data_pos;
 
     /*
      * Bit mask for boolean response properties to identify a true value.
      */
-    private int read_reply_data_bits;
+    private final int read_reply_data_bits;
 
     /*
      * Constructor for full read/write command
@@ -656,6 +659,7 @@ public enum ComfoAirCommandType {
         this.read_command = read_command;
         this.read_reply_command = read_reply_command;
         this.read_reply_data_pos = read_reply_data_pos;
+        this.read_reply_data_bits = 0;
     }
 
     /*
@@ -666,6 +670,7 @@ public enum ComfoAirCommandType {
             int[] read_reply_data_pos) {
         this.key = key;
         this.data_type = data_type;
+        this.possible_values = null;
         this.change_command = change_command;
         this.change_data_size = change_data_size;
         this.change_data_pos = change_data_pos;
@@ -673,6 +678,7 @@ public enum ComfoAirCommandType {
         this.read_command = read_command;
         this.read_reply_command = read_reply_command;
         this.read_reply_data_pos = read_reply_data_pos;
+        this.read_reply_data_bits = 0;
     }
 
     /*
@@ -683,11 +689,14 @@ public enum ComfoAirCommandType {
         this.key = key;
         this.data_type = data_type;
         this.possible_values = possible_values;
-        this.read_command = 0;
         this.change_command = change_command;
         this.change_data_size = change_data_size;
         this.change_data_pos = change_data_pos;
         this.change_affected = change_affected;
+        this.read_command = 0;
+        this.read_reply_command = 0;
+        this.read_reply_data_pos = null;
+        this.read_reply_data_bits = 0;
     }
 
     /*
@@ -697,6 +706,11 @@ public enum ComfoAirCommandType {
             int[] read_reply_data_pos, int read_reply_data_bits) {
         this.key = key;
         this.data_type = data_type;
+        this.possible_values = null;
+        this.change_command = 0;
+        this.change_data_size = 0;
+        this.change_data_pos = 0;
+        this.change_affected = null;
         this.read_command = read_command;
         this.read_reply_command = read_reply_command;
         this.read_reply_data_pos = read_reply_data_pos;
@@ -710,9 +724,15 @@ public enum ComfoAirCommandType {
             int[] read_reply_data_pos) {
         this.key = key;
         this.data_type = data_type;
+        this.possible_values = null;
+        this.change_command = 0;
+        this.change_data_size = 0;
+        this.change_data_pos = 0;
+        this.change_affected = null;
         this.read_command = read_command;
         this.read_reply_command = read_reply_command;
         this.read_reply_data_pos = read_reply_data_pos;
+        this.read_reply_data_bits = 0;
     }
 
     public static class Constants {
@@ -841,6 +861,9 @@ public enum ComfoAirCommandType {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
 
         if (commandType != null) {
+            if (commandType.read_command == 0) {
+                return null;
+            }
             return new ComfoAirCommand(key);
         }
         return null;
