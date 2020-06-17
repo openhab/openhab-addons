@@ -35,6 +35,7 @@ following configuration settings are supported for the `mower` thing.
 | offlineTimeout | no        | the maximum time, the mower can be offline before the binding triggers the offlineTrigger channel |
 | user           | no        | the username if authentication is enabled in the firmware.                                        |
 | password       | no        | the password if authenticaiton is enabled in the firmware.                                        |
+| timezone       | no        | the timezone as configured in Robonect on the robot (default: Europe/Berlin)                      |
 
 
 An example things configuration might look like
