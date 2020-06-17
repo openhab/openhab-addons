@@ -144,7 +144,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             lastError.set(result.getCause());
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         assertThat(okCount.get(), is(equalTo(0)));
         assertThat(errorCount.get(), is(equalTo(1)));
@@ -182,11 +182,12 @@ public class SmokeTest extends IntegrationTestSupport {
                             lastError.set(result.getCause());
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
+
+            assertThat(okCount.get(), is(equalTo(0)));
+            assertThat(errorCount.get(), is(equalTo(1)));
+            assertTrue(lastError.toString(), lastError.get() instanceof ModbusConnectionException);
         }
-        assertThat(okCount.get(), is(equalTo(0)));
-        assertThat(errorCount.get(), is(equalTo(1)));
-        assertTrue(lastError.toString(), lastError.get() instanceof ModbusConnectionException);
     }
 
     /**
@@ -246,15 +247,17 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
-        }
-        assertThat(unexpectedCount.get(), is(equalTo(0)));
-        BitArray bits = (BitArray) lastData.get();
-        assertThat(bits.size(), is(equalTo(count)));
-        if (functionCode == ModbusReadFunctionCode.READ_INPUT_DISCRETES) {
-            testDiscreteValues(bits, offset);
-        } else {
-            testCoilValues(bits, offset);
+            callbackCalled.await(60, TimeUnit.SECONDS);
+
+            assertThat(unexpectedCount.get(), is(equalTo(0)));
+            BitArray bits = (BitArray) lastData.get();
+            assertThat(bits, notNullValue());
+            assertThat(bits.size(), is(equalTo(count)));
+            if (functionCode == ModbusReadFunctionCode.READ_INPUT_DISCRETES) {
+                testDiscreteValues(bits, offset);
+            } else {
+                testCoilValues(bits, offset);
+            }
         }
     }
 
@@ -339,7 +342,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         ModbusRegisterArray registers = (ModbusRegisterArray) lastData.get();
@@ -369,7 +372,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         ModbusRegisterArray registers = (ModbusRegisterArray) lastData.get();
@@ -444,7 +447,7 @@ public class SmokeTest extends IntegrationTestSupport {
                     callbackCalled.countDown();
                 }
             });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
 
         assertThat(unexpectedCount.get(), is(equalTo(0)));
@@ -484,7 +487,7 @@ public class SmokeTest extends IntegrationTestSupport {
                     callbackCalled.countDown();
                 }
             });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         ModbusResponse response = (ModbusResponse) lastData.get();
@@ -524,7 +527,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             callbackCalled.countDown();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         assertThat(unexpectedCount.get(), is(equalTo(0)));
         assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
@@ -573,7 +576,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
@@ -614,7 +617,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
@@ -648,7 +651,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
@@ -711,7 +714,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
         }
         long end = System.currentTimeMillis();
         assertPollDetails(unexpectedCount, expectedReceived, start, end, 190, 600);
@@ -751,7 +754,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(5, TimeUnit.SECONDS);
+            callbackCalled.await(60, TimeUnit.SECONDS);
             long end = System.currentTimeMillis();
             assertPollDetails(unexpectedCount, expectedReceived, start, end, 190, 600);
 
@@ -817,7 +820,7 @@ public class SmokeTest extends IntegrationTestSupport {
                         response -> {
                             latch.countDown();
                         });
-                assertTrue(latch.await(1, TimeUnit.SECONDS));
+                assertTrue(latch.await(60, TimeUnit.SECONDS));
             }
             waitForAssert(() -> {
                 // 3. ensure one open connection
@@ -832,7 +835,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             new ModbusReadRequestBlueprint(1, ModbusReadFunctionCode.READ_COILS, 0, 1, 1), response -> {
                                 latch.countDown();
                             });
-                    assertTrue(latch.await(1, TimeUnit.SECONDS));
+                    assertTrue(latch.await(60, TimeUnit.SECONDS));
                 }
                 assertThat(getNumberOfOpenClients(socketSpy), is(equalTo(1L)));
                 // wait for moment (to check that no connections are closed)
