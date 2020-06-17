@@ -13,7 +13,7 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
-import static org.openhab.binding.deconz.internal.Util.buildUrl;
+import static org.openhab.binding.deconz.internal.Util.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,8 +88,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
-        ct_max = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MAX), 500);
-        ct_min = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MIN), 153);
+        ct_max = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MAX), ZCL_CT_MAX);
+        ct_min = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MIN), ZCL_CT_MIN);
     }
 
     @Override
@@ -179,7 +179,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof DecimalType) {
-                    newLightState.ct = unscaleColorTemperature(((DecimalType) command).doubleValue());
+                    int miredValue  = kelvinToMired(((DecimalType) command).intValue());
+                    newLightState.ct = constrainToRange(miredValue,ct_min, ct_max);
 
                     if (currentOn != null && !currentOn) {
                         // sending new color temperature is only allowed when light is on
@@ -294,8 +295,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 Integer ct = newState.ct;
-                if (ct != null) {
-                    updateState(channelId, new DecimalType(scaleColorTemperature(ct)));
+                if (ct != null && ct >= ct_min && ct <= ct_max) {
+                    updateState(channelId, new DecimalType(miredToKelvin(ct)));
                 }
                 break;
             case CHANNEL_POSITION:
@@ -325,13 +326,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         }
     }
 
-    private int unscaleColorTemperature(final double ct) {
-        return (int) (ct / 100.0 * (ct_max - ct_min) + ct_min);
-    }
-
-    private double scaleColorTemperature    (final int ct) {
-        return 100.0 * (ct - ct_min) / (ct_max - ct_min);
-    }
 
     private PercentType toPercentType(int val) {
         int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
