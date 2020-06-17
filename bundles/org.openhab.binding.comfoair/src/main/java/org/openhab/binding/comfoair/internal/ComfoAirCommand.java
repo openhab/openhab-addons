@@ -54,10 +54,26 @@ public class ComfoAirCommand {
         this.keys = new ArrayList<String>();
         this.keys.add(key);
         this.requestCmd = requestCmd;
-        this.requestData = data;
-        this.requestValue = requestValue;
-        this.dataPosition = dataPosition;
         this.replyCmd = replyCmd;
+        this.requestData = data;
+        this.dataPosition = dataPosition;
+        this.requestValue = requestValue;
+    }
+
+    /*
+     * Constructor for basic read command
+     */
+    public ComfoAirCommand(String key) {
+        this.keys = new ArrayList<String>();
+        this.keys.add(key);
+        ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
+        if (commandType != null) {
+            this.requestCmd = commandType.getReadCommand() == 0 ? null : commandType.getReadCommand();
+            this.replyCmd = commandType.getReadReplyCommand();
+        }
+        this.requestData = ComfoAirCommandType.Constants.EMPTY_INT_ARRAY;
+        this.dataPosition = null;
+        this.requestValue = null;
     }
 
     /**

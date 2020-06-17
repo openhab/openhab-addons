@@ -778,6 +778,20 @@ public enum ComfoAirCommandType {
     }
 
     /**
+     * @return read_command for this command key
+     */
+    public int getReadCommand() {
+        return read_command;
+    }
+
+    /**
+     * @return read_command for this command key
+     */
+    public int getReadReplyCommand() {
+        return read_reply_command;
+    }
+
+    /**
      * @return possible byte values
      */
     public int @Nullable [] getPossibleValues() {
@@ -827,13 +841,7 @@ public enum ComfoAirCommandType {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
 
         if (commandType != null) {
-            if (commandType.read_command == 0) {
-                return null;
-            }
-            int getCmd = commandType.read_command;
-            int replyCmd = commandType.read_reply_command;
-
-            return new ComfoAirCommand(key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null, null);
+            return new ComfoAirCommand(key);
         }
         return null;
     }
@@ -897,11 +905,9 @@ public enum ComfoAirCommandType {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
         if (commandType != null) {
             if (commandType.read_reply_command != 0) {
-                int getCmd = commandType.read_command == 0 ? null : commandType.read_command;
                 int replyCmd = commandType.read_reply_command;
 
-                ComfoAirCommand command = new ComfoAirCommand(key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null,
-                        null);
+                ComfoAirCommand command = new ComfoAirCommand(key);
                 commands.put(replyCmd, command);
             }
 
@@ -983,13 +989,12 @@ public enum ComfoAirCommandType {
     @SuppressWarnings("null")
     private static Map<Integer, ComfoAirCommand> modifiedCommandCollection(Map<Integer, ComfoAirCommand> commands,
             ComfoAirCommandType commandType) {
-        int getCmd = commandType.read_command == 0 ? null : commandType.read_command;
         int replyCmd = commandType.read_reply_command;
 
         ComfoAirCommand command = commands.get(replyCmd);
 
         if (command == null) {
-            command = new ComfoAirCommand(commandType.key, getCmd, replyCmd, Constants.EMPTY_INT_ARRAY, null, null);
+            command = new ComfoAirCommand(commandType.key);
             commands.put(replyCmd, command);
         } else {
             command.addKey(commandType.key);
