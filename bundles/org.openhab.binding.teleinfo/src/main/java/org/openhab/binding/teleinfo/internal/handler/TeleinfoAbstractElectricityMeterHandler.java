@@ -50,8 +50,6 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Electricity Meter thing handler {}.", getThing().getUID());
-
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
 
         Bridge bridge = getBridge();
@@ -63,22 +61,19 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("Controller status changed to {}.", bridgeStatusInfo.getStatus());
-
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
-            logger.debug("Controller is not online ({})", bridgeStatusInfo.getStatus());
             return;
         }
 
-        logger.debug("Controller is ONLINE. Starting Electricity Meter thing initialization");
-        updateStatus(ThingStatus.UNKNOWN);
-
-        TeleinfoAbstractControllerHandler controllerHandler = (TeleinfoAbstractControllerHandler) getBridge()
-                .getHandler();
-        controllerHandler.addListener(this);
-        logger.debug("Electricity Meter initialization complete.");
-        updateStatus(ThingStatus.ONLINE);
+        Bridge bridge = getBridge();
+        if(bridge != null) {
+            TeleinfoAbstractControllerHandler controllerHandler = (TeleinfoAbstractControllerHandler) bridge.getHandler();
+            if(controllerHandler != null) {
+                controllerHandler.addListener(this);
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
     }
 
     @Override
