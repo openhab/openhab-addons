@@ -29,7 +29,6 @@ public class TeleinfoBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERIAL_CONTROLLER = new ThingTypeUID(BINDING_ID, "serialcontroller");
     public static final String THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER = "invalidFrameCounter";
-    // public static final ThingTypeUID THING_TYPE_REMOTE_IP = new ThingTypeUID(BINDING_ID, "remoteip");
 
     // List of commons channel ids
     public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
