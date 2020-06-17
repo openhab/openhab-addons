@@ -85,6 +85,7 @@ public class HomekitOHItemProxy {
         final PercentType brightness = (PercentType) commandCache.remove(BRIGHTNESS_COMMAND);
         final DecimalType hue = (DecimalType) commandCache.remove(HUE_COMMAND);
         final PercentType saturation = (PercentType) commandCache.remove(SATURATION_COMMAND);
+        final @Nullable OnOffType currentOnState = ((DimmerItem) item).getStateAs(OnOffType.class);
         if (on != null) {
             // always sends OFF.
             // sends ON only if
@@ -93,7 +94,7 @@ public class HomekitOHItemProxy {
             // - DIMMER_MODE_FILTER_ON_EXCEPT100 is not enabled and brightness is null or below 100
             if ((on == OnOffType.OFF) || (dimmerMode == DIMMER_MODE_NORMAL)
                     || (dimmerMode == DIMMER_MODE_FILTER_BRIGHTNESS_100)
-                    || ((dimmerMode == DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100)
+                    || ((dimmerMode == DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100) && (currentOnState != OnOffType.ON)
                             && ((brightness == null) || (brightness.intValue() == 100)))) {
                 logger.trace("send OnOff command for item {} with value {}", item, on);
                 ((DimmerItem) item).send(on);
@@ -119,7 +120,7 @@ public class HomekitOHItemProxy {
             // - other modes (DIMMER_MODE_FILTER_BRIGHTNESS_100 or DIMMER_MODE_FILTER_ON_EXCEPT_BRIGHTNESS_100) and
             // <100%.
             if ((dimmerMode == DIMMER_MODE_NORMAL) || (dimmerMode == DIMMER_MODE_FILTER_ON)
-                    || (brightness.intValue() < 100)) {
+                    || (brightness.intValue() < 100) || (currentOnState == OnOffType.ON)) {
                 logger.trace("send Brightness command for item {} with value {}", item, brightness);
                 ((DimmerItem) item).send(brightness);
             }
