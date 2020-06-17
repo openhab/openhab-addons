@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.robonect.internal.handler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
+import java.time.ZoneId;
 import java.util.Calendar;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -38,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.robonect.internal.RobonectBindingConstants;
 import org.openhab.binding.robonect.internal.RobonectClient;
@@ -53,7 +53,7 @@ import org.openhab.binding.robonect.internal.model.Wlan;
 
 /**
  * The goal of this class is to test RobonectHandler in isolation.
- * 
+ *
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectHandlerTest {
@@ -72,12 +72,17 @@ public class RobonectHandlerTest {
     @Mock
     private HttpClient httpClientMock;
 
+    @Mock
+    private TimeZoneProvider timezoneProvider;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        subject = new RobonectHandler(robonectThingMock, httpClientMock);
+        subject = new RobonectHandler(robonectThingMock, httpClientMock, timezoneProvider);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
+
+        Mockito.when(timezoneProvider.getTimeZone()).thenReturn(ZoneId.of("Europe/Berlin"));
     }
 
     @Test
