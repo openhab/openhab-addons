@@ -61,12 +61,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
-            .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, 
-                    THING_TYPE_DIMMABLE_LIGHT, 
-                    THING_TYPE_COLOR_LIGHT,
-                    THING_TYPE_EXTENDED_COLOR_LIGHT, 
-                    THING_TYPE_ONOFF_LIGHT, 
-                    THING_TYPE_WINDOW_COVERING)
+            .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
+                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING)
             .collect(Collectors.toSet());
 
     private static final double HUE_FACTOR = 65535 / 360.0;
@@ -280,10 +276,11 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                         HSBType color = HSBType.fromXY((float) xy[0], (float) xy[1]);
                         updateState(channelId, new HSBType(color.getHue(), color.getSaturation(), toPercentType(bri)));
                     }
-                } else if (bri != null && newState.hue != null && newState.sat != null) { 
+                } else if (bri != null && newState.hue != null && newState.sat != null) {
                     final Integer hue = newState.hue;
                     final Integer sat = newState.sat;
-                    updateState(channelId, new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
+                    updateState(channelId,
+                            new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
@@ -325,7 +322,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             }
         }
     }
-
 
     private PercentType toPercentType(int val) {
         int scaledValue = (int) Math.ceil(val / BRIGHTNESS_FACTOR);
