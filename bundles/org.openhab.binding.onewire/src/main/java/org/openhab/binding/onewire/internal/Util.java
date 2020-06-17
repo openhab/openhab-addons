@@ -95,7 +95,7 @@ public class Util {
             return properties.entrySet().stream()
                     .collect(Collectors.toMap(e -> (String) e.getKey(), e -> (String) e.getValue()));
         } catch (IOException e) {
-            LOGGER.error("could not read resource file {}, binding will probably fail: {}", filename, e.getMessage());
+            LOGGER.warn("Could not read resource file {}, binding will probably fail: {}", filename, e.getMessage());
             return new HashMap<>();
         }
     }
