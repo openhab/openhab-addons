@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-// @Component(service = DiscoveryService.class, immediate = false, configurationPid = "discovery.teleinfo")
 public class TeleinfoDiscoveryService extends AbstractDiscoveryService implements TeleinfoControllerHandlerListener {
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
