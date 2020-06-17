@@ -745,7 +745,6 @@ public class SmokeTest extends IntegrationTestSupport {
                                 expectedReceived.incrementAndGet();
                                 errorCount.incrementAndGet();
                                 generateData();
-                                callbackCalled.countDown();
                             }
                         } else {
                             // bits
