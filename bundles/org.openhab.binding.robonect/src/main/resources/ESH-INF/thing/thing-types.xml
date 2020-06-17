@@ -80,6 +80,11 @@
 				<description>The maximum time the mower may be offline before the offline trigger is triggered.
 				</description>
 			</parameter>
+			<parameter name="timezone" type="text" required="false">
+				<label>Timezone</label>
+				<default>Europe/Berlin</default>
+				<description>The timezone configured on the robot (e.g. Europe/Berlin).</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
