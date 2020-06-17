@@ -152,12 +152,10 @@ public class GreeBindingConstants {
      * This is particularly important when scanning for devices because this will effectively
      * be the amount of time spent scanning.
      */
-    public static final int DATAGRAM_SOCKET_TIMEOUT = 5000;
-    public static final int MINIMUM_REFRESH_TIME_MS = 1000;
-    public static final int DEFAULT_REFRESH_TIME_MS = 1000;
-
-    public static final int DISCOVERY_TIMEOUT_MS = 7000;
+    public static final int DATAGRAM_SOCKET_TIMEOUT = 5000; // regular read timeout
+    public static final int DISCOVERY_TIMEOUT_MS = 7000; // do not change!!
     public static final int MAX_SCAN_CYCLES = 3;
+    public static final int REFRESH_INTERVAL_SEC = 5;
 
     public static final int DIGITS_TEMP = 1;
 }

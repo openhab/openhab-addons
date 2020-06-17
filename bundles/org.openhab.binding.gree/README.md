@@ -42,7 +42,7 @@ The following channels are supported for fans:
 |---------------|-----------|---------------------------------------------------------------------------------------------------|
 | power         | Switch    | Power on/off the Air Conditioner                                                                  |
 | mode          | String    | Sets the operating mode of the Air Conditioner                                                    |
-|               |           | Mode can be one of auto/cool/eco/dry/fan/turbo/heat or on/off                                     |
+|               |           | Mode can be one of auto/cool/eco/dry/fan/heat or on/off                                     |
 |               |           | Check the Air Conditioner's operating manual for supported modes.                                 |
 | temperature   | Number    | Sets the desired room temperature                                                                 |
 | air           | Switch    | Set on/off the Air Conditioner's Air function if applicable to the Air Conditioner model          |

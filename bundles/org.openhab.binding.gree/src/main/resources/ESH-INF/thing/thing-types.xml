@@ -125,13 +125,13 @@
 		<description>@text/channel-type.gree.swingleftright.description</description>
 		<state>
 			<options>
-				<option value="0">@text/channel-type.gree.swingleftright..option.0</option>
-				<option value="1">@text/channel-type.gree.swingleftright..option.1</option>
-				<option value="2">@text/channel-type.gree.swingleftright..option.2</option>
-				<option value="3">@text/channel-type.gree.swingleftright..option.3</option>
-				<option value="4">@text/channel-type.gree.swingleftright..option.4</option>
-				<option value="5">@text/channel-type.gree.swingleftright..option.5</option>
-				<option value="6">@text/channel-type.gree.swingleftright..option.6</option>
+				<option value="0">@text/channel-type.gree.swingleftright.option.0</option>
+				<option value="1">@text/channel-type.gree.swingleftright.option.1</option>
+				<option value="2">@text/channel-type.gree.swingleftright.option.2</option>
+				<option value="3">@text/channel-type.gree.swingleftright.option.3</option>
+				<option value="4">@text/channel-type.gree.swingleftright.option.4</option>
+				<option value="5">@text/channel-type.gree.swingleftright.option.5</option>
+				<option value="6">@text/channel-type.gree.swingleftright.option.6</option>
 			</options>
 		</state>
 	</channel-type>

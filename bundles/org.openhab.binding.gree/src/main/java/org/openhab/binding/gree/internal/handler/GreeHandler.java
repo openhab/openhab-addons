@@ -17,6 +17,7 @@ import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.DatagramSocket;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -62,6 +63,7 @@ public class GreeHandler extends BaseThingHandler {
     private GreeDeviceFinder deviceFinder = new GreeDeviceFinder();
     private GreeAirDevice device = new GreeAirDevice();
     private Optional<DatagramSocket> clientSocket = Optional.empty();
+    private final String thingId;
 
     private @Nullable ScheduledFuture<?> refreshTask;
     private long lastRefreshTime = 0;
@@ -69,14 +71,16 @@ public class GreeHandler extends BaseThingHandler {
     public GreeHandler(Thing thing, GreeTranslationProvider messages) {
         super(thing);
         this.messages = messages;
+        String label = getThing().getLabel();
+        this.thingId = label != null ? label : getThing().getUID().getId();
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(GreeConfiguration.class);
-        logger.debug("Config for {} is {}", thing.getUID(), config.toString());
+        logger.debug("{}: Config for {} is {}", thing.getUID(), thingId, config.toString());
         if (config.ipAddress.isEmpty() || (config.refresh < 0)) {
-            logger.warn("Config of {} is invalid. Check configuration", thing.getUID());
+            logger.warn("{}: Config of {} is invalid. Check configuration", thingId, thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Invalid configuration. Check thing configuration.");
             return;
@@ -98,7 +102,7 @@ public class GreeHandler extends BaseThingHandler {
             // Find the GREE device
             deviceFinder = new GreeDeviceFinder(config.ipAddress);
             deviceFinder.scan(clientSocket.get(), false);
-            logger.debug("{} units found matching IP address", deviceFinder.getScannedDeviceCount());
+            logger.debug("{}: {} units found matching IP address", thingId, deviceFinder.getScannedDeviceCount());
 
             // Now check that this one is amongst the air conditioners that responded.
             GreeAirDevice newDevice = deviceFinder.getDeviceByIPAddress(config.ipAddress);
@@ -114,13 +118,13 @@ public class GreeHandler extends BaseThingHandler {
                     return;
                 }
             }
-            logger.debug("GREE unit is not responding");
+            logger.debug("{}: GREE unit is not responding", thingId);
         } catch (GreeException e) {
-            logger.warn("Initialization failed: {}", messages.get("thinginit.exception", e.toString()));
+            logger.warn("{}: Initialization failed: {}", thingId, messages.get("thinginit.exception", e.toString()));
         } catch (IOException e) {
-            logger.debug("Exception on initialization: {}", e.toString());
+            logger.debug("{}: Exception on initialization: {}", thingId, e.toString());
         } catch (RuntimeException e) {
-            logger.warn("Initialization failed", e);
+            logger.warn("{}: Initialization failed", thingId, e);
         }
 
         updateStatus(ThingStatus.OFFLINE);
@@ -131,9 +135,10 @@ public class GreeHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             // The thing is updated by the scheduled automatic refresh so do nothing here.
         } else {
-            logger.debug("Issue command {} to channe {}", command, channelUID.getIdWithoutGroup());
+            logger.debug("{}: Issue command {} to channe {}", thingId, command, channelUID.getIdWithoutGroup());
             String channelId = channelUID.getIdWithoutGroup();
-            logger.debug("Handle command {} for channel {}, command class {}", command, channelId, command.getClass());
+            logger.debug("{}: Handle command {} for channel {}, command class {}", thingId, command, channelId,
+                    command.getClass());
             try {
                 DatagramSocket socket = clientSocket.get();
                 switch (channelId) {
@@ -153,8 +158,6 @@ public class GreeHandler extends BaseThingHandler {
                         // Set value, read back effective one and update channel
                         // e.g. 22.5C will result in 22.0, because the AC doesn't support half-steps for C
                         device.setDeviceTempSet(socket, convertTemp(command));
-                        device.getDeviceStatus(clientSocket.get());
-                        publishChannel(channelUID);
                         break;
                     case SWINGUD_CHANNEL:
                         device.setDeviceSwingUpDown(socket, getNumber(command));
@@ -182,11 +185,12 @@ public class GreeHandler extends BaseThingHandler {
                         break;
                 }
             } catch (GreeException e) {
-                logger.debug("Unable to execute command {} for channel {}: {}", command, channelId, e.toString());
+                logger.debug("{}: Unable to execute command {} for channel {}: {}", thingId, command, channelId,
+                        e.toString());
             } catch (IllegalArgumentException e) {
-                logger.warn("Invalid command value {} for channel {}", command, channelUID.getId());
+                logger.warn("{}: Invalid command value {} for channel {}", thingId, command, channelUID.getId());
             } catch (RuntimeException e) {
-                logger.warn("Unable to execute command {} for channel {}", command, channelId, e);
+                logger.warn("{}: Unable to execute command {} for channel {}", thingId, command, channelId, e);
             }
         }
     }
@@ -200,7 +204,7 @@ public class GreeHandler extends BaseThingHandler {
             mode = ((DecimalType) command).intValue();
         } else if (command instanceof OnOffType) {
             // Switch
-            logger.debug("Send Power-{}", command);
+            logger.debug("{}: Send Power-{}", thingId, command);
             device.setDevicePower(socket, getOnOff(command));
         } else /* String */ {
             modeStr = command.toString().toLowerCase();
@@ -227,7 +231,7 @@ public class GreeHandler extends BaseThingHandler {
                     break;
                 case MODE_ON:
                 case MODE_OFF:
-                    logger.debug("Turn unit {}", modeStr);
+                    logger.debug("{}: Turn unit {}", thingId, modeStr);
                     device.setDevicePower(socket, modeStr.equals(MODE_ON) ? 1 : 0);
                     return;
                 default:
@@ -237,7 +241,7 @@ public class GreeHandler extends BaseThingHandler {
                     isNumber = true;
                     break;
             }
-            logger.debug("Mode {} mapped to {}", modeStr, mode);
+            logger.debug("{}: Mode {} mapped to {}", thingId, modeStr, mode);
         }
 
         if (mode == -1) {
@@ -246,19 +250,19 @@ public class GreeHandler extends BaseThingHandler {
 
         // Turn on the unit if currently off
         if (!isNumber && (device.getIntStatusVal(GREE_PROP_POWER) == 0)) {
-            logger.debug("Send Auto-ON for mode {}", mode);
+            logger.debug("{}: Send Auto-ON for mode {}", thingId, mode);
             device.setDevicePower(socket, 1);
         }
 
         // Select mode
-        logger.debug("Select mode {}", mode);
+        logger.debug("{}: Select mode {}", thingId, mode);
         device.SetDeviceMode(socket, mode);
 
         // Check for secondary action
         switch (modeStr) {
             case MODE_ECO:
                 // Turn on power saving for eco mode
-                logger.debug("Turn on Power-Saving");
+                logger.debug("{}: Turn on Power-Saving", thingId);
                 device.setDevicePwrSaving(socket, 1);
                 break;
         }
@@ -323,9 +327,9 @@ public class GreeHandler extends BaseThingHandler {
     }
 
     private boolean isMinimumRefreshTimeExceeded() {
-        long currentTime = System.currentTimeMillis();
+        long currentTime = Instant.now().toEpochMilli();
         long timeSinceLastRefresh = currentTime - lastRefreshTime;
-        if (timeSinceLastRefresh < MINIMUM_REFRESH_TIME_MS) {
+        if (timeSinceLastRefresh < config.refresh * 1000) {
             return false;
         }
         lastRefreshTime = currentTime;
@@ -335,31 +339,33 @@ public class GreeHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         Runnable refresher = () -> {
             try {
-                logger.debug("Executing automatic update of values");
                 // safeguard for multiple REFRESH commands
                 if (isMinimumRefreshTimeExceeded()) {
                     // Get the current status from the Airconditioner
                     device.getDeviceStatus(clientSocket.get());
-                } else {
-                    logger.trace("Skipped fetching status values from device because minimum refresh time not reached");
-                }
+                    logger.debug("{}: Executing automatic update of values", thingId);
 
-                // Update All Channels
-                List<Channel> channels = getThing().getChannels();
-                for (Channel channel : channels) {
-                    publishChannel(channel.getUID());
+                    // Update All Channels
+                    List<Channel> channels = getThing().getChannels();
+                    for (Channel channel : channels) {
+                        publishChannel(channel.getUID());
+                    }
+                } else {
+                    logger.trace(
+                            "{}: Skipped fetching status values from device because minimum refresh time not reached",
+                            thingId);
                 }
             } catch (GreeException e) {
                 if (!e.isTimeout()) {
-                    logger.warn("Unable to perform auto-update: {}", e.toString());
+                    logger.warn("{}: Unable to perform auto-update: {}", thingId, e.toString());
                 }
             } catch (RuntimeException e) {
-                logger.warn("Unable to perform auto-update", e);
+                logger.warn("{}: Unable to perform auto-update", thingId, e);
             }
         };
 
-        refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, config.refresh, TimeUnit.SECONDS);
-        logger.debug("Automatic refresh started ({} second interval)", config.refresh);
+        refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
+        logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refresh);
     }
 
     private void publishChannel(ChannelUID channelUID) {
@@ -408,13 +414,13 @@ public class GreeHandler extends BaseThingHandler {
                     break;
             }
             if (state != null) {
-                logger.trace("Updating channel {} : {}", channelID, state);
+                logger.debug("{}: Updating channel {} : {}", thingId, channelID, state);
                 updateState(channelID, state);
             }
         } catch (GreeException e) {
-            logger.warn("Exception on channel update: {}", e.toString());
+            logger.warn("{}: Exception on channel update: {}", thingId, e.toString());
         } catch (RuntimeException e) {
-            logger.warn("Exception on channel update", e);
+            logger.warn("{}: Exception on channel update", thingId, e);
         }
     }
 
@@ -458,7 +464,7 @@ public class GreeHandler extends BaseThingHandler {
 
             }
             if (!modeStr.isEmpty()) {
-                logger.debug("Updading mode channel with {}/{}", mode, modeStr);
+                logger.debug("{}: Updading mode channel with {}/{}", thingId, mode, modeStr);
                 return new StringType(modeStr);
             }
         }
@@ -500,7 +506,7 @@ public class GreeHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Thing {} is disposing", thing.getUID());
+        logger.debug("{}: Thing {} is disposing", thingId, thing.getUID());
         if (clientSocket.isPresent()) {
             clientSocket.get().close();
             clientSocket = Optional.empty();
