@@ -113,7 +113,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
 
     private void detectNewElectricityMeterFromReceivedFrame(final Frame frameSample) {
         logger.debug("New eletricity meter detection from frame {}", frameSample.getId());
-        if (frameSample instanceof FrameAdco == false) {
+        if (!(frameSample instanceof FrameAdco)) {
             throw new IllegalStateException("Teleinfo frame type not supported: " + frameSample.getClass());
         }
         final FrameAdco frameAdco = (FrameAdco) frameSample;
