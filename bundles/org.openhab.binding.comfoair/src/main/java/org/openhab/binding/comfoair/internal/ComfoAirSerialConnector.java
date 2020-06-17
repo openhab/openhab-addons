@@ -480,8 +480,6 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
         Integer requestCmd = command.getRequestCmd();
         Integer dataPosition = command.getDataPosition();
         Integer requestValue = command.getRequestValue();
-        logger.debug("Building request data: requestCmd = {}, dataPosition = {}, requestValue = {}", requestCmd,
-                dataPosition, requestValue);
 
         if (requestCmd != null && dataPosition != null && requestValue != null) {
             if (requestCmd == 0xcb) {

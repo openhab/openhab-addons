@@ -58,11 +58,11 @@ public class DataTypeVolt implements ComfoAirDataType {
 
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value instanceof QuantityType) {
-            int[] template = commandType.getChangeDataTemplate();
+        int[] template = commandType.getChangeDataTemplate();
+        QuantityType<?> volts = ((QuantityType<?>) value).toUnit(SmartHomeUnits.VOLT);
 
-            template[commandType.getChangeDataPos()] = (int) (((QuantityType<?>) value).doubleValue() * 255 / 10);
-
+        if (volts != null) {
+            template[commandType.getChangeDataPos()] = (int) (volts.doubleValue() * 255 / 10);
             return template;
         } else {
             logger.trace("\"DataTypeVolt\" class \"convertFromState\" undefined state");

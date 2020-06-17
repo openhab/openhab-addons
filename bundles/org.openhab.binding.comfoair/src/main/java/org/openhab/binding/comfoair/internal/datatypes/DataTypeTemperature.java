@@ -58,11 +58,11 @@ public class DataTypeTemperature implements ComfoAirDataType {
 
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value instanceof QuantityType) {
-            int[] template = commandType.getChangeDataTemplate();
+        int[] template = commandType.getChangeDataTemplate();
+        QuantityType<?> celsius = ((QuantityType<?>) value).toUnit(SIUnits.CELSIUS);
 
-            template[commandType.getChangeDataPos()] = (int) (((QuantityType<?>) value).doubleValue() + 20) * 2;
-
+        if (celsius != null) {
+            template[commandType.getChangeDataPos()] = (int) (celsius.doubleValue() + 20) * 2;
             return template;
         } else {
             logger.trace("\"DataTypeTemperature\" class \"convertFromState\" undefined state");

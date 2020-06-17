@@ -58,12 +58,13 @@ public class DataTypeTime implements ComfoAirDataType {
 
     @Override
     public int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType) {
-        if (value instanceof QuantityType) {
-            int[] template = commandType.getChangeDataTemplate();
-            int[] possibleValues = commandType.getPossibleValues();
-            int position = commandType.getChangeDataPos();
+        int[] template = commandType.getChangeDataTemplate();
+        int[] possibleValues = commandType.getPossibleValues();
+        int position = commandType.getChangeDataPos();
+        QuantityType<?> hours = ((QuantityType<?>) value).toUnit(SmartHomeUnits.HOUR);
 
-            int intValue = ((QuantityType<?>) value).intValue();
+        if (hours != null) {
+            int intValue = hours.intValue();
 
             if (possibleValues == null) {
                 template[position] = intValue;

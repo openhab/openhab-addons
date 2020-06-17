@@ -24,8 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -52,9 +50,9 @@ public enum ComfoAirCommandType {
      * @param key
      *            command name
      * @param data_type
-     *            data type (can be: DataTypeBoolean.class, DataTypeMessage.class,
-     *            DataTypeNumber.class, DataTypeRPM.class,
-     *            DataTypeTemperature.class, DataTypeVolt.class)
+     *            data type (can be: DataTypeBoolean.getInstance(), DataTypeMessage.getInstance(),
+     *            DataTypeNumber.getInstance(), DataTypeRPM.getInstance(), DataTypeTemperature.getInstance(),
+     *            DataTypeTime.getInstance(), DataTypeVolt.getInstance())
      * @param possible_values
      *            possible values for write command, if it can only take certain values
      * @param change_command
@@ -859,32 +857,9 @@ public enum ComfoAirCommandType {
                 value = (OnOffType) command;
             } else if (dataType instanceof DataTypeNumber || dataType instanceof DataTypeRPM) {
                 value = (DecimalType) command;
-            } else if (dataType instanceof DataTypeTemperature) {
+            } else {
                 if (command instanceof QuantityType<?>) {
-                    QuantityType<?> celsius = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
-                    if (celsius != null) {
-                        value = celsius;
-                    }
-                } else {
-                    value = new QuantityType<>(((DecimalType) command).doubleValue(), SIUnits.CELSIUS);
-                }
-            } else if (dataType instanceof DataTypeVolt) {
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> volts = ((QuantityType<?>) command).toUnit(SmartHomeUnits.VOLT);
-                    if (volts != null) {
-                        value = volts;
-                    }
-                } else {
-                    value = new QuantityType<>(((DecimalType) command).doubleValue(), SmartHomeUnits.VOLT);
-                }
-            } else if (dataType instanceof DataTypeTime) {
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> hours = ((QuantityType<?>) command).toUnit(SmartHomeUnits.HOUR);
-                    if (hours != null) {
-                        value = hours;
-                    }
-                } else {
-                    value = new QuantityType<>(((DecimalType) command).doubleValue(), SmartHomeUnits.HOUR);
+                    value = (QuantityType<?>) command;
                 }
             }
             if (value instanceof UnDefType) {

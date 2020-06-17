@@ -22,6 +22,7 @@ import org.openhab.binding.comfoair.internal.ComfoAirCommandType;
  * versa
  *
  * @author Holger Hees - Initial Contribution
+ * @author Hans Böhm - Refactoring
  */
 @NonNullByDefault
 public interface ComfoAirDataType {
