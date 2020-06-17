@@ -129,13 +129,8 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
         thingDiscovered(discoveryResult);
     }
 
-    private ThingUID getThingUID(final Frame teleinfoFrame) {
-        if (!(teleinfoFrame instanceof FrameAdco)) {
-            throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
-        }
-        final FrameAdco frameAdco = (FrameAdco) teleinfoFrame;
-
-        return new ThingUID(getThingTypeUID(teleinfoFrame), frameAdco.getAdco(),
+    private ThingUID getThingUID(final FrameAdco frameAdco) {
+        return new ThingUID(getThingTypeUID(frameAdco), frameAdco.getAdco(),
                 controllerHandler.getThing().getUID().getId());
     }
 
