@@ -106,7 +106,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
      */
     @Before
     public void setUp() {
-        mockComms();
+        mockCommsToModbusManager();
         Configuration tcpConfig = new Configuration();
         tcpConfig.put("host", HOST);
         tcpConfig.put("port", PORT);

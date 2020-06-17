@@ -121,6 +121,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     private Set<ItemChannelLink> addedLinks = new HashSet<>();
     private StateSubscriber stateSubscriber = new StateSubscriber();
 
+    @Mock
     @NonNullByDefault({})
     protected ModbusCommunicationInterface comms;
 
@@ -225,8 +226,8 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         registerService(service, params);
     }
 
-    protected void mockComms() {
-        comms = mock(ModbusCommunicationInterface.class);
+    protected void mockCommsToModbusManager() {
+        assert comms != null;
         doReturn(comms).when(mockedModbusManager).newModbusCommunicationInterface(any(), any());
     }
 

@@ -141,6 +141,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         ModbusPollerThingHandler mockHandler = Mockito.mock(ModbusPollerThingHandler.class);
         doReturn(task.getRequest()).when(mockHandler).getRequest();
+        assert comms != null;
         doReturn(comms).when(mockHandler).getCommunicationInterface();
         doReturn(task.getEndpoint()).when(comms).getEndpoint();
         poller.setHandler(mockHandler);
@@ -280,112 +281,96 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testInitCoilsOutOfIndex() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "8", ModbusReadFunctionCode.READ_COILS, ModbusConstants.ValueType.BIT,
                 ThingStatus.OFFLINE);
     }
 
     @Test
     public void testInitCoilsOK() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "6", ModbusReadFunctionCode.READ_COILS, ModbusConstants.ValueType.BIT,
                 ThingStatus.ONLINE);
     }
 
     @Test
     public void testInitRegistersWithBitOutOfIndex() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "8.0", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.BIT, ThingStatus.OFFLINE);
     }
 
     @Test
     public void testInitRegistersWithBitOutOfIndex2() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "7.16", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.BIT, ThingStatus.OFFLINE);
     }
 
     @Test
     public void testInitRegistersWithBitOK() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "6.0", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.BIT, ThingStatus.ONLINE);
     }
 
     @Test
     public void testInitRegistersWithBitOK2() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "6.15", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.BIT, ThingStatus.ONLINE);
     }
 
     @Test
     public void testInitRegistersWithInt8OutOfIndex() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "8.0", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT8, ThingStatus.OFFLINE);
     }
 
     @Test
     public void testInitRegistersWithInt8OutOfIndex2() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "7.2", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT8, ThingStatus.OFFLINE);
     }
 
     @Test
     public void testInitRegistersWithInt8OK() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "6.0", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT8, ThingStatus.ONLINE);
     }
 
     @Test
     public void testInitRegistersWithInt8OK2() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "6.1", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT8, ThingStatus.ONLINE);
     }
 
     @Test
     public void testInitRegistersWithInt16OK() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "6", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT16, ThingStatus.ONLINE);
     }
 
     @Test
     public void testInitRegistersWithInt16OutOfBounds() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "8", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT16, ThingStatus.OFFLINE);
     }
 
     @Test
     public void testInitRegistersWithInt16NoDecimalFormatAllowed() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "7.0", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT16, ThingStatus.OFFLINE);
     }
 
     @Test
     public void testInitRegistersWithInt32OK() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "5", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT32, ThingStatus.ONLINE);
     }
 
     @Test
     public void testInitRegistersWithInt32OutOfBounds() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "6", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT32, ThingStatus.OFFLINE);
     }
 
     @Test
     public void testInitRegistersWithInt32AtTheEdge() {
-        mockComms();
         testOutOfBoundsGeneric(4, 3, "5", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT32, ThingStatus.ONLINE);
     }
@@ -501,7 +486,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testOnError() {
-        mockComms();
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0.0", "default", ModbusConstants.ValueType.BIT, null, null, new Exception("fooerror"));
 
@@ -510,7 +494,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testOnRegistersInt16StaticTransformation() {
-        mockComms();
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "-3", ModbusConstants.ValueType.INT16, null,
                 new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }), null);
@@ -531,7 +514,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testOnRegistersRealTransformation() {
-        mockComms();
         mockTransformation("MULTIPLY", new MultiplyTransformation());
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
@@ -555,7 +537,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testOnRegistersNaNFloatInRegisters() throws InvalidSyntaxException {
-        mockComms();
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "default", ModbusConstants.ValueType.FLOAT32, null, new ModbusRegisterArray(
                         // equivalent of floating point NaN
@@ -577,7 +558,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testOnRegistersRealTransformation2() throws InvalidSyntaxException {
-        mockComms();
         mockTransformation("ONOFF", new TransformationService() {
 
             @Override
@@ -603,7 +583,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteRealTransformation() throws InvalidSyntaxException {
-        mockComms();
         captureModbusWrites();
         mockTransformation("MULTIPLY", new MultiplyTransformation());
         ModbusDataThingHandler dataHandler = testWriteHandlingGeneric("50", "MULTIPLY(10)",
@@ -623,7 +602,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteRealTransformation2() throws InvalidSyntaxException {
-        mockComms();
         captureModbusWrites();
         mockTransformation("ZERO", new TransformationService() {
 
@@ -649,7 +627,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteRealTransformation3() throws InvalidSyntaxException {
-        mockComms();
         captureModbusWrites();
         mockTransformation("RANDOM", new TransformationService() {
 
@@ -675,7 +652,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteRealTransformation4() throws InvalidSyntaxException {
-        mockComms();
         captureModbusWrites();
         mockTransformation("JSON", new TransformationService() {
 
@@ -748,33 +724,28 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testCoilDoesNotAcceptFloat32ValueType() {
-        mockComms();
         testValueTypeGeneric(ModbusReadFunctionCode.READ_COILS, ModbusConstants.ValueType.FLOAT32, ThingStatus.OFFLINE);
     }
 
     @Test
     public void testCoilAcceptsBitValueType() {
-        mockComms();
         testValueTypeGeneric(ModbusReadFunctionCode.READ_COILS, ModbusConstants.ValueType.BIT, ThingStatus.ONLINE);
     }
 
     @Test
     public void testDiscreteInputDoesNotAcceptFloat32ValueType() {
-        mockComms();
         testValueTypeGeneric(ModbusReadFunctionCode.READ_INPUT_DISCRETES, ModbusConstants.ValueType.FLOAT32,
                 ThingStatus.OFFLINE);
     }
 
     @Test
     public void testDiscreteInputAcceptsBitValueType() {
-        mockComms();
         testValueTypeGeneric(ModbusReadFunctionCode.READ_INPUT_DISCRETES, ModbusConstants.ValueType.BIT,
                 ThingStatus.ONLINE);
     }
 
     @Test
     public void testRefreshOnData() throws InterruptedException {
-        mockComms();
         ModbusReadFunctionCode functionCode = ModbusReadFunctionCode.READ_COILS;
 
         ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502);
@@ -854,7 +825,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testReadOnlyData() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "0");
         dataConfig.put("readValueType", "bit");
@@ -867,7 +837,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
      */
     @Test
     public void testReadOnlyDataMissingValueTypeWithCoils() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "0");
         // missing value type
@@ -877,7 +846,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testReadOnlyDataInvalidValueType() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "0");
         dataConfig.put("readValueType", "foobar");
@@ -892,7 +860,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
      */
     @Test
     public void testReadOnlyDataMissingValueTypeWithRegisters() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "0");
         testInitGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, dataConfig, status -> {
@@ -903,7 +870,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteOnlyData() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeValueType", "bit");
@@ -914,7 +880,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteHoldingInt16Data() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeValueType", "int16");
@@ -958,7 +923,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteOnlyDataMissingOneParameter() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeValueType", "bit");
@@ -975,7 +939,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
      */
     @Test
     public void testWriteOnlyDataMissingValueTypeWithCoilParameter() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeType", "coil");
@@ -985,7 +948,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteOnlyIllegalValueType() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeType", "coil");
@@ -998,7 +960,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteInvalidType() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("writeStart", "0");
         dataConfig.put("writeType", "foobar");
@@ -1032,7 +993,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testReadHoldingBadStart() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "0.0");
         dataConfig.put("readValueType", "int16");
@@ -1044,7 +1004,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testReadHoldingBadStart2() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "0.0");
         dataConfig.put("readValueType", "bit");
@@ -1056,7 +1015,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testReadHoldingOKStart() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "0.0");
         dataConfig.put("readType", "holding");
@@ -1067,7 +1025,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testReadValueTypeIllegal() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         dataConfig.put("readStart", "0.0");
         dataConfig.put("readType", "holding");
@@ -1088,7 +1045,6 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testWriteTransformAndStart() {
-        mockComms();
         Configuration dataConfig = new Configuration();
         // It's illegal to have start and transform. Just have transform or have all
         dataConfig.put("writeStart", "3");
