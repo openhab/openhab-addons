@@ -110,4 +110,10 @@ public class BindingConstants {
 
     public static final String PROPERTY_CT_MIN = "ctmin";
     public static final String PROPERTY_CT_MAX = "ctmax";
+
+    // CT value range according to ZCL Spec
+    public static final int ZCL_CT_UNDEFINED = 0; // 0x0000
+    public static final int ZCL_CT_MIN = 1;
+    public static final int ZCL_CT_MAX = 65279; // 0xFEFF
+    public static final int ZCL_CT_INVALID = 65535; //0xFFFF
 }
