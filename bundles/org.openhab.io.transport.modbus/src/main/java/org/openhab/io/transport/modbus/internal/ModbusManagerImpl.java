@@ -841,26 +841,8 @@ public class ModbusManagerImpl implements ModbusManager {
                     return false;
                 }
                 logger.info("Unregistering regular poll task {} (interrupting if necessary)", task);
-
-                // Make sure connections to this endpoint are closed when they are returned to pool (which
-                // is usually pretty soon as transactions should be relatively short-lived)
-                localConnectionFactory.disconnectOnReturn(task.getEndpoint(), System.currentTimeMillis());
-
                 future.cancel(true);
-
                 logger.info("Poll task {} canceled", task);
-
-                try {
-                    // Close all idle connections as well (they will be reconnected if necessary on borrow)
-                    if (connectionPool != null) {
-                        connectionPool.clear(task.getEndpoint());
-                    }
-                } catch (Exception e) {
-                    logger.warn("Could not clear poll task {} endpoint {}. Stack trace follows", task,
-                            task.getEndpoint(), e);
-                    return false;
-                }
-
                 return true;
             }
         }
@@ -907,6 +889,7 @@ public class ModbusManagerImpl implements ModbusManager {
         public ModbusSlaveEndpoint getEndpoint() {
             return endpoint;
         }
+
     }
 
     @Override
@@ -933,20 +916,30 @@ public class ModbusManagerImpl implements ModbusManager {
 
     private void unregisterCommunicationInterface(ModbusCommunicationInterface commInterface) {
         communicationInterfaces.remove(commInterface);
-        if (communicationInterfaces.isEmpty()) {
-            ModbusSlaveEndpoint endpoint = commInterface.getEndpoint();
+        maybeCloseConnections(commInterface.getEndpoint());
+    }
+
+    private void maybeCloseConnections(ModbusSlaveEndpoint endpoint) {
+        boolean lastCommWithThisEndpointWasRemoved = communicationInterfaces.stream()
+                .filter(comm -> comm.endpoint.equals(endpoint)).count() == 0L;
+        if (lastCommWithThisEndpointWasRemoved) {
+            // Since last communication interface pointing to this endpoint was closed, we can clean up resources
+            // and disconnect connections.
+
             // Make sure connections to this endpoint are closed when they are returned to pool (which
             // is usually pretty soon as transactions should be relatively short-lived)
-            connectionFactory.disconnectOnReturn(endpoint, System.currentTimeMillis());
-            try {
-                // Close all idle connections as well (they will be reconnected if necessary on borrow)
-                if (connectionPool != null) {
-                    connectionPool.clear(endpoint);
+            ModbusSlaveConnectionFactoryImpl localConnectionFactory = connectionFactory;
+            if (localConnectionFactory != null) {
+                localConnectionFactory.disconnectOnReturn(endpoint, System.currentTimeMillis());
+                try {
+                    // Close all idle connections as well (they will be reconnected if necessary on borrow)
+                    if (connectionPool != null) {
+                        connectionPool.clear(endpoint);
+                    }
+                } catch (Exception e) {
+                    logger.warn("Could not clear endpoint {}. Stack trace follows", endpoint, e);
                 }
-            } catch (Exception e) {
-                logger.warn("Could not clear endpoint {}. Stack trace follows", endpoint, e);
             }
-
         }
     }
 
