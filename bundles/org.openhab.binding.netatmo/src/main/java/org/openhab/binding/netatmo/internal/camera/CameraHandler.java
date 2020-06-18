@@ -104,19 +104,19 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     protected State getStatusState() {
-        return module != null ? toOnOffType(module.getStatus()) : UnDefType.UNDEF;
+        return getModule().map(m -> toOnOffType(m.getStatus())).orElse(UnDefType.UNDEF);
     }
 
     protected State getSdStatusState() {
-        return module != null ? toOnOffType(module.getSdStatus()) : UnDefType.UNDEF;
+        return getModule().map(m -> toOnOffType(m.getSdStatus())).orElse(UnDefType.UNDEF);
     }
 
     protected State getAlimStatusState() {
-        return module != null ? toOnOffType(module.getAlimStatus()) : UnDefType.UNDEF;
+        return getModule().map(m -> toOnOffType(m.getAlimStatus())).orElse(UnDefType.UNDEF);
     }
 
     protected State getIsLocalState() {
-        return module != null ? toOnOffType(module.getIsLocal()) : UnDefType.UNDEF;
+        return getModule().map(m -> toOnOffType(m.getIsLocal())).orElse(UnDefType.UNDEF);
     }
 
     protected State getLivePictureURLState() {
@@ -164,7 +164,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     private Optional<String> getVpnUrl() {
-        return (module == null) ? Optional.empty() : Optional.ofNullable(module.getVpnUrl());
+        return getModule().map(NAWelcomeCamera::getVpnUrl);
     }
 
     public Optional<String> getStreamURL(String videoId) {
@@ -184,9 +184,8 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
         return Optional.of(resultStringBuilder.toString());
     }
 
-    @SuppressWarnings("null")
     private boolean isLocal() {
-        return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal();
+        return getModule().map(NAWelcomeCamera::getIsLocal).orElse(false);
     }
 
     private void switchVideoSurveillance(boolean isOn) {
@@ -226,7 +225,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
         return Optional.empty();
     }
 
-    protected @NonNull Optional<@NonNull String> executeGETRequest(@NonNull String url) {
+    protected Optional<String> executeGETRequest(String url) {
         try {
             String content = HttpUtil.executeUrl("GET", url, 5000);
             if (content != null && !content.isEmpty()) {

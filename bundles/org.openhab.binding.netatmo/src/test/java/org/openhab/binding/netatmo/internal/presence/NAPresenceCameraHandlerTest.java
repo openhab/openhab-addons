@@ -335,6 +335,40 @@ public class NAPresenceCameraHandlerTest {
         assertEquals(UnDefType.UNDEF, handlerWithoutModule.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
     }
 
+    @Test
+    public void testGetStreamURL() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
+        assertTrue(streamURL.isPresent());
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index.m3u8", streamURL.get());
+    }
+
+    @Test
+    public void testGetStreamURL_local() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        presenceCamera.setIsLocal(true);
+
+        Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
+        assertTrue(streamURL.isPresent());
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index_local.m3u8", streamURL.get());
+    }
+
+    @Test
+    public void testGetStreamURL_not_local() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        presenceCamera.setIsLocal(false);
+
+        Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
+        assertTrue(streamURL.isPresent());
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index.m3u8", streamURL.get());
+    }
+
+    @Test
+    public void testGetStreamURL_without_VPN() {
+        Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
+        assertFalse(streamURL.isPresent());
+    }
+
     private static Optional<String> createPingResponseContent(final String localURL) {
         return Optional.of("{\"local_url\":\"" + localURL + "\",\"product_name\":\"Welcome Netatmo\"}");
     }
