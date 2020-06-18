@@ -138,7 +138,7 @@ Currently, only favorites from the root level of the LMS favorites list are expo
 -   Add some favorites to your favorites list in LMS (local music playlists, Pandora, Slacker, Internet radio, etc.).
 Keep all favorites at the root level (i.e. favorites in sub-folders will be ignored).
 
--   If you're on an older openHAB build, you may need to delete and read your squeezebox server and player things to pick up the new channels.
+-   If you're on an older openHAB build, you may need to delete and re-add your squeezebox server and player things to pick up the new channels.
 
 -   Create a new item on each player
 
