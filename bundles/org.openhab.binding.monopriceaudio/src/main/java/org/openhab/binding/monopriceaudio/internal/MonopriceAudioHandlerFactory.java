@@ -42,9 +42,9 @@ public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider;
+    private final MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
     public MonopriceAudioHandlerFactory(final @Reference MonopriceAudioStateDescriptionOptionProvider provider,

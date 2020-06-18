@@ -167,18 +167,6 @@ public abstract class MonopriceAudioConnector {
     }
 
     /**
-     * Request the MonopriceAudio controller to execute a command that takes no arguments (ie power on, power off, etc.)
-     *
-     * @param zone the zone for which the command is to be run
-     * @param cmd the command to execute
-     *
-     * @throws MonopriceAudioException - In case of any problem
-     */
-    public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd) throws MonopriceAudioException {
-        sendCommand(zone, cmd, null);
-    }
-
-    /**
      * Request the MonopriceAudio controller to execute a command
      *
      * @param zone the zone for which the command is to be run
@@ -189,29 +177,19 @@ public abstract class MonopriceAudioConnector {
      */
     public void sendCommand(MonopriceAudioZone zone, MonopriceAudioCommand cmd, @Nullable Integer value)
             throws MonopriceAudioException {
-        String messageStr = MonopriceAudioCommand.BEGIN_CMD.getValue() + zone.getZoneId() + cmd.getValue();
-        byte[] message;
+        String messageStr = "";
 
         if (cmd == MonopriceAudioCommand.QUERY) {
-            // query special case - redo messageStr (ie: ? + zoneId)
+            // query special case (ie: ? + zoneId)
             messageStr = cmd.getValue() + zone.getZoneId();
         } else if (value != null) {
             // if the command passed a value, append it to the messageStr
-            switch (cmd) {
-                case SOURCE:
-                case VOLUME:
-                case TREBLE:
-                case BASS:
-                case BALANCE:
-                    messageStr += String.format("%02d", value);
-                    break;
-                default:
-                    break;
-            }
+            messageStr = MonopriceAudioCommand.BEGIN_CMD.getValue() + zone.getZoneId() + cmd.getValue()
+                    + String.format("%02d", value);
+        } else {
+            throw new MonopriceAudioException("Send command \"" + messageStr + "\" failed: passed in value is null");
         }
         messageStr += MonopriceAudioCommand.END_CMD.getValue();
-
-        message = messageStr.getBytes(StandardCharsets.US_ASCII);
         logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
@@ -219,7 +197,7 @@ public abstract class MonopriceAudioConnector {
             throw new MonopriceAudioException("Send command \"" + messageStr + "\" failed: output stream is null");
         }
         try {
-            dataOut.write(message);
+            dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException e) {
             throw new MonopriceAudioException("Send command \"" + cmd.getValue() + "\" failed: " + e.getMessage());

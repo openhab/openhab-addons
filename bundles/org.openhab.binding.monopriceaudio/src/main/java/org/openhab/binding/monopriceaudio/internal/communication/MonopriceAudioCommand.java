@@ -25,17 +25,14 @@ public enum MonopriceAudioCommand {
     BEGIN_CMD("<"),
     END_CMD("\r"),
 
-    POWER_ON("PR01"),
-    POWER_OFF("PR00"),
+    POWER("PR"),
     SOURCE("CH"),
     VOLUME("VO"),
-    MUTE_ON("MU01"),
-    MUTE_OFF("MU00"),
+    MUTE("MU"),
     TREBLE("TR"),
     BASS("BS"),
     BALANCE("BL"),
-    DND_ON("DT01"),
-    DND_OFF("DT00");
+    DND("DT");
 
     private String value;
 

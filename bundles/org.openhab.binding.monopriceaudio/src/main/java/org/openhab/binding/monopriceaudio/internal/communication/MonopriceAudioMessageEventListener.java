@@ -13,7 +13,6 @@
 package org.openhab.binding.monopriceaudio.internal.communication;
 
 import java.util.EventListener;
-import java.util.EventObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,7 +27,7 @@ public interface MonopriceAudioMessageEventListener extends EventListener {
     /**
      * Event handler method for incoming MonopriceAudio message events
      *
-     * @param event the event object
+     * @param event the MonopriceAudioMessageEvent
      */
-    public void onNewMessageEvent(EventObject event);
+    public void onNewMessageEvent(MonopriceAudioMessageEvent event);
 }

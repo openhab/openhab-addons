@@ -54,7 +54,7 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
 
     @Override
     public synchronized void open() throws MonopriceAudioException {
-        logger.info("Opening IP connection on IP {} port {}", this.address, this.port);
+        logger.debug("Opening IP connection on IP {} port {}", this.address, this.port);
         try {
             Socket clientSocket = new Socket(this.address, this.port);
             clientSocket.setSoTimeout(100);

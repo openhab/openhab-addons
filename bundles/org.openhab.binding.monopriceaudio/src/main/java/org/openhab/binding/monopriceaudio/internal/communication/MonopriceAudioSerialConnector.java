@@ -57,7 +57,7 @@ public class MonopriceAudioSerialConnector extends MonopriceAudioConnector {
 
     @Override
     public synchronized void open() throws MonopriceAudioException {
-        logger.info("Opening serial connection on port {}", serialPortName);
+        logger.debug("Opening serial connection on port {}", serialPortName);
         try {
             SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
             if (portIdentifier == null) {
