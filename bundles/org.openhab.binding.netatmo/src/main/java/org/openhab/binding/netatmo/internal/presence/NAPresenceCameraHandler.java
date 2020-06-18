@@ -87,18 +87,15 @@ public class NAPresenceCameraHandler extends CameraHandler {
     }
 
     private State getFloodlightState() {
-        if (module != null) {
-            final boolean isOn = module.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.ON;
-            return toOnOffType(isOn);
-        }
-        return UnDefType.UNDEF;
+        return getModule()
+                .map(m -> toOnOffType(m.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.ON))
+                .orElse(UnDefType.UNDEF);
     }
 
     private State getFloodlightAutoModeState() {
-        if (module != null) {
-            return toOnOffType(module.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.AUTO);
-        }
-        return UnDefType.UNDEF;
+        return getModule()
+                .map(m -> toOnOffType(m.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.AUTO))
+                .orElse(UnDefType.UNDEF);
     }
 
     private void switchFloodlight(boolean isOn) {
