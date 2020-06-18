@@ -121,7 +121,7 @@
 	<channel-type id="ct">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
-		<state pattern="%d" min="0" max="100"/>
+		<state pattern="%d" min="15" max="100000" step="100"/>
 	</channel-type>
 
 
