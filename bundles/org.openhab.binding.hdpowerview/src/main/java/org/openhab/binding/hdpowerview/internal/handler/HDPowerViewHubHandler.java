@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -138,13 +137,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             pollScenes();
         } catch (JsonParseException e) {
             logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
-        } catch (ProcessingException | IOException e) {
+        } catch (ProcessingException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         }
     }
 
-    private void pollShades() throws JsonParseException, ProcessingException, IOException {
+    private void pollShades() throws JsonParseException, ProcessingException {
         Shades shades = webTargets.getShades();
         updateStatus(ThingStatus.ONLINE);
         if (shades != null) {
@@ -169,7 +168,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollScenes() throws JsonParseException, ProcessingException, IOException {
+    private void pollScenes() throws JsonParseException, ProcessingException {
         Scenes scenes = webTargets.getScenes();
         if (scenes != null) {
             logger.debug("Received {} scenes", scenes.sceneIds.size());

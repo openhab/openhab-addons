@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.hdpowerview.internal.discovery;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.ProcessingException;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -77,7 +78,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             Shades shades;
             try {
                 shades = targets.getShades();
-            } catch (IOException e) {
+            } catch (ProcessingException e) {
                 logger.warn("Unexpected error: {}", e.getMessage());
                 stopScan();
                 return;

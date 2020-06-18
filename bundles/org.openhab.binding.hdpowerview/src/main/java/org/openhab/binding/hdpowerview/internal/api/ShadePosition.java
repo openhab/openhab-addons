@@ -30,7 +30,7 @@ public class ShadePosition {
         return new ShadePosition(null, vane);
     }
 
-    ShadePosition(Integer position, Integer vane) {
+    public ShadePosition(Integer position, Integer vane) {
         if (position != null) {
             posKind1 = ShadePositionKind.POSITION.getKey();
             position1 = position;
@@ -46,16 +46,14 @@ public class ShadePosition {
     public int getPosition() {
         if (ShadePositionKind.POSITION.getKey() == posKind1) {
             return position1;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     public int getVane() {
         if (ShadePositionKind.VANE.getKey() == posKind1) {
             return position1;
-        } else {
-            return 0;
         }
+        return 0;
     }
 }

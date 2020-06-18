@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.hdpowerview.internal;
 
-import java.io.IOException;
-
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -22,10 +20,14 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 public class HDPowerViewWebTargets {
 
     private WebTarget base;
@@ -56,37 +59,28 @@ public class HDPowerViewWebTargets {
         gson = new Gson();
     }
 
-    public Shades getShades() throws JsonParseException, IOException {
-        Response response = invoke(shades.request().buildGet(), shades);
-        if (response != null) {
-            String result = response.readEntity(String.class);
-            return gson.fromJson(result, Shades.class);
-        } else {
-            return null;
-        }
+    public @Nullable Shades getShades() throws JsonParseException, ProcessingException {
+        @Nullable
+        String json = invoke(shades.request().buildGet(), shades).readEntity(String.class);
+        return gson.fromJson(json, Shades.class);
     }
 
-    public Response moveShade(String shadeIdString, ShadePosition position) throws IOException {
+    public Response moveShade(String shadeIdString, ShadePosition position) throws ProcessingException {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shadeMove.resolveTemplate("id", shadeId);
-
-        String body = gson.toJson(new ShadeMove(shadeId, position));
-        return invoke(target.request().buildPut(Entity.entity(body, MediaType.APPLICATION_JSON_TYPE)), shadeMove);
+        String json = gson.toJson(new ShadeMove(shadeId, position));
+        return invoke(target.request().buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), shadeMove);
     }
 
-    public Scenes getScenes() throws JsonParseException, IOException {
-        Response response = invoke(scenes.request().buildGet(), scenes);
-        if (response != null) {
-            String result = response.readEntity(String.class);
-            return gson.fromJson(result, Scenes.class);
-        } else {
-            return null;
-        }
+    public @Nullable Scenes getScenes() throws JsonParseException, ProcessingException {
+        @Nullable
+        String json = invoke(scenes.request().buildGet(), scenes).readEntity(String.class);
+        return gson.fromJson(json, Scenes.class);
     }
 
-    public void activateScene(int sceneId) {
+    public void activateScene(int sceneId) throws ProcessingException {
         WebTarget target = sceneActivate.queryParam("sceneId", sceneId);
-        invoke(target.request().buildGet(), sceneActivate);
+        invoke(target.request().buildGet(), sceneActivate).readEntity(String.class);
     }
 
     private Response invoke(Invocation invocation, WebTarget target) throws ProcessingException {
@@ -94,21 +88,25 @@ public class HDPowerViewWebTargets {
         synchronized (this) {
             response = invocation.invoke();
         }
-
-        if (response.getStatus() == 423) {
-            // the hub seems to return a 423 error (resource locked) once per day around midnight
-            // this is probably some kind of regular re-initialization process, so suppress the error log
-            logger.debug("Bridge returned '423' while invoking {}", target.getUri());
-            return null;
-        } else if (response.getStatus() != 200) {
-            logger.warn("Bridge returned '{}' while invoking {} : {}", response.getStatus(), target.getUri(),
-                    response.readEntity(String.class));
-            return null;
-        } else if (!response.hasEntity()) {
+//        if (response.getStatus() == 423) {
+//            /*
+//             * the hub seems to return a 423 error (resource locked) once per day around
+//             * midnight this is probably some kind of regular re-initialization process, so
+//             * use logger.debug() instead of logger.warn()
+//             */
+//            logger.debug("Bridge returned '{}' while invoking {} : {} : {}", response.getStatus(), target.getUri(),
+//                    response.getStringHeaders().toString(), response.readEntity(String.class));
+//            throw new ProcessingException("Returned an HTTP error");
+//        } 
+        if (response.getStatus() != 200) {
+            logger.warn("Bridge returned '{}' while invoking {} : {} : {}", response.getStatus(), target.getUri(),
+                    response.getStringHeaders().toString(), response.readEntity(String.class));
+            throw new ProcessingException("Returned an HTTP error");
+        } 
+        if (!response.hasEntity()) {
             logger.warn("Bridge returned null response while invoking {}", target.getUri());
-            return null;
+            throw new ProcessingException("Missing response entity");
         }
-
         return response;
     }
 }

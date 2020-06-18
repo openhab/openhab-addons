@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
-import java.io.IOException;
-
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -115,7 +114,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         Response response;
         try {
             response = bridge.getWebTargets().moveShade(shadeId, position);
-        } catch (IOException e) {
+        } catch (ProcessingException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
         }
