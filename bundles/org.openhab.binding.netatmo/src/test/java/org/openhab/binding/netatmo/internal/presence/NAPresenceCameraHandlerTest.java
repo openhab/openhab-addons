@@ -14,13 +14,16 @@ package org.openhab.binding.netatmo.internal.presence;
 
 import io.swagger.client.model.NAWelcomeCamera;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.internal.i18n.I18nProviderImpl;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.internal.ThingImpl;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +54,7 @@ public class NAPresenceCameraHandlerTest {
     private NAWelcomeCamera presenceCamera;
     private ChannelUID floodlightChannelUID;
     private ChannelUID floodlightAutoModeChannelUID;
-    private NAPresenceCameraHandler handler;
+    private NAPresenceCameraHandlerAccessible handler;
 
     @Before
     public void before() {
@@ -60,16 +63,7 @@ public class NAPresenceCameraHandlerTest {
         floodlightChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT);
         floodlightAutoModeChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE);
 
-        handler = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl()) {
-            {
-                module = presenceCamera;
-            }
-
-            @Override
-            protected @NonNull Optional<@NonNull String> executeGETRequest(@NonNull String url) {
-                return requestExecutorMock.executeGETRequest(url);
-            }
-        };
+        handler = new NAPresenceCameraHandlerAccessible(presenceCameraThing, presenceCamera);
     }
 
     @Test
@@ -369,6 +363,34 @@ public class NAPresenceCameraHandlerTest {
         assertFalse(streamURL.isPresent());
     }
 
+    @Test
+    public void testGetLivePictureURLState() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+
+        State livePictureURLState = handler.getLivePictureURLState();
+        assertEquals(new StringType(DUMMY_VPN_URL + "/live/snapshot_720.jpg"), livePictureURLState);
+    }
+
+    @Test
+    public void testGetLivePictureURLState_without_VPN() {
+        State livePictureURLState = handler.getLivePictureURLState();
+        assertEquals(UnDefType.UNDEF, livePictureURLState);
+    }
+
+    @Test
+    public void testGetLiveStreamState() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+
+        State liveStreamState = handler.getLiveStreamState();
+        assertEquals(new StringType(DUMMY_VPN_URL + "/live/index.m3u8"), liveStreamState);
+    }
+
+    @Test
+    public void testGetLiveStreamState_without_VPN() {
+        State liveStreamState = handler.getLiveStreamState();
+        assertEquals(UnDefType.UNDEF, liveStreamState);
+    }
+
     private static Optional<String> createPingResponseContent(final String localURL) {
         return Optional.of("{\"local_url\":\"" + localURL + "\",\"product_name\":\"Welcome Netatmo\"}");
     }
@@ -376,5 +398,28 @@ public class NAPresenceCameraHandlerTest {
     private interface RequestExecutor {
 
         Optional<String> executeGETRequest(String url);
+    }
+
+    private class NAPresenceCameraHandlerAccessible extends NAPresenceCameraHandler {
+
+        public NAPresenceCameraHandlerAccessible(Thing thing, NAWelcomeCamera presenceCamera) {
+            super(thing, new I18nProviderImpl());
+            module = presenceCamera;
+        }
+
+        @Override
+        protected @NonNull Optional<@NonNull String> executeGETRequest(@NonNull String url) {
+            return requestExecutorMock.executeGETRequest(url);
+        }
+
+        @Override
+        protected @NonNull State getLivePictureURLState() {
+            return super.getLivePictureURLState();
+        }
+
+        @Override
+        protected @NonNull State getLiveStreamState() {
+            return super.getLiveStreamState();
+        }
     }
 }

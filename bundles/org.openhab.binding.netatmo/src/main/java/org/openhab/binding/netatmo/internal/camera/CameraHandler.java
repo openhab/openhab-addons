@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -120,18 +119,16 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     protected State getLivePictureURLState() {
-        Optional<String> livePictureURL = getLivePictureURL();
-        return livePictureURL.map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
+        return getLivePictureURL().map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
     }
 
     protected State getLivePictureState() {
         Optional<String> livePictureURL = getLivePictureURL();
-        return !livePictureURL.isPresent() ? UnDefType.UNDEF : HttpUtil.downloadImage(livePictureURL.get());
+        return livePictureURL.isPresent() ? HttpUtil.downloadImage(livePictureURL.get()) : UnDefType.UNDEF;
     }
 
     protected State getLiveStreamState() {
-        Optional<String> liveStreamURL = getLiveStreamURL();
-        return !liveStreamURL.isPresent() ? UnDefType.UNDEF : new StringType(liveStreamURL.get());
+        return getLiveStreamURL().map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
     }
 
     /**
