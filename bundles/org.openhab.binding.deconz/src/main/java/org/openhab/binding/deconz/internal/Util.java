@@ -47,4 +47,15 @@ public class Util {
     public static int constrainToRange(int intValue, int min, int max) {
         return Math.max(min, Math.min(intValue, max));
     }
+
+    public static int parseIntWithFallback(String text, int defaultValue) {
+        if (text == null || text.isEmpty()) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }        
+    }
 }

@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -84,8 +83,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
-        ct_max = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MAX), ZCL_CT_MAX);
-        ct_min = NumberUtils.toInt(thing.getProperties().get(PROPERTY_CT_MIN), ZCL_CT_MIN);
+        ct_max = parseIntWithFallback(thing.getProperties().get(PROPERTY_CT_MAX), ZCL_CT_MAX);
+        ct_min = parseIntWithFallback(thing.getProperties().get(PROPERTY_CT_MIN), ZCL_CT_MIN);
     }
 
     @Override
