@@ -33,11 +33,11 @@ import io.swagger.client.model.NAWelcomeCamera;
  *         NAWelcomeCameraHandler)
  *
  */
-public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
+public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
 
-    public CameraHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+    protected CameraHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
     }
 
@@ -133,7 +133,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
     }
 
     @SuppressWarnings("null")
-    private String getVpnUrl() {
+    protected String getVpnUrl() {
         return (module == null) ? null : module.getVpnUrl();
     }
 
