@@ -144,7 +144,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             lastError.set(result.getCause());
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(okCount.get(), is(equalTo(0)));
             assertThat(errorCount.get(), is(equalTo(1)));
@@ -183,7 +183,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             lastError.set(result.getCause());
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(okCount.get(), is(equalTo(0)));
             assertThat(errorCount.get(), is(equalTo(1)));
@@ -219,7 +219,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             lastError.set(result.getCause());
                         }
                     });
-            callbackCalled.await(15, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(15, TimeUnit.SECONDS));
             assertThat(okCount.get(), is(equalTo(0)));
             assertThat(lastError.toString(), errorCount.get(), is(equalTo(1)));
             assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveIOException);
@@ -248,7 +248,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(unexpectedCount.get(), is(equalTo(0)));
             BitArray bits = (BitArray) lastData.get();
@@ -343,7 +343,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(unexpectedCount.get(), is(equalTo(0)));
             ModbusRegisterArray registers = (ModbusRegisterArray) lastData.get();
@@ -374,7 +374,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(unexpectedCount.get(), is(equalTo(0)));
             ModbusRegisterArray registers = (ModbusRegisterArray) lastData.get();
@@ -450,7 +450,7 @@ public class SmokeTest extends IntegrationTestSupport {
                     callbackCalled.countDown();
                 }
             });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(unexpectedCount.get(), is(equalTo(0)));
             assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
@@ -490,7 +490,7 @@ public class SmokeTest extends IntegrationTestSupport {
                     callbackCalled.countDown();
                 }
             });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(unexpectedCount.get(), is(equalTo(0)));
             ModbusResponse response = (ModbusResponse) lastData.get();
@@ -531,7 +531,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             callbackCalled.countDown();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(unexpectedCount.get(), is(equalTo(0)));
             assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
@@ -581,7 +581,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             long end = System.currentTimeMillis();
             assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
@@ -623,7 +623,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
             long end = System.currentTimeMillis();
             assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
         }
@@ -657,7 +657,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
             long end = System.currentTimeMillis();
             assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
         }
@@ -720,7 +720,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             long end = System.currentTimeMillis();
             assertPollDetails(unexpectedCount, expectedReceived, start, end, 190, 600);
@@ -761,7 +761,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            callbackCalled.await(60, TimeUnit.SECONDS);
+            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
             long end = System.currentTimeMillis();
             assertPollDetails(unexpectedCount, expectedReceived, start, end, 190, 600);
 
