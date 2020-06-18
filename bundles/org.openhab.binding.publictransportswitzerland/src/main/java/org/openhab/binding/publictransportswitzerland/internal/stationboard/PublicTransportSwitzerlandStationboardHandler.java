@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -69,7 +70,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // This handler does not support any commands
+        if (command instanceof RefreshType) {
+            stopDataUpdate();
+            startDataUpdate();
+        }
     }
 
     @Override
@@ -80,12 +84,20 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
-            updateDataJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 60, TimeUnit.SECONDS);
+            startDataUpdate();
         }
     }
 
     @Override
     public void dispose() {
+        stopDataUpdate();
+    }
+
+    private void startDataUpdate() {
+        updateDataJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 60, TimeUnit.SECONDS);
+    }
+
+    private void stopDataUpdate() {
         if (updateDataJob != null && !updateDataJob.isCancelled()) {
             updateDataJob.cancel(true);
         }
