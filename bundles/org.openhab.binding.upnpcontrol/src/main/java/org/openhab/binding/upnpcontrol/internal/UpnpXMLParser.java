@@ -112,6 +112,7 @@ public class UpnpXMLParser {
         return handler.getEntries();
     }
 
+    @NonNullByDefault
     private static class AVTransportEventHandler extends DefaultHandler {
 
         private final Map<String, String> changes = new HashMap<String, String>();
@@ -137,11 +138,12 @@ public class UpnpXMLParser {
         }
     }
 
+    @NonNullByDefault
     private static class EntryHandler extends DefaultHandler {
 
         // Maintain a set of elements it is not useful to complain about.
         // This list will be initialized on the first failure case.
-        private static List<String> ignore = new ArrayList<String>();;
+        private static List<String> ignore = new ArrayList<String>();
 
         private String id = "";
         private String refId = "";

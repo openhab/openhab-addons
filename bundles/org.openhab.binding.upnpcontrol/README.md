@@ -1,7 +1,7 @@
 # UpnpControl Binding
 
-This binding acts as a universal UPnP control point to control UPnP AV media servers and media renderers as defined by the [UPnP Forum](https://openconnectivity.org/developer/specifications/upnp-resources/upnp/).
-It discovers UPnP media servers and renderers in the network.
+This binding acts as a UPnP control point to control UPnP AV media servers and media renderers as defined by the [UPnP Forum](https://openconnectivity.org/developer/specifications/upnp-resources/upnp/).
+It discovers UPnP media servers and renderers in the local network.
 UPnP AV media servers generally allow selecting content from a content directory.
 UPnP AV media renderers take care of playback of the content.
 
@@ -10,7 +10,7 @@ The full content hierarchy of the media on the server can be browsed hierarchica
 Searching the media library is also supported using uPnP search syntax.
 
 Controls are available to control the playback of the media on the renderer.
-Each discovered renderer will also be registered as an openHAB audo sink.
+Each discovered renderer will also be registered as an openHAB audio sink.
 
 ## Supported Things
 
@@ -18,8 +18,8 @@ Two thing types are supported, a server thing, `upnpserver`, and a renderer thin
 
 The binding has been tested with the AV Media Server and AV Media Renderer from Intel Developer Tools for UPnP Technology, available [here](https://www.meshcommander.com/upnptools).
 A second test set included a [TVersity Media Server](http://tversity.com/).
-It complies with part of the UPnP AV Media standard, but has not be certified to cover the full specification.
-Tests have focused on the playback of audio, but if the server and renderer support it, other media types could play as well.
+It complies with part of the UPnP AV Media standard, but has not been verified to comply with the full specification.
+Tests have focused on the playback of audio, but if the server and renderer support it, other media types should play as well.
 
 
 ## Discovery
@@ -33,23 +33,25 @@ Both the  `upnprenderer` and `upnpserver` thing require a configuration paramete
 This `udn` uniquely defines the UPnP device.
 It can be retrieved from the thing ID when using auto discovery.
 
-An `upnpserver` device has the following additional optional configuration parameters:
+Additionally, a `upnpserver` device has the following optional configuration parameters:
+
 * `filter`: when true, only list content that is playable on the renderer, default is `false`.
 * `sortcriteria`: Sort criteria for the titles in the selection list and when sending for playing to a renderer.
 The criteria are defined in UPnP sort criteria format, examples: `+dc:title`, `-dc:creator`, `+upnp:album`.
-Supported sort criteria will depend on the media server.
+Support for sort criteria will depend on the media server.
 The default is to sort ascending on title, `+dc:title`.
 
 The full syntax for manual configuration is:
 
 ```
 Thing upnpcontrol:upnpserver:<serverId> [udn="<udn of media server>"]
-Thing upnpcontrol:upnprenderer:<rendererId> [udn="<udn of media renderer>", filter=<true/false>, sortcriteria="<sort criteria string>" 
+Thing upnpcontrol:upnprenderer:<rendererId> [udn="<udn of media renderer>", filter=<true/false>, sortcriteria="<sort criteria string>"]
 ```
 
 ## Channels
 
 The `upnpserver` has the following channels:
+
 * `upnprenderer`: The renderer to send the media content to for playback.
 The channel allows selecting from all discovered media renderers.
 This list is dynamically adjusted as media renderers are being added/removed.
@@ -58,16 +60,17 @@ This channel can be used to skip to a specific container or entry in the content
 This is especially useful in rules.
 * `browse`: Browse and serve media content.
 The browsing will start at the top of the content directory tree and allows you to go down and up (represented by ..) in the tree.
-The list of containers (directories) and media for selection on the level in the content hierarchy is updated dynamically when changing a level.
-All media in the selection list, playable on the current selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
+The list of containers (directories) and media entries for selection in the content hierarchy is updated dynamically when selecting a container or entry.
+All media in the selection list, playable on the currently selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
 * `search`: Search for media content on the server.
 Search criteria are defined in UPnP search criteria format.
 Examples: `dc:title contains "song"`, `dc:creator contains "SpringSteen"`, `unp:class = "object.item.audioItem"`, `upnp:album contains "Born in"`.
-The search starts at the current level in the browse channel and searches down from there.
-When no level is selected, the search starts at the top.
+The search starts at the value of the `currentid` channel and searches down from there.
+When no `currentid` is selected, the search starts at the top.
 All media in the search result list, playable on the current selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
 
 The `upnprenderer` has the following channels:
+
 * `volume`: playback volume
 * `mute`: mute playback
 * `control`: play, pause, next, previous control
@@ -85,14 +88,14 @@ The `upnprenderer` has the following channels:
 
 ## Audio Support
 
-All configured media renderers are registered as an audio sink in the framework.
-`playSound`and `playStream`command can be used in rules to playback audio fragments or audio streams to a renderer.
+All configured media renderers are registered as an audio sink.
+`playSound`and `playStream`commands can be used in rules to play back audio fragments or audio streams to a renderer.
 
 ## Limitations
 
 The current version of BasicUI does not support dynamic refreshing of the selection list in the `upnpserver` channels `renderer` and `browse`.
 A refresh of the browser will be required to show the adjusted selection list.
-The `upnpserver` `search` channel requires input of a string to trigger a search.
+The `upnpserver search` channel requires input of a string to trigger a search.
 This cannot be done with BasicUI, but can be achieved with rules.
 
 ## Full Example

@@ -37,7 +37,7 @@ public class UpnpEntry {
     private String parentId;
     private String upnpClass;
     private String title = "";
-    private List<UpnpEntryRes> resList = new ArrayList<>();;
+    private List<UpnpEntryRes> resList = new ArrayList<>();
     private String album = "";
     private String albumArtUri = "";
     private String creator = "";

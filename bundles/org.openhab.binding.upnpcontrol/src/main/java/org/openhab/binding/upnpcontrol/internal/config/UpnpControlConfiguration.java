@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.upnpcontrol.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Mark Herwege - Initial contribution
  * @author Karel Goderis - Based on UPnP logic in Sonos binding
  */
+@NonNullByDefault
 public class UpnpControlConfiguration {
-    public String udn;
+    public @Nullable String udn;
 }

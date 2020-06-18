@@ -87,6 +87,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile boolean playerStopped;
     private volatile boolean playing;
     private volatile String trackDuration = "00:00:00";
+    private volatile String trackPosition = "00:00:00";
     private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
 
     private volatile @Nullable ScheduledFuture<?> subscriptionRefreshJob;
@@ -365,10 +366,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                         updateState(CONTROL, PlayPauseType.PAUSE);
                         playerStopped = true;
                         stop();
-                        if (!thing.getChannel(TRACK_POSITION).equals(UnDefType.UNDEF)) {
-                            // Set track position back to 0 when it was running
-                            updateState(TRACK_POSITION, StringType.valueOf("00:00:00"));
-                        }
+                        updateState(TRACK_POSITION, StringType.valueOf("00:00:00"));
                     }
                     break;
                 case CONTROL:
@@ -518,13 +516,10 @@ public class UpnpRendererHandler extends UpnpHandler {
                 break;
             case "CurrentTrackDuration":
                 updateState(TRACK_DURATION, StringType.valueOf(value));
-                if (value == null) {
-                    trackDuration = "00:00:00";
-                } else {
-                    trackDuration = value;
-                }
+                trackDuration = value != null ? value : "00:00:00";
             case "RelTime":
-                updateState(TRACK_POSITION, StringType.valueOf(value));
+                updateState(TRACK_POSITION, StringType.valueOf(trackPosition));
+                trackPosition = value != null ? value : "00:00:00";
             default:
                 super.onValueReceived(variable, value, service);
                 break;

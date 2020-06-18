@@ -132,7 +132,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     @Override
-    public String getUDN() {
+    public @Nullable String getUDN() {
         return config.udn;
     }
 
