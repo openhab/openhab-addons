@@ -508,7 +508,7 @@
 				<option value="AUTO">auto</option>
 				<option value="HEAT">heat</option>
 				<option value="OFF">off</option>
-		</options>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="offset">
