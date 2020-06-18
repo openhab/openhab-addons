@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -27,6 +28,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.model.NAWelcomeCamera;
@@ -43,6 +45,7 @@ import java.util.Optional;
  *         NAWelcomeCameraHandler)
  *
  */
+@NonNullByDefault
 public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     private static final String PING_URL_PATH = "/command/ping";
@@ -117,18 +120,18 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     protected State getLivePictureURLState() {
-        String livePictureURL = getLivePictureURL();
-        return livePictureURL == null ? UnDefType.UNDEF : toStringType(livePictureURL);
+        Optional<String> livePictureURL = getLivePictureURL();
+        return livePictureURL.map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
     }
 
     protected State getLivePictureState() {
-        String livePictureURL = getLivePictureURL();
-        return livePictureURL == null ? UnDefType.UNDEF : HttpUtil.downloadImage(livePictureURL);
+        Optional<String> livePictureURL = getLivePictureURL();
+        return !livePictureURL.isPresent() ? UnDefType.UNDEF : HttpUtil.downloadImage(livePictureURL.get());
     }
 
     protected State getLiveStreamState() {
-        String liveStreamURL = getLiveStreamURL();
-        return liveStreamURL == null ? UnDefType.UNDEF : new StringType(liveStreamURL);
+        Optional<String> liveStreamURL = getLiveStreamURL();
+        return !liveStreamURL.isPresent() ? UnDefType.UNDEF : new StringType(liveStreamURL.get());
     }
 
     /**
@@ -136,12 +139,8 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
      *
      * @return Url of the live snapshot
      */
-    private String getLivePictureURL() {
-        String result = getVpnUrl();
-        if (result != null) {
-            result += LIVE_PICTURE;
-        }
-        return result;
+    private Optional<String> getLivePictureURL() {
+        return getVpnUrl().map(u -> u += LIVE_PICTURE);
     }
 
     /**
@@ -149,33 +148,32 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
      *
      * @return Url of the live stream
      */
-    private String getLiveStreamURL() {
-        String result = getVpnUrl();
-        if (result == null) {
-            return null;
+    private Optional<String> getLiveStreamURL() {
+        Optional<String> result = getVpnUrl();
+        if (!result.isPresent()) {
+            return Optional.empty();
         }
 
-        StringBuilder resultStringBuilder = new StringBuilder(result);
+        StringBuilder resultStringBuilder = new StringBuilder(result.get());
         resultStringBuilder.append("/live/index");
         if (isLocal()) {
             resultStringBuilder.append("_local");
         }
         resultStringBuilder.append(".m3u8");
-        return resultStringBuilder.toString();
+        return Optional.of(resultStringBuilder.toString());
     }
 
-    @SuppressWarnings("null")
-    protected String getVpnUrl() {
-        return (module == null) ? null : module.getVpnUrl();
+    private Optional<String> getVpnUrl() {
+        return (module == null) ? Optional.empty() : Optional.ofNullable(module.getVpnUrl());
     }
 
-    public String getStreamURL(String videoId) {
-        String result = getVpnUrl();
-        if (result == null) {
-            return null;
+    public Optional<String> getStreamURL(String videoId) {
+        Optional<String> result = getVpnUrl();
+        if (!result.isPresent()) {
+            return Optional.empty();
         }
 
-        StringBuilder resultStringBuilder = new StringBuilder(result);
+        StringBuilder resultStringBuilder = new StringBuilder(result.get());
         resultStringBuilder.append("/vod/");
         resultStringBuilder.append(videoId);
         resultStringBuilder.append("/index");
@@ -183,7 +181,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
             resultStringBuilder.append("_local");
         }
         resultStringBuilder.append(".m3u8");
-        return resultStringBuilder.toString();
+        return Optional.of(resultStringBuilder.toString());
     }
 
     @SuppressWarnings("null")
@@ -205,8 +203,10 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     protected Optional<String> getLocalCameraURL() {
-        String vpnURL = getVpnUrl();
-        if (vpnURL != null) {
+        Optional<String> vpnURLOptional = getVpnUrl();
+        if (vpnURLOptional.isPresent()) {
+            final String vpnURL = vpnURLOptional.get();
+
             //The local address is (re-)requested when it wasn't already determined or when the vpn address was changed.
             if (!cameraAddress.isPresent() || cameraAddress.get().isVpnURLChanged(vpnURL)) {
                 Optional<JSONObject> json = executeGETRequestJSON(vpnURL + PING_URL_PATH);
