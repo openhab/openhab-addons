@@ -28,7 +28,7 @@ public class StiebelEltronBindingConstants {
     private static final String BINDING_ID = ModbusBindingConstants.BINDING_ID;
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "heatpump");
+    public static final ThingTypeUID THING_TYPE_HEATPUMP = new ThingTypeUID(BINDING_ID, "heatpump");
 
     // Channel group ids
     public static final String GROUP_SYSTEM_STATE = "systemState";

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.stiebeleltron.internal;
 
-import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.THING_TYPE_SAMPLE;
+import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.THING_TYPE_HEATPUMP;
 
 import java.util.Collections;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
     private ModbusManager manager;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_HEATPUMP);
 
     /**
      * This factory needs a reference to the ModbusManager wich is provided
@@ -65,7 +65,7 @@ public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
+        if (THING_TYPE_HEATPUMP.equals(thingTypeUID)) {
             return new StiebelEltronHandler(thing, manager);
         }
 
