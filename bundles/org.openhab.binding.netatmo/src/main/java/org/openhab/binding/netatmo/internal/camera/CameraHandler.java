@@ -56,7 +56,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
 
     private Optional<CameraAddress> cameraAddress = Optional.empty();
 
-    protected CameraHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+    protected CameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
     }
 
