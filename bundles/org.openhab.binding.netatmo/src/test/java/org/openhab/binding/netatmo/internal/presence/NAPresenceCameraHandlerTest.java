@@ -52,6 +52,7 @@ public class NAPresenceCameraHandlerTest {
 
     private Thing presenceCameraThing;
     private NAWelcomeCamera presenceCamera;
+    private ChannelUID cameraStatusChannelUID;
     private ChannelUID floodlightChannelUID;
     private ChannelUID floodlightAutoModeChannelUID;
     private NAPresenceCameraHandlerAccessible handler;
@@ -60,10 +61,49 @@ public class NAPresenceCameraHandlerTest {
     public void before() {
         presenceCameraThing = new ThingImpl(new ThingTypeUID("netatmo", "NOC"), "1");
         presenceCamera = new NAWelcomeCamera();
+
+        cameraStatusChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_STATUS);
         floodlightChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT);
         floodlightAutoModeChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE);
 
         handler = new NAPresenceCameraHandlerAccessible(presenceCameraThing, presenceCamera);
+    }
+
+    @Test
+    public void testHandleCommand_Switch_Surveillance_on() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(cameraStatusChannelUID, OnOffType.ON);
+
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch on
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/changestatus?status=on");
+    }
+
+    @Test
+    public void testHandleCommand_Switch_Surveillance_off() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
+
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(cameraStatusChannelUID, OnOffType.OFF);
+
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
+        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/changestatus?status=off");
+    }
+
+    @Test
+    public void testHandleCommand_Switch_Surveillance_unknown_command() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        handler.handleCommand(cameraStatusChannelUID, RefreshType.REFRESH);
+
+        verify(requestExecutorMock, never()).executeGETRequest(any()); //nothing should get executed on a refresh command
+    }
+
+    @Test
+    public void testHandleCommand_Switch_Surveillance_without_VPN() {
+        handler.handleCommand(cameraStatusChannelUID, OnOffType.ON);
+
+        verify(requestExecutorMock, never()).executeGETRequest(any()); //nothing should get executed when no VPN address is set
     }
 
     @Test
@@ -185,7 +225,7 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_VPN_URL_not_set() {
+    public void testHandleCommand_without_VPN() {
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
 
         verify(requestExecutorMock, never()).executeGETRequest(any()); //no executions because the VPN URL is still unknown
