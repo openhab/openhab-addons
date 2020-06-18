@@ -62,16 +62,16 @@ public class NAPresenceCameraHandler extends CameraHandler {
         String channelId = channelUID.getId();
         switch (channelId) {
             case CHANNEL_CAMERA_FLOODLIGHT:
-                if (OnOffType.ON.equals(command)) {
+                if (command == OnOffType.ON) {
                     switchFloodlight(true);
-                } else if (OnOffType.OFF.equals(command)) {
+                } else if (command == OnOffType.OFF) {
                     switchFloodlight(false);
                 }
                 break;
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
-                if (OnOffType.ON.equals(command)) {
+                if (command == OnOffType.ON) {
                     switchFloodlightAutoMode(true);
-                } else if (OnOffType.OFF.equals(command)) {
+                } else if (command == OnOffType.OFF) {
                     switchFloodlightAutoMode(false);
                 }
                 break;
@@ -88,7 +88,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
                 //The auto-mode state shouldn't be updated, because this isn't a dedicated information. When the
                 // floodlight is switched on the state within the Netatmo API is "on" and the information if the previous
                 // state was "auto" instead of "off" is lost... Therefore the binding handles its own auto-mode state.
-                if (UnDefType.UNDEF.equals(floodlightAutoModeState)) {
+                if (floodlightAutoModeState == UnDefType.UNDEF) {
                     floodlightAutoModeState = getFloodlightAutoModeState();
                 }
                 return floodlightAutoModeState;
@@ -98,7 +98,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private State getFloodlightState() {
         if (module != null) {
-            final boolean isOn = NAWelcomeCamera.LightModeStatusEnum.ON.equals(module.getLightModeStatus());
+            final boolean isOn = module.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.ON;
             return toOnOffType(isOn);
         }
         return UnDefType.UNDEF;
@@ -106,7 +106,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
 
     private State getFloodlightAutoModeState() {
         if (module != null) {
-            return toOnOffType(NAWelcomeCamera.LightModeStatusEnum.AUTO.equals(module.getLightModeStatus()));
+            return toOnOffType(module.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.AUTO);
         }
         return UnDefType.UNDEF;
     }
@@ -115,7 +115,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
         if (isOn) {
             changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum.ON);
         } else {
-            switchFloodlightAutoMode(OnOffType.ON.equals(floodlightAutoModeState));
+            switchFloodlightAutoMode(floodlightAutoModeState == OnOffType.ON);
         }
     }
 
