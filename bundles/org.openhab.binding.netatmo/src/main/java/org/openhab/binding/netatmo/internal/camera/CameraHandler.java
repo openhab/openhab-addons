@@ -17,14 +17,24 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.model.NAWelcomeCamera;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * {@link CameraHandler} is the class used to handle Camera Data
@@ -35,10 +45,32 @@ import io.swagger.client.model.NAWelcomeCamera;
  */
 public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
+    private static final String PING_URL_PATH = "/command/ping";
+    private static final String STATUS_CHANGE_URL_PATH = "/command/changestatus";
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
+
+    private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
+
+    private Optional<CameraAddress> cameraAddress = Optional.empty();
 
     protected CameraHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        String channelId = channelUID.getId();
+        switch (channelId) {
+            case CHANNEL_CAMERA_STATUS:
+            case CHANNEL_WELCOME_CAMERA_STATUS:
+                if(command == OnOffType.ON) {
+                    switchVideoSurveillance(true);
+                } else if(command == OnOffType.OFF) {
+                    switchVideoSurveillance(false);
+                }
+                break;
+        }
+        super.handleCommand(channelUID, command);
     }
 
     @Override
@@ -157,5 +189,52 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     @SuppressWarnings("null")
     private boolean isLocal() {
         return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal();
+    }
+
+    private void switchVideoSurveillance(boolean isOn) {
+        Optional<String> localCameraURL = getLocalCameraURL();
+        if (localCameraURL.isPresent()) {
+            String url = localCameraURL.get() + STATUS_CHANGE_URL_PATH + "?status=";
+            if(isOn) {
+                url += "on";
+            } else {
+                url += "off";
+            }
+            executeGETRequest(url);
+        }
+    }
+
+    protected Optional<String> getLocalCameraURL() {
+        String vpnURL = getVpnUrl();
+        if (vpnURL != null) {
+            //The local address is (re-)requested when it wasn't already determined or when the vpn address was changed.
+            if (!cameraAddress.isPresent() || cameraAddress.get().isVpnURLChanged(vpnURL)) {
+                Optional<JSONObject> json = executeGETRequestJSON(vpnURL + PING_URL_PATH);
+                cameraAddress = json.map(j -> j.optString("local_url", null))
+                        .map(localURL -> new CameraAddress(vpnURL, localURL));
+            }
+        }
+        return cameraAddress.map(CameraAddress::getLocalURL);
+    }
+
+    private Optional<JSONObject> executeGETRequestJSON(String url) {
+        try {
+            return executeGETRequest(url).map(JSONObject::new);
+        } catch (JSONException e) {
+            logger.warn("Error on parsing the content as JSON!", e);
+        }
+        return Optional.empty();
+    }
+
+    protected @NonNull Optional<@NonNull String> executeGETRequest(@NonNull String url) {
+        try {
+            String content = HttpUtil.executeUrl("GET", url, 5000);
+            if (content != null && !content.isEmpty()) {
+                return Optional.of(content);
+            }
+        } catch (IOException e) {
+            logger.warn("Error on accessing local camera url!", e);
+        }
+        return Optional.empty();
     }
 }
