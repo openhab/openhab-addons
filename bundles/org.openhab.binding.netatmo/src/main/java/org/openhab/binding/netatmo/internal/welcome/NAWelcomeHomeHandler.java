@@ -147,9 +147,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     Optional<AbstractNetatmoThingHandler> thing = getBridgeHandler().findNAThing(cameraId);
                     if (thing.isPresent()) {
                         CameraHandler eventCamera = (CameraHandler) thing.get();
-                        String streamUrl = eventCamera.getStreamURL(lastEvent.get().getVideoId());
-                        if (streamUrl != null) {
-                            return new StringType(streamUrl);
+                        Optional<String> streamUrl = eventCamera.getStreamURL(lastEvent.get().getVideoId());
+                        if (streamUrl.isPresent()) {
+                            return new StringType(streamUrl.get());
                         }
                     }
                 }
