@@ -81,7 +81,7 @@ public class LightsTest {
 
         lightThingHandler.messageReceived("", lightMessage);
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("21")));
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_ct), eq(new DecimalType("87.03170028818444")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_ct), eq(new DecimalType("2500")));
     }
 
     @Test
