@@ -80,7 +80,6 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
         updateProperties(null, moduleData.getType());
     }
 
-    @SuppressWarnings("null")
     @Override
     protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
