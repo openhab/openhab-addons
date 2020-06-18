@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+import org.openhab.binding.netatmo.internal.camera.CameraHandler;
 import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
@@ -145,7 +146,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     String cameraId = lastEvent.get().getCameraId();
                     Optional<AbstractNetatmoThingHandler> thing = getBridgeHandler().findNAThing(cameraId);
                     if (thing.isPresent()) {
-                        NAWelcomeCameraHandler eventCamera = (NAWelcomeCameraHandler) thing.get();
+                        CameraHandler eventCamera = (CameraHandler) thing.get();
                         String streamUrl = eventCamera.getStreamURL(lastEvent.get().getVideoId());
                         if (streamUrl != null) {
                             return new StringType(streamUrl);
