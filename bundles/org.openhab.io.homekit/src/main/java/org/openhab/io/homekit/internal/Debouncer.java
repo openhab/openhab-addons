@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,6 +42,7 @@ class Debouncer {
     private final Logger logger = LoggerFactory.getLogger(Debouncer.class);
 
     private volatile Long lastCallAttempt;
+    private ScheduledFuture<?> feature;
 
     /**
      * Highly performant generic debouncer
@@ -74,7 +76,14 @@ class Debouncer {
         lastCallAttempt = clock.millis();
         calls.incrementAndGet();
         if (pending.compareAndSet(false, true)) {
-            scheduler.schedule(this::tryActionOrPostpone, delayMs, TimeUnit.MILLISECONDS);
+            feature = scheduler.schedule(this::tryActionOrPostpone, delayMs, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    public void stop() {
+        logger.trace("stop debouncer");
+        if (feature != null) {
+            feature.cancel(true);
         }
     }
 
@@ -100,7 +109,7 @@ class Debouncer {
             // Note: we use Math.max as there's a _very_ small chance lastCallAttempt could advance in another thread,
             // and result in a negative calculation
             long delay = Math.max(1, lastCallAttempt - now + delayMs);
-            scheduler.schedule(this::tryActionOrPostpone, delay, TimeUnit.MILLISECONDS);
+            feature = scheduler.schedule(this::tryActionOrPostpone, delay, TimeUnit.MILLISECONDS);
         }
     }
 }

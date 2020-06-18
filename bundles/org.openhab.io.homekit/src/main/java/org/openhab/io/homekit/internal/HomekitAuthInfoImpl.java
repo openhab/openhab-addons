@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.eclipse.smarthome.core.storage.Storage;
-import org.eclipse.smarthome.core.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,13 +40,13 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private final byte[] privateKey;
     private final String pin;
 
-    public HomekitAuthInfoImpl(StorageService storageService, String pin) throws InvalidAlgorithmParameterException {
-        storage = storageService.getStorage("homekit");
-        initializeStorage();
+    public HomekitAuthInfoImpl(final Storage storage, final String pin) throws InvalidAlgorithmParameterException {
+        this.storage = storage;
         this.pin = pin;
-        mac = storage.get("mac");
-        salt = new BigInteger(storage.get("salt"));
-        privateKey = Base64.getDecoder().decode(storage.get("privateKey"));
+        initializeStorage();
+        mac = this.storage.get("mac");
+        salt = new BigInteger(this.storage.get("salt"));
+        privateKey = Base64.getDecoder().decode(this.storage.get("privateKey"));
     }
 
     @Override

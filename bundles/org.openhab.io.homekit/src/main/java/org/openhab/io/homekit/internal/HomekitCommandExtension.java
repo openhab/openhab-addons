@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.eclipse.smarthome.core.storage.StorageService;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
@@ -43,7 +42,6 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String LEGACY_SUBCMD_PRINT_ACCESSORY = "printAccessory";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
-    private StorageService storageService;
     private Homekit homekit;
 
     public HomekitCommandExtension() {
@@ -108,15 +106,6 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     @Reference
-    public void setStorageService(StorageService storageService) {
-        this.storageService = storageService;
-    }
-
-    public void unsetStorageService(StorageService storageService) {
-        this.storageService = null;
-    }
-
-    @Reference
     public void setHomekit(Homekit homekit) {
         this.homekit = homekit;
     }
@@ -127,8 +116,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
 
     private void clearHomekitPairings(Console console) {
         try {
-            new HomekitAuthInfoImpl(storageService, null).clear();
-            homekit.refreshAuthInfo();
+            homekit.clearHomekitPairings();
             console.println("Cleared HomeKit pairings");
         } catch (Exception e) {
             logger.warn("Could not clear HomeKit pairings", e);
