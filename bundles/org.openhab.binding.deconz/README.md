@@ -147,7 +147,7 @@ Other devices support
 | brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`                               |                                 
 | switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                  |
 | color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`            |
-| color_temperature | Number                   |     R/W     | Color temperature in kelvin           | `colortemperaturelight`, `extendedcolorlight` |
+| color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light          | `colortemperaturelight`, `extendedcolorlight` |
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                              |
 | heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                  |
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                  |
