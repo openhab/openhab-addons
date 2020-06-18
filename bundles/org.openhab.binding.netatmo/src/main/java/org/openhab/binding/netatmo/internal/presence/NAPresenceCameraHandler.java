@@ -24,14 +24,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.openhab.binding.netatmo.internal.camera.CameraHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT;
@@ -45,12 +39,8 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANN
 @NonNullByDefault
 public class NAPresenceCameraHandler extends CameraHandler {
 
-    private static final String PING_URL_PATH = "/command/ping";
     private static final String FLOODLIGHT_SET_URL_PATH = "/command/floodlight_set_config";
 
-    private final Logger logger = LoggerFactory.getLogger(NAPresenceCameraHandler.class);
-
-    private Optional<CameraAddress> cameraAddress = Optional.empty();
     private State floodlightAutoModeState = UnDefType.UNDEF;
 
     public NAPresenceCameraHandler(final Thing thing, final TimeZoneProvider timeZoneProvider) {
@@ -138,39 +128,5 @@ public class NAPresenceCameraHandler extends CameraHandler {
                     + "%22%7D";
             executeGETRequest(url);
         }
-    }
-
-    private Optional<String> getLocalCameraURL() {
-        String vpnURL = getVpnUrl();
-        if (vpnURL != null) {
-            //The local address is (re-)requested when it wasn't already determined or when the vpn address was changed.
-            if (!cameraAddress.isPresent() || cameraAddress.get().isVpnURLChanged(vpnURL)) {
-                Optional<JSONObject> json = executeGETRequestJSON(vpnURL + PING_URL_PATH);
-                cameraAddress = json.map(j -> j.optString("local_url", null))
-                        .map(localURL -> new CameraAddress(vpnURL, localURL));
-            }
-        }
-        return cameraAddress.map(CameraAddress::getLocalURL);
-    }
-
-    private Optional<JSONObject> executeGETRequestJSON(String url) {
-        try {
-            return executeGETRequest(url).map(JSONObject::new);
-        } catch (JSONException e) {
-            logger.warn("Error on parsing the content as JSON!", e);
-        }
-        return Optional.empty();
-    }
-
-    Optional<String> executeGETRequest(String url) {
-        try {
-            String content = HttpUtil.executeUrl("GET", url, 5000);
-            if (content != null && !content.isEmpty()) {
-                return Optional.of(content);
-            }
-        } catch (IOException e) {
-            logger.warn("Error on accessing local camera url!", e);
-        }
-        return Optional.empty();
     }
 }

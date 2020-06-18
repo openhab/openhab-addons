@@ -66,7 +66,7 @@ public class NAPresenceCameraHandlerTest {
             }
 
             @Override
-            @NonNull Optional<@NonNull String> executeGETRequest(@NonNull String url) {
+            protected @NonNull Optional<@NonNull String> executeGETRequest(@NonNull String url) {
                 return requestExecutorMock.executeGETRequest(url);
             }
         };
