@@ -334,9 +334,9 @@ public class NAPresenceCameraHandlerTest {
     @Test
     public void testGetStreamURL() {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
-        String streamURL = handler.getStreamURL("dummyVideoId");
-        assertNotNull(streamURL);
-        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index.m3u8", streamURL);
+        Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
+        assertTrue(streamURL.isPresent());
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index.m3u8", streamURL.get());
     }
 
     @Test
@@ -344,9 +344,9 @@ public class NAPresenceCameraHandlerTest {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         presenceCamera.setIsLocal(true);
 
-        String streamURL = handler.getStreamURL("dummyVideoId");
-        assertNotNull(streamURL);
-        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index_local.m3u8", streamURL);
+        Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
+        assertTrue(streamURL.isPresent());
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index_local.m3u8", streamURL.get());
     }
 
     @Test
@@ -354,15 +354,15 @@ public class NAPresenceCameraHandlerTest {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         presenceCamera.setIsLocal(false);
 
-        String streamURL = handler.getStreamURL("dummyVideoId");
-        assertNotNull(streamURL);
-        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index.m3u8", streamURL);
+        Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
+        assertTrue(streamURL.isPresent());
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index.m3u8", streamURL.get());
     }
 
     @Test
     public void testGetStreamURL_without_VPN() {
-        String streamURL = handler.getStreamURL("dummyVideoId");
-        assertNull(streamURL);
+        Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
+        assertFalse(streamURL.isPresent());
     }
 
     @Test

@@ -131,4 +131,8 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     protected void setRefreshRequired(boolean refreshRequired) {
         this.refreshRequired = refreshRequired;
     }
+
+    protected Optional<MODULE> getModule() {
+        return Optional.ofNullable(module);
+    }
 }
