@@ -126,7 +126,7 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
 
-        if (ThingStatus.ONLINE.equals(status) == false) {
+        if (!(ThingStatus.ONLINE.equals(status))) {
             for (Channel channel : getThing().getChannels()) {
                 if (!CHANNEL_LAST_UPDATE.equals(channel.getUID().getId())) {
                     updateState(channel.getUID(), UnDefType.UNDEF);
