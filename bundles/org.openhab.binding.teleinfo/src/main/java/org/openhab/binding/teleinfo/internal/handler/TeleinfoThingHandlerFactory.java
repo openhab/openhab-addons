@@ -133,6 +133,7 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @SuppressWarnings("null")
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof TeleinfoAbstractControllerHandler) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
