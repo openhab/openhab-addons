@@ -109,7 +109,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private Object sequenceLock = new Object();
 
     // build a Map with a MonopriceAudioZoneDTO for each zoneId
-    private static final Map<String, MonopriceAudioZoneDTO> ZONE_DATA_MAP = MonopriceAudioZone.VALID_ZONE_IDS.stream()
+    private final Map<String, MonopriceAudioZoneDTO> ZONE_DATA_MAP = MonopriceAudioZone.VALID_ZONE_IDS.stream()
             .collect(Collectors.toMap(s -> s, s -> new MonopriceAudioZoneDTO()));
 
     public MonopriceAudioHandler(Thing thing, MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider,
