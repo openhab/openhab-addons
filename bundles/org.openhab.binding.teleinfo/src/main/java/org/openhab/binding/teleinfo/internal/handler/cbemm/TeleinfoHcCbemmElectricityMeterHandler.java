@@ -24,7 +24,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmHcOption;
  * The {@link TeleinfoHcCbemmElectricityMeterHandler} class defines a handler for a HC CBEMM Electricity Meters thing.
  *
  * @author Nicolas SIBERIL - Initial contribution
- * @author olivierkeke - Change ADCO property to parameter
+ * @author Olivier MARCEAU - Change ADCO property to parameter
  */
 public class TeleinfoHcCbemmElectricityMeterHandler extends TeleinfoAbstractCbemmElectricityMeterHandler {
 

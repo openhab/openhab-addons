@@ -25,7 +25,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmTempoOption;
  * thing.
  *
  * @author Nicolas SIBERIL - Initial contribution
- * @author olivierkeke - Change ADCO property to parameter
+ * @author Olivier MARCEAU - Change ADCO property to parameter
  */
 public class TeleinfoTempoCbemmElectricityMeterHandler extends TeleinfoAbstractCbemmElectricityMeterHandler {
 
