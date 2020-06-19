@@ -84,6 +84,8 @@ class Debouncer {
         logger.trace("stop debouncer");
         if (feature != null) {
             feature.cancel(true);
+            calls.set(0);
+            pending.set(false);
         }
     }
 

@@ -115,12 +115,8 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     private void clearHomekitPairings(Console console) {
-        try {
-            homekit.clearHomekitPairings();
-            console.println("Cleared HomeKit pairings");
-        } catch (Exception e) {
-            logger.warn("Could not clear HomeKit pairings", e);
-        }
+        homekit.clearHomekitPairings();
+        console.println("Cleared HomeKit pairings");
     }
 
     private void allowUnauthenticatedHomekitRequests(boolean allow, Console console) {
