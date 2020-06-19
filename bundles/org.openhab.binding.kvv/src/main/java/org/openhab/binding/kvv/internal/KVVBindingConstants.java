@@ -27,13 +27,15 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class KVVBindingConstants {
 
-    /** ID of the binding */
     private static final String BINDING_ID = "kvv";
 
+    /** the thing type of the bridges */
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "kvvbridge");
 
+    /** the thing type of the stations */
     public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "kvvstation");
 
+    /** all of the supported types */
     public static final List<ThingTypeUID> SUPPORTED_THING_TYPES = Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_STATION);
 
     /** URL of the KVV API */

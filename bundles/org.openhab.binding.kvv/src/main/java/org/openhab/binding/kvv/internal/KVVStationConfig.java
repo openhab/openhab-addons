@@ -30,6 +30,7 @@ public class KVVStationConfig {
     /** maximum number of traines being queried */
     public int maxTrains;
 
+    /** the update interval */
     public int updateInterval;
 
     /** API key of the KVV API */

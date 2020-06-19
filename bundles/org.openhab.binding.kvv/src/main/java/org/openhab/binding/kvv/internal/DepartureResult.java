@@ -26,13 +26,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DepartureResult {
 
-    /** timestamp */
     private String timestamp = "";
 
-    /** name of the stop */
     private String stopName = "";
 
-    /** Ordered list of departures */
     private List<Departure> departures = new ArrayList<Departure>();
 
     /**
@@ -110,31 +107,22 @@ public class DepartureResult {
     @NonNullByDefault
     public class Departure {
 
-        /** the route (the 'name' of the train), e.g. 'S5' */
         private String route = "";
 
-        /** the destination of the train */
         private String destination = "";
 
-        /** the direction of the train */
         private String direction = "";
 
-        /** the estimated time available */
         private String time = "";
 
-        /** the type of the train */
         private String vehicleType = "";
 
-        /** is the train a low-floor train 'niederfluhrbahn'? */
         private boolean lowfloor;
 
-        /** the timestamp */
         private boolean realtime;
 
-        /** the traction */
         private int traction;
 
-        /** the position of the stop */
         private String stopPosition = "";
 
         /**
@@ -311,5 +299,4 @@ public class DepartureResult {
             return "Route " + this.route + timePrefix + this.time + " heading to " + this.destination;
         }
     }
-
 }
