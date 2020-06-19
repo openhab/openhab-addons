@@ -27,7 +27,7 @@ curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=377d840e54b59adb
 ### demo.things
 
 ```
-Bridge kvv:bridge:1 {
+Bridge kvv:kvvbridge:1 {
 	station gottesauerplatz		"Gottesauer Platz/BGV"		[ commonName="Gottesauer Platz/BGV", stationId="de:8212:6", maxTrains="3", updateInterval="10000" ]
 }
 ```
@@ -35,15 +35,39 @@ Bridge kvv:bridge:1 {
 ### demo.items
 
 ```
-String kvv_gottesauerplatz_train0_name      	{channel="kvv:station:1:gottesauerplatz:train0-name"}
-String kvv_gottesauerplatz_train0_destination	{channel="kvv:station:1:gottesauerplatz:train0-destination"}
-String kvv_gottesauerplatz_train0_eta      		{channel="kvv:station:1:gottesauerplatz:train0-eta"}
+String kvv_gottesauerplatz_train0_name      	{channel="kvv:kvvstation:1:gottesauerplatz:train0-name"}
+String kvv_gottesauerplatz_train0_destination	{channel="kvv:kvvstation:1:gottesauerplatz:train0-destination"}
+String kvv_gottesauerplatz_train0_eta      		{channel="kvv:kvvstation:1:gottesauerplatz:train0-eta"}
 
-String kvv_gottesauerplatz_train1_name      	{channel="kvv:station:1:gottesauerplatz:train1-name"}
-String kvv_gottesauerplatz_train1_destination   {channel="kvv:station:1:gottesauerplatz:train1-destination"}
-String kvv_gottesauerplatz_train1_eta      		{channel="kvv:station:1:gottesauerplatz:train1-eta"}
+String kvv_gottesauerplatz_train1_name      	{channel="kvv:kvvstation:1:gottesauerplatz:train1-name"}
+String kvv_gottesauerplatz_train1_destination   {channel="kvv:kvvstation:1:gottesauerplatz:train1-destination"}
+String kvv_gottesauerplatz_train1_eta      		{channel="kvv:kvvstation:1:gottesauerplatz:train1-eta"}
 
-String kvv_gottesauerplatz_train2_name      	{channel="kvv:station:1:gottesauerplatz:train2-name"}
-String kvv_gottesauerplatz_train2_destination   {channel="kvv:station:1:gottesauerplatz:train2-destination"}
-String kvv_gottesauerplatz_train2_eta      		{channel="kvv:station:1:gottesauerplatz:train2-eta"}
+String kvv_gottesauerplatz_train2_name      	{channel="kvv:kvvstation:1:gottesauerplatz:train2-name"}
+String kvv_gottesauerplatz_train2_destination   {channel="kvv:kvvstation:1:gottesauerplatz:train2-destination"}
+String kvv_gottesauerplatz_train2_eta      		{channel="kvv:kvvstation:1:gottesauerplatz:train2-eta"}
+```
+
+### habpanel template
+
+```html
+<style>
+.kvvtable > tbody > tr > td {padding: 3px 20px; text-align: left;}
+</style>
+<table class="kvvtable">
+<tr>
+  <td>{{itemValue('kvv_gottesauerplatz_train0_name')}}</td>
+  <td>{{itemValue('kvv_gottesauerplatz_train0_destination')}}</td>
+  <td>{{itemValue('kvv_gottesauerplatz_train0_eta')}}</td>
+</tr>
+<tr>
+  <td>{{itemValue('kvv_gottesauerplatz_train1_name')}}</td>
+  <td>{{itemValue('kvv_gottesauerplatz_train1_destination')}}</td>
+  <td>{{itemValue('kvv_gottesauerplatz_train1_eta')}}</td>
+</tr><tr>
+  <td>{{itemValue('kvv_gottesauerplatz_train2_name')}}</td>
+  <td>{{itemValue('kvv_gottesauerplatz_train2_destination')}}</td>
+  <td>{{itemValue('kvv_gottesauerplatz_train2_eta')}}</td>
+</tr>
+</table>
 ```
