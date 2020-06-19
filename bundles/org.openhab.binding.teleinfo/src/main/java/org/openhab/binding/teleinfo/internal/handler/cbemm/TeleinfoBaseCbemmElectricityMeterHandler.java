@@ -38,7 +38,7 @@ public class TeleinfoBaseCbemmElectricityMeterHandler extends TeleinfoAbstractCb
         final FrameCbemmBaseOption frameCbemmBaseOption = (FrameCbemmBaseOption) frame;
 
         String adco = (String) getThing().getConfiguration().get(THING_BASE_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO);
-        if (adco.equalsIgnoreCase(frameCbemmBaseOption.getAdco())) {
+        if (frameCbemmBaseOption.getAdco().equalsIgnoreCase(adco)) {
             updateStatesForCommonCbemmChannels(frameCbemmBaseOption);
             updateStatesForBaseFrameOption(frameCbemmBaseOption);
         }

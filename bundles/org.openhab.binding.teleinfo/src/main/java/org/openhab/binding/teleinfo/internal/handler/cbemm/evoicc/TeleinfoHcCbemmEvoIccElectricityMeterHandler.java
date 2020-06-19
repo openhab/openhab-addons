@@ -38,7 +38,7 @@ public class TeleinfoHcCbemmEvoIccElectricityMeterHandler extends TeleinfoAbstra
         final FrameCbemmEvolutionIccHcOption frameCbemmEvoIccHcOption = (FrameCbemmEvolutionIccHcOption) frame;
 
         String adco = (String) getThing().getConfiguration().get(THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO);
-        if (adco.equalsIgnoreCase(frameCbemmEvoIccHcOption.getAdco())) {
+        if (frameCbemmEvoIccHcOption.getAdco().equalsIgnoreCase(adco)) {
             updateStatesForCommonCbemmEvolutionIccChannels(frameCbemmEvoIccHcOption);
             updateStatesForHcFrameOption(frameCbemmEvoIccHcOption);
         }
