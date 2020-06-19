@@ -116,7 +116,7 @@ public class TeleinfoInputStream extends InputStream {
     public TeleinfoInputStream(final InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInMs,
             long readingFrameTimeoutInMs, boolean autoRepairInvalidADPSgroupLine) {
         if (teleinfoInputStream == null) {
-            throw new IllegalArgumentException("Teleinfo inputStream not null");
+            throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
 
         this.waitNextHeaderFrameTimeoutInMs = waitNextHeaderFrameTimeoutInMs;
