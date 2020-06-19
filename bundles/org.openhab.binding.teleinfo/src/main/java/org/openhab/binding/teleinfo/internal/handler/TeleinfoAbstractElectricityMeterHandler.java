@@ -128,7 +128,7 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
 
         if (ThingStatus.ONLINE.equals(status) == false) {
             for (Channel channel : getThing().getChannels()) {
-                if (CHANNEL_LAST_UPDATE.equals(channel.getUID().getId()) == false) {
+                if (!CHANNEL_LAST_UPDATE.equals(channel.getUID().getId())) {
                     updateState(channel.getUID(), UnDefType.UNDEF);
                 }
             }
