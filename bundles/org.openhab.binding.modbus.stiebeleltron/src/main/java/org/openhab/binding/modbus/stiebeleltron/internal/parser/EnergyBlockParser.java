@@ -28,19 +28,19 @@ public class EnergyBlockParser extends AbstractBaseParser {
     public EnergyBlock parse(ModbusRegisterArray raw) {
         EnergyBlock block = new EnergyBlock();
 
-        block.production_heat_today = extractUInt16(raw, 0, (short) 0);
-        block.production_heat_total_low = extractUInt16(raw, 1, (short) 0);
-        block.production_heat_total_high = extractUInt16(raw, 2, (short) 0);
-        block.production_water_today = extractUInt16(raw, 3, (short) 0);
-        block.production_water_total_low = extractUInt16(raw, 4, (short) 0);
-        block.production_water_total_high = extractUInt16(raw, 5, (short) 0);
+        block.productionHeatToday = extractUInt16(raw, 0, (short) 0);
+        block.productionHeatTotalLow = extractUInt16(raw, 1, (short) 0);
+        block.productionHeatTotalHigh = extractUInt16(raw, 2, (short) 0);
+        block.productionWaterToday = extractUInt16(raw, 3, (short) 0);
+        block.productionWaterTotalLow = extractUInt16(raw, 4, (short) 0);
+        block.productionWaterTotalHigh = extractUInt16(raw, 5, (short) 0);
 
-        block.consumption_heat_today = extractUInt16(raw, 10, (short) 0);
-        block.consumption_heat_total_low = extractUInt16(raw, 11, (short) 0);
-        block.consumption_heat_total_high = extractUInt16(raw, 12, (short) 0);
-        block.consumption_water_today = extractUInt16(raw, 13, (short) 0);
-        block.consumption_water_total_low = extractUInt16(raw, 14, (short) 0);
-        block.consumption_water_total_high = extractUInt16(raw, 15, (short) 0);
+        block.consumptionHeatToday = extractUInt16(raw, 10, (short) 0);
+        block.consumptionHeatTotalLow = extractUInt16(raw, 11, (short) 0);
+        block.consumptionHeatTotalHigh = extractUInt16(raw, 12, (short) 0);
+        block.consumptionWaterToday = extractUInt16(raw, 13, (short) 0);
+        block.consumptionWaterTotalLow = extractUInt16(raw, 14, (short) 0);
+        block.consumptionWaterTotalHigh = extractUInt16(raw, 15, (short) 0);
         return block;
     }
 }

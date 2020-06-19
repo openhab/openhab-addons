@@ -81,18 +81,12 @@ import org.slf4j.LoggerFactory;
 public class StiebelEltronHandler extends BaseThingHandler {
 
     public abstract class AbstractBasePoller {
-        /**
-         * Logger instance
-         */
+
         private final Logger logger = LoggerFactory.getLogger(StiebelEltronHandler.class);
 
         private volatile @Nullable PollTask pollTask;
 
-        public AbstractBasePoller() {
-        }
-
         public synchronized void unregisterPollTask() {
-            @Nullable
             PollTask task = pollTask;
             if (task == null) {
                 return;
@@ -101,7 +95,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
             StiebelEltronHandler.this.modbusManager.unregisterRegularPoll(task);
 
             pollTask = null;
-
         }
 
         /**
@@ -111,15 +104,11 @@ public class StiebelEltronHandler extends BaseThingHandler {
 
             logger.debug("Setting up regular polling");
 
-            @Nullable
             ModbusSlaveEndpoint myendpoint = StiebelEltronHandler.this.endpoint;
-            @Nullable
             StiebelEltronConfiguration myconfig = StiebelEltronHandler.this.config;
             if (myconfig == null || myendpoint == null) {
                 throw new IllegalStateException("registerPollTask called without proper configuration");
             }
-
-            logger.debug("Setting up regular polling");
 
             BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(getSlaveId(),
                     readFunctionCode, address, length, myconfig.getMaxTries());
@@ -130,17 +119,13 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 public void onRegisters(@Nullable ModbusReadRequestBlueprint request,
                         @Nullable ModbusRegisterArray registers) {
                     if (registers == null) {
-                        logger.info("Received empty register array on poll");
+                        logger.warn("Received empty register array on poll");
                         return;
                     }
-                    try {
-                        handlePolledData(registers);
+                    handlePolledData(registers);
 
-                        if (StiebelEltronHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
-                            updateStatus(ThingStatus.ONLINE);
-                        }
-                    } catch (Exception error) {
-                        StiebelEltronHandler.this.handleError(error);
+                    if (StiebelEltronHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
+                        updateStatus(ThingStatus.ONLINE);
                     }
                 }
 
@@ -283,28 +268,28 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @return short the value of the command multiplied by 10 (see datatype 2 in the stiebel eltron modbus
      *         documentation)
      */
-    private short getScaledInt16Value(Command command) {
+    private short getScaledInt16Value(Command command) throws IllegalArgumentException {
         if (command instanceof QuantityType) {
-            QuantityType<?> c = (QuantityType<?>) command;
+            QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
             return (short) (c.doubleValue() * 10);
         }
         if (command instanceof DecimalType) {
             DecimalType c = (DecimalType) command;
             return (short) (c.doubleValue() * 10);
         }
-        return 0;
+        throw new IllegalArgumentException();
     }
 
     /**
      * @param command get the value of this command.
      * @return short the value of the command as short
      */
-    private short getInt16Value(Command command) {
+    private short getInt16Value(Command command) throws IllegalArgumentException {
         if (command instanceof DecimalType) {
             DecimalType c = (DecimalType) command;
             return c.shortValue();
         }
-        return 0;
+        throw new IllegalArgumentException();
     }
 
     /**
@@ -312,9 +297,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH == command) {
-            // TODO: Implement refresh
-        } else {
+        try {
             if (GROUP_SYSTEM_PARAMETER.equals(channelUID.getGroupId())) {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_OPERATION_MODE:
@@ -335,6 +318,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 }
             }
         }
+        catch(IllegalArgumentException e){
+            handleError(e);
+        }
     }
 
     /**
@@ -351,18 +337,42 @@ public class StiebelEltronHandler extends BaseThingHandler {
 
     /*
      * This method starts the operation of this handler
-     * Connect to the slave bridge Start the periodic polling
+     * Connect to the slave bridge Start the periodic polling1
      */
     private void startUp() {
 
-        connectEndpoint();
-
-        if (endpoint == null || config == null) {
-            logger.debug("Invalid endpoint/config/manager ref for sunspec handler");
+        if (endpoint != null) {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
+        ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
+        if (slaveEndpointThingHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+            logger.debug("No bridge handler available -- aborting init for {}", this);
+            return;
+        }
+
+        try {
+            slaveId = slaveEndpointThingHandler.getSlaveId();
+
+            endpoint = slaveEndpointThingHandler.asSlaveEndpoint();
+        } catch (EndpointNotInitializedException e) {
+            // this will be handled below as endpoint remains null
+        }
+
+        if (endpoint == null) {
+            @SuppressWarnings("null")
+            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    String.format("Bridge '%s' not completely initialized", label));
+            logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
+            return;
+        }
+
+        if (config == null) {
+            logger.debug("Invalid endpoint/config/manager ref for stiebel eltron handler");
+            return;
+        }
 
         if (systemInformationPoller == null) {
             AbstractBasePoller poller = new AbstractBasePoller() {
@@ -408,6 +418,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
             poller.registerPollTask(1500, 11, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
             systemParameterPoller = poller;
         }
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     /**
@@ -422,33 +433,39 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Unregister the poll tasks and release the endpoint reference
      */
     private void tearDown() {
-        logger.trace("unregisterPollTasks");
-        if (systemInformationPoller != null) {
+        AbstractBasePoller poller = systemInformationPoller;
+        if (poller != null) {
             logger.debug("Unregistering systemInformationPoller from ModbusManager");
-            systemInformationPoller.unregisterPollTask();
+            poller.unregisterPollTask();
 
             systemInformationPoller = null;
         }
-        if (energyPoller != null) {
+
+        poller = energyPoller;
+        if (poller != null) {
             logger.debug("Unregistering energyPoller from ModbusManager");
-            energyPoller.unregisterPollTask();
+            poller.unregisterPollTask();
 
             energyPoller = null;
         }
-        if (systemStatePoller != null) {
+
+        poller = systemStatePoller;
+        if (poller != null) {
             logger.debug("Unregistering systemStatePoller from ModbusManager");
-            systemStatePoller.unregisterPollTask();
+            poller.unregisterPollTask();
 
             systemStatePoller = null;
         }
-        if (systemParameterPoller != null) {
+
+        poller = systemParameterPoller;
+        if (poller != null) {
             logger.debug("Unregistering systemParameterPoller from ModbusManager");
-            systemParameterPoller.unregisterPollTask();
+            poller.unregisterPollTask();
 
             systemParameterPoller = null;
         }
 
-        unregisterEndpoint();
+        endpoint = null;
     }
 
     /**
@@ -485,52 +502,11 @@ public class StiebelEltronHandler extends BaseThingHandler {
             ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
             return slaveEndpoint;
         } else {
-            logger.debug("Unexpected bridge handler: {}", handler);
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unexpected bridge handler: " + handler.toString());
         }
     }
 
-    /**
-     * Get a reference to the modbus endpoint
-     */
-    private void connectEndpoint() {
-        if (endpoint != null) {
-            return;
-        }
-
-        ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
-        if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, String.format("Bridge '%s' is offline",
-                    Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>")));
-            logger.debug("No bridge handler available -- aborting init for {}", this);
-            return;
-        }
-
-        try {
-            slaveId = slaveEndpointThingHandler.getSlaveId();
-
-            endpoint = slaveEndpointThingHandler.asSlaveEndpoint();
-        } catch (EndpointNotInitializedException e) {
-            // this will be handled below as endpoint remains null
-        }
-
-        if (endpoint == null) {
-            @SuppressWarnings("null")
-            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' not completely initialized", label));
-            logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
-            return;
-        }
-    }
-
-    /**
-     * Remove the endpoint if exists
-     */
-    private synchronized void unregisterEndpoint() {
-        endpoint = null;
-    }
-
+ 
     /**
      * Returns value divided by the 10
      *
@@ -602,21 +578,21 @@ public class StiebelEltronHandler extends BaseThingHandler {
 
         // Energy information group
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_PRODUCTION_HEAT_TODAY),
-                new QuantityType<>(block.production_heat_today, KILOWATT_HOUR));
+                new QuantityType<>(block.productionHeatToday, KILOWATT_HOUR));
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_PRODUCTION_HEAT_TOTAL),
-                getEnergyQuantity(block.production_heat_total_high, block.production_heat_total_low));
+                getEnergyQuantity(block.productionHeatTotalHigh, block.productionHeatTotalLow));
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_PRODUCTION_WATER_TODAY),
-                new QuantityType<>(block.production_water_today, KILOWATT_HOUR));
+                new QuantityType<>(block.productionWaterToday, KILOWATT_HOUR));
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_PRODUCTION_WATER_TOTAL),
-                getEnergyQuantity(block.production_water_total_high, block.production_water_total_low));
+                getEnergyQuantity(block.productionWaterTotalHigh, block.productionWaterTotalLow));
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_HEAT_TODAY),
-                new QuantityType<>(block.consumption_heat_today, KILOWATT_HOUR));
+                new QuantityType<>(block.consumptionHeatToday, KILOWATT_HOUR));
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_HEAT_TOTAL),
-                getEnergyQuantity(block.consumption_heat_total_high, block.consumption_heat_total_low));
+                getEnergyQuantity(block.consumptionHeatTotalHigh, block.consumptionHeatTotalLow));
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_WATER_TODAY),
-                new QuantityType<>(block.consumption_water_today, KILOWATT_HOUR));
+                new QuantityType<>(block.consumptionWaterToday, KILOWATT_HOUR));
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_WATER_TOTAL),
-                getEnergyQuantity(block.consumption_water_total_high, block.consumption_water_total_low));
+                getEnergyQuantity(block.consumptionWaterTotalHigh, block.consumptionWaterTotalLow));
     }
 
     /**
@@ -630,9 +606,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         logger.trace("System state block received, size: {}", registers.size());
 
         SystemStateBlock block = systemstateBlockParser.parse(registers);
-        boolean is_heating = (block.state & 16) != 0;
+        boolean isHeating = (block.state & 16) != 0;
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_HEATING),
-                is_heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                isHeating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_HEATING_WATER),
                 (block.state & 32) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_COOLING),

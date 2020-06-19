@@ -38,7 +38,7 @@ public class AbstractBaseParser {
      */
     protected Optional<Double> extractOptionalDouble(ModbusRegisterArray raw, int index) {
         return ModbusBitUtilities.extractStateFromRegisters(raw, index, ValueType.INT16)
-                .map(value -> ((float) value.intValue()) / 10.0).filter(value -> value != (short) 0x8000);
+                .map(value -> ((double) value.intValue()) / 10.0).filter(value -> value != (short) 0x8000);
     }
 
     /**
