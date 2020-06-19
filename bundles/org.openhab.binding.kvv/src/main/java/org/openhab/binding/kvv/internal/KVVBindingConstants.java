@@ -30,15 +30,12 @@ public class KVVBindingConstants {
     /** ID of the binding */
     private static final String BINDING_ID = "kvv";
 
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "kvvbridge");
 
-    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "station");
+    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "kvvstation");
 
     public static final List<ThingTypeUID> SUPPORTED_THING_TYPES = Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_STATION);
 
     /** URL of the KVV API */
     public static final String API_URL = "https://live.kvv.de/webapp";
-
-    /** API key of the KVV API */
-    public static final String API_KEY = "377d840e54b59adbe53608ba1aad70e8";
 }

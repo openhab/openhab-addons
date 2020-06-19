@@ -22,6 +22,10 @@
 				<label>Update Interval</label>
 				<description>Update interval in milliseconds.</description>
 			</parameter>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API key</label>
+				<description>API key of the KVV API</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

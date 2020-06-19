@@ -32,4 +32,6 @@ public class KVVStationConfig {
 
     public int updateInterval;
 
+    /** API key of the KVV API */
+    public @Nullable String apiKey;
 }

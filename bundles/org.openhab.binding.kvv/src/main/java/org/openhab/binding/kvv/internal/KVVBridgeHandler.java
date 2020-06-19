@@ -62,7 +62,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
      */
     public @Nullable DepartureResult queryKVV(final KVVStationConfig config) {
         final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + config.stationId + "?key="
-                            + KVVBindingConstants.API_KEY + "&maxInfos=" + config.maxTrains;
+                + config.apiKey + "&maxInfos=" + config.maxTrains;
         try {
             final HttpURLConnection conn = (HttpURLConnection) new URL(url.toString()).openConnection();
             conn.setRequestMethod("GET");
@@ -80,5 +80,4 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return null;
         }
     }
-
 }
