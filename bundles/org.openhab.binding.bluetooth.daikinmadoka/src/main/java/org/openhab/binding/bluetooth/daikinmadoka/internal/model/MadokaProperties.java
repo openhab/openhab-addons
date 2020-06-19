@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This class contains the enums for the various modes supported by the BLE thermostat
  *
  * @author Benjamin Lafois - Initial contribution
  *

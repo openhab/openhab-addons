@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DaikinMadokaHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * sent to one of the channels as well as updating channel values.
  *
  * @author Benjamin Lafois - Initial contribution
  */
@@ -185,7 +185,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     DecimalType dt = new DecimalType(setpoint.intValue());
                     submitCommand(new SetSetpointCommand(dt, dt));
                 } catch (Exception e) {
-                    logger.info("Data received is not a valid temperature", e);
+                    logger.warn("Data received is not a valid temperature.", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_ONOFF_STATUS:
@@ -193,7 +193,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     OnOffType oot = (OnOffType) command;
                     submitCommand(new SetPowerstateCommand(oot));
                 } catch (Exception e) {
-                    logger.info("Data received is not a valid on/off status", e);
+                    logger.warn("Data received is not a valid on/off status", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_FAN_SPEED:
@@ -202,7 +202,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                     FanSpeed fs = FanSpeed.valueOf(fanSpeed.intValue());
                     submitCommand(new SetFanspeedCommand(fs, fs));
                 } catch (Exception e) {
-                    logger.info("Data received is not a valid FanSpeed status", e);
+                    logger.warn("Data received is not a valid FanSpeed status", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_OPERATION_MODE:
@@ -212,7 +212,7 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
                     submitCommand(new SetOperationmodeCommand(m));
                 } catch (Exception e) {
-                    logger.info("Data received is not a valid OPERATION MODE", e);
+                    logger.warn("Data received is not a valid OPERATION MODE", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_HOMEBRIDGE_MODE:
@@ -245,12 +245,12 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                                 submitCommand(new SetPowerstateCommand(OnOffType.ON));
                             }
                             break;
-                        default: // Invalid Value
-                            logger.info("Invalid value received for channel {}. Ignoring.", channelUID);
+                        default: // Invalid Value - in case of new FW
+                            logger.warn("Invalid value received for channel {}. Ignoring.", channelUID);
                             break;
                     }
                 } catch (Exception e) {
-                    logger.info("Data received is not a valid HOMEBRIDGE OPERATION MODE", e);
+                    logger.warn("Data received is not a valid HOMEBRIDGE OPERATION MODE", e);
                 }
                 break;
             case DaikinMadokaBindingConstants.CHANNEL_ID_HOMEKIT_TARGET_HEATING_COOLING_MODE:
@@ -372,10 +372,9 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
                 }
             }
         } catch (Exception e) {
-            logger.debug("Error", e);
-        } finally {
-            logger.debug("Command final state: {}", command.getState());
             currentCommand = null;
+            // Let the exception bubble the stack!
+            throw new RuntimeException(e);
         }
 
         try {

@@ -75,7 +75,16 @@
 	<channel-type id="brc1h_operationMode">
 		<item-type>String</item-type>
 		<label>Operation Mode</label>
-		<description>Valid modes are FAN, DRY, AUTO, COOL, HEAT, VENTILATION</description>
+		<command>
+			<options>
+				<option value="FAN">Fan</option>
+				<option value="DRY">Dry</option>
+				<option value="AUTO">Auto</option>
+				<option value="COOL">Cool</option>
+				<option value="HEAT">Heat</option>
+				<option value="VENTILATION">Ventilation</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="brc1h_setpoint">
@@ -97,7 +106,14 @@
 	<channel-type id="brc1h_homekitTargetHeatingCoolingMode">
 		<item-type>String</item-type>
 		<label>HomeKit Target Mode</label>
-		<description>Valid values: Off, CoolOn, CoolOff, Auto</description>
+		<command>
+            <options>
+                <option value="Off">Off</option>
+                <option value="CoolOn">Cool</option>
+                <option value="HeatOn">Heat</option>
+                <option value="Auto">Auto</option>
+            </options>
+        </command>
 	</channel-type>
 
 </thing:thing-descriptions>

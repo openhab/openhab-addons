@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class represents a message transmitted or received from the BRC1H controller.
+ * This class represents a message transmitted or received from the BRC1H controller as a serial protocol
  *
  * @author Benjamin Lafois - Initial contribution
  */

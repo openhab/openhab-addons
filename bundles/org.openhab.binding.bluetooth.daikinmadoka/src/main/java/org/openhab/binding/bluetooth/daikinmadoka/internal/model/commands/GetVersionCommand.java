@@ -20,6 +20,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 
 /**
+ * This command returns the firmware version
  *
  * @author Benjamin Lafois - Initial contribution
  *

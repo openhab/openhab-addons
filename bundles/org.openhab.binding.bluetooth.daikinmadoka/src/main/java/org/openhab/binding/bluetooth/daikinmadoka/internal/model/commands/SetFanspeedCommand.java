@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This command sets the fanspeed for the current mode
  *
  * @author Benjamin Lafois - Initial contribution
  *

@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * This class is in charge of serializing/deserializing values from a message
  *
  * @author Benjamin Lafois - Initial contribution
  */

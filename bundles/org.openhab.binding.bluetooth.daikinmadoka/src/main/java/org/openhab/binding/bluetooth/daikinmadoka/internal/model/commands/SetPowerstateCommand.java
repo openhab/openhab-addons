@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This command is in charge of turning on or off the AC.
  *
  * @author Benjamin Lafois - Initial contribution
  *

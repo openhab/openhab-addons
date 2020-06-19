@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Command used to set the FAN speed for all modes (auto/cool/heat...)
  *
  * @author Benjamin Lafois - Initial contribution
  *

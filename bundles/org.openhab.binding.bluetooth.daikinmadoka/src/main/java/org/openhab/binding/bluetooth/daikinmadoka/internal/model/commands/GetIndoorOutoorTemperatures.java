@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This command returns the Indoor and Outdoor temperature. Outdoor is not always supported.
  *
  * @author Benjamin Lafois - Initial contribution
  *

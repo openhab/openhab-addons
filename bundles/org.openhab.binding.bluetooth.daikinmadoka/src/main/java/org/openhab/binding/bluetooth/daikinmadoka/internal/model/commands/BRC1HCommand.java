@@ -23,6 +23,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaMessage;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaParsingException;
 
 /**
+ * Abstract class for all BLE commands sent to the controller
  *
  * @author Benjamin Lafois - Initial contribution
  *

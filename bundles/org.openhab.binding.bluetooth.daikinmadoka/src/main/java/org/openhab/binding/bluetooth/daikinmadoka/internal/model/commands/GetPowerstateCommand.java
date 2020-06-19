@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This command returns the current AC power state (on or off)
  *
  * @author Benjamin Lafois - Initial contribution
  *

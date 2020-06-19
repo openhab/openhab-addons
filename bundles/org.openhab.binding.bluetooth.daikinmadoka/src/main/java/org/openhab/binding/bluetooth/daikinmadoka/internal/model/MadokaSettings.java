@@ -20,6 +20,7 @@ import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaPropertie
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.MadokaProperties.OperationMode;
 
 /**
+ * This class contains the current state of the controllerw
  *
  * @author Benjamin Lafois - Initial contribution
  *

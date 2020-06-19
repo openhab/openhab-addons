@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * THis command is in charge of changing the AC setpoint
  *
  * @author Benjamin Lafois - Initial contribution
  *

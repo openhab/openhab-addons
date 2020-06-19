@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This command is in charge of changing the current operation mode
  *
  * @author Benjamin Lafois - Initial contribution
  *

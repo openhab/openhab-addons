@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Command responses that the listener must implement
  *
  * @author Benjamin Lafois - Initial contribution
  *

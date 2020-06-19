@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.daikinmadoka.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * This exception is thrown when an exception happens parsing a message from the BLE controller.
  *
  * @author Benjamin Lafois - Initial contribution
  *
