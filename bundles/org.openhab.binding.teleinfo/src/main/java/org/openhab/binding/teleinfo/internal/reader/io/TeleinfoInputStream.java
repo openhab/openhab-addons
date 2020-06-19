@@ -317,7 +317,7 @@ public class TeleinfoInputStream extends InputStream {
     private FrameCbetmLong buildFrameCbetmLong(final Map<Label, Object> frameValues) throws InvalidFrameException {
         logger.trace("buildFrameCbetmLong(Map<Label, Object>) [start]");
         final FrameCbetmLong frameCbetm;
-        String optionTarif = getRequiredLabelValue(Label.OPTARIF, String.class, frameValues);
+        String optionTarif = getRequiredLabelValue(Label.OPTARIF, frameValues);
         if ("BASE".equals(optionTarif)) {
             frameCbetm = buildFrameCbetmLongBaseOption(frameValues);
         } else if ("HC..".equals(optionTarif)) {
@@ -339,19 +339,19 @@ public class TeleinfoInputStream extends InputStream {
     private void setCbetmCommonFrameFields(final FrameCbetmLong frame, final Map<Label, Object> frameValues)
             throws InvalidFrameException {
         logger.trace("setCbetmCommonFrameFields(Frame, Map<Label, Object>) [start]");
-        frame.setAdco(getRequiredLabelValue(Label.ADCO, String.class, frameValues));
-        frame.setIsousc(getRequiredLabelValue(Label.ISOUSC, Integer.class, frameValues));
-        frame.setIinst1(getRequiredLabelValue(Label.IINST1, Integer.class, frameValues));
-        frame.setIinst2(getRequiredLabelValue(Label.IINST2, Integer.class, frameValues));
-        frame.setIinst3(getRequiredLabelValue(Label.IINST3, Integer.class, frameValues));
-        frame.setImax1(getRequiredLabelValue(Label.IMAX1, Integer.class, frameValues));
-        frame.setImax2(getRequiredLabelValue(Label.IMAX2, Integer.class, frameValues));
-        frame.setImax3(getRequiredLabelValue(Label.IMAX3, Integer.class, frameValues));
-        frame.setPtec(getRequiredLabelValue(Label.PTEC, Ptec.class, frameValues));
-        frame.setPmax(getRequiredLabelValue(Label.PMAX, Integer.class, frameValues));
-        frame.setPapp(getRequiredLabelValue(Label.PAPP, Integer.class, frameValues));
-        frame.setMotdetat(getRequiredLabelValue(Label.MOTDETAT, String.class, frameValues));
-        frame.setPpot(getRequiredLabelValue(Label.PPOT, String.class, frameValues));
+        frame.setAdco(getRequiredLabelValue(Label.ADCO, frameValues));
+        frame.setIsousc(getRequiredLabelValue(Label.ISOUSC, frameValues));
+        frame.setIinst1(getRequiredLabelValue(Label.IINST1, frameValues));
+        frame.setIinst2(getRequiredLabelValue(Label.IINST2, frameValues));
+        frame.setIinst3(getRequiredLabelValue(Label.IINST3, frameValues));
+        frame.setImax1(getRequiredLabelValue(Label.IMAX1, frameValues));
+        frame.setImax2(getRequiredLabelValue(Label.IMAX2, frameValues));
+        frame.setImax3(getRequiredLabelValue(Label.IMAX3, frameValues));
+        frame.setPtec(getRequiredLabelValue(Label.PTEC, frameValues));
+        frame.setPmax(getRequiredLabelValue(Label.PMAX, frameValues));
+        frame.setPapp(getRequiredLabelValue(Label.PAPP, frameValues));
+        frame.setMotdetat(getRequiredLabelValue(Label.MOTDETAT, frameValues));
+        frame.setPpot(getRequiredLabelValue(Label.PPOT, frameValues));
         logger.trace("setCbetmCommonFrameFields(Frame, Map<Label, Object>) [end]");
     }
 
@@ -398,13 +398,13 @@ public class TeleinfoInputStream extends InputStream {
     private FrameCbetmShort buildFrameCbetmShort(final Map<Label, Object> frameValues) throws InvalidFrameException {
         logger.trace("buildFrameCbetmShort(Map<Label, Object>) [start]");
         FrameCbetmShort frame = new FrameCbetmShort();
-        frame.setAdco(getRequiredLabelValue(Label.ADCO, String.class, frameValues));
-        frame.setIinst1(getRequiredLabelValue(Label.IINST1, Integer.class, frameValues));
-        frame.setIinst2(getRequiredLabelValue(Label.IINST2, Integer.class, frameValues));
-        frame.setIinst3(getRequiredLabelValue(Label.IINST3, Integer.class, frameValues));
-        frame.setAdir1(getOptionalLabelValue(Label.ADIR1, Integer.class, frameValues));
-        frame.setAdir2(getOptionalLabelValue(Label.ADIR2, Integer.class, frameValues));
-        frame.setAdir3(getOptionalLabelValue(Label.ADIR3, Integer.class, frameValues));
+        frame.setAdco(getRequiredLabelValue(Label.ADCO, frameValues));
+        frame.setIinst1(getRequiredLabelValue(Label.IINST1, frameValues));
+        frame.setIinst2(getRequiredLabelValue(Label.IINST2, frameValues));
+        frame.setIinst3(getRequiredLabelValue(Label.IINST3, frameValues));
+        frame.setAdir1(getOptionalLabelValue(Label.ADIR1, frameValues));
+        frame.setAdir2(getOptionalLabelValue(Label.ADIR2, frameValues));
+        frame.setAdir3(getOptionalLabelValue(Label.ADIR3, frameValues));
         logger.trace("buildFrameCbetmShort(Map<Label, Object>) [end]");
         return frame;
     }
@@ -412,7 +412,7 @@ public class TeleinfoInputStream extends InputStream {
     private FrameCbemm buildFrameCbemm(final Map<Label, Object> frameValues) throws InvalidFrameException {
         logger.trace("buildFrameCbemm(Map<Label, Object>) [start]");
         final FrameCbemm frameCbemm;
-        String optionTarif = getRequiredLabelValue(Label.OPTARIF, String.class, frameValues);
+        String optionTarif = getRequiredLabelValue(Label.OPTARIF, frameValues);
         if ("BASE".equals(optionTarif)) {
             frameCbemm = buildFrameCbemmBaseOption(frameValues);
         } else if ("HC..".equals(optionTarif)) {
@@ -434,13 +434,13 @@ public class TeleinfoInputStream extends InputStream {
     private void setCbemmCommonFrameFields(final FrameCbemm frame, final Map<Label, Object> frameValues)
             throws InvalidFrameException {
         logger.trace("setCbemmCommonFrameFields(Frame, Map<Label, Object>) [start]");
-        frame.setAdco(getRequiredLabelValue(Label.ADCO, String.class, frameValues));
-        frame.setIsousc(getRequiredLabelValue(Label.ISOUSC, Integer.class, frameValues));
-        frame.setIinst(getRequiredLabelValue(Label.IINST, Integer.class, frameValues));
-        frame.setImax(getOptionalLabelValue(Label.IMAX, Integer.class, frameValues));
-        frame.setPtec(getRequiredLabelValue(Label.PTEC, Ptec.class, frameValues));
-        frame.setAdps(getOptionalLabelValue(Label.ADPS, Integer.class, frameValues));
-        frame.setMotdetat(getRequiredLabelValue(Label.MOTDETAT, String.class, frameValues));
+        frame.setAdco(getRequiredLabelValue(Label.ADCO, frameValues));
+        frame.setIsousc(getRequiredLabelValue(Label.ISOUSC, frameValues));
+        frame.setIinst(getRequiredLabelValue(Label.IINST, frameValues));
+        frame.setImax(getOptionalLabelValue(Label.IMAX, frameValues));
+        frame.setPtec(getRequiredLabelValue(Label.PTEC, frameValues));
+        frame.setAdps(getOptionalLabelValue(Label.ADPS, frameValues));
+        frame.setMotdetat(getRequiredLabelValue(Label.MOTDETAT, frameValues));
         logger.trace("setCbemmCommonFrameFields(Frame, Map<Label, Object>) [end]");
     }
 
@@ -488,7 +488,7 @@ public class TeleinfoInputStream extends InputStream {
             throws InvalidFrameException {
         logger.trace("buildFrameCbemmEvolutionIcc(Map<Label, Object>) [start]");
         final FrameCbemmEvolutionIcc frameCbemmEvoIcc;
-        String optionTarif = getRequiredLabelValue(Label.OPTARIF, String.class, frameValues);
+        String optionTarif = getRequiredLabelValue(Label.OPTARIF, frameValues);
         if ("BASE".equals(optionTarif)) {
             frameCbemmEvoIcc = buildFrameCbemmEvolutionIccBaseOption(frameValues);
         } else if ("HC..".equals(optionTarif)) {
@@ -512,7 +512,7 @@ public class TeleinfoInputStream extends InputStream {
             final Map<Label, Object> frameValues) throws InvalidFrameException {
         logger.trace("setCbemmEvolutionIccCommonFrameFields(Frame, Map<Label, Object>) [start]");
         setCbemmCommonFrameFields(frame, frameValues);
-        frame.setPapp(getRequiredLabelValue(Label.PAPP, Integer.class, frameValues));
+        frame.setPapp(getRequiredLabelValue(Label.PAPP, frameValues));
         logger.trace("setCbemmEvolutionIccCommonFrameFields(Frame, Map<Label, Object>) [end]");
     }
 
@@ -560,25 +560,25 @@ public class TeleinfoInputStream extends InputStream {
     private void setFrameBaseOptionFields(final FrameBaseOption frameBaseOption, final Map<Label, Object> frameValues)
             throws InvalidFrameException {
         logger.trace("setFrameBaseOptionFields(FrameBaseOption) [start]");
-        frameBaseOption.setBase(getRequiredLabelValue(Label.BASE, Integer.class, frameValues));
+        frameBaseOption.setBase(getRequiredLabelValue(Label.BASE, frameValues));
         logger.trace("setFrameBaseOptionFields(FrameBaseOption) [end]");
     }
 
     private void setFrameHcOptionFields(final FrameHcOption frameHcOption, final Map<Label, Object> frameValues)
             throws InvalidFrameException {
         logger.trace("setFrameHcOptionFields(FrameHcOption) [start]");
-        frameHcOption.setHchc(getRequiredLabelValue(Label.HCHC, Integer.class, frameValues));
-        frameHcOption.setHchp(getRequiredLabelValue(Label.HCHP, Integer.class, frameValues));
-        frameHcOption.setHhphc(getRequiredLabelValue(Label.HHPHC, Hhphc.class, frameValues));
+        frameHcOption.setHchc(getRequiredLabelValue(Label.HCHC, frameValues));
+        frameHcOption.setHchp(getRequiredLabelValue(Label.HCHP, frameValues));
+        frameHcOption.setHhphc(getRequiredLabelValue(Label.HHPHC, frameValues));
         logger.trace("setFrameHcOptionFields(FrameHcOption) [end]");
     }
 
     private void setFrameEjpOptionFields(final FrameEjpOption frameEjpOption, final Map<Label, Object> frameValues)
             throws InvalidFrameException {
         logger.trace("setFrameEjpOptionFields(FrameEjpOption) [start]");
-        frameEjpOption.setEjphn(getRequiredLabelValue(Label.EJPHN, Integer.class, frameValues));
-        frameEjpOption.setEjphpm(getRequiredLabelValue(Label.EJPHPM, Integer.class, frameValues));
-        frameEjpOption.setPejp(getOptionalLabelValue(Label.PEJP, Integer.class, frameValues));
+        frameEjpOption.setEjphn(getRequiredLabelValue(Label.EJPHN, frameValues));
+        frameEjpOption.setEjphpm(getRequiredLabelValue(Label.EJPHPM, frameValues));
+        frameEjpOption.setPejp(getOptionalLabelValue(Label.PEJP, frameValues));
         logger.trace("setFrameEjpOptionFields(FrameEjpOption) [end]");
     }
 
@@ -586,21 +586,21 @@ public class TeleinfoInputStream extends InputStream {
             final Map<Label, Object> frameValues, ProgrammeCircuit1 prgCircuit1, ProgrammeCircuit2 prgCircuit2)
             throws InvalidFrameException {
         logger.trace("setFrameTempoOptionFields(FrameTempoOption) [start]");
-        frameTempoOption.setBbrhpjr(getRequiredLabelValue(Label.BBRHPJR, Integer.class, frameValues));
-        frameTempoOption.setBbrhcjr(getRequiredLabelValue(Label.BBRHCJR, Integer.class, frameValues));
-        frameTempoOption.setBbrhpjw(getRequiredLabelValue(Label.BBRHPJW, Integer.class, frameValues));
-        frameTempoOption.setBbrhcjw(getRequiredLabelValue(Label.BBRHCJW, Integer.class, frameValues));
-        frameTempoOption.setBbrhpjb(getRequiredLabelValue(Label.BBRHPJB, Integer.class, frameValues));
-        frameTempoOption.setBbrhcjb(getRequiredLabelValue(Label.BBRHCJB, Integer.class, frameValues));
-        frameTempoOption.setDemain(getOptionalLabelValue(Label.DEMAIN, CouleurDemain.class, frameValues));
-        frameTempoOption.setHhphc(getRequiredLabelValue(Label.HHPHC, Hhphc.class, frameValues));
+        frameTempoOption.setBbrhpjr(getRequiredLabelValue(Label.BBRHPJR, frameValues));
+        frameTempoOption.setBbrhcjr(getRequiredLabelValue(Label.BBRHCJR, frameValues));
+        frameTempoOption.setBbrhpjw(getRequiredLabelValue(Label.BBRHPJW, frameValues));
+        frameTempoOption.setBbrhcjw(getRequiredLabelValue(Label.BBRHCJW, frameValues));
+        frameTempoOption.setBbrhpjb(getRequiredLabelValue(Label.BBRHPJB, frameValues));
+        frameTempoOption.setBbrhcjb(getRequiredLabelValue(Label.BBRHCJB, frameValues));
+        frameTempoOption.setDemain(getOptionalLabelValue(Label.DEMAIN, frameValues));
+        frameTempoOption.setHhphc(getRequiredLabelValue(Label.HHPHC, frameValues));
         frameTempoOption.setProgrammeCircuit1(prgCircuit1);
         frameTempoOption.setProgrammeCircuit2(prgCircuit2);
         logger.trace("setFrameTempoOptionFields(FrameTempoOption) [end]");
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getRequiredLabelValue(Label label, Class<T> dataType, final Map<Label, Object> frameValues)
+    private <T> T getRequiredLabelValue(Label label, final Map<Label, Object> frameValues)
             throws InvalidFrameException {
         if (!frameValues.containsKey(label)) {
             final String error = String.format("The required label '%1$s' is missing in frame", label);
@@ -611,7 +611,7 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getOptionalLabelValue(Label label, Class<T> dataType, final Map<Label, Object> frameValues) {
+    private <T> T getOptionalLabelValue(Label label, final Map<Label, Object> frameValues) {
         return (T) frameValues.get(label);
     }
 
