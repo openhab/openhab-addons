@@ -93,9 +93,7 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_SERIAL_CONTROLLER.equals(thingTypeUID)) {
             controller = new TeleinfoSerialControllerHandler((Bridge) thing, serialPortManager);
-        }
 
-        if (controller != null) {
             TeleinfoDiscoveryService discoveryService = new TeleinfoDiscoveryService(controller, 60);
             discoveryService.activate();
 
