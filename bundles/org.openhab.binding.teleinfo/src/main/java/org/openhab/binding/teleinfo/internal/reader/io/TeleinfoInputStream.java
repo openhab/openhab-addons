@@ -16,7 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -123,12 +123,8 @@ public class TeleinfoInputStream extends InputStream {
         this.readingFrameTimeoutInMs = readingFrameTimeoutInMs;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
 
-        try {
-            this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, "ASCII"));
-            this.teleinfoInputStream = teleinfoInputStream;
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
+        this.teleinfoInputStream = teleinfoInputStream;
 
         groupLine = null;
     }
