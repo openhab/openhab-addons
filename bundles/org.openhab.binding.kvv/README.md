@@ -16,7 +16,7 @@ Since every station is represented by a KVV-provided id, this id has to be figur
 
 ```
 # Request
-curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=377d840e54b59adbe53608ba1aad70e8
+curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=[APIKEY]
 
 # Response
 {"stops":[{"id":"de:8212:72","name":"Karlsruhe Volkswohnung","lat":49.00381654,"lon":8.40393026}]}
