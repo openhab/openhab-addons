@@ -73,6 +73,7 @@ public enum MiIoDevices {
     FAN3("zhimi.fan.v3", "Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_SA1("zhimi.fan.sa1", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_ZA1("zhimi.fan.za1", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
+    FAN_ZA4("zhimi.fan.za4", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FRIDGE_V3("viomi.fridge.v3", "Viomi Internet refrigerator iLive", THING_TYPE_UNSUPPORTED),
     GATEWAY1("lumi.gateway.v1", "Mi Smart Home Gateway v1", THING_TYPE_UNSUPPORTED),
     GATEWAY2("lumi.gateway.v2", "Mi Smart Home Gateway v2", THING_TYPE_UNSUPPORTED),
