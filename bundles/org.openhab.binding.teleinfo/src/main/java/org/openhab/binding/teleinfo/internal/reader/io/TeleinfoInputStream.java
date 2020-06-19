@@ -152,23 +152,20 @@ public class TeleinfoInputStream extends InputStream {
         logger.debug("readNextFrame() [start]");
 
         // seek the next header frame
-        Future<Void> seekNextHeaderFrameTask = executorService.submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                while (!isHeaderFrame(groupLine)) {
-                    groupLine = bufferedReader.readLine();
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("groupLine = {}", groupLine);
-                    }
-                    if (groupLine == null) { // end of stream
-                        logger.trace("end of stream reached !");
-                        return null;
-                    }
+        Future<Void> seekNextHeaderFrameTask = executorService.submit(()->{
+            while (!isHeaderFrame(groupLine)) {
+                groupLine = bufferedReader.readLine();
+                if (logger.isTraceEnabled()) {
+                    logger.trace("groupLine = {}", groupLine);
                 }
-
-                logger.trace("header frame found !");
-                return null;
+                if (groupLine == null) { // end of stream
+                    logger.trace("end of stream reached !");
+                    return null;
+                }
             }
+
+            logger.trace("header frame found !");
+            return null;
         });
         try {
             logger.debug("seeking the next header frame...");
