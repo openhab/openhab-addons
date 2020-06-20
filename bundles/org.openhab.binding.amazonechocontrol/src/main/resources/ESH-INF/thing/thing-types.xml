@@ -401,7 +401,7 @@
 	<channel-type id="sound" advanced="true">
 		<item-type>String</item-type>
 		<label>Sound</label>
-		<description>Play a sound (Write only). It is possible to use plain text.</description>
+		<description>Play a sound (Write only). It is possile to use sounds from the Alexa Skills Kit Sound Library (only those in the Alexa App are working).</description>
 	</channel-type>
 	<channel-type id="textToSpeechVolume" advanced="true">
 		<item-type>Dimmer</item-type>

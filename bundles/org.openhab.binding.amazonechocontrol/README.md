@@ -26,6 +26,8 @@ It provides features to control and view the current state of echo devices:
 - change the equalizer settings
 - get information about the next alarm, reminder and timer
 - send a message to the echo devices
+- send an announcement to the echo devices
+- play a sound
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -133,6 +135,7 @@ It will be configured at runtime by using the save channel to store the current 
 | playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
 | announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. Please note: the announcement feature must be activated in the alexa app at the echo device. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
+| accountAnnouncement   | String      | W           | account                       | Write Only! Display the announcement message on the display. Please note: the announcement feature must be activated in the alexa app at the echo device. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human. Please note: the announcement feature must be activated in the alexa app at the echo device to use SSML. </amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
@@ -145,6 +148,7 @@ It will be configured at runtime by using the save channel to store the current 
 | save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
 | playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
+| sound                 | String      | W           | echo, echoshow, echospot      | Write Only! Play a sound. It is possile to use sounds from the Alexa Skills Kit Sound Library (only those in the Alexa App are working).</description>
 
 ## Advanced Feature Technically Experienced Users
 
@@ -180,6 +184,10 @@ Sample for the Thing echo1 only. But it will work in the same way for the other 
 Take a look in the channel description above to know, which channels are supported by your thing type.
 
 ```
+// Account
+String Echo_Living_Room_SendMessage            "SendMessage"                           {channel="amazonechocontrol:account:account1:sendMessage"}
+String Echo_Living_Room_AccountAnnouncement    "AccountAnnouncement"                   {channel="amazonechocontrol:account:account1:accountAnnouncement"}
+
 Group Alexa_Living_Room <player>
 
 // Player control
@@ -230,6 +238,7 @@ String Echo_Living_Room_PlayAlarmSound         "Play Alarm Sound"               
 String Echo_Living_Room_StartRoutine           "Start Routine"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
 Dimmer Echo_Living_Room_NotificationVolume     "Notification volume"                   (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:notificationVolume"}
 Switch Echo_Living_Room_AscendingAlarm         "Ascending alarm"                       (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:ascendingAlarm"}
+String Echo_Living_Room_Sound                  "Play sound"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:sound"}
 
 // Feedbacks
 String Echo_Living_Room_LastVoiceCommand       "Last voice command"                    (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:lastVoiceCommand"}
@@ -460,6 +469,19 @@ when
     Item Spotify_Start_Wheater_Switch changed to ON
 then
      Echo_Living_Room_StartCommand.sendCommand('FlashBriefing.flashbriefing1')
+end
+```
+
+### Let Alexa play a sound from a rule:
+
+1) Create a rule with a trigger of your choice
+
+```php
+rule "Play sound if the door opens"
+when
+    Item Door_Contact changed to OPEN
+then
+    Echo_Living_Room_Sound.sendCommand('amzn_sfx_trumpet_bugle_04')
 end
 ```
 
