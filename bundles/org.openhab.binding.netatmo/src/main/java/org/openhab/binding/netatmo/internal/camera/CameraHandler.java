@@ -194,6 +194,8 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
                 url += "off";
             }
             executeGETRequest(url);
+
+            invalidateParentCacheAndRefresh();
         }
     }
 
