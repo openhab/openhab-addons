@@ -48,4 +48,9 @@ public interface Homekit {
      * returns list of HomeKit accessories registered at bridge.
      */
     List<HomekitAccessory> getAccessories();
+
+    /**
+     * clear all pairings with HomeKit clients
+     */
+    public void clearHomekitPairings();
 }
