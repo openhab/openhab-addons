@@ -149,8 +149,11 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     public void makeNewConfigurationRevision() {
-        storage.put(REVISION_CONFIG, "" + accessoryRegistry.makeNewConfigurationRevision());
+        final int newRevision = accessoryRegistry.makeNewConfigurationRevision();
         lastAccessoryCount = accessoryRegistry.getAllAccessories().size();
+        logger.trace("make new configuration revision. new revision number {}, number of accessories {}", newRevision,
+                lastAccessoryCount);
+        storage.put(REVISION_CONFIG, "" + newRevision);
         storage.put(ACCESSORY_COUNT, "" + lastAccessoryCount);
     }
 
@@ -189,6 +192,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     public synchronized void unsetBridge() {
+        applyUpdatesDebouncer.stop();
         accessoryRegistry.unsetBridge();
     }
 
