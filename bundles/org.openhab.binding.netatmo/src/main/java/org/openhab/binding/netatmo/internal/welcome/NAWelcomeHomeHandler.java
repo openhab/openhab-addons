@@ -96,7 +96,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 });
 
                 Optional<NAWelcomeEvent> previousLastEvent = lastEvent;
-                lastEvent = result.getEvents().stream().min(Comparator.comparingInt(NAWelcomeEvent::getTime));
+                lastEvent = result.getEvents().stream().max(Comparator.comparingInt(NAWelcomeEvent::getTime));
                 isNewLastEvent = previousLastEvent.isPresent() && !previousLastEvent.equals(lastEvent);
             }
         }
