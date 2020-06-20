@@ -103,7 +103,7 @@ public class Message {
      *
      * Optional.
      */
-    private List<String> deviceLinkList;
+    private List<String> devices;
 
     /**
      * Container for all parameters of the message. The parameters are contained in Property entities.
@@ -190,15 +190,15 @@ public class Message {
     /**
      * @return the deviceLinkList
      */
-    public List<String> getDeviceLinkList() {
-        return deviceLinkList;
+    public List<String> getDevices() {
+        return devices;
     }
 
     /**
      * @param deviceLinkList the deviceLinkList to set
      */
-    public void setDeviceLinkList(List<String> deviceLinkList) {
-        this.deviceLinkList = deviceLinkList;
+    public void setDevices(List<String> deviceLinkList) {
+        this.devices = deviceLinkList;
     }
 
     /**
