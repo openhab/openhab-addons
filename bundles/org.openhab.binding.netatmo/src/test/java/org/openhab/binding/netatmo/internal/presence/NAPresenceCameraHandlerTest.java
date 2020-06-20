@@ -14,13 +14,15 @@ package org.openhab.binding.netatmo.internal.presence;
 
 import io.swagger.client.model.NAWelcomeCamera;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.internal.i18n.I18nProviderImpl;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.internal.ThingImpl;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,30 +48,24 @@ public class NAPresenceCameraHandlerTest {
 
     @Mock
     private RequestExecutor requestExecutorMock;
+    @Mock
+    private TimeZoneProvider timeZoneProviderMock;
 
     private Thing presenceCameraThing;
     private NAWelcomeCamera presenceCamera;
     private ChannelUID floodlightChannelUID;
     private ChannelUID floodlightAutoModeChannelUID;
-    private NAPresenceCameraHandler handler;
+    private NAPresenceCameraHandlerAccessible handler;
 
     @Before
     public void before() {
         presenceCameraThing = new ThingImpl(new ThingTypeUID("netatmo", "NOC"), "1");
         presenceCamera = new NAWelcomeCamera();
+
         floodlightChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT);
         floodlightAutoModeChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE);
 
-        handler = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl()) {
-            {
-                module = presenceCamera;
-            }
-
-            @Override
-            @NonNull Optional<@NonNull String> executeGETRequest(@NonNull String url) {
-                return requestExecutorMock.executeGETRequest(url);
-            }
-        };
+        handler = new NAPresenceCameraHandlerAccessible(presenceCameraThing, presenceCamera);
     }
 
     @Test
@@ -191,7 +187,7 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testHandleCommand_VPN_URL_not_set() {
+    public void testHandleCommand_without_VPN() {
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
 
         verify(requestExecutorMock, never()).executeGETRequest(any()); //no executions because the VPN URL is still unknown
@@ -229,7 +225,7 @@ public class NAPresenceCameraHandlerTest {
 
     @Test
     public void testHandleCommand_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl());
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
         handlerWithoutModule.handleCommand(floodlightChannelUID, OnOffType.ON);
 
         verify(requestExecutorMock, never()).executeGETRequest(any()); //no executions because the thing isn't initialized
@@ -266,7 +262,7 @@ public class NAPresenceCameraHandlerTest {
 
     @Test
     public void testGetNAThingProperty_Floodlight_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl());
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
         assertEquals(UnDefType.UNDEF, handlerWithoutModule.getNAThingProperty(floodlightChannelUID.getId()));
     }
 
@@ -331,8 +327,70 @@ public class NAPresenceCameraHandlerTest {
 
     @Test
     public void testGetNAThingProperty_FloodlightAutoMode_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl());
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
         assertEquals(UnDefType.UNDEF, handlerWithoutModule.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
+    }
+
+    @Test
+    public void testGetStreamURL() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        String streamURL = handler.getStreamURL("dummyVideoId");
+        assertNotNull(streamURL);
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index.m3u8", streamURL);
+    }
+
+    @Test
+    public void testGetStreamURL_local() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        presenceCamera.setIsLocal(true);
+
+        String streamURL = handler.getStreamURL("dummyVideoId");
+        assertNotNull(streamURL);
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index_local.m3u8", streamURL);
+    }
+
+    @Test
+    public void testGetStreamURL_not_local() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+        presenceCamera.setIsLocal(false);
+
+        String streamURL = handler.getStreamURL("dummyVideoId");
+        assertNotNull(streamURL);
+        assertEquals(DUMMY_VPN_URL + "/vod/dummyVideoId/index.m3u8", streamURL);
+    }
+
+    @Test
+    public void testGetStreamURL_without_VPN() {
+        String streamURL = handler.getStreamURL("dummyVideoId");
+        assertNull(streamURL);
+    }
+
+    @Test
+    public void testGetLivePictureURLState() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+
+        State livePictureURLState = handler.getLivePictureURLState();
+        assertEquals(new StringType(DUMMY_VPN_URL + "/live/snapshot_720.jpg"), livePictureURLState);
+    }
+
+    @Test
+    public void testGetLivePictureURLState_without_VPN() {
+        State livePictureURLState = handler.getLivePictureURLState();
+        assertEquals(UnDefType.UNDEF, livePictureURLState);
+    }
+
+    @Test
+    public void testGetLiveStreamState() {
+        presenceCamera.setVpnUrl(DUMMY_VPN_URL);
+
+        State liveStreamState = handler.getLiveStreamState();
+        assertEquals(new StringType(DUMMY_VPN_URL + "/live/index.m3u8"), liveStreamState);
+    }
+
+    @Test
+    public void testGetLiveStreamState_without_VPN() {
+        State liveStreamState = handler.getLiveStreamState();
+        assertEquals(UnDefType.UNDEF, liveStreamState);
     }
 
     private static Optional<String> createPingResponseContent(final String localURL) {
@@ -342,5 +400,28 @@ public class NAPresenceCameraHandlerTest {
     private interface RequestExecutor {
 
         Optional<String> executeGETRequest(String url);
+    }
+
+    private class NAPresenceCameraHandlerAccessible extends NAPresenceCameraHandler {
+
+        public NAPresenceCameraHandlerAccessible(Thing thing, NAWelcomeCamera presenceCamera) {
+            super(thing, timeZoneProviderMock);
+            module = presenceCamera;
+        }
+
+        @Override
+        protected @NonNull Optional<@NonNull String> executeGETRequest(@NonNull String url) {
+            return requestExecutorMock.executeGETRequest(url);
+        }
+
+        @Override
+        protected @NonNull State getLivePictureURLState() {
+            return super.getLivePictureURLState();
+        }
+
+        @Override
+        protected @NonNull State getLiveStreamState() {
+            return super.getLiveStreamState();
+        }
     }
 }
