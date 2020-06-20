@@ -42,7 +42,7 @@ public class GreeCryptoUtil {
     }
 
     public static byte[] getAESGeneralKeyByteArray() {
-        return AES_KEY.getBytes();
+        return AES_KEY.getBytes(StandardCharsets.UTF_8);
     }
 
     public static String decryptPack(byte[] keyarray, String message) throws GreeException {

@@ -69,9 +69,10 @@ public class GreeHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshTask;
     private long lastRefreshTime = 0;
 
-    public GreeHandler(Thing thing, GreeTranslationProvider messages) {
+    public GreeHandler(Thing thing, GreeTranslationProvider messages, GreeDeviceFinder deviceFinder) {
         super(thing);
         this.messages = messages;
+        this.deviceFinder = deviceFinder;
         String label = getThing().getLabel();
         this.thingId = label != null ? label : getThing().getUID().getId();
     }
@@ -79,33 +80,30 @@ public class GreeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GreeConfiguration.class);
-        logger.debug("{}: Config for {} is {}", thing.getUID(), thingId, config.toString());
         if (config.ipAddress.isEmpty() || (config.refresh < 0)) {
-            logger.warn("{}: Config of {} is invalid. Check configuration", thingId, thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid configuration. Check thing configuration.");
-            return;
+            String message = messages.get("thinginit.invconf");
+            logger.warn("{}: {}", thingId, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
         }
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
         updateStatus(ThingStatus.UNKNOWN);
 
+        // Start the automatic refresh cycles
+        startAutomaticRefresh();
         scheduler.execute(this::initializeThing);
     }
 
     private void initializeThing() {
+        String message = "";
         try {
             if (!clientSocket.isPresent()) {
                 clientSocket = Optional.of(new DatagramSocket());
                 clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
             }
             // Find the GREE device
-            deviceFinder = new GreeDeviceFinder(config.ipAddress);
-            deviceFinder.scan(clientSocket.get(), false);
-            logger.debug("{}: {} units found matching IP address", thingId, deviceFinder.getScannedDeviceCount());
-
-            // Now check that this one is amongst the air conditioners that responded.
+            deviceFinder.scan(clientSocket.get(), config.ipAddress, false);
             GreeAirDevice newDevice = deviceFinder.getDeviceByIPAddress(config.ipAddress);
             if (newDevice != null) {
                 // Ok, our device responded, now let's Bind with it
@@ -113,22 +111,21 @@ public class GreeHandler extends BaseThingHandler {
                 device.bindWithDevice(clientSocket.get());
                 if (device.getIsBound()) {
                     updateStatus(ThingStatus.ONLINE);
-
-                    // Start the automatic refresh cycles
-                    startAutomaticRefresh();
                     return;
                 }
             }
-            logger.debug("{}: GREE unit is not responding", thingId);
+
+            message = messages.get("thinginit.failed");
+            logger.info("{}: {}", thingId, message);
         } catch (GreeException e) {
-            logger.warn("{}: Initialization failed: {}", thingId, messages.get("thinginit.exception", e.toString()));
+            logger.info("{}: {}", thingId, messages.get("thinginit.exception", e.getMessage()));
         } catch (IOException e) {
-            logger.debug("{}: Exception on initialization: {}", thingId, e.toString());
+            logger.warn("{}: {}", thingId, messages.get("thinginit.exception", "I/O Error"), e);
         } catch (RuntimeException e) {
-            logger.warn("{}: Initialization failed", thingId, e);
+            logger.warn("{}: {}", thingId, messages.get("thinginit.exception", "RuntimeException"), e);
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Thing initialization failed!");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
     }
 
     @Override
@@ -189,12 +186,12 @@ public class GreeHandler extends BaseThingHandler {
                 // force refresh on next status refresh cycle
                 forceRefresh = true;
             } catch (GreeException e) {
-                logger.debug("{}: Unable to execute command {} for channel {}: {}", thingId, command, channelId,
-                        e.toString());
+                String message = logInfo("command.exception", command, channelId) + ": " + e.getMessage();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
             } catch (IllegalArgumentException e) {
-                logger.warn("{}: Invalid command value {} for channel {}", thingId, command, channelUID.getId());
+                logInfo("command.invarg", command, channelId);
             } catch (RuntimeException e) {
-                logger.warn("{}: Unable to execute command {} for channel {}", thingId, command, channelId, e);
+                logger.warn("{}: {}", thingId, messages.get("command.exception", command, channelId), e);
             }
         }
     }
@@ -298,12 +295,12 @@ public class GreeHandler extends BaseThingHandler {
 
     private int getOnOff(Command command) {
         if (command instanceof OnOffType) {
-            return ((OnOffType) command) == OnOffType.ON ? 1 : 0;
+            return command == OnOffType.ON ? 1 : 0;
         }
         if (command instanceof DecimalType) {
             int value = ((DecimalType) command).intValue();
             if ((value == 0) || (value == 1)) {
-                return ((DecimalType) command).intValue();
+                return value;
             }
         }
         throw new IllegalArgumentException("Invalid OnOffType");
@@ -313,7 +310,7 @@ public class GreeHandler extends BaseThingHandler {
         if (command instanceof DecimalType) {
             return ((DecimalType) command).intValue();
         }
-        throw new IllegalArgumentException("Invalud Number type");
+        throw new IllegalArgumentException("Invalid Number type");
     }
 
     private QuantityType<?> convertTemp(Command command) {
@@ -336,46 +333,62 @@ public class GreeHandler extends BaseThingHandler {
                 // safeguard for multiple REFRESH commands
                 if (isMinimumRefreshTimeExceeded()) {
                     // Get the current status from the Airconditioner
-                    device.getDeviceStatus(clientSocket.get());
-                    logger.debug("{}: Executing automatic update of values", thingId);
 
-                    // Update All Channels
-                    List<Channel> channels = getThing().getChannels();
-                    for (Channel channel : channels) {
-                        publishChannel(channel.getUID());
+                    if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                        initializeThing();
+                        return;
+                    }
+
+                    if (clientSocket.isPresent()) {
+                        device.getDeviceStatus(clientSocket.get());
+                        logger.debug("{}: Executing automatic update of values", thingId);
+                        List<Channel> channels = getThing().getChannels();
+                        for (Channel channel : channels) {
+                            publishChannel(channel.getUID());
+                        }
                     }
                 }
             } catch (GreeException e) {
-                if (!e.isTimeout()) {
-                    logger.warn("{}: Unable to perform auto-update: {} ({})", thingId, e.toString(),
-                            e.getCause().getMessage());
+                String subcode = "";
+                if (e.getCause() != null) {
+                    subcode = " (" + e.getCause().getMessage() + ")";
+                }
+                String message = messages.get("update.exception", e.getMessage() + subcode);
+                if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                    logger.debug("{}: Thing still OFFLINE ({})", thingId, message);
+                } else {
+                    if (!e.isTimeout()) {
+                        logger.info("{}: {}", thingId, message);
+                    } else {
+                        logger.debug("{}: {}", thingId, message);
+                    }
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
                 }
             } catch (RuntimeException e) {
-                logger.warn("{}: Unable to perform auto-update", thingId, e);
+                String message = messages.get("update.exception", "RuntimeException");
+                logger.warn("{}: {}", thingId, message, e);
             }
         };
 
-        forceRefresh = false;
-        if ((refreshTask != null) && !refreshTask.isCancelled()) {
-            refreshTask.cancel(true);
+        if (refreshTask == null) {
+            refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
+            logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refresh);
         }
-        refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
-        logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refresh);
     }
 
     private boolean isMinimumRefreshTimeExceeded() {
         long currentTime = Instant.now().toEpochMilli();
         long timeSinceLastRefresh = currentTime - lastRefreshTime;
-        lastRefreshTime = currentTime;
-        if (!forceRefresh && ((lastRefreshTime == 0) || (timeSinceLastRefresh < config.refresh * 1000))) {
+        if (!forceRefresh && (timeSinceLastRefresh < config.refresh * 1000)) {
             return false;
         }
+        lastRefreshTime = currentTime;
         return true;
     }
 
     private void publishChannel(ChannelUID channelUID) {
+        String channelID = channelUID.getId();
         try {
-            String channelID = channelUID.getId();
             State state = null;
             switch (channelUID.getIdWithoutGroup()) {
                 case POWER_CHANNEL:
@@ -423,9 +436,9 @@ public class GreeHandler extends BaseThingHandler {
                 updateState(channelID, state);
             }
         } catch (GreeException e) {
-            logger.warn("{}: Exception on channel update: {}", thingId, e.toString());
+            logger.info("{}: {}", thingId, messages.get("channel.exception", channelID, e.getMessage()));
         } catch (RuntimeException e) {
-            logger.warn("{}: Exception on channel update", thingId, e);
+            logger.warn("{}: {}", thingId, messages.get("channel.exception", "RuntimeException"), e);
         }
     }
 
@@ -499,14 +512,29 @@ public class GreeHandler extends BaseThingHandler {
         return null;
     }
 
-    public static State toQuantityType(int value, int digits, Unit<?> unit) {
-        BigDecimal bd = new BigDecimal(value);
+    private String logInfo(String msgKey, Object... arg) {
+        String message = messages.get(msgKey, arg);
+        logger.info("{}: {}", thingId, message);
+        return message;
+    }
+
+    public static QuantityType<?> toQuantityType(Number value, int digits, Unit<?> unit) {
+        BigDecimal bd = new BigDecimal(value.doubleValue());
         return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN), unit);
     }
 
-    public static QuantityType<?> toQuantityType(DecimalType value, int digits, Unit<?> unit) {
-        BigDecimal bd = new BigDecimal(value.doubleValue());
-        return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN), unit);
+    private void stopRefrestTask() {
+        forceRefresh = false;
+        if (refreshTask == null) {
+            return;
+        }
+        synchronized (refreshTask) {
+            ScheduledFuture<?> task = refreshTask;
+            if ((task != null) && !task.isCancelled()) {
+                task.cancel(true);
+            }
+            refreshTask = null;
+        }
     }
 
     @Override
@@ -516,10 +544,6 @@ public class GreeHandler extends BaseThingHandler {
             clientSocket.get().close();
             clientSocket = Optional.empty();
         }
-        if (refreshTask != null) {
-            refreshTask.cancel(true);
-            refreshTask = null;
-        }
-        lastRefreshTime = 0;
+        stopRefrestTask();
     }
 }

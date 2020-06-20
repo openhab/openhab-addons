@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.gree.internal.discovery.GreeDeviceFinder;
 import org.openhab.binding.gree.internal.handler.GreeHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -40,13 +41,15 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding." + BINDING_ID, service = ThingHandlerFactory.class)
 public class GreeHandlerFactory extends BaseThingHandlerFactory {
     private final GreeTranslationProvider messages;
+    private final GreeDeviceFinder deviceFinder;
 
     @Activate
     public GreeHandlerFactory(@Reference NetworkAddressService networkAddressService,
-            @Reference GreeTranslationProvider translationProvider, ComponentContext componentContext,
-            Map<String, Object> configProperties) {
+            @Reference GreeDeviceFinder deviceFinder, @Reference GreeTranslationProvider translationProvider,
+            ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
-        messages = translationProvider;
+        this.messages = translationProvider;
+        this.deviceFinder = deviceFinder;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class GreeHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_GREEAIRCON.equals(thing.getThingTypeUID())) {
-            return new GreeHandler(thing, messages);
+            return new GreeHandler(thing, messages, deviceFinder);
         }
         return null;
     }

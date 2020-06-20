@@ -51,17 +51,20 @@ public class GreeTranslationProvider {
         this.localeProvider = other.localeProvider;
     }
 
-    public @Nullable String get(String key, @Nullable Object... arguments) {
+    public String get(String key, @Nullable Object... arguments) {
         return getText(key.contains("@text/") ? key : "message." + key, arguments);
     }
 
-    public @Nullable String getText(String key, @Nullable Object... arguments) {
+    public String getText(String key, @Nullable Object... arguments) {
         try {
             Locale locale = localeProvider.getLocale();
-            return i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments);
+            String message = i18nProvider.getText(bundle, key, getDefaultText(key), locale, arguments);
+            if (message != null) {
+                return message;
+            }
         } catch (IllegalArgumentException e) {
-            return "Unable to load message for key " + key;
         }
+        return "Unable to load message for key " + key;
     }
 
     public @Nullable String getDefaultText(String key) {

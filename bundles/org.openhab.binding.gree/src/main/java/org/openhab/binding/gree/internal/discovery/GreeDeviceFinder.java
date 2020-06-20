@@ -15,7 +15,6 @@ package org.openhab.binding.gree.internal.discovery;
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -33,12 +32,14 @@ import org.openhab.binding.gree.internal.gson.GreeScanReponsePackDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanRequestDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanResponseDTO;
 import org.openhab.binding.gree.internal.handler.GreeAirDevice;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The GreeDeviceFinder provides functionality for searching for GREE Airconditioners on the network and keeping a list
@@ -48,26 +49,25 @@ import com.google.gson.stream.JsonReader;
  * @author Markus Michels - Refactoring, adapted to OH 2.5x
  */
 @NonNullByDefault
+@Component(service = GreeDeviceFinder.class, immediate = true, configurationPid = "devicefinder.gree")
 public class GreeDeviceFinder {
     private final Logger logger = LoggerFactory.getLogger(GreeDeviceFinder.class);
     private static final Gson gson = (new GsonBuilder()).create();
 
-    protected final InetAddress ipAddress;
+    protected final InetAddress ipAddress = InetAddress.getLoopbackAddress();
     protected Map<String, GreeAirDevice> deviceTable = new HashMap<>();
 
+    @Activate
     public GreeDeviceFinder() {
-        ipAddress = InetAddress.getLoopbackAddress(); // dummy
     }
 
-    public GreeDeviceFinder(String broadcastAddress) throws GreeException {
+    public void scan(DatagramSocket clientSocket, String broadcastAddress, boolean scanNetwork) throws GreeException {
+        InetAddress ipAddress;
         try {
             ipAddress = InetAddress.getByName(broadcastAddress);
         } catch (UnknownHostException e) {
             throw new GreeException("Unknown host or invalid IP address", e);
         }
-    }
-
-    public void scan(DatagramSocket clientSocket, boolean scanNetwork) throws GreeException {
         try {
             byte[] sendData = new byte[1024];
             byte[] receiveData = new byte[1024];
@@ -77,13 +77,13 @@ public class GreeDeviceFinder {
             scanGson.t = GREE_CMDT_SCAN;
             String scanReq = gson.toJson(scanGson);
             sendData = scanReq.getBytes(StandardCharsets.UTF_8);
-            logger.trace("Sending scan packet to {}", ipAddress.getHostAddress());
+            logger.debug("Sending scan packet to {}", ipAddress.getHostAddress());
             clientSocket.setSoTimeout(DISCOVERY_TIMEOUT_MS);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, DISCOVERY_TIMEOUT_MS);
             clientSocket.send(sendPacket);
 
             // Loop for respnses from devices until we get a timeout.
-            int retries = MAX_SCAN_CYCLES;
+            int retries = scanNetwork ? MAX_SCAN_CYCLES : 1;
             while ((retries > 0)) {
                 // Receive a response
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -93,27 +93,16 @@ public class GreeDeviceFinder {
                     int remotePort = receivePacket.getPort();
 
                     // Read the response
-                    // String modifiedSentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
-                    // GreeScanResponseDTO scanResponseGson = gson.fromJson(modifiedSentence,
-                    // GreeScanResponseDTO.class);
-                    String modifiedSentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
-                    StringReader stringReader = new StringReader(modifiedSentence);
-                    GreeScanResponseDTO scanResponseGson = gson.fromJson(new JsonReader(stringReader),
-                            GreeScanResponseDTO.class);
+                    GreeScanResponseDTO scanResponseGson = fromJson(receivePacket, GreeScanResponseDTO.class);
 
                     // If there was no pack, ignore the response
                     if (scanResponseGson.pack == null) {
                         logger.debug("Invalid packet format, ignore");
+                        retries--;
                         continue;
                     }
 
                     // Decrypt message - a a GreeException is thrown when something went wrong
-                    /*
-                     * scanResponseGson.decryptedPack = GreeCryptoUtil
-                     * .decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), scanResponseGson.pack);
-                     * String decryptedMsg = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
-                     * scanResponseGson.pack);
-                     */
                     String decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil
                             .decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), scanResponseGson.pack);
                     logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
@@ -125,21 +114,14 @@ public class GreeDeviceFinder {
                     if (scanResponseGson.packJson.brand.equalsIgnoreCase("gree")) {
                         // Create a new GreeDevice
                         logger.debug("Discovered device at {}:{}", remoteAddress.getHostAddress(), remotePort);
-                        GreeAirDevice newDevice = new GreeAirDevice();
-                        newDevice.setAddress(remoteAddress);
-                        newDevice.setPort(remotePort);
-                        newDevice.setScanResponseGson(scanResponseGson);
+                        GreeAirDevice newDevice = new GreeAirDevice(remoteAddress, remotePort, scanResponseGson);
                         addDevice(newDevice);
                     } else {
                         logger.debug("Unit discovered, but brand is not GREE");
                     }
-
-                    if (!scanNetwork) {
-                        break;
-                    }
                 } catch (SocketTimeoutException e) {
-                    break;
-                } catch (IOException e) {
+                    return;
+                } catch (IOException | JsonSyntaxException e) {
                     retries--;
                     if (retries == 0) {
                         throw new GreeException("Exception on device scan", e);
@@ -149,6 +131,11 @@ public class GreeDeviceFinder {
         } catch (IOException e) {
             throw new GreeException("I/O exception during device scan", e);
         }
+    }
+
+    private <T> T fromJson(DatagramPacket packet, Class<T> classOfT) {
+        String json = new String(packet.getData(), StandardCharsets.UTF_8).replace("\\u0000", "").trim();
+        return gson.fromJson(json, classOfT);
     }
 
     public void addDevice(GreeAirDevice newDevice) {

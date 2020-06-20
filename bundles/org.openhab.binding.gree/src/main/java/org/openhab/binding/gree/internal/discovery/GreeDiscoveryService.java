@@ -51,17 +51,18 @@ import org.slf4j.LoggerFactory;
 public class GreeDiscoveryService extends AbstractDiscoveryService {
     private static final int TIMEOUT_SEC = 10;
     private final Logger logger = LoggerFactory.getLogger(GreeDiscoveryService.class);
+    private final GreeDeviceFinder deviceFinder;
     private final GreeTranslationProvider messages;
     private final String broadcastAddress;
 
-    private GreeDeviceFinder deviceFinder = new GreeDeviceFinder();
-
     @Activate
-    public GreeDiscoveryService(@Reference NetworkAddressService networkAddressService,
+    public GreeDiscoveryService(@Reference GreeDeviceFinder deviceFinder,
+            @Reference NetworkAddressService networkAddressService,
             @Reference GreeTranslationProvider translationProvider,
             @Nullable Map<String, @Nullable Object> configProperties) {
         super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SEC);
-        messages = translationProvider;
+        this.messages = translationProvider;
+        this.deviceFinder = deviceFinder;
         String ip = networkAddressService.getConfiguredBroadcastAddress();
         broadcastAddress = ip != null ? ip : "";
         activate(configProperties);
@@ -88,8 +89,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         try (DatagramSocket clientSocket = new DatagramSocket()) {
-            deviceFinder = new GreeDeviceFinder(broadcastAddress);
-            deviceFinder.scan(clientSocket, true);
+            deviceFinder.scan(clientSocket, broadcastAddress, true);
 
             int count = deviceFinder.getScannedDeviceCount();
             logger.debug("{}", messages.get("discovery.result", count));
@@ -98,9 +98,9 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
                 createResult(deviceFinder.getDevices());
             }
         } catch (GreeException e) {
-            logger.warn("Discovery failed: {}", e.toString());
+            logger.info("Discovery: {}", messages.get("discovery.exception", e.getMessage()));
         } catch (SocketException | RuntimeException e) {
-            logger.warn("Discovery failed", e);
+            logger.warn("Discovery: {}", messages.get("discovery.exception", "RuntimeException"), e);
         }
     }
 

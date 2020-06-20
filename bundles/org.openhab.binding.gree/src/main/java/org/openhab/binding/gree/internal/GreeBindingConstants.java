@@ -80,6 +80,7 @@ public class GreeBindingConstants {
     public static final int GREE_QUIET_QUIET = 2;
 
     // UDPPort used to communicate using UDP with GREE Airconditioners. .
+    public static final String VENDOR_GREE = "gree";
     public static final int GREE_PORT = 7000;
 
     public static final String GREE_CID = "app";
@@ -88,6 +89,9 @@ public class GreeBindingConstants {
     public static final String GREE_CMDT_STATUS = "status";
     public static final String GREE_CMDT_CMD = "cmd";
     public static final String GREE_CMDT_PACK = "pack";
+
+    public static final String GREE_CMD_OPT_NAME = "name"; // unit name
+    public static final String GREE_CMD_OPT_HOST = "host"; // remote host (cloud)
 
     /*
      * Note : Values can be:

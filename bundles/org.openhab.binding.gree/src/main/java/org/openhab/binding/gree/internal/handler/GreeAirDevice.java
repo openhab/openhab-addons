@@ -15,7 +15,6 @@ package org.openhab.binding.gree.internal.handler;
 import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -48,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The GreeDevice object repesents a Gree Airconditioner and provides
@@ -62,14 +61,28 @@ public class GreeAirDevice {
     private final Logger logger = LoggerFactory.getLogger(GreeAirDevice.class);
     private final static Gson gson = new Gson();
     private boolean isBound = false;
-    private InetAddress ipAddress = InetAddress.getLoopbackAddress();
+    private final InetAddress ipAddress;
     private int port = 0;
     private String encKey = "";
     private Optional<GreeScanResponseDTO> scanResponseGson = Optional.empty();
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
 
+    public GreeAirDevice() {
+        ipAddress = InetAddress.getLoopbackAddress();
+    }
+
+    public GreeAirDevice(InetAddress ipAddress, int port, GreeScanResponseDTO scanResponse) {
+        this.ipAddress = ipAddress;
+        this.port = port;
+        this.scanResponseGson = Optional.of(scanResponse);
+    }
+
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
+
+        if (!isBound) {
+            throw new GreeException("Device not bound");
+        }
         try {
             // Set the values in the HashMap
             ArrayList<String> columns = new ArrayList<>();
@@ -104,13 +117,10 @@ public class GreeAirDevice {
             String reqStatusPackStr = gson.toJson(reqStatusPackGson);
 
             // Encrypt and send the Status Request pack
-            String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), reqStatusPackStr);
+            String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey(), reqStatusPackStr);
             DatagramPacket sendPacket = createPackRequest(0,
                     new String(encryptedStatusReqPacket.getBytes(), StandardCharsets.UTF_8));
             clientSocket.send(sendPacket);
-
-            // Recieve a response
-            JsonReader receivedData = receiveResponse(clientSocket);
 
             // Keep a copy of the old response to be used to check if values have changed
             // If first time running, there will not be a previous GreeStatusResponsePack4Gson
@@ -120,20 +130,20 @@ public class GreeAirDevice {
             }
 
             // Read the response, create the JSON to hold the response values
-            GreeStatusResponseDTO resp = gson.fromJson(receivedData, GreeStatusResponseDTO.class);
-            resp.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(), resp.pack);
+            GreeStatusResponseDTO resp = receiveResponse(clientSocket, GreeStatusResponseDTO.class);
+            resp.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), resp.pack);
             logger.debug("Response from device: {}", resp.decryptedPack);
-            resp.packJson = gson.fromJson(new JsonReader(new StringReader(resp.decryptedPack)),
-                    GreeStatusResponsePackDTO.class);
+            resp.packJson = gson.fromJson(resp.decryptedPack, GreeStatusResponsePackDTO.class);
 
             // save the results
             statusResponseGson = Optional.of(resp);
             updateTempFtoC();
-        } catch (IOException e) {
-            throw new GreeException("I/O exception while receiving data", e);
+        } catch (IOException | JsonSyntaxException e) {
+            throw new GreeException("I/O exception while updating status", e);
         } catch (RuntimeException e) {
+            logger.debug("Exception", e);
             String json = statusResponseGson.map(r -> r.packJson.toString()).orElse("n/a");
-            throw new GreeException("Exception while receiving data, JSON=" + json, e);
+            throw new GreeException("Exception while updating status, JSON=" + json, e);
         }
     }
 
@@ -149,22 +159,20 @@ public class GreeAirDevice {
             // Encrypt and send the Binding Request pack
             String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
                     bindReqPackStr);
-            DatagramPacket sendPacket = createPackRequest(1,
-                    new String(encryptedBindReqPacket.getBytes(), StandardCharsets.UTF_8));
+            DatagramPacket sendPacket = createPackRequest(1, encryptedBindReqPacket);
             clientSocket.send(sendPacket);
 
             // Recieve a response, create the JSON to hold the response values
-            GreeBindResponseDTO resp = gson.fromJson(receiveResponse(clientSocket), GreeBindResponseDTO.class);
+            GreeBindResponseDTO resp = receiveResponse(clientSocket, GreeBindResponseDTO.class);
             resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
-            resp.packJson = gson.fromJson(new JsonReader(new StringReader(resp.decryptedPack)),
-                    GreeBindResponsePackDTO.class);
+            resp.packJson = gson.fromJson(resp.decryptedPack, GreeBindResponsePackDTO.class);
 
             // Now set the key and flag to indicate the bind was succesful
             encKey = resp.packJson.key;
 
             // save the outcome
-            setIsBound(true);
-        } catch (IOException e) {
+            isBound = true;
+        } catch (IOException | JsonSyntaxException e) {
             throw new GreeException("Unable to bind to device", e);
         }
     }
@@ -237,7 +245,7 @@ public class GreeAirDevice {
     public void setDeviceTempSet(DatagramSocket clientSocket, QuantityType<?> temp) throws GreeException {
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
         // temperature to use as celsius alone is ambigious
-        Double newVal = temp.doubleValue();
+        double newVal = temp.doubleValue();
         int CorF = temp.getUnit() == SIUnits.CELSIUS ? TEMP_UNIT_CELSIUS : TEMP_UNIT_FAHRENHEIT; // 0=Celsius,
                                                                                                  // 1=Fahrenheit
         if (((CorF == TEMP_UNIT_CELSIUS) && (newVal < TEMP_MIN_C || newVal > TEMP_MAX_C))
@@ -246,7 +254,7 @@ public class GreeAirDevice {
         }
 
         // Default for Celsius
-        int outVal = newVal.intValue();
+        int outVal = (int) newVal;
         int halfStep = TEMP_HALFSTEP_NO; // for whatever reason halfStep is not supported for Celsius
 
         // If value argument is degrees F, convert Fahrenheit to Celsius,
@@ -263,10 +271,6 @@ public class GreeAirDevice {
         // subtract the float version - the int version to get the fractional difference
         // if the difference is positive set halfStep to 1, negative to 0
         if (CorF == TEMP_UNIT_FAHRENHEIT) { // If Fahrenheit,
-            /*
-             * outVal = (int) (Math.round((newVal - 32.) * 5.0 / 9.0)); // Integer Truncated
-             * halfStep = ((((newVal - 32.) * 5.0 / 9.0) - outVal) > 0) ? 1 : 0;
-             */
             halfStep = newVal - outVal > 0 ? TEMP_HALFSTEP_YES : TEMP_HALFSTEP_NO;
         }
         logger.debug("Converted temp from {}{} to temp={}, halfStep={}, unit={})", newVal, temp.getUnit(), outVal,
@@ -390,20 +394,17 @@ public class GreeAirDevice {
             String execCmdPackStr = gson.toJson(execCmdPackGson);
 
             // Now encrypt and send the Command Request pack
-            String encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey().getBytes(), execCmdPackStr);
-            DatagramPacket sendPacket = createPackRequest(0,
-                    new String(encryptedCommandReqPacket.getBytes(), StandardCharsets.UTF_8));
+            String encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey(), execCmdPackStr);
+            DatagramPacket sendPacket = createPackRequest(0, encryptedCommandReqPacket);
             clientSocket.send(sendPacket);
 
-            GreeExecResponseDTO execResponseGson = gson.fromJson(receiveResponse(clientSocket),
-                    GreeExecResponseDTO.class);
-            execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(this.getKey().getBytes(),
-                    execResponseGson.pack);
+            // Receive and decode result
+            GreeExecResponseDTO execResponseGson = receiveResponse(clientSocket, GreeExecResponseDTO.class);
+            execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), execResponseGson.pack);
 
             // Create the JSON to hold the response values
-            execResponseGson.packJson = gson.fromJson(new JsonReader(new StringReader(execResponseGson.decryptedPack)),
-                    GreeExecResponsePackDTO.class);
-        } catch (IOException e) {
+            execResponseGson.packJson = gson.fromJson(execResponseGson.decryptedPack, GreeExecResponsePackDTO.class);
+        } catch (IOException | JsonSyntaxException e) {
             throw new GreeException("Exception on command execution", e);
         }
     }
@@ -429,20 +430,17 @@ public class GreeAirDevice {
         request.tcid = getId();
         request.pack = pack;
         byte[] sendData = gson.toJson(request).getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
         return sendPacket;
     }
 
-    private JsonReader receiveResponse(DatagramSocket clientSocket) throws GreeException {
-        try {
-            byte[] receiveData = new byte[1024];
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            clientSocket.receive(receivePacket);
-            String data = new String(receivePacket.getData(), StandardCharsets.UTF_8);
-            return new JsonReader(new StringReader(data));
-        } catch (IOException e) {
-            throw new GreeException("Unable to receive response", e);
-        }
+    private <T> T receiveResponse(DatagramSocket clientSocket, Class<T> classOfT)
+            throws IOException, JsonSyntaxException {
+        byte[] receiveData = new byte[1024];
+        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+        clientSocket.receive(receivePacket);
+        String json = new String(receivePacket.getData(), StandardCharsets.UTF_8).replace("\\u0000", "").trim();
+        return gson.fromJson(json, classOfT);
     }
 
     private void updateTempFtoC() {
@@ -476,32 +474,16 @@ public class GreeAirDevice {
         }
     }
 
-    public boolean getIsBound() {
-        return isBound;
-    }
-
-    public void setIsBound(boolean isBound) {
-        this.isBound = isBound;
-    }
-
     public InetAddress getAddress() {
         return ipAddress;
     }
 
-    public void setAddress(InetAddress address) {
-        this.ipAddress = address;
+    public boolean getIsBound() {
+        return isBound;
     }
 
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getKey() {
-        return encKey;
+    public byte[] getKey() {
+        return encKey.getBytes(StandardCharsets.UTF_8);
     }
 
     public String getId() {
