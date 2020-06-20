@@ -19,7 +19,6 @@
 			<channel-group id="heater" typeId="heater" />
 			<channel-group id="cookerhood" typeId="cookerhood" />
 			<channel-group id="enthalpy" typeId="enthalpy" />
-<!--			<channel-group id="options" typeId="options" /> -->
 			<channel-group id="menuP1" typeId="menuP1" />
 			<channel-group id="menuP2" typeId="menuP2" />
 			<channel-group id="menuP9" typeId="menuP9" />
@@ -160,22 +159,7 @@
 			<channel id="enthalpyTime" typeId="enthalpy_time" />
 		</channels>
 	</channel-group-type>
-<!--
-	<channel-group-type id="options">
-		<label>Option States</label>
-		<channels>
-			<channel id="isPreheater" typeId="is_preheater" />
-			<channel id="isBypass" typeId="is_bypass" />
-			<channel id="recuType" typeId="recu_type" />
-			<channel id="recuSize" typeId="recu_size" />
-			<channel id="isChimney" typeId="is_chimney" />
-			<channel id="isCookerhood" typeId="is_cookerhood" />
-			<channel id="isHeater" typeId="is_heater" />
-			<channel id="isEnthalpy" typeId="is_enthalpy" />
-			<channel id="isEWT" typeId="is_ewt" />
-		</channels>
-	</channel-group-type>
--->
+
 	<channel-group-type id="menuP1">
 		<label>Menu P1: Control States</label>
 		<channels>
@@ -864,101 +848,7 @@
 		<category>Time</category>
 		<state readOnly="true" />
 	</channel-type>
-<!--
-	<channel-type id="is_preheater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Preheater</label>
-		<description>Preheater option installed</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
 
-	<channel-type id="is_bypass" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Bypass</label>
-		<description>Bypass option installed</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="recu_type" advanced="true">
-		<item-type>Number</item-type>
-		<label>Comfoair Type</label>
-		<description>Type of the ComfoAir (1 = left / 2 = right)</description>
-		<category>Number</category>
-		<state readOnly="false">
-			<options>
-				<option value="1">Left</option>
-				<option value="2">Right</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="recu_size" advanced="true">
-		<item-type>Number</item-type>
-		<label>Comfoair Size</label>
-		<description>Size of the ComfoAir (1 = big / 2 = small)</description>
-		<category>Number</category>
-		<state readOnly="false">
-			<options>
-				<option value="1">Big</option>
-				<option value="2">Small</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="is_chimney" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Chimney</label>
-		<description>Chimney option installed</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="is_cookerhood" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Cookerhood</label>
-		<description>Cookerhood option installed</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="is_heater" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Heater</label>
-		<description>Heater option installed</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="is_enthalpy" advanced="true">
-		<item-type>Number</item-type>
-		<label>Enthalpy</label>
-		<description>Enthalpy option installed</description>
-		<category>Number</category>
-		<state readOnly="false">
-			<options>
-				<option value="0">Not installed</option>
-				<option value="1">Installed</option>
-				<option value="2">Installed w/o sensor</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="is_ewt" advanced="true">
-		<item-type>Number</item-type>
-		<label>EWT</label>
-		<description>EWT option installed</description>
-		<category>Number</category>
-		<state readOnly="false">
-			<options>
-				<option value="0">Not installed</option>
-				<option value="1">Regulated</option>
-				<option value="2">Not Regulated</option>
-			</options>
-		</state>
-	</channel-type>
--->
 	<channel-type id="is_L1_switch" advanced="true">
 		<item-type>Switch</item-type>
 		<label>L1 Switch</label>

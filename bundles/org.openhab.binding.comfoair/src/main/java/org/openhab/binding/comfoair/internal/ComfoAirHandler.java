@@ -362,7 +362,6 @@ public class ComfoAirHandler extends BaseThingHandler {
             int[] response = comfoAirConnector.sendCommand(optionsReadCommand,
                     ComfoAirCommandType.Constants.EMPTY_INT_ARRAY);
             if (response.length > 0) {
-                logger.debug("Response: {}.", response);
                 for (String prop : optionProperties) {
                     ComfoAirCommandType comfoAirCommandType = ComfoAirCommandType.getCommandTypeByKey(prop);
                     String value = "";
@@ -370,7 +369,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                     if (comfoAirCommandType != null) {
                         ComfoAirDataType dataType = comfoAirCommandType.getDataType();
                         int intValue = dataType.calculateNumberValue(response, comfoAirCommandType);
-                        logger.debug("Property: {}, intValue: {}.", prop, intValue);
+
                         switch (prop) {
                             case ComfoAirBindingConstants.PROPERTY_OPTION_RECU_TYPE:
                                 value = intValue == 1 ? "LEFT" : "RIGHT";
