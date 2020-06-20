@@ -30,19 +30,19 @@ public class ComfoAirBindingConstants {
 
     // Thing properties
     // General properties
-    public static final String PROPERTY_SOFTWARE_MAIN_VERSION = "softwareMainVersion";
-    public static final String PROPERTY_SOFTWARE_MINOR_VERSION = "softwareMinorVersion";
-    public static final String PROPERTY_DEVICE_NAME = "deviceName";
+    public static final String PROPERTY_SOFTWARE_MAIN_VERSION = "SOFTWARE_VERSION_MAIN";
+    public static final String PROPERTY_SOFTWARE_MINOR_VERSION = "SOFTWARE_VERSION_MINOR";
+    public static final String PROPERTY_DEVICE_NAME = "DEVICE_NAME";
     // Installed options
-    public static final String PROPERTY_OPTION_PREHEATER = "isPreheater";
-    public static final String PROPERTY_OPTION_BYPASS = "isBypass";
-    public static final String PROPERTY_OPTION_RECU_TYPE = "recuType";
-    public static final String PROPERTY_OPTION_RECU_SIZE = "recuSize";
-    public static final String PROPERTY_OPTION_CHIMNEY = "isChimney";
-    public static final String PROPERTY_OPTION_COOKERHOOD = "isCookerhood";
-    public static final String PROPERTY_OPTION_HEATER = "isHeater";
-    public static final String PROPERTY_OPTION_ENTHALPY = "isEnthalpy";
-    public static final String PROPERTY_OPTION_EWT = "isEWT";
+    public static final String PROPERTY_OPTION_PREHEATER = "OPTION_PREHEATER";
+    public static final String PROPERTY_OPTION_BYPASS = "OPTION_BYPASS";
+    public static final String PROPERTY_OPTION_RECU_TYPE = "DEVICE_TYPE";
+    public static final String PROPERTY_OPTION_RECU_SIZE = "DEVICE_SIZE";
+    public static final String PROPERTY_OPTION_CHIMNEY = "OPTION_CHIMNEY";
+    public static final String PROPERTY_OPTION_COOKERHOOD = "OPTION_COOKERHOOD";
+    public static final String PROPERTY_OPTION_HEATER = "OPTION_HEATER";
+    public static final String PROPERTY_OPTION_ENTHALPY = "OPTION_ENTHALPY";
+    public static final String PROPERTY_OPTION_EWT = "OPTION_EWT";
     // Common option states
     public static final String[] COMMON_OPTION_STATES = { "Not installed", "Installed" };
 
