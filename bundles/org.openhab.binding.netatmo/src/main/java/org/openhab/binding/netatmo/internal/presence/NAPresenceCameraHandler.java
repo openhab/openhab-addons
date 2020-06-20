@@ -124,6 +124,8 @@ public class NAPresenceCameraHandler extends CameraHandler {
                     + mode.toString()
                     + "%22%7D";
             executeGETRequest(url);
+
+            invalidateParentCacheAndRefresh();
         }
     }
 }
