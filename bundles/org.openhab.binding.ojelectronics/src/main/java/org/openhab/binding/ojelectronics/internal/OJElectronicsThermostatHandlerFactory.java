@@ -27,8 +27,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link OJElectronicsThermostatHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link OJElectronicsThermostatHandlerFactory} is responsible for creating {@link OJElectronicsThermostatHandler}.
  *
  * @author Christian Kittel - Initial contribution
  */

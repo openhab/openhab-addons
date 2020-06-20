@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Factory to create OJElectronicsBridgeHandler
+ * Factory to create {@link OJElectronicsBridgeHandler}
  *
  * @author Christian Kittel - Initial Contribution
  */
