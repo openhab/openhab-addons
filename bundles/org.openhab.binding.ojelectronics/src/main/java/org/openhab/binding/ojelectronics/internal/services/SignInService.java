@@ -74,14 +74,17 @@ public class SignInService {
             public void onComplete(@Nullable Result result) {
                 if (result == null || result.isFailed()) {
                     connectionLosed.run();
+                    return;
                 }
                 if (result != null && result.getResponse().getStatus() != 200) {
                     unauthorized.run();
+                    return;
                 }
                 PostSignInResponseModel signInModel = gson.fromJson(getContentAsString(),
                         PostSignInResponseModel.class);
                 if (signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
                     unauthorized.run();
+                    return;
                 }
                 signInDone.accept(signInModel.sessionId);
             }

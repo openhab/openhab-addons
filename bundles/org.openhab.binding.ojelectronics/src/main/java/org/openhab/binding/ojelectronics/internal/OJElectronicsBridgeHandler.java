@@ -171,6 +171,7 @@ public class OJElectronicsBridgeHandler extends BaseBridgeHandler implements Bri
             refreshService.stop();
             refreshService = null;
         }
+        signInService = null;
         super.handleConfigurationUpdate(configurationParameters);
     }
 }
