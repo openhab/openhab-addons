@@ -1460,7 +1460,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorA_last">
+	<channel-type id="errorA_last" advanced="true">
 		<item-type>String</item-type>
 		<label>Error A Last</label>
 		<description>Last error A</description>
@@ -1468,7 +1468,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorE_last">
+	<channel-type id="errorE_last" advanced="true">
 		<item-type>String</item-type>
 		<label>Error E Last</label>
 		<description>Last error E</description>
@@ -1476,7 +1476,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorA_prelast">
+	<channel-type id="errorA_prelast" advanced="true">
 		<item-type>String</item-type>
 		<label>Error A Prelast</label>
 		<description>Prelast error A</description>
@@ -1484,7 +1484,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorE_prelast">
+	<channel-type id="errorE_prelast" advanced="true">
 		<item-type>String</item-type>
 		<label>Error E Prelast</label>
 		<description>Prelast error E</description>
@@ -1492,7 +1492,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorA_pre_prelast">
+	<channel-type id="errorA_pre_prelast" advanced="true">
 		<item-type>String</item-type>
 		<label>Error A Pre-Prelast</label>
 		<description>Pre-Prelast error A</description>
@@ -1500,7 +1500,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorE_pre_prelast">
+	<channel-type id="errorE_pre_prelast" advanced="true">
 		<item-type>String</item-type>
 		<label>Error E Pre-Prelast</label>
 		<description>Pre-Prelast error E</description>
@@ -1508,7 +1508,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorEA_current">
+	<channel-type id="errorEA_current" advanced="true">
 		<item-type>String</item-type>
 		<label>Error EA Current</label>
 		<description>Current error EA</description>
@@ -1516,7 +1516,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorEA_last">
+	<channel-type id="errorEA_last" advanced="true">
 		<item-type>String</item-type>
 		<label>Error EA Last</label>
 		<description>Last error EA</description>
@@ -1524,7 +1524,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorEA_prelast">
+	<channel-type id="errorEA_prelast" advanced="true">
 		<item-type>String</item-type>
 		<label>Error EA Prelast</label>
 		<description>Prelast error EA</description>
@@ -1532,7 +1532,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorEA_pre_prelast">
+	<channel-type id="errorEA_pre_prelast" advanced="true">
 		<item-type>String</item-type>
 		<label>Error EA Pre-Prelast</label>
 		<description>Pre-Prelast error EA</description>
@@ -1540,7 +1540,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorA_high_current">
+	<channel-type id="errorA_high_current" advanced="true">
 		<item-type>String</item-type>
 		<label>Error A (high) Current</label>
 		<description>Current error A (high)</description>
@@ -1548,7 +1548,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorA_high_last">
+	<channel-type id="errorA_high_last" advanced="true">
 		<item-type>String</item-type>
 		<label>Error A (high) Last</label>
 		<description>Last error A (high)</description>
@@ -1556,7 +1556,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorA_high_prelast">
+	<channel-type id="errorA_high_prelast" advanced="true">
 		<item-type>String</item-type>
 		<label>Error A (high) Prelast</label>
 		<description>Prelast error A (high)</description>
@@ -1564,7 +1564,7 @@
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorA_high_pre_prelast">
+	<channel-type id="errorA_high_pre_prelast" advanced="true">
 		<item-type>String</item-type>
 		<label>Error A (high) Pre-Prelast</label>
 		<description>Pre-Prelast error A (high)</description>
