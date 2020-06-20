@@ -51,18 +51,20 @@ public class KVVStationHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduler.execute(() -> {
 
             // creating channels
             logger.info("Creating channels...");
             final List<Channel> channels = new ArrayList<Channel>();
             for (int i = 0; i < this.config.maxTrains; i++) {
-                channels.add(ChannelBuilder.create(
-                    new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String").build());
-                channels.add(ChannelBuilder.create(
-                    new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
-                channels.add(ChannelBuilder.create(
-                    new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String").build());
+                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
+                        .build());
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
+                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String")
+                        .build());
             }
             this.updateThing(this.editThing().withChannels(channels).build());
 
@@ -74,7 +76,7 @@ public class KVVStationHandler extends BaseThingHandler {
                 return;
             }
 
-            final KVVBridgeHandler handler = (KVVBridgeHandler)  bridge.getHandler();
+            final KVVBridgeHandler handler = (KVVBridgeHandler) bridge.getHandler();
             if (handler == null) {
                 logger.warn("Failed to get bridge handler (is null)");
                 updateStatus(ThingStatus.OFFLINE);
@@ -92,10 +94,10 @@ public class KVVStationHandler extends BaseThingHandler {
             for (final Channel c : this.getThing().getChannels()) {
                 logger.info("{}", c.getUID().getAsString());
             }
-            
+
             this.setDepartures(departures);
             this.scheduler.scheduleWithFixedDelay(new UpdateTask(), 0, this.config.updateInterval,
-                        TimeUnit.MILLISECONDS);
+                    TimeUnit.MILLISECONDS);
             updateStatus(ThingStatus.ONLINE);
             logger.info("Thing is online");
         });
@@ -138,7 +140,7 @@ public class KVVStationHandler extends BaseThingHandler {
                 return;
             }
 
-            final KVVBridgeHandler handler = (KVVBridgeHandler)  bridge.getHandler();
+            final KVVBridgeHandler handler = (KVVBridgeHandler) bridge.getHandler();
             if (handler == null) {
                 logger.warn("Failed to get bridge handler (is null)");
                 return;
@@ -149,7 +151,5 @@ public class KVVStationHandler extends BaseThingHandler {
                 setDepartures(departures);
             }
         }
-
     }
-    
 }

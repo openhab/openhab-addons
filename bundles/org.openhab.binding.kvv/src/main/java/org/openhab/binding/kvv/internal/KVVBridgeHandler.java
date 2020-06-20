@@ -44,6 +44,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             updateStatus(ThingStatus.ONLINE);
         });
