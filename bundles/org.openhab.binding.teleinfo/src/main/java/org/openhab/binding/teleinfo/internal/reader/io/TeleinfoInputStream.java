@@ -55,7 +55,7 @@ import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.Prog
 import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit2;
 import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
-import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionException;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.FrameUtil;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
@@ -234,7 +234,7 @@ public class TeleinfoInputStream extends InputStream {
                         Object value = converter.convert(valueString);
 
                         frameValues.put(label, value);
-                    } catch (ConvertionException e) {
+                    } catch (ConversionException e) {
                         final String error = String.format("An error occurred during '%s' value conversion",
                                 valueString);
                         throw new InvalidFrameException(error, e);

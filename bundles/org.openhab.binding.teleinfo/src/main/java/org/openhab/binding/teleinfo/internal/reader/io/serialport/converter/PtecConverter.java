@@ -13,7 +13,7 @@
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
 import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
-import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionException;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class PtecConverter implements Converter {
     private static Logger logger = LoggerFactory.getLogger(PtecConverter.class);
 
     @Override
-    public Object convert(String value) throws ConvertionException {
+    public Object convert(String value) throws ConversionException {
         logger.debug("convert(String) [start]");
         if (logger.isTraceEnabled()) {
             logger.trace("value = {}", value);
@@ -70,7 +70,7 @@ public class PtecConverter implements Converter {
                 convertedValue = Ptec.HPJR;
                 break;
             default:
-                throw new ConvertionException(value);
+                throw new ConversionException(value);
         }
 
         logger.debug("convert(String) [end]");

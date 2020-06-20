@@ -13,22 +13,22 @@
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
 /**
- * The {@link ConvertionException} class defines a conversion exception.
+ * The {@link ConversionException} class defines a conversion exception.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class ConvertionException extends Exception {
+public class ConversionException extends Exception {
 
     private static final long serialVersionUID = -1109821041874271681L;
     private static final String ERROR_MESSAGE = "Unable to convert '%1$s' value";
 
     private String valueToConvert;
 
-    public ConvertionException(String valueToConvert) {
+    public ConversionException(String valueToConvert) {
         this(valueToConvert, null);
     }
 
-    public ConvertionException(String valueToConvert, Throwable cause) {
+    public ConversionException(String valueToConvert, Throwable cause) {
         super(String.format(ERROR_MESSAGE, valueToConvert), cause);
     }
 

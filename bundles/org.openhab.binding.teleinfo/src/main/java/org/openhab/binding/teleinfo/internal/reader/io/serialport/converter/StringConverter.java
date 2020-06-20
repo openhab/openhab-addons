@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
-import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionException;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class StringConverter implements Converter {
     private static Logger logger = LoggerFactory.getLogger(StringConverter.class);
 
     @Override
-    public Object convert(String value) throws ConvertionException {
+    public Object convert(String value) throws ConversionException {
         logger.debug("convert(String) [start]");
         if (logger.isTraceEnabled()) {
             logger.trace("value = {}", value);

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
-import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionException;
+import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 
 /**
  * The {@link Converter} interface defines a converter to translate a Teleinfo String value into Java object.
@@ -21,6 +21,6 @@ import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConvertionExce
  */
 public interface Converter {
 
-    public Object convert(String value) throws ConvertionException;
+    public Object convert(String value) throws ConversionException;
 
 }
