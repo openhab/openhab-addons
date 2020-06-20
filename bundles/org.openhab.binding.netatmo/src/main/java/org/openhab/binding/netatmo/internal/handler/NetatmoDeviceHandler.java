@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,10 +23,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -55,28 +56,15 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     protected DEVICE device;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
-    public NetatmoDeviceHandler(Thing thing) {
-        super(thing);
+    public NetatmoDeviceHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            logger.debug("Initializing {} with id '{}'", getClass(), getId());
-            if (bridge.getStatus() == ThingStatus.ONLINE) {
-                defineRefreshInterval();
-                updateStatus(ThingStatus.ONLINE);
-                scheduleRefreshJob();
-            } else {
-                logger.debug("setting device '{}' offline (bridge or thing offline)", getId());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
-            }
-        } else {
-            logger.debug("setting device '{}' offline (bridge == null)", getId());
-            updateStatus(ThingStatus.OFFLINE);
-        }
+    protected void initializeThing() {
+        defineRefreshInterval();
+        updateStatus(ThingStatus.ONLINE);
+        scheduleRefreshJob();
     }
 
     private void scheduleRefreshJob() {
@@ -103,7 +91,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
         }
     }
 
-    protected abstract DEVICE updateReadings();
+    protected abstract @Nullable DEVICE updateReadings();
 
     protected void updateProperties(DEVICE deviceData) {
     }
@@ -136,7 +124,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     updateProperties(device);
                     Integer dataTimeStamp = getDataTimestamp();
                     if (dataTimeStamp != null) {
-                        refreshStrategy.setDataTimeStamp(dataTimeStamp);
+                        refreshStrategy.setDataTimeStamp(dataTimeStamp, timeZoneProvider.getTimeZone());
                     }
                     radioHelper.ifPresent(helper -> helper.setModule(device));
                     NetatmoBridgeHandler handler = getBridgeHandler();
@@ -162,14 +150,14 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         try {
             switch (channelId) {
                 case CHANNEL_LAST_STATUS_STORE:
                     if (device != null) {
                         Method getLastStatusStore = device.getClass().getMethod("getLastStatusStore");
                         Integer lastStatusStore = (Integer) getLastStatusStore.invoke(device);
-                        return ChannelTypeUtils.toDateTimeType(lastStatusStore);
+                        return ChannelTypeUtils.toDateTimeType(lastStatusStore, timeZoneProvider.getTimeZone());
                     } else {
                         return UnDefType.UNDEF;
                     }
@@ -231,5 +219,4 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     public void expireData() {
         refreshStrategy.expireData();
     }
-
 }

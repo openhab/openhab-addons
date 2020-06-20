@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,23 +23,6 @@ import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeather
  */
 @NonNullByDefault
 public class OpenWeatherMapWeatherAndForecastConfiguration extends OpenWeatherMapLocationConfiguration {
-
-    private int forecastHours;
-    private int forecastDays;
-
-    public int getForecastHours() {
-        return forecastHours;
-    }
-
-    public void setForecastHours(int forecastHours) {
-        this.forecastHours = forecastHours;
-    }
-
-    public int getForecastDays() {
-        return forecastDays;
-    }
-
-    public void setForecastDays(int forecastDays) {
-        this.forecastDays = forecastDays;
-    }
+    public int forecastHours;
+    public int forecastDays;
 }

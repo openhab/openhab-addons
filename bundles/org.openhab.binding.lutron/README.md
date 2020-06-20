@@ -3,19 +3,19 @@
 This binding integrates with [Lutron](http://www.lutron.com) lighting control and home automation systems.
 It contains separate binding support for four different types of Lutron systems:
 
-* RadioRA 2 and other systems that can be controlled by Lutron Integration Protocol, such as Homeworks QS, RA2 Select, and Caseta PRO
+* RadioRA 2, HomeWorks QS, and other systems that can be controlled by Lutron Integration Protocol, such as RA2 Select, and Caseta Pro
 * The original RadioRA system, referred to here as RadioRA Classic
 * Legacy HomeWorks RS232 Processors
 * Grafik Eye 3x/4x systems with GRX-PRG or GRX-CI-PRG control interfaces
 
 Each is described in a separate section below.
 
-# Lutron RadioRA 2 Binding
+# Lutron RadioRA 2/HomeWorks QS Binding
 
-**Note:** While the integration protocol used by this binding should largely be compatible with other current Lutron systems, this binding has only been fully tested with RadioRA 2 and Caseta.
-Homeworks QS support is still a work in progress.
-RA2 Select is believed to work, but it is unconfirmed.
-It has not yet been tested with Quantum, QS Standalone, or myRoom plus systems.
+**Note:** While the integration protocol used by this binding should largely be compatible with other current Lutron systems, this binding has only been fully tested with RadioRA 2, HomeWorks QS, and Caseta with Smart Bridge Pro.
+Homeworks QS support is still a work in progress, since not all features/devices are supported yet.
+RA2 Select systems have been reported to work with the binding, but full support is still unconfirmed.
+The binding has not been tested with Quantum, QS Standalone, or myRoom Plus systems.
 
 **Note:** Caseta support is only possible with the Smart Bridge **Pro** hub.
 The standard Caseta hub does not support Lutron Integration Protocol.
@@ -34,7 +34,7 @@ This binding currently supports the following thing types:
 * **palladiomkeypad** - Palladiom Keypad (HomeWorks QS only)
 * **pico** - Pico Keypad
 * **grafikeyekeypad** - GRAFIK Eye QS Keypad (RadioRA 2/HomeWorks QS only)
-* **virtualkeypad** - Repeater virtual keypad
+* **virtualkeypad** - Repeater/processor integration buttons or Caseta Smart Bridge scene buttons
 * **vcrx** - Visor control receiver module (VCRX)
 * **qsio** - QS IO Interface (HomeWorks QS only)
 * **wci** - QS Wallbox Closure Interface (WCI) (HomeWorks QS only)
@@ -52,7 +52,10 @@ Discovered repeaters/processors will be accessed using the default integration c
 These can be changed in the bridge thing configuration.
 Discovered keypad devices should now have their model parameters automatically set to the correct value.
 
-Hubs and their connected devices in Caseta and RA2 Select systems need to be configured manually.
+Caseta Smart Bridge PRO 2 hubs and RA2 Select main repeaters should now be discovered automatically via mDNS.
+Devices attached to them still need to be configured manually.
+
+Other supported Lutron systems must be configured manually.
 
 ## Binding Configuration
 
@@ -81,7 +84,9 @@ It also defaults to 5.
 The optional advanced parameter `delay` can be used to set a delay (in milliseconds) between transmission of integration commands to the bridge device.
 This may be used for command send rate throttling.
 It can be set to an integer value between 0 and 250 ms, and defaults to 0 (no delay).
-It is recommended to leave it set to 0 unless you experience problems with commands sent to Caseta hubs being dropped/ignored.
+It is recommended that this parameter be left at the default unless you experience problems with sent commands being dropped/ignored.
+This has been reported in some rare cases when large numbers of commands were sent in short periods to Caseta hubs.
+If you experience this problem, try setting a delay value of around 100 ms as a starting point.
 
 The optional advanced parameter `discoveryFile` can be set to force the device discovery service to read the Lutron configuration XML from a local file rather than retrieving it via HTTP from the RadioRA 2 or HomeWorks QS bridge device.
 This is useful in the case of some older Lutron software versions, where the discovery service may have problems retrieving the file from the bridge device.
@@ -121,7 +126,7 @@ Thing switch porch [ integrationId=8 ]
 ### Occupancy Sensors
 
 An **occupancysensor** thing interfaces to Lutron Radio Powr Savr wireless occupancy/vacancy sensors.
-It accepts no configuration parameters other than `integrationID`.
+It accepts no configuration parameters other than `integrationId`.
 
 The binding creates one *occupancystatus* channel, Item type Switch, category Motion.
 It is read-only, and ignores all commands.
@@ -137,7 +142,7 @@ Thing occupancysensor shopsensor [ integrationId=7 ]
 ### seeTouch and Hybrid seeTouch Keypads
 
 seeTouch and Hybrid seeTouch keypads are interfaced with using the **keypad** thing.
-In addition to the usual `integrationID` parameter, it accepts `model` and `autorelease` parameters.
+In addition to the usual `integrationId` parameter, it accepts `model` and `autorelease` parameters.
 The `model` parameter should be set to the Lutron keypad model number.
 This will cause the handler to create only the appropriate channels for that particular keypad model.
 The default is "Generic", which will cause the handler to create all possible channels, some of which will likely not be appropriate for your model.
@@ -186,7 +191,7 @@ end
 ### Tabletop seeTouch Keypads
 
 Tabletop seeTouch keypads use the **ttkeypad** thing.
-It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** thing.
+It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.110 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
@@ -203,7 +208,7 @@ Thing ttkeypad bedroomkeypad [ integrationId=11, model="T10RL" autorelease=true 
 ### International seeTouch Keypads (HomeWorks QS)
 
 International seeTouch keypads used in the HomeWorks QS system use the **intlkeypad** thing.
-It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
+It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
 To support this keypad's contact closure inputs, CCI channels named *cci1* and *cci2* are created with item type Contact and category Switch.
@@ -224,7 +229,7 @@ Thing intlkeypad kitchenkeypad [ integrationId=15, model="10BRL" autorelease=tru
 ### Palladiom Keypads (HomeWorks QS)
 
 Palladiom keypads used in the HomeWorks QS system use the **palladiomkeypad** thing.
-It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
+It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button and LED channel types as the **keypad** thing.
 See the **keypad** section above for a full discussion of configuration and use.
 
 Component numbering: For button and LED layouts and numbering, see the Lutron Integration Protocol Guide (rev. AA) p.95 (https://www.lutron.com/TechnicalDocumentLibrary/040249.pdf).
@@ -242,7 +247,7 @@ Thing palladiomkeypad kitchenkeypad [ integrationId=16, model="4W" autorelease=t
 ### Pico Keypads
 
 Pico keypads use the **pico** thing.
-It accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** and **ttkeypad** things.
+It accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same channel types as the **keypad** and **ttkeypad** things.
 The only difference is that no LED channels will be created, since Pico keypads have no indicator LEDs.
 See the discussion above for a full discussion of configuration and use.
 
@@ -267,7 +272,7 @@ In this configuration, the integrated dimmers will appear to openHAB as separate
 If your GRAFIK Eye is being used as a stand-alone device and is not integrated in to a RadioRA 2 or HomeWorks QS system, then *this is not the thing you are looking for*.
 You should instead be using the **grafikeye** thing (see below).
 
-The **grafikeyekeypad** thing accepts the same `integrationID`, `model`, and `autorelease` parameters and creates the same button, LED, and CCI, channel types as the other keypad things (see above).
+The **grafikeyekeypad** thing accepts the same `integrationId`, `model`, and `autorelease` parameters and creates the same button, LED, and CCI, channel types as the other keypad things (see above).
 The model parameter should be set to indicate whether there are zero, one, two, or three columns of buttons on the left side of the panel.
 Note that this count does not include the column of 5 scene buttons always found on the right side of the panel.
 
@@ -288,12 +293,21 @@ Thing lutron:grafikeyekeypad:theaterkeypad (lutron:ipbridge:radiora2) [ integrat
 
 ### Virtual Keypads
 
-The **virtualkeypad** thing is used to interface to the virtual buttons on the RadioRA 2 main repeater.
+The **virtualkeypad** thing is used to interface to the virtual buttons on the RadioRA 2 main repeater or HomeWorks processor.
 These are sometimes referred to in the Lutron documentation as phantom buttons or integration buttons, and are used only for integration.
 There are 100 of these virtual buttons, and 100 corresponding virtual indicator LEDs.
 
+The **virtualkeypad** thing can also be used to interface to the Smart Bridge scene buttons on Caseta systems.
+This allows you to trigger your defined scenes via the virtual keypad buttons.
+For this to work, the optional `model` parameter must be set to `Caseta`.
+When used with Caseta, no virtual indicator LED channels are created.
+
 The behavior of this binding is the same as the other keypad bindings, with the exception that the button and LED channels created have the Advanced flag set.
 This means, among other things, that they will not be automatically linked to items in the Paper UI's Simple Mode.
+
+In most cases the integrationId parameter should be set to 1.
+
+Supported settings for `model` parameter: Caseta, Other (default)
 
 Thing configuration file example:
 
@@ -311,8 +325,9 @@ Supported options are `integrationId` and `autorelease`.
 Supplying a model is not required, as there is only one model.
 
 To support the contact closure inputs, CCI channels named *cci[n]* are created with item type Contact and category Switch.
-They are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
-They present OPEN/CLOSED states but do not accept commands as Contact items are read-only in openHAB.
+The VCRX security (Full/Flash) input controls both the cci1 and cci2 channels, while input connections 1 and 2 map to the cci3 and cci4 channels respectively.
+The cci channels are marked as Advanced, so they will not be automatically linked to items in the Paper UI's Simple Mode.
+They present OPEN/CLOSED states but do not accept commands since Contact items are read-only in openHAB.
 Note that the `autorelease` option **does not** apply to CCI channels.
 
 Thing configuration file example:

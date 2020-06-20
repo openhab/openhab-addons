@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,13 @@ public enum DeviceAction {
     increase_bright,
     decrease_bright,
     increase_ct,
-    decrease_ct;
+    decrease_ct,
+    background_color,
+    background_brightness,
+    background_on,
+    background_off,
+    nightlight_off,
+    nightlight_on;
 
     private String mStrValue;
     private int mIntValue;

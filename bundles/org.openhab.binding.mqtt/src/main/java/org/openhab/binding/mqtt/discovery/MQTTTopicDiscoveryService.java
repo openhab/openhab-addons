@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,4 +38,12 @@ public interface MQTTTopicDiscoveryService {
      * @param listener A listener that has subscribed before.
      */
     void unsubscribe(MQTTTopicDiscoveryParticipant listener);
+
+    /**
+     * Publish a message to all connected brokers
+     *
+     * @param topic The topic to publish on
+     * @param payload The message to publish
+     */
+    void publish(String topic, byte[] payload);
 }

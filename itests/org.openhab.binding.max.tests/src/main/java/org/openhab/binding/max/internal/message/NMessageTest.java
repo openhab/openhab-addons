@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,14 +37,12 @@ public class NMessageTest {
 
     @Test
     public void getMessageTypeTest() {
-
         MessageType messageType = ((Message) message).getType();
         assertEquals(MessageType.N, messageType);
     }
 
     @Test
     public void getRFAddressTest() {
-
         String rfAddress = message.getRfAddress();
 
         assertEquals("0E15CC", rfAddress);

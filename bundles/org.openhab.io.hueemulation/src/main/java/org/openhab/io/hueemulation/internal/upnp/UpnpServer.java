@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.SocketAddress;
+import java.net.StandardProtocolFamily;
+import java.net.StandardSocketOptions;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.DatagramChannel;
@@ -223,7 +233,6 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
 
         xmlDocWithAddress = String.format(xmlDoc, urlBase, r.addressString, cs.ds.config.bridgeid, cs.ds.config.uuid,
                 cs.ds.config.devicename);
-
     }
 
     protected @Nullable HueEmulationConfigWithRuntime performAddressTest(
@@ -412,24 +421,23 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         boolean hasIPv4 = false;
         boolean hasIPv6 = false;
 
-        try (
-                DatagramChannel channelV4 = DatagramChannel.open(StandardProtocolFamily.INET);
-                DatagramChannel channelV6 = DatagramChannel.open(StandardProtocolFamily.INET6);
-                Selector selector = Selector.open()) {
-
+        try (Selector selector = Selector.open();
+                DatagramChannel channelV4 = createBoundDataGramChannelOrNull(StandardProtocolFamily.INET);
+                DatagramChannel channelV6 = createBoundDataGramChannelOrNull(StandardProtocolFamily.INET6)) {
+            // Set global config to thread local config. Otherwise upnpAnnouncementThreadRunning() will report wrong
+            // results.
+            config = threadContext;
             threadContext.asyncIOselector = selector;
 
-            bind(channelV4);
-            bind(channelV6);
             for (InetAddress address : cs.getDiscoveryIps()) {
                 NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
                 if (networkInterface == null) {
                     continue;
                 }
-                if (address instanceof Inet4Address) {
+                if (address instanceof Inet4Address && channelV4 != null) {
                     channelV4.join(MULTI_ADDR_IPV4, networkInterface);
                     hasIPv4 = true;
-                } else {
+                } else if (channelV6 != null) {
                     channelV6.join(MULTI_ADDR_IPV6, networkInterface);
                     hasIPv6 = true;
                 }
@@ -440,8 +448,6 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
                         .completeExceptionally(new IllegalStateException("Could not join upnp multicast network!"));
                 return;
             }
-
-
 
             if (hasIPv4) {
                 channelV4.configureBlocking(false);
@@ -497,10 +503,14 @@ public class UpnpServer extends HttpServlet implements Consumer<HueEmulationConf
         }
     }
 
-    private void bind(DatagramChannel channel) throws IOException {
-        channel.setOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true)
-                .bind(new InetSocketAddress(UPNP_PORT));
+    @Nullable
+    private DatagramChannel createBoundDataGramChannelOrNull(StandardProtocolFamily family) throws IOException {
+        try {
+            return DatagramChannel.open(family).setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                    .setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true).bind(new InetSocketAddress(UPNP_PORT));
+        } catch (UnsupportedOperationException uoe) {
+            return null;
+        }
     }
 
     /**

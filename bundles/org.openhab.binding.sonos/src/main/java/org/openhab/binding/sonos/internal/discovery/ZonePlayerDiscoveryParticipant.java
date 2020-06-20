@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 @Component(immediate = true)
 public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
@@ -46,7 +49,7 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
             String roomName = getSonosRoomName(device);
@@ -74,14 +77,22 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if (device.getDetails().getManufacturerDetails().getManufacturer() != null) {
             if (device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase().contains("SONOS")) {
                 String modelName = getModelName(device);
-                if (modelName.equals("ZP80")) {
-                    modelName = "CONNECT";
-                } else if (modelName.equals("ZP100")) {
-                    modelName = "CONNECTAMP";
+                switch (modelName) {
+                    case "ZP80":
+                        modelName = "CONNECT";
+                        break;
+                    case "ZP100":
+                        modelName = "CONNECTAMP";
+                        break;
+                    case "One SL":
+                        modelName = "OneSL";
+                        break;
+                    default:
+                        break;
                 }
                 ThingTypeUID thingUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, modelName);
                 if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingUID)) {
@@ -106,8 +117,7 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
         return SonosXMLParser.extractModelName(device.getDetails().getModelDetails().getModelName());
     }
 
-    private String getSonosRoomName(RemoteDevice device) {
+    private @Nullable String getSonosRoomName(RemoteDevice device) {
         return SonosXMLParser.getRoomName(device.getIdentity().getDescriptorURL().toString());
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
+import org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants;
 import org.openhab.binding.mqtt.homie.internal.homie300.DeviceCallback;
 import org.openhab.binding.mqtt.homie.internal.homie300.Node;
 import org.openhab.binding.mqtt.homie.internal.homie300.NodeAttributes;
@@ -39,7 +39,7 @@ import org.openhab.binding.mqtt.homie.internal.homie300.NodeAttributes;
 public class HomieChildMapTests {
     private @Mock DeviceCallback callback;
 
-    private final String deviceID = ThingChannelConstants.testHomieThing.getId();
+    private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;
 
     // A completed future is returned for a subscribe call to the attributes
@@ -48,7 +48,7 @@ public class HomieChildMapTests {
     ChildMap<Node> subject = new ChildMap<>();
 
     private Node createNode(String id) {
-        Node node = new Node(deviceTopic, id, ThingChannelConstants.testHomieThing, callback,
+        Node node = new Node(deviceTopic, id, ThingChannelConstants.TEST_HOMIE_THING, callback,
                 spy(new NodeAttributes()));
         doReturn(future).when(node.attributes).subscribeAndReceive(any(), any(), anyString(), any(), anyInt());
         doReturn(future).when(node.attributes).unsubscribe();
@@ -88,5 +88,4 @@ public class HomieChildMapTests {
         subject.apply(new String[] { "abc" }, addedAction, this::createNode, this::removedNode);
         verify(callback).nodeRemoved(eq(soonToBeRemoved));
     }
-
 }

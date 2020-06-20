@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,5 +28,4 @@ public class ControllerConfiguration {
     public String host;
     public int port = 10102;
     public int refresh = 5; // seconds
-
 }

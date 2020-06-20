@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,10 @@ import static org.openhab.binding.linuxinput.internal.evdev4j.Utils.constantFrom
 import java.text.MessageFormat;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import jnr.constants.platform.linux.Errno;
 import jnr.posix.POSIX;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Exception wrapping an operating system errno.

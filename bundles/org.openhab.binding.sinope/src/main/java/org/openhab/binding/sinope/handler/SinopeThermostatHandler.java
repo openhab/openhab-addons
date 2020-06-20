@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,11 +108,9 @@ public class SinopeThermostatHandler extends BaseThingHandler {
         } finally {
             getSinopeGatewayHandler().schedulePoll();
         }
-
     }
 
     private void setSetpointMode(int mode) throws UnknownHostException, IOException {
-
         getSinopeGatewayHandler().stopPoll();
         try {
             if (getSinopeGatewayHandler().connectToBridge()) {
@@ -267,6 +265,7 @@ public class SinopeThermostatHandler extends BaseThingHandler {
         if (handler != null) {
             handler.registerThermostatHandler(this);
         }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private @Nullable SinopeGatewayHandler getSinopeGatewayHandler() {

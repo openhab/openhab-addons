@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,6 @@ public class SwitchHandler extends LutronHandler {
         } else if (feedback instanceof ZoneMapFeedback) {
             handleZoneMapFeedback((ZoneMapFeedback) feedback);
         }
-
     }
 
     private void handleZoneMapFeedback(ZoneMapFeedback feedback) {
@@ -80,5 +79,4 @@ public class SwitchHandler extends LutronHandler {
             updateState(LutronBindingConstants.CHANNEL_SWITCH, OnOffType.valueOf(feedback.getState().toString()));
         }
     }
-
 }

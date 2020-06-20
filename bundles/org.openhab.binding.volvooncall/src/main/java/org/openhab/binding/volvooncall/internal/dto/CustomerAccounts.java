@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class CustomerAccounts {
+public class CustomerAccounts extends VocAnswer {
     @SerializedName("accountVehicleRelations")
     public @NonNullByDefault({}) String[] accountVehicleRelationsURL;
     public @Nullable String username;

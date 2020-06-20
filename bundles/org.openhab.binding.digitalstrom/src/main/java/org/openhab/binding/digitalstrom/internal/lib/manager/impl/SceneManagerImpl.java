@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,9 +54,8 @@ public class SceneManagerImpl implements SceneManager {
 
     private final Logger logger = LoggerFactory.getLogger(SceneManagerImpl.class);
 
-    private final List<String> echoBox = Collections.synchronizedList(new LinkedList<String>());
-    private final Map<String, InternalScene> internalSceneMap = Collections
-            .synchronizedMap(new HashMap<String, InternalScene>());
+    private final List<String> echoBox = Collections.synchronizedList(new LinkedList<>());
+    private final Map<String, InternalScene> internalSceneMap = Collections.synchronizedMap(new HashMap<>());
 
     private EventListener eventListener;
     private final StructureManager structureManager;
@@ -507,7 +506,7 @@ public class SceneManagerImpl implements SceneManager {
 
     @Override
     public List<InternalScene> getScenes() {
-        return this.internalSceneMap != null ? new LinkedList<InternalScene>(this.internalSceneMap.values()) : null;
+        return this.internalSceneMap != null ? new LinkedList<>(this.internalSceneMap.values()) : null;
     }
 
     @Override

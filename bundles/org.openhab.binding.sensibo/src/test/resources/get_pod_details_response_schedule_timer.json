@@ -1,0 +1,428 @@
+{
+	"status": "success",
+	"result": {
+		"configGroup": "stable",
+		"macAddress": "00:11:22:33:44:55",
+		"isGeofenceOnExitEnabled": false,
+		"sensorsCalibration": {
+			"temperature": 0.0,
+			"humidity": 0.0
+		},
+		"cleanFiltersNotificationEnabled": true,
+		"connectionStatus": {
+			"isAlive": true,
+			"lastSeen": {
+				"secondsAgo": 12,
+				"time": "2019-10-05T15:26:45.199202Z"
+			}
+		},
+		"acState": {
+			"on": true,
+			"fanLevel": "auto",
+			"temperatureUnit": "C",
+			"targetTemperature": 10,
+			"mode": "heat",
+			"swing": "rangeFull"
+		},
+		"serial": "000000000",
+		"id": "PODID",
+		"firmwareVersion": "SKY30043",
+		"firmwareType": "esp8266ex",
+		"measurements": {
+			"temperature": 19.1,
+			"humidity": 34.8,
+			"time": {
+				"secondsAgo": 12,
+				"time": "2019-10-05T15:26:45.199202Z"
+			},
+			"rssi": "-68",
+			"piezo": [
+				null,
+				null
+			]
+		},
+		"remoteFlavor": "Enthusiastic Triceratops",
+		"shouldShowFilterCleaningNotification": false,
+		"location": {
+			"latLon": [
+				59.924477,
+				10.5884129
+			],
+			"name": "Home",
+			"country": "Fantasyland",
+			"createTime": {
+				"secondsAgo": 31104046,
+				"time": "2018-10-10T15:26:12Z"
+			},
+			"address": [
+				"Street",
+				"Zip post",
+				"ENgland"
+			],
+			"id": "XXXXXXXX"
+		},
+		"currentlyAvailableFirmwareVersion": "SKY30043",
+		"tags": [],
+		"productModel": "skyv2",
+		"schedules": [
+			{
+				"nextTime": "2019-10-06T11:00:00",
+				"podUid": "XXXXXX",
+				"recurringDays": [
+					"Monday",
+					"Tuesday",
+					"Wednesday",
+					"Thursday",
+					"Friday",
+					"Saturday",
+					"Sunday"
+				],
+				"createTimeSecondsAgo": 51,
+				"isEnabled": true,
+				"createTime": "2019-10-05T15:26:07",
+				"acState": {
+					"on": true,
+					"fanLevel": "auto",
+					"temperatureUnit": "C",
+					"targetTemperature": 10,
+					"mode": "heat"
+				},
+				"targetTimeLocal": "13:00",
+				"timezone": "Europe/Oslo",
+				"nextTimeSecondsFromNow": 70381,
+				"causedBy": {
+					"username": "username",
+					"firstName": "FIrst",
+					"lastName": "Last",
+					"email": "mail@gmail.com"
+				},
+				"id": "scheduleid"
+			}
+		],
+		"isClimateReactGeofenceOnExitEnabled": false,
+		"remoteCapabilities": {
+			"modes": {
+				"dry": {
+					"swing": [
+						"stopped",
+						"fixedTop",
+						"fixedMiddleTop",
+						"fixedMiddle",
+						"fixedMiddleBottom",
+						"fixedBottom",
+						"rangeFull"
+					],
+					"temperatures": {
+						"C": {
+							"isNative": true,
+							"values": [
+								16,
+								17,
+								18,
+								19,
+								20,
+								21,
+								22,
+								23,
+								24,
+								25,
+								26,
+								27,
+								28,
+								29,
+								30,
+								31
+							]
+						},
+						"F": {
+							"isNative": false,
+							"values": [
+								61,
+								63,
+								64,
+								66,
+								68,
+								70,
+								72,
+								73,
+								75,
+								77,
+								79,
+								81,
+								82,
+								84,
+								86,
+								88
+							]
+						}
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto"
+					]
+				},
+				"auto": {
+					"swing": [
+						"stopped",
+						"fixedTop",
+						"fixedMiddleTop",
+						"fixedMiddle",
+						"fixedMiddleBottom",
+						"fixedBottom",
+						"rangeFull"
+					],
+					"temperatures": {
+						"C": {
+							"isNative": true,
+							"values": [
+								16,
+								17,
+								18,
+								19,
+								20,
+								21,
+								22,
+								23,
+								24,
+								25,
+								26,
+								27,
+								28,
+								29,
+								30,
+								31
+							]
+						},
+						"F": {
+							"isNative": false,
+							"values": [
+								61,
+								63,
+								64,
+								66,
+								68,
+								70,
+								72,
+								73,
+								75,
+								77,
+								79,
+								81,
+								82,
+								84,
+								86,
+								88
+							]
+						}
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto"
+					]
+				},
+				"heat": {
+					"swing": [
+						"stopped",
+						"fixedTop",
+						"fixedMiddleTop",
+						"fixedMiddle",
+						"fixedMiddleBottom",
+						"fixedBottom",
+						"rangeFull"
+					],
+					"temperatures": {
+						"C": {
+							"isNative": true,
+							"values": [
+								10,
+								16,
+								17,
+								18,
+								19,
+								20,
+								21,
+								22,
+								23,
+								24,
+								25,
+								26,
+								27,
+								28,
+								29,
+								30,
+								31
+							]
+						},
+						"F": {
+							"isNative": false,
+							"values": [
+								50,
+								61,
+								63,
+								64,
+								66,
+								68,
+								70,
+								72,
+								73,
+								75,
+								77,
+								79,
+								81,
+								82,
+								84,
+								86,
+								88
+							]
+						}
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto"
+					]
+				},
+				"fan": {
+					"swing": [
+						"stopped",
+						"fixedTop",
+						"fixedMiddleTop",
+						"fixedMiddle",
+						"fixedMiddleBottom",
+						"fixedBottom",
+						"rangeFull"
+					],
+					"temperatures": {
+						
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto"
+					]
+				},
+				"cool": {
+					"swing": [
+						"stopped",
+						"fixedTop",
+						"fixedMiddleTop",
+						"fixedMiddle",
+						"fixedMiddleBottom",
+						"fixedBottom",
+						"rangeFull"
+					],
+					"temperatures": {
+						"C": {
+							"isNative": true,
+							"values": [
+								16,
+								17,
+								18,
+								19,
+								20,
+								21,
+								22,
+								23,
+								24,
+								25,
+								26,
+								27,
+								28,
+								29,
+								30,
+								31
+							]
+						},
+						"F": {
+							"isNative": false,
+							"values": [
+								61,
+								63,
+								64,
+								66,
+								68,
+								70,
+								72,
+								73,
+								75,
+								77,
+								79,
+								81,
+								82,
+								84,
+								86,
+								88
+							]
+						}
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto"
+					]
+				}
+			}
+		},
+		"remote": {
+			"window": false,
+			"toggle": false
+		},
+		"room": {
+			"name": "Stue",
+			"icon": "Livingroom"
+		},
+		"temperatureUnit": "C",
+		"timer": {
+			"acState": {
+				"on": false,
+				"fanLevel": "auto",
+				"temperatureUnit": "C",
+				"targetTemperature": 10,
+				"mode": "heat",
+				"swing": "rangeFull"
+			},
+			"targetTimeSecondsFromNow": 3142,
+			"createTimeSecondsAgo": 38,
+			"isEnabled": true,
+			"causedBy": {
+				"username": "arneseime",
+				"firstName": "Arne",
+				"lastName": "Seime",
+				"email": "arne.seime@gmail.com"
+			},
+			"id": "7AZN7A9amL",
+			"targetTime": "2019-10-05T16:42:11",
+			"createTime": "2019-10-05T15:49:11"
+		},
+		"motionSensors": [],
+		"remoteAlternatives": [
+			"_mitsubishi1f_horizontal_rangeful",
+			"_mitsubishi1_for_ben_ho",
+			"_mitsubishi1_plasma_on",
+			"_mitsubishi1f_fixed_left",
+			"_mitsubishi1_plasma_on_clean_on",
+			"mitsubishi1f",
+			"_mitsubishi1f_fixed_right",
+			"_mitsubishi1_left_swing_fixed_bottom",
+			"_mitsubishi1_fixed_center",
+			"_mitsubishi1f"
+		]
+	}
+}

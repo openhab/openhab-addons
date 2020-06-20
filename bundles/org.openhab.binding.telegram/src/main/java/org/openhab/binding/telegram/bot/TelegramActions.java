@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,15 +15,27 @@ package org.openhab.binding.telegram.bot;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Authentication;
+import org.eclipse.jetty.client.api.AuthenticationStore;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.B64Code;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -60,6 +72,36 @@ public class TelegramActions implements ThingActions {
             return false;
         }
         return true;
+    }
+
+    @NonNullByDefault
+    private static class BasicResult implements Authentication.Result {
+
+        private final HttpHeader header;
+        private final URI uri;
+        private final String value;
+
+        public BasicResult(HttpHeader header, URI uri, String value) {
+            this.header = header;
+            this.uri = uri;
+            this.value = value;
+        }
+
+        @Override
+        public URI getURI() {
+            return this.uri;
+        }
+
+        @Override
+        public void apply(@Nullable Request request) {
+            if (request != null) {
+                request.header(this.header, this.value);
+            }
+        }
+
+        public String toString() {
+            return String.format("Basic authentication result for %s", this.uri);
+        }
     }
 
     @RuleAction(label = "Telegram answer", description = "Sends a Telegram answer via Telegram API")
@@ -100,7 +142,6 @@ public class TelegramActions implements ThingActions {
                 return false;
             }
             return message != null ? sendTelegram(chatId, message) : true;
-
         }
         return false;
     }
@@ -110,7 +151,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "message") @Nullable String message) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegramAnswer(chatId, replyId, message)) {
                     return false;
                 }
@@ -129,7 +170,7 @@ public class TelegramActions implements ThingActions {
     public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegram(chatId, message)) {
                     return false;
                 }
@@ -152,7 +193,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "buttons") @Nullable String... buttons) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegramQuery(chatId, message, replyId, buttons)) {
                     return false;
                 }
@@ -213,18 +254,18 @@ public class TelegramActions implements ThingActions {
 
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
-            @ActionInput(name = "message") @Nullable String format,
+            @ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "args") @Nullable Object... args) {
-        return sendTelegram(chatId, String.format(format, args));
+        return sendTelegram(chatId, String.format(message, args));
     }
 
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
-    public boolean sendTelegram(@ActionInput(name = "message") @Nullable String format,
+    public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "args") @Nullable Object... args) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
-                if (!sendTelegram(chatId, format, args)) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
+                if (!sendTelegram(chatId, message, args)) {
                     return false;
                 }
             }
@@ -236,6 +277,15 @@ public class TelegramActions implements ThingActions {
     public boolean sendTelegramPhoto(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "photoURL") @Nullable String photoURL,
             @ActionInput(name = "caption") @Nullable String caption) {
+        return sendTelegramPhoto(chatId, photoURL, caption, null, null);
+    }
+
+    @RuleAction(label = "Telegram photo", description = "Sends a Picture via Telegram API")
+    public boolean sendTelegramPhoto(@ActionInput(name = "chatId") @Nullable Long chatId,
+            @ActionInput(name = "photoURL") @Nullable String photoURL,
+            @ActionInput(name = "caption") @Nullable String caption,
+            @ActionInput(name = "username") @Nullable String username,
+            @ActionInput(name = "password") @Nullable String password) {
         if (photoURL == null) {
             logger.warn("Photo URL not defined; unable to retrieve photo for sending.");
             return false;
@@ -252,7 +302,30 @@ public class TelegramActions implements ThingActions {
             if (photoURL.toLowerCase().startsWith("http")) {
                 // load image from url
                 logger.debug("Photo URL provided.");
-                sendPhoto = new SendPhoto(chatId, photoURL);
+                HttpClient client = localHandler.getClient();
+                if (client == null) {
+                    return false;
+                }
+                Request request = client.newRequest(photoURL).method(HttpMethod.GET).timeout(30, TimeUnit.SECONDS);
+                if (username != null && password != null) {
+                    AuthenticationStore auth = client.getAuthenticationStore();
+                    URI uri = URI.create(photoURL);
+                    auth.addAuthenticationResult(new BasicResult(HttpHeader.AUTHORIZATION, uri,
+                            "Basic " + B64Code.encode(username + ":" + password, StandardCharsets.ISO_8859_1)));
+                }
+                try {
+                    ContentResponse contentResponse = request.send();
+                    if (contentResponse.getStatus() == 200) {
+                        byte[] fileContent = contentResponse.getContent();
+                        sendPhoto = new SendPhoto(chatId, fileContent);
+                    } else {
+                        logger.warn("Download from {} failed with status: {}", photoURL, contentResponse.getStatus());
+                        return false;
+                    }
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    logger.warn("Download from {} failed with exception: {}", photoURL, e.getMessage());
+                    return false;
+                }
             } else if (photoURL.toLowerCase().startsWith("file")) {
                 // Load image from local file system
                 logger.debug("Read file from local file system: {}", photoURL);
@@ -266,17 +339,25 @@ public class TelegramActions implements ThingActions {
             } else {
                 // Load image from provided base64 image
                 logger.debug("Photo base64 provided; converting to binary.");
-                try {
-                    InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(photoURL.getBytes("UTF-8")));
-                    try {
-                        byte[] photoBytes = IOUtils.toByteArray(is);
-                        sendPhoto = new SendPhoto(chatId, photoBytes);
-                    } catch (IOException e) {
-                        logger.warn("Malformed base64 string: {}", e.getMessage());
+                final String photoB64Data;
+                if (photoURL.startsWith("data:")) { // support data URI scheme
+                    String[] photoURLParts = photoURL.split(",");
+                    if (photoURLParts.length > 1) {
+                        photoB64Data = photoURLParts[1];
+                    } else {
+                        logger.warn("The provided base64 string is not a valid data URI scheme");
                         return false;
                     }
-                } catch (UnsupportedEncodingException e) {
-                    logger.warn("Cannot parse data fetched from photo URL as an image. Error: {}", e.getMessage());
+                } else {
+                    photoB64Data = photoURL;
+                }
+                InputStream is = Base64.getDecoder()
+                        .wrap(new ByteArrayInputStream(photoB64Data.getBytes(StandardCharsets.UTF_8)));
+                try {
+                    byte[] photoBytes = IOUtils.toByteArray(is);
+                    sendPhoto = new SendPhoto(chatId, photoBytes);
+                } catch (IOException e) {
+                    logger.warn("Malformed base64 string: {}", e.getMessage());
                     return false;
                 }
             }
@@ -291,11 +372,13 @@ public class TelegramActions implements ThingActions {
 
     @RuleAction(label = "Telegram photo", description = "Sends a Picture via Telegram API")
     public boolean sendTelegramPhoto(@ActionInput(name = "photoURL") @Nullable String photoURL,
-            @ActionInput(name = "caption") @Nullable String caption) {
+            @ActionInput(name = "caption") @Nullable String caption,
+            @ActionInput(name = "username") @Nullable String username,
+            @ActionInput(name = "password") @Nullable String password) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
-                if (!sendTelegramPhoto(chatId, photoURL, caption)) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
+                if (!sendTelegramPhoto(chatId, photoURL, caption, username, password)) {
                     return false;
                 }
             }
@@ -303,8 +386,14 @@ public class TelegramActions implements ThingActions {
         return true;
     }
 
-    // legacy delegate methods
+    @RuleAction(label = "Telegram photo", description = "Sends a Picture via Telegram API")
+    public boolean sendTelegramPhoto(@ActionInput(name = "photoURL") @Nullable String photoURL,
+            @ActionInput(name = "caption") @Nullable String caption) {
+        return sendTelegramPhoto(photoURL, caption, null, null);
+    }
 
+    // legacy delegate methods
+    /* APIs without chatId parameter */
     public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String format,
             @Nullable Object... args) {
         if (actions instanceof TelegramActions) {
@@ -332,6 +421,15 @@ public class TelegramActions implements ThingActions {
         }
     }
 
+    public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable String photoURL,
+            @Nullable String caption, @Nullable String username, @Nullable String password) {
+        if (actions instanceof TelegramActions) {
+            return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption, username, password);
+        } else {
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
+        }
+    }
+
     public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable String replyId,
             @Nullable String message) {
         if (actions instanceof TelegramActions) {
@@ -340,6 +438,8 @@ public class TelegramActions implements ThingActions {
             throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
     }
+
+    /* APIs with chatId parameter */
 
     public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable Long chatId, @Nullable String format,
             @Nullable Object... args) {
@@ -363,6 +463,15 @@ public class TelegramActions implements ThingActions {
             @Nullable String photoURL, @Nullable String caption) {
         if (actions instanceof TelegramActions) {
             return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption);
+        } else {
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
+        }
+    }
+
+    public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable Long chatId,
+            @Nullable String photoURL, @Nullable String caption, @Nullable String username, @Nullable String password) {
+        if (actions instanceof TelegramActions) {
+            return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption, username, password);
         } else {
             throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }

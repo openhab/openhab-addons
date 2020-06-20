@@ -6,7 +6,7 @@
 
 	<thing-type id="lightSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Light Sensor</label>
@@ -27,6 +27,10 @@
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<required>true</required>
+			</parameter>
+			<parameter name="receivingSIGEEP" type="boolean">
+				<label>Receive Battery Status Signal Messages</label>
+				<default>false</default>
 			</parameter>
 		</config-description>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,10 +87,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private static final String CHANNEL_CONFIG_QUOTE_LIST = "quoteList";
 
     private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
-            .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
+            .synchronizedList(new ArrayList<>());
 
-    private Map<String, SqueezeBoxPlayer> players = Collections
-            .synchronizedMap(new HashMap<String, SqueezeBoxPlayer>());
+    private Map<String, SqueezeBoxPlayer> players = Collections.synchronizedMap(new HashMap<>());
 
     // client socket and listener thread
     private Socket clientSocket;
@@ -145,11 +144,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void mute(String mac) {
-        setVolume(mac, 0);
+        sendCommand(mac + " mixer muting 1");
     }
 
-    public void unMute(String mac, int unmuteVolume) {
-        setVolume(mac, unmuteVolume);
+    public void unMute(String mac) {
+        sendCommand(mac + " mixer muting 0");
     }
 
     public void powerOn(String mac) {
@@ -381,7 +380,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     /**
@@ -527,13 +525,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 player.setMacAddress(macAddress);
                 // populate the player state
                 for (String parameter : parameterList) {
-                    if (parameter.contains("ip")) {
+                    if (parameter.startsWith("ip:")) {
                         player.setIpAddr(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.contains("uuid")) {
+                    } else if (parameter.startsWith("uuid:")) {
                         player.setUuid(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.contains("name")) {
+                    } else if (parameter.startsWith("name:")) {
                         player.setName(parameter.substring(parameter.indexOf(":") + 1));
-                    } else if (parameter.contains("model")) {
+                    } else if (parameter.startsWith("model:")) {
                         player.setModel(parameter.substring(parameter.indexOf(":") + 1));
                     }
                 }
@@ -588,7 +586,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     break;
                 default:
                     logger.trace("Unhandled player update message type '{}'.", messageType);
-
             }
         }
 
@@ -853,6 +850,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 mode = messageParts[3].equals("0") ? "play" : "pause";
             } else if (action.equals("stop")) {
                 mode = "stop";
+            } else if ("play".equals(action) && "playlist".equals(messageParts[1])) {
+                if (messageParts.length >= 4) {
+                    handleSourceChangeMessage(mac, messageParts[3]);
+                }
+                return;
             } else {
                 // Added so that actions (such as delete, index, jump, open) are not treated as "play"
                 logger.trace("Unhandled playlist message type '{}'", Arrays.toString(messageParts));
@@ -865,7 +867,18 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.modeChangeEvent(mac, value);
                 }
+            });
+        }
 
+        private void handleSourceChangeMessage(String mac, String rawSource) {
+            String source = URLDecoder.decode(rawSource);
+
+            updatePlayer(new PlayerUpdateEvent() {
+
+                @Override
+                public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                    listener.sourceChangeEvent(mac, source);
+                }
             });
         }
 
@@ -895,7 +908,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.absoluteVolumeChangeEvent(mac, volume);
                         }
-
                     });
                 }
             }

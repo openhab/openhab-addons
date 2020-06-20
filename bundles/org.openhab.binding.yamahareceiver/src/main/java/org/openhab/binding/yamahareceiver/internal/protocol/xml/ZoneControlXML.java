@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,6 @@ public class ZoneControlXML implements ZoneControl {
     public ZoneControlXML(AbstractConnection con, Zone zone, YamahaZoneConfig zoneSettings,
             ZoneControlStateListener observer, DeviceInformationState deviceInformationState,
             Supplier<InputConverter> inputConverterSupplier) {
-
         this.comReference = new WeakReference<>(con);
         this.zone = zone;
         this.zoneConfig = zoneSettings;
@@ -147,7 +146,7 @@ public class ZoneControlXML implements ZoneControl {
             }
 
         } catch (ReceivedMessageParseException | IOException e) {
-            logger.warn("Could not perform feature detection for RX-V3900", e);
+            logger.debug("Could not perform feature detection for RX-V3900");
         }
     }
 

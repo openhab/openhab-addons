@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ public class NetatmoBridgeConfiguration {
     public Boolean readThermostat;
     public Boolean readHealthyHomeCoach;
     public Boolean readWelcome;
+    public Boolean readPresence;
     public String webHookUrl;
     public Integer reconnectInterval;
 }

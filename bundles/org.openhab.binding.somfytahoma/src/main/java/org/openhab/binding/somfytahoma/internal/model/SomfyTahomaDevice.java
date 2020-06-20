@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.somfytahoma.internal.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,11 +27,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SomfyTahomaDevice {
 
     private String uiClass = "";
+    private String widget = "";
     private String deviceURL = "";
     private String label = "";
     private String oid = "";
     private SomfyTahomaDeviceDefinition definition = new SomfyTahomaDeviceDefinition();
-    private ArrayList<SomfyTahomaState> states = new ArrayList<>();
+    private List<SomfyTahomaState> states = new ArrayList<>();
 
     public String getLabel() {
         return label;
@@ -48,11 +50,15 @@ public class SomfyTahomaDevice {
         return uiClass;
     }
 
+    public String getWidget() {
+        return widget;
+    }
+
     public SomfyTahomaDeviceDefinition getDefinition() {
         return definition;
     }
 
-    public ArrayList<SomfyTahomaState> getStates() {
+    public List<SomfyTahomaState> getStates() {
         return states;
     }
 }

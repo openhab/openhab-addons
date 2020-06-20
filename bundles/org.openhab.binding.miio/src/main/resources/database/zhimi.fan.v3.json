@@ -12,7 +12,6 @@
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
-				"channelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_power",
@@ -26,7 +25,6 @@
 				"channel": "angleEnable",
 				"type": "Switch",
 				"refresh": true,
-				"channelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_angle_enable",
@@ -88,7 +86,7 @@
 			},
 			{
 				"property": "led_b",
-				"friendlyName": "Led",
+				"friendlyName": "LED",
 				"channel": "led_b",
 				"type": "Number",
 				"refresh": true,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,17 +41,19 @@ import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.enocean.internal.EnOceanConfigStatusMessage;
 import org.openhab.binding.enocean.internal.config.EnOceanBaseConfig;
+import org.openhab.binding.enocean.internal.config.EnOceanBridgeConfig;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.BaseResponse;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.binding.enocean.internal.messages.RDBaseIdResponse;
 import org.openhab.binding.enocean.internal.messages.RDRepeaterResponse;
 import org.openhab.binding.enocean.internal.messages.RDVersionResponse;
 import org.openhab.binding.enocean.internal.messages.Response;
 import org.openhab.binding.enocean.internal.messages.Response.ResponseType;
-import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
-import org.openhab.binding.enocean.internal.transceiver.EnOceanSerialTransceiver;
+import org.openhab.binding.enocean.internal.transceiver.EnOceanESP2Transceiver;
+import org.openhab.binding.enocean.internal.transceiver.EnOceanESP3Transceiver;
 import org.openhab.binding.enocean.internal.transceiver.EnOceanTransceiver;
+import org.openhab.binding.enocean.internal.transceiver.PacketListener;
 import org.openhab.binding.enocean.internal.transceiver.ResponseListener;
 import org.openhab.binding.enocean.internal.transceiver.ResponseListenerIgnoringTimeouts;
 import org.openhab.binding.enocean.internal.transceiver.TransceiverErrorListener;
@@ -68,7 +70,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     private Logger logger = LoggerFactory.getLogger(EnOceanBridgeHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE));
 
     private EnOceanTransceiver transceiver; // holds connection to serial/tcp port and sends/receives messages
     private ScheduledFuture<?> connectorTask; // is used for reconnection if something goes wrong
@@ -86,7 +88,6 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (transceiver == null) {
             updateStatus(ThingStatus.OFFLINE);
             return;
@@ -97,7 +98,6 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 if (command instanceof RefreshType) {
                     sendMessage(ESP3PacketFactory.CO_RD_REPEATER,
                             new ResponseListenerIgnoringTimeouts<RDRepeaterResponse>() {
-
                                 @Override
                                 public void responseReceived(RDRepeaterResponse response) {
                                     if (response.isValid() && response.isOK()) {
@@ -110,14 +110,12 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 } else if (command instanceof StringType) {
                     sendMessage(ESP3PacketFactory.CO_WR_REPEATER((StringType) command),
                             new ResponseListenerIgnoringTimeouts<BaseResponse>() {
-
                                 @Override
                                 public void responseReceived(BaseResponse response) {
                                     if (response.isOK()) {
                                         updateState(channelUID, (StringType) command);
                                     }
                                 }
-
                             });
                 }
                 break;
@@ -125,15 +123,12 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             case CHANNEL_SETBASEID:
                 if (command instanceof StringType) {
                     try {
-
                         byte[] id = HexUtils.hexToBytes(((StringType) command).toFullString());
 
                         sendMessage(ESP3PacketFactory.CO_WR_IDBASE(id),
                                 new ResponseListenerIgnoringTimeouts<BaseResponse>() {
-
                                     @Override
                                     public void responseReceived(BaseResponse response) {
-
                                         if (response.isOK()) {
                                             updateState(channelUID, new StringType("New Id successfully set"));
                                         } else if (response.getResponseType() == ResponseType.RET_FLASH_HW_ERROR) {
@@ -145,9 +140,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                                             updateState(channelUID, new StringType("No more change possible"));
                                         }
                                     }
-
                                 });
-
                     } catch (IllegalArgumentException e) {
                         updateState(channelUID, new StringType("BaseId could not be parsed"));
                     }
@@ -161,7 +154,6 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     @Override
     public void initialize() {
-
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "trying to connect to gateway...");
         if (this.serialPortManager == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -176,29 +168,34 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
             if (connectorTask == null || connectorTask.isDone()) {
                 connectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
-
                     @Override
                     public void run() {
                         if (thing.getStatus() != ThingStatus.ONLINE) {
                             initTransceiver();
                         }
                     }
-
                 }, 0, 60, TimeUnit.SECONDS);
             }
         }
     }
 
     private synchronized void initTransceiver() {
-
         try {
-
-            Configuration c = getThing().getConfiguration();
+            EnOceanBridgeConfig c = getThing().getConfiguration().as(EnOceanBridgeConfig.class);
             if (transceiver != null) {
                 transceiver.ShutDown();
             }
 
-            transceiver = new EnOceanSerialTransceiver((String) c.get(PATH), this, scheduler, serialPortManager);
+            switch (c.getESPVersion()) {
+                case ESP2:
+                    transceiver = new EnOceanESP2Transceiver(c.path, this, scheduler, serialPortManager);
+                    break;
+                case ESP3:
+                    transceiver = new EnOceanESP3Transceiver(c.path, this, scheduler, serialPortManager);
+                    break;
+                default:
+                    break;
+            }
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
             transceiver.Initialize();
@@ -206,21 +203,29 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "starting rx thread...");
             transceiver.StartReceiving(scheduler);
 
-            if ((boolean) c.get(RS485)) {
-                baseId = new byte[4];
+            if (c.rs485) {
+                if (c.rs485BaseId != null && !c.rs485BaseId.isEmpty()) {
+                    baseId = HexUtils.hexToBytes(c.rs485BaseId);
+                    if (baseId.length != 4) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "RS485 BaseId has the wrong format. It is expected to be an 8 digit hex code, for example 01000000");
+                    }
+                } else {
+                    baseId = new byte[4];
+                }
+
+                updateProperty(PROPERTY_BASE_ID, HexUtils.bytesToHex(baseId));
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "trying to get bridge base id...");
-                logger.debug("request base id");
-                transceiver.sendESP3Packet(ESP3PacketFactory.CO_RD_IDBASE,
-                        new ResponseListenerIgnoringTimeouts<RDBaseIdResponse>() {
 
+                logger.debug("request base id");
+                transceiver.sendBasePacket(ESP3PacketFactory.CO_RD_IDBASE,
+                        new ResponseListenerIgnoringTimeouts<RDBaseIdResponse>() {
                             @Override
                             public void responseReceived(RDBaseIdResponse response) {
-
                                 logger.debug("received response for base id");
-
                                 if (response.isValid() && response.isOK()) {
                                     baseId = response.getBaseId().clone();
                                     updateProperty(PROPERTY_BASE_ID, HexUtils.bytesToHex(response.getBaseId()));
@@ -237,12 +242,11 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                         });
             }
 
-            transceiver.sendESP3Packet(ESP3PacketFactory.CO_RD_VERSION,
+            logger.debug("request version info");
+            transceiver.sendBasePacket(ESP3PacketFactory.CO_RD_VERSION,
                     new ResponseListenerIgnoringTimeouts<RDVersionResponse>() {
-
                         @Override
                         public void responseReceived(RDVersionResponse response) {
-
                             if (response.isValid() && response.isOK()) {
                                 updateProperty(PROPERTY_APP_VERSION, response.getAPPVersion());
                                 updateProperty(PROPERTY_API_VERSION, response.getAPIVersion());
@@ -251,7 +255,6 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                             }
                         }
                     });
-
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port could not be found");
         } catch (PortInUseException e) {
@@ -335,35 +338,35 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         sendingThings[id] = null;
     }
 
-    public <T extends Response> void sendMessage(ESP3Packet message, ResponseListener<T> responseListener) {
+    public <T extends Response> void sendMessage(BasePacket message, ResponseListener<T> responseListener) {
         try {
-            transceiver.sendESP3Packet(message, responseListener);
+            transceiver.sendBasePacket(message, responseListener);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    public void addPacketListener(ESP3PacketListener listener) {
+    public void addPacketListener(PacketListener listener) {
         addPacketListener(listener, listener.getSenderIdToListenTo());
     }
 
-    public void addPacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
+    public void addPacketListener(PacketListener listener, long senderIdToListenTo) {
         if (transceiver != null) {
             transceiver.addPacketListener(listener, senderIdToListenTo);
         }
     }
 
-    public void removePacketListener(ESP3PacketListener listener) {
+    public void removePacketListener(PacketListener listener) {
         removePacketListener(listener, listener.getSenderIdToListenTo());
     }
 
-    public void removePacketListener(ESP3PacketListener listener, long senderIdToListenTo) {
+    public void removePacketListener(PacketListener listener, long senderIdToListenTo) {
         if (transceiver != null) {
             transceiver.removePacketListener(listener, senderIdToListenTo);
         }
     }
 
-    public void startDiscovery(ESP3PacketListener teachInListener) {
+    public void startDiscovery(PacketListener teachInListener) {
         transceiver.startDiscovery(teachInListener);
     }
 
@@ -376,6 +379,5 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         transceiver.ShutDown();
         transceiver = null;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
-
     }
 }

@@ -12,13 +12,85 @@
 			<parameter name="port" type="text" required="true">
 				<label>Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Serial Port</description>
 			</parameter>
-			<parameter name="discovery" type="boolean">
-				<label>Device Discovery</label>
-				<description>Whether this adapter actively participates in Bluetooth device discovery</description>
+			<parameter name="backgroundDiscovery" type="boolean">
+				<label>Background Discovery</label>
+				<description>Whether this adapter performs background discovery of Bluetooth devices</description>
 				<advanced>true</advanced>
-				<default>true</default>
+				<default>false</default>
+			</parameter>
+			<parameter name="inactiveDeviceCleanupInterval" type="integer" min="1" unit="s">
+				<label>Device Cleanup Interval</label>
+				<description>How often device cleanup is performed</description>
+				<advanced>true</advanced>
+				<default>60</default>
+			</parameter>
+			<parameter name="inactiveDeviceCleanupThreshold" type="integer" min="1" unit="s">
+				<label>Device Cleanup Threshold</label>
+				<description>Timespan a device can remain radio silent before it is eligible for cleanup</description>
+				<advanced>true</advanced>
+				<default>300</default>
+			</parameter>
+			<parameter name="passiveScanIdleTime" type="integer" min="100" max="60000">
+				<label>Passive Scan Idle Time</label>
+				<description>Passive scan idle time defines the time how long to wait in milliseconds before start passive scan.</description>
+				<advanced>true</advanced>
+				<default>5000</default>
+			</parameter>
+			<parameter name="passiveScanInterval" type="integer" min="4" max="16384">
+				<label>Passive Scan Interval</label>
+				<description>Passive scan interval defines the interval when scanning is re-started in units of 625us. Default is
+					4000ms.</description>
+				<advanced>true</advanced>
+				<default>6400</default>
+			</parameter>
+			<parameter name="passiveScanWindow" type="integer" min="4" max="16384">
+				<label>Passive Scan Window</label>
+				<description>Passive scan Window defines how long time the scanner will listen on a certain frequency and try to
+					pick up advertisement packets. Default is 4000ms.</description>
+				<advanced>true</advanced>
+				<default>6400</default>
+			</parameter>
+			<parameter name="activeScanInterval" type="integer" min="4" max="16384">
+				<label>Active Scan Interval</label>
+				<description>Active scan interval defines the interval when scanning is re-started in units of 625us. Default is
+					4000ms.</description>
+				<advanced>true</advanced>
+				<default>6400</default>
+			</parameter>
+			<parameter name="activeScanWindow" type="integer" min="4" max="16384">
+				<label>Active Scan Window</label>
+				<description>Active scan Window defines how long time the scanner will listen on a certain frequency and try to pick
+					up advertisement packets. Default is 4000ms.</description>
+				<advanced>true</advanced>
+				<default>6400</default>
+			</parameter>
+			<parameter name="connIntervalMin" type="integer" min="6" max="3200">
+				<label>Minimum Connection Interval</label>
+				<description>Minimum connection interval in units of 1.25ms. Default is 100ms.</description>
+				<advanced>true</advanced>
+				<default>80</default>
+			</parameter>
+			<parameter name="connIntervalMax" type="integer" min="6" max="3200">
+				<label>Maximum Connection Interval</label>
+				<description>Maximum connection interval in units of 1.25ms. Default is 1000ms.</description>
+				<advanced>true</advanced>
+				<default>800</default>
+			</parameter>
+			<parameter name="connLatency" type="integer" min="0" max="500">
+				<label>Connection Latency</label>
+				<description>Connection latency defines how many connection intervals a slave device can skip. Default is 3.</description>
+				<advanced>true</advanced>
+				<default>3</default>
+			</parameter>
+			<parameter name="connTimeout" type="integer" min="10" max="3200">
+				<label>Connection Supervision Timeout</label>
+				<description>Connection supervision timeout in units of 10ms defines how long the devices can be out of range before
+					the connection is closed. Default is 10000ms.</description>
+				<advanced>true</advanced>
+				<default>1000</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

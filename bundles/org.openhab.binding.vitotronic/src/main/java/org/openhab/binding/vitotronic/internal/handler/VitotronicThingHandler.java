@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,6 @@ public class VitotronicThingHandler extends BaseThingHandler {
         } else {
             return getBridgeHandler(bridge);
         }
-
     }
 
     private synchronized VitotronicBridgeHandler getBridgeHandler(Bridge bridge) {
@@ -106,7 +105,6 @@ public class VitotronicThingHandler extends BaseThingHandler {
         } else {
             logger.debug("Can't unregister {} at bridge bridgeHandler is null.", this.getThing().getUID());
         }
-
     }
 
     public void setChannelValue(String channelId, String value) {

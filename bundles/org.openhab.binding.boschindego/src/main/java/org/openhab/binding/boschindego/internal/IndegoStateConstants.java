@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,5 +26,4 @@ public class IndegoStateConstants {
     public static final int STATE_DOCKED_3 = 261;
     public static final int STATE_PAUSED = 517;
     public static final int STATE_IDLE_IN_LAWN = 519;
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DEFAULT_BROADCAST_PORT = 48899;
-
+    private static final String DISCOVER_MESSAGE = "HF-A11ASSISTHREAD";
     private Logger logger = LoggerFactory.getLogger(WiFiLEDDiscoveryService.class);
 
     public WiFiLEDDiscoveryService() {
@@ -73,17 +73,17 @@ public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
     private synchronized void discover() {
         logger.debug("Try to discover all WiFi LED devices");
 
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(DEFAULT_BROADCAST_PORT)) {
             socket.setBroadcast(true);
             socket.setSoTimeout(5000);
 
             InetAddress inetAddress = InetAddress.getByName("255.255.255.255");
 
             // send discover
-            byte[] discover = "HF-A11ASSISTHREAD".getBytes();
+            byte[] discover = DISCOVER_MESSAGE.getBytes();
             DatagramPacket packet = new DatagramPacket(discover, discover.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
-            logger.debug("Disover message sent: '{}'", ClassicWiFiLEDDriver.bytesToHex(discover));
+            logger.debug("Discover message sent: '{}'", DISCOVER_MESSAGE);
 
             // wait for responses
             while (true) {
@@ -92,17 +92,23 @@ public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
                 try {
                     socket.receive(packet);
                 } catch (SocketTimeoutException e) {
-                    break; // leave the endless loop
+                    logger.trace("Timeout exceeded. Discovery process ended.");
+                    break;
                 }
 
                 byte[] data = packet.getData();
                 String s = bytesToString(data);
-                logger.debug("Disover response received: '{}' [{}] ", s, ClassicWiFiLEDDriver.bytesToHex(data));
+                logger.debug("Discovery response received: '{}' [{}] ", s, ClassicWiFiLEDDriver.bytesToHex(data));
 
                 // 192.168.178.25,ACCF23489C9A,HF-LPB100-ZJ200
                 // ^-IP..........,^-MAC.......,^-HOSTNAME.....
 
                 String[] ss = s.split(",");
+                if (ss.length < 3) {
+                    logger.debug("Ignoring unparseable discovery response: '{}'", s);
+                    continue;
+                }
+
                 String ip = ss[0];
                 String mac = ss[1];
                 String name = ss[2];
@@ -118,7 +124,7 @@ public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Thing discovered '{}'", result);
             }
         } catch (IOException e) {
-            logger.debug("No WiFi LED device found. Diagnostic: {}", e.getMessage());
+            logger.debug("Device discovery encountered an I/O Exception: {}", e.getMessage(), e);
         }
     }
 
@@ -133,5 +139,4 @@ public class WiFiLEDDiscoveryService extends AbstractDiscoveryService {
 
         return sb.toString();
     }
-
 }

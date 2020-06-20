@@ -42,12 +42,12 @@
 		<label>SONY Soundbar HT-MT500</label>
 		<description>SONY Soundbar HT-MT500</description>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input-mt500" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
-			<channel id="soundField" typeId="sound-field-mt500" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input-mt500"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="soundField" typeId="sound-field-mt500"/>
 		</channels>
-		<config-description-ref uri="thing-type:sonyaudio:config" />
+		<config-description-ref uri="thing-type:sonyaudio:config"/>
 	</thing-type>
 </thing:thing-descriptions>

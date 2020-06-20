@@ -7,498 +7,498 @@
 	<channel-group-type id="f470-sensor-group-channels">
 		<label>Sensors</label>
 		<channels>
-			<channel id="40004" typeId="f470-40004" />
-			<channel id="40005" typeId="f470-40005" />
-			<channel id="40006" typeId="f470-40006" />
-			<channel id="40007" typeId="f470-40007" />
-			<channel id="40008" typeId="f470-40008" />
-			<channel id="40012" typeId="f470-40012" />
-			<channel id="40013" typeId="f470-40013" />
-			<channel id="40014" typeId="f470-40014" />
-			<channel id="40020" typeId="f470-40020" />
-			<channel id="40022" typeId="f470-40022" />
-			<channel id="40023" typeId="f470-40023" />
-			<channel id="40024" typeId="f470-40024" />
-			<channel id="40025" typeId="f470-40025" />
-			<channel id="40026" typeId="f470-40026" />
-			<channel id="40030" typeId="f470-40030" />
-			<channel id="40031" typeId="f470-40031" />
-			<channel id="40032" typeId="f470-40032" />
-			<channel id="40033" typeId="f470-40033" />
-			<channel id="40043" typeId="f470-40043" />
-			<channel id="40044" typeId="f470-40044" />
-			<channel id="40054" typeId="f470-40054" />
-			<channel id="40067" typeId="f470-40067" />
-			<channel id="40071" typeId="f470-40071" />
-			<channel id="40074" typeId="f470-40074" />
-			<channel id="40075" typeId="f470-40075" />
-			<channel id="40076" typeId="f470-40076" />
-			<channel id="40079" typeId="f470-40079" />
-			<channel id="40081" typeId="f470-40081" />
-			<channel id="40083" typeId="f470-40083" />
-			<channel id="40122" typeId="f470-40122" />
-			<channel id="40127" typeId="f470-40127" />
-			<channel id="40128" typeId="f470-40128" />
-			<channel id="40129" typeId="f470-40129" />
-			<channel id="40159" typeId="f470-40159" />
-			<channel id="40160" typeId="f470-40160" />
-			<channel id="40161" typeId="f470-40161" />
-			<channel id="40162" typeId="f470-40162" />
-			<channel id="40163" typeId="f470-40163" />
-			<channel id="40164" typeId="f470-40164" />
-			<channel id="40165" typeId="f470-40165" />
-			<channel id="40166" typeId="f470-40166" />
-			<channel id="40167" typeId="f470-40167" />
-			<channel id="40168" typeId="f470-40168" />
-			<channel id="40169" typeId="f470-40169" />
-			<channel id="40170" typeId="f470-40170" />
-			<channel id="40185" typeId="f470-40185" />
-			<channel id="40188" typeId="f470-40188" />
-			<channel id="40189" typeId="f470-40189" />
-			<channel id="40190" typeId="f470-40190" />
-			<channel id="40191" typeId="f470-40191" />
-			<channel id="40192" typeId="f470-40192" />
-			<channel id="40193" typeId="f470-40193" />
-			<channel id="40194" typeId="f470-40194" />
-			<channel id="40195" typeId="f470-40195" />
-			<channel id="40212" typeId="f470-40212" />
-			<channel id="40217" typeId="f470-40217" />
-			<channel id="40218" typeId="f470-40218" />
-			<channel id="40219" typeId="f470-40219" />
-			<channel id="40220" typeId="f470-40220" />
-			<channel id="40305" typeId="f470-40305" />
-			<channel id="40306" typeId="f470-40306" />
-			<channel id="40307" typeId="f470-40307" />
-			<channel id="40308" typeId="f470-40308" />
-			<channel id="40339" typeId="f470-40339" />
-			<channel id="40340" typeId="f470-40340" />
-			<channel id="40341" typeId="f470-40341" />
-			<channel id="40342" typeId="f470-40342" />
-			<channel id="40365" typeId="f470-40365" />
-			<channel id="40366" typeId="f470-40366" />
-			<channel id="40367" typeId="f470-40367" />
-			<channel id="40368" typeId="f470-40368" />
-			<channel id="40755" typeId="f470-40755" />
-			<channel id="40868" typeId="f470-40868" />
-			<channel id="40870" typeId="f470-40870" />
-			<channel id="40871" typeId="f470-40871" />
-			<channel id="40872" typeId="f470-40872" />
-			<channel id="40873" typeId="f470-40873" />
-			<channel id="40874" typeId="f470-40874" />
-			<channel id="40875" typeId="f470-40875" />
-			<channel id="40876" typeId="f470-40876" />
-			<channel id="40877" typeId="f470-40877" />
-			<channel id="40878" typeId="f470-40878" />
-			<channel id="40889" typeId="f470-40889" />
-			<channel id="41027" typeId="f470-41027" />
-			<channel id="41189" typeId="f470-41189" />
-			<channel id="41190" typeId="f470-41190" />
-			<channel id="41191" typeId="f470-41191" />
-			<channel id="41256" typeId="f470-41256" />
-			<channel id="41257" typeId="f470-41257" />
-			<channel id="41258" typeId="f470-41258" />
-			<channel id="41265" typeId="f470-41265" />
-			<channel id="41266" typeId="f470-41266" />
-			<channel id="41267" typeId="f470-41267" />
-			<channel id="41268" typeId="f470-41268" />
-			<channel id="41269" typeId="f470-41269" />
-			<channel id="41270" typeId="f470-41270" />
-			<channel id="41271" typeId="f470-41271" />
-			<channel id="41272" typeId="f470-41272" />
-			<channel id="41273" typeId="f470-41273" />
-			<channel id="41274" typeId="f470-41274" />
-			<channel id="41928" typeId="f470-41928" />
-			<channel id="41929" typeId="f470-41929" />
-			<channel id="41930" typeId="f470-41930" />
-			<channel id="41931" typeId="f470-41931" />
-			<channel id="41932" typeId="f470-41932" />
-			<channel id="41933" typeId="f470-41933" />
-			<channel id="41934" typeId="f470-41934" />
-			<channel id="41935" typeId="f470-41935" />
-			<channel id="41936" typeId="f470-41936" />
-			<channel id="41937" typeId="f470-41937" />
-			<channel id="41938" typeId="f470-41938" />
-			<channel id="41939" typeId="f470-41939" />
-			<channel id="41940" typeId="f470-41940" />
-			<channel id="41941" typeId="f470-41941" />
-			<channel id="41942" typeId="f470-41942" />
-			<channel id="41943" typeId="f470-41943" />
-			<channel id="41944" typeId="f470-41944" />
-			<channel id="41945" typeId="f470-41945" />
-			<channel id="41946" typeId="f470-41946" />
-			<channel id="41947" typeId="f470-41947" />
-			<channel id="41948" typeId="f470-41948" />
-			<channel id="41949" typeId="f470-41949" />
-			<channel id="41950" typeId="f470-41950" />
-			<channel id="41951" typeId="f470-41951" />
-			<channel id="41952" typeId="f470-41952" />
-			<channel id="41953" typeId="f470-41953" />
-			<channel id="41954" typeId="f470-41954" />
-			<channel id="41955" typeId="f470-41955" />
-			<channel id="41956" typeId="f470-41956" />
-			<channel id="41957" typeId="f470-41957" />
-			<channel id="41958" typeId="f470-41958" />
-			<channel id="41959" typeId="f470-41959" />
-			<channel id="41960" typeId="f470-41960" />
-			<channel id="41961" typeId="f470-41961" />
-			<channel id="41962" typeId="f470-41962" />
-			<channel id="41963" typeId="f470-41963" />
-			<channel id="41964" typeId="f470-41964" />
-			<channel id="41965" typeId="f470-41965" />
-			<channel id="41966" typeId="f470-41966" />
-			<channel id="41967" typeId="f470-41967" />
-			<channel id="41968" typeId="f470-41968" />
-			<channel id="41969" typeId="f470-41969" />
-			<channel id="41980" typeId="f470-41980" />
-			<channel id="41981" typeId="f470-41981" />
-			<channel id="41982" typeId="f470-41982" />
-			<channel id="41983" typeId="f470-41983" />
-			<channel id="41984" typeId="f470-41984" />
-			<channel id="41985" typeId="f470-41985" />
-			<channel id="41986" typeId="f470-41986" />
-			<channel id="41987" typeId="f470-41987" />
-			<channel id="41988" typeId="f470-41988" />
-			<channel id="41989" typeId="f470-41989" />
-			<channel id="41990" typeId="f470-41990" />
-			<channel id="41991" typeId="f470-41991" />
-			<channel id="41992" typeId="f470-41992" />
-			<channel id="41993" typeId="f470-41993" />
-			<channel id="41994" typeId="f470-41994" />
-			<channel id="41995" typeId="f470-41995" />
-			<channel id="41996" typeId="f470-41996" />
-			<channel id="41997" typeId="f470-41997" />
-			<channel id="41998" typeId="f470-41998" />
-			<channel id="41999" typeId="f470-41999" />
-			<channel id="42000" typeId="f470-42000" />
-			<channel id="42001" typeId="f470-42001" />
-			<channel id="42002" typeId="f470-42002" />
-			<channel id="42003" typeId="f470-42003" />
-			<channel id="42004" typeId="f470-42004" />
-			<channel id="42005" typeId="f470-42005" />
-			<channel id="42006" typeId="f470-42006" />
-			<channel id="42007" typeId="f470-42007" />
-			<channel id="42008" typeId="f470-42008" />
-			<channel id="42009" typeId="f470-42009" />
-			<channel id="42010" typeId="f470-42010" />
-			<channel id="42012" typeId="f470-42012" />
-			<channel id="42014" typeId="f470-42014" />
-			<channel id="42016" typeId="f470-42016" />
-			<channel id="42018" typeId="f470-42018" />
-			<channel id="42020" typeId="f470-42020" />
-			<channel id="42022" typeId="f470-42022" />
-			<channel id="42024" typeId="f470-42024" />
-			<channel id="42026" typeId="f470-42026" />
-			<channel id="42028" typeId="f470-42028" />
-			<channel id="42030" typeId="f470-42030" />
-			<channel id="42033" typeId="f470-42033" />
-			<channel id="42034" typeId="f470-42034" />
-			<channel id="42035" typeId="f470-42035" />
-			<channel id="42037" typeId="f470-42037" />
-			<channel id="42075" typeId="f470-42075" />
-			<channel id="42080" typeId="f470-42080" />
-			<channel id="42081" typeId="f470-42081" />
-			<channel id="42082" typeId="f470-42082" />
-			<channel id="42083" typeId="f470-42083" />
-			<channel id="42084" typeId="f470-42084" />
-			<channel id="42085" typeId="f470-42085" />
-			<channel id="42086" typeId="f470-42086" />
-			<channel id="42087" typeId="f470-42087" />
-			<channel id="42100" typeId="f470-42100" />
-			<channel id="42101" typeId="f470-42101" />
-			<channel id="42136" typeId="f470-42136" />
-			<channel id="42137" typeId="f470-42137" />
-			<channel id="42138" typeId="f470-42138" />
-			<channel id="43001" typeId="f470-43001" />
-			<channel id="43006" typeId="f470-43006" />
-			<channel id="43007" typeId="f470-43007" />
-			<channel id="43008" typeId="f470-43008" />
-			<channel id="43009" typeId="f470-43009" />
-			<channel id="43013" typeId="f470-43013" />
-			<channel id="43081" typeId="f470-43081" />
-			<channel id="43084" typeId="f470-43084" />
-			<channel id="43086" typeId="f470-43086" />
-			<channel id="43091" typeId="f470-43091" />
-			<channel id="43093" typeId="f470-43093" />
-			<channel id="43094" typeId="f470-43094" />
-			<channel id="43095" typeId="f470-43095" />
-			<channel id="43096" typeId="f470-43096" />
-			<channel id="43105" typeId="f470-43105" />
-			<channel id="43108" typeId="f470-43108" />
-			<channel id="43158" typeId="f470-43158" />
-			<channel id="43159" typeId="f470-43159" />
-			<channel id="43160" typeId="f470-43160" />
-			<channel id="43161" typeId="f470-43161" />
-			<channel id="43180" typeId="f470-43180" />
-			<channel id="43239" typeId="f470-43239" />
-			<channel id="43383" typeId="f470-43383" />
-			<channel id="43416" typeId="f470-43416" />
-			<channel id="43420" typeId="f470-43420" />
-			<channel id="43424" typeId="f470-43424" />
-			<channel id="43427" typeId="f470-43427" />
-			<channel id="43431" typeId="f470-43431" />
-			<channel id="43435" typeId="f470-43435" />
-			<channel id="43460" typeId="f470-43460" />
-			<channel id="43514" typeId="f470-43514" />
-			<channel id="43516" typeId="f470-43516" />
-			<channel id="44331" typeId="f470-44331" />
-			<channel id="44744" typeId="f470-44744" />
-			<channel id="44745" typeId="f470-44745" />
-			<channel id="44746" typeId="f470-44746" />
-			<channel id="44750" typeId="f470-44750" />
-			<channel id="44874" typeId="f470-44874" />
-			<channel id="44878" typeId="f470-44878" />
-			<channel id="44879" typeId="f470-44879" />
-			<channel id="44896" typeId="f470-44896" />
-			<channel id="44897" typeId="f470-44897" />
-			<channel id="44898" typeId="f470-44898" />
-			<channel id="44899" typeId="f470-44899" />
-			<channel id="44908" typeId="f470-44908" />
-			<channel id="45001" typeId="f470-45001" />
-			<channel id="47291" typeId="f470-47291" />
+			<channel id="40004" typeId="f470-40004"/>
+			<channel id="40005" typeId="f470-40005"/>
+			<channel id="40006" typeId="f470-40006"/>
+			<channel id="40007" typeId="f470-40007"/>
+			<channel id="40008" typeId="f470-40008"/>
+			<channel id="40012" typeId="f470-40012"/>
+			<channel id="40013" typeId="f470-40013"/>
+			<channel id="40014" typeId="f470-40014"/>
+			<channel id="40020" typeId="f470-40020"/>
+			<channel id="40022" typeId="f470-40022"/>
+			<channel id="40023" typeId="f470-40023"/>
+			<channel id="40024" typeId="f470-40024"/>
+			<channel id="40025" typeId="f470-40025"/>
+			<channel id="40026" typeId="f470-40026"/>
+			<channel id="40030" typeId="f470-40030"/>
+			<channel id="40031" typeId="f470-40031"/>
+			<channel id="40032" typeId="f470-40032"/>
+			<channel id="40033" typeId="f470-40033"/>
+			<channel id="40043" typeId="f470-40043"/>
+			<channel id="40044" typeId="f470-40044"/>
+			<channel id="40054" typeId="f470-40054"/>
+			<channel id="40067" typeId="f470-40067"/>
+			<channel id="40071" typeId="f470-40071"/>
+			<channel id="40074" typeId="f470-40074"/>
+			<channel id="40075" typeId="f470-40075"/>
+			<channel id="40076" typeId="f470-40076"/>
+			<channel id="40079" typeId="f470-40079"/>
+			<channel id="40081" typeId="f470-40081"/>
+			<channel id="40083" typeId="f470-40083"/>
+			<channel id="40122" typeId="f470-40122"/>
+			<channel id="40127" typeId="f470-40127"/>
+			<channel id="40128" typeId="f470-40128"/>
+			<channel id="40129" typeId="f470-40129"/>
+			<channel id="40159" typeId="f470-40159"/>
+			<channel id="40160" typeId="f470-40160"/>
+			<channel id="40161" typeId="f470-40161"/>
+			<channel id="40162" typeId="f470-40162"/>
+			<channel id="40163" typeId="f470-40163"/>
+			<channel id="40164" typeId="f470-40164"/>
+			<channel id="40165" typeId="f470-40165"/>
+			<channel id="40166" typeId="f470-40166"/>
+			<channel id="40167" typeId="f470-40167"/>
+			<channel id="40168" typeId="f470-40168"/>
+			<channel id="40169" typeId="f470-40169"/>
+			<channel id="40170" typeId="f470-40170"/>
+			<channel id="40185" typeId="f470-40185"/>
+			<channel id="40188" typeId="f470-40188"/>
+			<channel id="40189" typeId="f470-40189"/>
+			<channel id="40190" typeId="f470-40190"/>
+			<channel id="40191" typeId="f470-40191"/>
+			<channel id="40192" typeId="f470-40192"/>
+			<channel id="40193" typeId="f470-40193"/>
+			<channel id="40194" typeId="f470-40194"/>
+			<channel id="40195" typeId="f470-40195"/>
+			<channel id="40212" typeId="f470-40212"/>
+			<channel id="40217" typeId="f470-40217"/>
+			<channel id="40218" typeId="f470-40218"/>
+			<channel id="40219" typeId="f470-40219"/>
+			<channel id="40220" typeId="f470-40220"/>
+			<channel id="40305" typeId="f470-40305"/>
+			<channel id="40306" typeId="f470-40306"/>
+			<channel id="40307" typeId="f470-40307"/>
+			<channel id="40308" typeId="f470-40308"/>
+			<channel id="40339" typeId="f470-40339"/>
+			<channel id="40340" typeId="f470-40340"/>
+			<channel id="40341" typeId="f470-40341"/>
+			<channel id="40342" typeId="f470-40342"/>
+			<channel id="40365" typeId="f470-40365"/>
+			<channel id="40366" typeId="f470-40366"/>
+			<channel id="40367" typeId="f470-40367"/>
+			<channel id="40368" typeId="f470-40368"/>
+			<channel id="40755" typeId="f470-40755"/>
+			<channel id="40868" typeId="f470-40868"/>
+			<channel id="40870" typeId="f470-40870"/>
+			<channel id="40871" typeId="f470-40871"/>
+			<channel id="40872" typeId="f470-40872"/>
+			<channel id="40873" typeId="f470-40873"/>
+			<channel id="40874" typeId="f470-40874"/>
+			<channel id="40875" typeId="f470-40875"/>
+			<channel id="40876" typeId="f470-40876"/>
+			<channel id="40877" typeId="f470-40877"/>
+			<channel id="40878" typeId="f470-40878"/>
+			<channel id="40889" typeId="f470-40889"/>
+			<channel id="41027" typeId="f470-41027"/>
+			<channel id="41189" typeId="f470-41189"/>
+			<channel id="41190" typeId="f470-41190"/>
+			<channel id="41191" typeId="f470-41191"/>
+			<channel id="41256" typeId="f470-41256"/>
+			<channel id="41257" typeId="f470-41257"/>
+			<channel id="41258" typeId="f470-41258"/>
+			<channel id="41265" typeId="f470-41265"/>
+			<channel id="41266" typeId="f470-41266"/>
+			<channel id="41267" typeId="f470-41267"/>
+			<channel id="41268" typeId="f470-41268"/>
+			<channel id="41269" typeId="f470-41269"/>
+			<channel id="41270" typeId="f470-41270"/>
+			<channel id="41271" typeId="f470-41271"/>
+			<channel id="41272" typeId="f470-41272"/>
+			<channel id="41273" typeId="f470-41273"/>
+			<channel id="41274" typeId="f470-41274"/>
+			<channel id="41928" typeId="f470-41928"/>
+			<channel id="41929" typeId="f470-41929"/>
+			<channel id="41930" typeId="f470-41930"/>
+			<channel id="41931" typeId="f470-41931"/>
+			<channel id="41932" typeId="f470-41932"/>
+			<channel id="41933" typeId="f470-41933"/>
+			<channel id="41934" typeId="f470-41934"/>
+			<channel id="41935" typeId="f470-41935"/>
+			<channel id="41936" typeId="f470-41936"/>
+			<channel id="41937" typeId="f470-41937"/>
+			<channel id="41938" typeId="f470-41938"/>
+			<channel id="41939" typeId="f470-41939"/>
+			<channel id="41940" typeId="f470-41940"/>
+			<channel id="41941" typeId="f470-41941"/>
+			<channel id="41942" typeId="f470-41942"/>
+			<channel id="41943" typeId="f470-41943"/>
+			<channel id="41944" typeId="f470-41944"/>
+			<channel id="41945" typeId="f470-41945"/>
+			<channel id="41946" typeId="f470-41946"/>
+			<channel id="41947" typeId="f470-41947"/>
+			<channel id="41948" typeId="f470-41948"/>
+			<channel id="41949" typeId="f470-41949"/>
+			<channel id="41950" typeId="f470-41950"/>
+			<channel id="41951" typeId="f470-41951"/>
+			<channel id="41952" typeId="f470-41952"/>
+			<channel id="41953" typeId="f470-41953"/>
+			<channel id="41954" typeId="f470-41954"/>
+			<channel id="41955" typeId="f470-41955"/>
+			<channel id="41956" typeId="f470-41956"/>
+			<channel id="41957" typeId="f470-41957"/>
+			<channel id="41958" typeId="f470-41958"/>
+			<channel id="41959" typeId="f470-41959"/>
+			<channel id="41960" typeId="f470-41960"/>
+			<channel id="41961" typeId="f470-41961"/>
+			<channel id="41962" typeId="f470-41962"/>
+			<channel id="41963" typeId="f470-41963"/>
+			<channel id="41964" typeId="f470-41964"/>
+			<channel id="41965" typeId="f470-41965"/>
+			<channel id="41966" typeId="f470-41966"/>
+			<channel id="41967" typeId="f470-41967"/>
+			<channel id="41968" typeId="f470-41968"/>
+			<channel id="41969" typeId="f470-41969"/>
+			<channel id="41980" typeId="f470-41980"/>
+			<channel id="41981" typeId="f470-41981"/>
+			<channel id="41982" typeId="f470-41982"/>
+			<channel id="41983" typeId="f470-41983"/>
+			<channel id="41984" typeId="f470-41984"/>
+			<channel id="41985" typeId="f470-41985"/>
+			<channel id="41986" typeId="f470-41986"/>
+			<channel id="41987" typeId="f470-41987"/>
+			<channel id="41988" typeId="f470-41988"/>
+			<channel id="41989" typeId="f470-41989"/>
+			<channel id="41990" typeId="f470-41990"/>
+			<channel id="41991" typeId="f470-41991"/>
+			<channel id="41992" typeId="f470-41992"/>
+			<channel id="41993" typeId="f470-41993"/>
+			<channel id="41994" typeId="f470-41994"/>
+			<channel id="41995" typeId="f470-41995"/>
+			<channel id="41996" typeId="f470-41996"/>
+			<channel id="41997" typeId="f470-41997"/>
+			<channel id="41998" typeId="f470-41998"/>
+			<channel id="41999" typeId="f470-41999"/>
+			<channel id="42000" typeId="f470-42000"/>
+			<channel id="42001" typeId="f470-42001"/>
+			<channel id="42002" typeId="f470-42002"/>
+			<channel id="42003" typeId="f470-42003"/>
+			<channel id="42004" typeId="f470-42004"/>
+			<channel id="42005" typeId="f470-42005"/>
+			<channel id="42006" typeId="f470-42006"/>
+			<channel id="42007" typeId="f470-42007"/>
+			<channel id="42008" typeId="f470-42008"/>
+			<channel id="42009" typeId="f470-42009"/>
+			<channel id="42010" typeId="f470-42010"/>
+			<channel id="42012" typeId="f470-42012"/>
+			<channel id="42014" typeId="f470-42014"/>
+			<channel id="42016" typeId="f470-42016"/>
+			<channel id="42018" typeId="f470-42018"/>
+			<channel id="42020" typeId="f470-42020"/>
+			<channel id="42022" typeId="f470-42022"/>
+			<channel id="42024" typeId="f470-42024"/>
+			<channel id="42026" typeId="f470-42026"/>
+			<channel id="42028" typeId="f470-42028"/>
+			<channel id="42030" typeId="f470-42030"/>
+			<channel id="42033" typeId="f470-42033"/>
+			<channel id="42034" typeId="f470-42034"/>
+			<channel id="42035" typeId="f470-42035"/>
+			<channel id="42037" typeId="f470-42037"/>
+			<channel id="42075" typeId="f470-42075"/>
+			<channel id="42080" typeId="f470-42080"/>
+			<channel id="42081" typeId="f470-42081"/>
+			<channel id="42082" typeId="f470-42082"/>
+			<channel id="42083" typeId="f470-42083"/>
+			<channel id="42084" typeId="f470-42084"/>
+			<channel id="42085" typeId="f470-42085"/>
+			<channel id="42086" typeId="f470-42086"/>
+			<channel id="42087" typeId="f470-42087"/>
+			<channel id="42100" typeId="f470-42100"/>
+			<channel id="42101" typeId="f470-42101"/>
+			<channel id="42136" typeId="f470-42136"/>
+			<channel id="42137" typeId="f470-42137"/>
+			<channel id="42138" typeId="f470-42138"/>
+			<channel id="43001" typeId="f470-43001"/>
+			<channel id="43006" typeId="f470-43006"/>
+			<channel id="43007" typeId="f470-43007"/>
+			<channel id="43008" typeId="f470-43008"/>
+			<channel id="43009" typeId="f470-43009"/>
+			<channel id="43013" typeId="f470-43013"/>
+			<channel id="43081" typeId="f470-43081"/>
+			<channel id="43084" typeId="f470-43084"/>
+			<channel id="43086" typeId="f470-43086"/>
+			<channel id="43091" typeId="f470-43091"/>
+			<channel id="43093" typeId="f470-43093"/>
+			<channel id="43094" typeId="f470-43094"/>
+			<channel id="43095" typeId="f470-43095"/>
+			<channel id="43096" typeId="f470-43096"/>
+			<channel id="43105" typeId="f470-43105"/>
+			<channel id="43108" typeId="f470-43108"/>
+			<channel id="43158" typeId="f470-43158"/>
+			<channel id="43159" typeId="f470-43159"/>
+			<channel id="43160" typeId="f470-43160"/>
+			<channel id="43161" typeId="f470-43161"/>
+			<channel id="43180" typeId="f470-43180"/>
+			<channel id="43239" typeId="f470-43239"/>
+			<channel id="43383" typeId="f470-43383"/>
+			<channel id="43416" typeId="f470-43416"/>
+			<channel id="43420" typeId="f470-43420"/>
+			<channel id="43424" typeId="f470-43424"/>
+			<channel id="43427" typeId="f470-43427"/>
+			<channel id="43431" typeId="f470-43431"/>
+			<channel id="43435" typeId="f470-43435"/>
+			<channel id="43460" typeId="f470-43460"/>
+			<channel id="43514" typeId="f470-43514"/>
+			<channel id="43516" typeId="f470-43516"/>
+			<channel id="44331" typeId="f470-44331"/>
+			<channel id="44744" typeId="f470-44744"/>
+			<channel id="44745" typeId="f470-44745"/>
+			<channel id="44746" typeId="f470-44746"/>
+			<channel id="44750" typeId="f470-44750"/>
+			<channel id="44874" typeId="f470-44874"/>
+			<channel id="44878" typeId="f470-44878"/>
+			<channel id="44879" typeId="f470-44879"/>
+			<channel id="44896" typeId="f470-44896"/>
+			<channel id="44897" typeId="f470-44897"/>
+			<channel id="44898" typeId="f470-44898"/>
+			<channel id="44899" typeId="f470-44899"/>
+			<channel id="44908" typeId="f470-44908"/>
+			<channel id="45001" typeId="f470-45001"/>
+			<channel id="47291" typeId="f470-47291"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="f470-setting-group-channels">
 		<label>Settings</label>
 		<channels>
-			<channel id="40879" typeId="f470-40879" />
-			<channel id="40880" typeId="f470-40880" />
-			<channel id="40881" typeId="f470-40881" />
-			<channel id="40882" typeId="f470-40882" />
-			<channel id="40883" typeId="f470-40883" />
-			<channel id="40884" typeId="f470-40884" />
-			<channel id="40885" typeId="f470-40885" />
-			<channel id="40886" typeId="f470-40886" />
-			<channel id="40887" typeId="f470-40887" />
-			<channel id="40888" typeId="f470-40888" />
-			<channel id="45171" typeId="f470-45171" />
-			<channel id="47004" typeId="f470-47004" />
-			<channel id="47005" typeId="f470-47005" />
-			<channel id="47006" typeId="f470-47006" />
-			<channel id="47007" typeId="f470-47007" />
-			<channel id="47008" typeId="f470-47008" />
-			<channel id="47009" typeId="f470-47009" />
-			<channel id="47010" typeId="f470-47010" />
-			<channel id="47011" typeId="f470-47011" />
-			<channel id="47012" typeId="f470-47012" />
-			<channel id="47013" typeId="f470-47013" />
-			<channel id="47014" typeId="f470-47014" />
-			<channel id="47015" typeId="f470-47015" />
-			<channel id="47016" typeId="f470-47016" />
-			<channel id="47017" typeId="f470-47017" />
-			<channel id="47018" typeId="f470-47018" />
-			<channel id="47019" typeId="f470-47019" />
-			<channel id="47020" typeId="f470-47020" />
-			<channel id="47021" typeId="f470-47021" />
-			<channel id="47022" typeId="f470-47022" />
-			<channel id="47023" typeId="f470-47023" />
-			<channel id="47024" typeId="f470-47024" />
-			<channel id="47025" typeId="f470-47025" />
-			<channel id="47026" typeId="f470-47026" />
-			<channel id="47027" typeId="f470-47027" />
-			<channel id="47028" typeId="f470-47028" />
-			<channel id="47029" typeId="f470-47029" />
-			<channel id="47030" typeId="f470-47030" />
-			<channel id="47031" typeId="f470-47031" />
-			<channel id="47032" typeId="f470-47032" />
-			<channel id="47033" typeId="f470-47033" />
-			<channel id="47034" typeId="f470-47034" />
-			<channel id="47035" typeId="f470-47035" />
-			<channel id="47036" typeId="f470-47036" />
-			<channel id="47041" typeId="f470-47041" />
-			<channel id="47043" typeId="f470-47043" />
-			<channel id="47044" typeId="f470-47044" />
-			<channel id="47045" typeId="f470-47045" />
-			<channel id="47046" typeId="f470-47046" />
-			<channel id="47047" typeId="f470-47047" />
-			<channel id="47048" typeId="f470-47048" />
-			<channel id="47049" typeId="f470-47049" />
-			<channel id="47050" typeId="f470-47050" />
-			<channel id="47051" typeId="f470-47051" />
-			<channel id="47054" typeId="f470-47054" />
-			<channel id="47055" typeId="f470-47055" />
-			<channel id="47131" typeId="f470-47131" />
-			<channel id="47137" typeId="f470-47137" />
-			<channel id="47138" typeId="f470-47138" />
-			<channel id="47212" typeId="f470-47212" />
-			<channel id="47214" typeId="f470-47214" />
-			<channel id="47261" typeId="f470-47261" />
-			<channel id="47262" typeId="f470-47262" />
-			<channel id="47263" typeId="f470-47263" />
-			<channel id="47264" typeId="f470-47264" />
-			<channel id="47265" typeId="f470-47265" />
-			<channel id="47266" typeId="f470-47266" />
-			<channel id="47267" typeId="f470-47267" />
-			<channel id="47268" typeId="f470-47268" />
-			<channel id="47269" typeId="f470-47269" />
-			<channel id="47270" typeId="f470-47270" />
-			<channel id="47271" typeId="f470-47271" />
-			<channel id="47272" typeId="f470-47272" />
-			<channel id="47273" typeId="f470-47273" />
-			<channel id="47274" typeId="f470-47274" />
-			<channel id="47275" typeId="f470-47275" />
-			<channel id="47276" typeId="f470-47276" />
-			<channel id="47277" typeId="f470-47277" />
-			<channel id="47278" typeId="f470-47278" />
-			<channel id="47279" typeId="f470-47279" />
-			<channel id="47280" typeId="f470-47280" />
-			<channel id="47281" typeId="f470-47281" />
-			<channel id="47282" typeId="f470-47282" />
-			<channel id="47283" typeId="f470-47283" />
-			<channel id="47284" typeId="f470-47284" />
-			<channel id="47285" typeId="f470-47285" />
-			<channel id="47286" typeId="f470-47286" />
-			<channel id="47287" typeId="f470-47287" />
-			<channel id="47288" typeId="f470-47288" />
-			<channel id="47289" typeId="f470-47289" />
-			<channel id="47290" typeId="f470-47290" />
-			<channel id="47292" typeId="f470-47292" />
-			<channel id="47293" typeId="f470-47293" />
-			<channel id="47300" typeId="f470-47300" />
-			<channel id="47301" typeId="f470-47301" />
-			<channel id="47302" typeId="f470-47302" />
-			<channel id="47303" typeId="f470-47303" />
-			<channel id="47304" typeId="f470-47304" />
-			<channel id="47305" typeId="f470-47305" />
-			<channel id="47306" typeId="f470-47306" />
-			<channel id="47307" typeId="f470-47307" />
-			<channel id="47308" typeId="f470-47308" />
-			<channel id="47309" typeId="f470-47309" />
-			<channel id="47310" typeId="f470-47310" />
-			<channel id="47351" typeId="f470-47351" />
-			<channel id="47352" typeId="f470-47352" />
-			<channel id="47365" typeId="f470-47365" />
-			<channel id="47366" typeId="f470-47366" />
-			<channel id="47367" typeId="f470-47367" />
-			<channel id="47368" typeId="f470-47368" />
-			<channel id="47370" typeId="f470-47370" />
-			<channel id="47371" typeId="f470-47371" />
-			<channel id="47372" typeId="f470-47372" />
-			<channel id="47374" typeId="f470-47374" />
-			<channel id="47375" typeId="f470-47375" />
-			<channel id="47376" typeId="f470-47376" />
-			<channel id="47377" typeId="f470-47377" />
-			<channel id="47378" typeId="f470-47378" />
-			<channel id="47379" typeId="f470-47379" />
-			<channel id="47384" typeId="f470-47384" />
-			<channel id="47385" typeId="f470-47385" />
-			<channel id="47387" typeId="f470-47387" />
-			<channel id="47388" typeId="f470-47388" />
-			<channel id="47389" typeId="f470-47389" />
-			<channel id="47391" typeId="f470-47391" />
-			<channel id="47392" typeId="f470-47392" />
-			<channel id="47393" typeId="f470-47393" />
-			<channel id="47394" typeId="f470-47394" />
-			<channel id="47395" typeId="f470-47395" />
-			<channel id="47396" typeId="f470-47396" />
-			<channel id="47397" typeId="f470-47397" />
-			<channel id="47398" typeId="f470-47398" />
-			<channel id="47399" typeId="f470-47399" />
-			<channel id="47400" typeId="f470-47400" />
-			<channel id="47401" typeId="f470-47401" />
-			<channel id="47402" typeId="f470-47402" />
-			<channel id="47442" typeId="f470-47442" />
-			<channel id="47525" typeId="f470-47525" />
-			<channel id="47536" typeId="f470-47536" />
-			<channel id="47537" typeId="f470-47537" />
-			<channel id="47538" typeId="f470-47538" />
-			<channel id="47539" typeId="f470-47539" />
-			<channel id="47556" typeId="f470-47556" />
-			<channel id="47564" typeId="f470-47564" />
-			<channel id="47565" typeId="f470-47565" />
-			<channel id="47567" typeId="f470-47567" />
-			<channel id="48043" typeId="f470-48043" />
-			<channel id="48132" typeId="f470-48132" />
-			<channel id="48282" typeId="f470-48282" />
-			<channel id="48283" typeId="f470-48283" />
-			<channel id="48284" typeId="f470-48284" />
-			<channel id="48285" typeId="f470-48285" />
-			<channel id="48488" typeId="f470-48488" />
-			<channel id="48489" typeId="f470-48489" />
-			<channel id="48491" typeId="f470-48491" />
-			<channel id="48492" typeId="f470-48492" />
-			<channel id="48493" typeId="f470-48493" />
-			<channel id="48494" typeId="f470-48494" />
-			<channel id="48495" typeId="f470-48495" />
-			<channel id="48496" typeId="f470-48496" />
-			<channel id="48497" typeId="f470-48497" />
-			<channel id="48498" typeId="f470-48498" />
-			<channel id="48499" typeId="f470-48499" />
-			<channel id="48500" typeId="f470-48500" />
-			<channel id="48501" typeId="f470-48501" />
-			<channel id="48502" typeId="f470-48502" />
-			<channel id="48503" typeId="f470-48503" />
-			<channel id="48504" typeId="f470-48504" />
-			<channel id="48505" typeId="f470-48505" />
-			<channel id="48506" typeId="f470-48506" />
-			<channel id="48507" typeId="f470-48507" />
-			<channel id="48508" typeId="f470-48508" />
-			<channel id="48509" typeId="f470-48509" />
-			<channel id="48510" typeId="f470-48510" />
-			<channel id="48569" typeId="f470-48569" />
-			<channel id="48570" typeId="f470-48570" />
-			<channel id="48571" typeId="f470-48571" />
-			<channel id="48572" typeId="f470-48572" />
-			<channel id="48573" typeId="f470-48573" />
-			<channel id="48574" typeId="f470-48574" />
-			<channel id="48575" typeId="f470-48575" />
-			<channel id="48576" typeId="f470-48576" />
-			<channel id="48577" typeId="f470-48577" />
-			<channel id="48578" typeId="f470-48578" />
-			<channel id="48579" typeId="f470-48579" />
-			<channel id="48580" typeId="f470-48580" />
-			<channel id="48675" typeId="f470-48675" />
-			<channel id="48676" typeId="f470-48676" />
-			<channel id="48677" typeId="f470-48677" />
-			<channel id="48678" typeId="f470-48678" />
-			<channel id="48680" typeId="f470-48680" />
-			<channel id="48681" typeId="f470-48681" />
-			<channel id="48682" typeId="f470-48682" />
-			<channel id="48683" typeId="f470-48683" />
-			<channel id="48685" typeId="f470-48685" />
-			<channel id="48686" typeId="f470-48686" />
-			<channel id="48687" typeId="f470-48687" />
-			<channel id="48688" typeId="f470-48688" />
-			<channel id="48732" typeId="f470-48732" />
-			<channel id="48733" typeId="f470-48733" />
-			<channel id="48734" typeId="f470-48734" />
-			<channel id="48735" typeId="f470-48735" />
-			<channel id="48736" typeId="f470-48736" />
-			<channel id="48737" typeId="f470-48737" />
-			<channel id="48738" typeId="f470-48738" />
-			<channel id="48739" typeId="f470-48739" />
-			<channel id="48755" typeId="f470-48755" />
-			<channel id="48794" typeId="f470-48794" />
-			<channel id="48810" typeId="f470-48810" />
-			<channel id="48811" typeId="f470-48811" />
-			<channel id="48812" typeId="f470-48812" />
-			<channel id="48813" typeId="f470-48813" />
-			<channel id="48814" typeId="f470-48814" />
-			<channel id="48815" typeId="f470-48815" />
-			<channel id="48816" typeId="f470-48816" />
-			<channel id="48817" typeId="f470-48817" />
-			<channel id="48889" typeId="f470-48889" />
-			<channel id="48926" typeId="f470-48926" />
-			<channel id="48927" typeId="f470-48927" />
-			<channel id="48930" typeId="f470-48930" />
-			<channel id="48931" typeId="f470-48931" />
-			<channel id="48932" typeId="f470-48932" />
-			<channel id="48968" typeId="f470-48968" />
-			<channel id="48970" typeId="f470-48970" />
-			<channel id="48976" typeId="f470-48976" />
-			<channel id="49289" typeId="f470-49289" />
-			<channel id="49297" typeId="f470-49297" />
-			<channel id="49298" typeId="f470-49298" />
-			<channel id="49358" typeId="f470-49358" />
-			<channel id="49359" typeId="f470-49359" />
-			<channel id="49360" typeId="f470-49360" />
-			<channel id="49361" typeId="f470-49361" />
-			<channel id="49362" typeId="f470-49362" />
-			<channel id="49363" typeId="f470-49363" />
-			<channel id="49364" typeId="f470-49364" />
-			<channel id="49365" typeId="f470-49365" />
-			<channel id="49366" typeId="f470-49366" />
-			<channel id="49431" typeId="f470-49431" />
+			<channel id="40879" typeId="f470-40879"/>
+			<channel id="40880" typeId="f470-40880"/>
+			<channel id="40881" typeId="f470-40881"/>
+			<channel id="40882" typeId="f470-40882"/>
+			<channel id="40883" typeId="f470-40883"/>
+			<channel id="40884" typeId="f470-40884"/>
+			<channel id="40885" typeId="f470-40885"/>
+			<channel id="40886" typeId="f470-40886"/>
+			<channel id="40887" typeId="f470-40887"/>
+			<channel id="40888" typeId="f470-40888"/>
+			<channel id="45171" typeId="f470-45171"/>
+			<channel id="47004" typeId="f470-47004"/>
+			<channel id="47005" typeId="f470-47005"/>
+			<channel id="47006" typeId="f470-47006"/>
+			<channel id="47007" typeId="f470-47007"/>
+			<channel id="47008" typeId="f470-47008"/>
+			<channel id="47009" typeId="f470-47009"/>
+			<channel id="47010" typeId="f470-47010"/>
+			<channel id="47011" typeId="f470-47011"/>
+			<channel id="47012" typeId="f470-47012"/>
+			<channel id="47013" typeId="f470-47013"/>
+			<channel id="47014" typeId="f470-47014"/>
+			<channel id="47015" typeId="f470-47015"/>
+			<channel id="47016" typeId="f470-47016"/>
+			<channel id="47017" typeId="f470-47017"/>
+			<channel id="47018" typeId="f470-47018"/>
+			<channel id="47019" typeId="f470-47019"/>
+			<channel id="47020" typeId="f470-47020"/>
+			<channel id="47021" typeId="f470-47021"/>
+			<channel id="47022" typeId="f470-47022"/>
+			<channel id="47023" typeId="f470-47023"/>
+			<channel id="47024" typeId="f470-47024"/>
+			<channel id="47025" typeId="f470-47025"/>
+			<channel id="47026" typeId="f470-47026"/>
+			<channel id="47027" typeId="f470-47027"/>
+			<channel id="47028" typeId="f470-47028"/>
+			<channel id="47029" typeId="f470-47029"/>
+			<channel id="47030" typeId="f470-47030"/>
+			<channel id="47031" typeId="f470-47031"/>
+			<channel id="47032" typeId="f470-47032"/>
+			<channel id="47033" typeId="f470-47033"/>
+			<channel id="47034" typeId="f470-47034"/>
+			<channel id="47035" typeId="f470-47035"/>
+			<channel id="47036" typeId="f470-47036"/>
+			<channel id="47041" typeId="f470-47041"/>
+			<channel id="47043" typeId="f470-47043"/>
+			<channel id="47044" typeId="f470-47044"/>
+			<channel id="47045" typeId="f470-47045"/>
+			<channel id="47046" typeId="f470-47046"/>
+			<channel id="47047" typeId="f470-47047"/>
+			<channel id="47048" typeId="f470-47048"/>
+			<channel id="47049" typeId="f470-47049"/>
+			<channel id="47050" typeId="f470-47050"/>
+			<channel id="47051" typeId="f470-47051"/>
+			<channel id="47054" typeId="f470-47054"/>
+			<channel id="47055" typeId="f470-47055"/>
+			<channel id="47131" typeId="f470-47131"/>
+			<channel id="47137" typeId="f470-47137"/>
+			<channel id="47138" typeId="f470-47138"/>
+			<channel id="47212" typeId="f470-47212"/>
+			<channel id="47214" typeId="f470-47214"/>
+			<channel id="47261" typeId="f470-47261"/>
+			<channel id="47262" typeId="f470-47262"/>
+			<channel id="47263" typeId="f470-47263"/>
+			<channel id="47264" typeId="f470-47264"/>
+			<channel id="47265" typeId="f470-47265"/>
+			<channel id="47266" typeId="f470-47266"/>
+			<channel id="47267" typeId="f470-47267"/>
+			<channel id="47268" typeId="f470-47268"/>
+			<channel id="47269" typeId="f470-47269"/>
+			<channel id="47270" typeId="f470-47270"/>
+			<channel id="47271" typeId="f470-47271"/>
+			<channel id="47272" typeId="f470-47272"/>
+			<channel id="47273" typeId="f470-47273"/>
+			<channel id="47274" typeId="f470-47274"/>
+			<channel id="47275" typeId="f470-47275"/>
+			<channel id="47276" typeId="f470-47276"/>
+			<channel id="47277" typeId="f470-47277"/>
+			<channel id="47278" typeId="f470-47278"/>
+			<channel id="47279" typeId="f470-47279"/>
+			<channel id="47280" typeId="f470-47280"/>
+			<channel id="47281" typeId="f470-47281"/>
+			<channel id="47282" typeId="f470-47282"/>
+			<channel id="47283" typeId="f470-47283"/>
+			<channel id="47284" typeId="f470-47284"/>
+			<channel id="47285" typeId="f470-47285"/>
+			<channel id="47286" typeId="f470-47286"/>
+			<channel id="47287" typeId="f470-47287"/>
+			<channel id="47288" typeId="f470-47288"/>
+			<channel id="47289" typeId="f470-47289"/>
+			<channel id="47290" typeId="f470-47290"/>
+			<channel id="47292" typeId="f470-47292"/>
+			<channel id="47293" typeId="f470-47293"/>
+			<channel id="47300" typeId="f470-47300"/>
+			<channel id="47301" typeId="f470-47301"/>
+			<channel id="47302" typeId="f470-47302"/>
+			<channel id="47303" typeId="f470-47303"/>
+			<channel id="47304" typeId="f470-47304"/>
+			<channel id="47305" typeId="f470-47305"/>
+			<channel id="47306" typeId="f470-47306"/>
+			<channel id="47307" typeId="f470-47307"/>
+			<channel id="47308" typeId="f470-47308"/>
+			<channel id="47309" typeId="f470-47309"/>
+			<channel id="47310" typeId="f470-47310"/>
+			<channel id="47351" typeId="f470-47351"/>
+			<channel id="47352" typeId="f470-47352"/>
+			<channel id="47365" typeId="f470-47365"/>
+			<channel id="47366" typeId="f470-47366"/>
+			<channel id="47367" typeId="f470-47367"/>
+			<channel id="47368" typeId="f470-47368"/>
+			<channel id="47370" typeId="f470-47370"/>
+			<channel id="47371" typeId="f470-47371"/>
+			<channel id="47372" typeId="f470-47372"/>
+			<channel id="47374" typeId="f470-47374"/>
+			<channel id="47375" typeId="f470-47375"/>
+			<channel id="47376" typeId="f470-47376"/>
+			<channel id="47377" typeId="f470-47377"/>
+			<channel id="47378" typeId="f470-47378"/>
+			<channel id="47379" typeId="f470-47379"/>
+			<channel id="47384" typeId="f470-47384"/>
+			<channel id="47385" typeId="f470-47385"/>
+			<channel id="47387" typeId="f470-47387"/>
+			<channel id="47388" typeId="f470-47388"/>
+			<channel id="47389" typeId="f470-47389"/>
+			<channel id="47391" typeId="f470-47391"/>
+			<channel id="47392" typeId="f470-47392"/>
+			<channel id="47393" typeId="f470-47393"/>
+			<channel id="47394" typeId="f470-47394"/>
+			<channel id="47395" typeId="f470-47395"/>
+			<channel id="47396" typeId="f470-47396"/>
+			<channel id="47397" typeId="f470-47397"/>
+			<channel id="47398" typeId="f470-47398"/>
+			<channel id="47399" typeId="f470-47399"/>
+			<channel id="47400" typeId="f470-47400"/>
+			<channel id="47401" typeId="f470-47401"/>
+			<channel id="47402" typeId="f470-47402"/>
+			<channel id="47442" typeId="f470-47442"/>
+			<channel id="47525" typeId="f470-47525"/>
+			<channel id="47536" typeId="f470-47536"/>
+			<channel id="47537" typeId="f470-47537"/>
+			<channel id="47538" typeId="f470-47538"/>
+			<channel id="47539" typeId="f470-47539"/>
+			<channel id="47556" typeId="f470-47556"/>
+			<channel id="47564" typeId="f470-47564"/>
+			<channel id="47565" typeId="f470-47565"/>
+			<channel id="47567" typeId="f470-47567"/>
+			<channel id="48043" typeId="f470-48043"/>
+			<channel id="48132" typeId="f470-48132"/>
+			<channel id="48282" typeId="f470-48282"/>
+			<channel id="48283" typeId="f470-48283"/>
+			<channel id="48284" typeId="f470-48284"/>
+			<channel id="48285" typeId="f470-48285"/>
+			<channel id="48488" typeId="f470-48488"/>
+			<channel id="48489" typeId="f470-48489"/>
+			<channel id="48491" typeId="f470-48491"/>
+			<channel id="48492" typeId="f470-48492"/>
+			<channel id="48493" typeId="f470-48493"/>
+			<channel id="48494" typeId="f470-48494"/>
+			<channel id="48495" typeId="f470-48495"/>
+			<channel id="48496" typeId="f470-48496"/>
+			<channel id="48497" typeId="f470-48497"/>
+			<channel id="48498" typeId="f470-48498"/>
+			<channel id="48499" typeId="f470-48499"/>
+			<channel id="48500" typeId="f470-48500"/>
+			<channel id="48501" typeId="f470-48501"/>
+			<channel id="48502" typeId="f470-48502"/>
+			<channel id="48503" typeId="f470-48503"/>
+			<channel id="48504" typeId="f470-48504"/>
+			<channel id="48505" typeId="f470-48505"/>
+			<channel id="48506" typeId="f470-48506"/>
+			<channel id="48507" typeId="f470-48507"/>
+			<channel id="48508" typeId="f470-48508"/>
+			<channel id="48509" typeId="f470-48509"/>
+			<channel id="48510" typeId="f470-48510"/>
+			<channel id="48569" typeId="f470-48569"/>
+			<channel id="48570" typeId="f470-48570"/>
+			<channel id="48571" typeId="f470-48571"/>
+			<channel id="48572" typeId="f470-48572"/>
+			<channel id="48573" typeId="f470-48573"/>
+			<channel id="48574" typeId="f470-48574"/>
+			<channel id="48575" typeId="f470-48575"/>
+			<channel id="48576" typeId="f470-48576"/>
+			<channel id="48577" typeId="f470-48577"/>
+			<channel id="48578" typeId="f470-48578"/>
+			<channel id="48579" typeId="f470-48579"/>
+			<channel id="48580" typeId="f470-48580"/>
+			<channel id="48675" typeId="f470-48675"/>
+			<channel id="48676" typeId="f470-48676"/>
+			<channel id="48677" typeId="f470-48677"/>
+			<channel id="48678" typeId="f470-48678"/>
+			<channel id="48680" typeId="f470-48680"/>
+			<channel id="48681" typeId="f470-48681"/>
+			<channel id="48682" typeId="f470-48682"/>
+			<channel id="48683" typeId="f470-48683"/>
+			<channel id="48685" typeId="f470-48685"/>
+			<channel id="48686" typeId="f470-48686"/>
+			<channel id="48687" typeId="f470-48687"/>
+			<channel id="48688" typeId="f470-48688"/>
+			<channel id="48732" typeId="f470-48732"/>
+			<channel id="48733" typeId="f470-48733"/>
+			<channel id="48734" typeId="f470-48734"/>
+			<channel id="48735" typeId="f470-48735"/>
+			<channel id="48736" typeId="f470-48736"/>
+			<channel id="48737" typeId="f470-48737"/>
+			<channel id="48738" typeId="f470-48738"/>
+			<channel id="48739" typeId="f470-48739"/>
+			<channel id="48755" typeId="f470-48755"/>
+			<channel id="48794" typeId="f470-48794"/>
+			<channel id="48810" typeId="f470-48810"/>
+			<channel id="48811" typeId="f470-48811"/>
+			<channel id="48812" typeId="f470-48812"/>
+			<channel id="48813" typeId="f470-48813"/>
+			<channel id="48814" typeId="f470-48814"/>
+			<channel id="48815" typeId="f470-48815"/>
+			<channel id="48816" typeId="f470-48816"/>
+			<channel id="48817" typeId="f470-48817"/>
+			<channel id="48889" typeId="f470-48889"/>
+			<channel id="48926" typeId="f470-48926"/>
+			<channel id="48927" typeId="f470-48927"/>
+			<channel id="48930" typeId="f470-48930"/>
+			<channel id="48931" typeId="f470-48931"/>
+			<channel id="48932" typeId="f470-48932"/>
+			<channel id="48968" typeId="f470-48968"/>
+			<channel id="48970" typeId="f470-48970"/>
+			<channel id="48976" typeId="f470-48976"/>
+			<channel id="49289" typeId="f470-49289"/>
+			<channel id="49297" typeId="f470-49297"/>
+			<channel id="49298" typeId="f470-49298"/>
+			<channel id="49358" typeId="f470-49358"/>
+			<channel id="49359" typeId="f470-49359"/>
+			<channel id="49360" typeId="f470-49360"/>
+			<channel id="49361" typeId="f470-49361"/>
+			<channel id="49362" typeId="f470-49362"/>
+			<channel id="49363" typeId="f470-49363"/>
+			<channel id="49364" typeId="f470-49364"/>
+			<channel id="49365" typeId="f470-49365"/>
+			<channel id="49366" typeId="f470-49366"/>
+			<channel id="49431" typeId="f470-49431"/>
 		</channels>
 	</channel-group-type>
 

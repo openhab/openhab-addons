@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,8 +131,8 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
             return;
         }
         logger.debug("Init socket on Port: {}", port);
-        socket = new XiaomiBridgeSocket(port);
-        socket.intialize();
+        socket = new XiaomiBridgeSocket(port, getThing().getUID().getId());
+        socket.initialize();
         socket.registerListener(this);
 
         scheduler.schedule(() -> {

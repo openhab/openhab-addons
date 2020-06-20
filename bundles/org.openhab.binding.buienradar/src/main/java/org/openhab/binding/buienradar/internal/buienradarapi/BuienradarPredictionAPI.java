@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,8 +151,8 @@ public class BuienradarPredictionAPI implements PredictionAPI {
             logger.warn("Buienradar API at URI {} return empty result", address);
             return Optional.empty();
         }
-        final List<Prediction> predictions = new ArrayList<Prediction>(24);
-        final List<String> errors = new LinkedList<String>();
+        final List<Prediction> predictions = new ArrayList<>(24);
+        final List<String> errors = new LinkedList<>();
         logger.debug("Returned result from buienradar: {}", result);
         final String[] lines = result.split("\n");
         Optional<ZonedDateTime> actual = Optional.empty();
@@ -170,5 +170,4 @@ public class BuienradarPredictionAPI implements PredictionAPI {
         }
         return Optional.of(predictions);
     }
-
 }

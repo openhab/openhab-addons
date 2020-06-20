@@ -1,8 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airmonitor.v1",
-			"cgllc.airmonitor.b1"
+			"zhimi.airmonitor.v1"
 		],
 		"channels": [
 			{
@@ -32,7 +31,7 @@
 				"property": "battery",
 				"friendlyName": "Battery",
 				"channel": "battery",
-				"channelType":"system:battery-level",
+				"channelType": "system:battery-level",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",

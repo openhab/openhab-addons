@@ -5,12 +5,13 @@
 
 	<thing-type id="manager">
 		<label>RME Rain Manager</label>
-		<description>The RME Rain Manager is a controllable water supply unit that can monitor a gauge in a cistern, and switch between rain water and city provided water</description>
+		<description>The RME Rain Manager is a controllable water supply unit that can monitor a gauge in a cistern, and
+			switch between rain water and city provided water</description>
 
 		<channels>
-			<channel id="waterlevel" typeId="waterlevel" />
-			<channel id="mode" typeId="mode" />
-			<channel id="source" typeId="source" />
+			<channel id="waterlevel" typeId="waterlevel"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="source" typeId="source"/>
 			<channel id="exitpump" typeId="statusflag">
 				<label>Exit Pump Active</label>
 			</channel>
@@ -38,6 +39,7 @@
 			<parameter name="port" type="text">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Serial Port the RME Rain Manager is connected to</description>
 				<required>true</required>
 			</parameter>
@@ -49,7 +51,7 @@
 		<item-type>Number</item-type>
 		<label>Water Level</label>
 		<description>Indicates the % the cistern is filled with water</description>
-		<state readOnly="true" pattern="%.1f %%" />
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<!-- Operation Mode Channel Type -->

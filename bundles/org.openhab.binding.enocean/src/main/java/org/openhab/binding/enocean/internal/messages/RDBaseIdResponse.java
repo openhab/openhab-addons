@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
-import org.openhab.binding.enocean.internal.transceiver.Helper;
+import org.openhab.binding.enocean.internal.Helper;
 
 /**
  *
@@ -31,13 +31,12 @@ public class RDBaseIdResponse extends Response {
     RDBaseIdResponse(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, payload);
 
-        if (this.payload == null || this.payload.length != 5 || this.optionalPayload == null
-                || this.optionalPayload.length != 1) {
+        if (this.data == null || this.data.length != 5 || this.optionalData == null || this.optionalData.length != 1) {
             return;
         }
 
         baseId = getPayload(1, 4);
-        remainingWriteCycles = optionalPayload[0] & 0xFF;
+        remainingWriteCycles = optionalData[0] & 0xFF;
 
         _isValid = true;
     }
@@ -49,5 +48,4 @@ public class RDBaseIdResponse extends Response {
     public int getRemainingWriteCycles() {
         return remainingWriteCycles;
     }
-
 }

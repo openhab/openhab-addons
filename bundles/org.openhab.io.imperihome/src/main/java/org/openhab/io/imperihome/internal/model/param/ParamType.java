@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ public enum ParamType {
     STOPPABLE("stopable"),
     PULSEABLE("pulseable"),
 
-    //Thermostat parameters
+    // Thermostat parameters
     CUR_MODE("curmode"),
     CUR_SETPOINT("cursetpoint"),
     CUR_TEMP("curtemp"),
@@ -70,5 +70,4 @@ public enum ParamType {
     public String getApiString() {
         return apiString;
     }
-
 }

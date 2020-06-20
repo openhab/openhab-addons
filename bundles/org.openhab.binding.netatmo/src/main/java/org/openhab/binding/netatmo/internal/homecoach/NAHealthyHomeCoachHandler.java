@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
@@ -33,8 +34,8 @@ import io.swagger.client.model.NAHealthyHomeCoachDataBody;
  */
 public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHomeCoach> {
 
-    public NAHealthyHomeCoachHandler(@NonNull Thing thing) {
-        super(thing);
+    public NAHealthyHomeCoachHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         if (device != null) {
             NADashboardData dashboardData = device.getDashboardData();
             switch (channelId) {
@@ -78,11 +79,11 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
                 case CHANNEL_ABSOLUTE_PRESSURE:
                     return toQuantityType(dashboardData.getAbsolutePressure(), API_PRESSURE_UNIT);
                 case CHANNEL_TIMEUTC:
-                    return toDateTimeType(dashboardData.getTimeUtc());
+                    return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
                 case CHANNEL_DATE_MIN_TEMP:
-                    return toDateTimeType(dashboardData.getDateMinTemp());
+                    return toDateTimeType(dashboardData.getDateMinTemp(), timeZoneProvider.getTimeZone());
                 case CHANNEL_DATE_MAX_TEMP:
-                    return toDateTimeType(dashboardData.getDateMaxTemp());
+                    return toDateTimeType(dashboardData.getDateMaxTemp(), timeZoneProvider.getTimeZone());
                 case CHANNEL_HUMIDITY:
                     return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
             }
@@ -120,5 +121,4 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
         }
         return null;
     }
-
 }

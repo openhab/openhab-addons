@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public abstract class IhcBaseService extends IhcHttpsClient {
     protected String sendSoapQuery(String soapAction, String query, int timeout) throws IhcExecption {
         Map<String, String> reqProperties = null;
         if (soapAction != null) {
-            reqProperties = new HashMap<String, String>();
+            reqProperties = new HashMap<>();
             reqProperties.put("SOAPAction", soapAction);
         }
         return sendQuery(url, reqProperties, query, timeout);

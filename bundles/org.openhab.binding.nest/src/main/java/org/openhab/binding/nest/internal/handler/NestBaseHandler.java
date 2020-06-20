@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -158,7 +158,7 @@ public abstract class NestBaseHandler<T> extends BaseThingHandler
     }
 
     protected <U extends Quantity<U>> State getAsQuantityTypeOrNull(@Nullable Number value, Unit<U> unit) {
-        return value == null ? UnDefType.NULL : new QuantityType<U>(value, unit);
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 
     protected State getAsStringTypeOrNull(@Nullable Object value) {
@@ -200,5 +200,4 @@ public abstract class NestBaseHandler<T> extends BaseThingHandler
     }
 
     protected abstract void update(T oldData, T data);
-
 }

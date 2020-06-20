@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,6 @@ public class PrivateApiTokenCheck extends AbstractCommandCallback implements Sol
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-
         // as a token is used no real login is to be done here. It is just checked if a protected page can be retrieved
         // and therefore the token is valid.
         requestToPrepare.followRedirects(false);
@@ -52,5 +51,4 @@ public class PrivateApiTokenCheck extends AbstractCommandCallback implements Sol
     public void onComplete(Result result) {
         getListener().update(getCommunicationStatus());
     }
-
 }

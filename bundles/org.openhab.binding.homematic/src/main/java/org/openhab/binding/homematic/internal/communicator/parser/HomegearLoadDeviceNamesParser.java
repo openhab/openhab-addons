@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public class HomegearLoadDeviceNamesParser extends CommonRpcParser<Object[], Voi
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {
-        Map<String, HmDevice> devicesById = new HashMap<String, HmDevice>();
+        Map<String, HmDevice> devicesById = new HashMap<>();
         for (HmDevice device : devices) {
             devicesById.put(device.getHomegearId(), device);
         }

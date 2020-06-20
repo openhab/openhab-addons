@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,15 +14,11 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.util.HashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SomfyTahomaSilentRollerShutterHandler} is responsible for handling commands,
@@ -31,60 +27,58 @@ import org.slf4j.LoggerFactory;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaBaseThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaSilentRollerShutterHandler.class);
+public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaRollerShutterHandler {
 
     public SomfyTahomaSilentRollerShutterHandler(Thing thing) {
         super(thing);
         stateNames.put(CONTROL_SILENT, "core:ClosureState");
-        stateNames.put(CONTROL, "core:ClosureState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Received command {} for channel {}", command, channelUID);
+        super.handleCommand(channelUID, command);
         if (!CONTROL.equals(channelUID.getId()) && !channelUID.getId().equals(CONTROL_SILENT)) {
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
-            updateChannelState(channelUID);
+        if (command instanceof RefreshType) {
+            return;
         } else {
             String cmd = getTahomaCommand(command.toString());
-            if (COMMAND_MY.equals(cmd)) {
-                String executionId = getCurrentExecutions();
-                if (executionId != null) {
-                    //Check if the roller shutter is moving and MY is sent => STOP it
-                    cancelExecution(executionId);
-                } else {
-                    sendCommand(COMMAND_MY, "[]");
-                }
-            } else {
-                if (CONTROL_SILENT.equals(channelUID.getId()) && COMMAND_SET_CLOSURE.equals(cmd)) {
-                    // move the roller shutter to the specific position at low speed
-                    String param = "[" + command.toString() + ", \"lowspeed\"]";
-                    sendCommand(COMMAND_SET_CLOSURESPEED, param);
-                } else {
-                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
-                    sendCommand(cmd, param);
-                }
+            switch (cmd) {
+                case COMMAND_STOP:
+                    String executionId = getCurrentExecutions();
+                    if (executionId != null) {
+                        // Check if the roller shutter is moving and STOP is sent => STOP it
+                        cancelExecution(executionId);
+                        break;
+                    }
+                    // fall through
+                case COMMAND_MY:
+                    sendCommand(COMMAND_MY);
+                    break;
+                case COMMAND_SET_CLOSURE:
+                    if (CONTROL_SILENT.equals(channelUID.getId())) {
+                        // move the roller shutter to the specific position at low speed
+                        String param = "[" + toInteger(command) + ", \"lowspeed\"]";
+                        sendCommand(COMMAND_SET_CLOSURESPEED, param);
+                    } else {
+                        String param = "[" + toInteger(command) + "]";
+                        sendCommand(cmd, param);
+                    }
+                    break;
+                case COMMAND_UP:
+                case COMMAND_DOWN:
+                    if (CONTROL_SILENT.equals(channelUID.getId())) {
+                        // move the roller shutter to the specific position at low speed
+                        String param = "[" + (COMMAND_UP.equals(cmd) ? 0 : 100) + ", \"lowspeed\"]";
+                        sendCommand(COMMAND_SET_CLOSURESPEED, param);
+                        break;
+                    }
+                    // fall through
+                default:
+                    sendCommand(cmd);
             }
-        }
-    }
-
-    private String getTahomaCommand(String command) {
-        switch (command) {
-            case "OFF":
-            case "DOWN":
-                return COMMAND_DOWN;
-            case "ON":
-            case "UP":
-                return COMMAND_UP;
-            case "STOP":
-                return COMMAND_MY;
-            default:
-                return COMMAND_SET_CLOSURE;
         }
     }
 }

@@ -7,7 +7,7 @@
 	<!-- RockerSwitch -->
 	<thing-type id="pushButton">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Simple Push Button</label>

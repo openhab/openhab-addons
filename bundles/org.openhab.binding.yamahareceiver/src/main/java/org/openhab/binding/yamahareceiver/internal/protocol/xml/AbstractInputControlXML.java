@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,6 @@ public abstract class AbstractInputControlXML {
                 && deviceDescriptor.features.containsKey(Feature.NET_USB)
                 && !deviceDescriptor.features.containsKey(Feature.NET_RADIO)
                 && !deviceDescriptor.features.containsKey(Feature.USB)) {
-
             // have to use the NET_USB xml element in this case
             inputElement = "NET_USB";
             inputFeature = Feature.NET_USB;

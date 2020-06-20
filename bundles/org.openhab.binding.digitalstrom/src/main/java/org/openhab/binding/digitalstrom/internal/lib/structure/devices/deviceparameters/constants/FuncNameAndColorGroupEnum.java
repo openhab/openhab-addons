@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link FuncNameAndColorGroupEnum} contains all digitalSTROM functional group names and links to their
@@ -61,7 +62,7 @@ public enum FuncNameAndColorGroupEnum {
     private final short colorGroup;
     private final FunctionalColorGroupEnum color;
 
-    static final HashMap<Short, FuncNameAndColorGroupEnum> COLOR_GROUPS = new HashMap<Short, FuncNameAndColorGroupEnum>();
+    static final Map<Short, FuncNameAndColorGroupEnum> COLOR_GROUPS = new HashMap<>();
 
     static {
         for (FuncNameAndColorGroupEnum colorGroup : FuncNameAndColorGroupEnum.values()) {

@@ -57,11 +57,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
 
     AccountHandler accountHandler;
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
-    private final HashSet<String> discoverdFlashBriefings = new HashSet<>();
-
-    @Nullable
-    ScheduledFuture<?> startScanStateJob;
-    static @Nullable Long activateTimeStamp;
+    private final Set<String> discoverdFlashBriefings = new HashSet<>();
 
     private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
@@ -71,7 +67,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
     }
 
     public AmazonEchoDiscovery(AccountHandler accountHandler) {
-        super(SUPPORTED_ECHO_THING_TYPES_UIDS, 10);
+        super(SUPPORTED_THING_TYPES_UIDS, 10);
         this.accountHandler = accountHandler;
     }
 
@@ -87,9 +83,7 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
     @Override
     protected void startScan() {
         stopScanJob();
-        if (activateTimeStamp != null) {
-            removeOlderResults(activateTimeStamp);
-        }
+        removeOlderResults(activateTimeStamp);
 
         setDevices(accountHandler.updateDeviceList());
 
@@ -144,10 +138,8 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
         if (config != null) {
             modified(config);
         }
-        if (activateTimeStamp == null) {
-            activateTimeStamp = new Date().getTime();
-        }
-    };
+        activateTimeStamp = new Date().getTime();
+    }
 
     synchronized void setDevices(List<Device> deviceList) {
         DiscoveryServiceCallback discoveryServiceCallback = this.discoveryServiceCallback;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class NhcThermostat2 extends NhcThermostat {
         logger.debug("Niko Home Control: execute thermostat overrule {} during {} min for {}", overrule, overruletime,
                 id);
 
-        nhcComm.executeThermostat(id, overrule / 10, overruletime);
+        nhcComm.executeThermostat(id, overrule, overruletime);
     }
 
     /**

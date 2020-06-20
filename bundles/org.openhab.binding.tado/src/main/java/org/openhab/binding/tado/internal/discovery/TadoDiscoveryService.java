@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class TadoDiscoveryService extends AbstractDiscoveryService {
 
     private ScheduledFuture<?> discoveryFuture;
 
-    public final static Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_ZONE, THING_TYPE_MOBILE_DEVICE).collect(Collectors.toSet()));
 
     private TadoHomeHandler homeHandler;

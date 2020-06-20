@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,12 +22,12 @@ import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 
 /**
- * Subscribes and unsubscribes from Item changes to enable notification to Homekit
+ * Subscribes and unsubscribes from Item changes to enable notification to HomeKit
  * clients. Each item/key pair (key is optional) should be unique, as the underlying
- * Homekit library takes care of insuring only a single subscription exists for
+ * HomeKit library takes care of insuring only a single subscription exists for
  * each accessory.
  *
  * @author Andy Lintner - Initial contribution
@@ -55,7 +55,7 @@ public class HomekitAccessoryUpdater {
                 logger.debug("Received duplicate subscription for {} / {}", item, key);
                 unsubscribe(item, key);
             }
-            logger.debug("Adding subscription for {} / {}", item, key);
+            logger.trace("Adding subscription for {} / {}", item, key);
             Subscription subscription = (changedItem, oldState, newState) -> callback.changed();
             item.addStateChangeListener(subscription);
             return subscription;
@@ -71,7 +71,7 @@ public class HomekitAccessoryUpdater {
             return;
         }
         subscriptionsByName.computeIfPresent(new ItemKey(item, key), (k, v) -> {
-            logger.debug("Removing existing subscription for {} / {}", item, key);
+            logger.trace("Removing existing subscription for {} / {}", item, key);
             item.removeStateChangeListener(v);
             return null;
         });

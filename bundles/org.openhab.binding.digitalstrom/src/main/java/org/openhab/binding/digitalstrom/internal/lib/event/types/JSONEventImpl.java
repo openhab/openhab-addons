@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public class JSONEventImpl implements Event {
      * @param jsonEventArray must not be null
      */
     public JSONEventImpl(JsonArray jsonEventArray) {
-        this.eventItemList = new LinkedList<EventItem>();
+        this.eventItemList = new LinkedList<>();
         for (int i = 0; i < jsonEventArray.size(); i++) {
             if (jsonEventArray.get(i) instanceof JsonObject) {
                 this.eventItemList.add(new EventItemImpl((JsonObject) jsonEventArray.get(i)));

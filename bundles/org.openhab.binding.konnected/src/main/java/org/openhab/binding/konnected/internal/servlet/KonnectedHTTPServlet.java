@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ public class KonnectedHTTPServlet extends HttpServlet {
             String data = inputStreamToString(req);
 
             logger.debug("The raw json data is: {}", data);
-            if (data != null && !(konnectedThingHandlers.size() == 0)) {
+            if (data != null && !konnectedThingHandlers.isEmpty()) {
                 KonnectedModuleGson event = gson.fromJson(data, KonnectedModuleGson.class);
                 String authorizationHeader = req.getHeader("Authorization");
                 String thingHandlerKey = authorizationHeader.substring("Bearer".length()).trim();
@@ -99,5 +99,4 @@ public class KonnectedHTTPServlet extends HttpServlet {
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     }
-
 }

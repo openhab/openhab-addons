@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,21 +12,24 @@
  */
 package org.openhab.binding.miio.internal.robot;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * List of Errors
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public enum StatusType {
 
     UNKNOWN(0, "Unknown"),
     INITIATING(1, "Initiating"),
     SLEEPING(2, "Sleeping"),
     IDLE(3, "Idle"),
-    UNKNOWN4(4, "Remote Control"),
+    REMOTE(4, "Remote Control"),
     CLEANING(5, "Cleaning"),
     RETURNING(6, "Returning Dock"),
-    UNKNOWN7(7, "Manual Mode"),
+    MANUAL(7, "Manual Mode"),
     CHARGING(8, "Charging"),
     CHARGING_ERROR(9, "Charging Error"),
     PAUSED(10, "Paused"),
@@ -37,6 +40,7 @@ public enum StatusType {
     DOCKING(15, "Docking"),
     GOTO(16, "Go To"),
     ZONE(17, "Zone Clean"),
+    ROOM(18, "Room Clean"),
     FULL(100, "Full");
 
     private final int id;

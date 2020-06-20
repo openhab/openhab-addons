@@ -15,10 +15,15 @@ As described in the Telegram Bot API, this is the manual procedure needed in ord
 
 - Open a chat with your new Bot and send any message to it. The next step will not work unless you send a message to your bot first.
 
-3. Get the chatId
+3. Get the chatID
 
 - Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained)
-- Look at the JSON result to find the value of `id`. That is the chatId. Note that if using a Telegram group chat, the group chatIds are prefixed with a dash that must be included in the config file. (e.g. bot1.chatId: -22334455)
+- Look at the JSON result to find the value of `id`: that's the chatID.
+Note that if using a Telegram group chat, the group chatIDs are prefixed with a dash that must be included in the config (e.g. `-22334455`).
+If this does not work for you (the JSON response may be empty), or you want to send to *more* than one recipient (= another chatID), the alternative is to contact (= open a chat with) a Telegram bot to respond with the chatID.
+There's a number of them such as `@myidbot` or `@chatid_echo_bot` - open a chat, eventually tap `/start` and it will return the chatID you're looking for.
+Another option is `@getidsbot` which gives you much more information.
+Note bots may work or not at any time so eventually you need to try another one.
 
 4. Test the bot
 
@@ -34,14 +39,15 @@ As described in the Telegram Bot API, this is the manual procedure needed in ord
 
 The Telegram binding supports the following things which origin from the latest message sent to the Telegram bot:
 
-* message text
+* message text or URL
 * message date
 * full name of sender (first name + last name)
 * username of sender
 * chat id (used to identify the chat of the last message)
 * reply id (used to identify an answer from a user of a previously sent message by the binding)
 
-Please note that the things cannot be used to send messages. In order to send a message, an action must be used instead.
+Please note that the things cannot be used to send messages.
+In order to send a message, an action must be used instead.
 
 ## Thing Configuration
 
@@ -52,18 +58,64 @@ Please note that the things cannot be used to send messages. In order to send a 
 | `chatIds`               |         | Yes      | Comma-separated list of chat ids                                                             |
 | `botToken`              |         | Yes      | authentication token                                                                         |
 | `parseMode`             |  None   | No       | Support for formatted messages, values: Markdown or HTML.                                    |
+| `proxyHost`             |  None   | No       | Proxy host for telegram binding.                                                             |
+| `proxyPort`             |  None   | No       | Proxy port for telegram binding.                                                             |
+| `proxyType`             |  SOCKS5 | No       | Type of proxy server for telegram binding (SOCKS5 or HTTP). Default: SOCKS5                  |
+
+By default chat ids are bi-directionally, i.e. they can send and receive messages.
+They can be prefixed with an access modifier:
+- `<` restricts the chat to send only, i.e. this chat id can send messages to openHAB, but will never receive a notification.
+- `>` restricts the chat to receive only, i.e. this chat id will receive all notifications, but messages from this chat id will be discarded. 
+To use the reply function, chat ids need to be bi-directional.
+
+telegram.thing (no proxy):
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN" ]
+```
+
+telegram.thing (multiple chat ids, one bi-directional chat (ID1), one outbound-only (ID2)):
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID1",">ID2", botToken="TOKEN" ]
+```
+
+
+telegram.thing (markdown format):
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", parseMode ="Markdown" ]
+```
+
+telegram.thing (SOCKS5 proxy server is used): 
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="HOST", proxyPort="PORT", proxyType="TYPE" ]
+```
+
+or HTTP proxy server
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
+```
+
 
 ## Channels
 
 | Channel Type ID                      | Item Type | Description                                                     |
 |--------------------------------------|-----------|-----------------------------------------------------------------|
 | lastMessageText                      | String    | The last received message                                       |
+| lastMessageURL                       | String    | The URL of the last received message content                    |
 | lastMessageDate                      | DateTime  | The date of the last received message (UTC)                     |
 | lastMessageName                      | String    | The full name of the sender of the last received message        |
 | lastMessageUsername                  | String    | The username of the sender of the last received message         |
-| chatId                               | String    | The id of the chat of the last received meesage                 |
+| chatId                               | String    | The id of the chat of the last received message                 |
 | replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |
 
+All channels are read-only.
+Either `lastMessageText` or `lastMessageURL` are populated for a given message.
+If the message did contain text, the content is written to `lastMessageText`.
+If the message did contain an audio, photo, video or voice, the URL to retrieve that content can be found in `lastMessageURL`. 
 
 ## Rule Actions
 
@@ -74,7 +126,6 @@ val telegramAction = getActions("telegram","telegram:telegramBot:<uid>")
 ```
 
 where uid is the Thing UID of the Telegram thing (not the chat id!).
-
 
 Once this action instance is retrieved, you can invoke the `sendTelegram' method on it:
 
@@ -95,7 +146,8 @@ These actions will send a message to all chat ids configured for this bot.
 | sendTelegram(String format, Object... args)          | Sends a formatted message (See https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html for more information).
 | sendTelegramQuery(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png). |
 | sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should *always* call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
-| sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols or a base64 encoded image. |
+| sendTelegramPhoto(String photoURL, String caption) | Sends a picture. The URL can be specified using the http, https, and file protocols or a base64 encoded image (simple base64 data or data URI scheme). |
+| sendTelegramPhoto(String photoURL, String caption, String username, String password) | Sends a picture which is downloaded from a username/password protected http/https address. |
 
 ### Actions to send messages to a particular chat
 
@@ -165,6 +217,18 @@ then
 end
 ```
 
+telegram.rules
+
+```java
+rule "Send telegram with image from password protected http source"
+when
+    Item Light_GF_Living_Table changed
+then
+    val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    telegramAction.sendTelegramPhoto("http://192.168.1.5/doorcam/picture.jpg", "Door Camera", "user", "mypassword")
+end
+```
+
 To send a base64 jpeg or png image:
 
 telegram.rules
@@ -175,8 +239,13 @@ when
     Item Light_GF_Living_Table changed
 then
     val telegramAction = getActions("telegram","telegram:telegramBot:2b155b22")
+    // image as base64 string
     var String base64Image = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
     telegramAction.sendTelegramPhoto(base64Image, "battery of motion sensor is empty")
+    
+    // image as base64 string in data URI scheme
+    var String base64ImageDataURI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAS1BMVEUAAABAQEA9QUc7P0Y0OD88QEY+QUhmaW7c3N3w8PBlaG0+QUjb29w5PUU3O0G+vsigoas6P0WfoKo4O0I9QUdkZ2w9Qkg+QkkkSUnT3FKbAAAAGXRSTlMACJbx//CV9v//9pT/7Ur//+z/SfD2kpMHrnfDaAAAAGhJREFUeAHt1bUBAzAMRFGZmcL7LxpOalN5r/evLIlgGwBgXMhxSjP64sa6cdYH+hLWzYiKvqSbI4kQeEt5PlBealsMFIkAAgi8HNriOLcjduLTafWwBB9n3p8v/+Ma1Mxxvd4IAGCzB4xDPuBRkEZiAAAAAElFTkSuQmCC"
+    telegramAction.sendTelegramPhoto(base64ImageDataURI, "battery of motion sensor is empty")    
 end
 ```
 

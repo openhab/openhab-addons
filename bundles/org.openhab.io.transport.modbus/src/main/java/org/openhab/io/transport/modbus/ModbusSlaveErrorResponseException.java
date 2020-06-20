@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-abstract public class ModbusSlaveErrorResponseException extends ModbusTransportException {
+public abstract class ModbusSlaveErrorResponseException extends ModbusTransportException {
 
     /**
      * The function code received in the query is not an allowable action for the slave. This may be because the
@@ -102,6 +102,5 @@ abstract public class ModbusSlaveErrorResponseException extends ModbusTransportE
     /**
      * @return the Modbus exception code that happened
      */
-    abstract public int getExceptionCode();
-
+    public abstract int getExceptionCode();
 }

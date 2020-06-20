@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,5 +108,4 @@ public class HttpUtils {
         String cliPort = resp.getAsJsonObject().get("result").getAsJsonObject().get("_p2").getAsString();
         return Integer.parseInt(cliPort);
     }
-
 }

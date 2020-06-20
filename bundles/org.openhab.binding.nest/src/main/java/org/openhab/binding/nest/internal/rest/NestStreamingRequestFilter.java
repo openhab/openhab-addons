@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,8 +40,8 @@ public class NestStreamingRequestFilter implements ClientRequestFilter {
     public void filter(@Nullable ClientRequestContext requestContext) throws IOException {
         if (requestContext != null) {
             MultivaluedMap<String, Object> headers = requestContext.getHeaders();
-            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-            headers.add(HttpHeaders.CACHE_CONTROL, "no-cache");
+            headers.putSingle(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+            headers.putSingle(HttpHeaders.CACHE_CONTROL, "no-cache");
         }
     }
 }

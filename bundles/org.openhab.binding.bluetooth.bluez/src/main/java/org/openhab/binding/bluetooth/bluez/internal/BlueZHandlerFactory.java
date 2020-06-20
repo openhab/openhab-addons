@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,8 @@ public class BlueZHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerBluetoothAdapter(BluetoothAdapter adapter) {
-        this.serviceRegs.put(adapter.getUID(), bundleContext.registerService(BluetoothAdapter.class.getName(), adapter,
-                new Hashtable<String, Object>()));
+        this.serviceRegs.put(adapter.getUID(),
+                bundleContext.registerService(BluetoothAdapter.class.getName(), adapter, new Hashtable<>()));
     }
 
     @Override

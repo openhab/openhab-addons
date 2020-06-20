@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,7 +157,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
         if (connectorTask == null || connectorTask.isCancelled()) {
             connectorTask = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
+                logger.trace("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
                 if (thing.getStatus() != ThingStatus.ONLINE) {
                     connect();
                 }
@@ -240,7 +240,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
                     RFXComInterfaceMessage msg = (RFXComInterfaceMessage) message;
                     if (msg.subType == SubType.RESPONSE) {
                         if (msg.command == Commands.GET_STATUS) {
-                            logger.info("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
+                            logger.debug("RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
                                     msg.transceiverType, msg.hardwareVersion1, msg.hardwareVersion2,
                                     msg.firmwareVersion);
                             thing.setProperty(Thing.PROPERTY_HARDWARE_VERSION,

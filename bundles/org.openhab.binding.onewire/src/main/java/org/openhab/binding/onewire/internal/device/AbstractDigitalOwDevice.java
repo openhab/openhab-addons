@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.binding.onewire.internal.DigitalIoConfig;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
@@ -48,7 +49,7 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
     protected @NonNullByDefault({}) OwserverDeviceParameter fullInParam;
     protected @NonNullByDefault({}) OwserverDeviceParameter fullOutParam;
 
-    protected final List<DigitalIoConfig> ioConfig = new ArrayList<DigitalIoConfig>();
+    protected final List<DigitalIoConfig> ioConfig = new ArrayList<>();
 
     public AbstractDigitalOwDevice(SensorId sensorId, OwBaseThingHandler callback) {
         super(sensorId, callback);
@@ -79,8 +80,14 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
                 }
 
                 if (dynamicStateDescriptionProvider != null) {
-                    dynamicStateDescriptionProvider.setDescription(ioConfig.get(i).getChannelUID(),
-                            new StateDescription(null, null, null, null, ioConfig.get(i).isInput(), null));
+                    StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
+                            .withReadOnly(ioConfig.get(i).isInput()).build().toStateDescription();
+                    if (stateDescription != null) {
+                        dynamicStateDescriptionProvider.setDescription(ioConfig.get(i).getChannelUID(),
+                                stateDescription);
+                    } else {
+                        logger.warn("Failed to create state description in thing {}", thing.getUID());
+                    }
                 } else {
                     logger.debug(
                             "state description may be inaccurate, state description provider not available in thing {}",
@@ -96,8 +103,12 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
         isConfigured = true;
     }
 
+    /**
+     * refreshes this sensor - note that the update interval check is not performed as its and i/o device
+     */
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+        logger.trace("refresh of sensor {} started", sensorId);
         if (isConfigured) {
             State state;
 
@@ -144,5 +155,4 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
             throw new IllegalArgumentException("channel number out of range");
         }
     }
-
 }

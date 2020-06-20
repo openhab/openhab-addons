@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,5 +43,4 @@ class TypeString extends KNXChannelType {
     protected String getDefaultDPT(String gaConfigKey) {
         return DPTXlatorString.DPT_STRING_8859_1.getID();
     }
-
 }

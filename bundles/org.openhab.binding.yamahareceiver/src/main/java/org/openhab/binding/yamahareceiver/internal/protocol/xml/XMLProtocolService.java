@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,7 +99,6 @@ public class XMLProtocolService {
      */
     public static Collection<InputDto> getInputs(AbstractConnection con, Zone zone)
             throws IOException, ReceivedMessageParseException {
-
         Node inputSelItem = getZoneResponse(con, zone, ZONE_INPUT_QUERY, ZONE_INPUT_PATH);
 
         List<InputDto> inputs = new LinkedList<>();

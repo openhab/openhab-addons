@@ -43,7 +43,8 @@
 
 		<parameter name="audioFormat" type="text">
 			<label>Audio Format</label>
-			<description>Allows for overriding the system default audio format. "MP3" and "OGG" are the only audio formats that are supported.</description>
+			<description>Allows for overriding the system default audio format. "MP3" and "OGG" are the only audio formats that
+				are supported.</description>
 			<options>
 				<option value="default">Use system default</option>
 				<option value="MP3">MP3</option>
@@ -54,7 +55,7 @@
 
 		<parameter name="cacheExpiration" type="text">
 			<label>Cache Expiration</label>
-			<description>Determines the age in days when unused cached files are purged. 
+			<description>Determines the age in days when unused cached files are purged.
 				Use 0 to disable this functionality.</description>
 			<default>0</default>
 		</parameter>

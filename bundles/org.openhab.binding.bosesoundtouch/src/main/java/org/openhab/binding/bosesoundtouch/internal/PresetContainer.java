@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,9 +77,10 @@ public class PresetContainer {
             throw new ContentItemNotPresetableException();
         }
     }
-    
+
     /**
      * Remove the Preset stored under the specified Id
+     * 
      * @param presetID
      */
     public void remove(int presetID) {
@@ -126,7 +127,7 @@ public class PresetContainer {
             }
         }
 
-        if (listOfPresets.size() > 0) {
+        if (!listOfPresets.isEmpty()) {
             listOfPresets.forEach(item -> storage.put(String.valueOf(item.getPresetID()), item));
         }
     }

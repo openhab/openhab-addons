@@ -7,7 +7,7 @@
 	<!-- RockerSwitch -->
 	<thing-type id="rockerSwitch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Rocker Switch</label>

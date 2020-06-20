@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="meteostick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="meteostick"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -7,13 +8,14 @@
 		<label>Meteostick USB Receiver</label>
 		<description>Meteostick USB Receiver</description>
 		<channels>
-			<channel id="pressure" typeId="pressure" />
-			<channel id="indoor-temperature" typeId="indoor-temperature" />
+			<channel id="pressure" typeId="pressure"/>
+			<channel id="indoor-temperature" typeId="indoor-temperature"/>
 		</channels>
 		<config-description>
 			<parameter name="port" type="text" required="true">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Serial port that the Meteostick is plugged into</description>
 			</parameter>
 			<parameter name="mode" type="integer" required="true">
@@ -34,25 +36,25 @@
 
 	<thing-type id="meteostick_davis_iss">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="meteostick_bridge" />
+			<bridge-type-ref id="meteostick_bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Davis Vantage Vue ISS</label>
 		<description>Davis Integrated Sensor Suite</description>
 		<channels>
-			<channel id="outdoor-temperature" typeId="outdoor-temperature" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="wind-direction" typeId="wind-direction" />
-			<channel id="wind-direction-last2min-average" typeId="wind-direction-last2min-average" />
-			<channel id="wind-speed" typeId="wind-speed" />
-			<channel id="wind-speed-last2min-average" typeId="wind-speed-last2min-average" />
-			<channel id="wind-speed-last2min-maximum" typeId="wind-speed-last2min-maximum" />
-			<channel id="rain-raw" typeId="rain-raw" />
-			<channel id="rain-currenthour" typeId="rain-currenthour" />
-			<channel id="rain-lasthour" typeId="rain-lasthour" />
-			<channel id="solar-power" typeId="solar-power" />
-			<channel id="signal-strength" typeId="system.signal-strength" />
-			<channel id="low-battery" typeId="system.low-battery" />
+			<channel id="outdoor-temperature" typeId="outdoor-temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="wind-direction" typeId="wind-direction"/>
+			<channel id="wind-direction-last2min-average" typeId="wind-direction-last2min-average"/>
+			<channel id="wind-speed" typeId="wind-speed"/>
+			<channel id="wind-speed-last2min-average" typeId="wind-speed-last2min-average"/>
+			<channel id="wind-speed-last2min-maximum" typeId="wind-speed-last2min-maximum"/>
+			<channel id="rain-raw" typeId="rain-raw"/>
+			<channel id="rain-currenthour" typeId="rain-currenthour"/>
+			<channel id="rain-lasthour" typeId="rain-lasthour"/>
+			<channel id="solar-power" typeId="solar-power"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description>

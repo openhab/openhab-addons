@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
@@ -73,7 +75,7 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public ThingUID getThingUID(@Nullable RemoteDevice device) {
         if (device != null) {
             if (device.getDetails().getManufacturerDetails().getManufacturer() != null) {
                 if (device.getDetails().getManufacturerDetails().getManufacturer().toUpperCase().contains("BELKIN")) {
@@ -121,11 +123,40 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                                     device.getIdentity().getUdn().getIdentifierString());
                             return new ThingUID(THING_TYPE_COFFEE, device.getIdentity().getUdn().getIdentifierString());
                         }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("dimmer")) {
+                            logger.debug("Discovered a WeMo Dimmer Switch thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_DIMMER, device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("crockpot")) {
+                            logger.debug("Discovered a WeMo enabled Crockpot thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_CROCKPOT,
+                                    device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase()
+                                .startsWith("airpurifier")) {
+                            logger.debug("Discovered a WeMo enabled Holmes Air Purifier thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_PURIFIER,
+                                    device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase()
+                                .startsWith("humidifier")) {
+                            logger.debug("Discovered a WeMo enabled Holmes Humidifier thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_HUMIDIFIER,
+                                    device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("heater")) {
+                            logger.debug("Discovered a WeMo enabled Heater thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_HEATER, device.getIdentity().getUdn().getIdentifierString());
+                        }
                     }
                 }
             }
         }
         return null;
     }
-
 }

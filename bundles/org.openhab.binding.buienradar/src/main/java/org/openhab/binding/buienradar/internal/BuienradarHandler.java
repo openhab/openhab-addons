@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import javax.measure.quantity.Speed;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -76,7 +74,6 @@ public class BuienradarHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @SuppressWarnings("null")
@@ -155,7 +152,7 @@ public class BuienradarHandler extends BaseThingHandler {
                 if (minutesFromNow >= 0 && minutesFromNow <= 115) {
                     final String label = String.format(Locale.ENGLISH, "forecast_%d", minutesFromNow);
 
-                    updateState(label, new QuantityType<Speed>(intensity, SmartHomeUnits.MILLIMETRE_PER_HOUR));
+                    updateState(label, new QuantityType<>(intensity, SmartHomeUnits.MILLIMETRE_PER_HOUR));
                 }
             }
 

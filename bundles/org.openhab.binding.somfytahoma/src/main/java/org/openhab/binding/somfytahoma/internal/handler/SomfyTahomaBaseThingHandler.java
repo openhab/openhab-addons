@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,20 +14,23 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +46,6 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     private HashMap<String, Integer> typeTable = new HashMap<>();
     protected HashMap<String, String> stateNames = new HashMap<>();
 
-    //cache
-    private @Nullable ExpiringCache<List<SomfyTahomaState>> thingStates;
-
     public SomfyTahomaBaseThingHandler(Thing thing) {
         super(thing);
     }
@@ -54,38 +54,45 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return stateNames;
     }
 
+    private String url = "";
+
     @Override
     public void initialize() {
-        thingStates = new ExpiringCache<>(CACHE_EXPIRY, () -> getThingStates());
+        url = getURL();
+        if (getThing().getProperties().containsKey(RSSI_LEVEL_STATE)) {
+            createRSSIChannel();
+        }
+        updateStatus(ThingStatus.ONLINE);
+    }
 
-        if (ThingStatus.ONLINE == getBridge().getStatus()) {
-            SomfyTahomaState state = getCachedThingState(STATUS_STATE);
-            updateThingStatus(state);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+    private void createRSSIChannel() {
+        if (thing.getChannel(RSSI) == null) {
+            logger.debug("{} Creating a rssi channel", url);
+            createChannel(RSSI, "Number", "RSSI Level");
         }
     }
 
-    private synchronized @Nullable SomfyTahomaState getCachedThingState(String state) {
-        logger.debug("Getting cached state: {} for url: {}", state, getURL());
-        List<SomfyTahomaState> states = thingStates.getValue();
-        if (states != null) {
-            for (SomfyTahomaState st : states) {
-                if (st.getName().equals(state)) {
-                    logger.debug("Returning cached value: {} for state name: {}", st.getValue(), st.getName());
-                    return st;
-                }
-            }
+    private void createChannel(String name, String type, String label) {
+        ThingBuilder thingBuilder = editThing();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), type).withLabel(label).build();
+        thingBuilder.withChannel(channel);
+        updateThing(thingBuilder.build());
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("{} Received command {} for channel {}", url, command, channelUID);
+        if (command instanceof RefreshType) {
+            refresh(channelUID.getId());
         }
-        return null;
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     protected boolean isAlwaysOnline() {
         return false;
-    }
-
-    protected @Nullable List<SomfyTahomaState> getThingStates() {
-        return getBridgeHandler() != null ? getBridgeHandler().getAllStates(getStateNames().values(), getURL()) : null;
     }
 
     protected @Nullable SomfyTahomaBridgeHandler getBridgeHandler() {
@@ -93,7 +100,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     private String getURL() {
-        return getThing().getConfiguration().get("url") != null ? getThing().getConfiguration().get("url").toString() : "";
+        return getThing().getConfiguration().get("url") != null ? getThing().getConfiguration().get("url").toString()
+                : "";
     }
 
     private void setAvailable() {
@@ -108,25 +116,31 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    private boolean isChannelLinked(Channel channel) {
-        return isLinked(channel.getUID().getId());
+    protected void sendCommand(String cmd) {
+        sendCommand(cmd, "[]");
     }
 
     protected void sendCommand(String cmd, String param) {
         if (getBridgeHandler() != null) {
-            getBridgeHandler().sendCommand(getURL(), cmd, param);
+            getBridgeHandler().sendCommand(url, cmd, param);
+        }
+    }
+
+    protected void refresh(String channel) {
+        if (getBridgeHandler() != null && stateNames.containsKey(channel)) {
+            getBridgeHandler().refresh(url, stateNames.get(channel));
         }
     }
 
     protected void executeActionGroup() {
         if (getBridgeHandler() != null) {
-            getBridgeHandler().executeActionGroup(getURL());
+            getBridgeHandler().executeActionGroup(url);
         }
     }
 
     protected @Nullable String getCurrentExecutions() {
         if (getBridgeHandler() != null) {
-            return getBridgeHandler().getCurrentExecutions(getURL());
+            return getBridgeHandler().getCurrentExecutions(url);
         }
         return null;
     }
@@ -137,37 +151,11 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    protected @Nullable String getTahomaVersion(String id) {
-        if (getBridgeHandler() != null) {
-            return getBridgeHandler().getTahomaVersion(id);
-        }
-        return "N/A";
-    }
-
-    protected @Nullable String getTahomaStatus(String id) {
+    protected SomfyTahomaStatus getTahomaStatus(String id) {
         if (getBridgeHandler() != null) {
             return getBridgeHandler().getTahomaStatus(id);
         }
-        return "N/A";
-    }
-
-    private @Nullable State getChannelState(Channel channel,
-                                            List<SomfyTahomaState> channelStates) {
-        ChannelTypeUID channelUID = channel.getChannelTypeUID();
-        if (channelUID == null) {
-            return null;
-        }
-
-        State newState = null;
-        @Nullable String stateName = getStateNames().get(channelUID.getId());
-        for (SomfyTahomaState state : channelStates) {
-            if (state.getName().equals(stateName)) {
-                logger.trace("Parsing state for channel: {} with state name: {}", channel.getUID().getId(), state.getName());
-                //sometimes more states are sent in one event, so take the last one
-                newState = parseTahomaState(channel.getAcceptedItemType(), state);
-            }
-        }
-        return newState;
+        return new SomfyTahomaStatus();
     }
 
     private void cacheStateType(SomfyTahomaState state) {
@@ -182,7 +170,11 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable State parseTahomaState(@Nullable String acceptedState, @Nullable SomfyTahomaState state) {
+    protected @Nullable State parseTahomaState(@Nullable SomfyTahomaState state) {
+        return parseTahomaState(null, state);
+    }
+
+    protected @Nullable State parseTahomaState(@Nullable String acceptedState, @Nullable SomfyTahomaState state) {
         if (state == null) {
             return UnDefType.NULL;
         }
@@ -197,7 +189,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             }
 
             if (type == 0) {
-                logger.debug("Cannot recognize the state type for: {}!", state.getValue());
+                logger.debug("{} Cannot recognize the state type for: {}!", url, state.getValue());
                 return null;
             }
 
@@ -205,13 +197,13 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             switch (type) {
                 case TYPE_PERCENT:
                     Double valPct = Double.parseDouble(state.getValue().toString());
-                    return new PercentType(valPct.intValue());
+                    return new PercentType(normalizePercent(valPct));
                 case TYPE_DECIMAL:
                     Double valDec = Double.parseDouble(state.getValue().toString());
                     return new DecimalType(valDec);
                 case TYPE_STRING:
                 case TYPE_BOOLEAN:
-                    String value = state.getValue().toString().toLowerCase();
+                    String value = state.getValue().toString();
                     if ("String".equals(acceptedState)) {
                         return new StringType(value);
                     } else {
@@ -220,21 +212,38 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                 default:
                     return null;
             }
-        } catch (NumberFormatException ex) {
-            logger.debug("Error while parsing Tahoma state! Value: {} type: {}", state.getValue(), type, ex);
+        } catch (IllegalArgumentException ex) {
+            logger.debug("{} Error while parsing Tahoma state! Value: {} type: {}", url, state.getValue(), type, ex);
         }
         return null;
     }
 
+    private int normalizePercent(Double valPct) {
+        int value = valPct.intValue();
+        if (value < 0) {
+            value = 0;
+        } else if (value > 100) {
+            value = 100;
+        }
+        return value;
+    }
+
     private State parseStringState(String value) {
-        switch (value) {
+        if (value.endsWith("%")) {
+            // convert "100%" to 100 decimal
+            String val = value.replace("%", "");
+            logger.trace("converting: {} to value: {}", value, val);
+            Double valDec = Double.parseDouble(val);
+            return new DecimalType(valDec);
+        }
+        switch (value.toLowerCase()) {
             case "on":
             case "true":
                 return OnOffType.ON;
             case "off":
             case "false":
                 return OnOffType.OFF;
-            case "notDetected":
+            case "notdetected":
             case "nopersoninside":
             case "closed":
             case "locked":
@@ -242,10 +251,13 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             case "detected":
             case "personinside":
             case "open":
+            case "opened":
             case "unlocked":
                 return OpenClosedType.OPEN;
+            case "unknown":
+                return UnDefType.UNDEF;
             default:
-                logger.debug("Unknown thing state returned: {}", value);
+                logger.debug("{} Unknown thing state returned: {}", url, value);
                 return UnDefType.UNDEF;
         }
     }
@@ -266,8 +278,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     private void updateThingStatus(@Nullable SomfyTahomaState state) {
         if (state == null) {
-            //Most probably we are dealing with RTS device which does not return states
-            //so we have to setup ONLINE status manually
+            // Most probably we are dealing with RTS device which does not return states
+            // so we have to setup ONLINE status manually
             setAvailable();
             return;
         }
@@ -280,51 +292,49 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         }
     }
 
-    public void updateChannelState(ChannelUID channelUID) {
-        String stateName = getStateNames().get(channelUID.getId());
-        Channel channel = getChannelByChannelUID(channelUID);
-        if (channel == null) {
-            return;
-        }
-        if (stateName == null) {
-            logger.debug("Cannot find corresponding state name for channel: {}!", channelUID.getId());
-            return;
-        }
-        SomfyTahomaState tahomaState = getCachedThingState(stateName);
-        State state = parseTahomaState(channel.getAcceptedItemType(), tahomaState);
-
-        if (UnDefType.NULL.equals(state)) {
-            // relogin
-            getBridgeHandler().login();
-            tahomaState = getCachedThingState(stateName);
-            state = parseTahomaState(channel.getAcceptedItemType(), tahomaState);
-        }
-
-        if (state != null) {
-            updateState(channelUID, state);
-        }
-    }
-
-    private @Nullable Channel getChannelByChannelUID(ChannelUID channelUID) {
-        if (thing.getChannel(channelUID.getId()) != null) {
-            return thing.getChannel(channelUID.getId());
-        }
-        logger.debug("Cannot find channel for UID: {}", channelUID.getId());
-        return null;
-    }
-
-    public void updateThingChannels(ArrayList<SomfyTahomaState> states) {
-        // update channel values
-        for (Channel channel : thing.getChannels()) {
-            if (isChannelLinked(channel)) {
-                State channelState = getChannelState(channel, states);
-                if (channelState != null) {
-                    logger.trace("Updating channel: {} with state: {}", channel.getUID(), channelState);
-                    updateState(channel.getUID(), channelState);
-                } else {
-                    logger.debug("Cannot find state for channel {}", channel.getUID());
-                }
+    public void updateThingChannels(List<SomfyTahomaState> states) {
+        Map<String, String> properties = new HashMap<>();
+        for (SomfyTahomaState state : states) {
+            logger.trace("{} processing state: {} with value: {}", url, state.getName(), state.getValue());
+            properties.put(state.getName(), state.getValue().toString());
+            if (RSSI_LEVEL_STATE.equals(state.getName())) {
+                // RSSI channel is a dynamic one
+                updateRSSIChannel(state);
+            } else {
+                updateThingChannels(state);
             }
         }
+        updateProperties(properties);
+    }
+
+    private void updateRSSIChannel(SomfyTahomaState state) {
+        createRSSIChannel();
+        Channel ch = thing.getChannel(RSSI);
+        if (ch != null) {
+            logger.debug("{} updating RSSI channel with value: {}", url, state.getValue());
+            State newState = parseTahomaState(ch.getAcceptedItemType(), state);
+            if (newState != null) {
+                updateState(ch.getUID(), newState);
+            }
+        }
+    }
+
+    public void updateThingChannels(SomfyTahomaState state) {
+        stateNames.forEach((k, v) -> {
+            if (v.equals(state.getName())) {
+                Channel ch = thing.getChannel(k);
+                if (ch != null) {
+                    logger.debug("{} updating channel: {} with value: {}", url, k, state.getValue());
+                    State newState = parseTahomaState(ch.getAcceptedItemType(), state);
+                    if (newState != null) {
+                        updateState(ch.getUID(), newState);
+                    }
+                }
+            }
+        });
+    }
+
+    public int toInteger(Command command) {
+        return (command instanceof DecimalType) ? ((DecimalType) command).intValue() : 0;
     }
 }

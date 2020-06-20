@@ -33,6 +33,7 @@ The *pjLinkDevice* thing type has the following parameters:
 | refreshPower          | enables polling of the power status. *Optional, the default value is false*                                                                                  |
 | refreshMute           | enables polling of the mute status. *Optional, the default value is false*                                                                                   |
 | refreshInputChannel   | enables polling of the selected input channel. *Optional, the default value is false*                                                                        |
+| refreshLampState      | enables polling of the lamp usage hours and activity. *Optional, the default value is false*                                                                 |
 | autoReconnectInterval | seconds between connection retries when connection to the PJLink device has been lost, 0 means never retry, minimum 30s *Optional, the default value is 60*  |
 
 
@@ -44,6 +45,8 @@ The *pjLinkDevice* thing type has the following parameters:
 | input             | Switches the input channel of the device  |
 | audioMute         | Mutes the device audio                    |
 | videoMute         | Mutes the device video                    |
+| lamp1Hours        | The hours lamp 1 has been in use          |
+| lamp1Active       | Shows if lamp 1 is in use                 |
 
 ## Full Example
 
@@ -60,6 +63,8 @@ Switch Projector_Power "Projector Power"          { channel="pjLinkDevice:pjLink
 String Projector_Input "Projector Input"          { channel="pjLinkDevice:pjLinkDevice:MyProjector:input" }
 Switch Projector_AudioMute "Projector Audio Mute" { channel="pjLinkDevice:pjLinkDevice:MyProjector:audioMute" }
 Switch Projector_VideoMute "Projector Video Mute" { channel="pjLinkDevice:pjLinkDevice:MyProjector:videoMute" }
+Number Projector_Lamp1Hours "Projector lamp 1 used hours"   { channel="pjLinkDevice:pjLinkDevice:MyProjector:lamp1Hours" }
+Switch Projector_Lamp1Active "Projector lamp 1 active"      { channel="pjLinkDevice:pjLinkDevice:MyProjector:lamp1Active" }
 ```
 
 sample.sitemap:
@@ -71,6 +76,45 @@ sitemap sample label="Main Menu" {
     Selection item=Projector_Input
     Switch item=Projector_AudioMute
     Switch item=Projector_VideoMute
+    Switch item=Projector_Lamp1Active
+    Text item=Projector_Lamp1Hours
+  }
+}
+```
+
+### Multiple lamps
+
+Most of the time, there's just one lamp. In case a projector has more than one lamp, additional channels for those lamps can be configured.
+
+sample-lamp-2.things:
+
+```
+pjLinkDevice:pjLinkDevice:MyProjector [ ipAddress="192.168.178.10" ]
+{
+  Channels:
+    Type lampHours : lamp2Hours "Lamp 2 Hours" [
+        lampNumber=2
+    ]
+    Type lampActive : lamp2Active "Lamp 2 Active" [
+        lampNumber=2
+    ]
+}
+```
+
+sample-lamp-2.items:
+
+```
+Number Projector_Lamp2Hours "Projector lamp 2 used hours"   { channel="pjLinkDevice:pjLinkDevice:MyProjector:lamp2Hours" }
+Switch Projector_Lamp2Active "Projector lamp 2 active"      { channel="pjLinkDevice:pjLinkDevice:MyProjector:lamp2Active" }
+```
+
+sample-lamp-2.sitemap:
+
+```
+sitemap sample label="Main Menu" {
+  Frame  {
+    Switch item=Projector_Lamp2Active
+    Text item=Projector_Lamp2Hours
   }
 }
 ```

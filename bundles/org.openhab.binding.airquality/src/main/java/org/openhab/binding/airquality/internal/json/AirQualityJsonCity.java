@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,11 +39,10 @@ public class AirQualityJsonCity {
     }
 
     public String getGeo() {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (int i = 0; i < geo.size(); i++) {
             list.add(geo.get(i).toString());
         }
         return String.join(",", list);
     }
-
 }

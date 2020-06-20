@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.deconz.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The REST interface and websocket connection are using the same fields.
@@ -21,24 +22,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class SensorMessage {
-    // For websocket change events
-    public String e = ""; // "changed"
-    public String r = ""; // "sensors"
-    public String t = ""; // "event"
-    public String id = ""; // "3"
-
-    // for rest API
-    public String manufacturername = "";
-    public String modelid = "";
-    public String name = "";
-    public String swversion = "";
+public class SensorMessage extends DeconzBaseMessage {
     public String type = "";
-    /** the API endpoint **/
-    public String ep = "";
-    public SensorConfig config = new SensorConfig();
 
-    // websocket and rest api
-    public String uniqueid = ""; // "00:0b:57:ff:fe:94:6b:dd-01-1000"
-    public SensorState state = new SensorState();
+    public @Nullable SensorConfig config;
+    public @Nullable SensorState state;
+
+    @Override
+    public String toString() {
+        return "SensorMessage{" + "type='" + type + '\'' + ", config=" + config + ", state=" + state + ", e='" + e
+                + '\'' + ", r='" + r + '\'' + ", t='" + t + '\'' + ", id='" + id + '\'' + ", manufacturername='"
+                + manufacturername + '\'' + ", modelid='" + modelid + '\'' + ", name='" + name + '\'' + ", swversion='"
+                + swversion + '\'' + ", ep='" + ep + '\'' + ", uniqueid='" + uniqueid + '\'' + '}';
+    }
 }

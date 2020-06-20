@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COFFEE);
 
-    private Map<String, Boolean> subscriptionState = new HashMap<String, Boolean>();
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     protected static final int SUBSCRIPTION_DURATION = 600;
 
@@ -231,7 +231,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                 service.removeSubscription(this, subscription);
             }
 
-            subscriptionState = new HashMap<String, Boolean>();
+            subscriptionState = new HashMap<>();
             service.unregisterParticipant(this);
         }
     }
@@ -423,6 +423,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         }
     }
 
+    @SuppressWarnings("null")
     public State getDateTimeState(String attributeValue) {
         if (attributeValue != null) {
             long value = 0;
@@ -467,5 +468,4 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
     @Override
     public void onStatusChanged(boolean status) {
     }
-
 }

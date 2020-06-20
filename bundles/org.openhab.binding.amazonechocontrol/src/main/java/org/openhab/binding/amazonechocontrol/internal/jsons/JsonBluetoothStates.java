@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,6 @@ public class JsonBluetoothStates {
         public @Nullable String deviceClass;
         public @Nullable String friendlyName;
         public @Nullable String @Nullable [] profiles;
-
     }
 
     public static class BluetoothState {
@@ -60,6 +59,5 @@ public class JsonBluetoothStates {
         public boolean gadgetPaired;
         public boolean online;
         public @Nullable PairedDevice @Nullable [] pairedDeviceList;
-
     }
 }

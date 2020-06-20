@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,8 +53,14 @@ public abstract class TradfriDeviceData {
     public TradfriDeviceData(String attributesNodeName, JsonElement json) {
         try {
             root = json.getAsJsonObject();
-            array = root.getAsJsonArray(attributesNodeName);
-            attributes = array.get(0).getAsJsonObject();
+            if (root.has(attributesNodeName)) {
+                array = root.getAsJsonArray(attributesNodeName);
+                attributes = array.get(0).getAsJsonObject();
+            } else {
+                array = new JsonArray();
+                attributes = new JsonObject();
+                array.add(attributes);
+            }
             generalInfo = root.getAsJsonObject(DEVICE);
         } catch (JsonSyntaxException e) {
             logger.warn("JSON error: {}", e.getMessage(), e);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,6 @@ public class HueStateColorBulb extends HueStateBulb {
 
     public HueStateColorBulb(boolean on) {
         super(on);
-        this.bri = on ? MAX_BRI : 0;
         colormode = ColorMode.ct;
     }
 
@@ -72,10 +71,9 @@ public class HueStateColorBulb extends HueStateBulb {
      * @param hsb Color information. Sets the hue state to "on" if brightness is > 0.
      */
     public HueStateColorBulb(HSBType hsb) {
-        super(hsb.getBrightness().intValue() > 0);
+        super(hsb.getBrightness(), hsb.getBrightness().intValue() > 0);
         this.hue = (int) (hsb.getHue().intValue() * MAX_HUE / 360.0 + 0.5);
         this.sat = (int) (hsb.getSaturation().intValue() * MAX_SAT / 100.0 + 0.5);
-        this.bri = (int) (hsb.getBrightness().intValue() * MAX_BRI / 100.0 + 0.5);
         colormode = this.sat > 0 ? ColorMode.hs : ColorMode.ct;
     }
 
@@ -126,11 +124,13 @@ public class HueStateColorBulb extends HueStateBulb {
             }
             double hueSat = Math.floor((delta / maxValue) * 254.0d);
             int percentSat = (int) ((100.0d * hueSat) / (MAX_SAT));
+
+            int bri = this.bri * 100 / MAX_BRI;
             if (!this.on) {
-                this.bri = 0;
+                bri = 0;
             }
             return new HSBType(new DecimalType((Math.floor(182.04d * h) * 360.0d) / (MAX_HUE)),
-                    new PercentType(percentSat), new PercentType((this.bri * 100) / MAX_BRI));
+                    new PercentType(percentSat), new PercentType(bri));
 
         } else {
             int bri = this.bri * 100 / MAX_BRI;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.smarthome.core.transform.TransformationException;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.transform.regex.internal.RegExTransformationService;
 
 /**
  * @author Thomas.Eichstaedt-Engelen
@@ -33,7 +32,6 @@ public class RegExTransformationServiceTest extends AbstractTransformationServic
 
     @Test
     public void testTransformByRegex() throws TransformationException {
-
         // method under test
         String transformedResponse = processor.transform(".*?<current_conditions>.*?<temp_c data=\"(.*?)\".*", source);
 
@@ -43,7 +41,6 @@ public class RegExTransformationServiceTest extends AbstractTransformationServic
 
     @Test
     public void testTransformByRegex_noGroup() throws TransformationException {
-
         // method under test
         String transformedResponse = processor.transform(".*", source);
 
@@ -53,7 +50,6 @@ public class RegExTransformationServiceTest extends AbstractTransformationServic
 
     @Test
     public void testTransformByRegex_moreThanOneGroup() throws TransformationException {
-
         // method under test
         String transformedResponse = processor.transform(".*?<current_conditions>.*?<temp_c data=\"(.*?)\"(.*)",
                 source);

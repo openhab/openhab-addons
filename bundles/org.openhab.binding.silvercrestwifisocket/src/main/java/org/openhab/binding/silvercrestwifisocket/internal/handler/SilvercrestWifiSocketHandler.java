@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -353,7 +353,6 @@ public class SilvercrestWifiSocketHandler extends BaseThingHandler {
             logger.error("The Mac address passed is not valid! {}", e.getMacAddress());
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
-
     }
 
     /**

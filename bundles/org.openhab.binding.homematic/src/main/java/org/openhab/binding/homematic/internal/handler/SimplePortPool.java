@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import java.util.List;
 public class SimplePortPool {
     private static int START_PORT = 9125;
 
-    private List<PortInfo> availablePorts = new ArrayList<PortInfo>();
+    private List<PortInfo> availablePorts = new ArrayList<>();
 
     /**
      * Adds the specified port to the pool an mark it as in use.

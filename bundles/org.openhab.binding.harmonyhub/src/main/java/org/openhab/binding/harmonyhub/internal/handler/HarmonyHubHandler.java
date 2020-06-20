@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -314,7 +314,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         }
     }
 
-    private void updateActivityStatus(@Nullable Activity activity, Activity.@Nullable Status status) {
+    private void updateActivityStatus(@Nullable Activity activity, @Nullable Status status) {
         if (activity == null) {
             logger.debug("Cannot update activity status of {} with activity that is null", getThing().getUID());
             return;
@@ -445,5 +445,4 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     public void removeHubStatusListener(HubStatusListener listener) {
         listeners.remove(listener);
     }
-
 }

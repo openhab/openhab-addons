@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
@@ -19,11 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Command class for command that returns list of states changed since last
- * state read.
+ * Command class for command that returns list of states changed since last state read.
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class NewStatesCommand extends SatelCommandBase {
 
     private final Logger logger = LoggerFactory.getLogger(NewStatesCommand.class);
@@ -33,32 +34,15 @@ public class NewStatesCommand extends SatelCommandBase {
     /**
      * Creates new command class instance.
      *
-     * @param extended
-     *            if <code>true</code> command will be sent as extended (256
-     *            zones or outputs)
+     * @param extended if <code>true</code> command will be sent as extended (256 zones or outputs)
      */
     public NewStatesCommand(boolean extended) {
         super(COMMAND_CODE, extended);
     }
 
     @Override
-    public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
-        if (super.handleResponse(eventDispatcher, response)) {
-            // dispatch event
-            eventDispatcher.dispatchEvent(new NewStatesEvent(response.getPayload()));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length < 5 || response.getPayload().length > 6) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
@@ -66,4 +50,9 @@ public class NewStatesCommand extends SatelCommandBase {
         return true;
     }
 
+    @Override
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+        // dispatch event
+        eventDispatcher.dispatchEvent(new NewStatesEvent(getResponse().getPayload()));
+    }
 }

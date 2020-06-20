@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,13 @@ package org.openhab.binding.volvooncall.internal.discovery;
 
 import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.*;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.dto.AccountVehicleRelation;
 import org.openhab.binding.volvooncall.internal.dto.Attributes;
 import org.openhab.binding.volvooncall.internal.dto.Vehicles;
@@ -62,12 +62,11 @@ public class VolvoOnCallDiscoveryService extends AbstractDiscoveryService {
                                 .withBridge(bridgeHandler.getThing().getUID()).withProperty(VIN, attributes.vin)
                                 .withRepresentationProperty(accountVehicle.vehicleId).build());
 
-            } catch (IOException e) {
+            } catch (VolvoOnCallException e) {
                 logger.warn("Error while discovering vehicle: {}", e.getMessage());
             }
         });
 
         stopScan();
     }
-
 }

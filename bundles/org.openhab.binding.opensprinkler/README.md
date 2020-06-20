@@ -22,7 +22,7 @@ Discovery needs to be run manually as this is a brute force method of finding de
 OpenSprinkler using the HTTP interface
 
 ```
-Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, pasword="opendoor", refresh=60] {
+Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, password="opendoor", refresh=60] {
     Thing station 01 [stationIndex=1]
 }
 ```
@@ -52,15 +52,20 @@ The following channel is supported by the `station` thing.
 |                    |             |    | used as the time the station will be kept open when      |
 |                    |             |    | switched on. It is advised to add persistence for items  |
 |                    |             |    | linked to this channel, the binding does not persist     |
-|                    |             |    | values of it.
+|                    |             |    | values of it.                                            |
+| queued             | Switch      | RW | Indicates that the station is queued to be turned on.    |
+|                    |             |    | The channel cannot be turned on, only turning it off is  |
+|                    |             |    | supported (which removes the station from the queue).    |
 
 When using the `nextDuration` channel, it is advised to setup persistence (e.g. MapDB) in order to persist the value through restarts.
 
 The following is supported by the `device` thing, but only when connected using the http interface.
 
-| Channel Type ID | Item Type |    | Description                                                           |
-|-----------------|-----------|----|-----------------------------------------------------------------------|
-| rainsensor      | Switch    | RO | This channel indicates whether rain is detected by the device or not. |
+| Channel Type ID | Item Type              |    | Description                                                               |
+|-----------------|------------------------|----|---------------------------------------------------------------------------|
+| rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.     |
+| currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device. If the device does not have sensors |
+|                 |                        |    | for this metric, the channel will not be available.                       |
 
 ## Example
 
@@ -92,6 +97,7 @@ Switch Station05 (stations) { channel="opensprinkler:station:http:05:stationStat
 Switch Station06 (stations) { channel="opensprinkler:station:http:06:stationState" }
 
 Switch RainSensor { channel="opensprinkler:station:http:device:rainsensor" }
+Number:ElectricCurrent CurrentDraw {channel="opensprinkler:station:http:device:currentDraw"}
 ```
 
 demo.sitemap:

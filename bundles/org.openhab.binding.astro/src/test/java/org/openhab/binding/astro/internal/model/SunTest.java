@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,46 +12,52 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import java.time.ZoneId;
 
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
 
 /***
  * A set of standard unit test of {@link Sun} class. In particular it checks if
  * {@link Sun#getAllRanges()} contains a correct {@link SunPhaseName}.
- * 
+ *
  * @author Witold Markowski - Initial contribution
- * @see <a href="https://github.com/openhab/openhab2-addons/issues/5006">[astro]
+ * @see <a href="https://github.com/openhab/openhab-addons/issues/5006">[astro]
  *      Sun Phase returns UNDEF</a>
  */
 public class SunTest {
 
     private Sun sun;
+    private AstroChannelConfig config;
+
+    private static ZoneId ZONE = ZoneId.systemDefault();
 
     @Before
     public void init() {
         sun = new Sun();
+        config = new AstroChannelConfig();
     }
 
     @Test
     public void testConstructor() throws Exception {
         assertNotNull(sun.getPhase());
-        assertEquals(UnDefType.UNDEF, PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), null, sun));
+        assertEquals(UnDefType.UNDEF,
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
     }
 
     @Test
     public void testGetStateWhenNullPhaseName() throws Exception {
         sun.getPhase().setName(null);
 
-        assertEquals(UnDefType.UNDEF, PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), null, sun));
+        assertEquals(UnDefType.UNDEF,
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
     }
 
     @Test
@@ -59,7 +65,7 @@ public class SunTest {
         sun.getPhase().setName(SunPhaseName.DAYLIGHT);
 
         assertEquals(new StringType("DAYLIGHT"),
-                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), null, sun));
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
     }
 
     @Test(expected = NullPointerException.class)
@@ -67,7 +73,8 @@ public class SunTest {
         sun.setPhase(null);
 
         assertNull(sun.getPhase());
-        assertEquals(UnDefType.UNDEF, PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), null, sun));
+        assertEquals(UnDefType.UNDEF,
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
     }
 
     @Test

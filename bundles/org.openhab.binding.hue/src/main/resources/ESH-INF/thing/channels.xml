@@ -36,35 +36,35 @@
 		<label>Last Updated</label>
 		<description>The date and time when the sensor was last updated.</description>
 		<category>Time</category>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="illuminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Current illuminance.</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="light_level" advanced="true">
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="dark">
 		<item-type>Switch</item-type>
 		<label>Dark</label>
 		<description>Light level is below the darkness threshold.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="daylight">
 		<item-type>Switch</item-type>
 		<label>Daylight</label>
 		<description>Light level is above the daylight threshold.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dimmer_switch">
@@ -165,7 +165,7 @@
 		<label>Temperature</label>
 		<description>Current temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- Color Temperature Channel -->
@@ -199,7 +199,7 @@
 		<description>The effect channel allows putting the bulb in a color looping mode.</description>
 		<category>ColorLight</category>
 	</channel-type>
-	
+
 	<!-- CLIP Sensor -->
 	<channel-type id="status">
 		<item-type>Number</item-type>
@@ -212,5 +212,5 @@
 		<label>Flag</label>
 		<description>Flag of CLIP sensor.</description>
 	</channel-type>
-	
+
 </thing:thing-descriptions>

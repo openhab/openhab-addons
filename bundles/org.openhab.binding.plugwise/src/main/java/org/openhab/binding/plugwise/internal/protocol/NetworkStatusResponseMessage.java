@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,5 +93,4 @@ public class NetworkStatusResponseMessage extends Message {
     protected String payloadToHexString() {
         return unknown1 + String.format("%02X", online ? 1 : 0) + networkID + shortNetworkID + unknown2;
     }
-
 }

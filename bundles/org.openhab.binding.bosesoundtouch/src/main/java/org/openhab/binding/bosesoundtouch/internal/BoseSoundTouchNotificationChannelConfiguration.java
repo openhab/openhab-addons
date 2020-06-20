@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,11 +31,11 @@ public class BoseSoundTouchNotificationChannelConfiguration {
     public String notificationService;
     public String notificationReason;
     public String notificationMessage;
-    
+
     public static boolean isSupportedFirmware(String firmware) {
         return firmware != null && firmware.compareTo(MIN_FIRMWARE) > 0;
     }
-    
+
     public static boolean isSupportedHardware(String hardware) {
         return MODEL_TYPE.equals(hardware);
     }

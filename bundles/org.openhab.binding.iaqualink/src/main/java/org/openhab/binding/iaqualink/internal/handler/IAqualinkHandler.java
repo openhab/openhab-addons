@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,6 +60,7 @@ import org.openhab.binding.iaqualink.internal.api.IAqualinkClient.NotAuthorizedE
 import org.openhab.binding.iaqualink.internal.api.model.AccountInfo;
 import org.openhab.binding.iaqualink.internal.api.model.Auxiliary;
 import org.openhab.binding.iaqualink.internal.api.model.Device;
+import org.openhab.binding.iaqualink.internal.api.model.Home;
 import org.openhab.binding.iaqualink.internal.api.model.OneTouch;
 import org.openhab.binding.iaqualink.internal.config.IAqualinkConfiguration;
 import org.slf4j.Logger;
@@ -302,7 +303,6 @@ public class IAqualinkHandler extends BaseThingHandler {
             }
 
             initPolling(COMMAND_REFRESH_SECONDS);
-
         } catch (IOException e) {
             logger.debug("Could not connect to service {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -343,7 +343,15 @@ public class IAqualinkHandler extends BaseThingHandler {
     private void pollController() {
         ScheduledFuture<?> localFuture = pollFuture;
         try {
-            Map<String, String> map = client.getHome(serialNumber, sessionId).getSerializedMap();
+            Home home = client.getHome(serialNumber, sessionId);
+
+            if ("Error".equals(home.getResponse())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Service reports controller status as: " + home.getStatus());
+                return;
+            }
+
+            Map<String, String> map = home.getSerializedMap();
             if (map != null) {
                 temperatureUnit = "F".equalsIgnoreCase(map.get("temp_scale")) ? FAHRENHEIT : CELSIUS;
                 map.forEach((k, v) -> {
@@ -441,7 +449,7 @@ public class IAqualinkHandler extends BaseThingHandler {
 
             switch (type) {
                 case "Number:Temperature":
-                    return new QuantityType<Temperature>(Float.parseFloat(value), temperatureUnit);
+                    return new QuantityType<>(Float.parseFloat(value), temperatureUnit);
                 case "Number":
                     return new DecimalType(value);
                 case "Dimmer":
@@ -460,7 +468,7 @@ public class IAqualinkHandler extends BaseThingHandler {
      * Creates channels based on what is supported by the controller.
      */
     private void updateChannels(Auxiliary[] auxes, OneTouch[] oneTouches) {
-        List<Channel> channels = new ArrayList<Channel>(getThing().getChannels());
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
         for (Auxiliary aux : auxes) {
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), aux.getName());
             logger.debug("Add channel Aux Name: {} Label: {} Type: {} Subtype: {}", aux.getName(), aux.getLabel(),
@@ -518,12 +526,11 @@ public class IAqualinkHandler extends BaseThingHandler {
     @SuppressWarnings("unchecked")
     private @Nullable BigDecimal commandToRoundedTemperature(Command command, Unit<Temperature> unit)
             throws IllegalArgumentException {
-
         QuantityType<Temperature> quantity;
         if (command instanceof QuantityType) {
             quantity = (QuantityType<Temperature>) command;
         } else {
-            quantity = new QuantityType<Temperature>(new BigDecimal(command.toString()), unit);
+            quantity = new QuantityType<>(new BigDecimal(command.toString()), unit);
         }
 
         QuantityType<Temperature> temparatureQuantity = quantity.toUnit(unit);
@@ -544,5 +551,4 @@ public class IAqualinkHandler extends BaseThingHandler {
         Objects.requireNonNull(channelTypeUID);
         return channelTypeUID;
     }
-
 }

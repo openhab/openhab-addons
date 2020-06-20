@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -342,7 +342,6 @@ public class Connection {
             } catch (IOException e) {
                 return false;
             } catch (URISyntaxException e) {
-
             }
         }
         return false;
@@ -546,7 +545,6 @@ public class Connection {
                 URI uri = connection.getURL().toURI();
 
                 if (customHeaders == null || !customHeaders.containsKey("Cookie")) {
-
                     StringBuilder cookieHeaderBuilder = new StringBuilder();
                     for (HttpCookie cookie : cookieManager.getCookieStore().get(uri)) {
                         if (cookieHeaderBuilder.length() > 0) {
@@ -566,7 +564,6 @@ public class Connection {
                     }
                 }
                 if (postData != null) {
-
                     logger.debug("{}: {}", verb, postData);
                     // post data
                     byte[] postDataBytes = postData.getBytes(StandardCharsets.UTF_8);
@@ -602,7 +599,6 @@ public class Connection {
                             // store cookie
                             for (String cookieHeader : header.getValue()) {
                                 if (StringUtils.isNotEmpty(cookieHeader)) {
-
                                     List<HttpCookie> cookies = HttpCookie.parse(cookieHeader);
                                     for (HttpCookie cookie : cookies) {
                                         cookieManager.getCookieStore().add(uri, cookie);
@@ -653,13 +649,11 @@ public class Connection {
                     return connection;
                 }
                 throw new HttpException(code, verb + " url '" + url + "' failed: " + connection.getResponseMessage());
-
             } catch (IOException e) {
-
                 if (connection != null) {
                     connection.disconnect();
                 }
-                logger.warn("Request to url '{}' fails with unkown error", url, e);
+                logger.warn("Request to url '{}' fails with unknown error", url, e);
                 throw e;
             } catch (Exception e) {
                 if (connection != null) {
@@ -760,7 +754,6 @@ public class Connection {
     }
 
     private void exchangeToken() throws IOException, URISyntaxException {
-
         this.renewTime = 0;
         String cookiesJson = "{\"cookies\":{\"." + getAmazonSite() + "\":[]}}";
         String cookiesBase64 = Base64.getEncoder().encodeToString(cookiesJson.getBytes());

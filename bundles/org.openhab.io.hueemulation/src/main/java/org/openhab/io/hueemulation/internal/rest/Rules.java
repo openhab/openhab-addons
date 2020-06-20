@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -198,7 +198,6 @@ public class Rules implements RegistryChangeListener<Rule> {
 
     protected static RuleBuilder createHueRuleConditions(List<HueRuleEntry.Condition> hueConditions,
             RuleBuilder builder, List<Trigger> oldTriggers, List<Condition> oldConditions, ItemRegistry itemRegistry) {
-
         // Preserve all triggers, conditions that are not part of hue rules
         Map<String, Trigger> triggers = new TreeMap<>();
         triggers.putAll(oldTriggers.stream().filter(a -> !a.getTypeUID().equals("core.ItemStateChangeTrigger"))

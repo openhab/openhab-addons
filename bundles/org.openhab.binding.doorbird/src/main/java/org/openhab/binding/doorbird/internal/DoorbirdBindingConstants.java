@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,9 +32,10 @@ public class DoorbirdBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_D101 = new ThingTypeUID(BINDING_ID, "d101");
     public static final ThingTypeUID THING_TYPE_D210X = new ThingTypeUID(BINDING_ID, "d210x");
+    public static final ThingTypeUID THING_TYPE_A1081 = new ThingTypeUID(BINDING_ID, "a1081");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_D101, THING_TYPE_D210X)
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_D101, THING_TYPE_D210X, THING_TYPE_A1081).collect(Collectors.toSet());
 
     // List of all Channel IDs
     public static final String CHANNEL_DOORBELL = "doorbell";
@@ -46,6 +47,7 @@ public class DoorbirdBindingConstants {
     public static final String CHANNEL_LIGHT = "light";
     public static final String CHANNEL_OPENDOOR1 = "openDoor1";
     public static final String CHANNEL_OPENDOOR2 = "openDoor2";
+    public static final String CHANNEL_OPENDOOR3 = "openDoor3";
     public static final String CHANNEL_IMAGE = "image";
     public static final String CHANNEL_IMAGE_TIMESTAMP = "imageTimestamp";
     public static final String CHANNEL_DOORBELL_HISTORY_INDEX = "doorbellHistoryIndex";

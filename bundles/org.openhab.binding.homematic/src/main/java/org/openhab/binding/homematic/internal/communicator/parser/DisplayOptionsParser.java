@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     private int beep = 0;
     private int backlight = 0;
     private int unit = 0;
-    private List<String> symbols = new ArrayList<String>();
+    private List<String> symbols = new ArrayList<>();
 
     public DisplayOptionsParser(HmChannel channel) {
         this.channel = channel;
@@ -141,7 +141,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
      * Returns all possible symbols from the remote control.
      */
     private String[] getAvailableSymbols(HmChannel channel) {
-        List<String> symbols = new ArrayList<String>();
+        List<String> symbols = new ArrayList<>();
         for (HmDatapoint datapoint : channel.getDatapoints()) {
             if (!datapoint.isReadOnly() && datapoint.isBooleanType()
                     && datapoint.getParamsetType() == HmParamsetType.VALUES
@@ -187,5 +187,4 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     public List<String> getSymbols() {
         return symbols;
     }
-
 }

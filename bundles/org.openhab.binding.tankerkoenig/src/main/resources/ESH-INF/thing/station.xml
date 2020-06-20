@@ -5,15 +5,16 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="station">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="webservice" />
+			<bridge-type-ref id="webservice"/>
 		</supported-bridge-type-refs>
 		<label>Gas-Station</label>
-		<description>Provides the prices of gas types E5-, E10- and Diesel of that station and if that station reports as opened.</description>
+		<description>Provides the prices of gas types E5-, E10- and Diesel of that station and if that station reports as
+			opened.</description>
 		<channels>
-			<channel id="diesel" typeId="diesel" />
-			<channel id="e10" typeId="e10" />
-			<channel id="e5" typeId="e5" />
-			<channel id="station_open" typeId="station_open" />
+			<channel id="diesel" typeId="diesel"/>
+			<channel id="e10" typeId="e10"/>
+			<channel id="e5" typeId="e5"/>
+			<channel id="station_open" typeId="station_open"/>
 		</channels>
 		<config-description>
 			<parameter name="locationid" type="text" required="true">

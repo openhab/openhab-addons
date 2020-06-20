@@ -2,7 +2,6 @@
 	"deviceMapping": {
 		"id": [
 			"zhimi.airpurifier.v6",
-			"zhimi.airpurifier.v7",
 			"zhimi.airpurifier.ma2"
 		],
 		"channels": [
@@ -12,7 +11,6 @@
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
-				"channelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_power",
@@ -63,7 +61,7 @@
 			},
 			{
 				"property": "led",
-				"friendlyName": "Led Status",
+				"friendlyName": "LED Status",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,
@@ -77,7 +75,7 @@
 			},
 			{
 				"property": "bright",
-				"friendlyName": "Led Brightness",
+				"friendlyName": "LED Brightness",
 				"channel": "bright",
 				"type": "Number",
 				"refresh": true,

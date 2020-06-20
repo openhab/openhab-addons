@@ -36,6 +36,7 @@ If a device is removed or disconnects from the account the respective openHAB de
 
 All Things are updated according to the configured refresh time of their shared account Bridge.
 You may force an update by sending the `REFRESH` command to any channel of the Bridge Things.
+However this `REFRESH` command will not request data directly from the phone, but it will only make a query to the server.
 
 ## Channels
 

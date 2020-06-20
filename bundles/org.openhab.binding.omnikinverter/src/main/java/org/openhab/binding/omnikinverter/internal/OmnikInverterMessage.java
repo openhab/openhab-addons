@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OmnikInverterMessage {
 
-    final private byte[] bytes;
+    private final byte[] bytes;
 
     public OmnikInverterMessage(byte[] b) {
         this.bytes = b;

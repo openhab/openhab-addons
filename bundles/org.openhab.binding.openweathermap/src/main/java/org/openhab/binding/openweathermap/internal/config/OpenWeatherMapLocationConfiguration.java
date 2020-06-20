@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,14 +23,5 @@ import org.openhab.binding.openweathermap.internal.handler.AbstractOpenWeatherMa
  */
 @NonNullByDefault
 public class OpenWeatherMapLocationConfiguration {
-
-    private @NonNullByDefault({}) String location;
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
+    public @NonNullByDefault({}) String location;
 }

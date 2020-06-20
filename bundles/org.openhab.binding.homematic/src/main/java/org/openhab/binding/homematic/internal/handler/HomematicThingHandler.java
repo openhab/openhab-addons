@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,8 +105,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         });
     }
 
-    private void doInitializeInBackground()
-            throws GatewayNotAvailableException, HomematicClientException, IOException {
+    private void doInitializeInBackground() throws GatewayNotAvailableException, HomematicClientException, IOException {
         HomematicGateway gateway = getHomematicGateway();
         HmDevice device = gateway.getDevice(UidUtils.getHomematicAddress(getThing()));
         HmChannel channelZero = device.getChannel(0);
@@ -311,7 +310,7 @@ public class HomematicThingHandler extends BaseThingHandler {
      * Returns the rx mode that shall be used for transmitting a new value of a datapoint to the device. The
      * HomematicThingHandler always uses the default rx mode; custom thing handlers can override this method to
      * adjust the rx mode.
-     * 
+     *
      * @param datapointName The datapoint that will be updated on the device
      * @param currentValue The current value of the datapoint
      * @param newValue The value that will be sent to the device
@@ -368,7 +367,6 @@ public class HomematicThingHandler extends BaseThingHandler {
      */
     private void updateChannelState(final HmDatapoint dp, Channel channel)
             throws IOException, GatewayNotAvailableException, ConverterException {
-
         if (dp.isTrigger()) {
             if (dp.getValue() != null) {
                 triggerChannel(channel.getUID(), ObjectUtils.toString(dp.getValue()));
@@ -389,8 +387,7 @@ public class HomematicThingHandler extends BaseThingHandler {
     /**
      * Loads all values for the given Homematic channel if it is not initialized.
      */
-    private void loadHomematicChannelValues(HmChannel hmChannel)
-            throws GatewayNotAvailableException, IOException {
+    private void loadHomematicChannelValues(HmChannel hmChannel) throws GatewayNotAvailableException, IOException {
         if (!hmChannel.isInitialized()) {
             synchronized (this) {
                 if (!hmChannel.isInitialized()) {
@@ -419,7 +416,7 @@ public class HomematicThingHandler extends BaseThingHandler {
         ThingStatus newStatus = ThingStatus.ONLINE;
         ThingStatusDetail newDetail = ThingStatusDetail.NONE;
 
-        if (getBridge().getStatus() == ThingStatus.OFFLINE) {
+        if ((getBridge() != null) && (getBridge().getStatus() == ThingStatus.OFFLINE)) {
             newStatus = ThingStatus.OFFLINE;
             newDetail = ThingStatusDetail.BRIDGE_OFFLINE;
         } else if (device.isFirmwareUpdating()) {

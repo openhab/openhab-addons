@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="globalcache" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="globalcache"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -10,11 +11,11 @@
 		<description>GC-100-12 Infrared, Serial, and Contact Closure Device</description>
 
 		<channel-groups>
-			<channel-group id="sl-m1" typeId="sl-m1" />
-			<channel-group id="sl-m2" typeId="sl-m2" />
-			<channel-group id="cc-m3" typeId="cc-m3" />
-			<channel-group id="ir-m4" typeId="ir-m4" />
-			<channel-group id="ir-m5" typeId="ir-m5" />
+			<channel-group id="sl-m1" typeId="sl-m1"/>
+			<channel-group id="sl-m2" typeId="sl-m2"/>
+			<channel-group id="cc-m3" typeId="cc-m3"/>
+			<channel-group id="ir-m4" typeId="ir-m4"/>
+			<channel-group id="ir-m5" typeId="ir-m5"/>
 		</channel-groups>
 
 		<config-description>

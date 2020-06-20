@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,6 @@ public class BluetoothDescriptor {
      */
     BluetoothCharacteristic getCharacteristic() {
         return characteristic;
-
     }
 
     /**
@@ -69,7 +68,6 @@ public class BluetoothDescriptor {
      */
     public UUID getUuid() {
         return uuid;
-
     }
 
     /**
@@ -117,7 +115,7 @@ public class BluetoothDescriptor {
         }
 
         private static void initMapping() {
-            uuidToServiceMapping = new HashMap<UUID, GattDescriptor>();
+            uuidToServiceMapping = new HashMap<>();
             for (GattDescriptor s : values()) {
                 uuidToServiceMapping.put(s.uuid, s);
             }

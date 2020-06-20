@@ -10,15 +10,15 @@
 		<description>Connection to the Rotel RSX-1057 surround receiver</description>
 
 		<channel-groups>
-			<channel-group id="mainZone" typeId="mainZoneType3" />
-			<channel-group id="zone2" typeId="zone2type1" />
+			<channel-group id="mainZone" typeId="mainZoneType3"/>
+			<channel-group id="zone2" typeId="zone2type1"/>
 		</channel-groups>
 
 		<properties>
 			<property name="protocol">HEX</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:rotel:serial3" />
+		<config-description-ref uri="thing-type:rotel:serial3"/>
 	</thing-type>
 
 </thing:thing-descriptions>

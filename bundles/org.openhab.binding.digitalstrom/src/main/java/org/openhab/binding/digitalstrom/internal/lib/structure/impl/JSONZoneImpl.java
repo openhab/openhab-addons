@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,8 +45,8 @@ public class JSONZoneImpl implements Zone {
      * @param jObject of the server response, must not be null
      */
     public JSONZoneImpl(JsonObject jObject) {
-        this.groupList = new LinkedList<DetailedGroupInfo>();
-        this.deviceList = new LinkedList<Device>();
+        this.groupList = new LinkedList<>();
+        this.deviceList = new LinkedList<>();
 
         if (jObject.get(JSONApiResponseKeysEnum.NAME.getKey()) != null) {
             this.name = jObject.get(JSONApiResponseKeysEnum.NAME.getKey()).getAsString();

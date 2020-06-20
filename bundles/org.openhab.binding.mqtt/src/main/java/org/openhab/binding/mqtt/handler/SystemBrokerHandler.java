@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ public class SystemBrokerHandler extends AbstractBrokerHandler implements MqttSe
     @Override
     public void brokerRemoved(String connectionName, MqttBrokerConnection removedConnection) {
         final MqttBrokerConnection connection = this.connection;
-        if (removedConnection == connection) {
+        if (removedConnection.equals(connection)) {
             connection.removeConnectionObserver(this);
             this.connection = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.sharedremoved");

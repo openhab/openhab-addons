@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,5 +71,4 @@ public class InstallModeVirtualDatapoint extends AbstractVirtualDatapointHandler
         return dpDuration == null || dpDuration.getValue() == null || dpDuration.getType() != HmValueType.INTEGER ? 60
                 : ((Number) dpDuration.getValue()).intValue();
     }
-
 }

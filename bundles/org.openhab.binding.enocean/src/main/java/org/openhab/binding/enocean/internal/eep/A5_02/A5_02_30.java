@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,15 +38,14 @@ public class A5_02_30 extends A5_02 {
     protected double getUnscaledMin() {
         return 1023;
     }
-    
+
     @Override
     protected double getUnscaledMax() {
         return 0;
     }
-    
+
     @Override
     protected int getUnscaledTemperatureValue() {
         return getDB_1Value() + ((getDB_2Value() & 0b11) << 8);
     }
-
 }

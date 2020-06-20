@@ -9,12 +9,12 @@
 		<description>WiFi LED Device</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="color" typeId="color" />
-			<channel id="white" typeId="white" />
-			<channel id="white2" typeId="white2" />
-			<channel id="program" typeId="program" />
-			<channel id="programSpeed" typeId="programSpeed" />
+			<channel id="power" typeId="power"/>
+			<channel id="color" typeId="color"/>
+			<channel id="white" typeId="white"/>
+			<channel id="white2" typeId="white2"/>
+			<channel id="program" typeId="program"/>
+			<channel id="programSpeed" typeId="programSpeed"/>
 		</channels>
 
 		<config-description>
@@ -22,8 +22,7 @@
 				<label>IP</label>
 				<description>IP address or host name of the WIFI LED Controller</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false" min="1024"
-				max="49151">
+			<parameter name="port" type="integer" required="false" min="1024" max="49151">
 				<label>Port</label>
 				<description>Used Port of the device</description>
 				<default>5577</default>

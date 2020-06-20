@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,11 +37,13 @@ public class PushbulletActions implements ThingActions {
 
     private @Nullable PushbulletHandler handler;
 
-    @Override public void setThingHandler(@Nullable ThingHandler handler) {
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
         this.handler = (PushbulletHandler) handler;
     }
 
-    @Override public @Nullable ThingHandler getThingHandler() {
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
         return this.handler;
     }
 

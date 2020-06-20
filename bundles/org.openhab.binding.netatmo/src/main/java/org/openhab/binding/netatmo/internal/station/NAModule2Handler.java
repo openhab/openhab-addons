@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.station;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
@@ -30,8 +32,8 @@ import io.swagger.client.model.NAStationModule;
  */
 public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
 
-    public NAModule2Handler(Thing thing) {
-        super(thing);
+    public NAModule2Handler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -40,7 +42,7 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
             if (dashboardData != null) {
@@ -54,11 +56,11 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
                     case CHANNEL_GUST_STRENGTH:
                         return toQuantityType(dashboardData.getGustStrength(), API_WIND_SPEED_UNIT);
                     case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc());
+                        return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
                     case CHANNEL_MAX_WIND_STRENGTH:
                         return toQuantityType(dashboardData.getMaxWindStr(), API_WIND_SPEED_UNIT);
                     case CHANNEL_DATE_MAX_WIND_STRENGTH:
-                        return toDateTimeType(dashboardData.getDateMaxWindStr());
+                        return toDateTimeType(dashboardData.getDateMaxWindStr(), timeZoneProvider.getTimeZone());
                 }
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.lutron.internal.grxprg;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -103,17 +104,17 @@ class PrgProtocolHandler {
      * A lookup between a 0-100 percentage and corresponding hex value. Note: this specifically matches the liason
      * software setup
      */
-    private static final HashMap<Integer, String> intensityMap = new HashMap<Integer, String>();
+    private static final Map<Integer, String> intensityMap = new HashMap<>();
 
     /**
      * The reverse lookup for the {{@link #intensityMap}
      */
-    private static final HashMap<String, Integer> reverseIntensityMap = new HashMap<String, Integer>();
+    private static final Map<String, Integer> reverseIntensityMap = new HashMap<>();
 
     /**
      * A lookup between returned shade hex intensity to corresponding shade values
      */
-    private static final HashMap<String, Integer> shadeIntensityMap = new HashMap<String, Integer>();
+    private static final Map<String, Integer> shadeIntensityMap = new HashMap<>();
 
     /**
      * Cache of current zone intensities
@@ -254,7 +255,7 @@ class PrgProtocolHandler {
      * Constructs the protocol handler from given parameters
      *
      * @param session a non-null {@link SocketSession} (may be connected or disconnected)
-     * @param config  a non-null {@link PrgHandlerCallback}
+     * @param config a non-null {@link PrgHandlerCallback}
      */
     PrgProtocolHandler(SocketSession session, PrgHandlerCallback callback) {
         if (session == null) {
@@ -376,7 +377,6 @@ class PrgProtocolHandler {
         if (zone < 1 || zone > 8) {
             throw new IllegalArgumentException("Invalid zone (must be between 1 and 8): " + zone);
         }
-
     }
 
     /**
@@ -400,8 +400,8 @@ class PrgProtocolHandler {
      * Validates a zone intensity and returns the hex corresponding value (handles shade intensity zones as well)
      *
      * @param controlUnit the control unit
-     * @param zone        the zone
-     * @param intensity   the new intensity level
+     * @param zone the zone
+     * @param intensity the new intensity level
      * @return a valid hex representation
      * @throws IllegalArgumentException if controlUnit, zone or intensity are invalid
      */
@@ -433,8 +433,8 @@ class PrgProtocolHandler {
      * Converts a hex zone intensity back to a integer - handles shade zones as well
      *
      * @param controlUnit the control unit
-     * @param zone        the zone
-     * @param intensity   the hex intensity value
+     * @param zone the zone
+     * @param intensity the hex intensity value
      * @return the new intensity (between 0-100)
      * @throws IllegalArgumentException if controlUnit, zone or intensity are invalid
      */
@@ -466,7 +466,7 @@ class PrgProtocolHandler {
      * Selects a specific scene on a control unit
      *
      * @param controlUnit the control unit
-     * @param scene       the new scene
+     * @param scene the new scene
      * @throws IllegalArgumentException if controlUnit or scene are invalid
      */
     void selectScene(int controlUnit, int scene) {
@@ -485,7 +485,7 @@ class PrgProtocolHandler {
      * Sets the scene locked/unlocked for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param locked      true for locked, false otherwise
+     * @param locked true for locked, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setSceneLock(int controlUnit, boolean locked) {
@@ -497,7 +497,7 @@ class PrgProtocolHandler {
      * Sets the scene sequence on/off for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param on          true for sequencing on, false otherwise
+     * @param on true for sequencing on, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setSceneSequence(int controlUnit, boolean on) {
@@ -509,7 +509,7 @@ class PrgProtocolHandler {
      * Sets the zone locked/unlocked for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param locked      true for locked, false otherwise
+     * @param locked true for locked, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setZoneLock(int controlUnit, boolean locked) {
@@ -521,7 +521,7 @@ class PrgProtocolHandler {
      * Sets the zone to lowering for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param zone        the zone to lower
+     * @param zone the zone to lower
      * @throws IllegalArgumentException if controlUnit or zone is invalid
      */
     void setZoneLower(int controlUnit, int zone) {
@@ -541,7 +541,7 @@ class PrgProtocolHandler {
      * Sets the zone to raising for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param zone        the zone to raise
+     * @param zone the zone to raise
      * @throws IllegalArgumentException if controlUnit or zone is invalid
      */
     void setZoneRaise(int controlUnit, int zone) {
@@ -562,9 +562,9 @@ class PrgProtocolHandler {
      * nothing if already at floor or ceiling. If the specified zone is a shade, does nothing.
      *
      * @param controlUnit the control unit
-     * @param zone        the zone
-     * @param fade        the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
-     * @param increase    true to increase by 1, false otherwise
+     * @param zone the zone
+     * @param fade the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
+     * @param increase true to increase by 1, false otherwise
      * @throws IllegalArgumentException if controlUnit, zone or fade is invalid
      */
     void setZoneIntensity(int controlUnit, int zone, int fade, boolean increase) {
@@ -591,9 +591,9 @@ class PrgProtocolHandler {
      * If a shade, only deals with intensities from 0 to 5 (stop, open close, preset 1, preset 2, preset 3).
      *
      * @param controlUnit the control unit
-     * @param zone        the zone
-     * @param fade        the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
-     * @param increase    true to increase by 1, false otherwise
+     * @param zone the zone
+     * @param fade the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
+     * @param increase true to increase by 1, false otherwise
      * @throws IllegalArgumentException if controlUnit, zone, fade or intensity is invalid
      */
     void setZoneIntensity(int controlUnit, int zone, int fade, int intensity) {
@@ -831,7 +831,7 @@ class PrgProtocolHandler {
     /**
      * Handles the scene status response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSceneStatus(Matcher m, String resp) {
@@ -866,7 +866,7 @@ class PrgProtocolHandler {
     /**
      * Handles the report time response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleReportTime(Matcher m, String resp) {
@@ -896,7 +896,7 @@ class PrgProtocolHandler {
     /**
      * Handles the report schedule response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleReportSchedule(Matcher m, String resp) {
@@ -918,7 +918,7 @@ class PrgProtocolHandler {
     /**
      * Handles the sunrise/sunset response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSunriseSunset(Matcher m, String resp) {
@@ -951,7 +951,7 @@ class PrgProtocolHandler {
     /**
      * Handles the super sequence response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSuperSequenceStatus(Matcher m, String resp) {
@@ -978,7 +978,7 @@ class PrgProtocolHandler {
     /**
      * Handles the zone intensity response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleZoneIntensity(Matcher m, String resp) {
@@ -1009,7 +1009,7 @@ class PrgProtocolHandler {
     /**
      * Handles the controller information response (currently not used).
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleControlInfo(Matcher m, String resp) {
@@ -1046,7 +1046,7 @@ class PrgProtocolHandler {
     /**
      * Handles the interface being reset
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleResetting(Matcher m, String resp) {
@@ -1056,7 +1056,7 @@ class PrgProtocolHandler {
     /**
      * Handles the button press response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleButton(Matcher m, String resp) {
@@ -1167,7 +1167,6 @@ class PrgProtocolHandler {
             _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred reading from PRG: " + exception);
         }
-
     }
 
     /**
@@ -1182,7 +1181,7 @@ class PrgProtocolHandler {
         /**
          * Cache of responses that have occurred
          */
-        private BlockingQueue<Object> _responses = new ArrayBlockingQueue<Object>(5);
+        private BlockingQueue<Object> _responses = new ArrayBlockingQueue<>(5);
 
         /**
          * Will return the next response from {@link #_responses}. If the response is an exception, that exception will
@@ -1219,6 +1218,5 @@ class PrgProtocolHandler {
             } catch (InterruptedException e1) {
             }
         }
-
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,13 +32,13 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.sleepiq.api.SleepIQ;
+import org.openhab.binding.sleepiq.api.model.Bed;
+import org.openhab.binding.sleepiq.api.model.BedSideStatus;
+import org.openhab.binding.sleepiq.api.model.BedStatus;
 import org.openhab.binding.sleepiq.internal.config.SleepIQBedConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.sleepiq.api.SleepIQ;
-import org.syphr.sleepiq.api.model.Bed;
-import org.syphr.sleepiq.api.model.BedSideStatus;
-import org.syphr.sleepiq.api.model.BedStatus;
 
 /**
  * The {@link SleepIQDualBedHandler} is responsible for handling channel state updates from the cloud service.

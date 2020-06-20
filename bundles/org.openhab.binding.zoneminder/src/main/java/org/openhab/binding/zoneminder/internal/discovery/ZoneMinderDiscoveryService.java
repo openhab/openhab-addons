@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,13 +16,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.zoneminder.internal.ZoneMinderConstants;
 import org.openhab.binding.zoneminder.internal.handler.ZoneMinderServerBridgeHandler;
 import org.openhab.binding.zoneminder.internal.handler.ZoneMinderThingMonitorHandler;
@@ -35,17 +38,31 @@ import name.eskildsen.zoneminder.IZoneMinderMonitorData;
  *
  * @author Martin S. Eskildsen - Initial contribution
  */
-public class ZoneMinderDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
+public class ZoneMinderDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
+
     private final Logger logger = LoggerFactory.getLogger(ZoneMinderDiscoveryService.class);
 
-    private ZoneMinderServerBridgeHandler serverHandler;
-    private DiscoveryServiceCallback discoveryServiceCallback;
+    private @NonNullByDefault({}) ZoneMinderServerBridgeHandler serverHandler;
 
-    public ZoneMinderDiscoveryService(ZoneMinderServerBridgeHandler coordinatorHandler, int searchTime) {
-        super(searchTime);
-        this.serverHandler = coordinatorHandler;
+    public ZoneMinderDiscoveryService() {
+        super(30);
     }
 
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof ZoneMinderServerBridgeHandler) {
+            this.serverHandler = (ZoneMinderServerBridgeHandler) handler;
+            this.serverHandler.setDiscoveryService(this);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return serverHandler;
+    }
+
+    @Override
     public void activate() {
         logger.debug("[DISCOVERY]: Activating ZoneMinder discovery service for {}", serverHandler.getThing().getUID());
     }
@@ -54,11 +71,6 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
     public void deactivate() {
         logger.debug("[DISCOVERY]: Deactivating ZoneMinder discovery service for {}",
                 serverHandler.getThing().getUID());
-    }
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     @Override
@@ -100,7 +112,7 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService impleme
     }
 
     private boolean monitorThingExists(ThingUID newThingUID) {
-        return serverHandler.getThingByUID(newThingUID) != null ? true : false;
+        return serverHandler.getThing().getThing(newThingUID) != null ? true : false;
     }
 
     /**

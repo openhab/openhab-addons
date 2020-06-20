@@ -32,6 +32,7 @@ By default the pairing mode disables itself after 1 minute (can be configured).
 
 It is important to note that you are exposing *Items* not *Things* or *Channels*.
 Only Color, Dimmer, Rollershutter, Switch and Group type *Items* are supported.
+Group type items require the "Huelight" tag to be exposed as devices instead of Groups.
 
 This service can emulate 3 different devices:
 
@@ -113,7 +114,7 @@ This option allows you to override what addresses are used for the announcement.
 You can have multiple comma separated entries.
 
 ```
-org.openhab.hueemulation:discoveryIps=192.168.1.100,::FFFF:A9DB:0D85
+org.openhab.hueemulation:discoveryIp=192.168.1.100,::FFFF:A9DB:0D85
 ```
 
 The hue emulation service supports three types of emulated bulbs.

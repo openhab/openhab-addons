@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,7 +100,5 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(70.0));
         assertThat(((QuantityType<?>) convertedState).getUnit(), is(SmartHomeUnits.PERCENT));
         assertThat(((QuantityType<?>) convertedState).toUnit(SmartHomeUnits.ONE).doubleValue(), is(0.7));
-
     }
-
 }

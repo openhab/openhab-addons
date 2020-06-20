@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,6 +64,7 @@ public class SpotifyBindingConstants {
     public static final String CHANNEL_PLAYED_TRACKNUMBER = "trackNumber";
     public static final String CHANNEL_PLAYED_TRACKDISCNUMBER = "trackDiscNumber";
     public static final String CHANNEL_PLAYED_TRACKPOPULARITY = "trackPopularity";
+    public static final String CHANNEL_PLAYED_TRACKEXPLICIT = "trackExplicit";
     public static final String CHANNEL_PLAYED_TRACKDURATION_MS = "trackDurationMs";
     public static final String CHANNEL_PLAYED_TRACKPROGRESS_MS = "trackProgressMs";
     public static final String CHANNEL_PLAYED_TRACKDURATION_FMT = "trackDuration";

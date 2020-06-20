@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                 });
             }
         }
-        if (netatmoBridgeHandler.configuration.readWelcome) {
+        if (netatmoBridgeHandler.configuration.readWelcome || netatmoBridgeHandler.configuration.readPresence) {
             NAWelcomeHomeData welcomeHomeData = netatmoBridgeHandler.getWelcomeDataBody(null);
             if (welcomeHomeData != null) {
                 welcomeHomeData.getHomes().forEach(home -> {
@@ -142,7 +142,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     private void discoverWelcomeHome(NAWelcomeHome home) {
         // I observed that Thermostat homes are also reported here by Netatmo API
         // So I ignore homes that have an empty list of cameras
-        if (home.getCameras().size() > 0) {
+        if (!home.getCameras().isEmpty()) {
             onDeviceAddedInternal(home.getId(), null, WELCOME_HOME_THING_TYPE.getId(), home.getName(), null);
             // Discover Cameras
             home.getCameras().forEach(camera -> {
@@ -194,5 +194,4 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
 
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
     }
-
 }

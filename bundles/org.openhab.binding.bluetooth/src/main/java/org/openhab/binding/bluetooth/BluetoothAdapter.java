@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,8 +72,14 @@ public interface BluetoothAdapter extends Identifiable<ThingUID> {
      *
      * @param address the {@link BluetoothAddress} to retrieve
      * @return the {@link BluetoothDevice}
-     * @throws IllegalArgumentException if the address is no valid hardware address
      */
     BluetoothDevice getDevice(BluetoothAddress address);
 
+    /**
+     * Checks if this adapter has a device with the given {@link BluetoothAddress}.
+     *
+     * @param address the {@link BluetoothAddress} to check for
+     * @return true if this adapter has a {@link BluetoothDevice} with that address
+     */
+    boolean hasHandlerForDevice(BluetoothAddress address);
 }

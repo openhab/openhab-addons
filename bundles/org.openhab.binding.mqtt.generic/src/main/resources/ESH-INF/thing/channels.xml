@@ -7,29 +7,29 @@
 	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>Text Value</label>
-		<config-description-ref uri="thing-type:mqtt:string_channel" />
+		<config-description-ref uri="thing-type:mqtt:string_channel"/>
 	</channel-type>
 
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Date/Time Value</label>
 		<description>Current date and/or time</description>
-		<config-description-ref uri="thing-type:mqtt:string_channel" />
+		<config-description-ref uri="thing-type:mqtt:string_channel"/>
 	</channel-type>
 
 	<channel-type id="image">
 		<item-type>Image</item-type>
 		<label>Image</label>
 		<description>An image to display. Send a binary bmp, jpg, png or any other supported format to this channel.</description>
-		<state readOnly="true" />
-		<config-description-ref uri="thing-type:mqtt:string_channel" />
+		<state readOnly="true"/>
+		<config-description-ref uri="thing-type:mqtt:string_channel"/>
 	</channel-type>
 
 	<channel-type id="location">
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>GPS coordinates as Latitude,Longitude,Altitude</description>
-		<config-description-ref uri="thing-type:mqtt:string_channel" />
+		<config-description-ref uri="thing-type:mqtt:string_channel"/>
 	</channel-type>
 
 	<channel-type id="number">
@@ -74,6 +74,13 @@
 		<label>Color Value (Hue,Saturation,Brightness)</label>
 		<description></description>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
+	</channel-type>
+
+	<channel-type id="trigger">
+		<item-type>Trigger</item-type>
+		<label>Trigger</label>
+		<description></description>
+		<config-description-ref uri="thing-type:mqtt:trigger_channel"></config-description-ref>
 	</channel-type>
 
 </thing:thing-descriptions>

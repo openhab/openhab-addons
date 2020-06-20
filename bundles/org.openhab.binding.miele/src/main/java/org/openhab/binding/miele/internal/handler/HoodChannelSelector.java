@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,8 +64,7 @@ public enum HoodChannelSelector implements ApplianceChannelSelector {
     private final Class<? extends Type> typeClass;
     private final boolean isProperty;
 
-    HoodChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass,
-            boolean isProperty) {
+    HoodChannelSelector(String propertyID, String channelID, Class<? extends Type> typeClass, boolean isProperty) {
         this.mieleID = propertyID;
         this.channelID = channelID;
         this.typeClass = typeClass;

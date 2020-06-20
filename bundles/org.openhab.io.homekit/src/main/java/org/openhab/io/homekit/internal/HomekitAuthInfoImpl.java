@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,11 +23,11 @@ import org.eclipse.smarthome.core.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitAuthInfo;
-import com.beowulfe.hap.HomekitServer;
+import io.github.hapjava.server.HomekitAuthInfo;
+import io.github.hapjava.server.impl.HomekitServer;
 
 /**
- * Provides a mechanism to store authenticated homekit client details inside the
+ * Provides a mechanism to store authenticated HomeKit client details inside the
  * ESH StorageService, by implementing HomekitAuthInfo.
  *
  * @author Andy Lintner - Initial contribution
@@ -126,5 +126,4 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
             storage.put("privateKey", Base64.getEncoder().encodeToString(HomekitServer.generateKey()));
         }
     }
-
 }

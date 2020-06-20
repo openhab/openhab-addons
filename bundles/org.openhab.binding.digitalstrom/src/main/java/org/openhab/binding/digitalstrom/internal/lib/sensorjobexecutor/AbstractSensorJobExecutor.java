@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public abstract class AbstractSensorJobExecutor {
     protected Config config;
     private final ConnectionManager connectionManager;
 
-    private final List<CircuitScheduler> circuitSchedulerList = new LinkedList<CircuitScheduler>();
+    private final List<CircuitScheduler> circuitSchedulerList = new LinkedList<>();
 
     private class ExecutorRunnable implements Runnable {
         private final CircuitScheduler circuit;
@@ -109,7 +109,7 @@ public abstract class AbstractSensorJobExecutor {
     public synchronized void startExecutor() {
         logger.debug("start all circuit schedulers.");
         if (pollingSchedulers == null) {
-            pollingSchedulers = new HashMap<DSID, ScheduledFuture<?>>();
+            pollingSchedulers = new HashMap<>();
         }
         if (circuitSchedulerList != null && !circuitSchedulerList.isEmpty()) {
             for (CircuitScheduler circuit : circuitSchedulerList) {

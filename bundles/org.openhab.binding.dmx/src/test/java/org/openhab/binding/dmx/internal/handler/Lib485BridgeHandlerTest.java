@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,10 +33,9 @@ import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.handler.Lib485BridgeHandler;
 
 /**
- * Tests cases for {@link Lib485BridgeHandler}.
+ * Tests cases for {@link org.openhab.binding.dmx.internal.handler.Lib485BridgeHandler}.
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -86,5 +85,4 @@ public class Lib485BridgeHandlerTest extends JavaTest {
     public void assertBridgeStatus() {
         waitForAssert(() -> assertEquals(ThingStatus.OFFLINE, bridge.getStatusInfo().getStatus()));
     }
-
 }

@@ -6,7 +6,7 @@
 
 	<thing-type id="ctrl_ln2">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi "zero-fire" 2 Channel Wall Switch</label>
 		<channels>
@@ -19,6 +19,6 @@
 				<description>The second pushbutton on the switch.</description>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 </thing:thing-descriptions>

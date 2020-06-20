@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,11 +85,12 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
     private ThingUID getThingUID(DeviceBase device) {
         switch (device.getDeviceType()) {
             case ceiling:
-                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
-            case ceiling1:
-                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
             case ceiling3:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
+            case ceiling1:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING1, device.getDeviceId());
+            case ceiling4:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING4, device.getDeviceId());
             case color:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_WONDER, device.getDeviceId());
             case mono:
@@ -113,6 +114,8 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
                 return YeelightBindingConstants.THING_TYPE_CEILING1;
             case ceiling3:
                 return YeelightBindingConstants.THING_TYPE_CEILING3;
+            case ceiling4:
+                return YeelightBindingConstants.THING_TYPE_CEILING4;
             case color:
                 return YeelightBindingConstants.THING_TYPE_WONDER;
             case mono:

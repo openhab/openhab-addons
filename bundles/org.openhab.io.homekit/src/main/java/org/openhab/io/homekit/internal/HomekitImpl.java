@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,13 +16,19 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigurableService;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.smarthome.core.items.MetadataRegistry;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.homekit.Homekit;
@@ -36,11 +42,12 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.beowulfe.hap.HomekitRoot;
-import com.beowulfe.hap.HomekitServer;
+import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.server.impl.HomekitRoot;
+import io.github.hapjava.server.impl.HomekitServer;
 
 /**
- * Provides access to openHAB items via the Homekit API
+ * Provides access to openHAB items via the HomeKit API
  *
  * @author Andy Lintner - Initial contribution
  */
@@ -51,6 +58,7 @@ import com.beowulfe.hap.HomekitServer;
         ConfigurableService.SERVICE_PROPERTY_LABEL + "=HomeKit Integration", "port:Integer=9123" })
 @NonNullByDefault
 public class HomekitImpl implements Homekit {
+
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
     private final StorageService storageService;
     private final NetworkAddressService networkAddressService;
@@ -61,14 +69,17 @@ public class HomekitImpl implements Homekit {
     private @Nullable HomekitServer homekitServer;
     private @Nullable HomekitRoot bridge;
 
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+
     @Activate
     public HomekitImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
-            @Reference NetworkAddressService networkAddressService, Map<String, Object> config)
-            throws IOException, InvalidAlgorithmParameterException {
+            @Reference NetworkAddressService networkAddressService, Map<String, Object> config,
+            @Reference MetadataRegistry metadataRegistry) throws IOException, InvalidAlgorithmParameterException {
         this.storageService = storageService;
         this.networkAddressService = networkAddressService;
         this.settings = processConfig(config);
-        this.changeListener = new HomekitChangeListener(itemRegistry, settings);
+        this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
         startHomekitServer();
     }
 
@@ -88,7 +99,7 @@ public class HomekitImpl implements Homekit {
             settings = processConfig(config);
             changeListener.updateSettings(settings);
             if (!oldSettings.networkInterface.equals(settings.networkInterface) || oldSettings.port != settings.port) {
-                // the homekit server settings changed. we do a complete re-init
+                // the HomeKit server settings changed. we do a complete re-init
                 stopHomekitServer();
                 startHomekitServer();
             } else if (!oldSettings.name.equals(settings.name) || !oldSettings.pin.equals(settings.pin)) {
@@ -97,7 +108,7 @@ public class HomekitImpl implements Homekit {
                 startBridge();
             }
         } catch (IOException | InvalidAlgorithmParameterException e) {
-            logger.debug("Could not initialize homekit connector: {}", e.getMessage());
+            logger.warn("Could not initialize HomeKit connector: {}", e.getMessage());
             return;
         }
     }
@@ -112,16 +123,35 @@ public class HomekitImpl implements Homekit {
     }
 
     private void startBridge() throws InvalidAlgorithmParameterException, IOException {
+        final HomekitServer homekitServer = this.homekitServer;
         if (homekitServer != null && bridge == null) {
             final HomekitRoot bridge = homekitServer.createBridge(new HomekitAuthInfoImpl(storageService, settings.pin),
-                    settings.name, HomekitSettings.MANUFACTURER,
-                    FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.SERIAL_NUMBER);
+                    settings.name, HomekitSettings.MANUFACTURER, HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
+                    FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.HARDWARE_REVISION);
             changeListener.setBridge(bridge);
-            bridge.start();
             this.bridge = bridge;
+            bridge.setConfigurationIndex(changeListener.getConfigurationRevision());
+
+            final int lastAccessoryCount = changeListener.getLastAccessoryCount();
+            int currentAccessoryCount = changeListener.getAccessories().size();
+            if (currentAccessoryCount < lastAccessoryCount) {
+                logger.debug(
+                        "It looks like not all items were initialized yet. Old configuration had {} accessories, the current one has only {} accessories. Delay HomeKit bridge start for {} seconds.",
+                        lastAccessoryCount, currentAccessoryCount, settings.startDelay);
+                scheduler.schedule(() -> {
+                    if (currentAccessoryCount < lastAccessoryCount) {
+                        // the number of items is still different, maybe it is desired.
+                        // make new configuration revision.
+                        changeListener.makeNewConfigurationRevision();
+                    }
+                    bridge.start();
+                }, settings.startDelay, TimeUnit.SECONDS);
+            } else { // start bridge immediately.
+                bridge.start();
+            }
         } else {
             logger.warn(
-                    "trying to start bridge but homekit server is not initialized or bridge is already initialized");
+                    "trying to start bridge but HomeKit server is not initialized or bridge is already initialized");
         }
     }
 
@@ -131,7 +161,7 @@ public class HomekitImpl implements Homekit {
             homekitServer = new HomekitServer(networkInterface, settings.port);
             startBridge();
         } else {
-            logger.warn("trying to start homekit server but it is already initialized");
+            logger.warn("trying to start HomeKit server but it is already initialized");
         }
     }
 
@@ -155,6 +185,7 @@ public class HomekitImpl implements Homekit {
 
     @Override
     public void refreshAuthInfo() throws IOException {
+        final HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.refreshAuthInfo();
         }
@@ -162,8 +193,14 @@ public class HomekitImpl implements Homekit {
 
     @Override
     public void allowUnauthenticatedRequests(boolean allow) {
+        final HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.allowUnauthenticatedRequests(allow);
         }
+    }
+
+    @Override
+    public List<HomekitAccessory> getAccessories() {
+        return new ArrayList<HomekitAccessory>(this.changeListener.getAccessories().values());
     }
 }

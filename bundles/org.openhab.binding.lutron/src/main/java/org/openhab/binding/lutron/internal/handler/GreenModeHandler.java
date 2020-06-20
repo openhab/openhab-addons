@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Adair - Initial contribution
  */
+@NonNullByDefault
 public class GreenModeHandler extends LutronHandler {
     private static final Integer ACTION_STEP = 1;
     public static final int GREENSTEP_MIN = 1;
@@ -48,7 +51,7 @@ public class GreenModeHandler extends LutronHandler {
 
     private int integrationId;
     private int pollInterval;
-    private ScheduledFuture<?> pollJob;
+    private @Nullable ScheduledFuture<?> pollJob;
 
     public GreenModeHandler(Thing thing) {
         super(thing);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -187,17 +187,17 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
             boolean matchesAction = result.contains("<s:Body><u:" + action);
 
             if (action != null) {
-                if (matchesAction == false) {
+                if (!matchesAction) {
                     continue;
                 }
             }
             if (capitability != null) {
-                if (matchesCapability == false) {
+                if (!matchesCapability) {
                     continue;
                 }
             }
             if (value != null) {
-                if (matchesValue == false) {
+                if (!matchesValue) {
                     continue;
                 }
             }

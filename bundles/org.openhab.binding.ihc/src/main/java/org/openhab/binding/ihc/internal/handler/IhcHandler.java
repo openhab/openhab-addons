@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -404,7 +404,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         }
     }
 
-    private ArrayList<IhcEnumValue> getEnumValues(WSResourceValue value) {
+    private List<IhcEnumValue> getEnumValues(WSResourceValue value) {
         if (value instanceof WSEnumValue) {
             return enumDictionary.getEnumValues(((WSEnumValue) value).definitionTypeID);
         }
@@ -937,7 +937,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             resourceIds.addAll(linkedResourceIds);
             resourceIds.addAll(getAllLinkedChannelsResourceIds());
             logger.debug("Enable runtime notfications for {} resources: {}", resourceIds.size(), resourceIds);
-            if (resourceIds.size() > 0) {
+            if (!resourceIds.isEmpty()) {
                 try {
                     ihc.enableRuntimeValueNotifications(resourceIds);
                 } catch (IhcExecption e) {

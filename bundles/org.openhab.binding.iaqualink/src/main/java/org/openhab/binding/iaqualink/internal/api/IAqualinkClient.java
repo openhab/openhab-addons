@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -415,7 +415,7 @@ public class IAqualinkClient {
             }
             JsonObject jsonObject = json.getAsJsonObject();
             JsonArray oneTouchScreen = jsonObject.getAsJsonArray("onetouch_screen");
-            List<OneTouch> list = new ArrayList<OneTouch>();
+            List<OneTouch> list = new ArrayList<>();
             if (oneTouchScreen != null) {
                 oneTouchScreen.forEach(oneTouchScreenElement -> {
                     oneTouchScreenElement.getAsJsonObject().entrySet().forEach(oneTouchScreenEntry -> {
@@ -448,7 +448,7 @@ public class IAqualinkClient {
             }
             JsonObject jsonObject = json.getAsJsonObject();
             JsonArray auxScreen = jsonObject.getAsJsonArray("devices_screen");
-            List<Auxiliary> list = new ArrayList<Auxiliary>();
+            List<Auxiliary> list = new ArrayList<>();
             if (auxScreen != null) {
                 auxScreen.forEach(auxElement -> {
                     auxElement.getAsJsonObject().entrySet().forEach(auxScreenEntry -> {

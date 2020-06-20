@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,9 +51,8 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
         }
 
         switch (param) {
-
             case SmartMeterBindingConstants.CONFIGURATION_SERIAL_MODE:
-                List<ParameterOption> options = new ArrayList<ParameterOption>();
+                List<ParameterOption> options = new ArrayList<>();
 
                 for (ProtocolMode mode : ProtocolMode.values()) {
                     options.add(new ParameterOption(mode.name(), mode.toString()));
@@ -61,7 +60,7 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
                 return options;
 
             case SmartMeterBindingConstants.CONFIGURATION_BAUDRATE:
-                options = new ArrayList<ParameterOption>();
+                options = new ArrayList<>();
 
                 for (Baudrate baudrate : Baudrate.values()) {
                     options.add(new ParameterOption(baudrate.getBaudrate() + "", baudrate.toString()));
@@ -69,7 +68,7 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
                 return options;
 
             case SmartMeterBindingConstants.CONFIGURATION_CONFORMITY:
-                options = new ArrayList<ParameterOption>();
+                options = new ArrayList<>();
 
                 for (Conformity conformity : Conformity.values()) {
                     options.add(new ParameterOption(conformity.name(), conformity.toString()));
@@ -78,5 +77,4 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
         }
         return null;
     }
-
 }

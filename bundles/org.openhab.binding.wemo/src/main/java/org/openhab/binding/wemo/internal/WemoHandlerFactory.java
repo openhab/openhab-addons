@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,10 @@ import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.wemo.internal.discovery.WemoLinkDiscoveryService;
 import org.openhab.binding.wemo.internal.handler.WemoBridgeHandler;
 import org.openhab.binding.wemo.internal.handler.WemoCoffeeHandler;
+import org.openhab.binding.wemo.internal.handler.WemoCrockpotHandler;
+import org.openhab.binding.wemo.internal.handler.WemoDimmerHandler;
 import org.openhab.binding.wemo.internal.handler.WemoHandler;
+import org.openhab.binding.wemo.internal.handler.WemoHolmesHandler;
 import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
 import org.openhab.binding.wemo.internal.handler.WemoMakerHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
@@ -64,6 +67,7 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    @SuppressWarnings({ "null", "unused" })
     @Override
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -90,6 +94,26 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
                 logger.debug("Creating a WemoCoffeeHandler for thing '{}' with UDN '{}'", thing.getUID(),
                         thing.getConfiguration().get(UDN));
                 return new WemoCoffeeHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_DIMMER)) {
+                logger.debug("Creating a WemoDimmerHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoDimmerHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_CROCKPOT)) {
+                logger.debug("Creating a WemoCockpotHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoCrockpotHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_PURIFIER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HUMIDIFIER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HEATER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
             } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MZ100)) {
                 return new WemoLightHandler(thing, upnpIOService, wemoHttpcaller);
             } else {
@@ -123,8 +147,7 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
             WemoHttpCall wemoHttpCaller) {
         WemoLinkDiscoveryService discoveryService = new WemoLinkDiscoveryService(wemoBridgeHandler, upnpIOService,
                 wemoHttpCaller);
-        this.discoveryServiceRegs.put(wemoBridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(wemoBridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
-
 }

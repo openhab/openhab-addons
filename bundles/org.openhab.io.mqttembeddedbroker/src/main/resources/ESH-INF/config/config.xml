@@ -9,14 +9,16 @@
 		<parameter name="port" type="integer" required="false">
 			<label>Embedded Broker Port</label>
 			<description>A custom broker connection port. Leave empty to use the
-				default MQTT ports 1883 and 8883 (SSL) for secure or non-secure
+				default MQTT ports 1883 and 8883 (SSL) for secure
+				or non-secure
 				connections.</description>
 			<default></default>
 		</parameter>
 		<parameter name="secure" type="boolean" required="true">
 			<label>Secure Connection?</label>
 			<description>If set, hosts a secure SSL connection on port 8883 or
-				otherwise a non secure connection on port 1883 (if not overwritten
+				otherwise a non secure connection on port 1883 (if
+				not overwritten
 				by the port parameter)</description>
 			<default>false</default>
 		</parameter>
@@ -30,17 +32,21 @@
 		<parameter name="password" type="text" required="false">
 			<label>Embedded Broker Password</label>
 			<description>Connections need to provide this password to access the
-				broker. Should only be used if it is a secure connection, because
+				broker. Should only be used if it is a secure
+				connection, because
 				the password is transferred plain over the wire.</description>
 			<default></default>
 		</parameter>
 		<parameter name="persistenceFile" type="text" required="false">
 			<label>Persistence File</label>
 			<description>An optional persistence file. Retained messages are
-				stored in this file. Can be empty to not store anything. If it
+				stored in this file. Can be empty to not store
+				anything. If it
 				starts with "/" on Linux/MacOS or with a drive letter and colon (eg
-				"c:/") it will be treated as an absolute path. Be careful to select
-				a path that you have write access to. </description>
+				"c:/") it will be treated as an
+				absolute path. Be careful to select
+				a path that you have write access to.
+			</description>
 			<default>mqttembedded.bin</default>
 		</parameter>
 

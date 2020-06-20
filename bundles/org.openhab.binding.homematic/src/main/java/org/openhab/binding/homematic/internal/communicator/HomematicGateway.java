@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.homematic.internal.communicator;
 
 import java.io.IOException;
 
-import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -99,13 +98,13 @@ public interface HomematicGateway {
      * Returns the id of the HomematicGateway.
      */
     public String getId();
-    
+
     /**
      * Set install mode of homematic controller. During install mode the
      * controller will accept any device (normal mode)
      * 
      * @param enable <i>true</i> will start install mode, whereas <i>false</i>
-     *         will stop it
+     *            will stop it
      * @param seconds specify how long the install mode should last
      * @throws IOException if RpcClient fails to propagate command
      */
@@ -140,5 +139,4 @@ public interface HomematicGateway {
      * @param defer <i>true</i> will delete the device once it becomes available.
      */
     public void deleteDevice(String address, boolean reset, boolean force, boolean defer);
-
 }

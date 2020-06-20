@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,13 +27,13 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 /**
  * This {@link DiscoveryListener} implementation simply records all discovered
  * results, so that they can be checked after the discovery.
- * 
+ *
  * @author Florian Stolte - Initial Contribution
  *
  */
 public class SimpleDiscoveryListener implements DiscoveryListener {
 
-    public Queue<DiscoveryResult> discoveredResults = new ConcurrentLinkedQueue<DiscoveryResult>();
+    public Queue<DiscoveryResult> discoveredResults = new ConcurrentLinkedQueue<>();
 
     @Override
     public void thingRemoved(DiscoveryService source, ThingUID thingUID) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.velbus.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class VelbusPacketInputStream {
     private Byte currentPriority = null;
     private Byte currentAddress = null;
     private Byte currentDataLength = null;
-    private ArrayList<Byte> currentData = new ArrayList<Byte>();
+    private List<Byte> currentData = new ArrayList<>();
     private Byte currentChecksum = null;
 
     public VelbusPacketInputStream(InputStream inputStream) {
@@ -117,7 +118,7 @@ public class VelbusPacketInputStream {
         currentPriority = null;
         currentAddress = null;
         currentDataLength = null;
-        currentData = new ArrayList<Byte>();
+        currentData = new ArrayList<>();
         currentChecksum = null;
     }
 }

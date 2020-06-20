@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="synopanalyzer"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="synopanalyzer">
 		<label>Synop Message</label>
 		<description>The Synop Analyzer binding decodes Synop messages</description>
 
 		<channels>
-			<channel id="temperature" typeId="system.outdoor-temperature" />
-			<channel id="pressure" typeId="system.barometric-pressure" />
-			<channel id="wind-angle" typeId="system.wind-direction" />
-			<channel id="wind-direction" typeId="wind-direction" />
-			<channel id="wind-speed" typeId="system.wind-speed" />
-			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort" />
-			<channel id="overcast" typeId="overcast" />
-			<channel id="octa" typeId="octa" />
-			<channel id="attenuation-factor" typeId="attenuation-factor" />
-			<channel id="horizontal-visibility" typeId="horizontal-visibility" />
-			<channel id="time-utc" typeId="time-utc" />
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="wind-angle" typeId="system.wind-direction"/>
+			<channel id="wind-direction" typeId="wind-direction"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-speed-beaufort" typeId="wind-speed-beaufort"/>
+			<channel id="overcast" typeId="overcast"/>
+			<channel id="octa" typeId="octa"/>
+			<channel id="attenuation-factor" typeId="attenuation-factor"/>
+			<channel id="horizontal-visibility" typeId="horizontal-visibility"/>
+			<channel id="time-utc" typeId="time-utc"/>
 		</channels>
 
 		<config-description>
@@ -42,7 +42,7 @@
 		<label>Beaufort</label>
 		<description>Wind speed in Beaufort Scale</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="wind-direction">

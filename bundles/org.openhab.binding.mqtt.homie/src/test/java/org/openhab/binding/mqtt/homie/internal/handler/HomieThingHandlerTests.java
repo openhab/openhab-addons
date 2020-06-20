@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.testHomieThing;
+import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.TEST_HOMIE_THING;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -100,7 +100,7 @@ public class HomieThingHandlerTests {
 
     private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistry);
 
-    private final String deviceID = ThingChannelConstants.testHomieThing.getId();
+    private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;
 
     // A completed future is returned for a subscribe call to the attributes
@@ -116,7 +116,7 @@ public class HomieThingHandlerTests {
         config.put("basetopic", "homie");
         config.put("deviceid", deviceID);
 
-        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, testHomieThing.getId())
+        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, TEST_HOMIE_THING.getId())
                 .withConfiguration(config).build();
         thing.setStatusInfo(thingStatus);
 
@@ -137,15 +137,13 @@ public class HomieThingHandlerTests {
         thingHandler.setCallback(callback);
         final Device device = new Device(thing.getUID(), thingHandler, spy(new DeviceAttributes()),
                 spy(new ChildMap<>()));
-        thingHandler.setInternalObjects(spy(device),
-                spy(new DelayedBatchProcessing<Object>(500, thingHandler, scheduler)));
+        thingHandler.setInternalObjects(spy(device), spy(new DelayedBatchProcessing<>(500, thingHandler, scheduler)));
 
         // Return the bridge handler if the thing handler asks for it
         doReturn(bridgeHandler).when(thingHandler).getBridgeHandler();
 
         // We are by default online
         doReturn(thingStatus).when(thingHandler).getBridgeStatus();
-
     }
 
     @Test
@@ -230,8 +228,10 @@ public class HomieThingHandlerTests {
         thingHandler.device.nodes.put(node.nodeID, node);
 
         ThingHandlerHelper.setConnection(thingHandler, connection);
-        thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
+        // we need to set a channel value first, undefined values ignored on REFRESH
+        property.getChannelState().getCache().update(new StringType("testString"));
 
+        thingHandler.handleCommand(property.channelUID, RefreshType.REFRESH);
         verify(callback).stateUpdated(argThat(arg -> property.channelUID.equals(arg)),
                 argThat(arg -> property.getChannelState().getCache().getChannelState().equals(arg)));
     }
@@ -322,7 +322,7 @@ public class HomieThingHandlerTests {
 
     @Test
     public void propertiesChanged() throws InterruptedException, ExecutionException {
-        thingHandler.device.initialize("homie", "device", new ArrayList<Channel>());
+        thingHandler.device.initialize("homie", "device", new ArrayList<>());
         ThingHandlerHelper.setConnection(thingHandler, connection);
 
         // Create mocked homie device tree with one node and one property

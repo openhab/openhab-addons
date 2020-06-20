@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class RioZoneHandler extends AbstractThingHandler<RioZoneProtocol>
     /**
      * The zone name for this instance
      */
-    private final AtomicReference<String> zoneName = new AtomicReference<String>(null);
+    private final AtomicReference<String> zoneName = new AtomicReference<>(null);
 
     /**
      * Constructs the handler from the {@link Thing}

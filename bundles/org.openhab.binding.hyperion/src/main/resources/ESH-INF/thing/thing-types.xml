@@ -8,10 +8,10 @@
 		<label>Hyperion Server</label>
 		<description>This is a Hyperion server</description>
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<channel id="color" typeId="color" />
-			<channel id="effect" typeId="effect" />
-			<channel id="clear" typeId="clear" />
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="color" typeId="color"/>
+			<channel id="effect" typeId="effect"/>
+			<channel id="clear" typeId="clear"/>
 		</channels>
 
 		<config-description>
@@ -42,20 +42,20 @@
 		<label>Hyperion.ng Server</label>
 		<description>This is a Hyperion.ng server</description>
 		<channels>
-			<channel id="hyperionenabled" typeId="enabled" />
-			<channel id="brightness" typeId="brightness" />
-			<channel id="effect" typeId="effect" />
-			<channel id="clear" typeId="clear" />
-			<channel id="color" typeId="color" />
-			<channel id="blackborder" typeId="blackborder" />
-			<channel id="smoothing" typeId="smoothing" />
-			<channel id="kodichecker" typeId="kodichecker" />
-			<channel id="forwarder" typeId="forwarder" />
-			<channel id="udplistener" typeId="udplistener" />
-			<channel id="boblightserver" typeId="boblightserver" />
-			<channel id="grabber" typeId="grabber" />
-			<channel id="v4l" typeId="v4l" />
-			<channel id="leddevice" typeId="leddevice" />
+			<channel id="hyperionenabled" typeId="enabled"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="effect" typeId="effect"/>
+			<channel id="clear" typeId="clear"/>
+			<channel id="color" typeId="color"/>
+			<channel id="blackborder" typeId="blackborder"/>
+			<channel id="smoothing" typeId="smoothing"/>
+			<channel id="kodichecker" typeId="kodichecker"/>
+			<channel id="forwarder" typeId="forwarder"/>
+			<channel id="udplistener" typeId="udplistener"/>
+			<channel id="boblightserver" typeId="boblightserver"/>
+			<channel id="grabber" typeId="grabber"/>
+			<channel id="v4l" typeId="v4l"/>
+			<channel id="leddevice" typeId="leddevice"/>
 		</channels>
 
 		<config-description>
@@ -122,43 +122,50 @@
 	<channel-type id="blackborder" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Black Border</label>
-		<description>Shows the current state of the black border component and allows the black border component to be enabled or disabled</description>
+		<description>Shows the current state of the black border component and allows the black border component to be enabled
+			or disabled</description>
 	</channel-type>
 
 	<channel-type id="smoothing" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Smoothing</label>
-		<description>Shows the current state of the smoothing component and allows the smoothing component to be enabled or disabled</description>
+		<description>Shows the current state of the smoothing component and allows the smoothing component to be enabled or
+			disabled</description>
 	</channel-type>
 
 	<channel-type id="kodichecker" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Kodi Checker</label>
-		<description>Shows the current state of the Kodi checker component and allows the Kodi checker component to be enabled or disabled</description>
+		<description>Shows the current state of the Kodi checker component and allows the Kodi checker component to be enabled
+			or disabled</description>
 	</channel-type>
 
 	<channel-type id="forwarder" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Forwarder</label>
-		<description>Shows the current state of the forwarder component and allows the forwarder component to be enabled or disabled</description>
+		<description>Shows the current state of the forwarder component and allows the forwarder component to be enabled or
+			disabled</description>
 	</channel-type>
 
 	<channel-type id="udplistener" advanced="true">
 		<item-type>Switch</item-type>
 		<label>UDP Listener</label>
-		<description>Shows the current state of the UDP listener component and allows the UDP listener component to be enabled or disabled</description>
+		<description>Shows the current state of the UDP listener component and allows the UDP listener component to be enabled
+			or disabled</description>
 	</channel-type>
 
 	<channel-type id="boblightserver" advanced="true">
 		<item-type>Switch</item-type>
 		<label>UDP Listener</label>
-		<description>Shows the current state of the Boblight server component and allows the Boblight server component to be enabled or disabled</description>
+		<description>Shows the current state of the Boblight server component and allows the Boblight server component to be
+			enabled or disabled</description>
 	</channel-type>
 
 	<channel-type id="grabber" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Grabber</label>
-		<description>Shows the current state of the grabber component and allows the grabber component to be enabled or disabled</description>
+		<description>Shows the current state of the grabber component and allows the grabber component to be enabled or
+			disabled</description>
 	</channel-type>
 
 

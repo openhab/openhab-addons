@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,13 +18,18 @@ import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
@@ -38,24 +43,38 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
+public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
 
-    private final HomematicBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) HomematicBridgeHandler bridgeHandler;
     private Future<?> loadDevicesFuture;
     private volatile boolean isInInstallMode = false;
     private volatile Object installModeSync = new Object();
     private volatile int installModeDuration = HomematicConfig.DEFAULT_INSTALL_MODE_DURATION;
 
-    public HomematicDeviceDiscoveryService(HomematicBridgeHandler bridgeHandler) {
+    public HomematicDeviceDiscoveryService() {
         super(Collections.singleton(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
-        this.bridgeHandler = bridgeHandler;
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof HomematicBridgeHandler) {
+            this.bridgeHandler = (HomematicBridgeHandler) handler;
+            this.bridgeHandler.setDiscoveryService(this);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 
     /**
      * Called on component activation.
      */
+    @Override
     public void activate() {
         super.activate(null);
     }
@@ -164,7 +183,6 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
      * Waits for the discovery scan to finish and then returns.
      */
     public void waitForScanFinishing() {
-
         logger.debug("Waiting for finishing Homematic device discovery scan");
         try {
             waitForInstallModeFinished(DISCOVER_TIMEOUT_SECONDS * 1000);
@@ -227,5 +245,4 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService {
                 .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withTTL(timeToLive).build();
         thingDiscovered(discoveryResult);
     }
-
 }

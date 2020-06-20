@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The {@link SceneEnum} lists all available scenes of digitalSTROM.
@@ -128,7 +129,7 @@ public enum SceneEnum implements Scene {
     NO_HAIL((short) 91);
 
     private final short sceneNumber;
-    static final HashMap<Short, SceneEnum> DIGITALSTROM_SCENES = new HashMap<Short, SceneEnum>();
+    static final Map<Short, SceneEnum> DIGITALSTROM_SCENES = new HashMap<>();
 
     static {
         for (SceneEnum zs : SceneEnum.values()) {

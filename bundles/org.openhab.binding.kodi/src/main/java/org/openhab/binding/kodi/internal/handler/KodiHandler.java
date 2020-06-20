@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -89,6 +88,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private final KodiConnection connection;
     private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
 
+    private final ChannelUID profileChannelUID;
+
     private ScheduledFuture<?> connectionCheckerFuture;
     private ScheduledFuture<?> statusUpdaterFuture;
 
@@ -98,6 +99,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         connection = new KodiConnection(this, webSocketClient, callbackUrl);
 
         this.stateDescriptionProvider = stateDescriptionProvider;
+
+        profileChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_PROFILE);
     }
 
     @Override
@@ -297,7 +300,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 break;
             case CHANNEL_CURRENTTIME:
                 if (command instanceof QuantityType) {
-                    connection.setTime(((QuantityType) command).intValue());
+                    connection.setTime(((QuantityType<?>) command).intValue());
                 }
                 break;
             case CHANNEL_CURRENTTIMEPERCENTAGE:
@@ -344,7 +347,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         int httpPort = config.getHttpPort();
         String httpUser = config.getHttpUser();
         String httpPassword = config.getHttpPassword();
-        String userInfo = (StringUtils.isEmpty(httpUser) || StringUtils.isEmpty(httpPassword)) ? null
+        String userInfo = httpUser == null || httpUser.isEmpty() || httpPassword == null || httpPassword.isEmpty()
+                ? null
                 : String.format("%s:%s", httpUser, httpPassword);
         return new URI("http", userInfo, host, httpPort, "/image/", null, null);
     }
@@ -362,9 +366,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         if (favorite != null) {
             String path = favorite.getPath();
             String windowParameter = favorite.getWindowParameter();
-            if (StringUtils.isNotEmpty(path)) {
+            if (path != null && !path.isEmpty()) {
                 connection.playURI(path);
-            } else if (StringUtils.isNotEmpty(windowParameter)) {
+            } else if (windowParameter != null && !windowParameter.isEmpty()) {
                 String[] windowParameters = { windowParameter };
                 connection.activateWindow(favorite.getWindow(), windowParameters);
             } else {
@@ -615,7 +619,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                         updateFavoriteChannelStateDescription();
                         updatePVRChannelStateDescription(PVR_TV, CHANNEL_PVR_OPEN_TV);
                         updatePVRChannelStateDescription(PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
-                        updateProfileStateDescription(CHANNEL_PROFILE);
+                        updateProfileStateDescription();
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "No connection established");
@@ -656,13 +660,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
     }
 
-    private void updateProfileStateDescription(final String channelId) {
-        if (isLinked(channelId)) {
+    private void updateProfileStateDescription() {
+        if (isLinked(profileChannelUID)) {
             List<StateOption> options = new ArrayList<>();
             for (KodiProfile profile : connection.getProfiles()) {
                 options.add(new StateOption(profile.getLabel(), profile.getLabel()));
             }
-            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), channelId), options);
+            stateDescriptionProvider.setStateOptions(profileChannelUID, options);
         }
     }
 
@@ -699,7 +703,9 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             updateStatus(ThingStatus.ONLINE);
             scheduler.schedule(() -> connection.getSystemProperties(), 1, TimeUnit.SECONDS);
             scheduler.schedule(() -> connection.updateVolume(), 1, TimeUnit.SECONDS);
-            scheduler.schedule(() -> connection.updateCurrentProfile(), 1, TimeUnit.SECONDS);
+            if (isLinked(profileChannelUID)) {
+                scheduler.schedule(() -> connection.updateCurrentProfile(), 1, TimeUnit.SECONDS);
+            }
             try {
                 String version = connection.getVersion();
                 thing.setProperty(PROPERTY_VERSION, version);
@@ -807,7 +813,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateUserRating(double rating) {
-        updateState(CHANNEL_RATING, new DecimalType(rating));
+        updateState(CHANNEL_USERRATING, new DecimalType(rating));
     }
 
     @Override
@@ -961,7 +967,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     @Override
     public void updateCurrentProfile(String profile) {
-        updateState(CHANNEL_PROFILE, new StringType(profile));
+        updateState(profileChannelUID, new StringType(profile));
     }
 
     @Override

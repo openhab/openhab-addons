@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.nio.ByteOrder;
 
 /**
  * The Class SinopeOutTempData.
- * 
+ *
  * @author Pascal Larin - Initial contribution
  */
 public class SinopeOutTempData extends SinopeAppData {
@@ -26,7 +26,6 @@ public class SinopeOutTempData extends SinopeAppData {
      * Instantiates a new sinope out temp data.
      */
     public SinopeOutTempData() {
-
         super(new byte[] { 0x00, 0x00, 0x02, 0x04 }, new byte[] { 0, 0 });
     }
 
@@ -56,5 +55,4 @@ public class SinopeOutTempData extends SinopeAppData {
         }
         return sb.toString();
     }
-
 }

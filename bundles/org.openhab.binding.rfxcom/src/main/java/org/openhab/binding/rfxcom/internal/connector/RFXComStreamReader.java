@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,6 +67,8 @@ public class RFXComStreamReader extends Thread {
                     logger.trace("Message length is {} bytes", packetLength);
                     processMessage(buf, packetLength);
                     connector.sendMsgToListeners(Arrays.copyOfRange(buf, 0, packetLength + 1));
+                } else if (bytesRead == -1) {
+                    throw new IOException("End of stream");
                 }
             }
         } catch (IOException | RFXComTimeoutException e) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class SamsungTvDiscoveryParticipant implements UpnpDiscoveryParticipant {
             properties.put(HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withLabel(getLabel(device)).build();
+                    .withRepresentationProperty(HOST_NAME).withLabel(getLabel(device)).build();
 
             logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}' and properties: {}",
                     device.getDetails().getModelDetails().getModelName(),

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -155,7 +155,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public void controllerOffline() {
         bridgeOffline();
-
     }
 
     @Override
@@ -231,11 +230,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
         this.nhcDiscovery = nhcDiscovery;
     }
 
-    /**
-     * Send a trigger from an alarm received from Niko Home Control.
-     *
-     * @param Niko Home Control alarm message
-     */
     @Override
     public void alarmEvent(String alarmText) {
         logger.debug("Niko Home Control: triggering alarm channel with {}", alarmText);
@@ -243,16 +237,16 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
         updateStatus(ThingStatus.ONLINE);
     }
 
-    /**
-     * Send a trigger from a notice received from Niko Home Control.
-     *
-     * @param Niko Home Control alarm message
-     */
     @Override
     public void noticeEvent(String alarmText) {
         logger.debug("Niko Home Control: triggering notice channel with {}", alarmText);
         triggerChannel(CHANNEL_NOTICE, alarmText);
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void updatePropertiesEvent() {
+        updateProperties();
     }
 
     /**

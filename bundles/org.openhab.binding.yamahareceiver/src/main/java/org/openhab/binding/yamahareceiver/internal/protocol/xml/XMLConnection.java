@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,8 @@ public class XMLConnection extends AbstractConnection {
     private static final String XML_END = "</YAMAHA_AV>";
     private static final String HEADER_CHARSET_PART = "charset=";
 
+    private static final int CONNECTION_TIMEOUT_MS = 5000;
+
     public XMLConnection(String host) {
         super(host);
     }
@@ -74,7 +76,9 @@ public class XMLConnection extends AbstractConnection {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Content-Length", Integer.toString(message.length()));
 
-            connection.setConnectTimeout(5); // set a timeout in case the device is not reachable (went offline)
+            // Set a timeout in case the device is not reachable (went offline)
+            connection.setConnectTimeout(CONNECTION_TIMEOUT_MS);
+
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
@@ -140,7 +144,6 @@ public class XMLConnection extends AbstractConnection {
     }
 
     public String getResponse(String path) throws IOException {
-
         URL url = createBaseUrl(path);
         logger.debug("Making GET to {}", url);
 
@@ -166,7 +169,6 @@ public class XMLConnection extends AbstractConnection {
     }
 
     private Charset getResponseCharset(HttpURLConnection connection, Charset defaultCharset) {
-
         // See https://stackoverflow.com/a/3934280/1906057
 
         Charset charset = defaultCharset;

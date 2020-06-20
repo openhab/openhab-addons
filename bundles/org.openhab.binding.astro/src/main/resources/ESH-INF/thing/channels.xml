@@ -9,9 +9,9 @@
 		<label>Position</label>
 		<description>The position of the planet</description>
 		<channels>
-			<channel id="azimuth" typeId="azimuth" />
-			<channel id="elevation" typeId="elevation" />
-			<channel id="shadeLength" typeId="shadeLength" />
+			<channel id="azimuth" typeId="azimuth"/>
+			<channel id="elevation" typeId="elevation"/>
+			<channel id="shadeLength" typeId="shadeLength"/>
 		</channels>
 	</channel-group-type>
 
@@ -19,9 +19,9 @@
 		<label>Radiation</label>
 		<description>The radiation level of the sun</description>
 		<channels>
-			<channel id="direct" typeId="directRadiation" />
-			<channel id="diffuse" typeId="diffuseRadiation" />
-			<channel id="total" typeId="totalRadiation" />
+			<channel id="direct" typeId="directRadiation"/>
+			<channel id="diffuse" typeId="diffuseRadiation"/>
+			<channel id="total" typeId="totalRadiation"/>
 		</channels>
 	</channel-group-type>
 
@@ -29,42 +29,42 @@
 		<item-type>Number:Angle</item-type>
 		<label>Azimuth</label>
 		<description>The azimuth of the planet</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="elevation">
 		<item-type>Number:Angle</item-type>
 		<label>Elevation</label>
 		<description>The elevation of the planet</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="shadeLength">
 		<item-type>Number</item-type>
 		<label>Shade Length Ratio</label>
 		<description>Projected shade length ratio (derived from Elevation)</description>
-		<state readOnly="true" pattern="%.2f" />
+		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
 	<channel-type id="directRadiation">
 		<item-type>Number:Intensity</item-type>
 		<label>Direct Radiation</label>
 		<description>Level of radiation after penetration of the atmospheric layer</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="diffuseRadiation">
 		<item-type>Number:Intensity</item-type>
 		<label>Diffuse Radiation</label>
 		<description>Level of radiation diffracted by clouds and atmosphere</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="totalRadiation">
 		<item-type>Number:Intensity</item-type>
 		<label>Total Radiation</label>
 		<description>Total quantity of radiation on the ground</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<!-- sun range -->
@@ -72,10 +72,10 @@
 		<label>Range</label>
 		<description>Range for a sun event</description>
 		<channels>
-			<channel id="start" typeId="start" />
-			<channel id="end" typeId="end" />
-			<channel id="duration" typeId="duration" />
-			<channel id="event" typeId="rangeEvent" />
+			<channel id="start" typeId="start"/>
+			<channel id="end" typeId="end"/>
+			<channel id="duration" typeId="duration"/>
+			<channel id="event" typeId="rangeEvent"/>
 		</channels>
 	</channel-group-type>
 
@@ -83,9 +83,9 @@
 		<label>Range</label>
 		<description>Range for a moon event</description>
 		<channels>
-			<channel id="start" typeId="start" />
-			<channel id="end" typeId="end" />
-			<channel id="event" typeId="rangeEvent" />
+			<channel id="start" typeId="start"/>
+			<channel id="end" typeId="end"/>
+			<channel id="event" typeId="rangeEvent"/>
 		</channels>
 	</channel-group-type>
 
@@ -93,23 +93,23 @@
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>The start time of the event</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
-		<config-description-ref uri="channel-type:astro:config" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
 
 	<channel-type id="end">
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>The end time of the event</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
-		<config-description-ref uri="channel-type:astro:config" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
 
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>The duration of the event</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rangeEvent">
@@ -122,7 +122,7 @@
 				<option value="END">end</option>
 			</options>
 		</event>
-		<config-description-ref uri="channel-type:astro:config" />
+		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
 
 	<!-- sunZodiac -->
@@ -130,9 +130,9 @@
 		<label>Zodiac</label>
 		<description>The zodiac of the sun</description>
 		<channels>
-			<channel id="start" typeId="start" />
-			<channel id="end" typeId="end" />
-			<channel id="sign" typeId="sign" />
+			<channel id="start" typeId="start"/>
+			<channel id="end" typeId="end"/>
+			<channel id="sign" typeId="sign"/>
 		</channels>
 	</channel-group-type>
 
@@ -163,11 +163,19 @@
 		<label>Season</label>
 		<description>The seasons this year</description>
 		<channels>
-			<channel id="name" typeId="seasonName" />
-			<channel id="spring" typeId="spring" />
-			<channel id="summer" typeId="summer" />
-			<channel id="autumn" typeId="autumn" />
-			<channel id="winter" typeId="winter" />
+			<channel id="name" typeId="seasonName"/>
+			<channel id="spring" typeId="spring"/>
+			<channel id="summer" typeId="summer"/>
+			<channel id="autumn" typeId="autumn"/>
+			<channel id="winter" typeId="winter"/>
+			<channel id="nextName" typeId="seasonName">
+				<label>Next Season</label>
+				<description>The name of the next season</description>
+			</channel>
+			<channel id="timeLeft" typeId="duration">
+				<label>Time Left</label>
+				<description>The time remaining before season change</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -189,28 +197,28 @@
 		<item-type>DateTime</item-type>
 		<label>Spring</label>
 		<description>The beginning of spring</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="summer">
 		<item-type>DateTime</item-type>
 		<label>Summer</label>
 		<description>The beginning of summer</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="autumn">
 		<item-type>DateTime</item-type>
 		<label>Autumn</label>
 		<description>The beginning of autumn</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="winter">
 		<item-type>DateTime</item-type>
 		<label>Winter</label>
 		<description>The beginning of winter</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<!-- sun eclipse -->
@@ -218,10 +226,10 @@
 		<label>Eclipses</label>
 		<description>The DateTime of the next sun eclipses</description>
 		<channels>
-			<channel id="total" typeId="total" />
-			<channel id="partial" typeId="partial" />
-			<channel id="ring" typeId="ring" />
-			<channel id="event" typeId="sunEclipseEvent" />
+			<channel id="total" typeId="total"/>
+			<channel id="partial" typeId="partial"/>
+			<channel id="ring" typeId="ring"/>
+			<channel id="event" typeId="sunEclipseEvent"/>
 		</channels>
 	</channel-group-type>
 
@@ -229,21 +237,21 @@
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="partial">
 		<item-type>DateTime</item-type>
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="ring">
 		<item-type>DateTime</item-type>
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="sunEclipseEvent">
@@ -257,7 +265,7 @@
 				<option value="RING">ring</option>
 			</options>
 		</event>
-		<config-description-ref uri="channel-type:astro:config" />
+		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
 
 	<!-- sunphase -->
@@ -265,7 +273,7 @@
 		<label>Sun Phase</label>
 		<description>The details of the current sun phase</description>
 		<channels>
-			<channel id="name" typeId="sunPhaseName" />
+			<channel id="name" typeId="sunPhaseName"/>
 		</channels>
 	</channel-group-type>
 
@@ -295,16 +303,16 @@
 		<label>Moon Phase</label>
 		<description>The details of the current and next moon phases</description>
 		<channels>
-			<channel id="firstQuarter" typeId="firstQuarter" />
-			<channel id="thirdQuarter" typeId="thirdQuarter" />
-			<channel id="full" typeId="fullMoon" />
-			<channel id="new" typeId="newMoon" />
-			<channel id="age" typeId="age" />
-			<channel id="ageDegree" typeId="ageDegree" />
-			<channel id="agePercent" typeId="agePercent" />
-			<channel id="illumination" typeId="illumination" />
-			<channel id="name" typeId="phaseName" />
-			<channel id="event" typeId="phaseEvent" />
+			<channel id="firstQuarter" typeId="firstQuarter"/>
+			<channel id="thirdQuarter" typeId="thirdQuarter"/>
+			<channel id="full" typeId="fullMoon"/>
+			<channel id="new" typeId="newMoon"/>
+			<channel id="age" typeId="age"/>
+			<channel id="ageDegree" typeId="ageDegree"/>
+			<channel id="agePercent" typeId="agePercent"/>
+			<channel id="illumination" typeId="illumination"/>
+			<channel id="name" typeId="phaseName"/>
+			<channel id="event" typeId="phaseEvent"/>
 		</channels>
 	</channel-group-type>
 
@@ -312,56 +320,56 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="thirdQuarter">
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="fullMoon">
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="newMoon">
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="age">
 		<item-type>Number:Time</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon in days</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="ageDegree">
 		<item-type>Number:Angle</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="agePercent">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moon Age</label>
 		<description>The age of the moon</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="illumination">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Moon Illumination</label>
 		<description>The illumination of the moon</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="phaseName">
@@ -394,7 +402,7 @@
 				<option value="NEW">new</option>
 			</options>
 		</event>
-		<config-description-ref uri="channel-type:astro:config" />
+		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
 
 
@@ -403,9 +411,9 @@
 		<label>Eclipses</label>
 		<description>The DateTime of the next moon eclipses</description>
 		<channels>
-			<channel id="total" typeId="total" />
-			<channel id="partial" typeId="partial" />
-			<channel id="event" typeId="moonEclipseEvent" />
+			<channel id="total" typeId="total"/>
+			<channel id="partial" typeId="partial"/>
+			<channel id="event" typeId="moonEclipseEvent"/>
 		</channels>
 	</channel-group-type>
 
@@ -419,7 +427,7 @@
 				<option value="PARTIAL">partial</option>
 			</options>
 		</event>
-		<config-description-ref uri="channel-type:astro:config" />
+		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
 
 	<!-- distance -->
@@ -427,9 +435,9 @@
 		<label>Distance</label>
 		<description>Distance data</description>
 		<channels>
-			<channel id="date" typeId="distanceDate" />
-			<channel id="distance" typeId="distance" />
-			<channel id="event" typeId="distanceEvent" />
+			<channel id="date" typeId="distanceDate"/>
+			<channel id="distance" typeId="distance"/>
+			<channel id="event" typeId="distanceEvent"/>
 		</channels>
 	</channel-group-type>
 
@@ -437,14 +445,14 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="distance">
 		<item-type>Number:Length</item-type>
 		<label>Distance</label>
 		<description>The distance of the object</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="distanceEvent">
@@ -457,7 +465,7 @@
 				<option value="APOGEE">apogee</option>
 			</options>
 		</event>
-		<config-description-ref uri="channel-type:astro:config" />
+		<config-description-ref uri="channel-type:astro:config"/>
 	</channel-type>
 
 	<!-- moonZodiac -->
@@ -465,7 +473,7 @@
 		<label>Zodiac</label>
 		<description>The zodiac of the moon</description>
 		<channels>
-			<channel id="sign" typeId="sign" />
+			<channel id="sign" typeId="sign"/>
 		</channels>
 	</channel-group-type>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -247,7 +247,6 @@ public class AccountServlet extends HttpServlet {
         try {
             Connection connection = this.connectionToInitialize;
             if (uri.startsWith(FORWARD_URI_PART) && connection != null) {
-
                 String getUrl = "https://www." + connection.getAmazonSite() + "/"
                         + uri.substring(FORWARD_URI_PART.length());
 
@@ -271,7 +270,6 @@ public class AccountServlet extends HttpServlet {
             }
 
             if (connection != null && connection.verifyLogin()) {
-
                 // handle commands
                 if (baseUrl.equals("/logout") || baseUrl.equals("/logout/")) {
                     this.connectionToInitialize = reCreateConnection();
@@ -633,7 +631,6 @@ public class AccountServlet extends HttpServlet {
                 {
                     String location = urlConnection.getHeaderField("location");
                     if (location.contains("/ap/maplanding")) {
-
                         try {
                             connection.registerConnectionAsApp(location);
                             account.setConnection(connection);
@@ -646,7 +643,6 @@ public class AccountServlet extends HttpServlet {
                             this.connectionToInitialize = null;
                             return;
                         }
-
                     }
 
                     String startString = "https://www." + connection.getAmazonSite() + "/";

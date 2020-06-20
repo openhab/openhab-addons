@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Trips {
-    public @Nullable List<Trip> trips = null;
+public class Trips extends VocAnswer {
+    public @Nullable List<Trip> trips;
 }

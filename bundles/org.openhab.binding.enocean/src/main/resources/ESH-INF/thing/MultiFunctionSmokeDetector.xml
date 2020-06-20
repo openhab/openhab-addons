@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="multiFunctionSmokeDetector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Multi Function Smoke Detector</label>
+		<description>Multi Function Sensor like a Smoke Detector (EEP: F6-05, D2-14)</description>
+
+		<config-description>
+			<parameter name="enoceanId" type="text">
+				<label>EnOceanId</label>
+				<description>EnOceanId of device this thing belongs to</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="receivingEEPId" type="text">
+				<label>EEP</label>
+				<description>EEP which is used by sensor</description>
+				<options>
+					<option value="F6_05_02">F6-05-02 smoke detector</option>
+					<option value="D2_14_30">D2-14-30 multi function sensor for smoke</option>
+					<option value="A5_30_03_ELTAKO">A5-30-03 Eltako smoke detectors (FHMB, FRWB)</option>
+				</options>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

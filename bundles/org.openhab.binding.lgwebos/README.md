@@ -20,13 +20,7 @@ In combination with the wake on LAN binding this will allow you to start the TV 
 
 ## Binding Configuration
 
-The binding has only one configuration parameter, which is only required if the binding cannot automatically detect openHAB's local IP address: 
-
-| Name    | Description                                                          |
-|---------|----------------------------------------------------------------------|
-| localIP | This is the local IP of your openHAB host on the network. (Optional) |
-
-If LocalIP is not set, the binding will use openHAB's primary IP address, which may be configured under network settings.
+The binding has no configuration parameter. 
 
 ## Discovery
 
@@ -34,58 +28,111 @@ TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
 Please note, that if you are running openHAB in a Docker container you need to use macvlan or host networking for this binding to work.
+If automatic discovery is not possible you may still manually configure a device based on host and access key.
 
 ## Thing Configuration
 
-WebOS TV has no configuration parameters.
-Please note that at least one channel must be bound to an item before the binding will make an attempt to connect and pair with the TV once that one is turned on.
+WebOS TV has three configuration parameters.
+
+Parameters:
+
+| Name       | Description                                                                                         |
+|------------|-----------------------------------------------------------------------------------------------------|
+| host       | Hostname or IP address of TV                                                                        |
+| key        | Key exchanged with TV after pairing (enter it after you paired the device)                          |
+| macAddress | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it. |
+
+### Configuration in .things file
+
+Set host and key parameter as in the following example:
+
+```
+Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
+```
 
 ## Channels
 
 | Channel Type ID | Item Type | Description                                                                                                                                                                                                             | Read/Write |
 |-----------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| power           | Switch    | Current power setting. TV can only be powered off, not on.                                                                                                                                                              | RW         |
+| power           | Switch    | Current power setting. TV can only be powered off, not on, via the TV's API. Turning on is implemented via Wake On Lan, for which the MAC address must be set in the thing configuration. | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
-| channel         | String    | Current channel number.                                                                                                                                                                                                 | RW         |
-| channelName     | String    | Current channel name.                                                                                                                                                                                                   | R          |
+| channel         | String    | Current channel. Use the channel number or channel id as command to update the channel.                                                                                                                                 | RW         |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
+| rcButton        | String    | Simulates pressing of a button on the TV's remote control. See below for a list of button names.                                                                                                                        | W          |
+
+The available application IDs for your TV can be listed using a console command (see below).
+You have to use one of these IDs as command for the appLauncher channel.
+Here are examples of values that could be available for your TV: airplay, amazon, com.apple.appletv, com.webos.app.browser, com.webos.app.externalinput.av1, com.webos.app.externalinput.av2, com.webos.app.externalinput.component, com.webos.app.hdmi1, com.webos.app.hdmi2, com.webos.app.hdmi3, com.webos.app.hdmi4, com.webos.app.homeconnect, com.webos.app.igallery, com.webos.app.livetv, com.webos.app.music, com.webos.app.photovideo, com.webos.app.recordings, com.webos.app.screensaver, googleplaymovieswebos, netflix, youtube.leanback.v4.
+
+### Remote Control Buttons
+
+The rcButton channel has only been tested on an LGUJ657A TV. and this is a list of button codes that are known to work with this device.
+This list has been compiled mostly through trial and error. Your mileage may vary.
+
+| Code String | Description                                              |
+|-------------|----------------------------------------------------------|
+| LEFT        | Left button in cursor control group                      |
+| RIGHT       | Right button in cursor control group                     |
+| UP          | Up button in cursor control group                        |
+| DOWN        | Down button in cursor control group                      |
+| ENTER       | "OK" button in the center of the cursor control group    |
+| BACK        | "BACK" button                                            |
+| EXIT        | "EXIT" button                                            |
+| 0-9         | Number buttons                                           |
+| HOME        | "HOME" button                                            |
+| RED         | "RED"  button                                            |
+| GREEN       | "GREEN" button                                           |
+| YELLOW      | "YELLOW" button                                          |
+| BLUE        | "BLUE" button                                            |
+| PLAY        | "PLAY" button                                            |
+| PAUSE       | "PAUSE" button                                           |
+| STOP        | "STOP" button                                            |
+
+
+A sample HABPanel remote control widget can be found [in this github repository.](https://github.com/bbrodt/openhab2-misc)
+
+## Console Commands
+
+The binding provides a few commands you can use in the console.
+Enter the command `lgwebos` to get the usage.
+
+```
+openhab> lgwebos
+Usage: smarthome:lgwebos <thingUID> applications - list applications
+Usage: smarthome:lgwebos <thingUID> channels - list channels
+Usage: smarthome:lgwebos <thingUID> accesskey - show the access key
+```
+
+The command `applications` reports in the console the list of all applications with their id and name.
+The command `channels` reports in the console the list of all channels with their id, number and name.
+The command `accesskey` reports in the console the access key used to connect to your TV.
 
 ## Example
 
-Assuming your TV has device ID 3aab9eea-953b-4272-bdbd-f0cd0ecf4a46. 
-By default this binding will create ThingIDs for discovery results with prefix lgwebos:WebOSTV: and the device ID. e.g. lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46.
-Thus, you can find your TV's device ID by looking into discovery results in Paper UI.
-
-You could also specify an alternate ThingID using a .things file, specifying the deviceId as a mandatory configuration parameter:
+demo.things:
 
 ```
-Thing lgwebos:WebOSTV:tv1 [ deviceId="3aab9eea-953b-4272-bdbd-f0cd0ecf4a46" ]
+Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
-
-However, for the next steps of this example we will assumes you are using automatic discovery and the default ThingID.
-
 
 demo.items:
 
 ```
 Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:power" }
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
-Dimmer LG_TV0_Volume "Volume [%S]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
+Dimmer LG_TV0_Volume "Volume [%d]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
 Number LG_TV0_VolDummy "VolumeUpDown"
-String LG_TV0_Channel "Channel [%d]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
+String LG_TV0_Channel "Channel [%s]"         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channel" }
 Number LG_TV0_ChannelDummy "ChannelUpDown"
-String LG_TV0_ChannelName "Channel [%S]"     { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:channelName"}
 String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:toast"}
 Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaStop" }
 String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
 Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaPlayer"}
 
-// this assumes you also have the wake on lan binding configured and your TV's IP address is on this network - You would need to update your broadcast and mac address accordingly
-Switch LG_TV0_WOL                            { wol="192.168.2.255#3c:cd:93:c2:20:e0" }
 ```
 
 demo.sitemap:
@@ -98,25 +145,10 @@ sitemap demo label="Main Menu"
         Switch item=LG_TV0_Mute
         Text item=LG_TV0_Volume
         Switch item=LG_TV0_VolDummy icon="soundvolume" label="Volume" mappings=[1="▲", 0="▼"]
-        Text item=LG_TV0_Channel
+        Default item=LG_TV0_Channel
         Switch item=LG_TV0_ChannelDummy icon="television" label="Channel" mappings=[1="▲", 0="▼"]
-        Text item=LG_TV0_ChannelName
         Default item=LG_TV0_Player
-        Text item=LG_TV0_Application
-        Selection item=LG_TV0_Application mappings=[
-            "com.webos.app.livetv"="TV",
-            "com.webos.app.tvguide"="TV Guide",
-            "netflix" = "Netflix",
-            "youtube.leanback.v4" = "Youtube",
-            "spotify-beehive" = "Spotify",
-            "com.webos.app.hdmi1" = "HDMI 1",
-            "com.webos.app.hdmi2" = "HDMI 2",
-            "com.webos.app.hdmi3" = "HDMI 3",
-            "com.webos.app.hdmi4" = "HDMI 4",
-            "com.webos.app.externalinput.av1" = "AV1",
-            "com.webos.app.externalinput.av2" = "AV2",
-            "com.webos.app.externalinput.component" = "Component",
-            "com.webos.app.externalinput.scart" = "Scart"]
+        Default item=LG_TV0_Application
     }
 }
 ```
@@ -125,14 +157,6 @@ sitemap demo label="Main Menu"
 demo.rules:
 
 ```
-// this assumes you also have the wake on lan binding configured.
-rule "Power on TV via Wake on LAN"
-when
-Item LG_TV0_Power received command ON
-then
-    LG_TV0_WOL.sendCommand(ON)
-end
-
 // for relative volume changes
 rule "VolumeUpDown"
 when Item LG_TV0_VolDummy received command
@@ -347,8 +371,3 @@ In case of issues you may find it helpful to enable debug level logging and chec
 log:set debug org.openhab.binding.lgwebos
 ```
 
-Additional logs are available from the underlying library:
-
-```
-log:set debug com.connectsdk
-```

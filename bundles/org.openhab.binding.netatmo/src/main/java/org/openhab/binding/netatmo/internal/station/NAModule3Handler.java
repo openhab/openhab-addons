@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,13 @@ package org.openhab.binding.netatmo.internal.station;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
@@ -27,11 +34,14 @@ import io.swagger.client.model.NAStationModule;
  * capable of measuring precipitation
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
+ *
  */
 public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
+    private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
-    public NAModule3Handler(Thing thing) {
-        super(thing);
+    public NAModule3Handler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -40,7 +50,22 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    public void updateMeasurements() {
+        List<@NonNull String> types = Arrays.asList(SUM_RAIN);
+
+        if (isLinked(CHANNEL_SUM_RAIN_THIS_WEEK)) {
+            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types,
+                    Arrays.asList(CHANNEL_SUM_RAIN_THIS_WEEK), channelMeasurements);
+        }
+
+        if (isLinked(CHANNEL_SUM_RAIN_THIS_MONTH)) {
+            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types,
+                    Arrays.asList(CHANNEL_SUM_RAIN_THIS_MONTH), channelMeasurements);
+        }
+    }
+
+    @Override
+    protected State getNAThingProperty(@NonNull String channelId) {
         if (module != null) {
             NADashboardData dashboardData = module.getDashboardData();
             if (dashboardData != null) {
@@ -52,10 +77,17 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
                     case CHANNEL_SUM_RAIN24:
                         return toQuantityType(dashboardData.getSumRain24(), API_RAIN_UNIT);
                     case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc());
+                        return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
                 }
             }
         }
+
+        switch (channelId) {
+            case CHANNEL_SUM_RAIN_THIS_WEEK:
+            case CHANNEL_SUM_RAIN_THIS_MONTH:
+                return toQuantityType(channelMeasurements.get(channelId), API_RAIN_UNIT);
+        }
+
         return super.getNAThingProperty(channelId);
     }
 }

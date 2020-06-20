@@ -1,6 +1,8 @@
 # Freebox Binding
 
-This binding integrates the [Freebox Revolution](https://www.free.fr/freebox/freebox-revolution/) to your openHAB installation.
+This binding integrates the [Freebox Revolution](https://www.free.fr/freebox/freebox-revolution/) and [Freebox Delta](https://www.free.fr/freebox/freebox-delta/) to your openHAB installation.
+
+The 'server' Bridge can be connected to Free infrastructures either by xDSL or fiber optic.
 
 ## Supported Things
 
@@ -8,24 +10,24 @@ This binding supports the following thing types:
 
 | Thing         | Thing Type | Description                                             |
 |---------------|------------|---------------------------------------------------------|
-| server        | Bridge     | The Freebox Revolution Server.                          |
-| phone         | Thing      | The phone wired to the Freebox Revolution.              |
+| server        | Bridge     | The Freebox Server.                                     |
+| phone         | Thing      | The phone wired to the Freebox Server.                  |
 | net_device    | Thing      | A network device on the local network.                  |
 | net_interface | Thing      | A network interface from a device on the local network. |
 | airplay       | Thing      | An AirPlay device in the local network.                 |
 
 ## Discovery
 
-The Freebox Revolution server is discovered automatically through mDNS in the local network.
-After a Freebox Revolution is discovered and available to openHAB, the binding will automatically discover phone, network devices / interfaces and AirPlay devices with video capability in the local network.
+The Freebox Server is discovered automatically through mDNS in the local network.
+After a Freebox Server is discovered and available to openHAB, the binding will automatically discover phone, network devices / interfaces and AirPlay devices with video capability in the local network.
 Note that the discovered thing will be setup to use only HTTP API (and not HTTPS) because only an IP can be automatically determined while a domain name is required to use HTTPS with a valid certificate.
 
 ## Binding configuration
 
 The binding has the following configuration options, which can be set for "binding:freebox":
 
-| Parameter   | Name         | Description                                                              | Required |
-|-------------|--------------|--------------------------------------------------------------------------|----------|
+| Parameter   | Name         | Description                                                                | Required |
+|-------------|--------------|----------------------------------------------------------------------------|----------|
 | callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. <http://192.168.0.2:8080> | no       |
 
 ## Thing Configuration
@@ -87,19 +89,13 @@ The *airplay* thing requires the following configuration parameters:
 
 You will have to authorize openHAB to connect to your Freebox. Here is the process described :
 
-**Step 1** At binding startup, if no token is recorded in the Freebox Server (bridge) configuration, the following message will be displayed in the OSGi console :
-
-```text
-            ####################################################################
-            # Please accept activation request directly on your freebox        #
-            # Once done, record Apptoken in the Freebox thing configuration    #
-            # bEK7a7O8GkxxxxxxxxxxXBsKu/xxxttttwj5bXSssd5gUvSXs4vrpuhZwelEo804 #
-            ####################################################################
-```
+**Step 1** At binding startup, if no token is recorded in the Freebox Server (bridge) configuration, the binding will run a pairing request
 
 **Step 2** Run to your Freebox and approve the pairing request for openHAB Freebox Binding that is displayed on the Freebox screen
 
-**Step 3** Record the apptoken in the Freebox Server (bridge) configuration
+**Step 3** the application token is automatically recorded in the Freebox Server (bridge) configuration
+
+**Step 4** you can use the console command `freebox <bridgeUID> apptoken` to display the application token and use it later to set up your thing in a configuration file
 
 **Optionally** you can log in your Freebox admin console to allocate needed rights to openHAB
 
@@ -129,6 +125,7 @@ The following channels are supported:
 | server        | sambafileshare_status    | Switch    | RW          | Indicates whether Window File Sharing  is enabled                               |
 | server        | sambaprintershare_status | Switch    | RW          | Indicates whether Window Printer Sharing  is enabled                            |
 | server        | xdsl_status              | String    | R           | Status of the xDSL line                                                         |
+| server        | ftth_status              | Switch    | R           | Status of the Ftth line                                                         |
 | server        | line_status              | String    | R           | Status of network line connexion                                                |
 | server        | ipv4                     | String    | R           | Public IP Address of the Freebox Server                                         |
 | server        | rate_up                  | Number    | R           | Current upload rate in byte/s                                                   |
@@ -189,7 +186,8 @@ Bridge freebox:server:fb "Freebox Revolution" [ fqdn="abcdefgh.fbxos.fr", appTok
 ### Items
 
 ```java
-String Freebox_xdsl_status "Freebox state [%s]" {channel="freebox:server:fb:xdsl_status"}
+String Freebox_xdsl_status "Freebox xDSL state [%s]" {channel="freebox:server:fb:xdsl_status"}
+Switch Freebox_ftth_status "Freebox Fiber Optic state" {channel="freebox:server:fb:ftth_status"}
 String Freebox_cs_state "State [%s]" {channel="freebox:server:fb:line_status"}
 String Freebox_cs_ipv4 "ipV4 [%s]" {channel="freebox:server:fb:ipv4"}
 Number Freebox_cs_rate_up "Upload rate [%d b/s]" {channel="freebox:server:fb:rate_up"}

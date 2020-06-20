@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
 public class DigitalSTROMHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DigitalSTROMHandlerFactory.class);
-    private final HashMap<String, DiscoveryServiceManager> discoveryServiceManagers = new HashMap<String, DiscoveryServiceManager>();
+    private final Map<String, DiscoveryServiceManager> discoveryServiceManagers = new HashMap<>();
 
-    private HashMap<ThingUID, BridgeHandler> bridgeHandlers;
+    private Map<ThingUID, BridgeHandler> bridgeHandlers;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -109,7 +109,7 @@ public class DigitalSTROMHandlerFactory extends BaseThingHandlerFactory {
         if (BridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             BridgeHandler handler = new BridgeHandler((Bridge) thing);
             if (bridgeHandlers == null) {
-                bridgeHandlers = new HashMap<ThingUID, BridgeHandler>();
+                bridgeHandlers = new HashMap<>();
             }
             bridgeHandlers.put(thing.getUID(), handler);
             DiscoveryServiceManager discoveryServiceManager = new DiscoveryServiceManager(handler);

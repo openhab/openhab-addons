@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,7 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
                         status = lastDirection;
                     }
                 } else if (command instanceof PercentType) {
-                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { STATUS },
-                            new Object[] { AUTO });
+                    getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { STATUS }, new Object[] { AUTO });
                     getXiaomiBridgeHandler().writeToDevice(getItemId(), new String[] { CURTAIN_LEVEL },
                             new Object[] { status });
                 } else {
@@ -114,5 +113,4 @@ public class XiaomiActorCurtainHandler extends XiaomiActorBaseHandler {
             }
         }
     }
-
 }

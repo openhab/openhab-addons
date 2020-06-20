@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class JinjaTransformationService implements TransformationService {
      * Transforms the input <code>value</code> by Jinja template.
      *
      * @param template Jinja template
-     * @param value    String may contain JSON
+     * @param value String may contain JSON
      * @throws TransformationException
      */
     @Override

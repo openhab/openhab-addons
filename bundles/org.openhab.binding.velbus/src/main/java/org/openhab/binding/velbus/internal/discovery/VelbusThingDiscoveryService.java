@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -44,7 +45,7 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService implem
 
     private final Logger logger = LoggerFactory.getLogger(VelbusThingDiscoveryService.class);
 
-    private HashMap<Byte, VelbusModule> velbusModules = new HashMap<Byte, VelbusModule>();
+    private Map<Byte, VelbusModule> velbusModules = new HashMap<>();
 
     private VelbusBridgeHandler velbusBridgeHandler;
 

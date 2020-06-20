@@ -10,7 +10,7 @@
 		<description>The Homematic bridge represents a Homematic gateway</description>
 
 		<channels>
-			<channel typeId="DUTY_CYCLE_RATIO" id="DUTY_CYCLE_RATIO" />
+			<channel typeId="DUTY_CYCLE_RATIO" id="DUTY_CYCLE_RATIO"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>
@@ -44,11 +44,13 @@
 			</parameter>
 			<parameter name="xmlCallbackPort" type="integer">
 				<label>XML-RPC Callback Port</label>
-				<description>Callback port of the binding's XML-RPC server. If no value is specified, xmlCallbackPort starts with 9125 and counts up</description>
+				<description>Callback port of the binding's XML-RPC server. If no value is specified, xmlCallbackPort starts with
+					9125 and counts up</description>
 			</parameter>
 			<parameter name="binCallbackPort" type="integer">
 				<label>BIN-RPC Callback Port</label>
-				<description>Callback port of the binding's BIN-RPC server. If no value is specified, xmlCallbackPort starts with 9126 and counts up</description>
+				<description>Callback port of the binding's BIN-RPC server. If no value is specified, xmlCallbackPort starts with
+					9126 and counts up</description>
 			</parameter>
 			<parameter name="timeout" type="integer">
 				<label>Timeout</label>
@@ -105,13 +107,16 @@
 			</parameter>
 			<parameter name="unpairOnDeletion" type="boolean">
 				<label>Unpair Devices On Deletion</label>
-				<description>If set to true, devices are unpaired from the gateway when their corresponding things are removed. The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion, both options need to be set to false!</description>
+				<description>If set to true, devices are unpaired from the gateway when their corresponding things are removed. The
+					option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion, both options
+					need to be set to false!</description>
 				<advanced>true</advanced>
 				<default>false</default>
 			</parameter>
 			<parameter name="factoryResetOnDeletion" type="boolean">
 				<label>Factory Reset Devices On Deletion</label>
-				<description>If set to true, devices are factory reset when their corresponding things are removed. Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false!</description>
+				<description>If set to true, devices are factory reset when their corresponding things are removed. Due to the
+					factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false!</description>
 				<advanced>true</advanced>
 				<default>false</default>
 			</parameter>
@@ -123,6 +128,6 @@
 		<item-type>Number</item-type>
 		<label>Duty Cycle</label>
 		<description>Current duty cycle usage</description>
-		<state readOnly="true" min="0" max="100" pattern="%d %%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 </thing:thing-descriptions>

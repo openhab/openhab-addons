@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,6 @@ public class Ec3kSensorDefinition extends SensorDefinition<Ec3kReading> {
 
     @Override
     public JeeLinkSensorHandler<Ec3kReading> createHandler(Thing thing) {
-        return new Ec3kSensorHandler(thing);
+        return new Ec3kSensorHandler(thing, type);
     }
-
 }

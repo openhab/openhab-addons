@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.security.InvalidParameterException;
  *
  * @author Daniel Weber - Initial contribution
  */
-public class Response extends ESP3Packet {
+public class Response extends BasePacket {
 
     public enum ResponseType {
         RET_OK((byte) 0x00),
@@ -39,7 +39,7 @@ public class Response extends ESP3Packet {
             this.value = value;
         }
 
-        public int getValue() {
+        public byte getValue() {
             return this.value;
         }
 
@@ -52,13 +52,12 @@ public class Response extends ESP3Packet {
 
             throw new InvalidParameterException("Unknown response type");
         }
-
     }
 
     protected ResponseType responseType;
     protected boolean _isValid = false;
 
-    Response(int dataLength, int optionalDataLength, byte[] payload) {
+    protected Response(int dataLength, int optionalDataLength, byte[] payload) {
         super(dataLength, optionalDataLength, ESPPacketType.RESPONSE, payload);
 
         try {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="ambientweather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="ambientweather"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -9,8 +10,8 @@
 		<label>Station Information</label>
 		<description>Station Information</description>
 		<channels>
-			<channel id="name" typeId="stationName" />
-			<channel id="location" typeId="location" />
+			<channel id="name" typeId="stationName"/>
+			<channel id="location" typeId="location"/>
 		</channels>
 	</channel-group-type>
 
@@ -18,9 +19,9 @@
 		<label>Indoor Sensor</label>
 		<description>Indoor Sensor</description>
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="relativeHumidity" typeId="relativeHumidity" />
-			<channel id="batteryIndicator" typeId="batteryIndicator" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="relativeHumidity" typeId="relativeHumidity"/>
+			<channel id="batteryIndicator" typeId="batteryIndicator"/>
 		</channels>
 	</channel-group-type>
 
@@ -28,14 +29,14 @@
 		<label>Remote Sensor</label>
 		<description>Remote Sensor</description>
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="dewPoint" typeId="dewPoint" />
-			<channel id="feelingTemperature" typeId="feelingTemperature" />
-			<channel id="relativeHumidity" typeId="relativeHumidity" />
-			<channel id="soilTemperature" typeId="soilTemperature" />
-			<channel id="soilMoisture" typeId="soilMoisture" />
-			<channel id="soilMoistureLevel" typeId="soilMoistureLevel" />
-			<channel id="batteryIndicator" typeId="batteryIndicator" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="dewPoint" typeId="dewPoint"/>
+			<channel id="feelingTemperature" typeId="feelingTemperature"/>
+			<channel id="relativeHumidity" typeId="relativeHumidity"/>
+			<channel id="soilTemperature" typeId="soilTemperature"/>
+			<channel id="soilMoisture" typeId="soilMoisture"/>
+			<channel id="soilMoistureLevel" typeId="soilMoistureLevel"/>
+			<channel id="batteryIndicator" typeId="batteryIndicator"/>
 		</channels>
 	</channel-group-type>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,8 @@ public class TransitionMessage extends LocationMessage {
 
     /**
      * Event that triggered the transition (iOS,Android/string/required)
-     *      enter The tracker entered the defined geographical region or BLE Beacon range (iOS)
-     *      leave The tracker left the defined geographical region or BLE Beacon range (iOS)
+     * enter The tracker entered the defined geographical region or BLE Beacon range (iOS)
+     * leave The tracker left the defined geographical region or BLE Beacon range (iOS)
      */
     @SerializedName("event")
     String event;

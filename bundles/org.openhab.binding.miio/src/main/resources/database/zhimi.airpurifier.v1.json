@@ -10,7 +10,6 @@
 				"channel": "power",
 				"type": "Switch",
 				"refresh": true,
-				"channelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_power",
@@ -66,7 +65,7 @@
 			},
 			{
 				"property": "led",
-				"friendlyName": "Led Status",
+				"friendlyName": "LED Status",
 				"channel": "led",
 				"type": "Switch",
 				"refresh": true,

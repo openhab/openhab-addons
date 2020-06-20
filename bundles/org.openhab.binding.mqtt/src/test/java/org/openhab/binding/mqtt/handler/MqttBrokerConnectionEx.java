@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.handler;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttConnectionState;
+import org.eclipse.smarthome.io.transport.mqtt.internal.TopicSubscribers;
 import org.eclipse.smarthome.io.transport.mqtt.internal.client.MqttAsyncClientWrapper;
 
 import com.hivemq.client.mqtt.MqttClientState;
@@ -53,6 +55,10 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
         connectionCallback = spy(new ConnectionCallback(o));
     }
 
+    public Map<String, TopicSubscribers> getSubscribers() {
+        return subscribers;
+    }
+
     @Override
     protected MqttAsyncClientWrapper createClient() {
         MqttAsyncClientWrapper mockedClient = mock(MqttAsyncClientWrapper.class);
@@ -63,7 +69,7 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
                 connectionStateOverwrite = MqttConnectionState.CONNECTED;
                 return CompletableFuture.completedFuture(null);
             }
-            return new CompletableFuture<Boolean>();
+            return new CompletableFuture<>();
         }).when(mockedClient).connect(any(), anyInt(), any(), any());
         doAnswer(i -> {
             if (disconnectSuccess) {
@@ -71,7 +77,7 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
                 connectionStateOverwrite = MqttConnectionState.DISCONNECTED;
                 return CompletableFuture.completedFuture(null);
             }
-            return new CompletableFuture<Boolean>();
+            return new CompletableFuture<>();
         }).when(mockedClient).disconnect();
         // subscribe
         doAnswer(i -> {
@@ -104,5 +110,4 @@ public class MqttBrokerConnectionEx extends MqttBrokerConnection {
     public @NonNull MqttConnectionState connectionState() {
         return connectionStateOverwrite;
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,8 +94,7 @@ public class EnturNoConnection {
      * @throws EnturCommunicationException
      * @throws EnturConfigurationException
      */
-    public synchronized List<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId,
-            @Nullable String lineCode)
+    public synchronized List<DisplayData> getEnturTimeTable(@Nullable String stopPlaceId, @Nullable String lineCode)
             throws JsonSyntaxException, EnturConfigurationException, EnturCommunicationException {
         if (StringUtils.isBlank(stopPlaceId)) {
             throw new EnturConfigurationException("Stop place id cannot be empty or null");

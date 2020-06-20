@@ -7,8 +7,8 @@
 	<thing-type id="output">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ethm-1" />
-			<bridge-type-ref id="int-rs" />
+			<bridge-type-ref id="ethm-1"/>
+			<bridge-type-ref id="int-rs"/>
 		</supported-bridge-type-refs>
 
 		<label>Output</label>
@@ -19,7 +19,7 @@
 		</description>
 
 		<channels>
-			<channel typeId="output_state" id="state" />
+			<channel typeId="output_state" id="state"/>
 		</channels>
 
 		<config-description>

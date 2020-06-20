@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,10 +28,46 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
-import org.openhab.binding.somfytahoma.internal.handler.*;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaActionGroupHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaAdjustableSlatsRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaAwningHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaContactSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaCurtainHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaDockHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaDoorLockHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaElectricitySensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaExternalAlarmHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaGateHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaGatewayHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHeatingSystemHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaHumiditySensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaInternalAlarmHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaLightSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaMyfoxAlarmHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaMyfoxCameraHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOccupancySensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHeatingSystemHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPergolaHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaPodHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSilentRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSirenHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSmokeSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaTemperatureSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaThermostatHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaUnoRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaVenetianBlindHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWaterSensorHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWindowHandleHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWindowHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +85,13 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
+    private final HttpClientFactory httpClientFactory;
+
+    @Activate
+    public SomfyTahomaHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return THING_TYPE_BRIDGE.equals(thingTypeUID) || SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -62,7 +105,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Creating handler for {}", thing.getThingTypeUID().getId());
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            SomfyTahomaBridgeHandler handler = new SomfyTahomaBridgeHandler((Bridge) thing);
+            SomfyTahomaBridgeHandler handler = new SomfyTahomaBridgeHandler((Bridge) thing, httpClientFactory);
             registerItemDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
@@ -71,9 +114,12 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER_SILENT)) {
             return new SomfyTahomaSilentRollerShutterHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER_UNO)) {
+            return new SomfyTahomaUnoRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SCREEN) || thingTypeUID.equals(THING_TYPE_EXTERIORSCREEN)) {
             return new SomfyTahomaRollerShutterHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_VENETIANBLIND) || thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
+        } else if (thingTypeUID.equals(THING_TYPE_VENETIANBLIND)
+                || thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
             return new SomfyTahomaVenetianBlindHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GARAGEDOOR)) {
             return new SomfyTahomaRollerShutterHandler(thing);
@@ -93,6 +139,10 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaOccupancySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CONTACTSENSOR)) {
             return new SomfyTahomaContactSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_WATERSENSOR)) {
+            return new SomfyTahomaWaterSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_HUMIDITYSENSOR)) {
+            return new SomfyTahomaHumiditySensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_WINDOW)) {
             return new SomfyTahomaWindowHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_INTERNAL_ALARM)) {
@@ -115,7 +165,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaTemperatureSensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GATE)) {
             return new SomfyTahomaGateHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CURTAIN)){
+        } else if (thingTypeUID.equals(THING_TYPE_CURTAIN)) {
             return new SomfyTahomaCurtainHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ELECTRICITYSENSOR)) {
             return new SomfyTahomaElectricitySensorHandler(thing);
@@ -123,6 +173,14 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaDockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SIREN)) {
             return new SomfyTahomaSirenHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER)) {
+            return new SomfyTahomaAdjustableSlatsRollerShutterHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MYFOX_CAMERA)) {
+            return new SomfyTahomaMyfoxCameraHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MYFOX_ALARM)) {
+            return new SomfyTahomaMyfoxAlarmHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_THERMOSTAT)) {
+            return new SomfyTahomaThermostatHandler(thing);
         } else {
             return null;
         }
@@ -146,8 +204,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerItemDiscoveryService(SomfyTahomaBridgeHandler bridgeHandler) {
         SomfyTahomaItemDiscoveryService discoveryService = new SomfyTahomaItemDiscoveryService(bridgeHandler);
         discoveryService.activate(null);
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }

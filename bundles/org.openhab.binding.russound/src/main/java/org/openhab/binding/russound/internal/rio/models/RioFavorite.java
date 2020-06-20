@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class RioFavorite {
     /**
      * The favorite name
      */
-    private final AtomicReference<String> name = new AtomicReference<String>(null);
+    private final AtomicReference<String> name = new AtomicReference<>(null);
 
     /**
      * Simply creates the favorite from the given ID. The favorite will not be valid and the name will default to

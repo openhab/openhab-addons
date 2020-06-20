@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,6 @@ public class PhantomButtonHandler extends LutronHandler {
         if (feedback instanceof LEDMapFeedback) {
             handleLEDMapFeedback((LEDMapFeedback) feedback);
         }
-
     }
 
     private void handleLEDMapFeedback(LEDMapFeedback feedback) {
@@ -59,5 +58,4 @@ public class PhantomButtonHandler extends LutronHandler {
 
         updateState(LutronBindingConstants.CHANNEL_SWITCH, zoneEnabled ? OnOffType.ON : OnOffType.OFF);
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,8 +53,7 @@ public class AirVisualNodeBindingConstants {
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_AVNODE)));
 
     // List of all supported Channel ids
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_CO2, CHANNEL_HUMIDITY, CHANNEL_AQI_US,
-                    CHANNEL_PM_25, CHANNEL_TEMP_CELSIUS, CHANNEL_BATTERY_LEVEL,
-                    CHANNEL_WIFI_STRENGTH, CHANNEL_TIMESTAMP, CHANNEL_USED_MEMORY)));
+    public static final Set<String> SUPPORTED_CHANNEL_IDS = Collections.unmodifiableSet(new HashSet<>(
+            Arrays.asList(CHANNEL_CO2, CHANNEL_HUMIDITY, CHANNEL_AQI_US, CHANNEL_PM_25, CHANNEL_TEMP_CELSIUS,
+                    CHANNEL_BATTERY_LEVEL, CHANNEL_WIFI_STRENGTH, CHANNEL_TIMESTAMP, CHANNEL_USED_MEMORY)));
 }

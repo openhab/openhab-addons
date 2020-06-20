@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.volvooncall.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VehicleConfiguration} is the class used to match the
  * Vehicle thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class VehicleConfiguration {
-    public String vin;
-    public Integer refresh;
+    public String vin = "";
+    public Integer refresh = 5;
 }

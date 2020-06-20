@@ -5,51 +5,58 @@ This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/photovol
 
 ## Supported Things
 
-Support Fronius Galvo, Fronius Symo inverters and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger. 
-You can add multiple inverters that depend on the same datalogger with different device ids. ( Default 1 ) 
+Support Fronius Galvo, Fronius Symo inverters and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger.
+You can add multiple inverters that depend on the same datalogger with different device ids. (Default 1)
 
 ## Discovery
 
-There is no discovery implemented. You have to create your things manually and specify the IP of the Datalogger and the DeviceId.
+There is no discovery implemented. You have to create your things manually and specify the hostname or IP address of the Datalogger and the device id.
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The binding has no configuration options, all configuration is done at `bridge` or `powerinverter` level.
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+### Bridge Thing Configuration
 
-| Parameter | Description                                                              |
-|-----------|------------------------------------------------------------------------- |
-| Ip        | the ip-address of your Fronius Datalogger |
-| DeviceId  | The identifier of your device ( Default: 1) |
-| refresh   | Refresh interval in seconds |
+| Parameter       | Description                                           |
+|-----------------|------------------------------------------------------ |
+| hostname        | The hostname or IP address of your Fronius Datalogger |
+| refreshInterval | Refresh interval in seconds                           |
+
+### Powerinverter Thing Configuration
+
+| Parameter       | Description                                           |
+|-----------------|------------------------------------------------------ |
+| deviceId        | The identifier of your device (Default: 1)            |
 
 ## Channels
 
 | Channel ID | Item Type    | Description              |
 |------------|--------------|------------------------- |
-| day_energy | Number | Energy generated on current day |
-| pac | Number | AC powery |
-| total_energy | Number | Energy generated overall |
-| year_energy | Number | Energy generated in current year |
-| fac | Number | AC frequency |
-| iac | Number | AC current |
-| idc | Number | DC current |
-| uac | Number | AC voltage |
-| udc | Number | DC voltage |
-| pGrid | Number | Power + from grid, - to grid |
-| pLoad | Number | Power + generator, - consumer |
-| pAkku | Number | Power + charge, - discharge |
+| inverterdatachanneldayenergy | Number | Energy generated on current day |
+| inverterdatachannelpac | Number | AC powery |
+| inverterdatachanneltotal | Number | Energy generated overall |
+| inverterdatachannelyear | Number | Energy generated in current year |
+| inverterdatachannelfac | Number | AC frequency |
+| inverterdatachanneliac | Number | AC current |
+| inverterdatachannelidc | Number | DC current |
+| inverterdatachanneluac | Number | AC voltage |
+| inverterdatachanneludc | Number | DC voltage |
+| inverterdatadevicestatuserrorcode | Number | Device error code |
+| inverterdatadevicestatusstatuscode | Number | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
+| powerflowchannelpgrid | Number | Power + from grid, - to grid |
+| powerflowchannelpload | Number | Power + generator, - consumer |
+| powerflowchannelpakku | Number | Power + charge, - discharge |
 
 ## Full Example
 
 demo.things:
 
 ```
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148",refreshInterval=5] {
-    Thing powerinverter myinverter [ deviceId=1 ]
+Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
+    Thing powerinverter myinverter [deviceId=1]
 }
 ```
 
@@ -65,6 +72,8 @@ Number IAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachan
 Number IDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachannelidc" }
 Number UAC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneluac" }
 Number UDC { channel="fronius:powerinverter:mybridge:myinverter:inverterdatachanneludc" }
+Number ErrorCode { channel="fronius:powerinverter:mybridge:myinverter:inverterdatadevicestatuserrorcode" }
+Number StatusCode { channel="fronius:powerinverter:mybridge:myinverter:inverterdatadevicestatusstatuscode" }
 Number Grid_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpgrid" }
 Number Load_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpload" }
 Number Battery_Power { channel="fronius:powerinverter:mybridge:myinverter:powerflowchannelpakku" }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,21 +76,27 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     public void initialize() {
         logger.debug("Initializing Sinope Gateway");
 
-        SinopeConfig config = getConfigAs(SinopeConfig.class);
-        if (config.hostname == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway hostname must be set");
-        } else if (config.port == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway port must be set");
-        } else if (config.gatewayId == null || SinopeConfig.convert(config.gatewayId) == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway Id must be set");
-        } else if (config.apiKey == null || SinopeConfig.convert(config.apiKey) == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Api Key must be set");
-        } else {
+        try {
+            SinopeConfig config = getConfigAs(SinopeConfig.class);
             refreshInterval = config.refresh;
-            schedulePoll();
-            updateStatus(ThingStatus.ONLINE);
+            if (config.hostname == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Gateway hostname must be set");
+            } else if (config.port == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway port must be set");
+            } else if (config.gatewayId == null || SinopeConfig.convert(config.gatewayId) == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Gateway Id must be set");
+            } else if (config.apiKey == null || SinopeConfig.convert(config.apiKey) == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Api Key must be set");
+            } else if (connectToBridge()) {
+                schedulePoll();
+                updateStatus(ThingStatus.ONLINE);
+                return;
+            }
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "Can't connect to gateway. Please make sure that another instance is not connected.");
         }
-
     }
 
     @Override
@@ -126,7 +132,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     private synchronized void poll() {
-        if (thermostatHandlers.size() > 0) {
+        if (!thermostatHandlers.isEmpty()) {
             logger.debug("Polling for state");
             try {
                 if (connectToBridge()) {
@@ -170,7 +176,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         SinopeAnswer answ = command.getReplyAnswer(inputStream);
 
         return answ;
-
     }
 
     synchronized SinopeAnswer execute(SinopeDataRequest command) throws UnknownHostException, IOException {
@@ -204,7 +209,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @Override
@@ -245,7 +249,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         this.searching = true;
         pollSearch = scheduler.schedule(() -> search(sinopeThingsDiscoveryService), FIRST_POLL_INTERVAL,
                 TimeUnit.SECONDS);
-
     }
 
     private void search(final SinopeThingsDiscoveryService sinopeThingsDiscoveryService) {
@@ -270,7 +273,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         } catch (UnknownHostException e) {
             logger.warn("Unexpected error when searching for new devices", e);
         } catch (IOException e) {
-
             logger.debug("Network connection error, expected when ending search", e);
         } finally {
             schedulePoll();
@@ -306,6 +308,5 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             schedulePoll();
         }
-
     }
 }

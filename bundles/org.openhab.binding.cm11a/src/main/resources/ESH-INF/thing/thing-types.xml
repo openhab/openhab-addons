@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="cm11a"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Bridge which is the cm11a device -->
 	<bridge-type id="cm11a">
@@ -10,9 +10,10 @@
 		<description>CM11 is a device that allows control of X10 devices for a computer. </description>
 
 		<config-description>
-			<parameter name="serialPort" type="text" required="true" >
+			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Serial port used to communicate with the CM11a</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="1">

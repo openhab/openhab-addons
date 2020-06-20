@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.time.temporal.TemporalAdjusters;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -38,8 +39,8 @@ import io.swagger.client.model.NAYearMonth;
  */
 public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
 
-    public NAPlugHandler(@NonNull Thing thing) {
-        super(thing);
+    public NAPlugHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -62,12 +63,13 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_CONNECTED_BOILER:
                 return device != null ? toOnOffType(device.getPlugConnectedBoiler()) : UnDefType.UNDEF;
             case CHANNEL_LAST_PLUG_SEEN:
-                return device != null ? toDateTimeType(device.getLastPlugSeen()) : UnDefType.UNDEF;
+                return device != null ? toDateTimeType(device.getLastPlugSeen(), timeZoneProvider.getTimeZone())
+                        : UnDefType.UNDEF;
             case CHANNEL_LAST_BILAN:
                 return toDateTimeType(getLastBilan());
         }
@@ -96,5 +98,4 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
         }
         return null;
     }
-
 }

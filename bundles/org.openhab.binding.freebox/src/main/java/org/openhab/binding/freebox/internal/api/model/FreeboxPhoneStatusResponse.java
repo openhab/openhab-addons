@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ public class FreeboxPhoneStatusResponse extends FreeboxResponse<List<FreeboxPhon
     @Override
     public void evaluate() throws FreeboxException {
         super.evaluate();
-        if (getResult() == null || getResult().size() == 0) {
+        if (getResult() == null || getResult().isEmpty()) {
             throw new FreeboxException("No phone status in response", this);
         }
     }

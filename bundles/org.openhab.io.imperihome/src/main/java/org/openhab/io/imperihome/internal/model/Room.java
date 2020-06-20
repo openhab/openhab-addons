@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,6 @@ public class Room {
         Room room = (Room) o;
 
         return id != null ? id.equals(room.id) : room.id == null;
-
     }
 
     @Override
@@ -62,5 +61,4 @@ public class Room {
     public String toString() {
         return "Room{" + "id='" + id + '\'' + ", name='" + name + '\'' + '}';
     }
-
 }

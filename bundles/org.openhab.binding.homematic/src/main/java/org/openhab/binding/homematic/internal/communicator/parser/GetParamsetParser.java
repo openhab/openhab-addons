@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,6 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
     @Override
     @SuppressWarnings("unchecked")
     public Void parse(Object[] message) throws IOException {
-
         if (message == null || message.length == 0 || !(message[0] instanceof Map)) {
             return null;
         }

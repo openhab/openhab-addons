@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -272,7 +272,6 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
 
         public BigDecimal getTotal(BigDecimal spoon) {
-
             removeOldEntries();
 
             int least = -1;
@@ -341,7 +340,6 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
 
         public WindStats getStats() {
-
             removeOldEntries();
 
             double ewSum = 0;

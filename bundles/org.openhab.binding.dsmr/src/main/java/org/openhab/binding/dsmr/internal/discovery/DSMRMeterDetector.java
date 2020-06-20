@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,7 +80,6 @@ class DSMRMeterDetector {
             }
         }
         logger.trace("Telegram as received from the device:\n{}\n", telegram.getRawTelegram());
-        return new SimpleEntry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>>(
-                detectedMeters.values(), undetectedCosemObjects);
+        return new SimpleEntry<>(detectedMeters.values(), undetectedCosemObjects);
     }
 }

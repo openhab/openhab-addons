@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,15 +47,12 @@ public class SmlFileDebugOutput {
      *            the SML file
      */
     public static void printFile(SmlFile smlFile, Consumer<String> consumer) {
-
         List<SmlMessage> smlMessages = smlFile.getMessages();
 
         for (SmlMessage smlMessage : smlMessages) {
-
             EMessageBody messageBody = smlMessage.getMessageBody().getTag();
 
             switch (messageBody) {
-
                 case OPEN_REQUEST:
                     parseOpenRequest(smlMessage, consumer);
                     break;

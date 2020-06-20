@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,5 +34,4 @@ public class LgTvSerialBindingConstants {
     public static final ThingTypeUID THING_TYPE_LGTV_LVX55_SERIES = new ThingTypeUID(BINDING_ID, "lgtv-LVx55-series");
     public static final ThingTypeUID THING_TYPE_LGTV_M6503C = new ThingTypeUID(BINDING_ID, "lgtv-M6503C");
     public static final ThingTypeUID THING_TYPE_LGTV_PW_SERIES = new ThingTypeUID(BINDING_ID, "lgtv-PW-series");
-
 }

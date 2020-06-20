@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
     private AllPlay allPlay;
     private AllPlayBindingProperties bindingProperties;
 
-    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab2-addons/pull/6080 and
+    // Bindings should not use the ThingRegistry! See https://github.com/openhab/openhab-addons/pull/6080 and
     // https://github.com/eclipse/smarthome/issues/5182
     private final ThingRegistry thingRegistry;
     private final AudioHTTPServer audioHTTPServer;
@@ -99,7 +99,7 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         AllPlayAudioSink audioSink = new AllPlayAudioSink(handler, audioHTTPServer, callbackUrl);
         @SuppressWarnings("unchecked")
         ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
         audioSinkRegistrations.put(thing.getUID().toString(), reg);
     }
 
@@ -158,5 +158,4 @@ public class AllPlayHandlerFactory extends BaseThingHandlerFactory {
         }
         return callbackUrl;
     }
-
 }

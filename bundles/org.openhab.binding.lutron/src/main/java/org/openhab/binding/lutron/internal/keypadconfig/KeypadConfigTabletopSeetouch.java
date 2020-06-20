@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -164,5 +164,4 @@ public final class KeypadConfigTabletopSeetouch extends KeypadConfig {
         modelData.put("Generic", combinedList(BUTTONGROUP1, BUTTONGROUP2, BUTTONGROUP3, BUTTONGROUPBOTTOM_GENERIC,
                 LEDGROUP1, LEDGROUP2, LEDGROUP3, LEDGROUPBOTTOM_RL)); // Superset of all models
     }
-
 }

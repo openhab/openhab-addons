@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,7 @@ public abstract class BaseSensorValues {
 
     private void addSensorValue(CachedSensorValue cachedSensorValue) {
         if (sensorValues == null) {
-            sensorValues = new LinkedList<CachedSensorValue>();
+            sensorValues = new LinkedList<>();
             sensorValues.add(cachedSensorValue);
         } else {
             sensorValues.add(cachedSensorValue);
@@ -88,7 +88,7 @@ public abstract class BaseSensorValues {
      * @return available sensor types
      */
     public List<SensorEnum> getAvailableSensorTypes() {
-        List<SensorEnum> sensorTypes = new LinkedList<SensorEnum>();
+        List<SensorEnum> sensorTypes = new LinkedList<>();
         if (sensorValues != null) {
             for (CachedSensorValue cSensorValue : sensorValues) {
                 sensorTypes.add(cSensorValue.getSensorType());

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="airquality" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="airquality"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -7,27 +8,29 @@
 	<thing-type id="aqi">
 		<label>Air Quality</label>
 		<description>
-		Provides various air quality data from the World Air Quality Project.
-		In order to receive the data, you must register an account on http://aqicn.org/data-platform/token/ and get your API token.
+			Provides various air quality data from the World Air Quality Project.
+			In order to receive the data, you
+			must register an account on http://aqicn.org/data-platform/token/ and get your API
+			token.
 		</description>
 
 		<channels>
-			<channel id="aqiLevel" typeId="aqiLevel" />
-			<channel id="aqiDescription" typeId="aqiDescription" />
-			<channel id="pm25" typeId="pm25" />
-			<channel id="pm10" typeId="pm10" />
-			<channel id="o3" typeId="o3" />
-			<channel id="no2" typeId="no2" />
-			<channel id="co" typeId="co" />
-			<channel id="so2" typeId="so2" />
-			<channel id="locationName" typeId="locationName" />
-			<channel id="stationLocation" typeId="stationLocation" />
-			<channel id="stationId" typeId="stationId" />
-			<channel id="observationTime" typeId="observationTime" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="pressure" typeId="pressure" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="dominentpol" typeId="dominentPol" />
+			<channel id="aqiLevel" typeId="aqiLevel"/>
+			<channel id="aqiDescription" typeId="aqiDescription"/>
+			<channel id="pm25" typeId="pm25"/>
+			<channel id="pm10" typeId="pm10"/>
+			<channel id="o3" typeId="o3"/>
+			<channel id="no2" typeId="no2"/>
+			<channel id="co" typeId="co"/>
+			<channel id="so2" typeId="so2"/>
+			<channel id="locationName" typeId="locationName"/>
+			<channel id="stationLocation" typeId="stationLocation"/>
+			<channel id="stationId" typeId="stationId"/>
+			<channel id="observationTime" typeId="observationTime"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="pressure" typeId="pressure"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="dominentpol" typeId="dominentPol"/>
 		</channels>
 
 		<config-description>
@@ -130,7 +133,7 @@
 		<label>Station Location</label>
 		<description>Location of the measuring station</description>
 		<category>Station Location</category>
-		<state readOnly="true" pattern="%2$s°N,%3$s°W" />
+		<state readOnly="true" pattern="%2$s°N,%3$s°W"/>
 	</channel-type>
 
 	<channel-type id="stationId" advanced="true">
@@ -170,9 +173,9 @@
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
 	</channel-type>
-	
+
 	<channel-type id="dominentPol">
 		<item-type>String</item-type>
 		<label>Dominent Polutor</label>
@@ -180,4 +183,3 @@
 	</channel-type>
 
 </thing:thing-descriptions>
-

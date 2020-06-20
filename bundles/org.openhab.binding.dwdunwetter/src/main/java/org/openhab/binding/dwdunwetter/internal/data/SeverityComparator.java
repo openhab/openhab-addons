@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ public class SeverityComparator implements Comparator<DwdWarningData> {
 
     @Override
     public int compare(DwdWarningData o1, DwdWarningData o2) {
-
         Comparator.comparingInt(d -> ((DwdWarningData) d).getSeverity().getOrder());
         Comparator.comparing(DwdWarningData::getOnset);
 
@@ -35,5 +34,4 @@ public class SeverityComparator implements Comparator<DwdWarningData> {
         }
         return result;
     }
-
 }

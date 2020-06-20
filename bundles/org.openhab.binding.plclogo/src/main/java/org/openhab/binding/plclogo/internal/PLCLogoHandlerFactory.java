@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,6 @@ import org.openhab.binding.plclogo.internal.handler.PLCDigitalHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCMemoryHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCPulseHandler;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 
 /**
  * The {@link PLCLogoHandlerFactory} is responsible for creating things and
@@ -86,5 +85,4 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

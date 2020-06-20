@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,5 +97,4 @@ public class MCommandTest {
                 "m:00,VgIEAQALDaMCAA519gMIdGVzdHJvb20PHVQFAAjB1gQCCw2jS0VRMDU0NDI0MgABAQjB1ktFUTA2NDkzMTIABQQOdfZLRVExMTA0MzgwAAIBDx1UTEVRMDE1NTU3OAhUZXN0cm9vbQMB\r\n",
                 commandStr);
     }
-
 }

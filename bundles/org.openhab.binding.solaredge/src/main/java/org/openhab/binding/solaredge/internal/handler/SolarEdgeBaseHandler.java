@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,8 +66,8 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     public SolarEdgeBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.webInterface = new WebInterface(scheduler, this, httpClient);
-        this.liveDataPollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
-        this.aggregateDataPollingJobReference = new AtomicReference<@Nullable Future<?>>(null);
+        this.liveDataPollingJobReference = new AtomicReference<>(null);
+        this.aggregateDataPollingJobReference = new AtomicReference<>(null);
     }
 
     @Override
@@ -152,5 +152,4 @@ public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements S
     public SolarEdgeConfiguration getConfiguration() {
         return this.getConfigAs(SolarEdgeConfiguration.class);
     }
-
 }

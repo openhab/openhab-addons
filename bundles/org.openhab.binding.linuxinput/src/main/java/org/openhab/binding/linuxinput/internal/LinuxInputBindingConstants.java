@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,8 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class LinuxInputBindingConstants {
-    private LinuxInputBindingConstants() { }
+    private LinuxInputBindingConstants() {
+    }
 
     public static final String BINDING_ID = "linuxinput";
 

@@ -1,0 +1,71 @@
+{
+	"deviceMapping": {
+		"id": [
+			"cuco.plug.cp1"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 2,
+		"channels": [
+			{
+				"property": "firmware-revision",
+				"siid": 1,
+				"piid": 4,
+				"friendlyName": "Device Information-CurrentFirmware Version",
+				"channel": "FirmwareRevision",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "manufacturer",
+				"siid": 1,
+				"piid": 1,
+				"friendlyName": "Device Information-Device Manufacturer",
+				"channel": "Manufacturer",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "model",
+				"siid": 1,
+				"piid": 2,
+				"friendlyName": "Device Information-Device Model",
+				"channel": "Model",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "serial-number",
+				"siid": 1,
+				"piid": 3,
+				"friendlyName": "Device Information-Device Serial Number",
+				"channel": "SerialNumber",
+				"channelType": "miot_string",
+				"type": "String",
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Switch-Switch Status",
+				"channel": "On",
+				"channelType": "miot_bool",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			}
+		]
+	}
+}

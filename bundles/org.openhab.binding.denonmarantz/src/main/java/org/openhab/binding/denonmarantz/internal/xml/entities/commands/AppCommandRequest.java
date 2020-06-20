@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppCommandRequest {
 
     @XmlElement(name = "cmd")
-    private List<CommandTx> commands = new ArrayList<CommandTx>();
+    private List<CommandTx> commands = new ArrayList<>();
 
     public AppCommandRequest() {
     }

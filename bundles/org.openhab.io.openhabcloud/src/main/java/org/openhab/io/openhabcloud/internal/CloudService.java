@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -265,7 +265,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         } catch (IOException ioe) {
             // no exception handling - we just return the empty String
         }
-        return lines != null && lines.size() > 0 ? lines.get(0) : "";
+        return lines != null && !lines.isEmpty() ? lines.get(0) : "";
     }
 
     /**
@@ -394,5 +394,4 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             cloudClient.sendItemUpdate(ise.getItemName(), ise.getItemState().toString());
         }
     }
-
 }

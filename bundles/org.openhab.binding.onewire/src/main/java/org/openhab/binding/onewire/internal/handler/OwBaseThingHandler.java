@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
     protected List<String> requiredProperties = new ArrayList<>(REQUIRED_PROPERTIES);
     protected Set<OwSensorType> supportedSensorTypes;
 
-    protected final List<AbstractOwDevice> sensors = new ArrayList<AbstractOwDevice>();
+    protected final List<AbstractOwDevice> sensors = new ArrayList<>();
     protected @NonNullByDefault({}) SensorId sensorId;
     protected @NonNullByDefault({}) OwSensorType sensorType;
 
@@ -124,9 +124,10 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
         }
         sensors.clear();
 
-        if (configuration.id != null) {
+        final String id = configuration.id;
+        if (id != null) {
             try {
-                this.sensorId = new SensorId(configuration.id);
+                this.sensorId = new SensorId(id);
             } catch (IllegalArgumentException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "sensor id format mismatch");
                 return false;
@@ -137,10 +138,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
         }
 
         refreshInterval = configuration.refresh * 1000;
-
-        if (thing.getChannel(CHANNEL_PRESENT) != null) {
-            showPresence = true;
-        }
 
         // check if all required properties are present. update if not
         for (String property : requiredProperties) {
@@ -188,6 +185,10 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
             return;
         }
 
+        if (thing.getChannel(CHANNEL_PRESENT) != null) {
+            showPresence = true;
+        }
+
         validConfig = true;
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
     }
@@ -233,7 +234,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
             logger.debug("{}: refresh exception {}", this.thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "refresh exception");
         }
-
     }
 
     /**
@@ -317,7 +317,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "required properties missing");
         bridgeHandler.scheduleForPropertiesUpdate(thing);
-
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,15 +22,15 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.util.HexUtils;
-import org.openhab.binding.enocean.internal.eep.EEP;
-import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._4BSMessage;
+import org.openhab.binding.enocean.internal.eep.EEP;
+import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.handler.EnOceanBridgeHandler;
+import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
-import org.openhab.binding.enocean.internal.messages.ESP3Packet;
-import org.openhab.binding.enocean.internal.transceiver.ESP3PacketListener;
+import org.openhab.binding.enocean.internal.transceiver.PacketListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Weber - Initial contribution
  */
 
-public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService implements ESP3PacketListener {
+public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService implements PacketListener {
     private final Logger logger = LoggerFactory.getLogger(EnOceanDeviceDiscoveryService.class);
 
     private EnOceanBridgeHandler bridgeHandler;
@@ -89,7 +89,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
     }
 
     @Override
-    public void espPacketReceived(ESP3Packet packet) {
+    public void packetReceived(BasePacket packet) {
         ERP1Message msg = (ERP1Message) packet;
 
         logger.info("EnOcean Package discovered, RORG {}, payload {}, additional {}", msg.getRORG().name(),
@@ -97,6 +97,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
 
         EEP eep = EEPFactory.buildEEPFromTeachInERP1(msg);
         if (eep == null) {
+            logger.debug("Could not build EEP for received package");
             return;
         }
 
@@ -170,5 +171,4 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
         // we just want teach in msg, so return zero here
         return 0;
     }
-
 }

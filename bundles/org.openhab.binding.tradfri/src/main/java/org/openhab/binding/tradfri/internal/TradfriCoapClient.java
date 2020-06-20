@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TradfriCoapClient extends CoapClient {
 
-    private static final int TIMEOUT = 2000;
+    private static final long TIMEOUT = 2000;
     private static final int DEFAULT_DELAY_MILLIS = 600;
     private final Logger logger = LoggerFactory.getLogger(TradfriCoapClient.class);
     private final LinkedList<PayloadCallbackPair> commandsQueue = new LinkedList<>();

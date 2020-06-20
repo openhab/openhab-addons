@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,5 +36,4 @@ public class Co2SensorDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.CO2_VALUE, getUnit(), value));
     }
-
 }

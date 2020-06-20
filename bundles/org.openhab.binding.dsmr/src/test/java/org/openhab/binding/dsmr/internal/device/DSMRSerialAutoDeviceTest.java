@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -66,7 +65,7 @@ public class DSMRSerialAutoDeviceTest {
         }
 
         @Override
-        public @NonNull Stream<@NonNull SerialPortIdentifier> getIdentifiers() {
+        public Stream<SerialPortIdentifier> getIdentifiers() {
             return Stream.empty();
         }
     };
@@ -87,12 +86,12 @@ public class DSMRSerialAutoDeviceTest {
         AtomicReference<P1Telegram> telegramRef = new AtomicReference<>(null);
         DSMREventListener listener = new DSMREventListener() {
             @Override
-            public void handleTelegramReceived(@NonNull P1Telegram telegram) {
+            public void handleTelegramReceived(P1Telegram telegram) {
                 telegramRef.set(telegram);
             }
 
             @Override
-            public void handleErrorEvent(@NonNull DSMRConnectorErrorEvent connectorErrorEvent) {
+            public void handleErrorEvent(DSMRConnectorErrorEvent connectorErrorEvent) {
                 fail("No handleErrorEvent Expected" + connectorErrorEvent);
             }
         };
@@ -120,12 +119,12 @@ public class DSMRSerialAutoDeviceTest {
         AtomicReference<DSMRConnectorErrorEvent> eventRef = new AtomicReference<>(null);
         DSMREventListener listener = new DSMREventListener() {
             @Override
-            public void handleTelegramReceived(@NonNull P1Telegram telegram) {
+            public void handleTelegramReceived(P1Telegram telegram) {
                 fail("No telegram expected:" + telegram);
             }
 
             @Override
-            public void handleErrorEvent(@NonNull DSMRConnectorErrorEvent connectorErrorEvent) {
+            public void handleErrorEvent(DSMRConnectorErrorEvent connectorErrorEvent) {
                 eventRef.set(connectorErrorEvent);
             }
         };

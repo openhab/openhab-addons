@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,5 +71,4 @@ public class Mcp23017BindingConstants {
             .of(CHANNEL_A0, CHANNEL_A1, CHANNEL_A2, CHANNEL_A3, CHANNEL_A4, CHANNEL_A5, CHANNEL_A6, CHANNEL_A7,
                     CHANNEL_B0, CHANNEL_B1, CHANNEL_B2, CHANNEL_B3, CHANNEL_B4, CHANNEL_B5, CHANNEL_B6, CHANNEL_B7)
             .collect(Collectors.toSet());
-
 }

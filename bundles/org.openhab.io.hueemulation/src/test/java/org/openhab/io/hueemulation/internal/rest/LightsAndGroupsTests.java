@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,7 +94,6 @@ public class LightsAndGroupsTests {
         HueLightEntry device = cs.ds.lights.get(cs.mapItemUIDtoHueID(item));
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
-
     }
 
     @Test
@@ -124,6 +123,17 @@ public class LightsAndGroupsTests {
         HueGroupEntry device = cs.ds.groups.get(cs.mapItemUIDtoHueID(item));
         assertThat(device.groupItem, is(item));
         assertThat(device.action, is(instanceOf(HueStatePlug.class)));
+    }
+
+    @Test
+    public void addDeviceAsGroupSwitchableByTag() {
+        GroupItem item = new GroupItem("group1", new SwitchItem("switch1"));
+        item.addTag("Switchable");
+        item.addTag("Huelight");
+        itemRegistry.add(item);
+        HueLightEntry device = cs.ds.lights.get(cs.mapItemUIDtoHueID(item));
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
     }
 
     @Test
@@ -186,7 +196,6 @@ public class LightsAndGroupsTests {
 
     @Test
     public void changeSwitchState() {
-
         assertThat(((HueStatePlug) cs.ds.lights.get("1").state).on, is(false));
 
         String body = "{'on':true}";
@@ -203,7 +212,6 @@ public class LightsAndGroupsTests {
 
     @Test
     public void changeGroupItemSwitchState() {
-
         assertThat(((HueStatePlug) cs.ds.groups.get("10").action).on, is(false));
 
         String body = "{'on':true}";
@@ -220,7 +228,6 @@ public class LightsAndGroupsTests {
 
     @Test
     public void changeOnValue() {
-
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
 
         String body = "{'on':true}";
@@ -234,9 +241,8 @@ public class LightsAndGroupsTests {
 
     @Test
     public void changeOnAndBriValues() {
-
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(0));
+        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
 
         String body = "{'on':true,'bri':200}";
         Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
@@ -292,7 +298,7 @@ public class LightsAndGroupsTests {
     @Test
     public void switchOnWithXY() {
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(0));
+        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
 
         String body = "{'on':true,'bri':200,'xy':[0.5119,0.4147]}";
         Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()

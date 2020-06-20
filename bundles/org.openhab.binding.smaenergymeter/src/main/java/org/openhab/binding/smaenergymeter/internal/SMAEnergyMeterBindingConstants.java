@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,5 +39,4 @@ public class SMAEnergyMeterBindingConstants {
     public static final String CHANNEL_POWER_OUT = "powerOut";
     public static final String CHANNEL_ENERGY_IN = "energyIn";
     public static final String CHANNEL_ENERGY_OUT = "energyOut";
-
 }

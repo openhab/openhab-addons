@@ -37,12 +37,16 @@ Additionally you can check the eco temperature, the comfort temperature and the 
 The FRITZ!Box has to run at least on firmware FRITZ!OS 6.35.
 **NOTE:** The `battery_level` channel will be added to the thing during runtime - if the interface supports it (FRITZ!OS 7 or higher).
 
+### FRITZ!DECT 400
+
+The [FRITZ!DECT 400](https://avm.de/produkte/fritzdect/fritzdect-400/) is a button for convenient operation of FRITZ! Smart Home devices (FRITZ!OS 7.08 or higher).
+
 ### DECT-ULE / HAN-FUN devices
 
 The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!Box 7490 / 7590:
 
 - [SmartHome Tür-/Fensterkontakt (optisch)](https://www.smarthome.de/geraete/eurotronic-smarthome-tuer-fensterkontakt-optisch) - an optical door/window contact
-- SmartHome Tür-/Fensterkontakt (magnetisch) - a magnetic door/window contact
+- [SmartHome Tür-/Fensterkontakt (magnetisch)](https://www.smarthome.de/geraete/smarthome-tuer-fensterkontakt-magnetisch-weiss) - a magnetic door/window contact
 - [SmartHome Bewegungsmelder](https://www.smarthome.de/geraete/telekom-smarthome-bewegungsmelder-innen) - a motion sensor
 - [SmartHome Rauchmelder](https://www.smarthome.de/geraete/smarthome-rauchmelder-weiss) - a smoke detector
 - [SmartHome Wandtaster](https://www.smarthome.de/geraete/telekom-smarthome-wandtaster) - a switch with two buttons
@@ -62,9 +66,20 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 6.69.
 ## Discovery
 
 The FRITZ!Box and the powerline adapter are discovered through UPnP in the local network.
-Auto-discovery is enabled by default.
 When added as things, a username/password has eventually to be set depending on your Box/Powerline security configuration.
 The credentials given in the settings must have HomeAuto permissions.
+This implies to enable "login to the home network with user name and password" setting in the FRITZ!Box.
+To do so
+
+- Click "System" in the FRITZ!Box user interface.
+- Click "FRITZ!Box Users" in the "System" menu.
+- Click on the "Login to the Home Network" tab.
+- Enable the option "Login with FRITZ!Box user name and password".
+- Click "Apply" to save the settings.
+
+Note: Now you can only log in to the FRITZ!Box with a user account, i.e. after entering a user name and password.
+
+Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
 ```
@@ -103,6 +118,10 @@ If the FRITZ!Powerline 546E is added via auto-discovery it determines its own `a
 
 - `ain` (mandatory), no default (AIN number of the device)
 
+### Finding The AIN ###
+
+The AIN (actor identification number) can be found in the FRITZ!Box interface -> Home Network -> SmartHome. When opening the details view for a device with the edit button, the AIN is shown. Use the AIN without the blank.
+
 ## Supported Channels
 
 | Channel Type ID | Item Type                | Description                                                                                                                                         | Available on thing                                                                                  |
@@ -123,16 +142,17 @@ If the FRITZ!Powerline 546E is added via auto-discovery it determines its own `a
 | radiator_mode   | String                   | Mode of heating thermostat (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN)                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
 | next_change     | DateTime                 | Next change of the Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                             | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
 | next_temp       | Number:Temperature       | Next Set Temperature if scheduler is activated in the FRITZ!Box settings - FRITZ!OS 6.80                                                           | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| battery_level   | Number                   | Battery level (in %) - FRITZ!OS 7                                                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
-| battery_low     | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                          |
+| battery_level   | Number                   | Battery level (in %) - FRITZ!OS 7                                                                                                                  | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400                                          |
+| battery_low     | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400                                          |
 | contact_state   | Contact                  | Contact state information (OPEN/CLOSED).                                                                                                           | HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder)- FRITZ!OS 7       |
-| last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7                                             |
+| last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | FRITZ!DECT 400, HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7                             |
 
 ### Triggers
 
-| Channel Type ID | Item Type | Description                                            | Available on thing                                      |
-|-----------------|-----------|--------------------------------------------------------|---------------------------------------------------------|
-| press           | Trigger   | Dispatches a `PRESSED` event when a button is pressed. | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7 |
+| Channel Type ID | Item Type | Description                                                                    | Available on thing                                      |
+|-----------------|-----------|--------------------------------------------------------------------------------|---------------------------------------------------------|
+| press           | Trigger   | Dispatches a `PRESSED` event when a button is pressed.                         | HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7 |
+| press           | Trigger   | Dispatches a `SHORT_PRESSED` or `LONG_PRESSED` event when a button is pressed. | FRITZ!DECT 400 - FRITZ!OS 7.08                          |
 
 The trigger channel `press` is of type `system.rawbutton` to allow the usage of the `rawbutton-toggle-switch` profile.
 
@@ -175,6 +195,7 @@ Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx"
     Thing Comet_DECT aaaaaabbbbbb "Comet DECT #3" [ ain="aaaaaabbbbbb" ]
     Thing HAN_FUN_CONTACT zzzzzzzzzzzz_1 "HAN-FUN Contact #4" [ ain="zzzzzzzzzzzz-1" ]
     Thing HAN_FUN_SWITCH zzzzzzzzzzzz_2 "HAN-FUN Switch #5" [ ain=zzzzzzzzzzzz-2" ]
+    Thing FRITZ_DECT_Repeater_100 rrrrrrrrrrrr "DECT Repeater 100 #6" [ ain="rrrrrrrrrrrr" ]
     Thing FRITZ_GROUP_HEATING AA_AA_AA_900 "Heating group" [ ain="AA:AA:AA-900" ]
     Thing FRITZ_GROUP_SWITCH BB_BB_BB_900 "Switch group" [ ain="BB:BB:BB-900" ]
 }
@@ -202,6 +223,8 @@ Switch COMETDECTBatteryLow "Battery low" { channel="avmfritz:Comet_DECT:1:aaaaaa
 Contact HANFUNContactState "Status [%s]" { channel="avmfritz:HAN_FUN_CONTACT:1:zzzzzzzzzzzz_1:contact_state" }
 
 DateTime HANFUNSwitchLastChanged "Last change" { channel="avmfritz:HAN_FUN_SWITCH:1:zzzzzzzzzzzz_2:last_change" }
+
+Number:Temperature Temperature1 "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_Repeater_100:1:rrrrrrrrrrrr:temperature" }
 
 Number:Temperature FRITZ_GROUP_HEATINGSetTemperature "Group temperature set point [%.1f %unit%]" { channel="avmfritz:FRITZ_GROUP_HEATING:1:AA_AA_AA_900:set_temp" }
 

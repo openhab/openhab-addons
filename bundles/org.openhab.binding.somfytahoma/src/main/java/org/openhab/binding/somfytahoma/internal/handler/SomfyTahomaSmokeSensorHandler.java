@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.CONTACT;
-
-import java.util.HashMap;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 
 /**
  * The {@link SomfyTahomaSmokeSensorHandler} is responsible for handling commands,
@@ -30,6 +31,20 @@ public class SomfyTahomaSmokeSensorHandler extends SomfyTahomaContactSensorHandl
 
     public SomfyTahomaSmokeSensorHandler(Thing thing) {
         super(thing);
-        stateNames.put(CONTACT, "core:SmokeState");
+        stateNames.put(CONTACT, SMOKE_STATE);
+        stateNames.put(SENSOR_DEFECT, SENSOR_DEFECT_STATE);
+        stateNames.put(SENSOR_BATTERY, SENSOR_PART_BATTERY_STATE);
+        stateNames.put(RADIO_BATTERY, RADIO_PART_BATTERY_STATE);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+
+        if (command instanceof RefreshType) {
+            return;
+        } else if (ALARM_CHECK.equals(channelUID.getId())) {
+            sendCommand(COMMAND_CHECK_TRIGGER, "[\"" + command.toString().toLowerCase() + "\"]");
+        }
     }
 }

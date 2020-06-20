@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,14 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.device.DS1923;
@@ -32,11 +34,11 @@ import org.openhab.binding.onewire.internal.device.DS1923;
  * @author Jan N. Klug - Initial contribution
  * @author Michał Wójcik - Adapted to DS1923
  */
-public class DS1923Test extends DeviceTestParent {
+@NonNullByDefault
+public class DS1923Test extends DeviceTestParent<DS1923> {
     @Before
     public void setupMocks() {
-        setupMocks(THING_TYPE_MS_TH);
-        deviceTestClazz = DS1923.class;
+        setupMocks(THING_TYPE_MS_TX, DS1923.class);
 
         addChannel(CHANNEL_TEMPERATURE, "Number:Temperature");
         addChannel(CHANNEL_HUMIDITY, "Number:Dimensionless");
@@ -46,7 +48,8 @@ public class DS1923Test extends DeviceTestParent {
 
     @Test
     public void temperatureChannel() {
-        instantiateDevice();
+        final DS1923 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
@@ -67,7 +70,8 @@ public class DS1923Test extends DeviceTestParent {
 
     @Test
     public void humidityChannel() {
-        instantiateDevice();
+        final DS1923 testDevice = instantiateDevice();
+        final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
         try {
             Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);

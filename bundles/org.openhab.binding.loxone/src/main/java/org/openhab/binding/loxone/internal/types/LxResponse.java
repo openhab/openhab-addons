@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -117,7 +117,7 @@ public class LxResponse {
      * Deserializes response value as a given type
      *
      * @param gson GSON object used for deserialization
-     * @param      <T> class to deserialize response to
+     * @param <T> class to deserialize response to
      * @param type class type to deserialize response to
      * @return deserialized response
      */

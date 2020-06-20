@@ -250,10 +250,10 @@
 				<option value="B1">&#x25A0; Stop</option>
 				<option value="BA">&#x23F8; Freeze/Pause</option> <!-- Found in SAC34134216 for plasma TVs -->
 				<option value="BF">Component Discrete</option>
-				<option value="C0">Green</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series-->
-				<option value="C1">Red</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series-->
-				<option value="C2">Yellow</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series-->
-				<option value="C3">Blue</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series-->
+				<option value="C0">Green</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series -->
+				<option value="C1">Red</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series -->
+				<option value="C2">Yellow</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series -->
+				<option value="C3">Blue</option> <!-- Found in SAC34134216 for LV255C, LV355B, LV355C series -->
 				<option value="C4">Power on</option>
 				<option value="C5">Power off</option>
 				<option value="C6">HDMI/DVI Discrete</option>
@@ -396,7 +396,7 @@
 		<item-type>String</item-type>
 		<label>Serial Number</label>
 		<description>Read the serial numbers</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="sharpness">
@@ -447,7 +447,7 @@
 		<item-type>String</item-type>
 		<label>Software Version</label>
 		<description>Check the software version</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="speaker">
@@ -461,7 +461,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Value</label>
 		<description>Read the inside temperature value</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
@@ -518,7 +518,7 @@
 		<item-type>Dimmer</item-type>
 		<label>Tile ID Set</label>
 		<description>To assign the Tile ID for Tiling function</description>
-		<state min="0" max="25" />
+		<state min="0" max="25"/>
 	</channel-type>
 
 	<channel-type id="tile-v-position">
@@ -566,4 +566,3 @@
 	</channel-type>
 
 </thing:thing-descriptions>
-

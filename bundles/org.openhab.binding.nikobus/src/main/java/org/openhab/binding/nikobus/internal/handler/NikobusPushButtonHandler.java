@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,6 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         protected int getMinimalNumberOfSegments() {
             return 3;
         }
-
     }
 
     private static final String END_OF_TRANSMISSION = "\r#E1";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -210,17 +210,15 @@ public class AtomicStampedKeyValueTest {
     @Test
     public void testCompare() {
         // equal, smaller, larger
-        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<Object, Object>(42L, "", ""),
-                new AtomicStampedKeyValue<Object, Object>(42L, "", "")), is(equalTo(0)));
-        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<Object, Object>(41L, "", ""),
-                new AtomicStampedKeyValue<Object, Object>(42L, "", "")), is(equalTo(-1)));
-        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<Object, Object>(42L, "", ""),
-                new AtomicStampedKeyValue<Object, Object>(41L, "", "")), is(equalTo(1)));
+        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<>(42L, "", ""),
+                new AtomicStampedKeyValue<>(42L, "", "")), is(equalTo(0)));
+        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<>(41L, "", ""),
+                new AtomicStampedKeyValue<>(42L, "", "")), is(equalTo(-1)));
+        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<>(42L, "", ""),
+                new AtomicStampedKeyValue<>(41L, "", "")), is(equalTo(1)));
 
         // Nulls come first
-        assertThat(AtomicStampedKeyValue.compare(null, new AtomicStampedKeyValue<Object, Object>(42L, "", "")),
-                is(equalTo(-1)));
-        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<Object, Object>(42L, "", ""), null),
-                is(equalTo(1)));
+        assertThat(AtomicStampedKeyValue.compare(null, new AtomicStampedKeyValue<>(42L, "", "")), is(equalTo(-1)));
+        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<>(42L, "", ""), null), is(equalTo(1)));
     }
 }

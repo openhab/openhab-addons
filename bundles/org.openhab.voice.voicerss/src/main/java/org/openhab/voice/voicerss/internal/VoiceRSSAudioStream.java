@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,5 +32,4 @@ class VoiceRSSAudioStream extends FileAudioStream {
     public VoiceRSSAudioStream(File audioFile, AudioFormat format) throws AudioException {
         super(audioFile, format);
     }
-
 }

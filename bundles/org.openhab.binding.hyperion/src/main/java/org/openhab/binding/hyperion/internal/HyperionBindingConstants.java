@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ public class HyperionBindingConstants {
     public static final String COMPONENT_GRABBER = "GRABBER";
     public static final String COMPONENT_V4L = "V4L";
     public static final String COMPONENT_LEDDEVICE = "LEDDEVICE";
+    public static final String COMPONENT_ALL = "ALL";
 
     // List of all properties
     public static final String PROP_HOST = "host";
@@ -79,5 +80,4 @@ public class HyperionBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_V1);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SERVER_NG);
     }
-
 }

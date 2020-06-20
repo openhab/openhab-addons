@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -202,21 +202,20 @@ public class StateUpdate extends ConfigUpdate {
      * @param flag on if true, off otherwise
      * @return this object for chaining calls
      */
-    
+
     public StateUpdate setFlag(boolean flag) {
         commands.add(new Command("flag", flag));
         return this;
     }
-    
+
     /**
      * Set status of sensor.
      *
-     * @param status status 
+     * @param status status
      * @return this object for chaining calls
      */
     public StateUpdate setStatus(int status) {
         commands.add(new Command("status", status));
         return this;
     }
-    
 }

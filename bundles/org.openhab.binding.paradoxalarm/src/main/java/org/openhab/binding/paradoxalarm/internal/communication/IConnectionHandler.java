@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,9 +27,10 @@ public interface IConnectionHandler {
 
     void submitRequest(IRequest request);
 
+    boolean isEncrypted();
+
     /**
      * @param stoListener This method sets a listener which is called in case of socket timeout occurrence.
      */
     void setStoListener(ISocketTimeOutListener stoListener);
-
 }

@@ -7,6 +7,7 @@ When certain log events are recognized, openHAB rules can be used to send notifi
 
 This binding supports one ThingType: `reader`.
 A reader supports 3 separate channels
+
   * One for errors
   * one for warnings
   * one custom channel for other purposes.

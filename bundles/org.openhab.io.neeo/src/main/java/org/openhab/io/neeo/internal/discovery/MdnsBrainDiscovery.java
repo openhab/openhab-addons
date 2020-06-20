@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,7 +92,6 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
                 considerService(event.getInfo());
             }
         }
-
     };
 
     /** The service context */
@@ -207,7 +206,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
             return null;
         }
 
-        return new AbstractMap.SimpleImmutableEntry<String, InetAddress>(model, ipAddress);
+        return new AbstractMap.SimpleImmutableEntry<>(model, ipAddress);
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Krzysztof Goworek - Initial contribution
  */
+@NonNullByDefault
 public class Ethm1BridgeHandler extends SatelBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ETHM1);
@@ -54,7 +56,7 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
         Ethm1Config config = getConfigAs(Ethm1Config.class);
         if (StringUtils.isNotBlank(config.getHost())) {
             SatelModule satelModule = new Ethm1Module(config.getHost(), config.getPort(), config.getTimeout(),
-                    config.getEncryptionKey());
+                    config.getEncryptionKey(), config.hasExtCommandsSupport());
             super.initialize(satelModule);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -78,5 +80,4 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
 
         return configStatusMessages;
     }
-
 }

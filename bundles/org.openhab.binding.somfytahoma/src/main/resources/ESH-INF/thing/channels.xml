@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="somfytahoma" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="somfytahoma"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -46,6 +47,19 @@
 				<option value="off">DISARM</option>
 				<option value="alarmPartial1">ARM_PARTIAL_1</option>
 				<option value="alarmPartial2">ARM_PARTIAL_2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="myfox_alarm_command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>A channel used for sending commands to Somfy Myfox Alarm device</description>
+		<state>
+			<options>
+				<option value="arm">ARM</option>
+				<option value="disarm">DISARM</option>
+				<option value="partial">ARM_PARTIAL</option>
 			</options>
 		</state>
 	</channel-type>
@@ -118,6 +132,13 @@
 		<label>Current Temperature</label>
 		<description>The current temperature of the heating system</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Humidity</label>
+		<description>The current relative humidity</description>
+		<state readOnly="true" min="0" max="100" pattern="%f.1 %unit%"/>
 	</channel-type>
 
 	<channel-type id="current_state">
@@ -199,7 +220,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Consumption</label>
 		<description>The energy consumption reported by the sensor</description>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="siren_status">
@@ -237,5 +258,84 @@
 		<item-type>Switch</item-type>
 		<label>Dock Long Beep Test</label>
 		<description>A channel for testing the dock's long beeping</description>
+	</channel-type>
+
+	<channel-type id="alarm_check">
+		<item-type>String</item-type>
+		<label>Alarm Check Trigger</label>
+		<description>A channel for triggering the smoke sensor's check</description>
+		<command>
+			<options>
+				<option value="SHORT">Short check</option>
+				<option value="LONG">Long check</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="rocker">
+		<item-type>Switch</item-type>
+		<label>Rocker Position</label>
+		<description>A channel for controlling the rocker position</description>
+	</channel-type>
+
+	<channel-type id="cloud_status">
+		<item-type>String</item-type>
+		<label>Cloud Status State</label>
+		<description>Cloud status state of the camera</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="shutter">
+		<item-type>Switch</item-type>
+		<label>Myfox Shutter</label>
+		<description>A channel for controlling the shutter</description>
+	</channel-type>
+
+	<channel-type id="heating_mode">
+		<item-type>String</item-type>
+		<label>Heating Mode</label>
+		<description>Heating mode of the Somfy thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="derogation_heating_mode">
+		<item-type>String</item-type>
+		<label>Derogation Heating Mode</label>
+		<description>Derogation heating mode of the Somfy thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="derogation_activation">
+		<item-type>String</item-type>
+		<label>Derogation Activation State</label>
+		<description>Derogation activation state of the Somfy thermostat</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensor_defect">
+		<item-type>String</item-type>
+		<label>Sensor Defect State</label>
+		<description>State of the Somfy sensor (dead, lowBattery, noDefect...)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensor_battery">
+		<item-type>String</item-type>
+		<label>Sensor Part Battery State</label>
+		<description>State of the sensor part of the Somfy sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="radio_battery">
+		<item-type>String</item-type>
+		<label>Radio Part Battery State</label>
+		<description>State of the radio part of the Somfy sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="closure_orientation">
+		<item-type>String</item-type>
+		<label>Set Closure And Orientation</label>
+		<description>A channel for setting closure and orientation of the blind</description>
 	</channel-type>
 </thing:thing-descriptions>
