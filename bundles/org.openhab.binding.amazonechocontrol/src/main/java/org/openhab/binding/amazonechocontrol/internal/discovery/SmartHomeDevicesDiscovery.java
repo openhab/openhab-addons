@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amazonechocontrol.internal.smarthome;
+package org.openhab.binding.amazonechocontrol.internal.discovery;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_ID;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_SMART_HOME_THING_TYPES_UIDS;
@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,27 +37,26 @@ import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.DriverIdentity;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeGroups.SmartHomeGroup;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Lukas Knoeller
+ * @author Lukas Knoeller - Initial contribution
  */
 @NonNullByDefault
 public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implements ExtendedDiscoveryService {
-
-    AccountHandler accountHandler;
+    private AccountHandler accountHandler;
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDevicesDiscovery.class);
 
-    @Nullable
-    ScheduledFuture<?> startScanStateJob;
-    static @Nullable Long activateTimeStamp;
+    private @Nullable ScheduledFuture<?> startScanStateJob;
+    private @Nullable Long activateTimeStamp;
 
     private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
@@ -82,6 +82,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
     @Override
     protected void startScan() {
         stopScanJob();
+        Long activateTimeStamp = this.activateTimeStamp;
         if (activateTimeStamp != null) {
             removeOlderResults(activateTimeStamp);
         }
@@ -120,7 +121,6 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
     }
 
     void stopScanJob() {
-        @Nullable
         ScheduledFuture<?> currentStartScanStateJob = startScanStateJob;
         if (currentStartScanStateJob != null) {
             currentStartScanStateJob.cancel(false);
@@ -136,8 +136,9 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
         if (config != null) {
             modified(config);
         }
+        Long activateTimeStamp = this.activateTimeStamp;
         if (activateTimeStamp == null) {
-            activateTimeStamp = new Date().getTime();
+            this.activateTimeStamp = new Date().getTime();
         }
     };
 
@@ -147,17 +148,16 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
         if (discoveryServiceCallback == null) {
             return;
         }
-        int shouldDiscoverSmartHomeDevice = accountHandler.shouldDiscoverSmartHomeDevices();
-        if (shouldDiscoverSmartHomeDevice == 0) {
+        int smartHomeDeviceDiscoveryMode = accountHandler.getSmartHomeDevicesDiscoveryMode();
+        if (smartHomeDeviceDiscoveryMode == 0) {
             return;
         }
-        boolean shouldDiscoverOpenHabDevices = accountHandler.shouldDiscoverOpenHABSmartHomeDevices();
 
         for (Object smartHomeDevice : deviceList) {
             ThingUID bridgeThingUID = this.accountHandler.getThing().getUID();
             ThingUID thingUID = null;
             String deviceName = null;
-            Map<String, Object> props = new HashMap<String, Object>();
+            Map<String, Object> props = new HashMap<>();
 
             if (smartHomeDevice instanceof SmartHomeDevice) {
                 SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
@@ -176,23 +176,17 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                 DriverIdentity driverIdentity = shd.driverIdentity;
                 isSkillDevice = driverIdentity != null && "SKILL".equals(driverIdentity.namespace);
 
-                if (shouldDiscoverSmartHomeDevice == 1 && isSkillDevice) {
+                if (smartHomeDeviceDiscoveryMode == 1 && isSkillDevice) {
                     // Connected through skill
                     continue;
                 }
-                if (!shouldDiscoverOpenHabDevices && "openHAB".equalsIgnoreCase(shd.manufacturerName)) {
+                if (!(smartHomeDeviceDiscoveryMode == 2) && "openHAB".equalsIgnoreCase(shd.manufacturerName)) {
                     // OpenHAB device
                     continue;
                 }
 
-                boolean supportedDevice = false;
-                for (SmartHomeCapability capability : shd.capabilities) {
-                    if (Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
-                        supportedDevice = true;
-                        break;
-                    }
-                }
-                if (!supportedDevice) {
+                if (Stream.of(shd.capabilities).noneMatch(capability -> capability != null
+                        && Constants.SUPPORTED_INTERFACES.contains(capability.interfaceName))) {
                     // No supported interface found
                     continue;
                 }
@@ -202,10 +196,11 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                 if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "SonarCloudService".equals(driverIdentity.identifier)) {
                     deviceName = "Alexa Guard on " + shd.friendlyName;
-                } else if ("Amazon".equals(shd.manufacturerName)
+                } else if ("Amazon".equals(shd.manufacturerName) && driverIdentity != null
                         && "OnGuardSmartHomeBridgeService".equals(driverIdentity.identifier)) {
                     deviceName = "Alexa Guard";
-                } else if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0].friendlyName != null) {
+                } else if (shd.aliases != null && shd.aliases.length > 0 && shd.aliases[0] != null
+                        && shd.aliases[0].friendlyName != null) {
                     deviceName = shd.aliases[0].friendlyName;
                 } else {
                     deviceName = shd.friendlyName;
@@ -220,7 +215,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                     // No id
                     continue;
                 }
-                Set<SmartHomeDevice> supportedChildren = SmartHomeDeviceHandler.GetSupportedSmartHomeDevices(shg,
+                Set<SmartHomeDevice> supportedChildren = SmartHomeDeviceHandler.getSupportedSmartHomeDevices(shg,
                         deviceList);
                 if (supportedChildren.size() == 0) {
                     // No children with an supported interface
@@ -248,7 +243,5 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
                 thingDiscovered(result);
             }
         }
-
     }
-
 }

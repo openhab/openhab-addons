@@ -10,20 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amazonechocontrol.internal.jsons;
+package org.openhab.binding.amazonechocontrol.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 
 /**
- * The {@link SmartHomeBaseDevice} is the base interface for all smart home device json nodes
+ * The {@link AccountHandlerConfig} holds the configuration for the {@link AccountHandler}
  *
- * @author Michael Geramb - Initial contribution
+ * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public interface SmartHomeBaseDevice {
-    @Nullable
-    String findId();
-
-    boolean isGroup();
+public class AccountHandlerConfig {
+    public int discoverSmartHome = 0;
+    public int pollingIntervalSmartHomeAlexa = 60;
+    public int pollingIntervalSmartSkills = 120;
 }

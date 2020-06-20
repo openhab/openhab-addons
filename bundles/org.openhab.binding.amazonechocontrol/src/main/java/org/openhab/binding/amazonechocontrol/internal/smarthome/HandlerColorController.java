@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -31,16 +32,18 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerColorController} is responsible for the Alexa.ColorTemperatureController
  *
- * @author Lukas Knoeller, Michael Geramb
+ * @author Lukas Knoeller - Initial contribution
+ * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerColorController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.ColorController";
@@ -54,37 +57,35 @@ public class HandlerColorController extends HandlerBase {
             AmazonEchoControlBindingConstants.BINDING_ID, "color");
 
     // Channel and Properties
-    final static ChannelInfo color = new ChannelInfo("color" /* propertyName */ , "color" /* ChannelId */,
-            CHANNEL_TYPE_COLOR /* Channel Type */ , ITEM_TYPE_COLOR /* Item Type */);
+    private static final ChannelInfo COLOR = new ChannelInfo("color" /* propertyName */, "color" /* ChannelId */,
+            CHANNEL_TYPE_COLOR /* Channel Type */, ITEM_TYPE_COLOR /* Item Type */);
 
-    final static ChannelInfo colorProperties = new ChannelInfo("colorProperties" /* propertyName */ ,
-            "colorName" /* ChannelId */, CHANNEL_TYPE_COLOR_NAME /* Channel Type */ , ITEM_TYPE_STRING /* Item Type */);
+    private static final ChannelInfo COLOR_PROPERTIES = new ChannelInfo("colorProperties" /* propertyName */,
+            "colorName" /* ChannelId */, CHANNEL_TYPE_COLOR_NAME /* Channel Type */, ITEM_TYPE_STRING /* Item Type */);
 
-    @Nullable
-    HSBType lastColor;
-    @Nullable
-    String lastColorName;
+    private @Nullable HSBType lastColor;
+    private @Nullable String lastColorName;
 
     @Override
-    protected String[] GetSupportedInterface() {
+    public String[] getSupportedInterface() {
         return new String[] { INTERFACE, INTERFACE_COLOR_PROPERTIES };
     }
 
     @Override
-    protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (color.propertyName.contentEquals(property)) {
-            return new ChannelInfo[] { color, colorProperties };
+    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+        if (COLOR.propertyName.contentEquals(property)) {
+            return new ChannelInfo[] { COLOR, COLOR_PROPERTIES };
         }
         return null;
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+    public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         if (INTERFACE.equals(interfaceName)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
             HSBType colorValue = null;
             for (JsonObject state : stateList) {
-                if (color.propertyName.equals(state.get("name").getAsString())) {
+                if (COLOR.propertyName.equals(state.get("name").getAsString())) {
                     JsonObject value = state.get("value").getAsJsonObject();
                     // For groups take the maximum
                     if (colorValue == null) {
@@ -96,18 +97,18 @@ public class HandlerColorController extends HandlerBase {
             }
             if (colorValue != null) {
                 if (!colorValue.equals(lastColor)) {
-                    result.NeedSingleUpdate = true;
+                    result.needSingleUpdate = true;
                     lastColor = colorValue;
                 }
             }
-            updateState(color.channelId, colorValue == null ? UnDefType.UNDEF : colorValue);
+            updateState(COLOR.channelId, colorValue == null ? UnDefType.UNDEF : colorValue);
         }
         if (INTERFACE_COLOR_PROPERTIES.equals(interfaceName)) {
             String colorNameValue = null;
             for (JsonObject state : stateList) {
-                if (colorProperties.propertyName.equals(state.get("name").getAsString())) {
+                if (COLOR_PROPERTIES.propertyName.equals(state.get("name").getAsString())) {
                     if (colorNameValue == null) {
-                        result.NeedSingleUpdate = false;
+                        result.needSingleUpdate = false;
                         colorNameValue = state.get("value").getAsJsonObject().get("name").getAsString();
                     }
                 }
@@ -117,16 +118,16 @@ public class HandlerColorController extends HandlerBase {
             } else if (colorNameValue == null && lastColorName != null) {
                 colorNameValue = lastColorName;
             }
-            updateState(colorProperties.channelId,
+            updateState(COLOR_PROPERTIES.channelId,
                     lastColorName == null ? UnDefType.UNDEF : new StringType(lastColorName));
         }
     }
 
     @Override
-    protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(color.channelId)) {
-            if (ContainsCapabilityProperty(capabilties, color.propertyName)) {
+        if (channelId.equals(COLOR.channelId)) {
+            if (containsCapabilityProperty(capabilties, COLOR.propertyName)) {
                 if (command instanceof HSBType) {
                     HSBType color = ((HSBType) command);
                     JsonObject colorObject = new JsonObject();
@@ -137,8 +138,8 @@ public class HandlerColorController extends HandlerBase {
                 }
             }
         }
-        if (channelId.equals(colorProperties.channelId)) {
-            if (ContainsCapabilityProperty(capabilties, color.propertyName)) {
+        if (channelId.equals(COLOR_PROPERTIES.channelId)) {
+            if (containsCapabilityProperty(capabilties, COLOR.propertyName)) {
                 if (command instanceof StringType) {
                     String colorName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorName)) {

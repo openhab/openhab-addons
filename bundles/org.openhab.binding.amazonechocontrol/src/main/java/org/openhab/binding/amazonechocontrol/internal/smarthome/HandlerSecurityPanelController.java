@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -29,16 +30,18 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerSecurityPanelController} is responsible for the Alexa.PowerControllerInterface
  *
- * @author Lukas Knoeller, Michael Geramb
+ * @author Lukas Knoeller - Initial contribution
+ * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerSecurityPanelController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.SecurityPanelController";
@@ -60,37 +63,38 @@ public class HandlerSecurityPanelController extends HandlerBase {
             AmazonEchoControlBindingConstants.BINDING_ID, "waterAlarm");
 
     // Channel definitions
-    final static ChannelInfo armState = new ChannelInfo("armState" /* propertyName */ , "armState" /* ChannelId */,
-            CHANNEL_TYPE_ARM_STATE /* Channel Type */ , ITEM_TYPE_STRING /* Item Type */);
+    private static final ChannelInfo ARM_STATE = new ChannelInfo("armState" /* propertyName */ ,
+            "armState" /* ChannelId */, CHANNEL_TYPE_ARM_STATE /* Channel Type */ , ITEM_TYPE_STRING /* Item Type */);
 
-    final static ChannelInfo burglaryAlarm = new ChannelInfo("burglaryAlarm" /* propertyName */ ,
+    private static final ChannelInfo BURGLARY_ALARM = new ChannelInfo("burglaryAlarm" /* propertyName */ ,
             "burglaryAlarm" /* ChannelId */, CHANNEL_TYPE_BURGLARY_ALARM /* Channel Type */ ,
             ITEM_TYPE_CONTACT /* Item Type */);
 
-    final static ChannelInfo carbonMonoxideAlarm = new ChannelInfo("carbonMonoxideAlarm" /* propertyName */ ,
+    private static final ChannelInfo CARBON_MONOXIDE_ALARM = new ChannelInfo("carbonMonoxideAlarm" /* propertyName */ ,
             "carbonMonoxideAlarm" /* ChannelId */, CHANNEL_TYPE_CARBON_MONOXIDE_ALARM /* Channel Type */ ,
             ITEM_TYPE_CONTACT /* Item Type */);
 
-    final static ChannelInfo fireAlarm = new ChannelInfo("fireAlarm" /* propertyName */ , "fireAlarm" /* ChannelId */,
-            CHANNEL_TYPE_FIRE_ALARM /* Channel Type */ , ITEM_TYPE_CONTACT /* Item Type */);
+    private static final ChannelInfo FIRE_ALARM = new ChannelInfo("fireAlarm" /* propertyName */ ,
+            "fireAlarm" /* ChannelId */, CHANNEL_TYPE_FIRE_ALARM /* Channel Type */ ,
+            ITEM_TYPE_CONTACT /* Item Type */);
 
-    final static ChannelInfo waterAlarm = new ChannelInfo("waterAlarm" /* propertyName */ ,
+    private static final ChannelInfo WATER_ALARM = new ChannelInfo("waterAlarm" /* propertyName */ ,
             "waterAlarm" /* ChannelId */, CHANNEL_TYPE_WATER_ALARM /* Channel Type */ ,
             ITEM_TYPE_CONTACT /* Item Type */);
 
     private ChannelInfo[] getAlarmChannels() {
-        return new ChannelInfo[] { burglaryAlarm, carbonMonoxideAlarm, fireAlarm, waterAlarm };
+        return new ChannelInfo[] { BURGLARY_ALARM, CARBON_MONOXIDE_ALARM, FIRE_ALARM, WATER_ALARM };
     }
 
     @Override
-    protected String[] GetSupportedInterface() {
+    public String[] getSupportedInterface() {
         return new String[] { INTERFACE };
     }
 
     @Override
-    protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (armState.propertyName.equals(property)) {
-            return new ChannelInfo[] { armState };
+    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+        if (ARM_STATE.propertyName.equals(property)) {
+            return new ChannelInfo[] { ARM_STATE };
         }
         for (ChannelInfo channelInfo : getAlarmChannels()) {
             if (channelInfo.propertyName.equals(property)) {
@@ -101,56 +105,55 @@ public class HandlerSecurityPanelController extends HandlerBase {
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+    public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         String armStateValue = null;
         Boolean burglaryAlarmValue = null;
         Boolean carbonMonoxideAlarmValue = null;
         Boolean fireAlarmValue = null;
         Boolean waterAlarmValue = null;
         for (JsonObject state : stateList) {
-            if (armState.propertyName.equals(state.get("name").getAsString())) {
+            if (ARM_STATE.propertyName.equals(state.get("name").getAsString())) {
                 if (armStateValue == null) {
                     armStateValue = state.get("value").getAsString();
                 }
-            } else if (burglaryAlarm.propertyName.equals(state.get("name").getAsString())) {
+            } else if (BURGLARY_ALARM.propertyName.equals(state.get("name").getAsString())) {
                 if (burglaryAlarmValue == null) {
                     burglaryAlarmValue = "ALARM".equals(state.get("value").getAsString());
                 }
-            } else if (carbonMonoxideAlarm.propertyName.equals(state.get("name").getAsString())) {
+            } else if (CARBON_MONOXIDE_ALARM.propertyName.equals(state.get("name").getAsString())) {
                 if (carbonMonoxideAlarmValue == null) {
                     carbonMonoxideAlarmValue = "ALARM".equals(state.get("value").getAsString());
                 }
-            } else if (fireAlarm.propertyName.equals(state.get("name").getAsString())) {
+            } else if (FIRE_ALARM.propertyName.equals(state.get("name").getAsString())) {
                 if (fireAlarmValue == null) {
                     fireAlarmValue = "ALARM".equals(state.get("value").getAsString());
                 }
-            } else if (waterAlarm.propertyName.equals(state.get("name").getAsString())) {
+            } else if (WATER_ALARM.propertyName.equals(state.get("name").getAsString())) {
                 if (waterAlarmValue == null) {
                     waterAlarmValue = "ALARM".equals(state.get("value").getAsString());
                 }
             }
         }
-        updateState(armState.channelId, armStateValue == null ? UnDefType.UNDEF : new StringType(armStateValue));
-        updateState(burglaryAlarm.channelId, burglaryAlarmValue == null ? UnDefType.UNDEF
+        updateState(ARM_STATE.channelId, armStateValue == null ? UnDefType.UNDEF : new StringType(armStateValue));
+        updateState(BURGLARY_ALARM.channelId, burglaryAlarmValue == null ? UnDefType.UNDEF
                 : (burglaryAlarmValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN));
-        updateState(carbonMonoxideAlarm.channelId, carbonMonoxideAlarmValue == null ? UnDefType.UNDEF
+        updateState(CARBON_MONOXIDE_ALARM.channelId, carbonMonoxideAlarmValue == null ? UnDefType.UNDEF
                 : (carbonMonoxideAlarmValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN));
-        updateState(fireAlarm.channelId, fireAlarmValue == null ? UnDefType.UNDEF
+        updateState(FIRE_ALARM.channelId, fireAlarmValue == null ? UnDefType.UNDEF
                 : (fireAlarmValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN));
-        updateState(waterAlarm.channelId, waterAlarmValue == null ? UnDefType.UNDEF
+        updateState(WATER_ALARM.channelId, waterAlarmValue == null ? UnDefType.UNDEF
                 : (waterAlarmValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN));
     }
 
     @Override
-    protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(armState.channelId)) {
-
-            if (ContainsCapabilityProperty(capabilties, armState.propertyName)) {
+        if (channelId.equals(ARM_STATE.channelId)) {
+            if (containsCapabilityProperty(capabilties, ARM_STATE.propertyName)) {
                 if (command instanceof StringType) {
                     String armStateValue = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(armStateValue)) {
-                        connection.smartHomeCommand(entityId, "controlSecurityPanel", armState.propertyName,
+                        connection.smartHomeCommand(entityId, "controlSecurityPanel", ARM_STATE.propertyName,
                                 armStateValue);
                         return true;
                     }

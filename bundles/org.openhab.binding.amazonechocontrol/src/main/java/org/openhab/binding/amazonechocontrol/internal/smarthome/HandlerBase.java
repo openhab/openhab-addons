@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,35 +19,34 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.Properties;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.Property;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.handler.SmartHomeDeviceHandler;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.Properties;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.Property;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public abstract class HandlerBase {
+    protected @Nullable SmartHomeDeviceHandler smartHomeDeviceHandler;
+    protected Map<String, ChannelInfo> channels = new HashMap<>();
 
-    @Nullable
-    SmartHomeDeviceHandler smartHomeDeviceHandler;
-    Map<String, ChannelInfo> channels = new HashMap<>();
+    protected abstract ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property);
 
-    protected abstract @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property);
+    public abstract void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result);
 
-    protected abstract void updateChannels(String interfaceName, List<JsonObject> stateList,
-            UpdateChannelResult result);
-
-    protected abstract boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+    public abstract boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException;
 
     public abstract @Nullable StateDescription findStateDescription(String channelId,
@@ -57,32 +56,30 @@ public abstract class HandlerBase {
         return channels.containsKey(channelId);
     }
 
-    protected abstract String[] GetSupportedInterface();
+    public abstract String[] getSupportedInterface();
 
     SmartHomeDeviceHandler getSmartHomeDeviceHandler() throws IllegalStateException {
         SmartHomeDeviceHandler smartHomeDeviceHandler = this.smartHomeDeviceHandler;
         if (smartHomeDeviceHandler == null) {
-            throw new IllegalStateException("Handler not intialized");
+            throw new IllegalStateException("Handler not initialized");
         }
         return smartHomeDeviceHandler;
     }
 
-    public Collection<ChannelInfo> intialize(SmartHomeDeviceHandler smartHomeDeviceHandler,
-            List<SmartHomeCapability> capabilties) {
+    public Collection<ChannelInfo> initialize(SmartHomeDeviceHandler smartHomeDeviceHandler,
+            List<SmartHomeCapability> capabilities) {
         this.smartHomeDeviceHandler = smartHomeDeviceHandler;
         Map<String, ChannelInfo> channels = new HashMap<>();
-        for (SmartHomeCapability capability : capabilties) {
+        for (SmartHomeCapability capability : capabilities) {
             Properties properties = capability.properties;
             if (properties != null) {
-                @Nullable
                 Property @Nullable [] supported = properties.supported;
                 if (supported != null) {
-                    for (@Nullable
-                    Property property : supported) {
+                    for (Property property : supported) {
                         if (property != null) {
                             String name = property.name;
                             if (name != null) {
-                                ChannelInfo[] channelInfos = FindChannelInfos(capability, name);
+                                ChannelInfo[] channelInfos = findChannelInfos(capability, name);
                                 if (channelInfos != null) {
                                     for (ChannelInfo channelInfo : channelInfos) {
                                         if (channelInfo != null) {
@@ -100,16 +97,15 @@ public abstract class HandlerBase {
         return channels.values();
     }
 
-    protected boolean ContainsCapabilityProperty(SmartHomeCapability[] capabilties, String propertyName) {
+    protected boolean containsCapabilityProperty(SmartHomeCapability[] capabilties, String propertyName) {
         for (SmartHomeCapability capability : capabilties) {
             Properties properties = capability.properties;
             if (properties != null) {
-                @Nullable
                 Property @Nullable [] supportedProperties = properties.supported;
                 if (supportedProperties != null) {
                     for (Property property : supportedProperties) {
                         if (property != null) {
-                            if (StringUtils.equals(propertyName, property.name)) {
+                            if (propertyName != null && propertyName.equals(property.name)) {
                                 return true;
                             }
                         }
@@ -139,6 +135,6 @@ public abstract class HandlerBase {
     }
 
     public static class UpdateChannelResult {
-        public boolean NeedSingleUpdate;
+        public boolean needSingleUpdate;
     }
 }

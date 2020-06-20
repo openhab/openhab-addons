@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -26,16 +27,18 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerPowerController} is responsible for the Alexa.PowerControllerInterface
  *
- * @author Lukas Knoeller, Michael Geramb
+ * @author Lukas Knoeller - Initial contribution
+ * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerPowerController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.PowerController";
@@ -45,28 +48,28 @@ public class HandlerPowerController extends HandlerBase {
             AmazonEchoControlBindingConstants.BINDING_ID, "powerState");
 
     // Channel definitions
-    final static ChannelInfo powerState = new ChannelInfo("powerState" /* propertyName */ ,
+    private static final ChannelInfo POWER_STATE = new ChannelInfo("powerState" /* propertyName */ ,
             "powerState" /* ChannelId */, CHANNEL_TYPE_POWER_STATE /* Channel Type */ ,
             ITEM_TYPE_SWITCH /* Item Type */);
 
     @Override
-    protected String[] GetSupportedInterface() {
+    public String[] getSupportedInterface() {
         return new String[] { INTERFACE };
     }
 
     @Override
-    protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (powerState.propertyName.equals(property)) {
-            return new ChannelInfo[] { powerState };
+    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+        if (POWER_STATE.propertyName.equals(property)) {
+            return new ChannelInfo[] { POWER_STATE };
         }
         return null;
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+    public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         Boolean powerStateValue = null;
         for (JsonObject state : stateList) {
-            if (powerState.propertyName.equals(state.get("name").getAsString())) {
+            if (POWER_STATE.propertyName.equals(state.get("name").getAsString())) {
                 String value = state.get("value").getAsString();
                 // For groups take true if all true
                 if ("ON".equals(value)) {
@@ -77,16 +80,15 @@ public class HandlerPowerController extends HandlerBase {
 
             }
         }
-        updateState(powerState.channelId,
+        updateState(POWER_STATE.channelId,
                 powerStateValue == null ? UnDefType.UNDEF : (powerStateValue ? OnOffType.ON : OnOffType.OFF));
     }
 
     @Override
-    protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(powerState.channelId)) {
-
-            if (ContainsCapabilityProperty(capabilties, powerState.propertyName)) {
+    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+            SmartHomeCapability[] capabilities, String channelId, Command command) throws IOException {
+        if (channelId.equals(POWER_STATE.channelId)) {
+            if (containsCapabilityProperty(capabilities, POWER_STATE.propertyName)) {
                 if (command.equals(OnOffType.ON)) {
                     connection.smartHomeCommand(entityId, "turnOn");
                     return true;

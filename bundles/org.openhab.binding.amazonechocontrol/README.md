@@ -86,7 +86,9 @@ You will find the required serial number in settings of the device in the Alexa 
 
 ### Discover Smart Home Devices
 
-If you want to discover your smart home devices you need to activate it in the 'Amazon Account' thing. Devices from other skills can be discovered too. See section *Smart Home Devices* below for more information.
+If you want to discover your smart home devices you need to activate it in the 'Amazon Account' thing.
+Devices from other skills can be discovered too.
+See section *Smart Home Devices* below for more information.
 
 ## Account
 
@@ -104,10 +106,9 @@ The configuration of your Amazon account must be done in the 'Amazon Account' de
 
 | Configuration name              | Default | Description                                                                           |
 |---------------------------------|---------|---------------------------------------------------------------------------------------|
-| discoverSmartHome               | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and skill devices |
+| discoverSmartHome               | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and Alexa skill devices, 3...Discover direct, Alexa and openHAB skill devices |
 | pollingIntervalSmartHomeAlexa   | 30      | Defines the time in seconds for openHAB to pull the state of the Alexa connected devices. The minimum is 10 seconds. | 
 | pollingIntervalSmartSkills      | 120     | Defines the time in seconds for openHAB to pull the state of the over a skill connected devices. The minimum is 60 seconds. |
-| discoverOpenHabSmartHomeDevices | false   | Defines, if smart home devices of the openHAB skill should be discovered. This option is for development and testing purpose only. ||
 
 #### Channels
 
@@ -136,6 +137,11 @@ The configuration of your Amazon account must be done in the 'Amazon Account' de
 
 You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/amazonechocontrol/YOUR_ACCOUNT (e.g. http://openhab:8080/amazonechocontrol/account1).
 
+### Flash Briefing Profile
+
+The flashbriefingprofile thing has no configuration parameters.
+It will be configured at runtime by using the save channel to store the current flash briefing configuration in the thing.
+
 #### Channels
 
 | Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description
@@ -156,8 +162,8 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 | bluetoothDeviceName   | String      | R           | echo, echoshow, echospot      | User friendly name of the connected bluetooth device
 | radioStationId        | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a TuneIn radio station by specifying its id or stops playing if an empty string was provided
 | radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openhab start)
-| amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a Amazon Music track by it's id od stops playing if a empty string was provided
-| amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of a Amazon Music playlist by specifying it's id od stops playing if a empty string was provided. Selection will only work in PaperUI
+| amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by specifying its id or stops playing if an empty string was provided
+| amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided. Selection will only work in PaperUI
 | amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by its id or stops playing if an empty string was provided
 | amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided. Selection will only work in PaperUI
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
@@ -172,7 +178,6 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 | playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
 | announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
-| textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
@@ -181,6 +186,20 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 | mediaLength           | Number:Time | R           | echo, echoshow, echospot      | Media length
 | notificationVolume    | Dimmer      | R           | echo, echoshow, echospot      | Notification volume
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | Ascending alarm up to the configured volume
+| sendMessage           | String      | W           | account                       | Write Only! Sends a message to the Echo devices.
+| save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
+| active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
+| playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
+
+## Advanced Feature Technically Experienced Users
+
+The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the Amazon Alexa server.
+This can be used to call Alexa API from rules.
+
+E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
+
+http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+
 
 ### Example
 
@@ -275,6 +294,14 @@ DateTime Echo_Living_Room_NextAlarm            "Next alarm"                     
 DateTime Echo_Living_Room_NextMusicAlarm       "Next music alarm"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextMusicAlarm"}
 DateTime Echo_Living_Room_NextTimer            "Next timer"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextTimer"}
 
+// Flashbriefings
+Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
+Switch FlashBriefing_Technical_Active "Active"            { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
+String FlashBriefing_Technical_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
+
+Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"} 
+Switch FlashBriefing_LifeStyle_Active "Active"            { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
+String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 ```
 
 #### echo.sitemap:
@@ -434,7 +461,7 @@ The channels of the smarthome devices will be generated at runtime. Check in the
 | carbonMonoxideAlarm      | Contact   | R           | smartHomeDevice | Carbon monoxide detection alarm
 | fireAlarm                | Contact   | R           | smartHomeDevice | Fire alarm
 | waterAlarm               | Contact   | R           | smartHomeDevice | Water alarm
-| glassBreakDetectionState | Contact   | R           | smartHomeDevice | Glas break detection alarm
+| glassBreakDetectionState | Contact   | R           | smartHomeDevice | Glass break detection alarm
 | smokeAlarmDetectionState | Contact   | R           | smartHomeDevice | Smoke detection alarm
 | temperature              | Number    | R           | smartHomeDevice | Temperature
 
@@ -455,7 +482,7 @@ Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discove
 #### smarthome.items:
 
 Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
-Take a look in the channel description above to know, which channels are supported by your thing type.
+Take a look in the channel description above to know which channels are supported by your thing type.
 
 ```
 // Lights and lightgroups
@@ -667,7 +694,7 @@ http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&s
 
 This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon.de).
 In other words, it simulates a user which is using the web page.
-Unfortunately, the binding can get broken if Amazon change the web site.
+Unfortunately, this binding can break if Amazon changes the web site.
 
 The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazon.co.uk accounts, but should also work with all others.
 

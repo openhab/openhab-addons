@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -28,16 +29,18 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerBrightnessController} is responsible for the Alexa.PowerControllerInterface
  *
- * @author Lukas Knoeller, Michael Geramb
+ * @author Lukas Knoeller - Initial contribution
+ * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerBrightnessController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.BrightnessController";
@@ -47,30 +50,30 @@ public class HandlerBrightnessController extends HandlerBase {
             AmazonEchoControlBindingConstants.BINDING_ID, "brightness");
 
     // Channel definitions
-    final static ChannelInfo brightness = new ChannelInfo("brightness" /* propertyName */ ,
+    private static final ChannelInfo BRIGHTNESS = new ChannelInfo("brightness" /* propertyName */ ,
             "brightness" /* ChannelId */, CHANNEL_TYPE_BRIGHTNESS /* Channel Type */ ,
             ITEM_TYPE_DIMMER /* Item Type */);
 
-    Integer lastBrightness;
+    private @Nullable Integer lastBrightness;
 
     @Override
-    protected String[] GetSupportedInterface() {
+    public String[] getSupportedInterface() {
         return new String[] { INTERFACE };
     }
 
     @Override
-    protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (brightness.propertyName.equals(property)) {
-            return new ChannelInfo[] { brightness };
+    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+        if (BRIGHTNESS.propertyName.equals(property)) {
+            return new ChannelInfo[] { BRIGHTNESS };
         }
         return null;
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+    public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         Integer brightnessValue = null;
         for (JsonObject state : stateList) {
-            if (brightness.propertyName.equals(state.get("name").getAsString())) {
+            if (BRIGHTNESS.propertyName.equals(state.get("name").getAsString())) {
                 int value = state.get("value").getAsInt();
                 // For groups take the maximum
                 if (brightnessValue == null) {
@@ -83,45 +86,47 @@ public class HandlerBrightnessController extends HandlerBase {
         if (brightnessValue != null) {
             lastBrightness = brightnessValue;
         }
-        updateState(brightness.channelId, brightnessValue == null ? UnDefType.UNDEF : new PercentType(brightnessValue));
+        updateState(BRIGHTNESS.channelId, brightnessValue == null ? UnDefType.UNDEF : new PercentType(brightnessValue));
     }
 
     @Override
-    protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(brightness.channelId)) {
-            if (ContainsCapabilityProperty(capabilties, brightness.propertyName)) {
+        if (channelId.equals(BRIGHTNESS.channelId)) {
+            if (containsCapabilityProperty(capabilties, BRIGHTNESS.propertyName)) {
                 if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                    Integer lastBrightness = this.lastBrightness;
                     if (lastBrightness != null) {
                         int newValue = lastBrightness++;
                         if (newValue > 100) {
                             newValue = 100;
                         }
-                        lastBrightness = newValue;
-                        connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName, newValue);
+                        this.lastBrightness = newValue;
+                        connection.smartHomeCommand(entityId, "setBrightness", BRIGHTNESS.propertyName, newValue);
                         return true;
                     }
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                    Integer lastBrightness = this.lastBrightness;
                     if (lastBrightness != null) {
                         int newValue = lastBrightness--;
                         if (newValue < 0) {
                             newValue = 0;
                         }
-                        lastBrightness = newValue;
-                        connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName, newValue);
+                        this.lastBrightness = newValue;
+                        connection.smartHomeCommand(entityId, "setBrightness", BRIGHTNESS.propertyName, newValue);
                         return true;
                     }
                 } else if (command.equals(OnOffType.OFF)) {
                     lastBrightness = 0;
-                    connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName, 0);
+                    connection.smartHomeCommand(entityId, "setBrightness", BRIGHTNESS.propertyName, 0);
                     return true;
                 } else if (command.equals(OnOffType.ON)) {
                     lastBrightness = 100;
-                    connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName, 100);
+                    connection.smartHomeCommand(entityId, "setBrightness", BRIGHTNESS.propertyName, 100);
                     return true;
                 } else if (command instanceof PercentType) {
                     lastBrightness = ((PercentType) command).intValue();
-                    connection.smartHomeCommand(entityId, "setBrightness", brightness.propertyName,
+                    connection.smartHomeCommand(entityId, "setBrightness", BRIGHTNESS.propertyName,
                             ((PercentType) command).floatValue() / 100);
                     return true;
                 }

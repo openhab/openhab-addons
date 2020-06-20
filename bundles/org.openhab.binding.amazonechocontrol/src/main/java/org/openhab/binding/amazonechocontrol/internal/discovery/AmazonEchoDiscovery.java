@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -61,13 +62,16 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
 
     private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
 
+    private @Nullable ScheduledFuture<?> startScanStateJob;
+    private @Nullable Long activateTimeStamp;
+
     @Override
     public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
         this.discoveryServiceCallback = discoveryServiceCallback;
     }
 
     public AmazonEchoDiscovery(AccountHandler accountHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, 10);
+        super(SUPPORTED_ECHO_THING_TYPES_UIDS, 10);
         this.accountHandler = accountHandler;
     }
 
@@ -83,8 +87,10 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
     @Override
     protected void startScan() {
         stopScanJob();
-        removeOlderResults(activateTimeStamp);
-
+        final Long activateTimeStamp = this.activateTimeStamp;
+        if (activateTimeStamp != null) {
+            removeOlderResults(activateTimeStamp);
+        }
         setDevices(accountHandler.updateDeviceList());
 
         String currentFlashBriefingConfiguration = accountHandler.getNewCurrentFlashbriefingConfiguration();
@@ -138,7 +144,9 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
         if (config != null) {
             modified(config);
         }
-        activateTimeStamp = new Date().getTime();
+        if (activateTimeStamp == null) {
+            activateTimeStamp = new Date().getTime();
+        }
     }
 
     synchronized void setDevices(List<Device> deviceList) {
@@ -198,7 +206,6 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService implements Ext
         }
 
         if (!discoverdFlashBriefings.contains(currentFlashBriefingJson)) {
-
             ThingUID freeThingUID = null;
             int freeIndex = 0;
             for (int i = 1; i < 1000; i++) {

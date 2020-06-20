@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amazonechocontrol.internal.smarthome;
+package org.openhab.binding.amazonechocontrol.internal.handler;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_ID;
 import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants.SUPPORTED_INTERFACES;
@@ -18,14 +18,16 @@ import static org.openhab.binding.amazonechocontrol.internal.smarthome.Constants
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -34,112 +36,104 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
 import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.Constants;
+import org.openhab.binding.amazonechocontrol.internal.smarthome.HandlerBase;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.HandlerBase.ChannelInfo;
 import org.openhab.binding.amazonechocontrol.internal.smarthome.HandlerBase.UpdateChannelResult;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeGroups.SmartHomeGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * @author Lukas Knoeller
+ * @author Lukas Knoeller - Initial contribution
  */
+@NonNullByDefault
 public class SmartHomeDeviceHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDeviceHandler.class);
 
-    private @Nullable Connection connection;
     private @Nullable SmartHomeBaseDevice smartHomeBaseDevice;
-    private Gson gson;
-    private Map<String, HandlerBase> handlers = new HashMap<>();
-    private Map<String, JsonArray> lastStates = new HashMap<>();
-
-    @Nullable
-    AccountHandler accountHandler;
-    Thing thing;
+    private final Gson gson;
+    private final Map<String, @Nullable HandlerBase> handlers = new HashMap<>();
+    private final Map<String, @Nullable JsonArray> lastStates = new HashMap<>();
 
     public SmartHomeDeviceHandler(Thing thing, Gson gson) {
         super(thing);
-        this.thing = thing;
         this.gson = gson;
     }
 
-    synchronized public boolean setDeviceAndUpdateThingState(AccountHandler accountHandler,
+    public synchronized void setDeviceAndUpdateThingState(AccountHandler accountHandler,
             @Nullable SmartHomeBaseDevice smartHomeBaseDevice) {
-        if (this.accountHandler != accountHandler) {
-            this.accountHandler = accountHandler;
-        }
         if (smartHomeBaseDevice == null) {
-            updateStatus(ThingStatus.UNKNOWN);
-            return false;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Can't find smarthomeBaseDevice");
+            return;
         }
         boolean changed = this.smartHomeBaseDevice == null;
         this.smartHomeBaseDevice = smartHomeBaseDevice;
 
-        Thing thing = getThing();
         Set<String> unusedChannels = new HashSet<>();
-        for (Channel channel : thing.getChannels()) {
-            unusedChannels.add(channel.getUID().getId());
-        }
+        thing.getChannels().forEach(channel -> unusedChannels.add(channel.getUID().getId()));
 
-        Set<String> unusedHandlers = new HashSet<>();
-        unusedHandlers.addAll(handlers.keySet());
+        Set<String> unusedHandlers = new HashSet<>(handlers.keySet());
+
         Map<String, List<SmartHomeCapability>> capabilities = new HashMap<>();
-        GetCapabilities(capabilities, accountHandler, smartHomeBaseDevice);
+        getCapabilities(capabilities, accountHandler, smartHomeBaseDevice);
+
+        ThingBuilder thingBuilder = editThing();
+
         for (String interfaceName : capabilities.keySet()) {
             HandlerBase handler = handlers.get(interfaceName);
             if (handler != null) {
                 unusedHandlers.remove(interfaceName);
             } else {
-                Function<String, HandlerBase> creator = Constants.HandlerFactory.get(interfaceName);
+                Supplier<HandlerBase> creator = Constants.HANDLER_FACTORY.get(interfaceName);
                 if (creator != null) {
-                    handler = creator.apply(interfaceName);
+                    handler = creator.get();
                     handlers.put(interfaceName, handler);
                 }
             }
             if (handler != null) {
-                Collection<ChannelInfo> required = handler.intialize(this, capabilities.get(interfaceName));
+                Collection<ChannelInfo> required = handler.initialize(this, capabilities.get(interfaceName));
                 for (ChannelInfo channelInfo : required) {
                     unusedChannels.remove(channelInfo.channelId);
-                    if (addChannelToDevice(channelInfo.channelId, channelInfo.itemType, channelInfo.channelTypeUID)) {
+                    if (addChannelToDevice(thingBuilder, channelInfo.channelId, channelInfo.itemType,
+                            channelInfo.channelTypeUID)) {
                         changed = true;
                     }
                 }
             }
         }
-        for (String interfaceName : unusedHandlers) {
-            handlers.remove(interfaceName);
-        }
-        for (String channelId : unusedChannels) {
+
+        unusedHandlers.forEach(handlers::remove);
+        if (!unusedChannels.isEmpty()) {
             changed = true;
-            removeChannelFromDevice(channelId);
+            unusedChannels.stream().map(id -> new ChannelUID(thing.getUID(), id)).forEach(thingBuilder::withoutChannel);
         }
+
         if (changed) {
-            updateStatus(ThingStatus.UNKNOWN);
-            accountHandler.forceDelayedSmartHomeStateUpdate(findId());
+            updateThing(thingBuilder.build());
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Thing has changed.");
+            accountHandler.forceDelayedSmartHomeStateUpdate(getId());
         }
-        return true;
     }
 
-    public @Nullable AccountHandler findAccountHandler() {
-        return this.accountHandler;
-    }
-
-    public String findId() {
+    public String getId() {
         String id = (String) getConfig().get(DEVICE_PROPERTY_ID);
         if (id == null) {
             return "";
@@ -149,63 +143,62 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
     @Override
     public void updateState(String channelId, State state) {
-        super.updateState(new ChannelUID(getThing().getUID(), channelId), state);
+        super.updateState(new ChannelUID(thing.getUID(), channelId), state);
     }
 
     @Override
     public void initialize() {
-        logger.info("{} initialized", getClass().getSimpleName());
-        Bridge bridge = this.getBridge();
-        if (bridge != null) {
-            AccountHandler account = (AccountHandler) bridge.getHandler();
-            this.accountHandler = account;
-            if (account != null) {
-                account.addSmartHomeDeviceHandler(this);
-                setDeviceAndUpdateThingState(account, smartHomeBaseDevice);
-            }
+        AccountHandler accountHandler = getAccountHandler();
+        if (accountHandler != null) {
+            accountHandler.addSmartHomeDeviceHandler(this);
+            setDeviceAndUpdateThingState(accountHandler, smartHomeBaseDevice);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridgehandler not found");
         }
     }
 
-    private boolean addChannelToDevice(String channelId, String itemType, ChannelTypeUID channelTypeUID) {
-        Channel channel = getThing().getChannel(channelId);
+    private boolean addChannelToDevice(ThingBuilder thingBuilder, String channelId, String itemType,
+            ChannelTypeUID channelTypeUID) {
+        Channel channel = thing.getChannel(channelId);
         if (channel != null) {
             if (channelTypeUID.equals(channel.getChannelTypeUID()) && itemType.equals(channel.getAcceptedItemType())) {
                 // channel exist with the same settings
                 return false;
             }
             // channel exist with other settings, remove it first
-            removeChannelFromDevice(channelId);
+            thingBuilder.withoutChannel(channel.getUID());
         }
-        updateThing(
-                editThing().withChannel(ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelId), itemType)
-                        .withType(channelTypeUID).build()).build());
+        thingBuilder.withChannel(ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), itemType)
+                .withType(channelTypeUID).build());
         return true;
-    }
-
-    private void removeChannelFromDevice(String channelId) {
-        updateThing(editThing().withoutChannel(new ChannelUID(getThing().getUID(), channelId)).build());
     }
 
     public void updateChannelStates(List<SmartHomeBaseDevice> allDevices,
             Map<String, JsonArray> applianceIdToCapabilityStates) {
+        AccountHandler accountHandler = getAccountHandler();
         SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
         if (smartHomeBaseDevice == null) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Can't find smarthomeBaseDevice!");
             return;
         }
+
         boolean stateFound = false;
         Map<String, List<JsonObject>> mapInterfaceToStates = new HashMap<>();
         SmartHomeDevice firstDevice = null;
-        for (SmartHomeDevice shd : GetSupportedSmartHomeDevices(smartHomeBaseDevice, allDevices)) {
+        for (SmartHomeDevice shd : getSupportedSmartHomeDevices(smartHomeBaseDevice, allDevices)) {
             JsonArray states = applianceIdToCapabilityStates.get(shd.applianceId);
+            String applianceId = shd.applianceId;
+            if (applianceId == null) {
+                continue;
+            }
             if (states != null) {
                 stateFound = true;
                 if (smartHomeBaseDevice.isGroup()) {
                     // for groups, store the last state of all devices
-                    lastStates.put(shd.applianceId, states);
+                    lastStates.put(applianceId, states);
                 }
             } else {
-                states = lastStates.get(shd.applianceId);
+                states = lastStates.get(applianceId);
                 if (states == null) {
                     continue;
                 }
@@ -213,80 +206,87 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             if (firstDevice == null) {
                 firstDevice = shd;
             }
-            for (int i = 0; i < states.size(); i++) {
-                String stateJson = states.get(i).getAsString();
+            for (JsonElement stateElement : states) {
+                String stateJson = stateElement.getAsString();
                 if (stateJson.startsWith("{") && stateJson.endsWith("}")) {
-                    JsonObject state = this.gson.fromJson(stateJson, JsonObject.class);
+                    JsonObject state = gson.fromJson(stateJson, JsonObject.class);
                     String interfaceName = state.get("namespace").getAsString();
-                    List<JsonObject> stateList = mapInterfaceToStates.get(interfaceName);
-                    if (stateList == null) {
-                        stateList = new ArrayList<>();
-                        mapInterfaceToStates.put(interfaceName, stateList);
-                    }
-                    stateList.add(state);
+                    mapInterfaceToStates.computeIfAbsent(interfaceName, k -> new ArrayList<>()).add(state);
                 }
             }
         }
         for (HandlerBase handlerBase : handlers.values()) {
+            if (handlerBase == null) {
+                continue;
+            }
             UpdateChannelResult result = new UpdateChannelResult();
 
-            for (String interfaceName : handlerBase.GetSupportedInterface()) {
-                List<JsonObject> stateList = mapInterfaceToStates.get(interfaceName);
-                if (stateList == null) {
-                    stateList = new ArrayList<>();
-                }
+            for (String interfaceName : handlerBase.getSupportedInterface()) {
+                List<JsonObject> stateList = mapInterfaceToStates.getOrDefault(interfaceName, Collections.emptyList());
                 try {
                     handlerBase.updateChannels(interfaceName, stateList, result);
                 } catch (Exception e) {
                     // We catch all exceptions, otherwise all other things are not updated!
-                    logger.debug("Updating states failed {}", e);
+                    logger.debug("Updating states failed", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
                 }
             }
-            if (result.NeedSingleUpdate) {
-                if (smartHomeBaseDevice instanceof SmartHomeDevice) {
-                    SmartHomeDevice shd = (SmartHomeDevice) smartHomeBaseDevice;
-                    accountHandler.forceDelayedSmartHomeStateUpdate(shd.findId());
 
-                }
+            if (result.needSingleUpdate && smartHomeBaseDevice instanceof SmartHomeDevice && accountHandler != null) {
+                SmartHomeDevice shd = (SmartHomeDevice) smartHomeBaseDevice;
+                accountHandler.forceDelayedSmartHomeStateUpdate(shd.findId());
             }
         }
+
         if (stateFound) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "State not found");
         }
+    }
+
+    private @Nullable AccountHandler getAccountHandler() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof AccountHandler) {
+                return (AccountHandler) bridgeHandler;
+            }
+        }
+
+        return null;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        AccountHandler accountHandler = this.accountHandler;
+        AccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
+            logger.debug("accountHandler is null in {}", thing.getUID());
             return;
         }
         Connection connection = accountHandler.findConnection();
         if (connection == null) {
+            logger.debug("connection is null in {}", thing.getUID());
             return;
         }
 
         try {
             if (command instanceof RefreshType) {
-                accountHandler.forceDelayedSmartHomeStateUpdate(findId());
+                accountHandler.forceDelayedSmartHomeStateUpdate(getId());
                 return;
             }
             SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
             if (smartHomeBaseDevice == null) {
+                logger.debug("smarthomeBaseDevice is null in {}", thing.getUID());
                 return;
             }
-            Set<SmartHomeDevice> devices = GetSupportedSmartHomeDevices(smartHomeBaseDevice,
-                    accountHandler.getLastKnownSmartHomeDevice());
-            if (devices == null) {
-                return;
-            }
+            Set<SmartHomeDevice> devices = getSupportedSmartHomeDevices(smartHomeBaseDevice,
+                    accountHandler.getLastKnownSmartHomeDevices());
             String channelId = channelUID.getId();
+
             for (String interfaceName : handlers.keySet()) {
                 HandlerBase handlerBase = handlers.get(interfaceName);
-                if (!handlerBase.hasChannel(channelId)) {
+                if (handlerBase == null || !handlerBase.hasChannel(channelId)) {
                     continue;
                 }
                 for (SmartHomeDevice shd : devices) {
@@ -294,71 +294,62 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     if (entityId == null) {
                         continue;
                     }
-                    SmartHomeCapability[] capabilties = shd.capabilities;
-                    if (capabilties == null) {
+                    SmartHomeCapability[] capabilities = shd.capabilities;
+                    if (capabilities == null) {
+                        logger.debug("capabilities is null in {}", thing.getUID());
                         return;
                     }
-                    accountHandler.forceDelayedSmartHomeStateUpdate(findId()); // block updates
-                    if (handlerBase.handleCommand(connection, shd, entityId, capabilties, channelUID.getId(),
+                    accountHandler.forceDelayedSmartHomeStateUpdate(getId()); // block updates
+                    if (handlerBase.handleCommand(connection, shd, entityId, capabilities, channelUID.getId(),
                             command)) {
-                        accountHandler.forceDelayedSmartHomeStateUpdate(findId()); // force update again to restart
-                                                                                   // update timer
+                        accountHandler.forceDelayedSmartHomeStateUpdate(getId()); // force update again to restart
+                        // update timer
                         logger.debug("Command {} sent to {}", command, shd.findId());
                     }
                 }
-
             }
         } catch (Exception e) {
-            logger.warn("Handle command failed {}", e);
+            logger.warn("Handle command failed", e);
         }
-
-        logger.trace("Command {} received from channel '{}'", command, channelUID);
-
     }
 
-    public boolean initialize(AccountHandler handler) {
-        this.accountHandler = handler;
-        return true;
-    }
-
-    private static void GetCapabilities(Map<String, List<SmartHomeCapability>> result, AccountHandler accountHandler,
+    private static void getCapabilities(Map<String, List<SmartHomeCapability>> result, AccountHandler accountHandler,
             SmartHomeBaseDevice device) {
         if (device instanceof SmartHomeDevice) {
             SmartHomeDevice shd = (SmartHomeDevice) device;
-            for (SmartHomeCapability capability : shd.capabilities) {
-                List<SmartHomeCapability> list = result.get(capability.interfaceName);
-                if (list == null) {
-                    list = new ArrayList<SmartHomeCapability>();
-                    result.put(capability.interfaceName, list);
+            SmartHomeCapability[] capabilities = shd.capabilities;
+            if (capabilities == null) {
+                return;
+            }
+            for (SmartHomeCapability capability : capabilities) {
+                String interfaceName = capability.interfaceName;
+                if (interfaceName != null) {
+                    result.computeIfAbsent(interfaceName, name -> new ArrayList<>()).add(capability);
                 }
-                list.add(capability);
             }
         }
         if (device instanceof SmartHomeGroup) {
-            for (SmartHomeDevice shd : GetSupportedSmartHomeDevices(device,
-                    accountHandler.getLastKnownSmartHomeDevice())) {
-                GetCapabilities(result, accountHandler, shd);
+            for (SmartHomeDevice shd : getSupportedSmartHomeDevices(device,
+                    accountHandler.getLastKnownSmartHomeDevices())) {
+                getCapabilities(result, accountHandler, shd);
             }
         }
     }
 
-    public static Set<SmartHomeDevice> GetSupportedSmartHomeDevices(@Nullable SmartHomeBaseDevice baseDevice,
+    public static Set<SmartHomeDevice> getSupportedSmartHomeDevices(@Nullable SmartHomeBaseDevice baseDevice,
             List<SmartHomeBaseDevice> allDevices) {
-        Set<SmartHomeDevice> result = new HashSet<>();
         if (baseDevice == null) {
-            return result;
+            return Collections.emptySet();
         }
+        Set<SmartHomeDevice> result = new HashSet<>();
         if (baseDevice instanceof SmartHomeDevice) {
             SmartHomeDevice shd = (SmartHomeDevice) baseDevice;
-            boolean supportedDevice = false;
-            for (SmartHomeCapability capability : shd.capabilities) {
-                if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
-                    supportedDevice = true;
-                    break;
+            SmartHomeCapability[] capabilities = shd.capabilities;
+            if (capabilities != null) {
+                if (Arrays.stream(capabilities).map(capability -> capability.interfaceName)
+                        .anyMatch(SUPPORTED_INTERFACES::contains)) {
+                    result.add(shd);
                 }
-            }
-            if (supportedDevice) {
-                result.add(shd);
             }
         } else {
             SmartHomeGroup shg = (SmartHomeGroup) baseDevice;
@@ -367,19 +358,15 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     SmartHomeDevice shd = (SmartHomeDevice) device;
                     if (shd.tags != null && shd.tags.tagNameToValueSetMap != null
                             && shd.tags.tagNameToValueSetMap.groupIdentity != null
+                            && shg.applianceGroupIdentifier != null && shg.applianceGroupIdentifier.value != null
                             && Arrays.asList(shd.tags.tagNameToValueSetMap.groupIdentity)
                                     .contains(shg.applianceGroupIdentifier.value)) {
-
-                        boolean supportedDevice = false;
-                        for (SmartHomeCapability capability : shd.capabilities) {
-                            if (SUPPORTED_INTERFACES.contains(capability.interfaceName)) {
-                                supportedDevice = true;
-                                break;
+                        SmartHomeCapability[] capabilities = shd.capabilities;
+                        if (capabilities != null) {
+                            if (Arrays.stream(capabilities).map(capability -> capability.interfaceName)
+                                    .anyMatch(SUPPORTED_INTERFACES::contains)) {
+                                result.add(shd);
                             }
-                        }
-                        if (supportedDevice) {
-                            result.add(shd);
-                            continue;
                         }
                     }
                 }
@@ -392,11 +379,10 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             @Nullable Locale locale) {
         String channelId = channel.getUID().getId();
         for (HandlerBase handler : handlers.values()) {
-            if (handler.hasChannel(channelId)) {
+            if (handler != null && handler.hasChannel(channelId)) {
                 return handler.findStateDescription(channelId, originalStateDescription, locale);
             }
         }
         return null;
     }
-
 }

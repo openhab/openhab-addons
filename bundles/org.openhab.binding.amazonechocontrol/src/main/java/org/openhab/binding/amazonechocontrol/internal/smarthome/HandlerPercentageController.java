@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -28,16 +29,18 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerPercentageController} is responsible for the Alexa.PowerControllerInterface
  *
- * @author Lukas Knoeller, Michael Geramb
+ * @author Lukas Knoeller - Initial contribution
+ * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerPercentageController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.PercentageController";
@@ -47,30 +50,30 @@ public class HandlerPercentageController extends HandlerBase {
             AmazonEchoControlBindingConstants.BINDING_ID, "percentage");
 
     // Channel definitions
-    final static ChannelInfo percentage = new ChannelInfo("percentage" /* propertyName */ ,
+    private static final ChannelInfo PERCENTAGE = new ChannelInfo("percentage" /* propertyName */ ,
             "percentage" /* ChannelId */, CHANNEL_TYPE_PERCENTAGE /* Channel Type */ ,
             ITEM_TYPE_DIMMER /* Item Type */);
 
-    Integer lastPercentage;
+    private @Nullable Integer lastPercentage;
 
     @Override
-    protected String[] GetSupportedInterface() {
+    public String[] getSupportedInterface() {
         return new String[] { INTERFACE };
     }
 
     @Override
-    protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (percentage.propertyName.equals(property)) {
-            return new ChannelInfo[] { percentage };
+    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+        if (PERCENTAGE.propertyName.equals(property)) {
+            return new ChannelInfo[] { PERCENTAGE };
         }
         return null;
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+    public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         Integer percentageValue = null;
         for (JsonObject state : stateList) {
-            if (percentage.propertyName.equals(state.get("name").getAsString())) {
+            if (PERCENTAGE.propertyName.equals(state.get("name").getAsString())) {
                 int value = state.get("value").getAsInt();
                 // For groups take the maximum
                 if (percentageValue == null) {
@@ -83,46 +86,47 @@ public class HandlerPercentageController extends HandlerBase {
         if (percentageValue != null) {
             lastPercentage = percentageValue;
         }
-        updateState(percentage.channelId, percentageValue == null ? UnDefType.UNDEF : new PercentType(percentageValue));
+        updateState(PERCENTAGE.channelId, percentageValue == null ? UnDefType.UNDEF : new PercentType(percentageValue));
     }
 
     @Override
-    protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(percentage.channelId)) {
-            if (ContainsCapabilityProperty(capabilties, percentage.propertyName)) {
+        if (channelId.equals(PERCENTAGE.channelId)) {
+            if (containsCapabilityProperty(capabilties, PERCENTAGE.propertyName)) {
                 if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                    Integer lastPercentage = this.lastPercentage;
                     if (lastPercentage != null) {
                         int newValue = lastPercentage++;
                         if (newValue > 100) {
                             newValue = 100;
                         }
-                        lastPercentage = newValue;
-                        connection.smartHomeCommand(entityId, "setPercentage", percentage.propertyName, newValue);
+                        this.lastPercentage = newValue;
+                        connection.smartHomeCommand(entityId, "setPercentage", PERCENTAGE.propertyName, newValue);
                         return true;
                     }
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                    Integer lastPercentage = this.lastPercentage;
                     if (lastPercentage != null) {
                         int newValue = lastPercentage--;
                         if (newValue < 0) {
                             newValue = 0;
                         }
-                        lastPercentage = newValue;
-                        connection.smartHomeCommand(entityId, "setPercentage", percentage.propertyName, newValue);
+                        this.lastPercentage = newValue;
+                        connection.smartHomeCommand(entityId, "setPercentage", PERCENTAGE.propertyName, newValue);
                         return true;
                     }
                 } else if (command.equals(OnOffType.OFF)) {
                     lastPercentage = 0;
-                    connection.smartHomeCommand(entityId, "setPercentage", percentage.propertyName, 0);
+                    connection.smartHomeCommand(entityId, "setPercentage", PERCENTAGE.propertyName, 0);
                     return true;
                 } else if (command.equals(OnOffType.ON)) {
                     lastPercentage = 100;
-                    connection.smartHomeCommand(entityId, "setPercentage", percentage.propertyName, 100);
+                    connection.smartHomeCommand(entityId, "setPercentage", PERCENTAGE.propertyName, 100);
                     return true;
                 } else if (command instanceof PercentType) {
                     lastPercentage = ((PercentType) command).intValue();
-                    connection.smartHomeCommand(entityId, "setPercentage", percentage.propertyName,
-                            ((PercentType) command).floatValue() / 100);
+                    connection.smartHomeCommand(entityId, "setPercentage", PERCENTAGE.propertyName, lastPercentage);
                     return true;
                 }
             }

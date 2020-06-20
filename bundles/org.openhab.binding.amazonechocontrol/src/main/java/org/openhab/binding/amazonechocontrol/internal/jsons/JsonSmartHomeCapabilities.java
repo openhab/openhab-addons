@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,13 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amazonechocontrol.internal.smarthome;
+package org.openhab.binding.amazonechocontrol.internal.jsons;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Lukas Knoeller
+ * @author Lukas Knoeller - Initial contribution
  */
+@NonNullByDefault
 public class JsonSmartHomeCapabilities {
 
     public static class SmartHomeCapability {

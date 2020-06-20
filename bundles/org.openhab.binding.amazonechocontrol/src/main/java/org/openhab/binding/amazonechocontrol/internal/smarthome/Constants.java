@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,35 +15,35 @@ package org.openhab.binding.amazonechocontrol.internal.smarthome;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 
 /**
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class Constants {
+    public static final Map<String, @Nullable Supplier<HandlerBase>> HANDLER_FACTORY = new HashMap<>();
 
-    public static Map<String, Function<String, HandlerBase>> HandlerFactory = new HashMap<String, Function<String, HandlerBase>>() {
-        private static final long serialVersionUID = 1L;
-        {
-            put(HandlerPowerController.INTERFACE, (s) -> new HandlerPowerController());
-            put(HandlerBrightnessController.INTERFACE, (s) -> new HandlerBrightnessController());
-            put(HandlerColorController.INTERFACE, (s) -> new HandlerColorController());
-            put(HandlerColorTemperatureController.INTERFACE, (s) -> new HandlerColorTemperatureController());
-            put(HandlerSecurityPanelController.INTERFACE, (s) -> new HandlerSecurityPanelController());
-            put(HandlerAcousticEventSensor.INTERFACE, (s) -> new HandlerAcousticEventSensor());
-            put(HandlerTemperatureSensor.INTERFACE, (s) -> new HandlerTemperatureSensor());
-            put(HandlerPercentageController.INTERFACE, (s) -> new HandlerPercentageController());
-            put(HandlerPowerLevelController.INTERFACE, (s) -> new HandlerPowerLevelController());
-        }
-    };
+    static {
+        HANDLER_FACTORY.put(HandlerPowerController.INTERFACE, HandlerPowerController::new);
+        HANDLER_FACTORY.put(HandlerBrightnessController.INTERFACE, HandlerBrightnessController::new);
+        HANDLER_FACTORY.put(HandlerColorController.INTERFACE, HandlerColorController::new);
+        HANDLER_FACTORY.put(HandlerColorTemperatureController.INTERFACE, HandlerColorTemperatureController::new);
+        HANDLER_FACTORY.put(HandlerSecurityPanelController.INTERFACE, HandlerSecurityPanelController::new);
+        HANDLER_FACTORY.put(HandlerAcousticEventSensor.INTERFACE, HandlerAcousticEventSensor::new);
+        HANDLER_FACTORY.put(HandlerTemperatureSensor.INTERFACE, HandlerTemperatureSensor::new);
+        HANDLER_FACTORY.put(HandlerPercentageController.INTERFACE, HandlerPercentageController::new);
+        HANDLER_FACTORY.put(HandlerPowerLevelController.INTERFACE, HandlerPowerLevelController::new);
+    }
 
-    public static final Set<String> SUPPORTED_INTERFACES = HandlerFactory.keySet();
+    public static final Set<String> SUPPORTED_INTERFACES = HANDLER_FACTORY.keySet();
 
     // channel types
-
     public static final ChannelTypeUID CHANNEL_TYPE_TEMPERATURE = new ChannelTypeUID(
             AmazonEchoControlBindingConstants.BINDING_ID, "temperature");
 
@@ -55,5 +55,4 @@ public class Constants {
     public static final String ITEM_TYPE_NUMBER_TEMPERATURE = "Number:Temperature";
     public static final String ITEM_TYPE_CONTACT = "Contact";
     public static final String ITEM_TYPE_COLOR = "Color";
-
 }

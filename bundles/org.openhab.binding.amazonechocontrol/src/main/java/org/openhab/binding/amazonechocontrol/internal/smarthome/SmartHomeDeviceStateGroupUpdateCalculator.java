@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,28 +21,30 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.DriverIdentity;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.DriverIdentity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the update interval calculation
  *
- * @author Michael Geramb
+ * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
 public class SmartHomeDeviceStateGroupUpdateCalculator {
-    static final boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments()
-            .toString().indexOf("-agentlib:jdwp") > 0;
+    private final Logger logger = LoggerFactory.getLogger(SmartHomeDeviceStateGroupUpdateCalculator.class);
 
-    static final Integer updateIntervalPrivateSkillsInSeconds = isDebug ? 10 : 600;
-    static final Integer updateIntervalAcousticEventsInSeconds = 10;
-    Integer updateIntervalAmazonInSeconds;
-    Integer updateIntervalSkillsInSeconds;
+    private static final Integer UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS = 10;
+    private static final Integer UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS_TRACE = 600;
+    private static final Integer UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS = 10;
+    private Integer updateIntervalAmazonInSeconds;
+    private Integer updateIntervalSkillsInSeconds;
 
-    class UpdateGroup {
-        final int intervalInSeconds;
-        Date lastUpdated;
+    private static class UpdateGroup {
+        private final int intervalInSeconds;
+        private Date lastUpdated;
 
         public UpdateGroup(int intervalInSeconds) {
             this.intervalInSeconds = intervalInSeconds;
@@ -50,7 +52,7 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
         }
     }
 
-    Map<Integer, UpdateGroup> updateGroups = new HashMap<>();
+    private final Map<Integer, UpdateGroup> updateGroups = new HashMap<>();
 
     public SmartHomeDeviceStateGroupUpdateCalculator(int updateIntervalAmazonInSeconds,
             int updateIntervalSkillsInSeconds) {
@@ -58,8 +60,8 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
         this.updateIntervalSkillsInSeconds = updateIntervalSkillsInSeconds;
     }
 
-    Integer GetUpdateIntervalInSeconds(SmartHomeDevice shd) {
-        Integer updateIntervalInSeconds = shd.UpdateIntervalInSeconds;
+    private Integer getUpdateIntervalInSeconds(SmartHomeDevice shd) {
+        Integer updateIntervalInSeconds = shd.updateIntervalInSeconds;
         if (updateIntervalInSeconds != null) {
             return updateIntervalInSeconds;
         }
@@ -67,7 +69,7 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
         if (capabilities != null) {
             for (SmartHomeCapability capability : capabilities) {
                 if (capability != null && HandlerAcousticEventSensor.INTERFACE.equals(capability.interfaceName)) {
-                    updateIntervalInSeconds = updateIntervalAcousticEventsInSeconds;
+                    updateIntervalInSeconds = UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS;
                     break;
                 }
             }
@@ -76,8 +78,11 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
             if ("openHAB".equalsIgnoreCase(shd.manufacturerName)
                     || StringUtils.startsWithIgnoreCase(shd.manufacturerName, "ioBroker")) {
                 // OpenHAB or ioBroker skill
-                updateIntervalInSeconds = updateIntervalPrivateSkillsInSeconds;
-
+                if (logger.isTraceEnabled()) {
+                    updateIntervalInSeconds = UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS_TRACE;
+                } else {
+                    updateIntervalInSeconds = UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS;
+                }
             } else {
                 boolean isSkillDevice = false;
                 DriverIdentity driverIdentity = shd.driverIdentity;
@@ -89,17 +94,16 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
                 }
             }
         }
-        shd.UpdateIntervalInSeconds = updateIntervalInSeconds;
+        shd.updateIntervalInSeconds = updateIntervalInSeconds;
         return updateIntervalInSeconds;
-
     }
 
-    public void RemoveDevicesWithNoUpdate(List<SmartHomeDevice> devices) {
+    public void removeDevicesWithNoUpdate(List<SmartHomeDevice> devices) {
         Date updateTimeStamp = new Date();
         // check if new group is needed
         boolean syncAllGroups = false;
         for (SmartHomeDevice device : devices) {
-            int updateIntervalInSeconds = GetUpdateIntervalInSeconds(device);
+            int updateIntervalInSeconds = getUpdateIntervalInSeconds(device);
             if (!updateGroups.containsKey(updateIntervalInSeconds)) {
                 UpdateGroup newGroup = new UpdateGroup(updateIntervalInSeconds);
                 updateGroups.put(updateIntervalInSeconds, newGroup);
@@ -117,10 +121,9 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
         }
         // remove unused devices
         for (int i = devices.size() - 1; i >= 0; i--) {
-            if (!groupsToUpdate.contains(GetUpdateIntervalInSeconds(devices.get(i)))) {
+            if (!groupsToUpdate.contains(getUpdateIntervalInSeconds(devices.get(i)))) {
                 devices.remove(i);
             }
         }
-
     }
 }

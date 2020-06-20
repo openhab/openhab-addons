@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class AmazonEchoControlBindingConstants {
-
     public static final String BINDING_ID = "amazonechocontrol";
     public static final String BINDING_NAME = "Amazon Echo Control";
 
@@ -48,7 +47,7 @@ public class AmazonEchoControlBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_ECHO_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
-                    THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE, THING_TYPE_SMART_HOME_DEVICE));
+                    THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE));
 
     public static final Set<ThingTypeUID> SUPPORTED_SMART_HOME_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_SMART_HOME_DEVICE, THING_TYPE_SMART_HOME_DEVICE_GROUP));
@@ -117,5 +116,4 @@ public class AmazonEchoControlBindingConstants {
 
     // Other
     public static final String FLASH_BRIEFING_COMMAND_PREFIX = "FlashBriefing.";
-
 }

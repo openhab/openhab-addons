@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amazonechocontrol.internal.statedescription;
+package org.openhab.binding.amazonechocontrol.internal;
 
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.BINDING_ID;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TYPE_AMAZON_MUSIC_PLAY_LIST_ID;
@@ -35,11 +35,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
-import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.EchoHandler;
 import org.openhab.binding.amazonechocontrol.internal.handler.FlashBriefingProfileHandler;
@@ -50,10 +50,9 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists.PlayList;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * Dynamic channel state description provider.
@@ -64,23 +63,14 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 @Component(service = { DynamicStateDescriptionProvider.class, AmazonEchoDynamicStateDescriptionProvider.class })
 @NonNullByDefault
 public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
+    private final ThingRegistry thingRegistry;
 
-    private @Nullable ThingRegistry thingRegistry;
-
-    @Reference(cardinality = ReferenceCardinality.MANDATORY, policy = ReferencePolicy.DYNAMIC)
-    protected void setThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
-    }
-
-    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
+    @Activate
+    public AmazonEchoDynamicStateDescriptionProvider(@Reference ThingRegistry thingRegistry) {
         this.thingRegistry = thingRegistry;
     }
 
     public @Nullable ThingHandler findHandler(Channel channel) {
-        ThingRegistry thingRegistry = this.thingRegistry;
-        if (thingRegistry == null) {
-            return null;
-        }
         Thing thing = thingRegistry.get(channel.getUID().getThingUID());
         if (thing == null) {
             return null;
@@ -107,14 +97,11 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
-        if (!BINDING_ID.equals(channel.getChannelTypeUID().getBindingId())) {
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        if (channelTypeUID == null || !BINDING_ID.equals(channelTypeUID.getBindingId())) {
             return null;
         }
         if (originalStateDescription == null) {
-            return null;
-        }
-        ThingRegistry thingRegistry = this.thingRegistry;
-        if (thingRegistry == null) {
             return null;
         }
 
@@ -146,7 +133,6 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
             StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
                     .withOptions(options).build().toStateDescription();
             return result;
-
         } else if (CHANNEL_TYPE_AMAZON_MUSIC_PLAY_LIST_ID.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
@@ -225,9 +211,8 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     options.add(new StateOption(value, device.accountName));
                 }
             }
-            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
-                    .withOptions(options).build().toStateDescription();
-            return result;
+            return StateDescriptionFragmentBuilder.create(originalStateDescription).withOptions(options).build()
+                    .toStateDescription();
         } else if (CHANNEL_TYPE_MUSIC_PROVIDER_ID.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
@@ -251,9 +236,8 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                     options.add(new StateOption(providerId, displayName));
                 }
             }
-            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
-                    .withOptions(options).build().toStateDescription();
-            return result;
+            return StateDescriptionFragmentBuilder.create(originalStateDescription).withOptions(options).build()
+                    .toStateDescription();
         } else if (CHANNEL_TYPE_START_COMMAND.equals(channel.getChannelTypeUID())) {
             EchoHandler handler = (EchoHandler) findHandler(channel);
             if (handler == null) {
@@ -276,9 +260,8 @@ public class AmazonEchoDynamicStateDescriptionProvider implements DynamicStateDe
                 String displayName = flashBriefing.getThing().getLabel();
                 options.add(new StateOption(value, displayName));
             }
-            StateDescription result = StateDescriptionFragmentBuilder.create(originalStateDescription)
-                    .withOptions(options).build().toStateDescription();
-            return result;
+            return StateDescriptionFragmentBuilder.create(originalStateDescription).withOptions(options).build()
+                    .toStateDescription();
         }
         return null;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -29,42 +30,44 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerTemperatureSensor} is responsible for the Alexa.PowerControllerInterface
  *
- * @author Lukas Knoeller, Michael Geramb
+ * @author Lukas Knoeller - Initial contribution
+ * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerTemperatureSensor extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.TemperatureSensor";
     // Channel definitions
-    final static ChannelInfo temperature = new ChannelInfo("temperature" /* propertyName */ ,
+    private static final ChannelInfo TEMPERATURE = new ChannelInfo("temperature" /* propertyName */ ,
             "temperature" /* ChannelId */, CHANNEL_TYPE_TEMPERATURE /* Channel Type */ ,
             ITEM_TYPE_NUMBER_TEMPERATURE /* Item Type */);
 
     @Override
-    protected String[] GetSupportedInterface() {
+    public String[] getSupportedInterface() {
         return new String[] { INTERFACE };
     }
 
     @Override
-    protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (temperature.propertyName.equals(property)) {
-            return new ChannelInfo[] { temperature };
+    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+        if (TEMPERATURE.propertyName.equals(property)) {
+            return new ChannelInfo[] { TEMPERATURE };
         }
         return null;
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+    public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         QuantityType<Temperature> temperatureValue = null;
         for (JsonObject state : stateList) {
-            if (temperature.propertyName.equals(state.get("name").getAsString())) {
+            if (TEMPERATURE.propertyName.equals(state.get("name").getAsString())) {
                 JsonObject value = state.get("value").getAsJsonObject();
                 // For groups take the first
                 if (temperatureValue == null) {
@@ -78,11 +81,11 @@ public class HandlerTemperatureSensor extends HandlerBase {
                 }
             }
         }
-        updateState(temperature.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
+        updateState(TEMPERATURE.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
     }
 
     @Override
-    protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
         return false;
     }

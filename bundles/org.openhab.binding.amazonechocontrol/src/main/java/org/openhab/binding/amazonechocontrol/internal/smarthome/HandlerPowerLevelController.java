@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -28,16 +29,18 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerPowerLevelController} is responsible for the Alexa.PowerControllerInterface
  *
- * @author Lukas Knoeller, Michael Geramb
+ * @author Lukas Knoeller - Initial contribution
+ * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerPowerLevelController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.PowerLevelController";
@@ -47,30 +50,30 @@ public class HandlerPowerLevelController extends HandlerBase {
             AmazonEchoControlBindingConstants.BINDING_ID, "powerLevel");
 
     // Channel definitions
-    final static ChannelInfo powerLevel = new ChannelInfo("powerLevel" /* propertyName */ ,
+    private static final ChannelInfo POWER_LEVEL = new ChannelInfo("powerLevel" /* propertyName */ ,
             "powerLevel" /* ChannelId */, CHANNEL_TYPE_POWER_LEVEL /* Channel Type */ ,
             ITEM_TYPE_DIMMER /* Item Type */);
 
-    Integer lastPowerLevel;
+    private @Nullable Integer lastPowerLevel;
 
     @Override
-    protected String[] GetSupportedInterface() {
+    public String[] getSupportedInterface() {
         return new String[] { INTERFACE };
     }
 
     @Override
-    protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (powerLevel.propertyName.equals(property)) {
-            return new ChannelInfo[] { powerLevel };
+    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+        if (POWER_LEVEL.propertyName.equals(property)) {
+            return new ChannelInfo[] { POWER_LEVEL };
         }
         return null;
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+    public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         Integer powerLevelValue = null;
         for (JsonObject state : stateList) {
-            if (powerLevel.propertyName.equals(state.get("name").getAsString())) {
+            if (POWER_LEVEL.propertyName.equals(state.get("name").getAsString())) {
                 int value = state.get("value").getAsInt();
                 // For groups take the maximum
                 if (powerLevelValue == null) {
@@ -83,45 +86,48 @@ public class HandlerPowerLevelController extends HandlerBase {
         if (powerLevelValue != null) {
             lastPowerLevel = powerLevelValue;
         }
-        updateState(powerLevel.channelId, powerLevelValue == null ? UnDefType.UNDEF : new PercentType(powerLevelValue));
+        updateState(POWER_LEVEL.channelId,
+                powerLevelValue == null ? UnDefType.UNDEF : new PercentType(powerLevelValue));
     }
 
     @Override
-    protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(powerLevel.channelId)) {
-            if (ContainsCapabilityProperty(capabilties, powerLevel.propertyName)) {
+        if (channelId.equals(POWER_LEVEL.channelId)) {
+            if (containsCapabilityProperty(capabilties, POWER_LEVEL.propertyName)) {
                 if (command.equals(IncreaseDecreaseType.INCREASE)) {
+                    Integer lastPowerLevel = this.lastPowerLevel;
                     if (lastPowerLevel != null) {
                         int newValue = lastPowerLevel++;
                         if (newValue > 100) {
                             newValue = 100;
                         }
-                        lastPowerLevel = newValue;
-                        connection.smartHomeCommand(entityId, "setPowerLevel", powerLevel.propertyName, newValue);
+                        this.lastPowerLevel = newValue;
+                        connection.smartHomeCommand(entityId, "setPowerLevel", POWER_LEVEL.propertyName, newValue);
                         return true;
                     }
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
+                    Integer lastPowerLevel = this.lastPowerLevel;
                     if (lastPowerLevel != null) {
                         int newValue = lastPowerLevel--;
                         if (newValue < 0) {
                             newValue = 0;
                         }
-                        lastPowerLevel = newValue;
-                        connection.smartHomeCommand(entityId, "setPowerLevel", powerLevel.propertyName, newValue);
+                        this.lastPowerLevel = newValue;
+                        connection.smartHomeCommand(entityId, "setPowerLevel", POWER_LEVEL.propertyName, newValue);
                         return true;
                     }
                 } else if (command.equals(OnOffType.OFF)) {
                     lastPowerLevel = 0;
-                    connection.smartHomeCommand(entityId, "setPowerLevel", powerLevel.propertyName, 0);
+                    connection.smartHomeCommand(entityId, "setPowerLevel", POWER_LEVEL.propertyName, 0);
                     return true;
                 } else if (command.equals(OnOffType.ON)) {
                     lastPowerLevel = 100;
-                    connection.smartHomeCommand(entityId, "setPowerLevel", powerLevel.propertyName, 100);
+                    connection.smartHomeCommand(entityId, "setPowerLevel", POWER_LEVEL.propertyName, 100);
                     return true;
                 } else if (command instanceof PercentType) {
                     lastPowerLevel = ((PercentType) command).intValue();
-                    connection.smartHomeCommand(entityId, "setPowerLevel", powerLevel.propertyName,
+                    connection.smartHomeCommand(entityId, "setPowerLevel", POWER_LEVEL.propertyName,
                             ((PercentType) command).floatValue() / 100);
                     return true;
                 }

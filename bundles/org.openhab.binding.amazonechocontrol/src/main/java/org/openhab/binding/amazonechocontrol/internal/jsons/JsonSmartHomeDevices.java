@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,24 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.amazonechocontrol.internal.smarthome;
+package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDeviceNetworkState.SmartHomeDeviceNetworkState;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeTags.JsonSmartHomeTag;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDeviceNetworkState.SmartHomeDeviceNetworkState;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeTags.JsonSmartHomeTag;
 
 /**
- * @author Lukas Knoeller
+ * @author Lukas Knoeller - Initial contribution
  */
 @NonNullByDefault
 public class JsonSmartHomeDevices {
-
     public static class SmartHomeDevice implements SmartHomeBaseDevice {
 
-        public @Nullable Integer UpdateIntervalInSeconds;
+        public @Nullable Integer updateIntervalInSeconds;
 
         @Override
         public @Nullable String findId() {
@@ -56,7 +54,7 @@ public class JsonSmartHomeDevices {
         public @Nullable DriverIdentity driverIdentity;
     }
 
-    static class DriverIdentity {
+    public static class DriverIdentity {
         public @Nullable String namespace;
         public @Nullable String identifier;
     }

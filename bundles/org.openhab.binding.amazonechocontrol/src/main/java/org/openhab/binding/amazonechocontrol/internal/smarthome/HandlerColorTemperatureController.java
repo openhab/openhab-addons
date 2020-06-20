@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -29,16 +30,18 @@ import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeCapabilities.SmartHomeCapability;
-import org.openhab.binding.amazonechocontrol.internal.smarthome.JsonSmartHomeDevices.SmartHomeDevice;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeCapabilities.SmartHomeCapability;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 
 import com.google.gson.JsonObject;
 
 /**
  * The {@link HandlerColorTemperatureController} is responsible for the Alexa.ColorTemperatureController
  *
- * @author Lukas Knoeller, Michael Geramb
+ * @author Lukas Knoeller - Initial contribution
+ * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class HandlerColorTemperatureController extends HandlerBase {
     // Interface
     public static final String INTERFACE = "Alexa.ColorTemperatureController";
@@ -52,38 +55,36 @@ public class HandlerColorTemperatureController extends HandlerBase {
             AmazonEchoControlBindingConstants.BINDING_ID, "colorTemperatureInKelvin");
 
     // Channel and Properties
-    final static ChannelInfo colorTemperatureInKelvin = new ChannelInfo("colorTemperatureInKelvin" /* propertyName */ ,
-            "colorTemperatureInKelvin" /* ChannelId */, CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN /* Channel Type */ ,
-            ITEM_TYPE_NUMBER /* Item Type */);
+    private static final ChannelInfo COLOR_TEMPERATURE_IN_KELVIN = new ChannelInfo(
+            "colorTemperatureInKelvin" /* propertyName */ , "colorTemperatureInKelvin" /* ChannelId */,
+            CHANNEL_TYPE_COLOR_TEPERATURE_IN_KELVIN /* Channel Type */ , ITEM_TYPE_NUMBER /* Item Type */);
 
-    final static ChannelInfo colorTemperatureName = new ChannelInfo("colorProperties" /* propertyName */ ,
+    private static final ChannelInfo COLOR_TEMPERATURE_NAME = new ChannelInfo("colorProperties" /* propertyName */ ,
             "colorTemperatureName" /* ChannelId */, CHANNEL_TYPE_COLOR_TEMPERATURE_NAME /* Channel Type */ ,
             ITEM_TYPE_STRING /* Item Type */);
 
-    @Nullable
-    Integer lastColorTemperature;
-    @Nullable
-    String lastColorName;
+    private @Nullable Integer lastColorTemperature;
+    private @Nullable String lastColorName;
 
     @Override
-    protected String[] GetSupportedInterface() {
+    public String[] getSupportedInterface() {
         return new String[] { INTERFACE, INTERFACE_COLOR_PROPERTIES };
     }
 
     @Override
-    protected @Nullable ChannelInfo[] FindChannelInfos(SmartHomeCapability capability, String property) {
-        if (colorTemperatureInKelvin.propertyName.contentEquals(property)) {
-            return new ChannelInfo[] { colorTemperatureInKelvin, colorTemperatureName };
+    protected ChannelInfo @Nullable [] findChannelInfos(SmartHomeCapability capability, String property) {
+        if (COLOR_TEMPERATURE_IN_KELVIN.propertyName.contentEquals(property)) {
+            return new ChannelInfo[] { COLOR_TEMPERATURE_IN_KELVIN, COLOR_TEMPERATURE_NAME };
         }
         return null;
     }
 
     @Override
-    protected void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
+    public void updateChannels(String interfaceName, List<JsonObject> stateList, UpdateChannelResult result) {
         if (INTERFACE.equals(interfaceName)) {
             Integer colorTemperatureInKelvinValue = null;
             for (JsonObject state : stateList) {
-                if (colorTemperatureInKelvin.propertyName.equals(state.get("name").getAsString())) {
+                if (COLOR_TEMPERATURE_IN_KELVIN.propertyName.equals(state.get("name").getAsString())) {
                     int value = state.get("value").getAsInt();
                     // For groups take the maximum
                     if (colorTemperatureInKelvinValue == null) {
@@ -93,17 +94,17 @@ public class HandlerColorTemperatureController extends HandlerBase {
             }
             if (colorTemperatureInKelvinValue != null && !colorTemperatureInKelvinValue.equals(lastColorTemperature)) {
                 lastColorTemperature = colorTemperatureInKelvinValue;
-                result.NeedSingleUpdate = true;
+                result.needSingleUpdate = true;
             }
-            updateState(colorTemperatureInKelvin.channelId, colorTemperatureInKelvinValue == null ? UnDefType.UNDEF
+            updateState(COLOR_TEMPERATURE_IN_KELVIN.channelId, colorTemperatureInKelvinValue == null ? UnDefType.UNDEF
                     : new DecimalType(colorTemperatureInKelvinValue));
         }
         if (INTERFACE_COLOR_PROPERTIES.equals(interfaceName)) {
             String colorTemperatureNameValue = null;
             for (JsonObject state : stateList) {
-                if (colorTemperatureName.propertyName.equals(state.get("name").getAsString())) {
+                if (COLOR_TEMPERATURE_NAME.propertyName.equals(state.get("name").getAsString())) {
                     if (colorTemperatureNameValue == null) {
-                        result.NeedSingleUpdate = false;
+                        result.needSingleUpdate = false;
                         colorTemperatureNameValue = state.get("value").getAsJsonObject().get("name").getAsString();
                     }
                 }
@@ -113,17 +114,17 @@ public class HandlerColorTemperatureController extends HandlerBase {
             } else if (colorTemperatureNameValue == null && lastColorName != null) {
                 colorTemperatureNameValue = lastColorName;
             }
-            updateState(colorTemperatureName.channelId,
+            updateState(COLOR_TEMPERATURE_NAME.channelId,
                     colorTemperatureNameValue == null ? UnDefType.UNDEF : new StringType(colorTemperatureNameValue));
         }
     }
 
     @Override
-    protected boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
+    public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
             SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
-        if (channelId.equals(colorTemperatureInKelvin.channelId)) {
+        if (channelId.equals(COLOR_TEMPERATURE_IN_KELVIN.channelId)) {
             // WRITING TO THIS CHANNEL DOES CURRENTLY NOT WORK, BUT WE LEAVE THE CODE FOR FUTURE USE!
-            if (ContainsCapabilityProperty(capabilties, colorTemperatureInKelvin.propertyName)) {
+            if (containsCapabilityProperty(capabilties, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
                 if (command instanceof DecimalType) {
                     int intValue = ((DecimalType) command).intValue();
                     if (intValue < 1000) {
@@ -137,8 +138,8 @@ public class HandlerColorTemperatureController extends HandlerBase {
                 }
             }
         }
-        if (channelId.equals(colorTemperatureName.channelId)) {
-            if (ContainsCapabilityProperty(capabilties, colorTemperatureInKelvin.propertyName)) {
+        if (channelId.equals(COLOR_TEMPERATURE_NAME.channelId)) {
+            if (containsCapabilityProperty(capabilties, COLOR_TEMPERATURE_IN_KELVIN.propertyName)) {
                 if (command instanceof StringType) {
                     String colorTemperatureName = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(colorTemperatureName)) {
