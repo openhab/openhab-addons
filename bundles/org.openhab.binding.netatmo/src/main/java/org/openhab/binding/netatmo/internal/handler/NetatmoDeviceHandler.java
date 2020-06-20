@@ -49,6 +49,9 @@ import retrofit.RetrofitError;
  */
 public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingHandler {
 
+    private static final int MIN_REFRESH_INTERVAL = 2000;
+    private static final int DEFAULT_REFRESH_INTERVAL = 300000;
+
     private Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
     private ScheduledFuture<?> refreshJob;
     private RefreshStrategy refreshStrategy;
@@ -209,7 +212,17 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
             }
         } else {
             Object interval = config.get(REFRESH_INTERVAL);
-            dataValidityPeriod = (BigDecimal) interval;
+            if (interval instanceof BigDecimal) {
+                dataValidityPeriod = (BigDecimal) interval;
+                if (dataValidityPeriod.intValue() < MIN_REFRESH_INTERVAL) {
+                    logger.info(
+                            "Refresh interval setting is too small for thing {}, {} ms is considered as refresh interval.",
+                            thing.getUID(), MIN_REFRESH_INTERVAL);
+                    dataValidityPeriod = new BigDecimal(MIN_REFRESH_INTERVAL);
+                }
+            } else {
+                dataValidityPeriod = new BigDecimal(DEFAULT_REFRESH_INTERVAL);
+            }
         }
         refreshStrategy = new RefreshStrategy(dataValidityPeriod.intValue());
     }
