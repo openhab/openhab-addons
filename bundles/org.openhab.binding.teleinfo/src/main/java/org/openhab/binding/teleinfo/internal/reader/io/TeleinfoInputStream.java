@@ -29,7 +29,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.teleinfo.internal.reader.Frame;
 import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemm;
 import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmBaseOption;
@@ -656,7 +655,7 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     private String computeProgrammeCircuitBinaryValue(char value) {
-        return StringUtils.leftPad(Integer.toBinaryString(value), 8, "0");
+        return String.format("%8s",Integer.toBinaryString(value)).replace(' ', '0');
     }
 
     private Exception rethrowTaskExecutionException(ExecutionException e)
