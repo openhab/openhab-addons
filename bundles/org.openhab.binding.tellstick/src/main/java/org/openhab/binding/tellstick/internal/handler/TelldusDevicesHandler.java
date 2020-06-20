@@ -15,6 +15,8 @@ package org.openhab.binding.tellstick.internal.handler;
 import static org.openhab.binding.tellstick.internal.TellstickBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 import org.eclipse.smarthome.config.core.Configuration;
@@ -266,7 +268,8 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             }
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(event.getTimestamp());
-            updateState(timestampChannel, new DateTimeType(cal));
+            updateState(timestampChannel,
+                    new DateTimeType(ZonedDateTime.ofInstant(cal.toInstant(), ZoneId.systemDefault())));
         }
     }
 
