@@ -85,7 +85,7 @@ public class MonopriceAudioSerialConnector extends MonopriceAudioConnector {
                 }
             }
 
-            Thread thread = new MonopriceAudioReaderThread(this);
+            Thread thread = new MonopriceAudioReaderThread(this, this.serialPortName);
             setReaderThread(thread);
             thread.start();
 

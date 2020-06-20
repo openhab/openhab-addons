@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -40,6 +41,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -91,6 +93,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private static final int BALANCE_OFFSET = 10;
     private static final int TONE_OFFSET = 7;
 
+    // build a Map with a MonopriceAudioZoneDTO for each zoneId
+    private final Map<String, MonopriceAudioZoneDTO> ZONE_DATA_MAP = MonopriceAudioZone.VALID_ZONE_IDS.stream()
+            .collect(Collectors.toMap(s -> s, s -> new MonopriceAudioZoneDTO()));
+
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioHandler.class);
     private final MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider;
     private final SerialPortManager serialPortManager;
@@ -100,17 +106,13 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
     private MonopriceAudioConnector connector = new MonopriceAudioDefaultConnector();
 
-    private HashSet<String> ignoreZones = new HashSet<>();
+    private Set<String> ignoreZones = new HashSet<>();
     private long lastPollingUpdate = System.currentTimeMillis();
     private long pollingInterval = 0;
     private int numZones = 0;
     private int allVolume = 1;
     private int initialAllVolume = 0;
     private Object sequenceLock = new Object();
-
-    // build a Map with a MonopriceAudioZoneDTO for each zoneId
-    private final Map<String, MonopriceAudioZoneDTO> ZONE_DATA_MAP = MonopriceAudioZone.VALID_ZONE_IDS.stream()
-            .collect(Collectors.toMap(s -> s, s -> new MonopriceAudioZoneDTO()));
 
     public MonopriceAudioHandler(Thing thing, MonopriceAudioStateDescriptionOptionProvider stateDescriptionProvider,
             SerialPortManager serialPortManager) {
@@ -242,6 +244,11 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         synchronized (sequenceLock) {
             if (!connector.isConnected()) {
                 logger.debug("Command {} from channel {} is ignored: connection not established", command, channel);
+                return;
+            }
+
+            if (command instanceof RefreshType) {
+                updateChannelState(zone, channelType, ZONE_DATA_MAP.get(zone.getZoneId()));
                 return;
             }
 
@@ -413,7 +420,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 }
 
                 if (success) {
-                    logger.debug("Command {} from channel {} succeeded", command, channel);
+                    logger.trace("Command {} from channel {} succeeded", command, channel);
                 }
             } catch (MonopriceAudioException e) {
                 logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());

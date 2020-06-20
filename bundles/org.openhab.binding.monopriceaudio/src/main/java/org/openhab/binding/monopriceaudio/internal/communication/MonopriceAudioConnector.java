@@ -44,6 +44,8 @@ public abstract class MonopriceAudioConnector {
     public static final String MSG_VALUE_ON = "on";
 
     private static final Pattern PATTERN = Pattern.compile("^.*#>(\\d{22})$", Pattern.DOTALL);
+    private static final String BEGIN_CMD = "<";
+    private static final String END_CMD = "\r";
 
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioConnector.class);
 
@@ -104,19 +106,12 @@ public abstract class MonopriceAudioConnector {
      */
     protected void cleanup() {
         Thread readerThread = this.readerThread;
-        if (readerThread != null) {
-            readerThread.interrupt();
-            try {
-                readerThread.join();
-            } catch (InterruptedException e) {
-            }
-            this.readerThread = null;
-        }
         OutputStream dataOut = this.dataOut;
         if (dataOut != null) {
             try {
                 dataOut.close();
             } catch (IOException e) {
+                logger.debug("Error closing dataOut: {}", e.getMessage());
             }
             this.dataOut = null;
         }
@@ -125,8 +120,18 @@ public abstract class MonopriceAudioConnector {
             try {
                 dataIn.close();
             } catch (IOException e) {
+                logger.debug("Error closing dataIn: {}", e.getMessage());
             }
             this.dataIn = null;
+        }
+        if (readerThread != null) {
+            readerThread.interrupt();
+            try {
+                readerThread.join(3000);
+            } catch (InterruptedException e) {
+                logger.warn("Error joining readerThread: {}", e.getMessage());
+            }
+            this.readerThread = null;
         }
     }
 
@@ -184,12 +189,11 @@ public abstract class MonopriceAudioConnector {
             messageStr = cmd.getValue() + zone.getZoneId();
         } else if (value != null) {
             // if the command passed a value, append it to the messageStr
-            messageStr = MonopriceAudioCommand.BEGIN_CMD.getValue() + zone.getZoneId() + cmd.getValue()
-                    + String.format("%02d", value);
+            messageStr = BEGIN_CMD + zone.getZoneId() + cmd.getValue() + String.format("%02d", value);
         } else {
             throw new MonopriceAudioException("Send command \"" + messageStr + "\" failed: passed in value is null");
         }
-        messageStr += MonopriceAudioCommand.END_CMD.getValue();
+        messageStr += END_CMD;
         logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;

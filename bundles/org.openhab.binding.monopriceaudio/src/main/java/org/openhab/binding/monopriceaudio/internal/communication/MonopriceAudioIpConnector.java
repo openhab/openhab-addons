@@ -62,7 +62,8 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new MonopriceAudioReaderThread(this);
+            Thread thread = new MonopriceAudioReaderThread(this, this.address + "." + this.port);
+
             setReaderThread(thread);
             thread.start();
 

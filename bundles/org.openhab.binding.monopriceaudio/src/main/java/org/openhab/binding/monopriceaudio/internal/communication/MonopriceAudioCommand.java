@@ -22,9 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum MonopriceAudioCommand {
     QUERY("?"),
-    BEGIN_CMD("<"),
-    END_CMD("\r"),
-
     POWER("PR"),
     SOURCE("CH"),
     VOLUME("VO"),
