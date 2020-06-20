@@ -14,7 +14,7 @@ package org.openhab.binding.lgwebos.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
+import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
@@ -40,12 +40,12 @@ public class MediaControlPlayer extends BaseChannelHandler<CommandConfirmation> 
             handler.getSocket().play(getDefaultResponseListener());
         } else if (PlayPauseType.PAUSE == command) {
             handler.getSocket().pause(getDefaultResponseListener());
-        } else if (RewindFastforwardType.FASTFORWARD == command) {
+        } else if (NextPreviousType.NEXT == command) {
             handler.getSocket().fastForward(getDefaultResponseListener());
-        } else if (RewindFastforwardType.REWIND == command) {
+        } else if (NextPreviousType.PREVIOUS == command) {
             handler.getSocket().rewind(getDefaultResponseListener());
         } else {
-            logger.info("Only accept PlayPauseType, RewindFastforwardType, RefreshType. Type was {}.",
+            logger.info("Only accept PlayPauseType, NextPreviousType, RefreshType. Type was {}.",
                     command.getClass());
         }
     }
