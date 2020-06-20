@@ -49,9 +49,14 @@ public class DataTypeBoolean implements ComfoAirDataType {
         } else {
             int[] get_reply_data_pos = commandType.getGetReplyDataPos();
             int get_reply_data_bits = commandType.getGetReplyDataBits();
+            boolean result;
 
             if (get_reply_data_pos != null && get_reply_data_pos[0] < data.length) {
-                boolean result = (data[get_reply_data_pos[0]] & get_reply_data_bits) == get_reply_data_bits;
+                if (get_reply_data_bits == 0) {
+                    result = data[get_reply_data_pos[0]] == 1;
+                } else {
+                    result = (data[get_reply_data_pos[0]] & get_reply_data_bits) == get_reply_data_bits;
+                }
                 return OnOffType.from(result);
             } else {
                 return UnDefType.NULL;
