@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response;
+import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
+import javax.ws.rs.ProcessingException;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
@@ -24,8 +26,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.ShadePositionKind;
+import org.openhab.binding.hdpowerview.internal.api.responses.ShadeSingleton;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.slf4j.Logger;
@@ -35,11 +40,10 @@ import org.slf4j.LoggerFactory;
  * Handles commands for an HD Power View shade
  *
  * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Added support for secondary rail positions
+ * 
  */
 public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
-
-    private static final int MAX_POSITION = 65535;
-    private static final int MAX_VANE = 32767;
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
 
@@ -55,21 +59,31 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
-            case HDPowerViewBindingConstants.CHANNEL_SHADE_POSITION:
+            case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
-                    setPosition(((PercentType) command).intValue());
+                    setPosition(ShadePositionKind.PRIMARY, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    setPosition(((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
+                    setPosition(ShadePositionKind.PRIMARY, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     logger.warn("PowerView shades do not support StopMove commands");
                 }
                 break;
 
-            case HDPowerViewBindingConstants.CHANNEL_SHADE_VANE:
+            case CHANNEL_SHADE_SECONDARY_POSITION:
                 if (command instanceof PercentType) {
-                    setVane(((PercentType) command).intValue());
+                    setPosition(ShadePositionKind.SECONDARY, ((PercentType) command).intValue());
+                } else if (command instanceof UpDownType) {
+                    setPosition(ShadePositionKind.SECONDARY, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
+                } else if (command instanceof StopMoveType) {
+                    logger.warn("PowerView shades do not support StopMove commands");
+                }
+                break;
+
+            case CHANNEL_SHADE_VANE:
+                if (command instanceof PercentType) {
+                    setPosition(ShadePositionKind.VANE, ((PercentType) command).intValue());
                 } else if (command instanceof OnOffType) {
-                    setPosition(ShadePosition.forVane(((OnOffType) command).equals(OnOffType.ON) ? MAX_VANE : 0));
+                    setPosition(ShadePositionKind.VANE, ((OnOffType) command).equals(OnOffType.ON) ? 100 : 0);
                 }
                 break;
         }
@@ -78,49 +92,50 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     void onReceiveUpdate(Shade shade) {
         updateStatus(ThingStatus.ONLINE);
         updatePosition(shade.positions);
-        updateState(HDPowerViewBindingConstants.CHANNEL_SHADE_LOW_BATTERY,
-                shade.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_SHADE_LOW_BATTERY, shade.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
     }
 
     private void updatePosition(ShadePosition pos) {
         if (pos != null) {
-            updateState(HDPowerViewBindingConstants.CHANNEL_SHADE_POSITION,
-                    new PercentType(100 - (int) Math.round(((double) pos.getPosition()) / MAX_POSITION * 100)));
-            updateState(HDPowerViewBindingConstants.CHANNEL_SHADE_VANE,
-                    new PercentType((int) Math.round(((double) pos.getVane()) / MAX_VANE * 100)));
+            updateState(CHANNEL_SHADE_POSITION, pos.getPercent(ShadePositionKind.PRIMARY));
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, pos.getPercent(ShadePositionKind.SECONDARY));
+            updateState(CHANNEL_SHADE_VANE, pos.getPercent(ShadePositionKind.VANE));
         } else {
-            updateState(HDPowerViewBindingConstants.CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
-            updateState(HDPowerViewBindingConstants.CHANNEL_SHADE_VANE, UnDefType.UNDEF);
+            updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);
+            updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
         }
     }
 
-    private void setPosition(int percent) {
-        ShadePosition position = ShadePosition
-                .forPosition(MAX_POSITION - (int) Math.round(percent / 100d * MAX_POSITION));
-        setPosition(position);
-    }
-
-    private void setVane(int value) {
-        ShadePosition position = ShadePosition.forVane((int) Math.round(value / 100d * MAX_VANE));
-        setPosition(position);
-    }
-
-    private void setPosition(ShadePosition position) {
+    private void setPosition(ShadePositionKind kind, int posValue) {
         HDPowerViewHubHandler bridge;
         if ((bridge = getBridgeHandler()) == null) {
             return;
         }
+        HDPowerViewWebTargets webTargets = bridge.getWebTargets();
         String shadeId = getShadeId();
-        Response response;
+        @Nullable
+        ShadePosition newPos = null;
         try {
-            response = bridge.getWebTargets().moveShade(shadeId, position);
+            if (kind == ShadePositionKind.SECONDARY) {
+                @Nullable
+                ShadeSingleton oldShade = webTargets.refreshShade(shadeId);
+                if (oldShade != null) {
+                    newPos = ShadePosition.create(kind, 0, posValue).copyPrimaryFrom(oldShade.shadeData.positions);
+                    webTargets.moveShade(shadeId, newPos);
+                }
+            } else {
+                newPos = ShadePosition.create(kind, posValue);
+                webTargets.moveShade(shadeId, newPos);
+            }
         } catch (ProcessingException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
+        } catch (HubMaintenanceException e) {
+            logger.debug("Hub temporariliy down for maintenance");
+            return;
         }
-        if (response != null) {
-            updatePosition(position);
-        }
+        updatePosition(newPos);
     }
 
     private String getShadeId() {

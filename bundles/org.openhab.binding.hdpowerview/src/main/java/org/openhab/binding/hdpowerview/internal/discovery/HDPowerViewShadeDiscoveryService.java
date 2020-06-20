@@ -24,12 +24,15 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonParseException;
 
 /**
  * Discovers an HD Power View Shade from an existing hub
@@ -78,9 +81,12 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             Shades shades;
             try {
                 shades = targets.getShades();
-            } catch (ProcessingException e) {
+            } catch (ProcessingException | JsonParseException e) {
                 logger.warn("Unexpected error: {}", e.getMessage());
                 stopScan();
+                return;
+            } catch (HubMaintenanceException e) {
+                logger.debug("Hub temporariliy down for maintenance");
                 return;
             }
             if (shades != null) {

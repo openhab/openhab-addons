@@ -23,6 +23,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Added support for secondary rail positions
+ * 
  */
 @NonNullByDefault
 public class HDPowerViewBindingConstants {
@@ -37,6 +39,7 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_POSITION = "position";
     public static final String CHANNEL_SHADE_VANE = "vane";
     public static final String CHANNEL_SHADE_LOW_BATTERY = "lowBattery";
+    public static final String CHANNEL_SHADE_SECONDARY_POSITION = "secondary-position";
 
     public static final String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
 

@@ -23,6 +23,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -36,8 +37,10 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
+import org.openhab.binding.hdpowerview.internal.api.responses.ShadeSingleton;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
@@ -52,6 +55,8 @@ import com.google.gson.JsonParseException;
  * sent to one of the channels.
  *
  * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Added support for secondary rail positions
+ * 
  */
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
@@ -75,7 +80,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         Channel channel = getThing().getChannel(channelUID.getId());
         if (channel != null && sceneChannelTypeUID.equals(channel.getChannelTypeUID())) {
             if (command.equals(OnOffType.ON)) {
-                webTargets.activateScene(Integer.parseInt(channelUID.getId()));
+                try {
+                    webTargets.activateScene(Integer.parseInt(channelUID.getId()));
+                } catch (HubMaintenanceException e) {
+                    logger.debug("Hub temporariliy down for maintenance");
+                } catch (NumberFormatException | ProcessingException e) {
+                    logger.debug("Unexpected error {}", e.getMessage());
+                }
             }
         }
     }
@@ -140,10 +151,12 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         } catch (ProcessingException e) {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+        } catch (HubMaintenanceException e) {
+            logger.debug("Hub temporariliy down for maintenance");
         }
     }
 
-    private void pollShades() throws JsonParseException, ProcessingException {
+    private void pollShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
         Shades shades = webTargets.getShades();
         updateStatus(ThingStatus.ONLINE);
         if (shades != null) {
@@ -155,7 +168,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                     HDPowerViewShadeHandler handler = ((HDPowerViewShadeHandler) thing.getHandler());
                     if (handler != null) {
                         logger.debug("Handling update for shade {}", shade.id);
-                        handler.onReceiveUpdate(shade);
+                        @Nullable
+                        ShadeSingleton thisShade = webTargets.refreshShade(shade.id);
+                        if (thisShade != null) {
+                            handler.onReceiveUpdate(thisShade.shadeData);
+                        }
                     } else {
                         logger.debug("Skipping shade with no handler {}", shade.id);
                     }
@@ -168,7 +185,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private void pollScenes() throws JsonParseException, ProcessingException {
+    private void pollScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
         Scenes scenes = webTargets.getScenes();
         if (scenes != null) {
             logger.debug("Received {} scenes", scenes.sceneIds.size());
@@ -215,7 +232,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private Map<Integer, Channel> getSceneChannelsById() {
         Map<Integer, Channel> ret = new HashMap<>();
         for (Channel channel : getThing().getChannels()) {
-            if (channel.getChannelTypeUID().equals(sceneChannelTypeUID)) {
+            if (sceneChannelTypeUID.equals(channel.getChannelTypeUID())) {
                 Integer id = Integer.parseInt(channel.getUID().getId());
                 ret.put(id, channel);
             }

@@ -22,6 +22,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
@@ -68,7 +69,7 @@ public class HDPowerViewJUnitTests {
                     String shadeName = shade.getName();
                     assertNotNull(shadeName);
                 }
-            } catch (JsonParseException | ProcessingException e) {
+            } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
@@ -83,22 +84,22 @@ public class HDPowerViewJUnitTests {
                     String sceneName = scene.getName();
                     assertNotNull(sceneName);
                 }
-            } catch (JsonParseException | ProcessingException e) {
+            } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
             try {
                 assertNotNull(shadeId);
                 assertNotNull(shadePos);
-                shadePos.position1 = shadePos.position1 + ((shadePos.position1 <= 1000) ? 1000 : -1000);
+                // TODO shadePos.position1 = shadePos.position1 + ((shadePos.position1 <= 1000) ? 1000 : -1000);
                 webTargets.moveShade(shadeId, shadePos);
-            } catch (ProcessingException e) {
+            } catch (ProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
             try {
                 webTargets.activateScene(sceneId);
-            } catch (ProcessingException e) {
+            } catch (ProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
         }
