@@ -16,7 +16,9 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -138,41 +140,33 @@ public class AbstractDynamoDBItemSerializationTest {
 
     @Test
     public void testDateTimeTypeWithDateTimeItem() throws IOException {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.set(2016, Calendar.MAY, 1, 13, 46, 0);
-        calendar.set(Calendar.MILLISECOND, 50);
-        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(calendar), "2016-05-01T13:46:00.050Z");
-        testAsHistoricGeneric(dbitem, new DateTimeItem("foo"), new DateTimeType(calendar));
+        ZonedDateTime zdt = ZonedDateTime.parse("2016-05-01T13:46:00.050Z");
+        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(zdt.toString()), "2016-05-01T13:46:00.050Z");
+        testAsHistoricGeneric(dbitem, new DateTimeItem("foo"),
+                new DateTimeType(zdt.withZoneSameInstant(ZoneId.systemDefault())));
     }
 
     @Test
     public void testDateTimeTypeWithStringItem() throws IOException {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        calendar.set(2016, Calendar.MAY, 1, 13, 46, 0);
-        calendar.set(Calendar.MILLISECOND, 50);
-        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(calendar), "2016-05-01T13:46:00.050Z");
+        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(ZonedDateTime.parse("2016-05-01T13:46:00.050Z")),
+                "2016-05-01T13:46:00.050Z");
         testAsHistoricGeneric(dbitem, new StringItem("foo"), new StringType("2016-05-01T13:46:00.050Z"));
     }
 
     @Test
     public void testDateTimeTypeLocalWithDateTimeItem() throws IOException {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("GMT+03:00"));
-        calendar.setTimeInMillis(1468773487050L); // GMT: Sun, 17 Jul 2016 16:38:07.050 GMT
-        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(calendar), "2016-07-17T16:38:07.050Z");
+        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType("2016-07-17T19:38:07.050+0300"),
+                "2016-07-17T16:38:07.050Z");
 
-        // when deserializing data, we get the date in UTC Calendar
-        Calendar expectedCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        expectedCal.setTimeInMillis(1468773487050L);
-        testAsHistoricGeneric(dbitem, new DateTimeItem("foo"), new DateTimeType(expectedCal));
+        ZonedDateTime expectedZdt = Instant.ofEpochMilli(1468773487050L).atZone(ZoneId.systemDefault());
+        testAsHistoricGeneric(dbitem, new DateTimeItem("foo"), new DateTimeType(expectedZdt));
     }
 
     @Test
     public void testDateTimeTypeLocalWithStringItem() throws IOException {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("GMT+03:00"));
-        calendar.setTimeInMillis(1468773487050L); // GMT: Sun, 17 Jul 2016 16:38:07.050 GMT
-        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(calendar), "2016-07-17T16:38:07.050Z");
+        Instant instant = Instant.ofEpochMilli(1468773487050L); // GMT: Sun, 17 Jul 2016 16:38:07.050 GMT
+        ZonedDateTime zdt = instant.atZone(TimeZone.getTimeZone("GMT+03:00").toZoneId());
+        DynamoDBItem<?> dbitem = testStateGeneric(new DateTimeType(zdt), "2016-07-17T16:38:07.050Z");
         testAsHistoricGeneric(dbitem, new StringItem("foo"), new StringType("2016-07-17T16:38:07.050Z"));
     }
 

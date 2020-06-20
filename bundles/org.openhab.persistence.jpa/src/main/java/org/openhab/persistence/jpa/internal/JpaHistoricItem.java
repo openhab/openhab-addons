@@ -13,8 +13,10 @@
 package org.openhab.persistence.jpa.internal;
 
 import java.text.DateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -112,9 +114,8 @@ public class JpaHistoricItem implements HistoricItem {
         } else if (item instanceof RollershutterItem) {
             state = PercentType.valueOf(pItem.getValue());
         } else if (item instanceof DateTimeItem) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date(Long.valueOf(pItem.getValue())));
-            state = new DateTimeType(cal);
+            state = new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.valueOf(pItem.getValue())),
+                    ZoneId.systemDefault()));
         } else if (item instanceof LocationItem) {
             PointType pType = null;
             String[] comps = pItem.getValue().split(";");

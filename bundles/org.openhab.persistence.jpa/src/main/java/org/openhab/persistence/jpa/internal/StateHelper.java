@@ -36,7 +36,7 @@ public class StateHelper {
      */
     public static String toString(State state) throws Exception {
         if (state instanceof DateTimeType) {
-            return String.valueOf(((DateTimeType) state).getCalendar().getTime().getTime());
+            return String.valueOf(((DateTimeType) state).getZonedDateTime().toInstant().toEpochMilli());
         }
         if (state instanceof DecimalType) {
             return String.valueOf(((DecimalType) state).doubleValue());

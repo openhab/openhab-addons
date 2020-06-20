@@ -12,15 +12,11 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_CATEGORY_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_LABEL_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_TYPE_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -65,14 +61,8 @@ public class ItemToStorePointCreator {
         return point.build();
     }
 
-    @SuppressWarnings("null")
     private String calculateMeasurementName(Item item, @Nullable String storeAlias) {
-        String name;
-        if (StringUtils.isNotBlank(storeAlias)) {
-            name = storeAlias;
-        } else {
-            name = item.getName();
-        }
+        String name = storeAlias != null && !storeAlias.isBlank() ? storeAlias : item.getName();
 
         if (configuration.isReplaceUnderscore()) {
             name = name.replace('_', '.');
@@ -105,8 +95,9 @@ public class ItemToStorePointCreator {
     private void addPointTags(Item item, InfluxPoint.Builder point) {
         if (configuration.isAddCategoryTag()) {
             String categoryName = item.getCategory();
-            if (categoryName == null)
+            if (categoryName == null) {
                 categoryName = "n/a";
+            }
             point.withTag(TAG_CATEGORY_NAME, categoryName);
         }
 
@@ -116,8 +107,9 @@ public class ItemToStorePointCreator {
 
         if (configuration.isAddLabelTag()) {
             String labelName = item.getLabel();
-            if (labelName == null)
+            if (labelName == null) {
                 labelName = "n/a";
+            }
             point.withTag(TAG_LABEL_NAME, labelName);
         }
 
