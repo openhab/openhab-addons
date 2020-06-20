@@ -16,8 +16,9 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.time.Month;
 import java.time.ZoneId;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
@@ -113,15 +114,14 @@ public class RobonectHandlerTest {
 
         State value = stateCaptor.getValue();
         assertTrue(value instanceof DateTimeType);
-        DateTimeType dateTimeType = (DateTimeType) value;
-        assertEquals(1, dateTimeType.getCalendar().get(Calendar.DAY_OF_MONTH));
 
-        assertEquals(2017, dateTimeType.getCalendar().get(Calendar.YEAR));
-        // calendar january is 0
-        assertEquals(4, dateTimeType.getCalendar().get(Calendar.MONTH));
-        assertEquals(19, dateTimeType.getCalendar().get(Calendar.HOUR_OF_DAY));
-        assertEquals(0, dateTimeType.getCalendar().get(Calendar.MINUTE));
-        assertEquals(0, dateTimeType.getCalendar().get(Calendar.SECOND));
+        ZonedDateTime zdt = ((DateTimeType) value).getZonedDateTime();
+        assertEquals(1, zdt.getDayOfMonth());
+        assertEquals(2017, zdt.getYear());
+        assertEquals(Month.MAY, zdt.getMonth());
+        assertEquals(19, zdt.getHour());
+        assertEquals(0, zdt.getMinute());
+        assertEquals(0, zdt.getSecond());
     }
 
     @Test
@@ -136,7 +136,7 @@ public class RobonectHandlerTest {
         error.setDate("01.05.2017");
         error.setTime("19:00:00");
         error.setUnix("1493665200");
-        error.setErrorCode(new Integer(22));
+        error.setErrorCode(Integer.valueOf(22));
         error.setErrorMessage("Dummy Message");
         mowerInfo.getStatus().setStatus(MowerStatus.ERROR_STATUS);
         mowerInfo.setError(error);
@@ -164,14 +164,14 @@ public class RobonectHandlerTest {
 
         State errorDate = errorDateCaptor.getValue();
         assertTrue(errorDate instanceof DateTimeType);
-        DateTimeType dateTimeType = (DateTimeType) errorDate;
-        assertEquals(1, dateTimeType.getCalendar().get(Calendar.DAY_OF_MONTH));
-        assertEquals(2017, dateTimeType.getCalendar().get(Calendar.YEAR));
-        // calendar january is 0
-        assertEquals(4, dateTimeType.getCalendar().get(Calendar.MONTH));
-        assertEquals(19, dateTimeType.getCalendar().get(Calendar.HOUR_OF_DAY));
-        assertEquals(0, dateTimeType.getCalendar().get(Calendar.MINUTE));
-        assertEquals(0, dateTimeType.getCalendar().get(Calendar.SECOND));
+
+        ZonedDateTime zdt = ((DateTimeType) errorDate).getZonedDateTime();
+        assertEquals(1, zdt.getDayOfMonth());
+        assertEquals(2017, zdt.getYear());
+        assertEquals(Month.MAY, zdt.getMonth());
+        assertEquals(19, zdt.getHour());
+        assertEquals(0, zdt.getMinute());
+        assertEquals(0, zdt.getSecond());
 
         State errorMessage = errorMessageCaptor.getValue();
         assertTrue(errorMessage instanceof StringType);
@@ -298,8 +298,8 @@ public class RobonectHandlerTest {
         assertEquals("Mowy", stateCaptorName.getValue().toFullString());
         assertEquals(99, ((DecimalType) stateCaptorBattery.getValue()).intValue());
         assertEquals(4, ((DecimalType) stateCaptorStatus.getValue()).intValue());
-        assertEquals(55, ((QuantityType) stateCaptorDuration.getValue()).intValue());
-        assertEquals(22, ((QuantityType) stateCaptorHours.getValue()).intValue());
+        assertEquals(55, ((QuantityType<?>) stateCaptorDuration.getValue()).intValue());
+        assertEquals(22, ((QuantityType<?>) stateCaptorHours.getValue()).intValue());
         assertEquals(MowerMode.AUTO.name(), stateCaptorMode.getValue().toFullString());
         assertEquals(OnOffType.ON, stateCaptorStarted.getValue());
         assertEquals(-88, ((DecimalType) stateCaptorWlan.getValue()).intValue());
