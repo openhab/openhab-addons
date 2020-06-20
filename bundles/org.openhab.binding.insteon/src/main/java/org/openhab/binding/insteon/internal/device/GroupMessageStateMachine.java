@@ -101,18 +101,20 @@ public class GroupMessageStateMachine {
         EXPECT_SUCCESS
     };
 
-    State state = State.EXPECT_BCAST;
-    int lastHops = 0;
+    private State state = State.EXPECT_BCAST;
+    private long lastUpdated = 0;
+    private boolean publish = false;
 
     /**
      * Advance the state machine and determine if update is genuine (no duplicate)
      *
      * @param a the group message (action) that was received
-     * @param hops number of hops that was given on the message. Currently not used.
+     * @param address the address of the device that this state machine belongs to
+     * @param group the group that this state machine belongs to
      * @return true if the group message is not a duplicate
      */
-    public boolean action(GroupMessage a, int hops) {
-        boolean publish = false;
+    public boolean action(GroupMessage a, InsteonAddress address, int group) {
+        publish = false;
         switch (state) {
             case EXPECT_BCAST:
                 switch (a) {
@@ -166,7 +168,17 @@ public class GroupMessageStateMachine {
                 state = State.EXPECT_BCAST;
                 break;
         }
-        logger.trace("group state: {} --{}--> {}, publish: {}", oldState, a, state, publish);
+
+        lastUpdated = System.currentTimeMillis();
+        logger.debug("{} group {} state: {} --{}--> {}, publish: {}", address, group, oldState, a, state, publish);
         return (publish);
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public boolean getPublish() {
+        return publish;
     }
 }

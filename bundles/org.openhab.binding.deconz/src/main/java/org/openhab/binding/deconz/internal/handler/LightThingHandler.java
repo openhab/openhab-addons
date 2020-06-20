@@ -13,7 +13,7 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
-import static org.openhab.binding.deconz.internal.Util.buildUrl;
+import static org.openhab.binding.deconz.internal.Util.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -78,8 +78,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
 
+    private final int ct_max;
+    private final int ct_min;
+
     public LightThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
+        ct_max = parseIntWithFallback(thing.getProperties().get(PROPERTY_CT_MAX), ZCL_CT_MAX);
+        ct_min = parseIntWithFallback(thing.getProperties().get(PROPERTY_CT_MIN), ZCL_CT_MIN);
     }
 
     @Override
@@ -169,7 +174,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof DecimalType) {
-                    newLightState.ct = unscaleColorTemperature(((DecimalType) command).doubleValue());
+                    int miredValue  = kelvinToMired(((DecimalType) command).intValue());
+                    newLightState.ct = constrainToRange(miredValue,ct_min, ct_max);
 
                     if (currentOn != null && !currentOn) {
                         // sending new color temperature is only allowed when light is on
@@ -263,16 +269,17 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             case CHANNEL_COLOR:
                 if (on != null && on == false) {
                     updateState(channelId, OnOffType.OFF);
-                } else {
-                    double @Nullable [] xy = newState.xy;
-                    Integer hue = newState.hue;
-                    Integer sat = newState.sat;
-                    if (hue != null && sat != null && bri != null) {
-                        updateState(channelId,
-                                new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
-                    } else if (xy != null && xy.length == 2) {
-                        updateState(channelId, HSBType.fromXY((float) xy[0], (float) xy[1]));
+                } else if (bri != null && newState.colormode != null && newState.colormode.equals("xy")) {
+                    final double @Nullable [] xy = newState.xy;
+                    if (xy != null && xy.length == 2) {
+                        HSBType color = HSBType.fromXY((float) xy[0], (float) xy[1]);
+                        updateState(channelId, new HSBType(color.getHue(), color.getSaturation(), toPercentType(bri)));
                     }
+                } else if (bri != null && newState.hue != null && newState.sat != null) {
+                    final Integer hue = newState.hue;
+                    final Integer sat = newState.sat;
+                    updateState(channelId,
+                            new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
@@ -284,8 +291,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 Integer ct = newState.ct;
-                if (ct != null) {
-                    updateState(channelId, new DecimalType(scaleColorTemperature(ct)));
+                if (ct != null && ct >= ct_min && ct <= ct_max) {
+                    updateState(channelId, new DecimalType(miredToKelvin(ct)));
                 }
                 break;
             case CHANNEL_POSITION:
@@ -313,14 +320,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
             }
         }
-    }
-
-    private int unscaleColorTemperature(double ct) {
-        return (int) (ct / 100.0 * (500 - 153) + 153);
-    }
-
-    private double scaleColorTemperature(int ct) {
-        return 100.0 * (ct - 153) / (500 - 153);
     }
 
     private PercentType toPercentType(int val) {
