@@ -92,7 +92,8 @@ public class HomekitTaggedItem {
     }
 
     public boolean isGroup() {
-        return (isAccessory() && (proxyItem.getItem() instanceof GroupItem));
+        return (isAccessory() && (proxyItem.getItem() instanceof GroupItem)
+                && ((GroupItem) proxyItem.getItem()).getBaseItem() == null);
     }
 
     public HomekitAccessoryType getAccessoryType() {
