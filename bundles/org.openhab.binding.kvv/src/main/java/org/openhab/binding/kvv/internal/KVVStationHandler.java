@@ -15,9 +15,11 @@ package org.openhab.binding.kvv.internal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -41,12 +43,11 @@ public class KVVStationHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KVVStationHandler.class);
 
-    private final KVVStationConfig config;
+    @Nullable
+    private ScheduledFuture<?> pollingJob;
 
     public KVVStationHandler(final Thing thing) {
         super(thing);
-        logger.info("stationhandler!");
-        this.config = getConfigAs(KVVStationConfig.class);
     }
 
     @Override
@@ -54,21 +55,13 @@ public class KVVStationHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
-
-            // creating channels
-            logger.info("Creating channels...");
-            final List<Channel> channels = new ArrayList<Channel>();
-            for (int i = 0; i < this.config.maxTrains; i++) {
-                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
-                        .build());
-                channels.add(ChannelBuilder
-                        .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
-                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String")
-                        .build());
+            final KVVStationConfig config = getConfigAs(KVVStationConfig.class);
+            if (config == null) {
+                logger.warn("Failed to get config (is null)");
+                updateStatus(ThingStatus.OFFLINE);
+                return;
             }
-            this.updateThing(this.editThing().withChannels(channels).build());
 
-            logger.info("Starting inital fetch");
             final Bridge bridge = getBridge();
             if (bridge == null) {
                 logger.warn("Failed to get bridge (is null)");
@@ -83,24 +76,28 @@ public class KVVStationHandler extends BaseThingHandler {
                 return;
             }
 
-            final DepartureResult departures = handler.queryKVV(this.config);
-            if (departures == null) {
-                logger.warn("Failed to get departures for '{}'", this.thing.getUID().getAsString());
-                updateStatus(ThingStatus.OFFLINE);
-                return;
+            // creating channels
+            final List<Channel> channels = new ArrayList<Channel>();
+            for (int i = 0; i < config.maxTrains; i++) {
+                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
+                        .build());
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
+                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String")
+                        .build());
             }
-
-            logger.info("Listing channels...");
-            for (final Channel c : this.getThing().getChannels()) {
-                logger.info("{}", c.getUID().getAsString());
-            }
-
-            this.setDepartures(departures);
-            this.scheduler.scheduleWithFixedDelay(new UpdateTask(), 0, this.config.updateInterval,
-                    TimeUnit.MILLISECONDS);
+            this.updateThing(this.editThing().withChannels(channels).build());
+            this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(handler, config), 0,
+                    config.updateInterval, TimeUnit.MILLISECONDS);
             updateStatus(ThingStatus.ONLINE);
-            logger.info("Thing is online");
         });
+    }
+
+    @Override
+    public void dispose() {
+        if (this.pollingJob != null) {
+            this.pollingJob.cancel(true);
+        }
     }
 
     /**
@@ -108,8 +105,8 @@ public class KVVStationHandler extends BaseThingHandler {
      *
      * @param departures the new list of departures
      */
-    private synchronized void setDepartures(final DepartureResult departures) {
-        for (int i = 0; i < this.config.maxTrains; i++) {
+    private synchronized void setDepartures(final DepartureResult departures, final int maxTrains) {
+        for (int i = 0; i < maxTrains; i++) {
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"),
                     new StringType(departures.getDepartures().get(i).getRoute()));
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"),
@@ -132,23 +129,20 @@ public class KVVStationHandler extends BaseThingHandler {
     @NonNullByDefault
     public class UpdateTask extends TimerTask {
 
+        private final KVVBridgeHandler handler;
+
+        private final KVVStationConfig config;
+
+        public UpdateTask(final KVVBridgeHandler handler, KVVStationConfig config) {
+            this.handler = handler;
+            this.config = config;
+        }
+
         @Override
         public void run() {
-            final Bridge bridge = getBridge();
-            if (bridge == null) {
-                logger.warn("Failed to get bridge (is null)");
-                return;
-            }
-
-            final KVVBridgeHandler handler = (KVVBridgeHandler) bridge.getHandler();
-            if (handler == null) {
-                logger.warn("Failed to get bridge handler (is null)");
-                return;
-            }
-
-            final DepartureResult departures = handler.queryKVV(config);
+            final DepartureResult departures = this.handler.queryKVV(config);
             if (departures != null) {
-                setDepartures(departures);
+                setDepartures(departures, this.config.maxTrains);
             }
         }
     }
