@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.CouleurDemain;
 import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
@@ -21,6 +22,7 @@ import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public enum Label {
 
     ADCO(String.class, 12),
