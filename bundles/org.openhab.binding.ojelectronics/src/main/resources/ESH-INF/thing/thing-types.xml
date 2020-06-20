@@ -64,6 +64,12 @@
 			<channel id="heating" typeId="heating" />
 			<channel id="thermostatName" typeId="thermostatName" />
 			<channel id="regulationMode" typeId="regulationMode" />
+			<channel id="serialNumber" typeId="serialNumber" />
+			<channel id="comfortSetpoint" typeId="comfortSetpoint" />
+            <channel id="comfortEndTime" typeId="comfortEndTime" />
+            <channel id="boostEndTime" typeId="boostEndTime" />
+            <channel id="manualModeSetpoint" typeId="manualModeSetpoint" />
+            <channel id="vacationEnabled" typeId="vacationEnabled" />
 		</channels>
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
@@ -124,6 +130,36 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="serialNumber">
+	   <item-type>String</item-type>
+	   <label>Serial Number</label>
+	   <state readOnly="true" />
+	</channel-type>
+    <channel-type id="comfortSetpoint">
+        <item-type>Number</item-type>
+        <label>Comfort set point temperature</label>
+        <category>Temperature</category>
+        <state pattern="%.1f °C" readOnly="true" />
+    </channel-type>
+    <channel-type id="comfortEndTime">
+        <item-type>DateTime</item-type>
+        <label>End time of comfort mode</label>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="boostEndTime">
+        <item-type>DateTime</item-type>
+        <label>End time of boost mode</label>
+        <state readOnly="true" />
+    </channel-type>
+    <channel-type id="manualModeSetpoint">
+        <item-type>Number</item-type>
+        <label>Manual set point temperature</label>
+        <category>Temperature</category>
+        <state pattern="%.1f °C" readOnly="true" />
+    </channel-type>
+        <channel-type id="vacationEnabled">
+        <item-type>Switch</item-type>
+        <label>Vacation mode enabled</label>
+        <state readOnly="true" />
+    </channel-type>
 </thing:thing-descriptions>
-
-

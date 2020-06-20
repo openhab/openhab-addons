@@ -39,4 +39,10 @@ public class OJElectronicsBindingConstants {
     public static final String CHANNEL_OWD5_ROOMTEMPERATURE = "roomTemperature";
     public static final String CHANNEL_OWD5_THERMOSTATNAME = "thermostatName";
     public static final String CHANNEL_OWD5_REGULATIONMODE = "regulationMode";
+    public static final String CHANNEL_OWD5_SERIALNUMBER = "serialNumber";
+    public static final String CHANNEL_OWD5_COMFORTSETPOINT = "comfortSetpoint";
+    public static final String CHANNEL_OWD5_COMFORTENDTIME = "comfortEndTime";
+    public static final String CHANNEL_OWD5_BOOSTENDTIME = "boostEndTime";
+    public static final String CHANNEL_OWD5_MANUALSETPOINT = "manualSetpoint";
+    public static final String CHANNEL_OWD5_VACATIONENABLED = "vacationEnabled";
 }

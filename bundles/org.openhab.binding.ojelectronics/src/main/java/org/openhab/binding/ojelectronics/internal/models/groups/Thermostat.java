@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ojelectronics.internal.models.groups;
 
+import java.util.Date;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -70,7 +72,7 @@ public class Thermostat {
     public Integer comfortSetpoint = 0;
     @SerializedName("ComfortEndTime")
     @Expose
-    public String comfortEndTime = "";
+    public Date comfortEndTime = new Date();
     @SerializedName("ManualModeSetpoint")
     @Expose
     public Integer manualModeSetpoint = 0;
@@ -79,10 +81,10 @@ public class Thermostat {
     public Boolean vacationEnabled = false;
     @SerializedName("VacationBeginDay")
     @Expose
-    public String vacationBeginDay = "";
+    public Date vacationBeginDay = new Date();
     @SerializedName("VacationEndDay")
     @Expose
-    public String vacationEndDay = "";
+    public Date vacationEndDay = new Date();
     @SerializedName("VacationTemperature")
     @Expose
     public Integer vacationTemperature = 0;
@@ -91,7 +93,7 @@ public class Thermostat {
     public Boolean lastPrimaryModeIsAuto = false;
     @SerializedName("BoostEndTime")
     @Expose
-    public String boostEndTime = "";
+    public Date boostEndTime = new Date();
     @SerializedName("FrostProtectionTemperature")
     @Expose
     public Integer frostProtectionTemperature = 0;

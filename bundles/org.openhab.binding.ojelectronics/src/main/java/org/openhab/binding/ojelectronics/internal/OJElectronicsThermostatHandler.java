@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.ojelectronics.internal;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -88,6 +92,11 @@ public class OJElectronicsThermostatHandler extends BaseThingHandler {
         logger.debug("Finished initializing!");
     }
 
+    /**
+     * Sets the values after refreshing the thermostats values
+     *
+     * @param thermostat thermostat values
+     */
     public void handleThermostatRefresh(Thermostat thermostat) {
         updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_GROUPNAME, StringType.valueOf(thermostat.groupName));
         updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_GROUPID, new DecimalType(thermostat.groupId));
@@ -101,5 +110,15 @@ public class OJElectronicsThermostatHandler extends BaseThingHandler {
                 StringType.valueOf(thermostat.thermostatName));
         updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_REGULATIONMODE,
                 StringType.valueOf(thermostat.regulationMode.toString()));
+        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_SERIALNUMBER,
+                StringType.valueOf(thermostat.serialNumber));
+        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_COMFORTSETPOINT,
+                new DecimalType(thermostat.comfortSetpoint / (double) 100));
+        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(
+                ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), ZoneId.systemDefault())));
+        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_BOOSTENDTIME,
+                new DateTimeType(ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), ZoneId.systemDefault())));
+        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_MANUALSETPOINT,
+                new DecimalType(thermostat.comfortSetpoint / (double) 100));
     }
 }

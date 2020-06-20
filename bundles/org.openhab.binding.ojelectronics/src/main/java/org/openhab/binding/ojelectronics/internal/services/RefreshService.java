@@ -45,7 +45,7 @@ public final class RefreshService {
     private final OJElectronicsBridgeConfiguration config;
     private final Logger logger = LoggerFactory.getLogger(RefreshService.class);
     private final HttpClient httpClient;
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 
     private @Nullable Runnable connectionLosed;
     private @Nullable Consumer<@Nullable GroupContentResponseModel> refreshDone;
