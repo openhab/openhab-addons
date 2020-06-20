@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.presence;
 import io.swagger.client.model.NAWelcomeCamera;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
-import org.eclipse.smarthome.core.internal.i18n.I18nProviderImpl;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -49,6 +48,8 @@ public class NAPresenceCameraHandlerTest {
 
     @Mock
     private RequestExecutor requestExecutorMock;
+    @Mock
+    private TimeZoneProvider timeZoneProviderMock;
 
     private Thing presenceCameraThing;
     private NAWelcomeCamera presenceCamera;
@@ -263,7 +264,7 @@ public class NAPresenceCameraHandlerTest {
 
     @Test
     public void testHandleCommand_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl());
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
         handlerWithoutModule.handleCommand(floodlightChannelUID, OnOffType.ON);
 
         verify(requestExecutorMock, never()).executeGETRequest(any()); //no executions because the thing isn't initialized
@@ -300,7 +301,7 @@ public class NAPresenceCameraHandlerTest {
 
     @Test
     public void testGetNAThingProperty_Floodlight_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl());
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
         assertEquals(UnDefType.UNDEF, handlerWithoutModule.getNAThingProperty(floodlightChannelUID.getId()));
     }
 
@@ -365,7 +366,7 @@ public class NAPresenceCameraHandlerTest {
 
     @Test
     public void testGetNAThingProperty_FloodlightAutoMode_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, new I18nProviderImpl());
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
         assertEquals(UnDefType.UNDEF, handlerWithoutModule.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
     }
 
@@ -443,7 +444,7 @@ public class NAPresenceCameraHandlerTest {
     private class NAPresenceCameraHandlerAccessible extends NAPresenceCameraHandler {
 
         public NAPresenceCameraHandlerAccessible(Thing thing, NAWelcomeCamera presenceCamera) {
-            super(thing, new I18nProviderImpl());
+            super(thing, timeZoneProviderMock);
             module = presenceCamera;
         }
 
