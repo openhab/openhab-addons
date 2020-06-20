@@ -14,9 +14,11 @@ package org.openhab.persistence.jdbc.db;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -427,8 +429,8 @@ public class JdbcBaseDAO {
             vo.setValue(newVal.intValue());
         } else if ("DATETIMEITEM".equals(itemType)) {
             vo.setValueTypes(getSqlTypes().get(itemType), java.sql.Timestamp.class);
-            Calendar x = ((DateTimeType) item.getState()).getCalendar();
-            java.sql.Timestamp d = new java.sql.Timestamp(x.getTimeInMillis());
+            java.sql.Timestamp d = new java.sql.Timestamp(
+                    ((DateTimeType) item.getState()).getZonedDateTime().toInstant().toEpochMilli());
             logger.debug("JDBC::storeItemValueProvider: DateTimeItem: '{}'", d);
             vo.setValue(d);
         } else {
@@ -483,9 +485,8 @@ public class JdbcBaseDAO {
         } else if (item instanceof RollershutterItem) {
             return new PercentType(objectAsInteger(v));
         } else if (item instanceof DateTimeItem) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(objectAsLong(v));
-            return new DateTimeType(calendar);
+            return new DateTimeType(
+                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsLong(v)), ZoneId.systemDefault()));
         } else if (item instanceof StringItem) {
             return StringType.valueOf(((String) v).toString());
         } else {// Call, Location, String

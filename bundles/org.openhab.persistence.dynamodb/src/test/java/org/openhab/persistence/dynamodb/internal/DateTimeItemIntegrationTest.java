@@ -13,8 +13,6 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,19 +30,13 @@ import org.openhab.core.types.State;
 public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest {
 
     private static final String NAME = "datetime";
-    private static final Calendar CAL1 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    private static final Calendar CAL2 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    private static final Calendar CAL_BETWEEN = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-    static {
-        CAL1.set(2016, 5, 15, 10, 00, 00);
-        CAL2.set(2016, 5, 15, 16, 00, 00);
-        CAL2.set(Calendar.MILLISECOND, 123);
-        CAL_BETWEEN.set(2016, 5, 15, 14, 00, 00);
-    }
+    private static final ZonedDateTime ZDT1 = ZonedDateTime.parse("2016-06-15T10:00:00Z");
+    private static final ZonedDateTime ZDT2 = ZonedDateTime.parse("2016-06-15T16:00:00.123Z");
+    private static final ZonedDateTime ZDT_BETWEEN = ZonedDateTime.parse("2016-06-15T14:00:00Z");
 
-    private static final DateTimeType STATE1 = new DateTimeType(CAL1);
-    private static final DateTimeType STATE2 = new DateTimeType(CAL2);
-    private static final DateTimeType STATE_BETWEEN = new DateTimeType(CAL_BETWEEN);
+    private static final DateTimeType STATE1 = new DateTimeType(ZDT1);
+    private static final DateTimeType STATE2 = new DateTimeType(ZDT2);
+    private static final DateTimeType STATE_BETWEEN = new DateTimeType(ZDT_BETWEEN);
 
     @BeforeClass
     public static void storeData() throws InterruptedException {

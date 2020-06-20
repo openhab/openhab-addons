@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -57,12 +58,12 @@ public class InfluxDBConfiguration {
 
     @SuppressWarnings("null")
     public InfluxDBConfiguration(Map<String, @Nullable Object> config) {
-        url = (String) config.getOrDefault(URL_PARAM, "http://127.0.0.1:8086");
-        user = (String) config.getOrDefault(USER_PARAM, "openhab");
-        password = (String) config.getOrDefault(PASSWORD_PARAM, "");
-        token = (String) config.getOrDefault(TOKEN_PARAM, "");
-        databaseName = (String) config.getOrDefault(DATABASE_PARAM, "openhab");
-        retentionPolicy = (String) config.getOrDefault(RETENTION_POLICY_PARAM, "autogen");
+        url = (@NonNull String) config.getOrDefault(URL_PARAM, "http://127.0.0.1:8086");
+        user = (@NonNull String) config.getOrDefault(USER_PARAM, "openhab");
+        password = (@NonNull String) config.getOrDefault(PASSWORD_PARAM, "");
+        token = (@NonNull String) config.getOrDefault(TOKEN_PARAM, "");
+        databaseName = (@NonNull String) config.getOrDefault(DATABASE_PARAM, "openhab");
+        retentionPolicy = (@NonNull String) config.getOrDefault(RETENTION_POLICY_PARAM, "autogen");
         version = parseInfluxVersion(config.getOrDefault(VERSION_PARAM, InfluxDBVersion.V1.name()));
 
         replaceUnderscore = getConfigBooleanValue(config, REPLACE_UNDERSCORE_PARAM, false);

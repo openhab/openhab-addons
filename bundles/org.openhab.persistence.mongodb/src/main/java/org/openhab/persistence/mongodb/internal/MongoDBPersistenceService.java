@@ -12,8 +12,9 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -187,7 +188,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         if (state instanceof PercentType) {
             value = ((PercentType) state).toBigDecimal().doubleValue();
         } else if (state instanceof DateTimeType) {
-            value = ((DateTimeType) state).getCalendar().getTime();
+            value = Date.from(((DateTimeType) state).getZonedDateTime().toInstant());
         } else if (state instanceof DecimalType) {
             value = ((DecimalType) state).toBigDecimal().doubleValue();
         } else {
@@ -301,9 +302,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             } else if (item instanceof RollershutterItem) {
                 state = new PercentType(obj.getInt(FIELD_VALUE));
             } else if (item instanceof DateTimeItem) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(obj.getDate(FIELD_VALUE));
-                state = new DateTimeType(cal);
+                state = new DateTimeType(
+                        ZonedDateTime.ofInstant(obj.getDate(FIELD_VALUE).toInstant(), ZoneId.systemDefault()));
             } else {
                 state = new StringType(obj.getString(FIELD_VALUE));
             }
