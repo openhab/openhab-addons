@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	bindingId="amazonechocontrol"
+<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="amazonechocontrol"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
 		<label>Amazon Account</label>
@@ -20,27 +18,27 @@
 					<option value="2">Direct and over Alexa skill</option>
 				</options>
 			</parameter>
-			<parameter name="pollingIntervalSmartHomeAlexa"
-				type="decimal" min="10">
+			<parameter name="pollingIntervalSmartHomeAlexa" type="decimal" min="10">
 				<default>30</default>
 				<description>
 					Defines the time in seconds for openHAB to pull the
-					state of the Alexa connected devices. The minimum is 10 seconds.
+					state of the Alexa connected devices. The minimum is
+					10 seconds.
 				</description>
 			</parameter>
-			<parameter name="pollingIntervalSmartSkills" type="decimal"
-				min="60">
+			<parameter name="pollingIntervalSmartSkills" type="decimal" min="60">
 				<default>120</default>
 				<description>
 					Defines the time in seconds for openHAB to pull the
-					state of the over a skill connected devices. The minimum is 60 seconds.
+					state of the over a skill connected devices. The
+					minimum is 60 seconds.
 				</description>
 			</parameter>
-			<parameter name="discoverOpenHabSmartHomeDevices"
-				type="boolean">
+			<parameter name="discoverOpenHabSmartHomeDevices" type="boolean">
 				<default>false</default>
 				<advanced>true</advanced>
-				<description>Defines, if smart home devices of the openHAB skill should be discovered. This option is for development and testing purpose only.</description>
+				<description>Defines, if smart home devices of the openHAB skill should be discovered. This option is for
+					development and testing purpose only.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -64,17 +62,14 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName"
-				typeId="providerDisplayName" />
+			<channel id="providerDisplayName" typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand"
-				typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId"
-				typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
@@ -88,8 +83,7 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName"
-				typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -122,17 +116,14 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName"
-				typeId="providerDisplayName" />
+			<channel id="providerDisplayName" typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand"
-				typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId"
-				typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
@@ -146,8 +137,7 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName"
-				typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -180,17 +170,14 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName"
-				typeId="providerDisplayName" />
+			<channel id="providerDisplayName" typeId="providerDisplayName" />
 			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand"
-				typeId="playMusicVoiceCommand" />
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand" />
 			<channel id="startCommand" typeId="startCommand" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId"
-				typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 			<channel id="announcement" typeId="announcement" />
 			<channel id="textToSpeech" typeId="textToSpeech" />
@@ -204,8 +191,7 @@
 			<channel id="startRoutine" typeId="startRoutine" />
 			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
 			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName"
-				typeId="bluetoothDeviceName" />
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName" />
 			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
 			<channel id="notificationVolume" typeId="notificationVolume" />
 			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
@@ -234,13 +220,11 @@
 			<channel id="title" typeId="title" />
 			<channel id="subtitle1" typeId="subtitle1" />
 			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName"
-				typeId="providerDisplayName" />
+			<channel id="providerDisplayName" typeId="providerDisplayName" />
 			<channel id="radioStationId" typeId="radioStationId" />
 			<channel id="radio" typeId="radio" />
 			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId"
-				typeId="amazonMusicPlayListId" />
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId" />
 			<channel id="amazonMusic" typeId="amazonMusic" />
 		</channels>
 		<representation-property>serialNumber</representation-property>
@@ -349,8 +333,7 @@
 		<label>Amazon Music Play List Id</label>
 		<description>Amazon Music play list id (Write only, no current state)</description>
 	</channel-type>
-	<channel-type id="amazonMusicPlayListIdLastUsed"
-		advanced="true">
+	<channel-type id="amazonMusicPlayListIdLastUsed" advanced="true">
 		<item-type>String</item-type>
 		<label>Amazon Music Last Selected Playlist Id</label>
 		<description>Id of the playlist which was started with openHAB</description>
@@ -456,12 +439,15 @@
 	<channel-type id="announcement" advanced="true">
 		<item-type>String</item-type>
 		<label>Announcement</label>
-		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding description to learn how it's possible to set the title and turn off the sound.</description>
+		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding
+			description to learn how it's possible to set the title and turn off the sound.</description>
 	</channel-type>
 	<channel-type id="textToSpeech" advanced="true">
 		<item-type>String</item-type>
 		<label>Speak</label>
-		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe it?&lt;/speak&gt;</description>
+		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a
+			secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe
+			it?&lt;/speak&gt;</description>
 	</channel-type>
 	<channel-type id="textToSpeechVolume" advanced="true">
 		<item-type>Dimmer</item-type>
@@ -588,13 +574,11 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="colorTemperatureInKelvin"
-		advanced="false">
+	<channel-type id="colorTemperatureInKelvin" advanced="false">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
 		<description>The color temperature of the light</description>
-		<state min="1000" max="10000" step="100" pattern="%.1f K"
-			readOnly="true" />
+		<state min="1000" max="10000" step="100" pattern="%.1f K" readOnly="true" />
 	</channel-type>
 	<channel-type id="brightness" advanced="false">
 		<item-type>Dimmer</item-type>
@@ -652,15 +636,13 @@
 		<description>Water alarm</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="glassBreakDetectionState"
-		advanced="false">
+	<channel-type id="glassBreakDetectionState" advanced="false">
 		<item-type>Contact</item-type>
 		<label>Glass Break</label>
 		<description>Glass break alarm</description>
 		<state readOnly="true" />
 	</channel-type>
-	<channel-type id="smokeAlarmDetectionState"
-		advanced="false">
+	<channel-type id="smokeAlarmDetectionState" advanced="false">
 		<item-type>Contact</item-type>
 		<label>Smoke Alarm</label>
 		<description>Smoke alarm</description>
