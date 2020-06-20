@@ -207,6 +207,7 @@ public class HomekitImpl implements Homekit {
         return new ArrayList<HomekitAccessory>(this.changeListener.getAccessories().values());
     }
 
+    @Override
     public void clearHomekitPairings() {
         try {
             if (authInfo != null) {
