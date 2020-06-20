@@ -54,43 +54,41 @@ public class KVVStationHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
-            final KVVStationConfig config = getConfigAs(KVVStationConfig.class);
-            if (config == null) {
-                logger.warn("Failed to get config (is null)");
-                updateStatus(ThingStatus.OFFLINE);
-                return;
-            }
+        final KVVStationConfig config = getConfigAs(KVVStationConfig.class);
+        if (config == null) {
+            logger.warn("Failed to get config (is null)");
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
 
-            final Bridge bridge = getBridge();
-            if (bridge == null) {
-                logger.warn("Failed to get bridge (is null)");
-                updateStatus(ThingStatus.OFFLINE);
-                return;
-            }
+        final Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.warn("Failed to get bridge (is null)");
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
 
-            final KVVBridgeHandler handler = (KVVBridgeHandler) bridge.getHandler();
-            if (handler == null) {
-                logger.warn("Failed to get bridge handler (is null)");
-                updateStatus(ThingStatus.OFFLINE);
-                return;
-            }
+        final KVVBridgeHandler handler = (KVVBridgeHandler) bridge.getHandler();
+        if (handler == null) {
+            logger.warn("Failed to get bridge handler (is null)");
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
 
-            // creating channels
-            final List<Channel> channels = new ArrayList<Channel>();
-            for (int i = 0; i < config.maxTrains; i++) {
-                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
-                        .build());
-                channels.add(ChannelBuilder
-                        .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
-                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String")
-                        .build());
-            }
-            this.updateThing(this.editThing().withChannels(channels).build());
-            this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(handler, config), 0,
-                    config.updateInterval, TimeUnit.MILLISECONDS);
-            updateStatus(ThingStatus.ONLINE);
-        });
+        // creating channels
+        final List<Channel> channels = new ArrayList<Channel>();
+        for (int i = 0; i < config.maxTrains; i++) {
+            channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
+                    .build());
+            channels.add(ChannelBuilder
+                    .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
+            channels.add(
+                    ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String").build());
+        }
+        this.updateThing(this.editThing().withChannels(channels).build());
+        this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(handler, config), 0,
+                config.updateInterval, TimeUnit.MILLISECONDS);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
