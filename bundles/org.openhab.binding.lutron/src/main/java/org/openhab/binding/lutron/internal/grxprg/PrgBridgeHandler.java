@@ -13,7 +13,8 @@
 package org.openhab.binding.lutron.internal.grxprg;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -167,8 +168,8 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
 
         } else if (id.equals(PrgConstants.CHANNEL_TIMECLOCK)) {
             if (command instanceof DateTimeType) {
-                final Calendar c = ((DateTimeType) command).getCalendar();
-                _protocolHandler.setTime(c);
+                final ZonedDateTime zdt = ((DateTimeType) command).getZonedDateTime();
+                _protocolHandler.setTime(GregorianCalendar.from(zdt));
             } else {
                 logger.error("Received a TIMECLOCK channel command with a non DateTimeType: {}", command);
             }
