@@ -40,7 +40,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Christian Kittel - Initial Contribution
  */
 @NonNullByDefault
-public final class RefreshService {
+public final class RefreshService implements AutoCloseable {
 
     private final OJElectronicsBridgeConfiguration config;
     private final Logger logger = LoggerFactory.getLogger(RefreshService.class);
@@ -152,9 +152,7 @@ public final class RefreshService {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        destroyed = true;
+    public void close() throws Exception {
         stop();
     }
 }

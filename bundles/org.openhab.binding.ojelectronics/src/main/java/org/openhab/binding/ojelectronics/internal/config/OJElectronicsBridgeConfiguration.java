@@ -13,10 +13,9 @@
 package org.openhab.binding.ojelectronics.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ojelectronics.internal.OJElectronicsBridgeHandler;
 
 /**
- * The configuration for {@link OJElectronicsBridgeHandler}
+ * The configuration for {@link org.openhab.binding.ojelectronics.internal.OJElectronicsBridgeHandler}
  *
  * @author Christian Kittel - Initial contribution
  */
