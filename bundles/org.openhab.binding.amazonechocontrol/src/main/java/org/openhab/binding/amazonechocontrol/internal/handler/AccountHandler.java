@@ -75,6 +75,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerAccountAnnouncement;
 
 /**
  * Handles the connection to the amazon server.
@@ -109,6 +110,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         this.httpService = httpService;
         this.stateStorage = stateStorage;
         channelHandlers.add(new ChannelHandlerSendMessage(this, this.gson));
+        channelHandlers.add(new ChannelHandlerAccountAnnouncement(this, this.gson));
     }
 
     @Override
@@ -149,8 +151,15 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
             String channelId = channelUID.getId();
             for (ChannelHandler channelHandler : channelHandlers) {
-                if (channelHandler.tryHandleCommand(new Device(), connection, channelId, command)) {
-                    return;
+                if (channelHandler instanceof ChannelHandlerAccountAnnouncement) {
+                    Device[] devices = jsonSerialNumberDeviceMapping.values().toArray(new Device[jsonSerialNumberDeviceMapping.values().size()]);
+                    if (channelHandler.tryHandleCommand(devices, connection, channelId, command)) {
+                        return;
+                    }
+                } else {
+                    if (channelHandler.tryHandleCommand(new Device(), connection, channelId, command)) {
+                        return;
+                    }
                 }
             }
             if (command instanceof RefreshType) {
@@ -159,6 +168,13 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         } catch (IOException | URISyntaxException e) {
             logger.info("handleCommand fails", e);
         }
+    }
+
+    @Override
+    public void startAnnouncment(Device[] devices, String speak, String bodyText, @Nullable String title,
+            @Nullable Integer volume) throws IOException, URISyntaxException {
+        EchoHandler echoHandler = findEchoHandlerBySerialNumber(devices[0].serialNumber);
+        echoHandler.startAnnouncment(devices, speak, bodyText, title, volume);
     }
 
     public List<FlashBriefingProfileHandler> getFlashBriefingProfileHandlers() {
@@ -266,26 +282,22 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private void cleanup() {
         logger.debug("cleanup {}", getThing().getUID().getAsString());
-        @Nullable
-        ScheduledFuture<?> refreshJob = this.checkDataJob;
+        @Nullable ScheduledFuture<?> refreshJob = this.checkDataJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
             this.checkDataJob = null;
         }
-        @Nullable
-        ScheduledFuture<?> refreshLogin = this.checkLoginJob;
+        @Nullable ScheduledFuture<?> refreshLogin = this.checkLoginJob;
         if (refreshLogin != null) {
             refreshLogin.cancel(true);
             this.checkLoginJob = null;
         }
-        @Nullable
-        ScheduledFuture<?> foceCheckDataJob = this.foceCheckDataJob;
+        @Nullable ScheduledFuture<?> foceCheckDataJob = this.foceCheckDataJob;
         if (foceCheckDataJob != null) {
             foceCheckDataJob.cancel(true);
             this.foceCheckDataJob = null;
         }
-        @Nullable
-        ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
+        @Nullable ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
         if (refreshDataDelayed != null) {
             refreshDataDelayed.cancel(true);
             this.refreshAfterCommandJob = null;
@@ -326,7 +338,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     if (!currentConnection.getIsLoggedIn()) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                                 "Please login in through web site: http(s)://<YOUROPENHAB>:<YOURPORT>/amazonechocontrol/"
-                                        + URLEncoder.encode(uid.getId(), "UTF8"));
+                                + URLEncoder.encode(uid.getId(), "UTF8"));
                     }
                 } catch (ConnectionException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -486,8 +498,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 for (EchoHandler child : echoHandlers) {
                     Device device = findDeviceJson(child);
 
-                    @Nullable
-                    JsonNotificationSound[] notificationSounds = null;
+                    @Nullable JsonNotificationSound[] notificationSounds = null;
                     JsonPlaylists playlists = null;
                     if (device != null && currentConnection.getIsLoggedIn()) {
                         // update notification sounds
@@ -713,15 +724,20 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     void handleWebsocketCommand(JsonPushCommand pushCommand) {
         String command = pushCommand.command;
         if (command != null) {
+            @Nullable ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
             switch (command) {
                 case "PUSH_ACTIVITY":
                     handlePushActivity(pushCommand.payload);
-                    return;
+                    // refresh data 200ms after last command
+                    if (refreshDataDelayed != null) {
+                        refreshDataDelayed.cancel(false);
+                    }
+                    this.refreshAfterCommandJob = scheduler.schedule(this::refreshAfterCommand, 700,
+                            TimeUnit.MILLISECONDS);
+                    break;
                 case "PUSH_DOPPLER_CONNECTION_CHANGE":
                 case "PUSH_BLUETOOTH_STATE_CHANGE":
                     // refresh data 200ms after last command
-                    @Nullable
-                    ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
                     if (refreshDataDelayed != null) {
                         refreshDataDelayed.cancel(false);
                     }
@@ -739,8 +755,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             && payload.endsWith("}")) {
                         JsonCommandPayloadPushDevice devicePayload = gson.fromJson(payload,
                                 JsonCommandPayloadPushDevice.class);
-                        @Nullable
-                        DopplerId dopplerId = devicePayload.dopplerId;
+                        @Nullable DopplerId dopplerId = devicePayload.dopplerId;
                         if (dopplerId != null) {
                             handlePushDeviceCommand(dopplerId, command, payload);
                         }
@@ -751,8 +766,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     private void handlePushDeviceCommand(DopplerId dopplerId, String command, String payload) {
-        @Nullable
-        EchoHandler echoHandler = findEchoHandlerBySerialNumber(dopplerId.deviceSerialNumber);
+        @Nullable EchoHandler echoHandler = findEchoHandlerBySerialNumber(dopplerId.deviceSerialNumber);
         if (echoHandler != null) {
             echoHandler.handlePushCommand(command, payload);
         }
@@ -783,8 +797,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             return;
         }
 
-        @Nullable
-        SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
+        @Nullable SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
         if (sourceDeviceIds != null) {
             for (SourceDeviceId sourceDeviceId : sourceDeviceIds) {
                 if (sourceDeviceId != null) {

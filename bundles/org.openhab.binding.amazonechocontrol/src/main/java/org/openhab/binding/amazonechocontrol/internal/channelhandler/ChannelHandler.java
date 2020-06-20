@@ -31,7 +31,11 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Geramb - Initial contribution
  */
 public abstract class ChannelHandler {
+
     public abstract boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
+            throws IOException, URISyntaxException;
+
+    public abstract boolean tryHandleCommand(Device[] devices, Connection connection, String channelId, Command command)
             throws IOException, URISyntaxException;
 
     protected final IAmazonThingHandler thingHandler;

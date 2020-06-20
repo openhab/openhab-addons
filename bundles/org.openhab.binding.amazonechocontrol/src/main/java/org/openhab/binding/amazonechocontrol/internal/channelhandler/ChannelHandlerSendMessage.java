@@ -25,11 +25,13 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import com.google.gson.Gson;
 
 /**
- * The {@link ChannelHandlerSendMessage} is responsible for the announcement channel
+ * The {@link ChannelHandlerSendMessage} is responsible for the announcement
+ * channel
  *
  * @author Michael Geramb - Initial contribution
  */
 public class ChannelHandlerSendMessage extends ChannelHandler {
+
     private static final String CHANNEL_NAME = "sendMessage";
     private @Nullable AccountJson accountJson;
     private int lastMessageId = 1000;
@@ -80,7 +82,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
                 conversationJson.time = LocalDateTime.now().toString();
                 conversationJson.payload.text = commandValue;
 
-                String sendConversationBody = this.gson.toJson(new SendConversationJson[] { conversationJson });
+                String sendConversationBody = this.gson.toJson(new SendConversationJson[]{conversationJson});
                 String sendUrl = baseUrl + "/users/" + senderCommsId + "/conversations/" + receiverCommsId
                         + "/messages";
                 connection.makeRequestAndReturnString("POST", sendUrl, sendConversationBody, true, null);
@@ -90,11 +92,18 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
         return false;
     }
 
+    @Override
+    public boolean tryHandleCommand(Device[] devices, Connection connection, String channelId, Command command)
+            throws IOException, URISyntaxException {
+        return tryHandleCommand(devices[0], connection, channelId, command);
+    }
+
     void RefreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
     static class AccountJson {
+
         public @Nullable String commsId;
         public @Nullable String directedId;
         public @Nullable String phoneCountryCode;
@@ -111,6 +120,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
     }
 
     static class SendConversationJson {
+
         public @Nullable String conversationId;
         public @Nullable String clientMessageId;
         public @Nullable Integer messageId;
@@ -121,6 +131,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
         public Integer status = 1;
 
         static class Payload {
+
             public @Nullable String text;
         }
     }

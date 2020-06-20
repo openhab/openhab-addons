@@ -7,6 +7,7 @@
 		<description>Amazon Account where the amazon echo devices are registered.</description>
 		<channels>
 			<channel id="sendMessage" typeId="sendMessage"/>
+			<channel id="accountAnnouncement" typeId="accountAnnouncement"/>
 		</channels>
 	</bridge-type>
 	<thing-type id="echo">
@@ -40,6 +41,7 @@
 			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
+			<channel id="sound" typeId="sound"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
@@ -94,6 +96,7 @@
 			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
+			<channel id="sound" typeId="sound"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
@@ -148,6 +151,7 @@
 			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
+			<channel id="sound" typeId="sound"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
@@ -381,12 +385,23 @@
 		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding
 			description to learn how it's possible to set the title and turn off the sound.</description>
 	</channel-type>
+	<channel-type id="accountAnnouncement" advanced="false">
+		<item-type>String</item-type>
+		<label>AccountAnnouncement</label>
+		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding
+			description to learn how it's possible to set the title and turn off the sound.</description>
+	</channel-type>
 	<channel-type id="textToSpeech" advanced="true">
 		<item-type>String</item-type>
 		<label>Speak</label>
 		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a
 			secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe
 			it?&lt;/speak&gt;</description>
+	</channel-type>
+	<channel-type id="sound" advanced="true">
+		<item-type>String</item-type>
+		<label>Sound</label>
+		<description>Play a sound (Write only). It is possible to use plain text.</description>
 	</channel-type>
 	<channel-type id="textToSpeechVolume" advanced="true">
 		<item-type>Dimmer</item-type>

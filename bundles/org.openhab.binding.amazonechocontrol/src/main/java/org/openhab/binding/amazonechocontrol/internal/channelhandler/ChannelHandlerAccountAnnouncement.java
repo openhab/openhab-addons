@@ -26,24 +26,32 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link ChannelHandlerAnnouncement} is responsible for the announcement
- * channel
+ * The {@link ChannelHandlerAccountAnnouncement} is responsible for the account
+ * announcement channel
  *
- * @author Michael Geramb - Initial contribution
+ * @author Trinitus01
  */
-public class ChannelHandlerAnnouncement extends ChannelHandler {
+public class ChannelHandlerAccountAnnouncement extends ChannelHandler {
 
-    private static final String CHANNEL_NAME = "announcement";
+    private static final String CHANNEL_NAME = "accountAnnouncement";
 
-    protected final IEchoThingHandler thingHandler;
+    protected final IAmazonThingHandler thingHandler;
 
-    public ChannelHandlerAnnouncement(IEchoThingHandler thingHandler, Gson gson) {
+    public ChannelHandlerAccountAnnouncement(IAmazonThingHandler thingHandler, Gson gson) {
         super(thingHandler, gson);
         this.thingHandler = thingHandler;
     }
 
     @Override
     public boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
+            throws IOException, URISyntaxException {
+        Device[] devices = new Device[1];
+        devices[0] = device;
+        return tryHandleCommand(devices, connection, channelId, command);
+    }
+
+    @Override
+    public boolean tryHandleCommand(Device[] devices, Connection connection, String channelId, Command command)
             throws IOException, URISyntaxException {
         if (channelId.equals(CHANNEL_NAME)) {
             if (command instanceof StringType) {
@@ -64,14 +72,14 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                             title = request.title;
                             body = request.body;
                             if (body == null) {
-                                body = speak;
+                                body = "";
                             }
                             Boolean sound = request.sound;
                             if (sound != null) {
-                                if (!sound && !speak.startsWith("<speak>")) {
+                                if (sound == false && !speak.startsWith("<speak>")) {
                                     speak = "<speak>" + StringEscapeUtils.escapeXml(speak) + "</speak>";
                                 }
-                                if (sound && speak.startsWith("<speak>")) {
+                                if (sound == true && speak.startsWith("<speak>")) {
                                     body = "Error: The combination of sound and speak in SSML syntax is not allowed";
                                     title = "Error";
                                     speak = "<speak><lang xml:lang=\"en-UK\">Error: The combination of sound and speak in <prosody rate=\"x-slow\"><say-as interpret-as=\"characters\">SSML</say-as></prosody> syntax is not allowed</lang></speak>";
@@ -89,17 +97,11 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                         body = e.getLocalizedMessage();
                     }
                 }
-                thingHandler.startAnnouncment(device, speak, body, title, volume);
+                thingHandler.startAnnouncment(devices, speak, body, title, volume);
             }
             RefreshChannel();
         }
         return false;
-    }
-
-    @Override
-    public boolean tryHandleCommand(Device[] devices, Connection connection, String channelId, Command command)
-            throws IOException, URISyntaxException {
-        return tryHandleCommand(devices[0], connection, channelId, command);
     }
 
     void RefreshChannel() {
