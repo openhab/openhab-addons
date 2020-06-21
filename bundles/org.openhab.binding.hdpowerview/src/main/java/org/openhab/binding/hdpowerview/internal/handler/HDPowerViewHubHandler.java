@@ -160,18 +160,18 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (shades != null) {
             Map<String, Thing> things = getThingsByShadeId();
             logger.debug("Found {} shades", things.size());
-            for (ShadeData shade : shades.shadeData) {
-                Thing thing = things.get(shade.id);
+            for (ShadeData shadeData : shades.shadeData) {
+                Thing thing = things.get(shadeData.id);
                 if (thing != null) {
                     HDPowerViewShadeHandler handler = ((HDPowerViewShadeHandler) thing.getHandler());
                     if (handler != null) {
-                        logger.debug("Handling update for shade {}", shade.id);
-                        handler.onReceiveUpdate(shade);
+                        logger.debug("Handling update for shade {}", shadeData.id);
+                        handler.onReceiveUpdate(shadeData);
                     } else {
-                        logger.debug("Skipping shade with no handler {}", shade.id);
+                        logger.debug("Skipping shade with no handler {}", shadeData.id);
                     }
                 } else {
-                    logger.debug("Skipping non-bound shade {}", shade.id);
+                    logger.debug("Skipping non-bound shade {}", shadeData.id);
                 }
             }
         } else {

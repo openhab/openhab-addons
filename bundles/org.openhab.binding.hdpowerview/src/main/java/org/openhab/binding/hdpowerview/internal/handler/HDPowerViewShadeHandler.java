@@ -107,10 +107,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    void onReceiveUpdate(ShadeData shade) {
+    void onReceiveUpdate(ShadeData shadeData) {
         updateStatus(ThingStatus.ONLINE);
-        updatePosition(shade.positions);
-        updateState(CHANNEL_SHADE_LOW_BATTERY, shade.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
+        updatePosition(shadeData.positions);
+        updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
     }
 
     private void updatePosition(ShadePosition pos) {

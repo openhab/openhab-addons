@@ -123,8 +123,6 @@ public class HDPowerViewWebTargets {
         }
         String json = response.readEntity(String.class); 
         logger.trace("JSON response = {}", json);
-        System.out.println("<< " + json);
-        System.out.println();
         return json;
     }
 

@@ -88,8 +88,8 @@ public class HDPowerViewJUnitTests {
                 assertNotNull(shadePos);
                 shadeId = shades.shadeData.get(0).id;
                 assertNotNull(shadeId);
-                for (ShadeData shade : shades.shadeData) {
-                    String shadeName = shade.getName();
+                for (ShadeData shadeData : shades.shadeData) {
+                    String shadeName = shadeData.getName();
                     assertNotNull(shadeName);
                 }
             } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
@@ -112,26 +112,26 @@ public class HDPowerViewJUnitTests {
             }
             
             @Nullable
-            Shade shadeSingleton = null;
+            Shade shade = null;
             try {
                 assertNotNull(shadeId);
-                shadeSingleton = webTargets.refreshShade(shadeId);
-                assertNotNull(shadeSingleton);
+                shade = webTargets.refreshShade(shadeId);
+                assertNotNull(shade);
             } catch (ProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
 
             try {
                 assertNotNull(shadeId);
-                assertNotNull(shadeSingleton);
-                ShadePositionKind kind = shadeSingleton.shade.positions.getPosKind();
+                assertNotNull(shade);
+                ShadePositionKind kind = shade.shade.positions.getPosKind();
                 assertNotNull(kind);
-                int position = shadeSingleton.shade.positions.getPercent(kind).intValue();
+                int position = shade.shade.positions.getPercent(kind).intValue();
                 position = position + ((position <= 10) ? 5 : -5);
                 ShadePosition newPos = ShadePosition.create(kind, position);
                 assertNotNull(newPos);
-                shadeSingleton = webTargets.moveShade(shadeId, newPos);
-                assertNotNull(shadeSingleton);
+                shade = webTargets.moveShade(shadeId, newPos);
+                assertNotNull(shade);
             } catch (ProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
