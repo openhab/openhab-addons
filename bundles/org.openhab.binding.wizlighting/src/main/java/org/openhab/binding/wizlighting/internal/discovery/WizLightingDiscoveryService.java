@@ -18,11 +18,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -30,7 +32,9 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.wizlighting.internal.entities.RegistrationRequestParam;
+import org.openhab.binding.wizlighting.internal.entities.SystemConfigResult;
 import org.openhab.binding.wizlighting.internal.entities.WizLightingRequest;
+import org.openhab.binding.wizlighting.internal.entities.WizLightingResponse;
 import org.openhab.binding.wizlighting.internal.enums.WizLightingMethodType;
 import org.openhab.binding.wizlighting.internal.handler.WizLightingMediator;
 import org.openhab.binding.wizlighting.internal.utils.WizLightingPacketConverter;
@@ -122,13 +126,69 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_MAC_ADDRESS, lightMacAddress);
         properties.put(CONFIG_IP_ADDRESS, lightIpAddress);
 
+        // Assume it is a full color bulb, unless we get confirmation otherwise.
+        // This will ensure the maximum number of channels will be created so there's no missing functionality.
+        // There's nothing a simple dimmable bulb can do that a full color bulb can't.
+        // It's easy for a user to ignore or not link anything to a non-working channel,
+        // but impossible to add a new channel if it's wanted.
+        // The bulbs will merely ignore or return an error for specific commands they cannot carry-out
+        // (ie, setting color on a non-color bulb) and continue to function as they were before the bad command.
+        ThingTypeUID thisBulbType = THING_TYPE_WIZ_COLOR_BULB;
+        WizLightingResponse configResponse = getDiscoveredBulbConfig(lightIpAddress);
+        if (configResponse != null) {
+            SystemConfigResult discoveredBulbConfig = configResponse.getSystemConfigResults();
+            if (discoveredBulbConfig != null) {
+                String discoveredModel = discoveredBulbConfig.moduleName;
+                if (discoveredModel.contains("TW")) {
+                    thisBulbType = THING_TYPE_WIZ_TUNABLE_BULB;
+                }
+            }
+        }
+
         // NOTE: Only full color bulbs supported at this time
-        ThingUID newThingId = new ThingUID(THING_TYPE_WIZ_COLOR_BULB, lightMacAddress);
+        ThingUID newThingId = new ThingUID(thisBulbType, lightMacAddress);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
                 .withLabel("WiZ Full Color Bulb at " + lightIpAddress).withRepresentationProperty(CONFIG_MAC_ADDRESS)
                 .build();
 
         this.thingDiscovered(discoveryResult);
+    }
+
+    private synchronized @Nullable WizLightingResponse getDiscoveredBulbConfig(final String lightIpAddress) {
+
+        DatagramSocket dsocket = null;
+        try {
+            WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.GetSystemConfig, null);
+            request.setId(1);
+
+            byte[] message = this.converter.transformToByteMessage(request);
+            // logger.trace("Raw packet to send: {}", message);
+
+            // Initialize a datagram packet with data and address
+            InetAddress address = InetAddress.getByName(lightIpAddress);
+            DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_BULB_UDP_PORT);
+
+            // Create a datagram socket, send the packet through it, close it.
+            dsocket = new DatagramSocket();
+            dsocket.send(packet);
+            logger.debug("Sent packet to address: {} and port {}", address, DEFAULT_BULB_UDP_PORT);
+
+            byte[] responseMessage = new byte[1024];
+            packet = new DatagramPacket(responseMessage, responseMessage.length);
+            dsocket.receive(packet);
+
+            return converter.transformResponsePacket(packet);
+        } catch (SocketTimeoutException e) {
+            logger.trace("Socket timeout after sending command; no response from {} within 500ms", lightIpAddress);
+        } catch (IOException exception) {
+            logger.debug("Something wrong happened when sending the packet to address: {} and port {}... msg: {}",
+                    lightIpAddress, DEFAULT_BULB_UDP_PORT, exception.getMessage());
+        } finally {
+            if (dsocket != null) {
+                dsocket.close();
+            }
+        }
+        return null;
     }
 
     // SETTERS AND GETTERS

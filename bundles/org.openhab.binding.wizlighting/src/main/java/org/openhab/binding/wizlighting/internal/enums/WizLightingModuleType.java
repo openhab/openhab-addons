@@ -27,7 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 public enum WizLightingModuleType {
     FullColorWifi("ESP01_SHRGB1C_31", THING_TYPE_WIZ_COLOR_BULB),
-    TunableWhiteWifi("TBD", THING_TYPE_WIZ_TUNABLE_BULB),
+    TunableWhiteWifi("ESP56_SHTW3_01", THING_TYPE_WIZ_TUNABLE_BULB),
     DimmableWifi("TBD", THING_TYPE_WIZ_DIMMABLE_BULB),
     SmartPlug("TBD", THING_TYPE_WIZ_SMART_PLUG);
 
