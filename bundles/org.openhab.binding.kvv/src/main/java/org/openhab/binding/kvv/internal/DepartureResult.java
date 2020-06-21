@@ -104,7 +104,6 @@ public class DepartureResult {
      * @author Maximilian Hess - Initial contribution
      *
      */
-    @NonNullByDefault
     public class Departure {
 
         private String route = "";

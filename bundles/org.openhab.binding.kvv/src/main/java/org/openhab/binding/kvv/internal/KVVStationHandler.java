@@ -124,7 +124,6 @@ public class KVVStationHandler extends BaseThingHandler {
      * @author Maximilian Hess - Initial contribution
      *
      */
-    @NonNullByDefault
     public class UpdateTask extends TimerTask {
 
         private final KVVBridgeHandler handler;
