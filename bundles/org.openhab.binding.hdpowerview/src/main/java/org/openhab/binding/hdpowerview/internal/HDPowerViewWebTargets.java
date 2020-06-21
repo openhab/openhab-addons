@@ -61,7 +61,6 @@ public class HDPowerViewWebTargets {
     }
 
     public @Nullable Shades getShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        @Nullable
         String json = invoke(shades.request().buildGet(), shades);
         return gson.fromJson(json, Shades.class);
     }
@@ -70,14 +69,12 @@ public class HDPowerViewWebTargets {
             throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shade.resolveTemplate("id", shadeId);
-        @Nullable
         String json = gson.toJson(new ShadeMove(shadeId, position));
         json = invoke(target.request().buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target);
         return gson.fromJson(json, Shade.class);
     }
 
     public @Nullable Scenes getScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        @Nullable
         String json = invoke(scenes.request().buildGet(), scenes);
         return gson.fromJson(json, Scenes.class);
     }
@@ -87,8 +84,7 @@ public class HDPowerViewWebTargets {
         invoke(target.request().buildGet(), target);
     }
 
-    private String invoke(Invocation invocation, WebTarget target)
-            throws ProcessingException, HubMaintenanceException {
+    private String invoke(Invocation invocation, WebTarget target) throws ProcessingException, HubMaintenanceException {
         logger.trace("API request = {}", target.getUri());
         Response response;
         synchronized (this) {
@@ -121,7 +117,8 @@ public class HDPowerViewWebTargets {
             response.close();
             throw new ProcessingException("Missing response entity");
         }
-        String json = response.readEntity(String.class); 
+        @Nullable
+        String json = response.readEntity(String.class);
         logger.trace("JSON response = {}", json);
         return json;
     }
@@ -129,7 +126,6 @@ public class HDPowerViewWebTargets {
     public @Nullable Shade refreshShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shade.resolveTemplate("id", shadeId).queryParam("refresh", true);
-        @Nullable
         String json = invoke(target.request().buildGet(), target);
         return gson.fromJson(json, Shade.class);
     }

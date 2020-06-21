@@ -127,7 +127,7 @@ public class ShadePosition {
                 break;
             case SECONDARY:
                 @Nullable
-                Integer p2 = position2; 
+                Integer p2 = position2;
                 @Nullable
                 Integer k2 = posKind2;
                 if (p2 != null && k2 != null && kind.getKey() == p2.intValue()) {
@@ -137,7 +137,7 @@ public class ShadePosition {
         }
         return PercentType.ZERO;
     }
-    
+
     public ShadePositionKind getPosKind() {
         return ShadePositionKind.get(posKind1);
     }

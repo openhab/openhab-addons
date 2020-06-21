@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 
 /**
@@ -20,7 +22,8 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
+@NonNullByDefault
 public class Shade {
 
-    public ShadeData shade;
+    public @Nullable ShadeData shade;
 }

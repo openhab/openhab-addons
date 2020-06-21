@@ -139,8 +139,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 @Nullable
                 Shade oldShade = webTargets.refreshShade(shadeId);
                 if (oldShade != null) {
-                    newPos = ShadePosition.create(kind, 0, posValue).copyPrimaryFrom(oldShade.shade.positions);
-                    webTargets.moveShade(shadeId, newPos);
+                    @Nullable
+                    ShadeData oldData = oldShade.shade;
+                    if (oldData != null && oldData.positions != null) {
+                        newPos = ShadePosition.create(kind, 0, posValue).copyPrimaryFrom(oldData.positions);
+                        webTargets.moveShade(shadeId, newPos);
+                    }
                 }
             } else {
                 newPos = ShadePosition.create(kind, posValue);

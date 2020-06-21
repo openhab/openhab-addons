@@ -14,14 +14,11 @@ package org.openhab.binding.hdpowerview;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,9 +36,10 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import com.google.gson.JsonParseException;
 
 /**
- * Unit tests
+ * Unit tests for HD PowerView binding
  *
  * @author Andrew Fiddian-Green - Initial contribution
+ * 
  */
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
@@ -49,16 +47,16 @@ public class HDPowerViewJUnitTests {
     public static final Pattern VALID_IP_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
-    public class Logger implements ClientRequestFilter {
-
-        @Override
-        public void filter(ClientRequestContext requestContext) throws IOException {
-            System.out.println(requestContext.getMethod() + " " + requestContext.getUri());
-            if (requestContext.hasEntity()) {
-                System.out.println(">> " + requestContext.getEntity().toString());
-            }
-        }
-    }
+    // public class Logger implements ClientRequestFilter {
+    //
+    // @Override
+    // public void filter(ClientRequestContext requestContext) throws IOException {
+    // System.out.println(requestContext.getMethod() + " " + requestContext.getUri());
+    // if (requestContext.hasEntity()) {
+    // System.out.println(">> " + requestContext.getEntity().toString());
+    // }
+    // }
+    // }
 
     /*
      * NOTE: in order to actually run these physical tests you must (obviously) have
@@ -72,7 +70,7 @@ public class HDPowerViewJUnitTests {
         if (VALID_IP_ADDRESS.matcher(hubIPAddress).matches()) {
             Client client = ClientBuilder.newClient();
             assertNotNull(client);
-            client.register(new Logger());
+            // client.register(new Logger());
 
             HDPowerViewWebTargets webTargets = new HDPowerViewWebTargets(client, hubIPAddress);
             assertNotNull(webTargets);
@@ -110,7 +108,7 @@ public class HDPowerViewJUnitTests {
             } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
             }
-            
+
             @Nullable
             Shade shade = null;
             try {
@@ -124,9 +122,14 @@ public class HDPowerViewJUnitTests {
             try {
                 assertNotNull(shadeId);
                 assertNotNull(shade);
-                ShadePositionKind kind = shade.shade.positions.getPosKind();
+                @Nullable
+                ShadeData shadeData = shade.shade;
+                assertNotNull(shadeData);
+                ShadePosition positions = shadeData.positions;
+                assertNotNull(positions);
+                ShadePositionKind kind = positions.getPosKind();
                 assertNotNull(kind);
-                int position = shade.shade.positions.getPercent(kind).intValue();
+                int position = positions.getPercent(kind).intValue();
                 position = position + ((position <= 10) ? 5 : -5);
                 ShadePosition newPos = ShadePosition.create(kind, position);
                 assertNotNull(newPos);
