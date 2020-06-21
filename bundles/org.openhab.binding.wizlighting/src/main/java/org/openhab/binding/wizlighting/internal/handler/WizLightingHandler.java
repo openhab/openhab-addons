@@ -83,6 +83,7 @@ public class WizLightingHandler extends BaseThingHandler {
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
     private @Nullable ScheduledFuture<?> keepAliveJob;
     private long latestUpdate = -1;
+    private long latestOfflineRefresh = -1;
     private int requestId = 0;
 
     private volatile boolean disposed;
@@ -284,12 +285,15 @@ public class WizLightingHandler extends BaseThingHandler {
         if (keepAliveJob != null) {
             keepAliveJob.cancel(true);
         }
-        // try with handler port if is null
+
         Runnable runnable = () -> {
             long now = System.currentTimeMillis();
             long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
+            long timePassedFromLastRefreshInSeconds = (now - latestOfflineRefresh) / 1000;
 
-            if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            // If the bulb has an online status, check if we it's been too long since the
+            // last response and re-set offline accordingly
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
                 logger.trace("MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", config.bulbMacAddress,
                         latestUpdate, now, timePassedFromLastUpdateInSeconds);
 
@@ -300,23 +304,43 @@ public class WizLightingHandler extends BaseThingHandler {
                             "Since no updates have been received from mac address {} in {} seconds, setting its status to OFFLINE and discontinuing polling.",
                             config.bulbMacAddress, MARK_OFFLINE_AFTER_SEC);
                     updateStatus(ThingStatus.OFFLINE);
-                } else if (config.useHeartBeats) {
-                    // If we're using 5s heart-beats, we must re-register every 30s to maintain connection
+
+                }
+            }
+
+            // If we're not offline ither re-register for heart-beats or request status
+            if (getThing().getStatus() != ThingStatus.OFFLINE) {
+                if (config.useHeartBeats) {
+                    // If we're using 5s heart-beats, we must re-register every 30s to maintain
+                    // connection
                     logger.debug("Re-registering for heart-beats from bulb at {}.", config.bulbIpAddress);
                     registerWithBulb();
                 } else {
                     // If we're not using heart-beats, just request the current status
-                    logger.debug(
-                            "Polling for status from bulb at {}. Current configuration update interval: {} seconds.",
-                            config.bulbIpAddress, config.updateInterval);
+                    logger.debug("Polling for status from bulb at {} - {}.", config.bulbIpAddress,
+                            config.bulbMacAddress);
                     getPilot();
                 }
-            } else {
-                logger.debug("Bulb at {} - {} is offline.  Will not query for status until a firstBeat is received.",
-                        config.bulbIpAddress, config.bulbMacAddress);
+
+                // Else if we are offline, but it's been a while, re-check if the bulb re-appeared
+            } else if (timePassedFromLastRefreshInSeconds > config.reconnectInterval * 60) {
+                // Request the current status
+                logger.debug("Checking for reappearance of offline bulb at {} - {}.", config.bulbIpAddress,
+                        config.bulbMacAddress);
+                latestOfflineRefresh = now;
+                getPilot();
             }
         };
+        /**
+         * Schedule the keep-alive job.
+         *
+         * The scheduling inteval is:
+         * - every 30 seconds for online bulbs receiving heart-beats
+         * - every config.updateInterval for other online bulbs
+         */
         long updateIntervalInUse = config.useHeartBeats ? 30 : config.updateInterval;
+        logger.debug("Scheduling reoccuring keep alive for every {} seconds for bulb at {} - {}.", updateIntervalInUse,
+                config.bulbIpAddress, config.bulbMacAddress);
         this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateIntervalInUse, TimeUnit.SECONDS);
     }
 
@@ -535,7 +559,7 @@ public class WizLightingHandler extends BaseThingHandler {
     }
 
     /**
-     * Makes note of the latest timestamps
+     * Makes note of the latest timestamps and sets the bulb online
      */
     private synchronized void updateTimestamps() {
         if (hasConfigurationError() || disposed) {
@@ -543,6 +567,7 @@ public class WizLightingHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.ONLINE);
         latestUpdate = System.currentTimeMillis();
+        latestOfflineRefresh = System.currentTimeMillis();
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
     }
 

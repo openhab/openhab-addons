@@ -32,7 +32,7 @@ public class WizLightingBindingConstants {
      * The binding id.
      */
     public static final String BINDING_ID = "wizlighting";
-    public static final String CURRENT_BINDING_VERSION = "v0.02.11";
+    public static final String CURRENT_BINDING_VERSION = "v0.02.16";
 
     /**
      * List of all Thing Type UIDs.
@@ -79,6 +79,12 @@ public class WizLightingBindingConstants {
      */
     public static final String CONFIG_UPDATE_INTERVAL = "updateInterval";
     public static final long DEFAULT_REFRESH_INTERVAL_SEC = 60;
+
+    /**
+     * Wifi socket update interval configuration argument key.
+     */
+    public static final String CONFIG_RECONNECT_INTERVAL = "reconnectInterval";
+    public static final long DEFAULT_RECONNECT_INTERVAL_MIN = 15;
 
     // -------------- Default values ----------------
 

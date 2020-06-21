@@ -32,4 +32,5 @@ public class WizLightingDeviceConfiguration {
     public String bulbIpAddress = MISSING_INVALID_IP_ADDRESS;
     public long updateInterval = DEFAULT_REFRESH_INTERVAL_SEC;
     public boolean useHeartBeats = false; // true: register to get 5s heart-beats
+    public long reconnectInterval = DEFAULT_RECONNECT_INTERVAL_MIN;
 }
