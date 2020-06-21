@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
+import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,12 +71,20 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
+    private final Runnable refreshShadeCacheTask = () -> {
+        refreshShadeCache();
+    };
+
     public HDPowerViewHubHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (CHANNEL_HUB_REFRESH_CACHE.equals(channelUID.getId()) && command.equals(OnOffType.ON)) {
+            new Thread(refreshShadeCacheTask).start();
+            return;
+        }
         Channel channel = getThing().getChannel(channelUID.getId());
         if (channel != null && sceneChannelTypeUID.equals(channel.getChannelTypeUID())) {
             if (command.equals(OnOffType.ON)) {
@@ -232,5 +242,18 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         }
         return ret;
+    }
+
+    private void refreshShadeCache() {
+        Map<String, Thing> things = getThingsByShadeId();
+        for (String shadeId : things.keySet()) {
+            try {
+                webTargets.refreshShade(shadeId);
+            } catch (HubMaintenanceException e) {
+                logger.debug("Hub temporariliy down for maintenance");
+            } catch (ProcessingException e) {
+                logger.debug("Unexpected error {}", e.getMessage());
+            }
+        }
     }
 }

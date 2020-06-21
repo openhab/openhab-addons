@@ -41,6 +41,8 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_LOW_BATTERY = "lowBattery";
     public static final String CHANNEL_SHADE_SECONDARY_POSITION = "secondary";
 
+    public static final String CHANNEL_HUB_REFRESH_CACHE = "refresh";
+
     public static final String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
 
     public static final String NETBIOS_NAME = "PDBU-Hub3.0";

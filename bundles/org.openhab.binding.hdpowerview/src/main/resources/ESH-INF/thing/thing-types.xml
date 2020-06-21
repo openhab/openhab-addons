@@ -8,6 +8,10 @@
 		<label>PowerView Hub</label>
 		<description>Hunter Douglas PowerView Hub</description>
 
+		<channels>
+			<channel id="refresh" typeId="refresh"/>
+		</channels>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
@@ -28,14 +32,17 @@
 		</supported-bridge-type-refs>
 		<label>PowerView Shade</label>
 		<description>Hunter Douglas PowerView Shade</description>
+
 		<channels>
 			<channel id="position" typeId="shade-position"/>
 			<channel id="secondary" typeId="shade-position">
+				<label>Secondary Position</label>
 				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
 			</channel>
 			<channel id="vane" typeId="shade-vane"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
+
 		<config-description>
 			<parameter name="id" type="text" required="true">
 				<label>ID</label>
@@ -49,6 +56,7 @@
 		<label>Position</label>
 		<description>The vertical position of the shade</description>
 	</channel-type>
+
 	<channel-type id="shade-vane">
 		<item-type>Dimmer</item-type>
 		<label>Vane</label>
@@ -59,6 +67,12 @@
 		<item-type>Switch</item-type>
 		<label>Activate</label>
 		<description>Activates the scene</description>
+	</channel-type>
+
+	<channel-type id="refresh">
+		<item-type>Switch</item-type>
+		<label>Refresh Cache</label>
+		<description>Instructs the Hub to refresh its Shade data cache</description>
 	</channel-type>
 
 </thing:thing-descriptions>
