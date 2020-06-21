@@ -109,8 +109,11 @@ public class KVVStationHandler extends BaseThingHandler {
                     new StringType(departures.getDepartures().get(i).getRoute()));
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"),
                     new StringType(departures.getDepartures().get(i).getDestination()));
-            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"),
-                    new StringType(departures.getDepartures().get(i).getTime()));
+            String eta = departures.getDepartures().get(i).getTime();
+            if (eta.equals("0")) {
+                eta += " min";
+            }
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), new StringType(eta));
         }
     }
 
