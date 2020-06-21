@@ -1,6 +1,7 @@
 # Astro Binding
 
 The Astro binding is used for calculating 
+
     * many DateTime and positional values for sun and moon.
     * Radiation levels (direct, diffuse and total) of the sun during the day
 
