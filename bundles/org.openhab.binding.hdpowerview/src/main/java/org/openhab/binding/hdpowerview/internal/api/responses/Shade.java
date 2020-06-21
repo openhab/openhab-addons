@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 
 /**
  * A single Shade, as returned by the HD Power View Hub
@@ -20,7 +20,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
-public class ShadeSingleton {
+public class Shade {
 
-    public Shade shadeData;
+    public ShadeData shade;
 }

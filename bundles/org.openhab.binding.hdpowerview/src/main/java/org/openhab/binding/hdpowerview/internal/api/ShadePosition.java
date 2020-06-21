@@ -93,7 +93,7 @@ public class ShadePosition {
     ShadePosition(ShadePositionKind primaryKind, int primaryPos, @Nullable Integer secondaryPos) {
         switch (primaryKind) {
             case PRIMARY:
-                this.position1 = 100 - (int) Math.round((primaryPos * MAX_SHADE) / 100d);
+                this.position1 = (int) Math.round(((100 - primaryPos) * MAX_SHADE) / 100d);
                 this.posKind1 = primaryKind.getKey();
                 break;
             case VANE:
@@ -108,7 +108,7 @@ public class ShadePosition {
             this.position2 = null;
             this.posKind2 = null;
         } else {
-            this.position2 = 100 - Integer.valueOf((int) Math.round((secondaryPos.intValue() * MAX_SHADE) / 100d));
+            this.position2 = Integer.valueOf((int) Math.round(((100 - secondaryPos.intValue()) * MAX_SHADE) / 100d));
             this.posKind2 = Integer.valueOf(ShadePositionKind.SECONDARY.getKey());
         }
     }
@@ -136,6 +136,10 @@ public class ShadePosition {
                 break;
         }
         return PercentType.ZERO;
+    }
+    
+    public ShadePositionKind getPosKind() {
+        return ShadePositionKind.get(posKind1);
     }
 
     public ShadePosition copyPrimaryFrom(ShadePosition position) {

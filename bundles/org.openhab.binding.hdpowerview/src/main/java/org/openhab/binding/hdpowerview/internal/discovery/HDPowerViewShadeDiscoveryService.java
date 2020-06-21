@@ -26,7 +26,7 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.slf4j.Logger;
@@ -90,7 +90,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                 return;
             }
             if (shades != null) {
-                for (Shade shade : shades.shadeData) {
+                for (ShadeData shade : shades.shadeData) {
                     ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE, shade.id);
                     DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                             .withProperty(HDPowerViewShadeConfiguration.ID, shade.id).withLabel(shade.getName())

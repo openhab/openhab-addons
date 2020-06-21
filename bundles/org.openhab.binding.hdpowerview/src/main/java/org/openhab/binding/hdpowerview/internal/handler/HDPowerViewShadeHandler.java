@@ -25,13 +25,14 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.ShadePositionKind;
-import org.openhab.binding.hdpowerview.internal.api.responses.ShadeSingleton;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,23 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+            HDPowerViewHubHandler bridge = getBridgeHandler();
+            if (bridge != null) {
+                HDPowerViewWebTargets webTargets = bridge.getWebTargets();
+                if (webTargets != null) {
+                    try {
+                        webTargets.refreshShade(getShadeId());
+                    } catch (ProcessingException e) {
+                        logger.warn("Unexpected error: {}", e.getMessage());
+                    } catch (HubMaintenanceException e) {
+                        logger.debug("Hub temporariliy down for maintenance");
+                    }
+                }
+            }
+            return;
+        }
+
         switch (channelUID.getId()) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
@@ -89,7 +107,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    void onReceiveUpdate(Shade shade) {
+    void onReceiveUpdate(ShadeData shade) {
         updateStatus(ThingStatus.ONLINE);
         updatePosition(shade.positions);
         updateState(CHANNEL_SHADE_LOW_BATTERY, shade.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
@@ -119,9 +137,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         try {
             if (kind == ShadePositionKind.SECONDARY) {
                 @Nullable
-                ShadeSingleton oldShade = webTargets.refreshShade(shadeId);
+                Shade oldShade = webTargets.refreshShade(shadeId);
                 if (oldShade != null) {
-                    newPos = ShadePosition.create(kind, 0, posValue).copyPrimaryFrom(oldShade.shadeData.positions);
+                    newPos = ShadePosition.create(kind, 0, posValue).copyPrimaryFrom(oldShade.shade.positions);
                     webTargets.moveShade(shadeId, newPos);
                 }
             } else {

@@ -30,8 +30,8 @@
 		<description>Hunter Douglas PowerView Shade</description>
 		<channels>
 			<channel id="position" typeId="shade-position"/>
-			<channel id="secondary-position" typeId="shade-position">
-				<description>The secondary vertical position (top-down/bottom-up shades)</description>
+			<channel id="secondary" typeId="shade-position">
+				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
 			</channel>
 			<channel id="vane" typeId="shade-vane"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>

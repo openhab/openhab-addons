@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
-import org.openhab.binding.hdpowerview.internal.api.responses.ShadeSingleton;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +45,7 @@ public class HDPowerViewWebTargets {
 
     private WebTarget base;
     private WebTarget shades;
-    private WebTarget shadeMove;
-    private WebTarget shadeRefresh;
+    private WebTarget shade;
     private WebTarget sceneActivate;
     private WebTarget scenes;
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
@@ -55,8 +54,7 @@ public class HDPowerViewWebTargets {
     public HDPowerViewWebTargets(Client client, String ipAddress) {
         base = client.target("http://" + ipAddress + "/api");
         shades = base.path("shades/");
-        shadeMove = base.path("shades/{id}");
-        shadeRefresh = shadeMove.queryParam("refresh", true);
+        shade = base.path("shades/{id}");
         sceneActivate = base.path("scenes");
         scenes = base.path("scenes/");
         gson = new Gson();
@@ -64,39 +62,34 @@ public class HDPowerViewWebTargets {
 
     public @Nullable Shades getShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
         @Nullable
-        String json = invoke(shades.request().buildGet(), shades).readEntity(String.class);
-        logger.trace("Get shades JSON response = {}", json);
+        String json = invoke(shades.request().buildGet(), shades);
         return gson.fromJson(json, Shades.class);
     }
 
-    public void moveShade(String shadeIdString, ShadePosition position)
+    public @Nullable Shade moveShade(String shadeIdString, ShadePosition position)
             throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
-        WebTarget target = shadeMove.resolveTemplate("id", shadeId);
+        WebTarget target = shade.resolveTemplate("id", shadeId);
         @Nullable
         String json = gson.toJson(new ShadeMove(shadeId, position));
-        logger.trace("Move shade JSON request = {}", json);
-        json = invoke(target.request().buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target)
-                .readEntity(String.class);
-        logger.trace("Move shade JSON response = {}", json);
+        json = invoke(target.request().buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target);
+        return gson.fromJson(json, Shade.class);
     }
 
     public @Nullable Scenes getScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
         @Nullable
-        String json = invoke(scenes.request().buildGet(), scenes).readEntity(String.class);
-        logger.trace("Get scenes JSON response = {}", json);
+        String json = invoke(scenes.request().buildGet(), scenes);
         return gson.fromJson(json, Scenes.class);
     }
 
     public void activateScene(int sceneId) throws ProcessingException, HubMaintenanceException {
         WebTarget target = sceneActivate.queryParam("sceneId", sceneId);
-        @Nullable
-        String json = invoke(target.request().buildGet(), target).readEntity(String.class);
-        logger.trace("Activate scene JSON response = {}", json);
+        invoke(target.request().buildGet(), target);
     }
 
-    private Response invoke(Invocation invocation, WebTarget target)
+    private String invoke(Invocation invocation, WebTarget target)
             throws ProcessingException, HubMaintenanceException {
+        logger.trace("API request = {}", target.getUri());
         Response response;
         synchronized (this) {
             response = invocation.invoke();
@@ -128,15 +121,18 @@ public class HDPowerViewWebTargets {
             response.close();
             throw new ProcessingException("Missing response entity");
         }
-        return response;
+        String json = response.readEntity(String.class); 
+        logger.trace("JSON response = {}", json);
+        System.out.println("<< " + json);
+        System.out.println();
+        return json;
     }
 
-    public @Nullable ShadeSingleton refreshShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
+    public @Nullable Shade refreshShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
-        WebTarget target = shadeRefresh.resolveTemplate("id", shadeId);
+        WebTarget target = shade.resolveTemplate("id", shadeId).queryParam("refresh", true);
         @Nullable
-        String json = invoke(target.request().buildGet(), target).readEntity(String.class);
-        logger.trace("Refresh shades JSON = {}", json);
-        return gson.fromJson(json, ShadeSingleton.class);
+        String json = invoke(target.request().buildGet(), target);
+        return gson.fromJson(json, Shade.class);
     }
 }

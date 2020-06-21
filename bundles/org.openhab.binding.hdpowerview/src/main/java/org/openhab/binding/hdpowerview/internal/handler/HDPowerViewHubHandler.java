@@ -23,7 +23,6 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -40,9 +39,8 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
-import org.openhab.binding.hdpowerview.internal.api.responses.ShadeSingleton;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shades.Shade;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.slf4j.Logger;
@@ -162,17 +160,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (shades != null) {
             Map<String, Thing> things = getThingsByShadeId();
             logger.debug("Found {} shades", things.size());
-            for (Shade shade : shades.shadeData) {
+            for (ShadeData shade : shades.shadeData) {
                 Thing thing = things.get(shade.id);
                 if (thing != null) {
                     HDPowerViewShadeHandler handler = ((HDPowerViewShadeHandler) thing.getHandler());
                     if (handler != null) {
                         logger.debug("Handling update for shade {}", shade.id);
-                        @Nullable
-                        ShadeSingleton thisShade = webTargets.refreshShade(shade.id);
-                        if (thisShade != null) {
-                            handler.onReceiveUpdate(thisShade.shadeData);
-                        }
+                        handler.onReceiveUpdate(shade);
                     } else {
                         logger.debug("Skipping shade with no handler {}", shade.id);
                     }

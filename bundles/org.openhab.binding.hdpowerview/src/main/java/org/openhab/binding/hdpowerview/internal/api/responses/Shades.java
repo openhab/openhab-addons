@@ -24,10 +24,10 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
  */
 public class Shades {
 
-    public List<Shade> shadeData;
+    public List<ShadeData> shadeData;
     public List<String> shadeIds;
 
-    public static class Shade {
+    public static class ShadeData {
         public String id;
         String name;
         public int roomId;
