@@ -31,14 +31,13 @@ import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- * @author Sven Strohschein
+ * @author Sven Strohschein - Initial contribution
  */
 @RunWith(MockitoJUnitRunner.class)
 public class NAWelcomeHomeHandlerTest {

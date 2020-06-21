@@ -34,7 +34,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANN
 /**
  * {@link NAPresenceCameraHandler} is the class used to handle Presence camera data
  *
- * @author Sven Strohschein
+ * @author Sven Strohschein - Initial contribution
  */
 @NonNullByDefault
 public class NAPresenceCameraHandler extends CameraHandler {

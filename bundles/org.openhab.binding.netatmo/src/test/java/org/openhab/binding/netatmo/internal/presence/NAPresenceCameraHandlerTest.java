@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- * @author Sven Strohschein
+ * @author Sven Strohschein - Initial contribution
  */
 @RunWith(MockitoJUnitRunner.class)
 public class NAPresenceCameraHandlerTest {
