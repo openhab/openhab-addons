@@ -220,6 +220,7 @@
     <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
+    <module>org.openhab.binding.resol</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>

@@ -182,6 +182,7 @@
 /bundles/org.openhab.binding.pushbullet/ @hakan42
 /bundles/org.openhab.binding.radiothermostat/ @mlobstein
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
+/bundles/org.openhab.binding.resol/ @ramack
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem

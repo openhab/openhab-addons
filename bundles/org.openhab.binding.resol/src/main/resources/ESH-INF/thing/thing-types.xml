@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="resol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="vbuslan" />
+        </supported-bridge-type-refs>
+        
+		<label>Resol Device</label>
+		<description>Solar or system controller (or any other device on the VBus) from Resol.</description>
+	</thing-type>
+    
+    <channel-type id="None">
+        <item-type>String</item-type>
+        <label>Any</label>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="NoneHidden" advanced="true">
+        <item-type>String</item-type>
+        <label>Any</label>
+        <state readOnly="true" />
+    </channel-type>
+
+    <channel-type id="DateTime">
+        <item-type>DateTime</item-type>
+        <label>date</label>
+        <state readOnly="true" />
+    </channel-type>
+    
+</thing:thing-descriptions>
