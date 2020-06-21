@@ -28,6 +28,8 @@
 			<channel id="sourceApp" typeId="sourceapp"/>
 		</channels>
 
+		<representation-property>hostName</representation-property>
+
 		<config-description-ref uri="thing-type:samsungtv:tv"/>
 	</thing-type>
 

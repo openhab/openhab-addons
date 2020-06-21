@@ -238,7 +238,6 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             createChannel(CHANNEL_GESTURE, ChannelKind.STATE);
             createChannel(CHANNEL_GESTUREEVENT, ChannelKind.TRIGGER);
         }
-
     }
 
     @Override

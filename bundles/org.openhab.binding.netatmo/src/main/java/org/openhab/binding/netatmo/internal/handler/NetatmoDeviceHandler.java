@@ -23,7 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -47,6 +49,9 @@ import retrofit.RetrofitError;
  */
 public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingHandler {
 
+    private static final int MIN_REFRESH_INTERVAL = 2000;
+    private static final int DEFAULT_REFRESH_INTERVAL = 300000;
+
     private Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
     private ScheduledFuture<?> refreshJob;
     private RefreshStrategy refreshStrategy;
@@ -54,8 +59,8 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     protected DEVICE device;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
-    public NetatmoDeviceHandler(Thing thing) {
-        super(thing);
+    public NetatmoDeviceHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -89,7 +94,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
         }
     }
 
-    protected abstract DEVICE updateReadings();
+    protected abstract @Nullable DEVICE updateReadings();
 
     protected void updateProperties(DEVICE deviceData) {
     }
@@ -122,7 +127,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     updateProperties(device);
                     Integer dataTimeStamp = getDataTimestamp();
                     if (dataTimeStamp != null) {
-                        refreshStrategy.setDataTimeStamp(dataTimeStamp);
+                        refreshStrategy.setDataTimeStamp(dataTimeStamp, timeZoneProvider.getTimeZone());
                     }
                     radioHelper.ifPresent(helper -> helper.setModule(device));
                     NetatmoBridgeHandler handler = getBridgeHandler();
@@ -148,14 +153,14 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         try {
             switch (channelId) {
                 case CHANNEL_LAST_STATUS_STORE:
                     if (device != null) {
                         Method getLastStatusStore = device.getClass().getMethod("getLastStatusStore");
                         Integer lastStatusStore = (Integer) getLastStatusStore.invoke(device);
-                        return ChannelTypeUtils.toDateTimeType(lastStatusStore);
+                        return ChannelTypeUtils.toDateTimeType(lastStatusStore, timeZoneProvider.getTimeZone());
                     } else {
                         return UnDefType.UNDEF;
                     }
@@ -207,7 +212,17 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
             }
         } else {
             Object interval = config.get(REFRESH_INTERVAL);
-            dataValidityPeriod = (BigDecimal) interval;
+            if (interval instanceof BigDecimal) {
+                dataValidityPeriod = (BigDecimal) interval;
+                if (dataValidityPeriod.intValue() < MIN_REFRESH_INTERVAL) {
+                    logger.info(
+                            "Refresh interval setting is too small for thing {}, {} ms is considered as refresh interval.",
+                            thing.getUID(), MIN_REFRESH_INTERVAL);
+                    dataValidityPeriod = new BigDecimal(MIN_REFRESH_INTERVAL);
+                }
+            } else {
+                dataValidityPeriod = new BigDecimal(DEFAULT_REFRESH_INTERVAL);
+            }
         }
         refreshStrategy = new RefreshStrategy(dataValidityPeriod.intValue());
     }

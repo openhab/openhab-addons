@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -65,15 +66,17 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
     private final LocaleProvider localeProvider;
     private final LocationProvider locationProvider;
     private final TranslationProvider i18nProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public OpenWeatherMapHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference LocaleProvider localeProvider, final @Reference LocationProvider locationProvider,
-            final @Reference TranslationProvider i18nProvider) {
+            final @Reference TranslationProvider i18nProvider, final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.localeProvider = localeProvider;
         this.locationProvider = locationProvider;
         this.i18nProvider = i18nProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -94,9 +97,9 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
                     .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
             return handler;
         } else if (THING_TYPE_WEATHER_AND_FORECAST.equals(thingTypeUID)) {
-            return new OpenWeatherMapWeatherAndForecastHandler(thing);
+            return new OpenWeatherMapWeatherAndForecastHandler(thing, timeZoneProvider);
         } else if (THING_TYPE_UVINDEX.equals(thingTypeUID)) {
-            return new OpenWeatherMapUVIndexHandler(thing);
+            return new OpenWeatherMapUVIndexHandler(thing, timeZoneProvider);
         }
 
         return null;

@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.scheduler.ScheduledCompletableFuture;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -66,6 +67,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /** Scheduler to schedule jobs */
     private final CronScheduler cronScheduler;
 
+    private final TimeZoneProvider timeZoneProvider;
+
     private final Lock monitor = new ReentrantLock();
 
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
@@ -76,9 +79,10 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     private @Nullable ScheduledCompletableFuture<?> dailyJob;
 
-    public AstroThingHandler(Thing thing, CronScheduler scheduler) {
+    public AstroThingHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.cronScheduler = scheduler;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -155,7 +159,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Publishes the channel with data if it's linked.
      */
     public void publishChannelIfLinked(ChannelUID channelUID) {
-        if (isLinked(channelUID.getId()) && getPlanet() != null) {
+        Planet planet = getPlanet();
+        if (isLinked(channelUID.getId()) && planet != null) {
             final Channel channel = getThing().getChannel(channelUID.getId());
             if (channel == null) {
                 logger.error("Cannot find channel for {}", channelUID);
@@ -163,7 +168,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             }
             try {
                 AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
-                updateState(channelUID, PropertyUtils.getState(channelUID, config, getPlanet()));
+                updateState(channelUID,
+                        PropertyUtils.getState(channelUID, config, planet, timeZoneProvider.getTimeZone()));
             } catch (Exception ex) {
                 logger.error("Can't update state for channel {} : {}", channelUID, ex.getMessage(), ex);
             }

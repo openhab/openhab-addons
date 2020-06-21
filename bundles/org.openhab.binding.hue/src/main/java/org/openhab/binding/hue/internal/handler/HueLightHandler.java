@@ -456,8 +456,10 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return false;
         }
 
+        State state = fullLight.getState();
+
         final FullLight lastState = lastFullLight;
-        if (lastState == null || !Objects.equals(lastState.getState(), fullLight.getState())) {
+        if (lastState == null || !Objects.equals(lastState.getState(), state)) {
             lastFullLight = fullLight;
         } else {
             return true;
@@ -471,7 +473,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
         lastSentBrightness = null;
 
         // update status (ONLINE, OFFLINE)
-        if (fullLight.getState().isReachable()) {
+        if (state.isReachable()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
             // we assume OFFLINE without any error (NONE), as this is an
@@ -479,33 +481,37 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-not-reachable");
         }
 
-        HSBType hsbType = LightStateConverter.toHSBType(fullLight.getState());
-        if (!fullLight.getState().isOn()) {
+        logger.debug("onLightStateChanged Light {}: on {} bri {} hue {} sat {} temp {} mode {} XY {}",
+                fullLight.getName(), state.isOn(), state.getBrightness(), state.getHue(), state.getSaturation(),
+                state.getColorTemperature(), state.getColorMode(), state.getXY());
+
+        HSBType hsbType = LightStateConverter.toHSBType(state);
+        if (!state.isOn()) {
             hsbType = new HSBType(hsbType.getHue(), hsbType.getSaturation(), new PercentType(0));
         }
         updateState(CHANNEL_COLOR, hsbType);
 
-        ColorMode colorMode = fullLight.getState().getColorMode();
+        ColorMode colorMode = state.getColorMode();
         if (ColorMode.CT.equals(colorMode)) {
-            PercentType colorTempPercentType = LightStateConverter.toColorTemperaturePercentType(fullLight.getState());
+            PercentType colorTempPercentType = LightStateConverter.toColorTemperaturePercentType(state);
             updateState(CHANNEL_COLORTEMPERATURE, colorTempPercentType);
         } else {
             updateState(CHANNEL_COLORTEMPERATURE, UnDefType.NULL);
         }
 
-        PercentType brightnessPercentType = LightStateConverter.toBrightnessPercentType(fullLight.getState());
-        if (!fullLight.getState().isOn()) {
+        PercentType brightnessPercentType = LightStateConverter.toBrightnessPercentType(state);
+        if (!state.isOn()) {
             brightnessPercentType = new PercentType(0);
         }
         updateState(CHANNEL_BRIGHTNESS, brightnessPercentType);
 
-        if (fullLight.getState().isOn()) {
+        if (state.isOn()) {
             updateState(CHANNEL_SWITCH, OnOffType.ON);
         } else {
             updateState(CHANNEL_SWITCH, OnOffType.OFF);
         }
 
-        StringType stringType = LightStateConverter.toAlertStringType(fullLight.getState());
+        StringType stringType = LightStateConverter.toAlertStringType(state);
         if (!"NULL".equals(stringType.toString())) {
             updateState(CHANNEL_ALERT, stringType);
             scheduleAlertStateRestore(stringType);

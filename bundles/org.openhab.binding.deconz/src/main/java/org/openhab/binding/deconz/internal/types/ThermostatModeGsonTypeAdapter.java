@@ -48,6 +48,5 @@ public class ThermostatModeGsonTypeAdapter implements JsonDeserializer<Thermosta
     public JsonElement serialize(ThermostatMode src, @Nullable Type typeOfSrc,
             @Nullable JsonSerializationContext context) throws JsonParseException {
         return src != ThermostatMode.UNKNOWN ? new JsonPrimitive(src.getDeconzValue()) : JsonNull.INSTANCE;
-
     }
 }
