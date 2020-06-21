@@ -57,6 +57,7 @@ However, the configuration parameters are described below:
 | Channel    | Item Type     | Description                                                                                                                                                 |
 |------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | position   | Rollershutter | The vertical position of the shade. Up/Down commands will move the shade to its completely up or completely down position. Move/Stop commands are ignored.  |
+| secondary  | Rollershutter | The secondary vertical position of the shade. This channel only applies in the case of shades with combined top-down and bottom-up motors. The function is the sames as the (proimary) position channel above. |
 | vane       | Dimmer        | The amount the slats on the shade are open. Setting this value will completely close the shade first, as the slats can only be controlled in that position. |
 | batteryLow | Switch        | Indicates ON when the battery level of the shade is low, as determined by the Hub's internal rules                                                          |
 
@@ -67,3 +68,53 @@ Scenes channels are added to the Hub as they are discovered.
 | Channel  | Item Type | Description                                                                                                                                                                                                         |
 |----------|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | activate | Switch    | Turning this to ON will activate the scene. Scenes are stateless in the PowerView hub - they have no on/off state. Include { autoupdate="false" } on your item configuration to avoid needing to toggle off and on. |
+
+## Transient Hub State and Manual Operation
+
+The Hub maintains transient shade state such as position and battery level, so a call by this binding  that returns the shade position and/or the battery level is delivering the last Hub saved value of these attributes.
+In general, shades are moved via binding calls to Shades and Scenes. and since  the Hub is always involved in these motion events, it tracks the final shade position and saves it.
+However, shades can be moved without the Hub’s knowledge.
+An individual can manually move a shade simply by pressing the motion button on the side of the shade.
+In addition, shades can be moved using a PowerView Motorization handheld remote control device.
+In both of these cases, the Hub is not told of the shade’s new position.
+
+If you want to force the Hub to refresh its state after using such manual control commands, then you can send an Item `Refresh` command in a rule, as follows:
+
+```
+import org.eclipse.smarthome.core.types.RefreshType
+
+sendCommand(ITEM_NAME, RefreshType.REFRESH)
+```
+or
+```
+sendCommand(ITEM_NAME, "REFRESH")
+```
+
+## Full Example
+
+### `demo.things` File
+```
+Bridge hdpowerview:hub:g24 "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"] {
+    Thing shade s50150 "Living Room Shade 1" @ "Living Room" [id="50150"]
+}
+```
+
+### `demo.items` File
+```
+Rollershutter Living_Room_Shade_Position "Living Room Shade Position [%.0f %%]" <blinds> (g_Living_Room_Shades_Position) {channel="hdpowerview:shade:g24:s50150:position"}
+
+Rollershutter Living_Room_Shade_Secondary "Living Room Shade Secondary Position [%.0f %%]" <blinds> (g_Living_Room_Shades_Position) {channel="hdpowerview:shade:g24:s50150:secondary"}
+
+Dimmer Living_Room_Shade_Vane "Living Room Shade Vane [%.0f %%]" <flow> {channel="hdpowerview:shade:g24:s50150:vane"}
+
+Switch Living_Room_Shade_Battery_Low_Alarm "Living Room Shade Battery Low Alarm [MAP(24g-battery.map):%s]" <battery> (g_Battery_Low_Alarm) {channel="hdpowerview:shade:g24:s50150:lowBattery"}
+
+Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:g24:22663", autoupdate="false"}
+```
+### `demo.sitemap` File
+```
+Frame label="Living Room Shades" {
+  Switch item=Living_Room_Shades_Scene_Open
+  Slider item=Living_Room_Shade_1_Position 
+}
+```
