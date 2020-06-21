@@ -93,11 +93,11 @@ public class ShadePosition {
     ShadePosition(ShadePositionKind primaryKind, int primaryPos, @Nullable Integer secondaryPos) {
         switch (primaryKind) {
             case PRIMARY:
-                this.position1 = (int) Math.round(((100 - primaryPos) * MAX_SHADE) / 100d);
+                this.position1 = mulDiv(100 - primaryPos, MAX_SHADE, 100);
                 this.posKind1 = primaryKind.getKey();
                 break;
             case VANE:
-                this.position1 = (int) Math.round((primaryPos * MAX_VANE) / 100d);
+                this.position1 = mulDiv(primaryPos, MAX_VANE, 100);
                 this.posKind1 = primaryKind.getKey();
                 break;
             case SECONDARY:
@@ -108,32 +108,44 @@ public class ShadePosition {
             this.position2 = null;
             this.posKind2 = null;
         } else {
-            this.position2 = Integer.valueOf((int) Math.round(((100 - secondaryPos.intValue()) * MAX_SHADE) / 100d));
+            this.position2 = Integer.valueOf(mulDiv(100 - secondaryPos.intValue(), MAX_SHADE, 100));
             this.posKind2 = Integer.valueOf(ShadePositionKind.SECONDARY.getKey());
         }
+    }
+
+    private int mulDiv(int value, int multiplicator, int divisor) {
+        return (value * multiplicator) / divisor;
     }
 
     public PercentType getPercent(ShadePositionKind kind) {
         switch (kind) {
             case PRIMARY:
-                if (posKind1 == kind.getKey()) {
-                    return new PercentType(100 - (int) Math.round((position1 * 100d) / MAX_SHADE));
+                switch (posKind1) {
+                    case 1:
+                        return new PercentType(100 - mulDiv(position1, 100, MAX_SHADE));
+                    case 3:
+                        return PercentType.HUNDRED;
                 }
                 break;
             case VANE:
-                if (posKind1 == kind.getKey()) {
-                    return new PercentType((int) Math.round((position1 * 100d) / MAX_VANE));
+                switch (posKind1) {
+                    case 1:
+                        return PercentType.ZERO;
+                    case 3:
+                        return new PercentType(mulDiv(position1, 100, MAX_VANE));
                 }
                 break;
             case SECONDARY:
-                @Nullable
-                Integer p2 = position2;
-                @Nullable
-                Integer k2 = posKind2;
-                if (p2 != null && k2 != null && kind.getKey() == p2.intValue()) {
-                    return new PercentType(100 - (int) Math.round((p2.intValue() * 100d) / MAX_SHADE));
+                Integer posKind2 = this.posKind2;
+                Integer position2 = this.position2;
+                if (posKind2 != null && position2 != null) {
+                    switch (posKind2.intValue()) {
+                        case 1:
+                            return new PercentType(100 - mulDiv(position2.intValue(), 100, MAX_SHADE));
+                        case 3:
+                            return PercentType.HUNDRED;
+                    }
                 }
-                break;
         }
         return PercentType.ZERO;
     }
