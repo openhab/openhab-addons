@@ -443,7 +443,7 @@ public class NAPresenceCameraHandlerTest {
 
     private class NAPresenceCameraHandlerAccessible extends NAPresenceCameraHandler {
 
-        public NAPresenceCameraHandlerAccessible(Thing thing, NAWelcomeCamera presenceCamera) {
+        private NAPresenceCameraHandlerAccessible(Thing thing, NAWelcomeCamera presenceCamera) {
             super(thing, timeZoneProviderMock);
             module = presenceCamera;
         }
