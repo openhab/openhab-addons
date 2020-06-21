@@ -64,6 +64,7 @@ public class BindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
+    public static final String CHANNEL_LAST_SEEN = "last_seen";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_CONSUMPTION = "consumption";
     public static final String CHANNEL_VOLTAGE = "voltage";
