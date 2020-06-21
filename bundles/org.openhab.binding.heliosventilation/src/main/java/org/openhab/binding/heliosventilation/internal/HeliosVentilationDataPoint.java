@@ -322,7 +322,7 @@ public class HeliosVentilationDataPoint {
     }
 
     /**
-     * @return true iff writing to this datapoint requires a read-modify-write on the address
+     * @return true if writing to this datapoint requires a read-modify-write on the address
      */
     public boolean requiresReadModifyWrite() {
         /*

@@ -26,38 +26,38 @@ The binding supports only one thing and requires the configuration of the serial
 
 Supported operation channels:
 
-| channel            | type               | description                                   |
-|--------------------|--------------------|-----------------------------------------------|
-| outsideTemp        | Number:Temperature | Temperature sensor in the outside air flow    |
-| outgoingTemp       | Number:Temperature | Temperature sensor in the outgoing air flow   |
-| extractTemp        | Number:Temperature | Temperature sensor in the extract air flow    |
-| supplyTemp         | Number:Temperature | Temperature sensor in the supply air flow     |
-| setTemp            | Number:Temperature | Set temperature for supply (not always used)  |
-| fanspeed           | Number             | Level of the fanspeed (1-8)                   |
-| powerState         | Switch             | Main power switch                             |
-| co2State           | Switch             | Switch for CO2 regulation                     |
-| rhState            | Switch             | Switch for humidity regulation                |
-| winterMode         | Switch             | Switch to set winter mode                     |
+| channel            | type                 | description                                   |
+|--------------------|----------------------|-----------------------------------------------|
+| outsideTemp        | Number:Temperature   | Temperature sensor in the outside air flow    |
+| outgoingTemp       | Number:Temperature   | Temperature sensor in the outgoing air flow   |
+| extractTemp        | Number:Temperature   | Temperature sensor in the extract air flow    |
+| supplyTemp         | Number:Temperature   | Temperature sensor in the supply air flow     |
+| setTemp            | Number:Temperature   | Set temperature for supply (not always used)  |
+| fanspeed           | Number               | Level of the fanspeed (1-8)                   |
+| powerState         | Switch               | Main power switch                             |
+| co2State           | Switch               | Switch for CO2 regulation                     |
+| rhState            | Switch               | Switch for humidity regulation                |
+| winterMode         | Switch               | Switch to set winter mode                     |
 
 Supported configuration channels:
 
-| channel            | type               | description                                   |
-|--------------------|--------------------|-----------------------------------------------|
-| bypassTemp         | Number:Temperature | Temperature to disable the bypass function    |
-| supplyStopTemp     | Number:Temperature | Temperature to stop supply fan for defrosting |
-| preheatTemp        | Number:Temperature | Temperature to enable the preheater           |
-| minFanspeed        | Number             | Minimal level of the fanspeed (1-8)           |
-| maxFanspeed        | Number             | Maximal level of the fanspeed (1-8)           |
-| rhLimit            | Number             | Limit for relative humidity sensor            |
-| hysteresis         | Number:Temperature | Hysteresis on defroster temperature           |
-| DCFanExtract       | Number             | Speed reduction for the extract fan           |
-| DCFanSupply        | Number             | Speed reduction for the supply fan            |
-| maintenanceInterval| Number             | Maintenance interval in months                |
-| adjustInveral      | Number             | Adjust interval in minutes for air quality    |
-| RHLevelAuto        | Switch             | Automatic base humidity determination         |  
-| switchType         | Switch             | External Switch type (Boost or Fireplace)     |  
-| radiatorType       | Switch             | Use water (ON) or electric (OFF) radiator     |
-| cascade            | Switch             | System is cascaded                            |
+| channel            | type                 | description                                   |
+|--------------------|----------------------|-----------------------------------------------|
+| bypassTemp         | Number:Temperature   | Temperature to disable the bypass function    |
+| supplyStopTemp     | Number:Temperature   | Temperature to stop supply fan for defrosting |
+| preheatTemp        | Number:Temperature   | Temperature to enable the preheater           |
+| minFanspeed        | Number               | Minimal level of the fanspeed (1-8)           |
+| maxFanspeed        | Number               | Maximal level of the fanspeed (1-8)           |
+| rhLimit            | Number:Dimensionless | Limit for relative humidity sensor            |
+| hysteresis         | Number:Temperature   | Hysteresis on defroster temperature           |
+| DCFanExtract       | Number:Dimensionless | Speed reduction for the extract fan           |
+| DCFanSupply        | Number:Dimensionless | Speed reduction for the supply fan            |
+| maintenanceInterval| Number:Dimensionless | Maintenance interval in months                |
+| adjustInveral      | Number:Dimensionless | Adjust interval in minutes for air quality    |
+| RHLevelAuto        | Switch               | Automatic base humidity determination         |
+| switchType         | Switch               | External Switch type (Boost or Fireplace)     |
+| radiatorType       | Switch               | Use water (ON) or electric (OFF) radiator     |
+| cascade            | Switch               | System is cascaded                            |
 
 Note: the configuration channels are not intended to be written regularly.
 

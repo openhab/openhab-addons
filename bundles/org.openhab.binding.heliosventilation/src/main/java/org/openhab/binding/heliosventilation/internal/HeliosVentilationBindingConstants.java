@@ -75,12 +75,12 @@ public class HeliosVentilationBindingConstants {
                         result.put(dp.address(), dp);
                     }
                 } catch (HeliosPropertiesFormatException e) {
-                    LOGGER.error("could not read resource file {}, binding will probably fail: {}", DATAPOINT_FILE,
+                    LOGGER.warn("could not read resource file {}, binding will probably fail: {}", DATAPOINT_FILE,
                             e.getMessage());
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("could not read resource file {}, binding will probably fail: {}", DATAPOINT_FILE,
+            LOGGER.warn("could not read resource file {}, binding will probably fail: {}", DATAPOINT_FILE,
                     e.getMessage());
         }
 

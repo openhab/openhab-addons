@@ -15,7 +15,6 @@ package org.openhab.binding.heliosventilation.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TooManyListenersException;
@@ -62,7 +61,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     private static final int POLL_OFFLINE_THRESHOLD = 3;
 
     /** Logger Instance */
-    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final Logger logger = LoggerFactory.getLogger(HeliosVentilationHandler.class);
 
     /**
      * store received data for read-modify-write operations on bitlevel
@@ -440,13 +439,10 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                         String t = datapoint.asString(val);
                         logger.trace("Received {} = {}", datapoint, t);
                     }
-                    if (thing.getStatus() != ThingStatus.REMOVING) {
-                        // plausible data received, so the thing is online
-                        updateStatus(ThingStatus.ONLINE);
-                        pollCounter = 0;
+                    updateStatus(ThingStatus.ONLINE);
+                    pollCounter = 0;
 
-                        updateState(datapoint.getName(), datapoint.asState(val));
-                    }
+                    updateState(datapoint.getName(), datapoint.asState(val));
                     datapoint = datapoint.next();
                 } while (datapoint != null);
 
