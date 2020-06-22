@@ -20,8 +20,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.boschshc.internal.services.BoschSHCService;
+import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.JsonElement;
 
@@ -36,6 +41,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
     private @Nullable BoschSHCConfiguration config;
+
+    /**
+     * Services of the device.
+     */
+    private List<BoschSHCService<? extends BoschSHCServiceState>> services = new ArrayList<BoschSHCService<? extends BoschSHCServiceState>>();
 
     public BoschSHCHandler(Thing thing) {
         super(thing);
@@ -54,6 +64,10 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         return this.config;
     }
 
+    /**
+     * Initializes this handler. Use this method to register all services of the
+     * device with {@link #registerService(BoschSHCService)}.
+     */
     @Override
     public void initialize() {
 
@@ -67,7 +81,20 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     @Override
     public abstract void handleCommand(ChannelUID channelUID, Command command);
 
-    public abstract void processUpdate(String id, JsonElement state);
+    /**
+     * Processes an update which is received from the bridge.
+     * 
+     * @param serviceName Name of service the update came from.
+     * @param stateData   Current state of device service. Serialized as JSON.
+     */
+    public void processUpdate(String serviceName, JsonElement stateData) {
+        // Check services of device to correctly
+        for (BoschSHCService<? extends BoschSHCServiceState> service : this.services) {
+            if (serviceName.equals(service.getServiceName())) {
+                service.onStateUpdate(stateData);
+            }
+        }
+    }
 
     protected @Nullable BoschSHCBridgeHandler getBridgeHandler() {
         Bridge bridge = this.getBridge();
@@ -75,5 +102,14 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             return null;
         }
         return (BoschSHCBridgeHandler) bridge.getHandler();
+    }
+
+    /**
+     * Registers a service of this device.
+     * 
+     * @param service Service which belongs to this device
+     */
+    protected <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service) {
+        this.services.add(service);
     }
 }
