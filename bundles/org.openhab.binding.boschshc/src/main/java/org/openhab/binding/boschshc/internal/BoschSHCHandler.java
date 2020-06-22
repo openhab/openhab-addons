@@ -20,15 +20,29 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.gson.JsonElement;
+
+class DeviceService<TState extends BoschSHCServiceState> {
+    /**
+     * Service which belongs to the device.
+     */
+    public BoschSHCService<TState> service;
+
+    /**
+     * Channels which are affected by the state of this service.
+     */
+    public Collection<String> affectedChannels;
+}
 
 /**
  * The {@link BoschSHCHandler} represents Bosch Things. Each type of device
@@ -45,7 +59,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Services of the device.
      */
-    private List<BoschSHCService<? extends BoschSHCServiceState>> services = new ArrayList<BoschSHCService<? extends BoschSHCServiceState>>();
+    private List<DeviceService<? extends BoschSHCServiceState>> services = new ArrayList<DeviceService<? extends BoschSHCServiceState>>();
 
     public BoschSHCHandler(Thing thing) {
         super(thing);
@@ -79,7 +93,16 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     @Override
-    public abstract void handleCommand(ChannelUID channelUID, Command command);
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            // Refresh state of services that affect the channel
+            for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
+                if (deviceService.affectedChannels.contains(channelUID.getIdWithoutGroup())) {
+                    deviceService.service.refreshState();
+                }
+            }
+        }
+    }
 
     /**
      * Processes an update which is received from the bridge.
@@ -89,7 +112,8 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     public void processUpdate(String serviceName, JsonElement stateData) {
         // Check services of device to correctly
-        for (BoschSHCService<? extends BoschSHCServiceState> service : this.services) {
+        for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
+            BoschSHCService<? extends BoschSHCServiceState> service = deviceService.service;
             if (serviceName.equals(service.getServiceName())) {
                 service.onStateUpdate(stateData);
             }
@@ -107,9 +131,15 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Registers a service of this device.
      * 
-     * @param service Service which belongs to this device
+     * @param service          Service which belongs to this device
+     * @param affectedChannels Channels which are affected by the state of this
+     *                         service
      */
-    protected <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service) {
-        this.services.add(service);
+    protected <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
+            Collection<String> affectedChannels) {
+        DeviceService<TState> deviceService = new DeviceService<TState>();
+        deviceService.service = service;
+        deviceService.affectedChannels = affectedChannels;
+        this.services.add(deviceService);
     }
 }
