@@ -16,9 +16,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -47,10 +50,14 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
     @Override
     public CompletableFuture<LockCurrentStateEnum> getLockCurrentState() {
         @Nullable
-        OnOffType state = getStateAs(HomekitCharacteristicType.LOCK_CURRENT_STATE, OnOffType.class);
-        if (state != null) {
+
+        final State state = getItem(HomekitCharacteristicType.LOCK_CURRENT_STATE, GenericItem.class).getState();
+        if (state instanceof DecimalType) {
+            return CompletableFuture.completedFuture(LockCurrentStateEnum.fromCode(
+                state.as(DecimalType.class).intValue()));
+        } else if (state instanceof OnOffType) {
             return CompletableFuture.completedFuture(
-                    state == OnOffType.OFF ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED);
+                state.equals(OnOffType.ON) ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED);
         }
         return CompletableFuture.completedFuture(LockCurrentStateEnum.UNKNOWN);
     }
@@ -61,7 +68,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
         OnOffType state = getStateAs(HomekitCharacteristicType.LOCK_TARGET_STATE, OnOffType.class);
         if (state != null) {
             return CompletableFuture.completedFuture(
-                    state == OnOffType.OFF ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);
+                    state == OnOffType.ON ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);
         }
         return CompletableFuture.completedFuture(LockTargetStateEnum.UNSECURED);
         // Apple HAP specification has onyl SECURED and UNSECURED values for lock target state.
@@ -77,13 +84,13 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
                 case SECURED:
                     // Close the door
                     if (item instanceof SwitchItem) {
-                        ((SwitchItem) item).send(OnOffType.OFF);
+                        ((SwitchItem) item).send(OnOffType.ON);
                     }
                     break;
                 case UNSECURED:
                     // Open the door
                     if (item instanceof SwitchItem) {
-                        ((SwitchItem) item).send(OnOffType.ON);
+                        ((SwitchItem) item).send(OnOffType.OFF);
                     }
                     break;
                 default:
