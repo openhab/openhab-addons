@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
@@ -265,7 +266,7 @@ public class ShellyComponents {
                         ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), sdata));
             }
 
-            if (sdata.actReasons != null) {
+            if ((sdata.actReasons != null) && (sdata.actReasons.length > 0)) {
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP,
                         getStringType(sdata.actReasons[0]));
                 updated |= changed;
@@ -329,6 +330,18 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE,
                         getOnOff(sdata.smoke));
             }
+            if (sdata.gasSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SELFTTEST,
+                        getStringType(sdata.gasSensor.selfTestState));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE,
+                        getStringType(sdata.gasSensor.alarmState));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE_STR,
+                        getStringType(sdata.gasSensor.sensorState));
+            }
+            if ((sdata.concentration != null) && sdata.concentration.isValid) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM,
+                        getDecimal(sdata.concentration.ppm));
+            }
 
             if (sdata.bat != null) { // no update for Sense
                 thingHandler.logger.trace("{}: Updating battery", thingHandler.thingName);
@@ -351,6 +364,20 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
                         getOnOff(sdata.charger));
             }
+
+            // Shelly Button
+            if ((sdata.inputs != null) && profile.isSensor) {
+                int idx = 1;
+                for (ShellyInputState input : sdata.inputs) {
+                    String channel = sdata.inputs.size() == 1 ? CHANNEL_INPUT : CHANNEL_INPUT + String.valueOf(idx);
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, channel, getOnOff(input.input));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_STATUS_EVENTTYPE,
+                            getStringType(input.event));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_STATUS_EVENTCOUNT,
+                            getDecimal(input.eventCount));
+                }
+            }
+
             if (updated) {
                 thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }

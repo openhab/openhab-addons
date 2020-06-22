@@ -214,7 +214,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         // Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing could not be
         // fully initialized here. In this case the CoAP messages triggers auto-initialization (like the Action URL does
         // when enabled)
-        if (config.eventsCoIoT && (profile.isSensor && !profile.isSense)) {
+        if (config.eventsCoIoT && profile.hasBattery && !profile.isSense) {
             coap.start(thingName, config);
         }
 
@@ -589,21 +589,16 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 String event = !parmType.isEmpty() ? parmType : type;
                 switch (event) {
                     case SHELLY_EVENT_SHORTPUSH:
+                    case SHELLY_EVENT_DOUBLE_SHORTPUSH:
+                    case SHELLY_EVENT_TRIPLE_SHORTPUSH:
                     case SHELLY_EVENT_LONGPUSH:
                         if (isButton) {
                             channel = CHANNEL_BUTTON_TRIGGER;
-                            payload = event.equals(SHELLY_EVENT_SHORTPUSH) ? CommonTriggerEvents.SHORT_PRESSED
-                                    : CommonTriggerEvents.LONG_PRESSED;
+                            payload = mapEvent(event);
                         } else {
                             logger.debug("{}: Relay button is not in memontary or detached mode, ignore SHORT/LONGPUSH",
                                     thingName);
                         }
-                        break;
-                    case SHELLY_EVENT_ROLLER_OPEN:
-                    case SHELLY_EVENT_ROLLER_CLOSE:
-                    case SHELLY_EVENT_ROLLER_STOP:
-                        channel = CHANNEL_EVENT_TRIGGER;
-                        payload = event;
                         break;
                     case SHELLY_EVENT_BTN_ON:
                     case SHELLY_EVENT_BTN_OFF:
@@ -625,6 +620,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     case SHELLY_EVENT_OUT_OFF:
                         onoff = CHANNEL_OUTPUT;
                         break;
+                    case SHELLY_EVENT_ROLLER_OPEN:
+                    case SHELLY_EVENT_ROLLER_CLOSE:
+                    case SHELLY_EVENT_ROLLER_STOP:
+                        channel = CHANNEL_EVENT_TRIGGER;
+                        payload = event;
+                        break;
                     case SHELLY_EVENT_SENSORREPORT:
                         // process sensor with next refresh
                         break;
@@ -632,6 +633,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     case SHELLY_EVENT_FLOOD_GONE:
                         updateChannel(group, CHANNEL_SENSOR_FLOOD,
                                 event.equalsIgnoreCase(SHELLY_EVENT_FLOOD_DETECTED) ? OnOffType.ON : OnOffType.OFF);
+                        break;
+
+                    case SHELLY_EVENT_ALARM_MILD:
+                    case SHELLY_EVENT_ALARM_HEAVY: // DW 1.7+
+                    case SHELLY_EVENT_ALARM_OFF: // DW 1.7+
+                        channel = CHANNEL_SENSOR_ALARM_STATE;
+                        payload = mapEvent(event);
                         break;
                     default:
                         // trigger will be provided by input/output channel or sensor channels
@@ -654,6 +662,20 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             return true;
         }
         return false;
+    }
+
+    private String mapEvent(String event) {
+        switch (event) {
+            case SHELLY_EVENT_SHORTPUSH:
+                return CommonTriggerEvents.SHORT_PRESSED;
+            case SHELLY_EVENT_DOUBLE_SHORTPUSH:
+                return CommonTriggerEvents.DOUBLE_PRESSED;
+            case SHELLY_EVENT_TRIPLE_SHORTPUSH:
+            default:
+                return CommonTriggerEvents.PRESSED;
+            case SHELLY_EVENT_LONGPUSH:
+                return CommonTriggerEvents.LONG_PRESSED;
+        }
     }
 
     /**

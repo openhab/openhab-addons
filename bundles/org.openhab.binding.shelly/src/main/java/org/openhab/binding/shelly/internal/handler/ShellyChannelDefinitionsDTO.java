@@ -83,6 +83,8 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned",
                         ITEM_TYPE_POWER))
                 .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER, "charger", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SELFTTEST, "selfTest",
+                        ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, "updateAvailable",
                         ITEM_TYPE_SWITCH))
 
@@ -113,10 +115,22 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEM_TYPE_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_FLOOD, "sensorFlood", ITEM_TYPE_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SMOKE, "sensorSmoke", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE, "sensorState", ITEM_TYPE_CONTACT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PPM, "sensorPPM", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE, "sensorState", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE_STR, "sensorStateStr", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEM_TYPE_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_LAST_UPDATE, "lastUpdate", ITEM_TYPE_DATETIME))
+
+                // Button
+                .add(new ShellyChannel(m, CHANNEL_GROUP_STATUS, CHANNEL_INPUT, "inputState", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_STATUS, CHANNEL_STATUS_EVENTTYPE, "eventType",
+                        ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_STATUS, CHANNEL_STATUS_EVENTCOUNT, "eventCount",
+                        ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_STATUS, CHANNEL_BUTTON_TRIGGER, "system.button",
+                        ITEM_TYPE_STRING))
 
                 // Addon with external sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1, "sensorExtTemp", ITEM_TYPE_TEMP))
@@ -249,6 +263,18 @@ public class ShellyChannelDefinitionsDTO {
         addChannel(thing, newChannels, sdata.charger != null, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.sensorError != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
         addChannel(thing, newChannels, sdata.actReasons != null, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP);
+
+        // Gas
+        if (sdata.gasSensor != null) {
+            addChannel(thing, newChannels, sdata.gasSensor.selfTestState != null, CHANNEL_GROUP_DEV_STATUS,
+                    CHANNEL_DEVST_SELFTTEST);
+            addChannel(thing, newChannels, sdata.gasSensor.sensorState != null, CHANNEL_GROUP_SENSOR,
+                    CHANNEL_SENSOR_STATE_STR);
+            addChannel(thing, newChannels, sdata.concentration != null && sdata.concentration.ppm != null,
+                    CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM);
+            addChannel(thing, newChannels, sdata.gasSensor.sensorState != null, CHANNEL_GROUP_SENSOR,
+                    CHANNEL_SENSOR_ALARM_STATE);
+        }
 
         // Battery
         if (sdata.bat != null) {

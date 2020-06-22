@@ -102,6 +102,7 @@ public class ShellyCoapJSonDTO {
         @SerializedName("index")
         public String id; // id
         public double value; // value
+        public String valueStr; // value
     }
 
     public static class CoIotGenericSensorList {
@@ -127,7 +128,15 @@ public class ShellyCoapJSonDTO {
                     final CoIotSensor sensor = new CoIotSensor();
                     in.nextInt(); // alway 0
                     sensor.id = Integer.toString(in.nextInt());
-                    sensor.value = in.nextDouble();
+                    // try double
+                    try {
+                        sensor.value = in.nextDouble();
+                        sensor.valueStr = "";
+                    } catch (NumberFormatException e) {
+                        // handle as string
+                        sensor.valueStr = in.nextString();
+                        sensor.value = -1;
+                    }
                     in.endArray();
                     list.generic.add(sensor);
                 }

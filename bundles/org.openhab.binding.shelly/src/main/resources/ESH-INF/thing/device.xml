@@ -8,10 +8,10 @@
 		<label>Device Status</label>
 		<description>Information about the device status</description>
 		<channels>
-			<channel id="alarm" typeId="alarmTrigger"/>
-			<channel id="wifiSignal" typeId="system.signal-strength"/>
-			<channel id="uptime" typeId="uptime"/>
-			<channel id="updateAvailable" typeId="updateAvailable"/>
+			<channel id="alarm" typeId="alarmTrigger" />
+			<channel id="wifiSignal" typeId="system.signal-strength" />
+			<channel id="uptime" typeId="uptime" />
+			<channel id="updateAvailable" typeId="updateAvailable" />
 		</channels>
 	</channel-group-type>
 
@@ -75,4 +75,18 @@
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
+	<channel-type id="selfTest">
+		<item-type>String</item-type>
+		<label>Self Test</label>
+		<description>Self Test Status/Result</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="not_completed">Not completed</option>
+				<option value="completed">Completed</option>
+				<option value="running">Running</option>
+				<option value="pending">Pending</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

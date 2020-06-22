@@ -367,7 +367,8 @@ public class ShellyHttpApi {
         if (profile.isSensor) {
             logger.debug("{}: Set Sensor Reporting URL", thingName);
             setEventUrl(config.eventsSensorReport, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
-                    SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_CLOSE, SHELLY_EVENT_VIBRATION);
+                    SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_CLOSE, SHELLY_EVENT_VIBRATION,
+                    SHELLY_EVENT_ALARM_MILD, SHELLY_EVENT_ALARM_HEAVY, SHELLY_EVENT_ALARM_OFF);
         }
     }
 

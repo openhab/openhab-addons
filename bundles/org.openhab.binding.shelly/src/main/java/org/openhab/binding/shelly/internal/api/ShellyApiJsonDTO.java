@@ -14,6 +14,8 @@ package org.openhab.binding.shelly.internal.api;
 
 import java.util.ArrayList;
 
+import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -62,6 +64,9 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_EVENT_OUT_OFF = "out_off";
     public static final String SHELLY_EVENT_SHORTPUSH = "shortpush";
     public static final String SHELLY_EVENT_LONGPUSH = "longpush";
+    // Button
+    public static final String SHELLY_EVENT_DOUBLE_SHORTPUSH = "double_shortpush";
+    public static final String SHELLY_EVENT_TRIPLE_SHORTPUSH = "triple_shortpush";
 
     // Dimmer
     public static final String SHELLY_EVENT_BTN1_ON = "btn1_on";
@@ -85,7 +90,12 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_EVENT_FLOOD_DETECTED = "flood_detected";
     public static final String SHELLY_EVENT_FLOOD_GONE = "flood_gone";
     public static final String SHELLY_EVENT_VIBRATION = "vibration"; // DW 1.6.5+
-    public static final String SHELLY_EVENT_CLOSE = "close_url"; // DW 1.6.5+
+    public static final String SHELLY_EVENT_CLOSE = "close"; // DW 1.6.5+
+
+    // Gas
+    public static final String SHELLY_EVENT_ALARM_MILD = "alarm_mild"; // DW 1.7+
+    public static final String SHELLY_EVENT_ALARM_HEAVY = "alarm_heavy"; // DW 1.7+
+    public static final String SHELLY_EVENT_ALARM_OFF = "alarm_off"; // DW 1.7+
 
     //
     // API values
@@ -186,8 +196,15 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_IR_CODET_PRONTO = "pronto";
     public static final String SHELLY_IR_CODET_PRONTO_HEX = "pronto_hex";
 
+    // Bulb/Duo/RGBW2
     public static final int SHELLY_MIN_EFFECT = 0;
     public static final int SHELLY_MAX_EFFECT = 6;
+
+    // Button
+    public static final String SHELLY_BTNEVENT_1SHORTPUSH = "S";
+    public static final String SHELLY_BTNEVENT_2SHORTPUSH = "SS";
+    public static final String SHELLY_BTNEVENT_3SHORTPUSH = "SSS";
+    public static final String SHELLY_BTNEVENT_LONGPUSH = "L";
 
     public static final String SHELLY_TEMP_CELSIUS = "C";
     public static final String SHELLY_TEMP_FAHRENHEIT = "F";
@@ -407,7 +424,14 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellyInputState {
+        @SerializedName("input")
         public Integer input;
+
+        // Shelly Button
+        @SerializedName("event")
+        public String event;
+        @SerializedName("event_cnt")
+        public Integer eventCount;
     }
 
     public static class ShellySettingsMeter {
@@ -528,6 +552,16 @@ public class ShellyApiJsonDTO {
         // public Boolean vibrationEnabled; // Whether vibration monitoring is activated
         // @SerializedName("reverse_open_close")
         // public Boolean reverseOpenClose; // Whether to reverse which position the sensor consideres "open"
+
+        // Gas FW 1.7
+        @SerializedName("set_volume")
+        public Integer volume; // Speaker volume for alarm
+        @SerializedName("alarm_off_url")
+        public String alarmOffUrl; // URL reports when alarm went off
+        @SerializedName("alarm_mild_url")
+        public String alarmMidUrl; // URL reports middle alarm
+        @SerializedName("alarm_heavy_url")
+        public String alarmHeavyfUrl; // URL reports heavy alarm
     }
 
     public static class ShellySettingsAttributes {
@@ -814,6 +848,17 @@ public class ShellyApiJsonDTO {
 
         @SerializedName("sensor_error")
         public String sensorError; // 1.5.7: Only displayed in case of error
+
+        // FW 1.7: Shelly Gas
+        @SerializedName("gas_sensor")
+        public ShellyStatusGasSensor gasSensor;
+        @SerializedName("concentration")
+        public ShellyStatusGasConcentration concentration;
+
+        // FW 1.7 Button
+        @SerializedName("connect_retries")
+        public Integer connectRetries;
+        public ArrayList<ShellyInputState> inputs; // Firmware 1.5.6+
     }
 
     public static class ShellySettingsSmoke {
@@ -823,6 +868,24 @@ public class ShellyApiJsonDTO {
         public Integer temperatureThreshold; // Temperature delta (in configured degree units) which triggers an update
         @SerializedName("sleep_mode_period")
         public Integer sleepModePeriod; // Periodic update period in hours, between 1 and 24
+    }
+
+    // Shelly Gas
+    // "gas_sensor":{"sensor_state":"normal","self_test_state":"not_completed","alarm_state":"none"},
+    // "concentration":{"ppm":0,"is_valid":true},
+    public static class ShellyStatusGasSensor {
+        @SerializedName("sensor_state")
+        public String sensorState;
+        @SerializedName("self_test_state")
+        public String selfTestState;
+        @SerializedName("alarm_state")
+        public String alarmState;
+    }
+
+    public static class ShellyStatusGasConcentration {
+        public Integer ppm;
+        @SerializedName("is_valid")
+        public Boolean isValid;
     }
 
     public static class ShellySettingsLight {
@@ -916,5 +979,25 @@ public class ShellyApiJsonDTO {
     public static String fixDimmerJson(String json) {
         return !json.contains("\"lights\":[") ? json
                 : json.replaceFirst(java.util.regex.Pattern.quote("\"lights\":["), "\"dimmers\":[");
+    }
+
+    /**
+     * Convert Shelly Button events into OH button states
+     *
+     * @param eventType S/SS/SSS or L
+     * @return OH button states
+     */
+    public static String mapButtonEvent(String eventType) {
+        switch (eventType) {
+            case SHELLY_BTNEVENT_1SHORTPUSH:
+                return CommonTriggerEvents.SHORT_PRESSED;
+            case SHELLY_BTNEVENT_2SHORTPUSH:
+                return CommonTriggerEvents.DOUBLE_PRESSED;
+            case SHELLY_BTNEVENT_3SHORTPUSH:
+            default:
+                return CommonTriggerEvents.PRESSED;
+            case SHELLY_BTNEVENT_LONGPUSH:
+                return CommonTriggerEvents.LONG_PRESSED;
+        }
     }
 }
