@@ -148,9 +148,6 @@ public class GreeBindingConstants {
     public static final int TEMP_HALFSTEP_NO = 0;
     public static final int TEMP_HALFSTEP_YES = 1;
 
-    // parameters.put("SvSt", value);
-    // parameters.put("SwhSlp", 0);
-    // parameters.put("SlpMod", 0);
     /*
      * The timeout for the Datagram socket used to communicate with Gree Airconditioners.
      * This is particularly important when scanning for devices because this will effectively

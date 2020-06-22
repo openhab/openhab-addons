@@ -181,7 +181,7 @@ public class GreeAirDevice {
         setCommandValue(clientSocket, GREE_PROP_POWER, value);
     }
 
-    public void SetDeviceMode(DatagramSocket clientSocket, int value) throws GreeException {
+    public void setDeviceMode(DatagramSocket clientSocket, int value) throws GreeException {
         if ((value < 0 || value > 4)) {
             throw new GreeException("Device mode out of range!");
         }
@@ -429,7 +429,7 @@ public class GreeAirDevice {
         request.uid = 0;
         request.tcid = getId();
         request.pack = pack;
-        byte[] sendData = gson.toJson(request).getBytes();
+        byte[] sendData = gson.toJson(request).getBytes(StandardCharsets.UTF_8);
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
         return sendPacket;
     }

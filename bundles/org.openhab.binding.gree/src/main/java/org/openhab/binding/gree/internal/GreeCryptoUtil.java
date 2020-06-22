@@ -37,10 +37,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GreeCryptoUtil {
     private static final String AES_KEY = "a3K8Bx%2r8Y7#xDh";
 
-    public static String GetAESGeneralKey() {
-        return AES_KEY;
-    }
-
     public static byte[] getAESGeneralKeyByteArray() {
         return AES_KEY.getBytes(StandardCharsets.UTF_8);
     }

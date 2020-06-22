@@ -257,7 +257,7 @@ public class GreeHandler extends BaseThingHandler {
 
         // Select mode
         logger.debug("{}: Select mode {}", thingId, mode);
-        device.SetDeviceMode(socket, mode);
+        device.setDeviceMode(socket, mode);
 
         // Check for secondary action
         switch (modeStr) {
