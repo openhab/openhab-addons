@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
@@ -77,7 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class StiebelEltronHandler extends BaseThingHandler {
-    
+
     public abstract class AbstractBasePoller {
 
         private final Logger logger = LoggerFactory.getLogger(StiebelEltronHandler.class);
@@ -139,10 +140,17 @@ public class StiebelEltronHandler extends BaseThingHandler {
             });
 
             long refreshMillis = myconfig.getRefreshMillis();
-            @Nullable
+
             PollTask task = pollTask;
             if (task != null) {
                 StiebelEltronHandler.this.modbusManager.registerRegularPoll(task, refreshMillis, 1000);
+            }
+        }
+
+        public synchronized void poll() {
+            PollTask task = pollTask;
+            if (task != null) {
+                StiebelEltronHandler.this.modbusManager.submitOneTimePoll(task);
             }
         }
 
@@ -266,32 +274,32 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @return short the value of the command multiplied by 10 (see datatype 2 in
      *         the stiebel eltron modbus documentation)
      */
-    private short getScaledInt16Value(Command command) throws IllegalArgumentException {
+    private short getScaledInt16Value(Command command) throws StiebelEltronException {
         if (command instanceof QuantityType) {
             QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
             } else {
-                throw new IllegalArgumentException();
+                throw new StiebelEltronException("Unsupported unit");
             }
         }
         if (command instanceof DecimalType) {
             DecimalType c = (DecimalType) command;
             return (short) (c.doubleValue() * 10);
         }
-        throw new IllegalArgumentException();
+        throw new StiebelEltronException("Unsupported command type");
     }
 
     /**
      * @param command get the value of this command.
      * @return short the value of the command as short
      */
-    private short getInt16Value(Command command) throws IllegalArgumentException {
+    private short getInt16Value(Command command) throws StiebelEltronException {
         if (command instanceof DecimalType) {
             DecimalType c = (DecimalType) command;
             return c.shortValue();
         }
-        throw new IllegalArgumentException();
+        throw new StiebelEltronException("Unsupported command type");
     }
 
     /**
@@ -299,28 +307,52 @@ public class StiebelEltronHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        try {
-            if (GROUP_SYSTEM_PARAMETER.equals(channelUID.getGroupId())) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case CHANNEL_OPERATION_MODE:
-                        writeInt16(1500, getInt16Value(command));
+        if (RefreshType.REFRESH == command) {
+            AbstractBasePoller poller = null;
+            String groupId = channelUID.getGroupId();
+            if (groupId != null) {
+                switch (groupId) {
+                    case GROUP_SYSTEM_STATE:
+                        poller = systemStatePoller;
                         break;
-                    case CHANNEL_COMFORT_TEMPERATURE_HEATING:
-                        writeInt16(1501, getScaledInt16Value(command));
+                    case GROUP_SYSTEM_PARAMETER:
+                        poller = systemParameterPoller;
                         break;
-                    case CHANNEL_ECO_TEMPERATURE_HEATING:
-                        writeInt16(1502, getScaledInt16Value(command));
+                    case GROUP_SYSTEM_INFO:
+                        poller = systemInformationPoller;
                         break;
-                    case CHANNEL_COMFORT_TEMPERATURE_WATER:
-                        writeInt16(1509, getScaledInt16Value(command));
-                        break;
-                    case CHANNEL_ECO_TEMPERATURE_WATER:
-                        writeInt16(1510, getScaledInt16Value(command));
+                    case GROUP_ENERGY_INFO:
+                        poller = energyPoller;
                         break;
                 }
             }
-        } catch (IllegalArgumentException e) {
-            handleError(e);
+            if (poller != null) {
+                poller.poll();
+            }
+        } else {
+            try {
+                if (GROUP_SYSTEM_PARAMETER.equals(channelUID.getGroupId())) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case CHANNEL_OPERATION_MODE:
+                            writeInt16(1500, getInt16Value(command));
+                            break;
+                        case CHANNEL_COMFORT_TEMPERATURE_HEATING:
+                            writeInt16(1501, getScaledInt16Value(command));
+                            break;
+                        case CHANNEL_ECO_TEMPERATURE_HEATING:
+                            writeInt16(1502, getScaledInt16Value(command));
+                            break;
+                        case CHANNEL_COMFORT_TEMPERATURE_WATER:
+                            writeInt16(1509, getScaledInt16Value(command));
+                            break;
+                        case CHANNEL_ECO_TEMPERATURE_WATER:
+                            writeInt16(1510, getScaledInt16Value(command));
+                            break;
+                    }
+                }
+            } catch (StiebelEltronException e) {
+                handleError(e);
+            }
         }
     }
 
