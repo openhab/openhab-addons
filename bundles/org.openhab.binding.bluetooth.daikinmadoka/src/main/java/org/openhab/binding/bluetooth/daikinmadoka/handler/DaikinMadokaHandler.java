@@ -545,12 +545,13 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     @Override
     public void receivedResponse(GetOperationmodeCommand command) {
         if (command.getOperationMode() == null) {
+            logger.debug("OperationMode is null.");
             return;
         }
 
         OperationMode newMode = command.getOperationMode();
-        // If the mode has not changed - no need to refresh everything
-        if (newMode == null || newMode.equals(this.madokaSettings.getOperationMode())) {
+
+        if (newMode == null) {
             return;
         }
 
@@ -620,10 +621,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
 
         OnOffType oot = command.isPowerState() ? OnOffType.ON : OnOffType.OFF;
 
-        if (oot.equals(this.madokaSettings.getOnOffState())) {
-            return;
-        }
-
         this.madokaSettings.setOnOffState(oot);
 
         updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_ONOFF_STATUS, oot);
@@ -641,16 +638,14 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
     public void receivedResponse(GetIndoorOutoorTemperatures command) {
         DecimalType newIndoorTemp = command.getIndoorTemperature();
         if (newIndoorTemp != null) {
-            if (!newIndoorTemp.equals(this.madokaSettings.getIndoorTemperature())) {
-                this.madokaSettings.setIndoorTemperature(newIndoorTemp);
-                updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_TEMPERATURE, newIndoorTemp);
-            }
+            updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_INDOOR_TEMPERATURE, newIndoorTemp);
+            this.madokaSettings.setIndoorTemperature(newIndoorTemp);
         }
 
         DecimalType newOutdoorTemp = command.getOutdoorTemperature();
         if (newOutdoorTemp == null) {
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE, UnDefType.UNDEF);
-        } else if (!newOutdoorTemp.equals(this.madokaSettings.getOutdoorTemperature())) {
+        } else {
             this.madokaSettings.setOutdoorTemperature(newOutdoorTemp);
             updateStateIfLinked(DaikinMadokaBindingConstants.CHANNEL_ID_OUTDOOR_TEMPERATURE, newOutdoorTemp);
         }
