@@ -79,9 +79,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
-                    setPosition(ShadePositionKind.PRIMARY, ((PercentType) command).intValue());
+                    setShadePercentPosition(ShadePositionKind.PRIMARY, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    setPosition(ShadePositionKind.PRIMARY, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
+                    setShadePercentPosition(ShadePositionKind.PRIMARY, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     logger.warn("PowerView shades do not support StopMove commands");
                 }
@@ -89,9 +89,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_SECONDARY_POSITION:
                 if (command instanceof PercentType) {
-                    setPosition(ShadePositionKind.SECONDARY, ((PercentType) command).intValue());
+                    setShadePercentPosition(ShadePositionKind.SECONDARY, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    setPosition(ShadePositionKind.SECONDARY, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
+                    setShadePercentPosition(ShadePositionKind.SECONDARY, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     logger.warn("PowerView shades do not support StopMove commands");
                 }
@@ -99,9 +99,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_VANE:
                 if (command instanceof PercentType) {
-                    setPosition(ShadePositionKind.VANE, ((PercentType) command).intValue());
+                    setShadePercentPosition(ShadePositionKind.VANE, ((PercentType) command).intValue());
                 } else if (command instanceof OnOffType) {
-                    setPosition(ShadePositionKind.VANE, ((OnOffType) command).equals(OnOffType.ON) ? 100 : 0);
+                    setShadePercentPosition(ShadePositionKind.VANE, ((OnOffType) command).equals(OnOffType.ON) ? 100 : 0);
                 }
                 break;
         }
@@ -109,15 +109,15 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     void onReceiveUpdate(ShadeData shadeData) {
         updateStatus(ThingStatus.ONLINE);
-        updatePosition(shadeData.positions);
+        updateBindingPercentPositions(shadeData.positions);
         updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
     }
 
-    private void updatePosition(ShadePosition pos) {
-        if (pos != null) {
-            updateState(CHANNEL_SHADE_POSITION, pos.getPercent(ShadePositionKind.PRIMARY));
-            updateState(CHANNEL_SHADE_SECONDARY_POSITION, pos.getPercent(ShadePositionKind.SECONDARY));
-            updateState(CHANNEL_SHADE_VANE, pos.getPercent(ShadePositionKind.VANE));
+    private void updateBindingPercentPositions(ShadePosition shadePositions) {
+        if (shadePositions != null) {
+            updateState(CHANNEL_SHADE_POSITION, shadePositions.getPercent(ShadePositionKind.PRIMARY));
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePositions.getPercent(ShadePositionKind.SECONDARY));
+            updateState(CHANNEL_SHADE_VANE, shadePositions.getPercent(ShadePositionKind.VANE));
         } else {
             updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);
@@ -125,7 +125,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private void setPosition(ShadePositionKind kind, int posValue) {
+    private void setShadePercentPosition(ShadePositionKind kind, int percent) {
         HDPowerViewHubHandler bridge;
         if ((bridge = getBridgeHandler()) == null) {
             return;
@@ -142,12 +142,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     @Nullable
                     ShadeData oldData = oldShade.shade;
                     if (oldData != null && oldData.positions != null) {
-                        newPos = ShadePosition.create(kind, 0, posValue).copyPrimaryFrom(oldData.positions);
+                        newPos = ShadePosition.create(kind, 0, percent).copyPrimaryFrom(oldData.positions);
                         webTargets.moveShade(shadeId, newPos);
                     }
                 }
             } else {
-                newPos = ShadePosition.create(kind, posValue);
+                newPos = ShadePosition.create(kind, percent);
                 webTargets.moveShade(shadeId, newPos);
             }
         } catch (ProcessingException e) {
@@ -157,7 +157,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             logger.debug("Hub temporariliy down for maintenance");
             return;
         }
-        updatePosition(newPos);
+        updateBindingPercentPositions(newPos);
     }
 
     private String getShadeId() {
