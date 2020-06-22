@@ -2,11 +2,10 @@ package org.openhab.binding.boschshc.internal.thermostat;
 
 import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
 
+import java.util.Arrays;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
@@ -35,20 +34,14 @@ public class ThermostatHandler extends BoschSHCHandler {
 
         // Initialize services
         String deviceId = this.getBoschID();
+
         this.temperatureLevelService = new TemperatureLevelService();
         this.temperatureLevelService.initialize(bridgeHandler, deviceId, this::updateChannels);
-        this.registerService(this.temperatureLevelService);
+        this.registerService(this.temperatureLevelService, Arrays.asList(CHANNEL_TEMPERATURE));
+
         this.valveTappetService = new ValveTappetService();
         this.valveTappetService.initialize(bridgeHandler, deviceId, this::updateChannels);
-        this.registerService(this.valveTappetService);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            this.temperatureLevelService.refreshState();
-            this.valveTappetService.refreshState();
-        }
+        this.registerService(this.valveTappetService, Arrays.asList(CHANNEL_VALVE_TAPPET_POSITION));
     }
 
     protected void updateChannels(TemperatureLevelServiceState state) {
