@@ -148,16 +148,16 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
                 String discoveredModel = discoveredBulbConfig.moduleName;
                 logger.trace("Returned model from discovered bulb at {}: {}", lightIpAddress, discoveredModel);
 
+                // We'll try to key off "TW" for tunable white
                 if (discoveredModel.contains("TW")) {
-                    // We'll try to key off "TW" for tunable white
                     thisBulbType = THING_TYPE_WIZ_TUNABLE_BULB;
                     thisBulbLabel = "WiZ Tunable White Bulb at " + lightIpAddress;
                     newThingId = new ThingUID(thisBulbType, lightMacAddress);
                     logger.trace("New bulb appears to be a tunable white bulb and will be given the UUID: {}",
                             newThingId);
 
-                } else if (!discoveredModel.contains("RBG")) {
                     // We key off "RGB" for color bulbs
+                } else if (!discoveredModel.contains("RBG")) {
                     thisBulbType = THING_TYPE_WIZ_DIMMABLE_BULB;
                     thisBulbLabel = "WiZ Dimmable White Bulb at " + lightIpAddress;
                     newThingId = new ThingUID(thisBulbType, lightMacAddress);
@@ -178,7 +178,6 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
     }
 
     private synchronized @Nullable WizLightingResponse getDiscoveredBulbConfig(final String lightIpAddress) {
-
         DatagramSocket dsocket = null;
         try {
             WizLightingRequest request = new WizLightingRequest(WizLightingMethodType.GetSystemConfig, null);
