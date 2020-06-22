@@ -16,7 +16,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Represents a device status update as represented by the Smart Home Controller.
+ * Represents a device status update as represented by the Smart Home
+ * Controller.
  *
  * @author Stefan Kästle
  *
@@ -24,18 +25,12 @@ import com.google.gson.annotations.SerializedName;
 public class DeviceStatusUpdate {
 
     /**
-     * {"result":[
-     * ..{
+     * {"result":[ ..{
      * ...."path":"/devices/hdm:HomeMaticIP:3014F711A0001916D859A8A9/services/PowerSwitch",
-     * ...."@type":"DeviceServiceData",
-     * ...."id":"PowerSwitch",
-     * ...."state":{
-     * ......"@type":"powerSwitchState",
-     * ......"automaticPowerOffTime":0,
-     * ......"switchState":"ON"
-     * ....},
-     * ...."deviceId":"hdm:HomeMaticIP:3014F711A0001916D859A8A9"}
-     * ],"jsonrpc":"2.0"}
+     * ...."@type":"DeviceServiceData", ...."id":"PowerSwitch", ...."state":{
+     * ......"@type":"powerSwitchState", ......"automaticPowerOffTime":0,
+     * ......"switchState":"ON" ....},
+     * ...."deviceId":"hdm:HomeMaticIP:3014F711A0001916D859A8A9"} ],"jsonrpc":"2.0"}
      */
 
     String path;
@@ -43,10 +38,19 @@ public class DeviceStatusUpdate {
     @SerializedName("@type")
     String type;
 
+    /**
+     * Name of service the update came from.
+     */
     String id;
 
+    /**
+     * Current state of device. Serialized as JSON.
+     */
     JsonElement state;
 
+    /**
+     * Id of device the update is for
+     */
     String deviceId;
 
     @Override
