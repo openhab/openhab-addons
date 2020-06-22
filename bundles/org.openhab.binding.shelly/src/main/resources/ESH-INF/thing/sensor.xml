@@ -136,7 +136,7 @@
 		<channels>
 			<channel id="input" typeId="inputState" />
 			<channel id="button" typeId="system.button" />
-			<channel id="eventType" typeId="eventType" />
+			<channel id="lastEvent" typeId="lastEvent" />
 			<channel id="eventCount" typeId="eventCount" />
 		</channels>
 	</channel-group-type>
@@ -193,11 +193,11 @@
 				<option value="poweron">Power-On</option>
 				<option value="sensor">Sensor</option>
 				<option value="alarm">Alarm</option>
-                <option value="ext_power">Charger connected</option>
+				<option value="ext_power">Charger connected</option>
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="eventType">
+	<channel-type id="lastEvent">
 		<item-type>String</item-type>
 		<label>Event</label>
 		<description>Event Type</description>

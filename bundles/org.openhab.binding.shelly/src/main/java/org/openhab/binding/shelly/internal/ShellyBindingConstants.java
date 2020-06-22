@@ -246,7 +246,7 @@ public class ShellyBindingConstants {
 
     // Button
     public static final String CHANNEL_GROUP_STATUS = "status";
-    public static final String CHANNEL_STATUS_EVENTTYPE = "eventType";
+    public static final String CHANNEL_STATUS_EVENTTYPE = "lastEvent";
     public static final String CHANNEL_STATUS_EVENTCOUNT = "eventCount";
 
     // Device Status

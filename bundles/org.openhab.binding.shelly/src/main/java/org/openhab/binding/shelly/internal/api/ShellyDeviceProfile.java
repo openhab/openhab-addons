@@ -192,6 +192,6 @@ public class ShellyDeviceProfile {
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isSense;
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON_STR);
-        hasBattery = isHT || isFlood || isDW || isSmoke; // we assume that Sense is connected to the charger
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton; // we assume that Sense is connected to the charger
     }
 }
