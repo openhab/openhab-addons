@@ -125,33 +125,56 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>(2);
         properties.put(CONFIG_MAC_ADDRESS, lightMacAddress);
         properties.put(CONFIG_IP_ADDRESS, lightIpAddress);
+        logger.trace("New bulb discovered at {} with MAC {}.  Requesting configuration info from the bulb.",
+                lightIpAddress, lightMacAddress);
 
         // Assume it is a full color bulb, unless we get confirmation otherwise.
-        // This will ensure the maximum number of channels will be created so there's no missing functionality.
+        // This will ensure the maximum number of channels will be created so there's no
+        // missing functionality.
         // There's nothing a simple dimmable bulb can do that a full color bulb can't.
         // It's easy for a user to ignore or not link anything to a non-working channel,
         // but impossible to add a new channel if it's wanted.
-        // The bulbs will merely ignore or return an error for specific commands they cannot carry-out
-        // (ie, setting color on a non-color bulb) and continue to function as they were before the bad command.
+        // The bulbs will merely ignore or return an error for specific commands they
+        // cannot carry-out (ie, setting color on a non-color bulb) and continue to
+        // function as they were before the bad command.
         ThingTypeUID thisBulbType = THING_TYPE_WIZ_COLOR_BULB;
+        String thisBulbLabel = "WiZ Full Color Bulb at " + lightIpAddress;
+        ThingUID newThingId = new ThingUID(thisBulbType, lightMacAddress);
+
         WizLightingResponse configResponse = getDiscoveredBulbConfig(lightIpAddress);
         if (configResponse != null) {
             SystemConfigResult discoveredBulbConfig = configResponse.getSystemConfigResults();
             if (discoveredBulbConfig != null) {
                 String discoveredModel = discoveredBulbConfig.moduleName;
+                logger.trace("Returned model from discovered bulb at {}: {}", lightIpAddress, discoveredModel);
+
                 if (discoveredModel.contains("TW")) {
+                    // We'll try to key off "TW" for tunable white
                     thisBulbType = THING_TYPE_WIZ_TUNABLE_BULB;
+                    thisBulbLabel = "WiZ Tunable White Bulb at " + lightIpAddress;
+                    newThingId = new ThingUID(thisBulbType, lightMacAddress);
+                    logger.trace("New bulb appears to be a tunable white bulb and will be given the UUID: {}",
+                            newThingId);
+
+                } else if (!discoveredModel.contains("RBG")) {
+                    // We key off "RGB" for color bulbs
+                    thisBulbType = THING_TYPE_WIZ_DIMMABLE_BULB;
+                    thisBulbLabel = "WiZ Dimmable White Bulb at " + lightIpAddress;
+                    newThingId = new ThingUID(thisBulbType, lightMacAddress);
+                    logger.trace(
+                            "New bulb appears not to be either tunable white bulb or full color and will be called dimmable only and given the UUID: {}",
+                            newThingId);
                 }
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
+                        .withLabel(thisBulbLabel).withRepresentationProperty(CONFIG_MAC_ADDRESS).build();
+
+                this.thingDiscovered(discoveryResult);
             }
+        } else {
+            logger.trace(
+                    "Couldn't get or couldn't parse configuration information from discovered bulb.  Discovery result will not be created.");
         }
-
-        // NOTE: Only full color bulbs supported at this time
-        ThingUID newThingId = new ThingUID(thisBulbType, lightMacAddress);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
-                .withLabel("WiZ Full Color Bulb at " + lightIpAddress).withRepresentationProperty(CONFIG_MAC_ADDRESS)
-                .build();
-
-        this.thingDiscovered(discoveryResult);
     }
 
     private synchronized @Nullable WizLightingResponse getDiscoveredBulbConfig(final String lightIpAddress) {
