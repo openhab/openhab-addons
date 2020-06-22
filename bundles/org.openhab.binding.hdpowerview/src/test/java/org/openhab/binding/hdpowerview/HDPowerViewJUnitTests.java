@@ -14,6 +14,9 @@ package org.openhab.binding.hdpowerview;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.ProcessingException;
@@ -48,25 +51,33 @@ public class HDPowerViewJUnitTests {
     public static final Pattern VALID_IP_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
-    // public class Logger implements ClientRequestFilter {
-    //
-    // @Override
-    // public void filter(ClientRequestContext requestContext) throws IOException {
-    // System.out.println(requestContext.getMethod() + " " + requestContext.getUri());
-    // if (requestContext.hasEntity()) {
-    // System.out.println(">> " + requestContext.getEntity().toString());
-    // }
-    // }
-    // }
-
     /*
-     * NOTE: in order to actually run these physical tests you must (obviously) have
-     * a hub physically available, and its IP address must be correctly configured
-     * in the "hubIPAddress" string constant below..
+     * load a test JSON string from a file
      */
+    private String loadJson(String fileName) {
+        try (FileReader file = new FileReader(String.format("src/test/resources/%s.json", fileName));
+                BufferedReader reader = new BufferedReader(file)) {
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line).append("\n");
+            }
+            return builder.toString();
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+        return "";
+    }
+
     @Test
     public void testCommunicationWithHub() {
-        String hubIPAddress = "192.168.1.xxx"; // e.g. "192.168.1.123"
+        // NOTE: in order to actually run these tests you must have a hub physically
+        // available, and its IP address must be correctly configured in the
+        // "hubIPAddress" string constant e.g. "192.168.1.123"
+        String hubIPAddress = "192.168.1.xxx";
+
+        // NOTE: set this to true if you accept physically moving the shades
+        boolean allowShadeMovementCommands = false;
 
         if (VALID_IP_ADDRESS.matcher(hubIPAddress).matches()) {
             // initialize stuff
@@ -120,11 +131,38 @@ public class HDPowerViewJUnitTests {
             assertNotNull(pos);
             assertEquals(100, pos.intValue());
 
-            // ==== get all shades ====
+            @Nullable
             String shadeId = null;
+            @Nullable
             ShadePosition shadePos = null;
+            @Nullable
+            Shades shades = null;
+
+            // test the JSON parsing for a duette top down bottom up shade
             try {
-                Shades shades = webTargets.getShades();
+                ShadeData shadeData = null;
+                String json = loadJson("duette");
+                assertNotNull(json);
+                assertNotEquals("", json);
+                shades = webTargets.gson.fromJson(json, Shades.class);
+                assertNotNull(shades);
+                assertEquals(1, shades.shadeData.size());
+                shadeData = shades.shadeData.get(0);
+                assertEquals("Gardin 1", shadeData.getName());
+                assertEquals("63778", shadeData.id);
+                shadePos = shadeData.positions;
+                assertNotNull(shadePos);
+                assertEquals(ShadePositionKind.PRIMARY, shadePos.getPosKind());
+                assertEquals(59, shadePos.getPercent(ShadePositionKind.PRIMARY).intValue());
+                assertEquals(65, shadePos.getPercent(ShadePositionKind.SECONDARY).intValue());
+                assertEquals(0, shadePos.getPercent(ShadePositionKind.VANE).intValue());
+            } catch (JsonParseException e) {
+                fail(e.getMessage());
+            }
+
+            // ==== get all shades ====
+            try {
+                shades = webTargets.getShades();
                 assertNotNull(shades);
                 assertTrue(shades.shadeData.size() > 0);
                 assertTrue(shades.shadeData.get(0).getName().length() > 0);
@@ -168,33 +206,37 @@ public class HDPowerViewJUnitTests {
             }
 
             // ==== move a specific shade ====
-            // try {
-            // assertNotNull(shadeId);
-            // assertNotNull(shade);
-            // @Nullable
-            // ShadeData shadeData = shade.shade;
-            // assertNotNull(shadeData);
-            // ShadePosition positions = shadeData.positions;
-            // assertNotNull(positions);
-            // ShadePositionKind kind = positions.getPosKind();
-            // assertNotNull(kind);
-            // int position = positions.getPercent(kind).intValue();
-            // position = position + ((position <= 10) ? 5 : -5);
-            // ShadePosition newPos = ShadePosition.create(kind, position);
-            // assertNotNull(newPos);
-            // shade = webTargets.moveShade(shadeId, newPos);
-            // assertNotNull(shade);
-            // } catch (ProcessingException | HubMaintenanceException e) {
-            // fail(e.getMessage());
-            // }
+            if (allowShadeMovementCommands) {
+                try {
+                    assertNotNull(shadeId);
+                    assertNotNull(shade);
+                    @Nullable
+                    ShadeData shadeData = shade.shade;
+                    assertNotNull(shadeData);
+                    ShadePosition positions = shadeData.positions;
+                    assertNotNull(positions);
+                    ShadePositionKind kind = positions.getPosKind();
+                    assertNotNull(kind);
+                    int position = positions.getPercent(kind).intValue();
+                    position = position + ((position <= 10) ? 5 : -5);
+                    ShadePosition newPos = ShadePosition.create(kind, position);
+                    assertNotNull(newPos);
+                    shade = webTargets.moveShade(shadeId, newPos);
+                    assertNotNull(shade);
+                } catch (ProcessingException | HubMaintenanceException e) {
+                    fail(e.getMessage());
+                }
+            }
 
             // ==== activate a specific scene ====
-            // try {
-            // assertNotNull(sceneId);
-            // webTargets.activateScene(sceneId);
-            // } catch (ProcessingException | HubMaintenanceException e) {
-            // fail(e.getMessage());
-            // }
+            if (allowShadeMovementCommands) {
+                try {
+                    assertNotNull(sceneId);
+                    webTargets.activateScene(sceneId);
+                } catch (ProcessingException | HubMaintenanceException e) {
+                    fail(e.getMessage());
+                }
+            }
         }
     }
 }

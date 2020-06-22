@@ -81,7 +81,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 if (command instanceof PercentType) {
                     setShadePercentPosition(ShadePositionKind.PRIMARY, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    setShadePercentPosition(ShadePositionKind.PRIMARY, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
+                    setShadePercentPosition(ShadePositionKind.PRIMARY,
+                            ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     logger.warn("PowerView shades do not support StopMove commands");
                 }
@@ -91,7 +92,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 if (command instanceof PercentType) {
                     setShadePercentPosition(ShadePositionKind.SECONDARY, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    setShadePercentPosition(ShadePositionKind.SECONDARY, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
+                    setShadePercentPosition(ShadePositionKind.SECONDARY,
+                            ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     logger.warn("PowerView shades do not support StopMove commands");
                 }
@@ -101,7 +103,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 if (command instanceof PercentType) {
                     setShadePercentPosition(ShadePositionKind.VANE, ((PercentType) command).intValue());
                 } else if (command instanceof OnOffType) {
-                    setShadePercentPosition(ShadePositionKind.VANE, ((OnOffType) command).equals(OnOffType.ON) ? 100 : 0);
+                    setShadePercentPosition(ShadePositionKind.VANE,
+                            ((OnOffType) command).equals(OnOffType.ON) ? 100 : 0);
                 }
                 break;
         }

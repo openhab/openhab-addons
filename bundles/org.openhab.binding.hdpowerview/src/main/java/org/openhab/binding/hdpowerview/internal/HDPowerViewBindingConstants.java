@@ -46,6 +46,7 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
 
     public static final String NETBIOS_NAME = "PDBU-Hub3.0";
+    public static final String NETBIOS_NAME_V2 = "PowerView-Hub";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 

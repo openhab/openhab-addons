@@ -49,7 +49,7 @@ public class HDPowerViewWebTargets {
     private WebTarget sceneActivate;
     private WebTarget scenes;
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
-    private final Gson gson;
+    public final Gson gson;
 
     public HDPowerViewWebTargets(Client client, String ipAddress) {
         base = client.target("http://" + ipAddress + "/api");

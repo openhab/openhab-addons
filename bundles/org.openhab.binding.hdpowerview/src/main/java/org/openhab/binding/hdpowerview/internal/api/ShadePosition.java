@@ -92,17 +92,17 @@ public class ShadePosition {
 
     ShadePosition(ShadePositionKind primaryKind, int primaryPercent, @Nullable Integer secondaryPercent) {
         switch (primaryKind) {
-        case PRIMARY:
-            this.position1 = MAX_SHADE - (int) Math.round(primaryPercent / 100d * MAX_SHADE);
-            this.posKind1 = primaryKind.getKey();
-            break;
-        case VANE:
-            this.position1 = (int) Math.round(primaryPercent / 100d * MAX_VANE);
-            this.posKind1 = primaryKind.getKey();
-            break;
-        case SECONDARY:
-            this.position1 = 0;
-            this.posKind1 = ShadePositionKind.PRIMARY.getKey();
+            case PRIMARY:
+                this.position1 = MAX_SHADE - (int) Math.round(primaryPercent / 100d * MAX_SHADE);
+                this.posKind1 = primaryKind.getKey();
+                break;
+            case VANE:
+                this.position1 = (int) Math.round(primaryPercent / 100d * MAX_VANE);
+                this.posKind1 = primaryKind.getKey();
+                break;
+            case SECONDARY:
+                this.position1 = 0;
+                this.posKind1 = ShadePositionKind.PRIMARY.getKey();
         }
         if (secondaryPercent == null) {
             this.position2 = null;
@@ -116,33 +116,33 @@ public class ShadePosition {
 
     public PercentType getPercent(ShadePositionKind kind) {
         switch (kind) {
-        case PRIMARY:
-            if (ShadePositionKind.PRIMARY.getKey() == posKind1) {
-                return new PercentType(100 - (int) Math.round((double) position1 / MAX_SHADE * 100));
-            }
-            if (ShadePositionKind.VANE.getKey() == posKind1) {
-                return PercentType.HUNDRED;
-            }
-            break;
-        case VANE:
-            if (ShadePositionKind.PRIMARY.getKey() == posKind1) {
-                return PercentType.ZERO;
-            }
-            if (ShadePositionKind.VANE.getKey() == posKind1) {
-                return new PercentType((int) Math.round((double) position1 / MAX_VANE * 100));
-            }
-            break;
-        case SECONDARY:
-            Integer posKind2 = this.posKind2;
-            Integer position2 = this.position2;
-            if (posKind2 != null && position2 != null) {
-                if (ShadePositionKind.PRIMARY.getKey() == posKind2.intValue()) {
-                    return new PercentType(100 - (int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
+            case PRIMARY:
+                if (ShadePositionKind.PRIMARY.getKey() == posKind1) {
+                    return new PercentType(100 - (int) Math.round((double) position1 / MAX_SHADE * 100));
                 }
-                if (ShadePositionKind.VANE.getKey() == posKind2.intValue()) {
+                if (ShadePositionKind.VANE.getKey() == posKind1) {
                     return PercentType.HUNDRED;
                 }
-            }
+                break;
+            case VANE:
+                if (ShadePositionKind.PRIMARY.getKey() == posKind1) {
+                    return PercentType.ZERO;
+                }
+                if (ShadePositionKind.VANE.getKey() == posKind1) {
+                    return new PercentType((int) Math.round((double) position1 / MAX_VANE * 100));
+                }
+                break;
+            case SECONDARY:
+                Integer posKind2 = this.posKind2;
+                Integer position2 = this.position2;
+                if (posKind2 != null && position2 != null) {
+                    if (ShadePositionKind.SECONDARY.getKey() == posKind2.intValue()) {
+                        return new PercentType(100 - (int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
+                    }
+                    if (ShadePositionKind.VANE.getKey() == posKind2.intValue()) {
+                        return PercentType.HUNDRED;
+                    }
+                }
         }
         return PercentType.ZERO;
     }
