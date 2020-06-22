@@ -157,7 +157,7 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
                             newThingId);
 
                     // We key off "RGB" for color bulbs
-                } else if (!discoveredModel.contains("RBG")) {
+                } else if (!discoveredModel.contains("RGB")) {
                     thisBulbType = THING_TYPE_WIZ_DIMMABLE_BULB;
                     thisBulbLabel = "WiZ Dimmable White Bulb at " + lightIpAddress;
                     newThingId = new ThingUID(thisBulbType, lightMacAddress);
