@@ -13,8 +13,8 @@ By using a scene to control multiple shades at once, the shades will all begin m
 
 ## Supported Things
 
-| Thing           | Thing Type | Description                          |
-|-----------------|------------|----------------------------------------------------------------------|
+| Thing           | Thing Type | Description        |
+|-----------------|------------|--------------------|
 | PowerView Hub   | Bridge     | The PowerView hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
 | PowerView Shade | Thing      | A motorized shade. |
 
