@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>2.5.7-SNAPSHOT</version>
+    <version>2.5.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -91,7 +93,6 @@
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feican</module>
-    <module>org.openhab.binding.fmiweather</module>
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.foobot</module>
     <module>org.openhab.binding.freebox</module>
@@ -129,7 +130,6 @@
     <module>org.openhab.binding.konnected</module>
     <module>org.openhab.binding.kostalinverter</module>
     <module>org.openhab.binding.lametrictime</module>
-    <module>org.openhab.binding.lcn</module>
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lghombot</module>
     <module>org.openhab.binding.lgtvserial</module>
@@ -172,7 +172,6 @@
     <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nikobus</module>
     <module>org.openhab.binding.nikohomecontrol</module>
-    <module>org.openhab.binding.novafinedust</module>
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.oceanic</module>
@@ -219,7 +218,6 @@
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.smartmeter</module>
-    <module>org.openhab.binding.smhi</module>
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
@@ -246,6 +244,7 @@
     <module>org.openhab.binding.vektiva</module>
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.velux</module>
+    <module>org.openhab.binding.venstarthermostat</module>
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
