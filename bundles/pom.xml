@@ -62,6 +62,7 @@
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.bsblan</module>
+    <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
     <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chromecast</module>
