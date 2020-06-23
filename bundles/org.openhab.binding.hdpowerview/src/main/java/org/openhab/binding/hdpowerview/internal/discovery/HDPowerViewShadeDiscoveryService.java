@@ -77,26 +77,25 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
 
     private Runnable createScanner() {
         return () -> {
-            HDPowerViewWebTargets targets = hub.getWebTargets();
-            Shades shades;
             try {
-                shades = targets.getShades();
+                HDPowerViewWebTargets targets = hub.getWebTargets();
+                Shades shades = targets.getShades();
+                if (shades != null && shades.shadeData != null) {
+                    ThingUID bridgeUID = hub.getThing().getUID();
+                    for (ShadeData shadeData : shades.shadeData) {
+                        ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE, bridgeUID,
+                                shadeData.id);
+                        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                                .withProperty(HDPowerViewShadeConfiguration.ID, shadeData.id)
+                                .withLabel(shadeData.getName()).withBridge(bridgeUID).build();
+                        logger.debug("Hub discovered shade '{}'", shadeData.id);
+                        thingDiscovered(result);
+                    }
+                }
             } catch (ProcessingException | JsonParseException e) {
                 logger.warn("Unexpected error: {}", e.getMessage());
-                stopScan();
-                return;
             } catch (HubMaintenanceException e) {
                 logger.debug("Hub temporariliy down for maintenance");
-                return;
-            }
-            if (shades != null) {
-                for (ShadeData shadeData : shades.shadeData) {
-                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE, shadeData.id);
-                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(HDPowerViewShadeConfiguration.ID, shadeData.id).withLabel(shadeData.getName())
-                            .withBridge(hub.getThing().getUID()).build();
-                    thingDiscovered(result);
-                }
             }
             stopScan();
         };
