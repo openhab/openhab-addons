@@ -930,7 +930,6 @@ public class SmokeTest extends IntegrationTestSupport {
             return socket.getPort() == tcpModbusPort && socket.isConnected()
                     && socket.getLocalAddress().equals(testServerAddress);
         }).count();
-
     }
 
     /**
@@ -949,7 +948,6 @@ public class SmokeTest extends IntegrationTestSupport {
             sockets.add(socket);
             return socket;
         }
-
     }
 
     private static SocketImpl newSocksSocketImpl() {
@@ -975,5 +973,4 @@ public class SmokeTest extends IntegrationTestSupport {
             throw new RuntimeException(e);
         }
     }
-
 }

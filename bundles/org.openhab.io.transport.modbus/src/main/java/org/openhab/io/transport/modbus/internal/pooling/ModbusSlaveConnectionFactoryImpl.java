@@ -108,7 +108,6 @@ public class ModbusSlaveConnectionFactoryImpl
                 return false;
             }
         }
-
     }
 
     private final Logger logger = LoggerFactory.getLogger(ModbusSlaveConnectionFactoryImpl.class);

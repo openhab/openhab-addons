@@ -32,5 +32,4 @@ public class ModbusSlaveConnectionEvictionPolicy implements EvictionPolicy<Modbu
     public boolean evict(EvictionConfig config, PooledObject<ModbusSlaveConnection> underTest, int idleCount) {
         return ((PooledConnection) underTest).maybeResetConnection("evict");
     }
-
 }
