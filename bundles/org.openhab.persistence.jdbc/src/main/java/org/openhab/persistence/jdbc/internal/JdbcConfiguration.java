@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.persistence.jdbc.db.JdbcBaseDAO;
 import org.openhab.persistence.jdbc.utils.MovingAverage;
@@ -92,14 +91,14 @@ public class JdbcConfiguration {
 
         Properties parsedURL = StringUtilsExt.parseJdbcURL(url);
 
-        if (StringUtils.isBlank(user)) {
+        if (user == null || user.isBlank()) {
             logger.debug("No jdbc:user parameter defined in jdbc.cfg");
         }
-        if (StringUtils.isBlank(password)) {
+        if (password == null || password.isBlank()) {
             logger.debug("No jdbc:password parameter defined in jdbc.cfg.");
         }
 
-        if (StringUtils.isBlank(url)) {
+        if (url.isBlank()) {
             logger.debug(
                     "JDBC url is missing - please configure in jdbc.cfg like 'jdbc:<service>:<host>[:<port>;<attributes>]'");
             return false;
@@ -118,94 +117,95 @@ public class JdbcConfiguration {
         }
 
         logger.debug("JDBC::updateConfig: user={}", user);
-        logger.debug("JDBC::updateConfig: password exists? {}", password != null & !StringUtils.isBlank(password));
+        logger.debug("JDBC::updateConfig: password exists? {}", password != null & !password.isBlank());
         logger.debug("JDBC::updateConfig: url={}", url);
 
         // set database type and database type class
         setDBDAOClass(parsedURL.getProperty("dbShortcut")); // derby, h2, hsqldb, mariadb, mysql, postgresql,
                                                             // sqlite
         // set user
-        if (StringUtils.isNotBlank(user)) {
+        if (user == null || user.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.user", user);
         }
 
         // set password
-        if (StringUtils.isNotBlank(password)) {
+        if (password == null || password.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.password", password);
         }
 
         // set sql-types from external config
         setSqlTypes();
 
+        final Pattern isNumericPattern = Pattern.compile("\\d+(\\.\\d+)?");
         String et = (String) configuration.get("reconnectCnt");
-        if (StringUtils.isNotBlank(et) && StringUtils.isNumeric(et)) {
+        if (et != null && !et.isBlank() && isNumericPattern.matcher(et).matches()) {
             errReconnectThreshold = Integer.parseInt(et);
             logger.debug("JDBC::updateConfig: errReconnectThreshold={}", errReconnectThreshold);
         }
 
         String np = (String) configuration.get("tableNamePrefix");
-        if (StringUtils.isNotBlank(np)) {
+        if (np != null && !np.isBlank()) {
             tableNamePrefix = np;
             logger.debug("JDBC::updateConfig: tableNamePrefix={}", tableNamePrefix);
         }
 
         String dd = (String) configuration.get("numberDecimalcount");
-        if (StringUtils.isNotBlank(dd) && StringUtils.isNumeric(dd)) {
+        if (dd != null && !dd.isBlank() && isNumericPattern.matcher(dd).matches()) {
             numberDecimalcount = Integer.parseInt(dd);
             logger.debug("JDBC::updateConfig: numberDecimalcount={}", numberDecimalcount);
         }
 
         String rn = (String) configuration.get("tableUseRealItemNames");
-        if (StringUtils.isNotBlank(rn)) {
+        if (rn != null && !rn.isBlank()) {
             tableUseRealItemNames = "true".equals(rn) ? Boolean.parseBoolean(rn) : false;
             logger.debug("JDBC::updateConfig: tableUseRealItemNames={}", tableUseRealItemNames);
         }
 
         String td = (String) configuration.get("tableIdDigitCount");
-        if (StringUtils.isNotBlank(td) && StringUtils.isNumeric(td)) {
+        if (td != null && !td.isBlank() && isNumericPattern.matcher(td).matches()) {
             tableIdDigitCount = Integer.parseInt(td);
             logger.debug("JDBC::updateConfig: tableIdDigitCount={}", tableIdDigitCount);
         }
 
         String rt = (String) configuration.get("rebuildTableNames");
-        if (StringUtils.isNotBlank(rt)) {
+        if (rt != null && !rt.isBlank()) {
             rebuildTableNames = Boolean.parseBoolean(rt);
             logger.debug("JDBC::updateConfig: rebuildTableNames={}", rebuildTableNames);
         }
 
         // undocumented
         String ac = (String) configuration.get("maximumPoolSize");
-        if (StringUtils.isNotBlank(ac)) {
+        if (ac != null && !ac.isBlank()) {
             dBDAO.databaseProps.setProperty("maximumPoolSize", ac);
         }
 
         // undocumented
         String ic = (String) configuration.get("minimumIdle");
-        if (StringUtils.isNotBlank(ic)) {
+        if (ic != null && !ic.isBlank()) {
             dBDAO.databaseProps.setProperty("minimumIdle", ic);
         }
 
         // undocumented
         String it = (String) configuration.get("idleTimeout");
-        if (StringUtils.isNotBlank(it)) {
+        if (it != null && !it.isBlank()) {
             dBDAO.databaseProps.setProperty("idleTimeout", it);
         }
         // undocumented
         String ent = (String) configuration.get("enableLogTime");
-        if (StringUtils.isNotBlank(ent)) {
+        if (ent != null && !ent.isBlank()) {
             enableLogTime = "true".equals(ent) ? Boolean.parseBoolean(ent) : false;
         }
         logger.debug("JDBC::updateConfig: enableLogTime {}", enableLogTime);
 
         // undocumented
         String fd = (String) configuration.get("driverClassName");
-        if (StringUtils.isNotBlank(fd)) {
+        if (fd != null && !fd.isBlank()) {
             dBDAO.databaseProps.setProperty("driverClassName", fd);
         }
 
         // undocumented
         String ds = (String) configuration.get("dataSourceClassName");
-        if (StringUtils.isNotBlank(ds)) {
+        if (ds != null && !ds.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSourceClassName", ds);
         }
 
@@ -229,7 +229,7 @@ public class JdbcConfiguration {
         serviceName = "none";
 
         // set database type
-        if (StringUtils.isBlank(sn) || sn.length() < 2) {
+        if (sn == null || sn.isBlank() || sn.length() < 2) {
             logger.error(
                     "JDBC::updateConfig: Required database url like 'jdbc:<service>:<host>[:<port>;<attributes>]' - please configure the jdbc:url parameter in openhab.cfg");
         } else {

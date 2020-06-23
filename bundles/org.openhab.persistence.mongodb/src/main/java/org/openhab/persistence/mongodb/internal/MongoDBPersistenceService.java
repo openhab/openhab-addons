@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -101,19 +100,19 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     public void activate(final BundleContext bundleContext, final Map<String, Object> config) {
         url = (String) config.get("url");
         logger.debug("MongoDB URL {}", url);
-        if (StringUtils.isBlank(url)) {
+        if (url == null || url.isBlank()) {
             logger.warn("The MongoDB database URL is missing - please configure the mongodb:url parameter.");
             return;
         }
         db = (String) config.get("database");
         logger.debug("MongoDB database {}", db);
-        if (StringUtils.isBlank(db)) {
+        if (db == null || db.isBlank()) {
             logger.warn("The MongoDB database name is missing - please configure the mongodb:database parameter.");
             return;
         }
         collection = (String) config.get("collection");
         logger.debug("MongoDB collection {}", collection);
-        if (StringUtils.isBlank(collection)) {
+        if (collection == null || collection.isBlank()) {
             logger.warn(
                     "The MongoDB database collection is missing - please configure the mongodb:collection parameter.");
             return;
@@ -334,17 +333,12 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
     }
 
     private @Nullable Item getItem(String itemName) {
-        Item item = null;
         try {
-            if (itemRegistry != null) {
-                item = itemRegistry.getItem(itemName);
-            }
+            return itemRegistry == null ? null : itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
             logger.error("Unable to get item type for {}", itemName);
-            // Set type to null - data will be returned as StringType
-            item = null;
         }
-        return item;
+        return null;
     }
 
     @Override

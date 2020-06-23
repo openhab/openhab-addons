@@ -25,7 +25,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
@@ -257,7 +256,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         if (config.dbUserName != null && config.dbPassword == null) {
             logger.warn("JPA persistence - it is recommended to use a password to protect data store");
         }
-        if (config.dbSyncMapping != null && !StringUtils.isBlank(config.dbSyncMapping)) {
+        if (config.dbSyncMapping != null && !config.dbSyncMapping.isBlank()) {
             logger.warn("You are settings openjpa.jdbc.SynchronizeMappings, I hope you know what you're doing!");
             properties.put("openjpa.jdbc.SynchronizeMappings", config.dbSyncMapping);
         }
@@ -304,17 +303,12 @@ public class JpaPersistenceService implements QueryablePersistenceService {
      * @return item
      */
     private @Nullable Item getItemFromRegistry(String itemName) {
-        Item item = null;
         try {
-            if (itemRegistry != null) {
-                item = itemRegistry.getItem(itemName);
-            }
+            return itemRegistry == null ? null : itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
             logger.error("Unable to get item type for {}", itemName);
-            // Set type to null - data will be returned as StringType
-            item = null;
         }
-        return item;
+        return null;
     }
 
     @Override

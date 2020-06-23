@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.NamedThreadFactory;
@@ -422,7 +421,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 String name = subkeys[0].toLowerCase();
                 String property = subkeys[1].toLowerCase();
 
-                if (StringUtils.isBlank(value)) {
+                if (value.isBlank()) {
                     logger.trace("Config is empty: {}", property);
                     continue;
                 } else {

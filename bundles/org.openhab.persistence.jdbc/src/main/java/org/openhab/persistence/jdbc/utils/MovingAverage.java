@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-//import org.apache.commons.math3.stat.StatUtils;
 
 /**
  * Calculates the average/mean of a number series.
