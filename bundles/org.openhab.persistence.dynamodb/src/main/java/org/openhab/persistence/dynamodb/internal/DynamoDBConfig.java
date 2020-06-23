@@ -12,11 +12,10 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -67,21 +66,23 @@ public class DynamoDBConfig {
             try {
                 region = Regions.fromName(regionName);
             } catch (IllegalArgumentException e) {
-                invalidRegionLogHelp(regionName);
+                LOGGER.error("Specify valid AWS region to use, got {}. Valid values include: {}", regionName, Arrays
+                        .asList(Regions.values()).stream().map(r -> r.getName()).collect(Collectors.joining(",")));
                 return null;
             }
 
             AWSCredentials credentials;
             String accessKey = (String) config.get("accessKey");
             String secretKey = (String) config.get("secretKey");
-            if (!isBlank(accessKey) && !isBlank(secretKey)) {
+            if (accessKey != null && !accessKey.isBlank() && secretKey != null && !secretKey.isBlank()) {
                 LOGGER.debug("accessKey and secretKey specified. Using those.");
                 credentials = new BasicAWSCredentials(accessKey, secretKey);
             } else {
                 LOGGER.debug("accessKey and/or secretKey blank. Checking profilesConfigFile and profile.");
                 String profilesConfigFile = (String) config.get("profilesConfigFile");
                 String profile = (String) config.get("profile");
-                if (isBlank(profilesConfigFile) || isBlank(profile)) {
+                if (profilesConfigFile == null || profilesConfigFile.isBlank() || profile == null
+                        || profile.isBlank()) {
                     LOGGER.error("Specify either 1) accessKey and secretKey; or 2) profilesConfigFile and "
                             + "profile for providing AWS credentials");
                     return null;
@@ -90,14 +91,14 @@ public class DynamoDBConfig {
             }
 
             String table = (String) config.get("tablePrefix");
-            if (isBlank(table)) {
+            if (table == null || table.isBlank()) {
                 LOGGER.debug("Using default table name {}", DEFAULT_TABLE_PREFIX);
                 table = DEFAULT_TABLE_PREFIX;
             }
 
             final boolean createTable;
             String createTableParam = (String) config.get("createTable");
-            if (isBlank(createTableParam)) {
+            if (createTableParam == null || createTableParam.isBlank()) {
                 LOGGER.debug("Creating table on demand: {}", DEFAULT_CREATE_TABLE_ON_DEMAND);
                 createTable = DEFAULT_CREATE_TABLE_ON_DEMAND;
             } else {
@@ -106,7 +107,7 @@ public class DynamoDBConfig {
 
             final long readCapacityUnits;
             String readCapacityUnitsParam = (String) config.get("readCapacityUnits");
-            if (isBlank(readCapacityUnitsParam)) {
+            if (readCapacityUnitsParam == null || readCapacityUnitsParam.isBlank()) {
                 LOGGER.debug("Read capacity units: {}", DEFAULT_READ_CAPACITY_UNITS);
                 readCapacityUnits = DEFAULT_READ_CAPACITY_UNITS;
             } else {
@@ -115,7 +116,7 @@ public class DynamoDBConfig {
 
             final long writeCapacityUnits;
             String writeCapacityUnitsParam = (String) config.get("writeCapacityUnits");
-            if (isBlank(writeCapacityUnitsParam)) {
+            if (writeCapacityUnitsParam == null || writeCapacityUnitsParam.isBlank()) {
                 LOGGER.debug("Write capacity units: {}", DEFAULT_WRITE_CAPACITY_UNITS);
                 writeCapacityUnits = DEFAULT_WRITE_CAPACITY_UNITS;
             } else {
@@ -124,7 +125,7 @@ public class DynamoDBConfig {
 
             final long bufferCommitIntervalMillis;
             String bufferCommitIntervalMillisParam = (String) config.get("bufferCommitIntervalMillis");
-            if (isBlank(bufferCommitIntervalMillisParam)) {
+            if (bufferCommitIntervalMillisParam == null || bufferCommitIntervalMillisParam.isBlank()) {
                 LOGGER.debug("Buffer commit interval millis: {}", DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS);
                 bufferCommitIntervalMillis = DEFAULT_BUFFER_COMMIT_INTERVAL_MILLIS;
             } else {
@@ -133,7 +134,7 @@ public class DynamoDBConfig {
 
             final int bufferSize;
             String bufferSizeParam = (String) config.get("bufferSize");
-            if (isBlank(bufferSizeParam)) {
+            if (bufferSizeParam == null || bufferSizeParam.isBlank()) {
                 LOGGER.debug("Buffer size: {}", DEFAULT_BUFFER_SIZE);
                 bufferSize = DEFAULT_BUFFER_SIZE;
             } else {
@@ -190,15 +191,5 @@ public class DynamoDBConfig {
 
     public int getBufferSize() {
         return bufferSize;
-    }
-
-    private static void invalidRegionLogHelp(String region) {
-        Regions[] regions = Regions.values();
-        String[] regionNames = new String[regions.length];
-        for (int i = 0; i < regions.length; i++) {
-            regionNames[i] = regions[i].getName();
-        }
-        LOGGER.error("Specify valid AWS region to use, got {}. Valid values include: {}", region,
-                StringUtils.join(regionNames, ','));
     }
 }

@@ -14,7 +14,6 @@ package org.openhab.persistence.jpa.internal;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +48,7 @@ public class JpaConfiguration {
         logger.debug("url: {}", param);
         if (param == null) {
             logger.warn("Connection url is required in jpa.cfg!");
-        }
-        if (StringUtils.isBlank(param)) {
+        } else if (param.isBlank()) {
             logger.warn("Empty connection url in jpa.cfg!");
         }
         dbConnectionUrl = param;
@@ -59,8 +57,7 @@ public class JpaConfiguration {
         logger.debug("driver: {}", param);
         if (param == null) {
             logger.warn("Driver class is required in jpa.cfg!");
-        }
-        if (StringUtils.isBlank(param)) {
+        } else if (param.isBlank()) {
             logger.warn("Empty driver class in jpa.cfg!");
         }
         dbDriverClass = param;

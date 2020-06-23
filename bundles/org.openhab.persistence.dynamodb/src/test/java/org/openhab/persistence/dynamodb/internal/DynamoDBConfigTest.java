@@ -15,11 +15,12 @@ package org.openhab.persistence.dynamodb.internal;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Rule;
 import org.junit.Test;
@@ -82,8 +83,10 @@ public class DynamoDBConfigTest {
     @Test
     public void testRegionWithProfilesConfigFile() throws Exception {
         File credsFile = folder.newFile("creds");
-        FileUtils.write(credsFile, "[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
-                + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n");
+        Files.write(
+                credsFile.toPath(), ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
+                        + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
+                StandardOpenOption.TRUNCATE_EXISTING);
 
         DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile",
                 credsFile.getAbsolutePath(), "profile", "fooprofile"));
@@ -104,8 +107,10 @@ public class DynamoDBConfigTest {
     @Test
     public void testRegionWithInvalidProfilesConfigFile() throws Exception {
         File credsFile = folder.newFile("creds");
-        FileUtils.write(credsFile, "[fooprofile]\n" + "aws_access_key_idINVALIDKEY=testAccessKey\n"
-                + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n");
+        Files.write(credsFile.toPath(),
+                ("[fooprofile]\n" + "aws_access_key_idINVALIDKEY=testAccessKey\n"
+                        + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
+                StandardOpenOption.TRUNCATE_EXISTING);
 
         assertNull(DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile",
                 credsFile.getAbsolutePath(), "profile", "fooprofile")));
@@ -114,8 +119,10 @@ public class DynamoDBConfigTest {
     @Test
     public void testRegionWithProfilesConfigFileMissingProfile() throws Exception {
         File credsFile = folder.newFile("creds");
-        FileUtils.write(credsFile, "[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
-                + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n");
+        Files.write(
+                credsFile.toPath(), ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
+                        + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
+                StandardOpenOption.TRUNCATE_EXISTING);
 
         assertNull(DynamoDBConfig
                 .fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile", credsFile.getAbsolutePath())));

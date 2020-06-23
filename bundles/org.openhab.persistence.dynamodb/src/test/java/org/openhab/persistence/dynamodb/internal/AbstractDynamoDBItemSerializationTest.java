@@ -22,7 +22,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.core.items.Item;
@@ -173,10 +172,8 @@ public class AbstractDynamoDBItemSerializationTest {
     @Test
     public void testPointTypeWithLocationItem() throws IOException {
         final PointType point = new PointType(new DecimalType(60.3), new DecimalType(30.2), new DecimalType(510.90));
-        String expected = StringUtils.join(
-                new String[] { point.getLatitude().toBigDecimal().toString(),
-                        point.getLongitude().toBigDecimal().toString(), point.getAltitude().toBigDecimal().toString() },
-                ",");
+        String expected = point.getLatitude().toBigDecimal().toString() + ","
+                + point.getLongitude().toBigDecimal().toString() + "," + point.getAltitude().toBigDecimal().toString();
         DynamoDBItem<?> dbitem = testStateGeneric(point, expected);
         testAsHistoricGeneric(dbitem, new LocationItem("foo"), point);
     }

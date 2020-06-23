@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.BeforeClass;
@@ -72,109 +71,106 @@ public class BaseIntegrationTest {
         ITEMS.put("location", new LocationItem("location"));
 
         service = new DynamoDBPersistenceService();
-        service.setItemRegistry(
+        service.setItemRegistry(new ItemRegistry() {
+            @Override
+            public Collection<Item> getItems(String pattern) {
+                throw new UnsupportedOperationException();
+            }
 
-                new ItemRegistry() {
+            @Override
+            public Collection<Item> getItems() {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Collection<Item> getItems(String pattern) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public Item getItemByPattern(String name) throws ItemNotFoundException, ItemNotUniqueException {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Collection<Item> getItems() {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public Item getItem(String name) throws ItemNotFoundException {
+                Item item = ITEMS.get(name);
+                if (item == null) {
+                    throw new ItemNotFoundException(name);
+                }
+                return item;
+            }
 
-                    @Override
-                    public Item getItemByPattern(String name) throws ItemNotFoundException, ItemNotUniqueException {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public void addRegistryChangeListener(RegistryChangeListener<Item> listener) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Item getItem(String name) throws ItemNotFoundException {
-                        Item item = ITEMS.get(name);
-                        if (item == null) {
-                            throw new ItemNotFoundException(name);
-                        }
-                        return item;
-                    }
+            @Override
+            public Collection<Item> getAll() {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public void addRegistryChangeListener(RegistryChangeListener<Item> listener) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public Stream<Item> stream() {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Collection<Item> getAll() {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public @Nullable Item get(String key) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Stream<Item> stream() {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public void removeRegistryChangeListener(RegistryChangeListener<Item> listener) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public @Nullable Item get(String key) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public Item add(Item element) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public void removeRegistryChangeListener(RegistryChangeListener<Item> listener) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public @Nullable Item update(Item element) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Item add(Item element) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public @Nullable Item remove(String key) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public @Nullable Item update(Item element) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public Collection<Item> getItemsOfType(String type) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public @Nullable Item remove(String key) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public Collection<Item> getItemsByTag(String... tags) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Collection<Item> getItemsOfType(String type) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public Collection<Item> getItemsByTagAndType(String type, String... tags) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Collection<Item> getItemsByTag(String... tags) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public <T extends Item> Collection<T> getItemsByTag(Class<T> typeFilter, String... tags) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public Collection<Item> getItemsByTagAndType(String type, String... tags) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public @Nullable Item remove(String itemName, boolean recursive) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public <T extends Item> Collection<T> getItemsByTag(Class<T> typeFilter, String... tags) {
-                        throw new NotImplementedException();
-                    }
+            @Override
+            public void addRegistryHook(RegistryHook<Item> hook) {
+                throw new UnsupportedOperationException();
+            }
 
-                    @Override
-                    public @Nullable Item remove(String itemName, boolean recursive) {
-                        throw new NotImplementedException();
-                    }
-
-                    @Override
-                    public void addRegistryHook(RegistryHook<Item> hook) {
-                        throw new NotImplementedException();
-                    }
-
-                    @Override
-                    public void removeRegistryHook(RegistryHook<Item> hook) {
-                        throw new NotImplementedException();
-                    }
-                });
+            @Override
+            public void removeRegistryHook(RegistryHook<Item> hook) {
+                throw new UnsupportedOperationException();
+            }
+        });
 
         Map<String, Object> config = new HashMap<>();
         config.put("region", System.getProperty("DYNAMODBTEST_REGION"));

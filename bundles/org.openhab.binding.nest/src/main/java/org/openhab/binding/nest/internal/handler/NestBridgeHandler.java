@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nest.internal.NestUtils;
@@ -260,7 +259,7 @@ public class NestBridgeHandler extends BaseBridgeHandler implements NestStreamin
             logger.debug("PUT response: {}", jsonResponse);
 
             ErrorData error = NestUtils.fromJson(jsonResponse, ErrorData.class);
-            if (StringUtils.isNotBlank(error.getError())) {
+            if (error.getError() != null && !error.getError().isBlank()) {
                 logger.debug("Nest API error: {}", error);
                 logger.warn("Nest API error: {}", error.getMessage());
             }

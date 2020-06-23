@@ -17,7 +17,6 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
@@ -149,7 +148,7 @@ public class InfluxDBStateConvertUtils {
             if ("1".equals(object)) {
                 return true;
             } else {
-                return BooleanUtils.toBoolean(String.valueOf(object));
+                return Boolean.valueOf(String.valueOf(object));
             }
         } else {
             return false;

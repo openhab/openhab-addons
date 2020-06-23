@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,7 +55,6 @@ public class InfluxDBConfiguration {
     private final boolean addTypeTag;
     private final boolean addLabelTag;
 
-    @SuppressWarnings("null")
     public InfluxDBConfiguration(Map<String, @Nullable Object> config) {
         url = (@NonNull String) config.getOrDefault(URL_PARAM, "http://127.0.0.1:8086");
         user = (@NonNull String) config.getOrDefault(USER_PARAM, "openhab");
@@ -75,7 +73,6 @@ public class InfluxDBConfiguration {
     private static boolean getConfigBooleanValue(Map<String, @Nullable Object> config, String key,
             boolean defaultValue) {
         Object object = config.get(key);
-
         if (object instanceof Boolean) {
             return (Boolean) object;
         } else if (object instanceof String) {
@@ -98,13 +95,12 @@ public class InfluxDBConfiguration {
         boolean hasVersion = version != InfluxDBVersion.UNKNOWN;
         boolean hasCredentials = false;
         if (version == InfluxDBVersion.V1) {
-            hasCredentials = StringUtils.isNotBlank(user) && StringUtils.isNotBlank(password);
+            hasCredentials = !user.isBlank() && !password.isBlank();
         } else if (version == InfluxDBVersion.V2) {
-            hasCredentials = StringUtils.isNotBlank(token)
-                    || (StringUtils.isNotBlank(user) && StringUtils.isNotBlank(password));
+            hasCredentials = !token.isBlank() || (!user.isBlank() && !password.isBlank());
         }
-        boolean hasDatabase = StringUtils.isNotBlank(databaseName);
-        boolean hasRetentionPolicy = StringUtils.isNotBlank(retentionPolicy);
+        boolean hasDatabase = !databaseName.isBlank();
+        boolean hasRetentionPolicy = !retentionPolicy.isBlank();
 
         boolean valid = hasVersion && hasCredentials && hasDatabase && hasRetentionPolicy;
         if (valid) {

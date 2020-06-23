@@ -15,7 +15,6 @@ package org.openhab.binding.nest.internal.handler;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -98,7 +97,7 @@ public class NestRedirectUrlSupplier {
             logger.debug("Redirect response: {}", response.getContentAsString());
             throw new FailedResolvingNestUrlException("Failed to get redirect URL, expected status "
                     + HttpStatus.TEMPORARY_REDIRECT_307 + " but was " + status);
-        } else if (StringUtils.isEmpty(redirectUrl)) {
+        } else if (redirectUrl == null || redirectUrl.isEmpty()) {
             throw new FailedResolvingNestUrlException("Redirect URL is empty");
         }
 

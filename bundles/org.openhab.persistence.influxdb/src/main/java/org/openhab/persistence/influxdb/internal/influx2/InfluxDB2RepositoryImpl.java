@@ -12,10 +12,7 @@
  */
 package org.openhab.persistence.influxdb.internal.influx2;
 
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V2;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME_V2;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.FIELD_VALUE_NAME;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.TAG_ITEM_NAME;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -25,7 +22,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
@@ -86,8 +82,9 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     public boolean connect() {
         InfluxDBClientOptions.Builder optionsBuilder = InfluxDBClientOptions.builder().url(configuration.getUrl())
                 .org(configuration.getDatabaseName()).bucket(configuration.getRetentionPolicy());
-        if (StringUtils.isNotBlank("token")) {
-            optionsBuilder.authenticateToken(configuration.getTokenAsCharArray());
+        char[] token = configuration.getTokenAsCharArray();
+        if (token.length > 0) {
+            optionsBuilder.authenticateToken(token);
         } else {
             optionsBuilder.authenticate(configuration.getUser(), configuration.getPassword().toCharArray());
         }
