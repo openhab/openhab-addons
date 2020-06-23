@@ -30,17 +30,17 @@
 		<config-description-ref uri="thing-type:shelly:battery" />
 	</thing-type>
 
-	<thing-type id="shellygas">
-		<label>Shelly GAS (SHGS-1)</label>
-		<description>Shelly Gas Sensor</description>
+    <thing-type id="shellygas">
+        <label>Shelly GAS (SHGS-1)</label>
+        <description>Shelly Gas Sensor</description>
 
-		<channel-groups>
-			<channel-group id="sensors" typeId="gasSensor" />
-			<channel-group id="device" typeId="deviceStatus" />
-		</channel-groups>
+        <channel-groups>
+            <channel-group id="sensors" typeId="gasSensor" />
+            <channel-group id="device" typeId="deviceStatus" />
+        </channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
-	</thing-type>
+        <config-description-ref uri="thing-type:shelly:battery" />
+    </thing-type>
 
 	<thing-type id="shellyflood">
 		<label>Shelly Flood (SHWT-1)</label>
@@ -85,7 +85,7 @@
 		<description>Shelly Button 1 (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="status" typeId="buttonState" />
+			<channel-group id="sensors" typeId="buttonState" />
 			<channel-group id="battery" typeId="batteryStatus" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
@@ -178,22 +178,6 @@
 				<option value="mild">Mild</option>
 				<option value="heavy">Heavy</option>
 				<option value="test">Test</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="sensorWakeup" advanced="true">
-		<item-type>String</item-type>
-		<label>Wakeup Reason</label>
-		<description>Last reason, which woke up the device: battery, button, periodic, poweron, sensor, alarm</description>
-		<state pattern="%s" readOnly="true">
-			<options>
-				<option value="button">Button</option>
-				<option value="battery">Battery</option>
-				<option value="periodic">Periodic</option>
-				<option value="poweron">Power-On</option>
-				<option value="sensor">Sensor</option>
-				<option value="alarm">Alarm</option>
-				<option value="ext_power">Charger connected</option>
 			</options>
 		</state>
 	</channel-type>

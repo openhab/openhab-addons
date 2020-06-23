@@ -25,7 +25,9 @@ This Binding integrated Shelly devices.
 | shellyht           | Shelly Sensor (temp+humidity)                          | SHHT-1    |
 | shellyflood        | Shelly Flood Sensor                                    | SHWT-1    |
 | shellysmoke        | Shelly Smoke Sensor                                    |           |
+| shellygas          | Shelly Gas Sensor                                      | SHGS-1    |
 | shellydw           | Shelly Door/Window                                     | SHDW-1    |
+| shellybutton1      | Shelly Button 1                                        | SHBTN-1   |
 | shellysense        | Shelly Motion and IR Controller                        | SHSEN-1   |
 | shellydevice       | A password protected Shelly device or an unknown type  |           |
 
@@ -140,14 +142,17 @@ Every device has a channel group `device` with the following channels:
 |device    |uptime             |Number  |yes      |Number of seconds since the device was powered up                                |
 |          |wifiSignal         |Number  |yes      |WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none)   |
 |          |innerTemp          |Number  |yes      |Internal device temperature (when provided by the device)                        |
-|          |wakeupReason       |String  |yes      |Sensors only: Last wake-up reason (POWERON/PERIODIC/BUTTON/BATTERY/ALARM)        |
-|          |alarm              |Trigger |yes      |Most recent alarm for health check                                               |
+|          |selfTest           |String  |yes      |ON: A firmwareupdate is available (use Shelly App to perform update)             |
+|          |alarm              |Trigger |yes      |Self-Test result not_completed/completed/running/pending                         |
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kw/h of the device (including all meters)             |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kw/h of the device (including all meters)          |
 |          |updateAvailable    |Switch  |yes      |ON: A firmwareupdate is available (use Shelly App to perform update)             |
 
-The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and 3EM.
+Availability of  channels is depending on the device type.
+The binding detects many of those channels on-the-fly (during thing initialization) and adjusts the thing channel structure.
+The device must be discovered and ONLINE to successfully complete this process.
+The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and EM3.
 
 
 ### Events / Alarms
@@ -517,7 +522,6 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |humidity     |Number   |yes      |Relative humidity in %                                                 |
 |          |charger      |Number   |yes      |ON: USB charging cable is                                              |
-|          |wakeupReason |String   |yes      |Last reason for a device wake-up (battery, button, periodic, poweron, sensor or alarm) |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
@@ -529,7 +533,6 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |flood        |Switch   |yes      |ON: Flooding condition detected, OFF: no flooding                      |
-|          |wakeupReason |String   |yes      |Last reason for a device wake-up (battery, button, periodic, poweron, sensor or alarm) |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
@@ -544,9 +547,20 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |          |illumination |String   |yes      |Current illumination: dark/twilight/bright                             |
 |          |titl         |Number   |yes      |Tilt in ° (angle), -1 indicates that the sensor is not calibrated      |
 |          |vibration    |Switch   |yes      |ON: Vibration detected                                                 |
-|          |wakeupReason |String   |yes      |Last reason for a device wake-up (battery, button, periodic, poweron, sensor or alarm) |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |          |lastError    |String   |yes      |Last device error.                                                     |
+|battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
+|          |voltage      |Number   |yes      |Voltage of the battery                                                 |
+|          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
+
+### Shelly Button 1 (thing type: shellybutton1)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|sensors   |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpushc                       |
+|          |eventCount   |Number   |yes      |Number of button events                                                |
+|          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels             |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
@@ -559,12 +573,20 @@ You should calibrate the sensor using the Shelly App to get information on the t
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |sensors   |temperature  |Number   |yes      |Temperature, unit is reported by tempUnit                              |
 |          |smoke        |Number   |yes      |ON: Smoke detected                                                     |
-|          |wakeupReason |String   |yes      |Last reason for a device wake-up (battery, button, periodic, poweron, sensor or alarm) |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 |          |lastError    |String   |yes      |Last device error.                                                     |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
+
+### Shelly Smoke(thing type: shellygas)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|sensors   |ppm          |Number   |yes      |Gas concentration (ppm)                                                |
+|          |sensorState  |String   |yes      |Sensor state: unknown/warmup/normal/fault                              |
+|          |alarmState   |String   |yes      |Alarm state: unknown/none/mild/heavy/test                              |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any sensor value changed)                |
 
 ### Shelly Sense (thing-type: shellysense) 
 

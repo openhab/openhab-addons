@@ -494,13 +494,13 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 break;
                             case "input event": // Shelly Button 1
                                 String type = getString(s.valueStr);
-                                updateChannel(updates, CHANNEL_GROUP_STATUS, CHANNEL_STATUS_EVENTTYPE,
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSORS_EVENTTYPE,
                                         getStringType(type));
-                                thingHandler.triggerChannel(CHANNEL_GROUP_STATUS, CHANNEL_BUTTON_TRIGGER,
+                                thingHandler.triggerChannel(CHANNEL_GROUP_SENSOR, CHANNEL_BUTTON_TRIGGER,
                                         mapButtonEvent(type));
                                 break;
                             case "input event counter": // Shelly Button 1
-                                updateChannel(updates, CHANNEL_GROUP_STATUS, CHANNEL_STATUS_EVENTCOUNT,
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSORS_EVENTCOUNT,
                                         getDecimal(s.value));
                                 break;
                             case "flood":
@@ -625,7 +625,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             // Dimmer and Roller things have 2 inputs
             iChannel = CHANNEL_INPUT + String.valueOf(idx);
         } else if (profile.isButton) {
-            iGroup = CHANNEL_GROUP_STATUS;
+            iGroup = CHANNEL_GROUP_SENSOR;
         } else {
             // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
             iGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;

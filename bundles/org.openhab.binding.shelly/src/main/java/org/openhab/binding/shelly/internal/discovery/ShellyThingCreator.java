@@ -15,7 +15,7 @@ package org.openhab.binding.shelly.internal.discovery;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,15 +30,23 @@ import org.eclipse.smarthome.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class ShellyThingCreator {
-    private static final Map<String, String> thingTypeMapping = new HashMap<>();
+    private static final Map<String, String> thingTypeMapping = new LinkedHashMap<>();
     static {
         // mapping by thing type
+        thingTypeMapping.put(SHELLYDT_1PM, THING_TYPE_SHELLY1PM_STR);
+        thingTypeMapping.put(SHELLYDT_1, THING_TYPE_SHELLY1_STR);
+        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
+        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
+        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
+        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
+        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
+        thingTypeMapping.put(SHELLYDT_EM, THING_TYPE_SHELLYEM_STR);
         thingTypeMapping.put(SHELLYDT_GAS, THING_TYPE_SHELLYGAS_STR);
         thingTypeMapping.put(SHELLYDT_DUO, THING_TYPE_SHELLYDUO_STR);
         thingTypeMapping.put(SHELLYDT_BULB, THING_TYPE_SHELLYBULB_STR);
         thingTypeMapping.put(SHELLYDT_VINTAGE, THING_TYPE_SHELLYVINTAGE_STR);
         thingTypeMapping.put(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER_STR);
-        thingTypeMapping.put(SHELLYDT_BUTTON, THING_TYPE_SHELLYBUTTON_STR);
+        thingTypeMapping.put(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1_STR);
 
         // mapping by thing type
         thingTypeMapping.put(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1_STR);
@@ -57,7 +65,7 @@ public class ShellyThingCreator {
         thingTypeMapping.put(THING_TYPE_SHELLYDOORWIN_STR, THING_TYPE_SHELLYDOORWIN_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYSENSE_STR, THING_TYPE_SHELLYSENSE_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYEYE_STR, THING_TYPE_SHELLYEYE_STR);
-        thingTypeMapping.put(THING_TYPE_SHELLYBUTTON_STR, THING_TYPE_SHELLYBUTTON_STR);
+        thingTypeMapping.put(THING_TYPE_SHELLYBUTTON1_STR, THING_TYPE_SHELLYBUTTON1_STR);
 
         thingTypeMapping.put(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED_STR);
     }

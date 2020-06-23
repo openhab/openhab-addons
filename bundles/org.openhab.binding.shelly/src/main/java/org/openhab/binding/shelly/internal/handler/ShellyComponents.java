@@ -370,10 +370,10 @@ public class ShellyComponents {
                 int idx = 1;
                 for (ShellyInputState input : sdata.inputs) {
                     String channel = sdata.inputs.size() == 1 ? CHANNEL_INPUT : CHANNEL_INPUT + String.valueOf(idx);
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, channel, getOnOff(input.input));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_STATUS_EVENTTYPE,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, channel, getOnOff(input.input));
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSORS_EVENTTYPE,
                             getStringType(input.event));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_STATUS, CHANNEL_STATUS_EVENTCOUNT,
+                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSORS_EVENTCOUNT,
                             getDecimal(input.eventCount));
                 }
             }

@@ -36,7 +36,23 @@
 			</options>
 		</event>
 	</channel-type>
-	<channel-type id="charger">
+	<channel-type id="sensorWakeup" advanced="true">
+		<item-type>String</item-type>
+		<label>Wakeup Reason</label>
+		<description>Last reason, which woke up the device: battery, button, periodic, poweron, sensor, alarm</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="button">Button</option>
+				<option value="battery">Battery</option>
+				<option value="periodic">Periodic</option>
+				<option value="poweron">Power-On</option>
+				<option value="sensor">Sensor</option>
+				<option value="alarm">Alarm</option>
+				<option value="ext_power">Charger connected</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charger" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Charger Connected</label>
 		<description>ON: Device is charging, OFF: No charger connected</description>
