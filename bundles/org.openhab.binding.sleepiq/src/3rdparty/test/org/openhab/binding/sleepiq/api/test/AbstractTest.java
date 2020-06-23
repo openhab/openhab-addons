@@ -24,17 +24,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractTest
-{
+public abstract class AbstractTest {
     private static final String RESOURCES_PATH = "src/test/resources/";
 
-    protected File getTestDataFile(String name)
-    {
+    protected File getTestDataFile(String name) {
         return getTestDataPath(name).toFile();
     }
 
-    protected Path getTestDataPath(String name)
-    {
+    protected Path getTestDataPath(String name) {
         String packageName = this.getClass().getPackage().getName();
 
         List<String> paths = new ArrayList<>();
@@ -44,8 +41,7 @@ public abstract class AbstractTest
         return Paths.get(RESOURCES_PATH, paths.toArray(new String[paths.size()]));
     }
 
-    protected String readJson(String jsonFileName) throws IOException
-    {
-        return new String(Files.readAllBytes(getTestDataPath(jsonFileName)));
+    protected String readJson(String jsonFileName) throws IOException {
+        return String.join("\n", Files.readAllLines(getTestDataPath(jsonFileName)));
     }
 }
