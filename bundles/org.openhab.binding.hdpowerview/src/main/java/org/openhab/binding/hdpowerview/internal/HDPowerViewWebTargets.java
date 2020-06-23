@@ -38,7 +38,6 @@ import com.google.gson.JsonParseException;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * 
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {

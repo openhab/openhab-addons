@@ -43,7 +43,6 @@ import com.google.gson.JsonParseException;
  * Unit tests for HD PowerView binding
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
  */
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
@@ -71,12 +70,17 @@ public class HDPowerViewJUnitTests {
 
     @Test
     public void testCommunicationWithHub() {
-        // NOTE: in order to actually run these tests you must have a hub physically
-        // available, and its IP address must be correctly configured in the
-        // "hubIPAddress" string constant e.g. "192.168.1.123"
+        /*
+         * NOTE: in order to actually run these tests you must have a hub physically
+         * available, and its IP address must be correctly configured in the
+         * "hubIPAddress" string constant e.g. "192.168.1.123"
+         */
         String hubIPAddress = "192.168.1.xxx";
 
-        // NOTE: set this to true if you accept physically moving the shades
+        /*
+         * NOTE: set allowShadeMovementCommands = true if you accept physically moving
+         * the shades
+         */
         boolean allowShadeMovementCommands = false;
 
         if (VALID_IP_ADDRESS.matcher(hubIPAddress).matches()) {

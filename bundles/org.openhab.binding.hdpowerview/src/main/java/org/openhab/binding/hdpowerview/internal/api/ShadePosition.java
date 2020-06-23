@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.library.types.PercentType;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * 
  */
 @NonNullByDefault
 public class ShadePosition {

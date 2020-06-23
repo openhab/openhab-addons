@@ -18,14 +18,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link HubMaintenanceException} is a custom exception for the HD PowerView hub
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
  */
 @NonNullByDefault
 public class HubMaintenanceException extends Exception {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -708582495003057343L;
 
     public HubMaintenanceException(String message) {

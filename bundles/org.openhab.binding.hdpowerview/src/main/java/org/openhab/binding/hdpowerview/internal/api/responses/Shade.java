@@ -20,7 +20,6 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
  * A single Shade, as returned by the HD Power View Hub
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * 
  */
 @NonNullByDefault
 public class Shade {

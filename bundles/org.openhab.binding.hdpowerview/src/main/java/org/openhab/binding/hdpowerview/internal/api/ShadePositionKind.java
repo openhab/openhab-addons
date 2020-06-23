@@ -17,7 +17,6 @@ package org.openhab.binding.hdpowerview.internal.api;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * 
  */
 public enum ShadePositionKind {
 
