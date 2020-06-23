@@ -56,7 +56,6 @@ import com.google.gson.JsonParseException;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * 
  */
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
@@ -101,7 +100,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing HDPowerView HUB");
+        logger.debug("Initializing hub");
         HDPowerViewHubConfiguration config = getConfigAs(HDPowerViewHubConfiguration.class);
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
@@ -167,67 +166,90 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private void pollShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
         Shades shades = webTargets.getShades();
         updateStatus(ThingStatus.ONLINE);
-        if (shades != null) {
-            Map<String, Thing> things = getThingsByShadeId();
-            logger.debug("Found {} shades", things.size());
-            for (ShadeData shadeData : shades.shadeData) {
-                Thing thing = things.get(shadeData.id);
-                if (thing != null) {
-                    HDPowerViewShadeHandler handler = ((HDPowerViewShadeHandler) thing.getHandler());
-                    if (handler != null) {
-                        logger.debug("Handling update for shade {}", shadeData.id);
-                        handler.onReceiveUpdate(shadeData);
-                    } else {
-                        logger.debug("Skipping shade with no handler {}", shadeData.id);
-                    }
-                } else {
-                    logger.debug("Skipping non-bound shade {}", shadeData.id);
-                }
+
+        if (shades == null) {
+            throw new JsonParseException("Missing 'shades' element");
+        }
+        List<ShadeData> shadeData = shades.shadeData;
+        if (shadeData == null) {
+            throw new JsonParseException("Missing 'shades.shadeData' element");
+        }
+        logger.debug("Received data for {} shades", shadeData.size());
+
+        Map<String, ShadeData> shadeIdData = getShadeDataById(shadeData);
+        List<Thing> things = getThing().getThings();
+        if (shadeIdData.size() != things.size()) {
+            logger.debug("Shade count in hub ({}) != Shade count in binding ({})", shadeIdData.size(), things.size());
+        }
+
+        for (Thing thing : things) {
+            String thingId = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
+            HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
+            if (thingHandler == null) {
+                logger.debug("Shade '{}' missing handler", thingId);
+                continue;
             }
-        } else {
-            logger.warn("No response to shade poll");
+            if (!shadeIdData.containsKey(thingId)) {
+                thingHandler.onReceiveUpdate(null);
+                logger.debug("Shade '{}' not found in hub", thingId);
+                continue;
+            }
+            logger.debug("Updating shade '{}'", thingId);
+            thingHandler.onReceiveUpdate(shadeIdData.get(thingId));
         }
     }
 
     private void pollScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
         Scenes scenes = webTargets.getScenes();
-        if (scenes != null) {
-            logger.debug("Received {} scenes", scenes.sceneIds.size());
-            Map<Integer, Channel> channels = getSceneChannelsById();
-            for (Scene scene : scenes.sceneData) {
-                // Remove existing scene from the map
-                Channel existingChannel = channels.remove(scene.id);
-                if (existingChannel == null) {
-                    // Create the new scene
-                    ChannelUID channelUID = new ChannelUID(getThing().getUID(), Integer.toString(scene.id, 10));
-                    Channel channel = ChannelBuilder.create(channelUID, "Switch").withType(sceneChannelTypeUID)
-                            .withLabel(scene.getName()).withDescription("Activates the scene " + scene.getName())
-                            .build();
-                    updateThing(editThing().withChannel(channel).build());
-                    logger.debug("Created new channel for scene {}", scene.id);
-                } else {
-                    logger.debug("Skipping existing scene {}", scene.id);
-                }
-            }
 
-            // Remove any previously created channels that no longer exist
-            if (!channels.isEmpty()) {
-                logger.debug("Removing {} existing scenes", channels.size());
-                List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
-                allChannels.removeAll(channels.values());
-                updateThing(editThing().withChannels(allChannels).build());
+        if (scenes == null) {
+            throw new JsonParseException("Missing 'scenes' element");
+        }
+        List<Scene> sceneData = scenes.sceneData;
+        if (sceneData == null) {
+            throw new JsonParseException("Missing 'scenes.sceneData' element");
+        }
+        logger.debug("Received data for {} scenes", sceneData.size());
+
+        Map<Integer, Channel> channels = getSceneChannelsById();
+
+        for (Scene scene : sceneData) {
+            // remove existing scenes from the map
+            if (channels.remove(scene.id) == null) {
+                // Create the new scene
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), Integer.toString(scene.id, 10));
+                Channel channel = ChannelBuilder.create(channelUID, "Switch").withType(sceneChannelTypeUID)
+                        .withLabel(scene.getName()).withDescription("Activates the scene " + scene.getName()).build();
+                updateThing(editThing().withChannel(channel).build());
+                logger.debug("Creating new channel for scene '{}'", scene.id);
+                continue;
             }
-        } else {
-            logger.warn("No response to scene poll");
+            logger.debug("Keeping channel for existing scene '{}'", scene.id);
+        }
+
+        // Remove any previously created channels that no longer exist
+        if (!channels.isEmpty()) {
+            logger.debug("Removing {} orphan scene channels", channels.size());
+            List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+            allChannels.removeAll(channels.values());
+            updateThing(editThing().withChannels(allChannels).build());
         }
     }
 
     private Map<String, Thing> getThingsByShadeId() {
         Map<String, Thing> ret = new HashMap<>();
         for (Thing thing : getThing().getThings()) {
-            if (thing.getThingTypeUID().equals(HDPowerViewBindingConstants.THING_TYPE_SHADE)) {
-                String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
-                ret.put(id, thing);
+            String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
+            ret.put(id, thing);
+        }
+        return ret;
+    }
+
+    private Map<String, ShadeData> getShadeDataById(List<ShadeData> shadeData) {
+        Map<String, ShadeData> ret = new HashMap<>();
+        if (shadeData != null) {
+            for (ShadeData shade : shadeData) {
+                ret.put(shade.id, shade);
             }
         }
         return ret;
