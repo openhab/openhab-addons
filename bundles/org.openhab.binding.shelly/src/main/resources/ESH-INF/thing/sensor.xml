@@ -30,17 +30,17 @@
 		<config-description-ref uri="thing-type:shelly:battery" />
 	</thing-type>
 
-    <thing-type id="shellygas">
-        <label>Shelly GAS (SHGS-1)</label>
-        <description>Shelly Gas Sensor</description>
+	<thing-type id="shellygas">
+		<label>Shelly GAS (SHGS-1)</label>
+		<description>Shelly Gas Sensor</description>
 
-        <channel-groups>
-            <channel-group id="sensors" typeId="gasSensor" />
-            <channel-group id="device" typeId="deviceStatus" />
-        </channel-groups>
+		<channel-groups>
+			<channel-group id="sensors" typeId="gasSensor" />
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
 
-        <config-description-ref uri="thing-type:shelly:battery" />
-    </thing-type>
+		<config-description-ref uri="thing-type:shelly:battery" />
+	</thing-type>
 
 	<thing-type id="shellyflood">
 		<label>Shelly Flood (SHWT-1)</label>
