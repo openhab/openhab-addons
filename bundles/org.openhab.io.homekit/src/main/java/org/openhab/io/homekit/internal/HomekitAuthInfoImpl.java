@@ -18,7 +18,6 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.storage.Storage;
 import org.slf4j.Logger;
@@ -112,8 +111,10 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     private void initializeStorage() throws InvalidAlgorithmParameterException {
         mac = storage.get("mac");
-        salt = new BigInteger(storage.get("salt"));
-        privateKey = Base64.getDecoder().decode(storage.get("privateKey"));
+        @Nullable
+        Object saltConfig = storage.get("salt");
+        @Nullable
+        Object privateKeyConfig = storage.get("privateKey");
 
         if (mac == null) {
             logger.warn(
@@ -122,13 +123,17 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
             mac = HomekitServer.generateMac();
             storage.put("mac", mac);
         }
-        if (salt == null) {
+        if (saltConfig == null) {
             salt = HomekitServer.generateSalt();
             storage.put("salt", salt.toString());
+        } else {
+            salt = new BigInteger(saltConfig.toString());
         }
-        if (privateKey == null) {
+        if (privateKeyConfig == null) {
             privateKey = HomekitServer.generateKey();
             storage.put("privateKey", Base64.getEncoder().encodeToString(privateKey));
+        } else {
+            privateKey = Base64.getDecoder().decode(privateKeyConfig.toString());
         }
     }
 }
