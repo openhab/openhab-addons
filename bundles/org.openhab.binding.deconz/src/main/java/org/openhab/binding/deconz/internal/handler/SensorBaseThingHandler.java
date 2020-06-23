@@ -21,7 +21,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
@@ -80,9 +79,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
      */
     private boolean ignoreConfigurationUpdate;
 
-    // Used to refresh the "last seen" status
-    private @Nullable ScheduledFuture<?> scheduledFuture;
-
     public SensorBaseThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
     }
@@ -105,9 +101,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         WebSocketConnection conn = connection;
         if (conn != null) {
             conn.unregisterSensorListener(config.id);
-        }
-        if (scheduledFuture != null) {
-            scheduledFuture.cancel(true);
         }
     }
 
@@ -164,19 +157,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         ignoreConfigurationUpdate = true;
         updateProperties(editProperties);
 
-        // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
-        // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
-        // So to monitor a sensor is still alive, the "last seen" is necessary.
-        if (stateResponse.lastseen != null) {
-            updateState(CHANNEL_LAST_SEEN,
-                    new DateTimeType(ZonedDateTime.ofInstant(
-                            LocalDateTime.parse(stateResponse.lastseen, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            ZoneOffset.UTC, ZoneId.systemDefault())));
-            // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
-            // manually poll it time to time (every 5 minutes by default)
-            scheduledFuture = scheduler.scheduleAtFixedRate((Runnable) this::requestState, 5, 5, TimeUnit.MINUTES);
-        }
-
         // Some sensors support optional channels
         // (see https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices#sensors)
         // any battery-powered sensor
@@ -192,6 +172,19 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         // Initial data
         updateChannels(sensorConfig);
         updateChannels(sensorState, true);
+
+        // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
+        // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
+        // So to monitor a sensor is still alive, the "last seen" is necessary.
+        if (stateResponse.lastseen != null) {
+            updateState(CHANNEL_LAST_SEEN,
+                    new DateTimeType(ZonedDateTime.ofInstant(
+                            LocalDateTime.parse(stateResponse.lastseen, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            ZoneOffset.UTC, ZoneId.systemDefault())));
+            // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
+            // manually poll it time to time (every 5 minutes by default)
+            super.scheduledFuture = scheduler.schedule((Runnable) this::requestState, 5, TimeUnit.MINUTES);
+        }
 
         updateStatus(ThingStatus.ONLINE);
     }
