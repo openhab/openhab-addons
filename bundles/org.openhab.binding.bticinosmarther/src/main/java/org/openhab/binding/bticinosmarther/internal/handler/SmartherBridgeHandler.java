@@ -745,13 +745,15 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
      *
      * @return {@code true} if the given string is a formally valid Notification Url, {@code false} otherwise
      */
-    private boolean isValidNotificationUrl(String str) {
+    private boolean isValidNotificationUrl(@Nullable String str) {
         try {
-            URI maybeValidNotificationUrl = new URI(str);
-            if (HTTPS_SCHEMA.equals(maybeValidNotificationUrl.getScheme())) {
-                InetAddress address = InetAddress.getByName(maybeValidNotificationUrl.getHost());
-                if (!address.isLoopbackAddress() && !address.isSiteLocalAddress()) {
-                    return true;
+            if (str != null) {
+                URI maybeValidNotificationUrl = new URI(str);
+                if (HTTPS_SCHEMA.equals(maybeValidNotificationUrl.getScheme())) {
+                    InetAddress address = InetAddress.getByName(maybeValidNotificationUrl.getHost());
+                    if (!address.isLoopbackAddress() && !address.isSiteLocalAddress()) {
+                        return true;
+                    }
                 }
             }
             return false;
