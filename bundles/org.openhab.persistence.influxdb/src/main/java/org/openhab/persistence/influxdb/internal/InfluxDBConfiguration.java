@@ -97,7 +97,7 @@ public class InfluxDBConfiguration {
         if (version == InfluxDBVersion.V1) {
             hasCredentials = !user.isBlank() && !password.isBlank();
         } else if (version == InfluxDBVersion.V2) {
-            hasCredentials = (!token.isBlank()) || (!user.isBlank() && !password.isBlank());
+            hasCredentials = !token.isBlank() || (!user.isBlank() && !password.isBlank());
         }
         boolean hasDatabase = !databaseName.isBlank();
         boolean hasRetentionPolicy = !retentionPolicy.isBlank();

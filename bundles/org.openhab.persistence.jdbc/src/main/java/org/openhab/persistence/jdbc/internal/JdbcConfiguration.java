@@ -117,19 +117,19 @@ public class JdbcConfiguration {
         }
 
         logger.debug("JDBC::updateConfig: user={}", user);
-        logger.debug("JDBC::updateConfig: password exists? {}", password != null & !password.isBlank());
+        logger.debug("JDBC::updateConfig: password exists? {}", password != null && !password.isBlank());
         logger.debug("JDBC::updateConfig: url={}", url);
 
         // set database type and database type class
         setDBDAOClass(parsedURL.getProperty("dbShortcut")); // derby, h2, hsqldb, mariadb, mysql, postgresql,
                                                             // sqlite
         // set user
-        if (user == null || user.isBlank()) {
+        if (user != null && !user.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.user", user);
         }
 
         // set password
-        if (password == null || password.isBlank()) {
+        if (password != null && !password.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.password", password);
         }
 
