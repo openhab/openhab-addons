@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
@@ -32,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
@@ -66,6 +68,14 @@ public class SmokeTest extends IntegrationTestSupport {
     private static final int DISCRETE_EVERY_N_TRUE = 3;
     private static final int HOLDING_REGISTER_MULTIPLIER = 1;
     private static final int INPUT_REGISTER_MULTIPLIER = 10;
+    private static final SpyingSocketFactory socketSpy = new SpyingSocketFactory();
+    static {
+        try {
+            Socket.setSocketImplFactory(socketSpy);
+        } catch (IOException e) {
+            fail("Could not install socket spy in SmokeTest");
+        }
+    }
 
     /**
      * Whether tests are run in Continuous Integration environment, i.e. Jenkins or Travis CI
@@ -118,6 +128,11 @@ public class SmokeTest extends IntegrationTestSupport {
             assertThat(String.format("i=%d, expecting %d, got %d", i, registers.getRegister(i).toUnsignedShort(),
                     expected), registers.getRegister(i).toUnsignedShort(), is(equalTo(expected)));
         }
+    }
+
+    @Before
+    public void setUpSocketSpy() throws IOException {
+        socketSpy.sockets.clear();
     }
 
     /**
@@ -805,10 +820,6 @@ public class SmokeTest extends IntegrationTestSupport {
         assumeTrue("Connection closing test supported only with TCP slaves",
                 endpoint instanceof ModbusTCPSlaveEndpoint);
 
-        // Starts recording sockets created during the test
-        SpyingSocketFactory socketSpy = new SpyingSocketFactory();
-        Socket.setSocketImplFactory(socketSpy);
-
         // Generate server data
         generateData();
 
@@ -863,6 +874,50 @@ public class SmokeTest extends IntegrationTestSupport {
         });
     }
 
+    @Test
+    public void testConnectionCloseAfterOneOffPoll() throws IllegalArgumentException, Exception {
+        assumeFalse("Running in CI! Will not test timing-sensitive details", isRunningInCI());
+        ModbusSlaveEndpoint endpoint = getEndpoint();
+        assumeTrue("Connection closing test supported only with TCP slaves",
+                endpoint instanceof ModbusTCPSlaveEndpoint);
+
+        // Generate server data
+        generateData();
+
+        EndpointPoolConfiguration config = new EndpointPoolConfiguration();
+        config.setReconnectAfterMillis(2_000);
+
+        // 1. capture open connections at this point
+        long openSocketsBefore = getNumberOfOpenClients(socketSpy);
+        assertThat(openSocketsBefore, is(equalTo(0L)));
+
+        // 2. make poll, binding opens the tcp connection
+        try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, config)) {
+            {
+                CountDownLatch latch = new CountDownLatch(1);
+                comms.submitOneTimePoll(new ModbusReadRequestBlueprint(1, ModbusReadFunctionCode.READ_COILS, 0, 1, 1),
+                        response -> {
+                            latch.countDown();
+                        });
+                assertTrue(latch.await(60, TimeUnit.SECONDS));
+            }
+            // Right after the poll we should have one connection open
+            waitForAssert(() -> {
+                // 3. ensure one open connection
+                long openSocketsAfter = getNumberOfOpenClients(socketSpy);
+                assertThat(openSocketsAfter, is(equalTo(1L)));
+            });
+            // 4. Connection should close itself by the commons pool eviction policy (checking for old idle connection
+            // every now and then)
+            waitForAssert(() -> {
+                // 3. ensure one open connection
+                long openSocketsAfter = getNumberOfOpenClients(socketSpy);
+                assertThat(openSocketsAfter, is(equalTo(0L)));
+            }, 60_000, 50);
+
+        }
+    }
+
     private long getNumberOfOpenClients(SpyingSocketFactory socketSpy) {
         final InetAddress testServerAddress;
         try {
@@ -884,7 +939,7 @@ public class SmokeTest extends IntegrationTestSupport {
      * @author Sami Salonen
      *
      */
-    private class SpyingSocketFactory implements SocketImplFactory {
+    private static class SpyingSocketFactory implements SocketImplFactory {
 
         Queue<SocketImpl> sockets = new ConcurrentLinkedQueue<SocketImpl>();
 
