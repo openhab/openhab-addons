@@ -58,6 +58,7 @@ public enum MiIoDevices {
     DEHUMIDIFIER_FW1("nwt.derh.wdh318efw1", "XIAOMI MIJIA WIDETECH WDH318EFW1 Dehumidifier", THING_TYPE_UNSUPPORTED),
     ZHIMI_AIRPURIFIER_MB1("zhimi.airpurifier.mb1", "Mi Air Purifier mb1", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MC1("zhimi.airpurifier.mc1", "Mi Air Purifier 2S", THING_TYPE_BASIC),
+    ZHIMI_AIRPURIFIER_MC2("zhimi.airpurifier.mc2", "Mi Air Purifier 2S", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_VIRTUAL("zhimi.airpurifier.virtual", "Mi Air Purifier virtual", THING_TYPE_UNSUPPORTED),
     ZHIMI_AIRPURIFIER_VTL_M1("zhimi.airpurifier.vtl_m1", "Mi Air Purifier vtl m1", THING_TYPE_UNSUPPORTED),
     CHUANGMI_IR2("chuangmi.ir.v2", "Mi Remote v2", THING_TYPE_UNSUPPORTED),
