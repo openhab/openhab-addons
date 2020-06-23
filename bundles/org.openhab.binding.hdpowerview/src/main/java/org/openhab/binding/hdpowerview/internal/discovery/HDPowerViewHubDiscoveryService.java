@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.discovery;
 
+import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
+
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
@@ -22,25 +24,28 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jcifs.netbios.NbtAddress;
 
 /**
- * Discovers the HD Power View HUB by searching for a host advertised with the NetBIOS name PDBU-Hub3.0
+ * Discovers HD Power View hubs by means of NetBios
  *
  * @author Andy Lintner - Initial contribution
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.hdpowerview")
 public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryService.class);
+
     private final Runnable scanner;
     private ScheduledFuture<?> backgroundFuture;
 
     public HDPowerViewHubDiscoveryService() {
-        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_HUB), 600, true);
+        super(Collections.singleton(THING_TYPE_HUB), 600, true);
         scanner = createScanner();
     }
 
@@ -69,19 +74,22 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     private Runnable createScanner() {
         return () -> {
-            try {
-                NbtAddress address = NbtAddress.getByName(HDPowerViewBindingConstants.NETBIOS_NAME);
-                if (address != null) {
-                    String host = address.getInetAddress().getHostAddress();
-                    ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_HUB,
-                            host.replace('.', '_'));
-                    DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                            .withProperty(HDPowerViewHubConfiguration.HOST, host)
-                            .withLabel("PowerView Hub (" + host + ")").build();
-                    thingDiscovered(result);
+            for (String netBiosName : NETBIOS_NAMES) {
+                try {
+                    NbtAddress address = NbtAddress.getByName(netBiosName);
+                    if (address != null) {
+                        String host = address.getInetAddress().getHostAddress();
+                        ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                        DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                                .withProperty(HDPowerViewHubConfiguration.HOST, host).withRepresentationProperty(host)
+                                .withLabel("PowerView Hub (" + host + ")").build();
+                        logger.debug("NetBios discovered hub on host '{}'", host);
+                        thingDiscovered(hub);
+                    }
+                } catch (UnknownHostException e) {
+                    // Nothing to do here - the host couldn't be found, likely because it doesn't
+                    // exist
                 }
-            } catch (UnknownHostException e) {
-                // Nothing to do here - the host couldn't be found, likely because it doesn't exist
             }
         };
     }
