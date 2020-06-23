@@ -42,6 +42,6 @@ public abstract class AbstractTest {
     }
 
     protected String readJson(String jsonFileName) throws IOException {
-        return new String(Files.readAllBytes(getTestDataPath(jsonFileName))).replaceAll("\r\n", "\n");
+        return String.join("\n", Files.readAllLines(getTestDataPath(jsonFileName)));
     }
 }
