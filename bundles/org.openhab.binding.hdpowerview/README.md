@@ -5,7 +5,7 @@ In some countries the PowerView system is sold under the brand name [Luxaflex](h
 
 ![PowerView](doc/hdpowerview.png)
 
-PowerView shades have motorization control for their vertical position, as well as vane controls on the shade's slats.
+PowerView shades have motorization control for their vertical position, and some also have vane controls to change the angle of their slats.
 
 This binding also supports scenes that are defined in the PowerView app.
 This helps to work around a limitation of the hub; commands are executed serially with a several second delay between executions.
@@ -24,11 +24,11 @@ Make sure your shades are visible in the PowerView app before attempting discove
 
 The binding can automatically discover the PowerView hub.
 The discovery process can be started by pressing the refresh button in the PaperUI Inbox.
-However you can also manually create a (bridge) thing for the hub, and enter the required Configuration Parameters (see Thing Configuration below).
-If the Configuration Parameters are all valid, the binding will then automatically attempt to connect to the hub.
+However you can also manually create a (bridge) thing for the hub, and enter the required configuration parameters (see Thing Configuration below).
+If the configuration parameters are all valid, the binding will then automatically attempt to connect to the hub.
 If the connection succeeds, the hub will indicate its status as Online, otherwise it will show an error status. 
 
-Once the hub thing has been created and successfully connected, the binding will automatically interrogate the hub to discover all shades and scenes that are in it.
+Once the hub thing has been created and successfully connected, the binding will automatically discover all shades and scenes that are in it.
 
 - For each shade discovered: the binding will create a new dedicated thing with its own channels.
 - For each scene discovered: the binding will create a new channel dynamically within the hub thing.
@@ -42,7 +42,7 @@ If in the future, you add additional shades or scenes to your system, the bindin
 | Configuration Parameter | Description   |
 |-------------------------|---------------|
 | host                    | The host name or IP address of the hub on your network. |
-| refresh                 | The number of milli-seconds between fetches of the PowerView hub's shade state. Default value: 60,000 (one minute). |
+| refresh                 | The number of milli-seconds between fetches of the PowerView hub's shade state (default 60'000 one minute). |
 
 ### Thing Configuration for PowerView Shades
 
@@ -96,7 +96,7 @@ In neither case will the hub be aware of the shade’s new position.
 
 So the hub implements the `refresh` Switch type channel (see above) in order to overcome this issue.
 
-Note: You can also force the hub to refresh itself by sending an item `Refresh` command in a rule, as follows:
+Note: You can also force the hub to refresh itself by sending a `Refresh` command in a rule to an item that is connected to a channel in the hub as follows:
 
 ```
 import org.eclipse.smarthome.core.types.RefreshType
