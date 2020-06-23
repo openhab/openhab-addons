@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -42,7 +43,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * 
  */
 public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
@@ -111,9 +111,13 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     void onReceiveUpdate(ShadeData shadeData) {
-        updateStatus(ThingStatus.ONLINE);
-        updateBindingPercentPositions(shadeData.positions);
-        updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
+        if (shadeData != null) {
+            updateStatus(ThingStatus.ONLINE);
+            updateBindingPercentPositions(shadeData.positions);
+            updateState(CHANNEL_SHADE_LOW_BATTERY, shadeData.batteryStatus < 2 ? OnOffType.ON : OnOffType.OFF);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
     }
 
     private void updateBindingPercentPositions(ShadePosition shadePositions) {
