@@ -17,11 +17,11 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nest.internal.config.NestDeviceConfiguration;
@@ -166,7 +166,8 @@ public abstract class NestBaseHandler<T> extends BaseThingHandler
     }
 
     protected State getAsStringTypeListOrNull(@Nullable Collection<?> values) {
-        return values == null || values.isEmpty() ? UnDefType.NULL : new StringType(StringUtils.join(values, ","));
+        return values == null || values.isEmpty() ? UnDefType.NULL
+                : new StringType(values.stream().map(v -> v.toString()).collect(Collectors.joining(",")));
     }
 
     protected boolean isNotHandling(NestIdentifiable nestIdentifiable) {
