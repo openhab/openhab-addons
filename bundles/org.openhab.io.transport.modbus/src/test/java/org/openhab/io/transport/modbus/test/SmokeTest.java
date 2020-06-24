@@ -150,7 +150,6 @@ public class SmokeTest extends IntegrationTestSupport {
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             assert !result.hasError();
                             okCount.incrementAndGet();
@@ -158,6 +157,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             errorCount.incrementAndGet();
                             lastError.set(result.getCause());
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -188,7 +188,6 @@ public class SmokeTest extends IntegrationTestSupport {
                 configuration)) {
             comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             assert !result.hasError();
                             okCount.incrementAndGet();
@@ -197,6 +196,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             errorCount.incrementAndGet();
                             lastError.set(result.getCause());
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -224,7 +224,6 @@ public class SmokeTest extends IntegrationTestSupport {
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 5, 1), result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             assert !result.hasError();
                             okCount.incrementAndGet();
@@ -233,6 +232,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             errorCount.incrementAndGet();
                             lastError.set(result.getCause());
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(15, TimeUnit.SECONDS));
             assertThat(okCount.get(), is(equalTo(0)));
@@ -256,12 +256,12 @@ public class SmokeTest extends IntegrationTestSupport {
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, functionCode, offset, count, 1),
                     result -> {
-                        callbackCalled.countDown();
                         if (result.getBits() != null) {
                             lastData.set(result.getBits());
                         } else {
                             unexpectedCount.incrementAndGet();
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -351,12 +351,12 @@ public class SmokeTest extends IntegrationTestSupport {
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             lastData.set(result.getRegisters());
                         } else {
                             unexpectedCount.incrementAndGet();
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -382,12 +382,12 @@ public class SmokeTest extends IntegrationTestSupport {
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             comms.submitOneTimePoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_INPUT_REGISTERS, 1, 15, 1), result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             lastData.set(result.getRegisters());
                         } else {
                             unexpectedCount.incrementAndGet();
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -459,11 +459,10 @@ public class SmokeTest extends IntegrationTestSupport {
             comms.submitOneTimeWrite(new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, true, 1), result -> {
                 if (result.hasError()) {
                     lastError.set(result.getCause());
-                    callbackCalled.countDown();
                 } else {
                     unexpectedCount.incrementAndGet();
-                    callbackCalled.countDown();
                 }
+                callbackCalled.countDown();
             });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -499,11 +498,10 @@ public class SmokeTest extends IntegrationTestSupport {
             comms.submitOneTimeWrite(new ModbusWriteCoilRequestBlueprint(SLAVE_UNIT_ID, 3, bits, false, 1), result -> {
                 if (result.hasError()) {
                     unexpectedCount.incrementAndGet();
-                    callbackCalled.countDown();
                 } else {
                     lastData.set(result.getResponse());
-                    callbackCalled.countDown();
                 }
+                callbackCalled.countDown();
             });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -540,11 +538,10 @@ public class SmokeTest extends IntegrationTestSupport {
                     result -> {
                         if (result.hasError()) {
                             lastError.set(result.getCause());
-                            callbackCalled.countDown();
                         } else {
                             unexpectedCount.incrementAndGet();
-                            callbackCalled.countDown();
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -580,10 +577,8 @@ public class SmokeTest extends IntegrationTestSupport {
             comms.registerRegularPoll(
                     new ModbusReadRequestBlueprint(SLAVE_UNIT_ID, ModbusReadFunctionCode.READ_COILS, 1, 15, 1), 150, 0,
                     result -> {
-                        callbackCalled.countDown();
                         if (result.getBits() != null) {
                             dataReceived.incrementAndGet();
-
                             BitArray bits = result.getBits();
                             try {
                                 assertThat(bits.size(), is(equalTo(15)));
@@ -595,6 +590,7 @@ public class SmokeTest extends IntegrationTestSupport {
                         } else {
                             unexpectedCount.incrementAndGet();
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
@@ -623,7 +619,6 @@ public class SmokeTest extends IntegrationTestSupport {
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             comms.registerRegularPoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 150, 0, result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             dataReceived.incrementAndGet();
                             ModbusRegisterArray registers = result.getRegisters();
@@ -637,6 +632,7 @@ public class SmokeTest extends IntegrationTestSupport {
                         } else {
                             unexpectedCount.incrementAndGet();
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
             long end = System.currentTimeMillis();
@@ -657,7 +653,6 @@ public class SmokeTest extends IntegrationTestSupport {
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             PollTask task = comms.registerRegularPoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 150, 0, result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             dataReceived.incrementAndGet();
                             ModbusRegisterArray registers = result.getRegisters();
@@ -671,6 +666,7 @@ public class SmokeTest extends IntegrationTestSupport {
                         } else {
                             unexpectedCount.incrementAndGet();
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
             long end = System.currentTimeMillis();
@@ -710,14 +706,13 @@ public class SmokeTest extends IntegrationTestSupport {
 
         AtomicInteger unexpectedCount = new AtomicInteger();
         AtomicInteger errorCount = new AtomicInteger();
-        CountDownLatch callbackCalled = new CountDownLatch(3);
+        CountDownLatch successfulCountDownLatch = new CountDownLatch(3);
         AtomicInteger expectedReceived = new AtomicInteger();
 
         long start = System.currentTimeMillis();
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             PollTask task = comms.registerRegularPoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 200, 0, result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             expectedReceived.incrementAndGet();
                         } else if (result.hasError()) {
@@ -728,14 +723,15 @@ public class SmokeTest extends IntegrationTestSupport {
                                 expectedReceived.incrementAndGet();
                                 errorCount.incrementAndGet();
                                 generateData();
-                                callbackCalled.countDown();
+                                successfulCountDownLatch.countDown();
                             }
                         } else {
                             // bits
                             unexpectedCount.incrementAndGet();
                         }
                     });
-            assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
+            // Wait for N successful responses before proceeding with assertions of poll rate
+            assertTrue(successfulCountDownLatch.await(60, TimeUnit.SECONDS));
 
             long end = System.currentTimeMillis();
             assertPollDetails(unexpectedCount, expectedReceived, start, end, 190, 600);
@@ -759,7 +755,6 @@ public class SmokeTest extends IntegrationTestSupport {
         try (ModbusCommunicationInterface comms = modbusManager.newModbusCommunicationInterface(endpoint, null)) {
             PollTask task = comms.registerRegularPoll(new ModbusReadRequestBlueprint(SLAVE_UNIT_ID,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 200, 0, result -> {
-                        callbackCalled.countDown();
                         if (result.getRegisters() != null) {
                             expectedReceived.incrementAndGet();
                         } else if (result.hasError()) {
@@ -775,6 +770,7 @@ public class SmokeTest extends IntegrationTestSupport {
                             // bits
                             unexpectedCount.incrementAndGet();
                         }
+                        callbackCalled.countDown();
                     });
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
             long end = System.currentTimeMillis();
