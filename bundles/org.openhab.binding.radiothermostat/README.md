@@ -2,16 +2,16 @@
 
 This binding connects RadioThermostat/3M Filtrete models CT30, CT50/3M50, CT80, etc. with built-in Wi-Fi module to openHAB.
 
-The binding retrieves and periodically updates all basic system information from the thermostat. The main thermostat functions such 
-as thermostat mode, fan mode, temperature set point and hold mode can be controlled. System run-time information and humidity readings 
-are polled less frequently and can be disabled completely if not desired. Humidity information is available only when using a CT80 
-thermostat and I have noticed that the humidity reported is very inaccurate.
+The binding retrieves and periodically updates all basic system information from the thermostat.
+The main thermostat functions such as thermostat mode, fan mode, temperature set point and hold mode can be controlled.
+System run-time information and humidity readings are polled less frequently and can be disabled completely if not desired.
+Humidity information is available only when using a CT80 thermostat and I have noticed that the humidity reported is very inaccurate.
 
-The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it 
-with excessive amounts of simultaneous commands. When changing the thermostat mode, the current temperature set point is cleared and 
-a refresh of the thermostat data is done to get the new mode's set point. Since retrieving the thermostat's data is the slowest 
-operation, it will take several seconds after changing the mode before the new set point is displayed. The 'Program Mode' command 
-is untested and according to the published API is only available on a CT80 Rev B.
+The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow.
+Do not over load it with excessive amounts of simultaneous commands.
+When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
+Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
+The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
 
 ## Supported Things
 
@@ -21,7 +21,8 @@ Multiple Things can be added if more than one thermostat is to be controlled.
 
 ## Discovery
 
-Auto-discovery is supported if the thermostat can be located on the local network using SSDP. Otherwise the thing must be manually added.
+Auto-discovery is supported if the thermostat can be located on the local network using SSDP.
+Otherwise the thing must be manually added.
 
 ## Binding Configuration
 
