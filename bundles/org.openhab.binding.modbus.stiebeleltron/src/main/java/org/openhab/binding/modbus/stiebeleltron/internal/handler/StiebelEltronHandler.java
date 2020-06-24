@@ -17,7 +17,6 @@ import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.KILOWATT_HO
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
 import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import javax.measure.Unit;
@@ -230,7 +229,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        @Nullable
         StiebelEltronConfiguration myconfig = StiebelEltronHandler.this.config;
         if (myconfig == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
@@ -308,9 +306,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
-            AbstractBasePoller poller = null;
             String groupId = channelUID.getGroupId();
             if (groupId != null) {
+                AbstractBasePoller poller;
                 switch (groupId) {
                     case GROUP_SYSTEM_STATE:
                         poller = systemStatePoller;
@@ -324,10 +322,13 @@ public class StiebelEltronHandler extends BaseThingHandler {
                     case GROUP_ENERGY_INFO:
                         poller = energyPoller;
                         break;
+                    default:
+                        poller = null;
+                        break;
                 }
-            }
-            if (poller != null) {
-                poller.poll();
+                if (poller != null) {
+                    poller.poll();
+                }
             }
         } else {
             try {
@@ -381,7 +382,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
-            logger.debug("No bridge handler available -- aborting init for {}", this);
             return;
         }
 
@@ -398,7 +398,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' not completely initialized", label));
-            logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
             return;
         }
 
@@ -574,26 +573,28 @@ public class StiebelEltronHandler extends BaseThingHandler {
         SystemInformationBlock block = systemInformationBlockParser.parse(registers);
 
         // System information group
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_TEMPERATURE), getScaled(block.temperature_fek, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_TEMPERATURE), getScaled(block.temperatureFek, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_TEMPERATURE_SETPOINT),
-                getScaled(block.temperature_fek_setpoint, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_HUMIDITY), getScaled(block.humidity_ffk, PERCENT));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_DEWPOINT), getScaled(block.dewpoint_ffk, CELSIUS));
+                getScaled(block.temperatureFekSetPoint, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_HUMIDITY), getScaled(block.humidityFek, PERCENT));
+        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_DEWPOINT), getScaled(block.dewpointFek, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_OUTDOOR_TEMPERATURE),
-                getScaled(block.temperature_outdoor, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperature_hk1, CELSIUS));
+                getScaled(block.temperatureOutdoor, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperatureHk1, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE_SETPOINT),
-                getScaled(block.temperature_hk1_setpoint, CELSIUS));
+                getScaled(block.temperatureHk1SetPoint, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_SUPPLY_TEMPERATURE),
-                getScaled(block.temperature_supply, CELSIUS));
+                getScaled(block.temperatureSupply, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_RETURN_TEMPERATURE),
-                getScaled(block.temperature_return, CELSIUS));
+                getScaled(block.temperatureReturn, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_SOURCE_TEMPERATURE),
-                getScaled(block.temperature_source, CELSIUS));
+                getScaled(block.temperatureSource, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_WATER_TEMPERATURE),
-                getScaled(block.temperature_water, CELSIUS));
+                getScaled(block.temperatureWater, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_WATER_TEMPERATURE_SETPOINT),
-                getScaled(block.temperature_water_setpoint, CELSIUS));
+                getScaled(block.temperatureWaterSetPoint, CELSIUS));
+
+        resetCommunicationError();
     }
 
     /**
@@ -625,6 +626,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 new QuantityType<>(block.consumptionWaterToday, KILOWATT_HOUR));
         updateState(channelUID(GROUP_ENERGY_INFO, CHANNEL_CONSUMPTION_WATER_TOTAL),
                 getEnergyQuantity(block.consumptionWaterTotalHigh, block.consumptionWaterTotalLow));
+
+        resetCommunicationError();
     }
 
     /**
@@ -650,6 +653,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_STATE, CHANNEL_IS_PUMPING),
                 (block.state & 1) != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
 
+        resetCommunicationError();
     }
 
     /**
@@ -663,16 +667,18 @@ public class StiebelEltronHandler extends BaseThingHandler {
         logger.trace("System state block received, size: {}", registers.size());
 
         SystemParameterBlock block = systemParameterBlockParser.parse(registers);
-        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_OPERATION_MODE), new DecimalType(block.operation_mode));
+        updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_OPERATION_MODE), new DecimalType(block.operationMode));
 
         updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_COMFORT_TEMPERATURE_HEATING),
-                getScaled(block.comfort_temperature_heating, CELSIUS));
+                getScaled(block.comfortTemperatureHeating, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_ECO_TEMPERATURE_HEATING),
-                getScaled(block.eco_temperature_heating, CELSIUS));
+                getScaled(block.ecoTemperatureHeating, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_COMFORT_TEMPERATURE_WATER),
-                getScaled(block.comfort_temperature_water, CELSIUS));
+                getScaled(block.comfortTemperatureWater, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_PARAMETER, CHANNEL_ECO_TEMPERATURE_WATER),
-                getScaled(block.eco_temperature_water, CELSIUS));
+                getScaled(block.ecoTemperatureWater, CELSIUS));
+
+        resetCommunicationError();
     }
 
     /**
@@ -682,10 +688,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
 
-        logger.debug("Thing status changed to {}", this.getThing().getStatus().name());
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             startUp();
-        } else if (getThing().getStatus() == ThingStatus.OFFLINE) {
+        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             tearDown();
         }
     }

@@ -28,18 +28,18 @@ public class SystemInfromationBlockParser extends AbstractBaseParser {
     public SystemInformationBlock parse(ModbusRegisterArray raw) {
         SystemInformationBlock block = new SystemInformationBlock();
 
-        block.temperature_fek = extractInt16(raw, 2, (short) 0);
-        block.temperature_fek_setpoint = extractInt16(raw, 3, (short) 0);
-        block.humidity_ffk = extractInt16(raw, 4, (short) 0);
-        block.dewpoint_ffk = extractInt16(raw, 5, (short) 0);
-        block.temperature_outdoor = extractInt16(raw, 6, (short) 0);
-        block.temperature_hk1 = extractInt16(raw, 7, (short) 0);
-        block.temperature_hk1_setpoint = extractInt16(raw, 9, (short) 0);
-        block.temperature_supply = extractInt16(raw, 12, (short) 0);
-        block.temperature_return = extractInt16(raw, 15, (short) 0);
-        block.temperature_water = extractInt16(raw, 21, (short) 0);
-        block.temperature_water_setpoint = extractInt16(raw, 22, (short) 0);
-        block.temperature_source = extractInt16(raw, 35, (short) 0);
+        block.temperatureFek = extractInt16(raw, 2, (short) 0);
+        block.temperatureFekSetPoint = extractInt16(raw, 3, (short) 0);
+        block.humidityFek = extractInt16(raw, 4, (short) 0);
+        block.dewpointFek = extractInt16(raw, 5, (short) 0);
+        block.temperatureOutdoor = extractInt16(raw, 6, (short) 0);
+        block.temperatureHk1 = extractInt16(raw, 7, (short) 0);
+        block.temperatureHk1SetPoint = extractInt16(raw, 9, (short) 0);
+        block.temperatureSupply = extractInt16(raw, 12, (short) 0);
+        block.temperatureReturn = extractInt16(raw, 15, (short) 0);
+        block.temperatureWater = extractInt16(raw, 21, (short) 0);
+        block.temperatureWaterSetPoint = extractInt16(raw, 22, (short) 0);
+        block.temperatureSource = extractInt16(raw, 35, (short) 0);
         return block;
     }
 }

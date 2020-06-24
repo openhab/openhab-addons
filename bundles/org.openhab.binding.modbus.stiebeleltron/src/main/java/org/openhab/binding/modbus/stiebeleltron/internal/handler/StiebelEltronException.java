@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.modbus.stiebeleltron.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown when the stiebel eltron handler sees an error.
  *
  * @author Paul Frank - Initial contribution
  */
 @SuppressWarnings("serial")
+@NonNullByDefault
 public class StiebelEltronException extends Exception {
 
     public StiebelEltronException() {

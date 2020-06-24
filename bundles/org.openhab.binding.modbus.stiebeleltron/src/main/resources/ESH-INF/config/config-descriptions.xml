@@ -6,7 +6,7 @@
 
 	<config-description uri="thing-type:stiebeleltron:modbusconfig">
 
-		<parameter name="refresh" type="integer" min="0" unit="s">
+		<parameter name="refresh" type="integer" min="1" unit="s">
 			<label>Polling Interval</label>
 			<description>Poll interval in seconds. Use zero to disable automatic polling.</description>
 			<default>5</default>

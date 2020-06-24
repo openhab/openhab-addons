@@ -21,15 +21,15 @@ package org.openhab.binding.modbus.stiebeleltron.internal.dto;
 public class SystemInformationBlock {
 
     public short temperatureFek;
-    public short temperature_fek_setpoint;
-    public short humidity_ffk;
-    public short dewpoint_ffk;
-    public short temperature_outdoor;
-    public short temperature_hk1;
-    public short temperature_hk1_setpoint;
-    public short temperature_supply;
-    public short temperature_return;
-    public short temperature_source;
-    public short temperature_water;
-    public short temperature_water_setpoint;
+    public short temperatureFekSetPoint;
+    public short humidityFek;
+    public short dewpointFek;
+    public short temperatureOutdoor;
+    public short temperatureHk1;
+    public short temperatureHk1SetPoint;
+    public short temperatureSupply;
+    public short temperatureReturn;
+    public short temperatureSource;
+    public short temperatureWater;
+    public short temperatureWaterSetPoint;
 }
