@@ -85,7 +85,7 @@
 		<description>Shelly Button 1 (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="buttonState" />
+			<channel-group id="status" typeId="buttonState" />
 			<channel-group id="battery" typeId="batteryStatus" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>

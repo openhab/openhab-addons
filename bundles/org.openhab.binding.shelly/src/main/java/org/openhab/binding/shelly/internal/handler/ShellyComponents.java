@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
@@ -365,18 +364,7 @@ public class ShellyComponents {
                         getOnOff(sdata.charger));
             }
 
-            // Shelly Button
-            if ((sdata.inputs != null) && profile.isSensor) {
-                int idx = 1;
-                for (ShellyInputState input : sdata.inputs) {
-                    String channel = sdata.inputs.size() == 1 ? CHANNEL_INPUT : CHANNEL_INPUT + String.valueOf(idx);
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, channel, getOnOff(input.input));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSORS_EVENTTYPE,
-                            getStringType(input.event));
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSORS_EVENTCOUNT,
-                            getDecimal(input.eventCount));
-                }
-            }
+            updated |= thingHandler.updateInputs(status);
 
             if (updated) {
                 thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());

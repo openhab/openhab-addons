@@ -226,7 +226,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType);
-        if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYUNKNOWN)) {
+        if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, tmpPrf.mode);
             return false; // force re-initialization
         }
@@ -371,6 +371,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 updated |= ShellyComponents.updateDeviceStatus(this, status);
                 updated |= ShellyComponents.updateMeters(this, status);
                 updated |= ShellyComponents.updateSensors(this, status);
+                // updated |= updateInputs(status);
 
                 // All channels must be created after the first cycle
                 channelsCreated = true;
@@ -842,13 +843,17 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @return true: one or more inputs were updated
      */
     public boolean updateInputs(String groupName, ShellySettingsStatus status, int index) {
+        if ((status.input == null)) {
+            return false;
+        }
+
         boolean updated = false;
-        if ((status.input != null) && (index == 0)) {
+        if (index == 0) {
             // RGBW2: a single int rather than an array
             updated |= updateChannel(groupName, CHANNEL_INPUT,
                     getInteger(status.input) == 0 ? OnOffType.OFF : OnOffType.ON);
-        } else if (status.inputs != null) {
-            if (profile.isInitialized() && (profile.isDimmer || profile.isRoller)) {
+        } else {
+            if (profile.isDimmer || profile.isRoller) {
                 ShellyInputState state1 = status.inputs.get(0);
                 ShellyInputState state2 = status.inputs.get(1);
                 logger.trace("{}: Updating {}#input1 with {}, input2 with {}", thingName, groupName,
@@ -866,6 +871,54 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
         }
         return updated;
+    }
+
+    public boolean updateInputs(ShellySettingsStatus status) {
+        boolean updated = false;
+        String groupName = "";
+
+        if (status.input != null) {
+            // RGBW2: a single int rather than an array
+            return updateChannel(groupName, CHANNEL_INPUT,
+                    getInteger(status.input) == 0 ? OnOffType.OFF : OnOffType.ON);
+        }
+        if (status.inputs != null) {
+            int idx = 1;
+            for (ShellyInputState input : status.inputs) {
+                String group = getControlGroup(status, idx);
+                updated |= updateChannel(group, CHANNEL_INPUT, getOnOff(input.input));
+                if (input.event != null) {
+                    updated |= updateChannel(group, CHANNEL_STATUS_EVENTTYPE, getStringType(input.event));
+                    updated |= updateChannel(group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(input.eventCount));
+                }
+                idx++;
+            }
+        }
+        return updated;
+    }
+
+    public String getControlGroup(ShellySettingsStatus status, int idx) {
+        if (profile.isDimmer) {
+            return CHANNEL_GROUP_DIMMER_CONTROL;
+        }
+        if (profile.isRoller && (status.rollers != null)) {
+            return profile.numRollers == 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
+        }
+        if (profile.hasBattery && (status.relays != null)) {
+            return profile.numRelays == 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
+        }
+        if (profile.isLight && (status.lights != null)) {
+            return profile.numRelays == 1 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_CONTROL + idx;
+        }
+        if (profile.isButton) {
+            return CHANNEL_GROUP_STATUS;
+        }
+        if (profile.isSensor) {
+            return CHANNEL_GROUP_SENSOR;
+        }
+
+        // e.g. ix3
+        return profile.numRelays == 1 ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
     }
 
     public void publishState(String channelId, State value) {

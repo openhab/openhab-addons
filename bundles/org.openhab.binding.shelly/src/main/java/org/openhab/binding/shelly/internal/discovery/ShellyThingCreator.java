@@ -36,25 +36,25 @@ public class ShellyThingCreator {
         thingTypeMapping.put(SHELLYDT_1PM, THING_TYPE_SHELLY1PM_STR);
         thingTypeMapping.put(SHELLYDT_1, THING_TYPE_SHELLY1_STR);
         thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
-        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
-        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
-        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
-        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
         thingTypeMapping.put(SHELLYDT_EM, THING_TYPE_SHELLYEM_STR);
         thingTypeMapping.put(SHELLYDT_GAS, THING_TYPE_SHELLYGAS_STR);
         thingTypeMapping.put(SHELLYDT_DUO, THING_TYPE_SHELLYDUO_STR);
         thingTypeMapping.put(SHELLYDT_BULB, THING_TYPE_SHELLYBULB_STR);
         thingTypeMapping.put(SHELLYDT_VINTAGE, THING_TYPE_SHELLYVINTAGE_STR);
         thingTypeMapping.put(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER_STR);
+        thingTypeMapping.put(SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2_STR);
+        thingTypeMapping.put(SHELLYDT_IX3, THING_TYPE_SHELLYIX3_STR);
         thingTypeMapping.put(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1_STR);
 
         // mapping by thing type
         thingTypeMapping.put(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1_STR);
         thingTypeMapping.put(THING_TYPE_SHELLY1PM_STR, THING_TYPE_SHELLY1PM_STR);
         thingTypeMapping.put(THING_TYPE_SHELLY4PRO_STR, THING_TYPE_SHELLY4PRO_STR);
+        thingTypeMapping.put(THING_TYPE_SHELLYDIMMER2_STR, THING_TYPE_SHELLYDIMMER2_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYDIMMER_STR, THING_TYPE_SHELLYDIMMER_STR);
-        thingTypeMapping.put(THING_TYPE_SHELLYEM_STR, THING_TYPE_SHELLYEM_STR);
+        thingTypeMapping.put(THING_TYPE_SHELLYIX3_STR, THING_TYPE_SHELLYIX3_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYEM3_STR, THING_TYPE_SHELLYEM3_STR);
+        thingTypeMapping.put(THING_TYPE_SHELLYEM_STR, THING_TYPE_SHELLYEM_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYBULB_STR, THING_TYPE_SHELLYBULB_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO_STR);
@@ -88,7 +88,7 @@ public class ShellyThingCreator {
         String name = hostname.toLowerCase();
         String type = StringUtils.substringBefore(name, "-").toLowerCase();
         String devid = StringUtils.substringAfterLast(name, "-");
-        if (devid == null) {
+        if ((devid == null) || (type == null)) {
             throw new IllegalArgumentException("Invalid device name format: " + hostname);
         }
 
@@ -115,6 +115,6 @@ public class ShellyThingCreator {
         if (thingTypeMapping.containsKey(type)) {
             return thingTypeMapping.get(type);
         }
-        return THING_TYPE_UNKNOWN_STR;
+        return THING_TYPE_SHELLYUNKNOWN_STR;
     }
 }

@@ -49,6 +49,7 @@ public class ShellyChannelDefinitionsDTO {
 
     // shortcuts to avoid line breaks (make code more readable)
     private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
+    private static final String CHGR_STATUS = CHANNEL_GROUP_STATUS;
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
@@ -119,11 +120,11 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_LAST_UPDATE, "lastUpdate", ITEM_TYPE_DATETIME))
 
-                // Button
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_INPUT, "inputState", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSORS_EVENTTYPE, "eventType", ITEM_TYPE_STRING))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSORS_EVENTCOUNT, "eventCount", ITEM_TYPE_NUMBER))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_BUTTON_TRIGGER, "system.button", ITEM_TYPE_STRING))
+                // Button/ix3
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "eventType", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_BUTTON_TRIGGER, "system.button", ITEM_TYPE_STRING))
 
                 // Addon with external sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1, "sensorExtTemp", ITEM_TYPE_TEMP))
@@ -147,6 +148,8 @@ public class ShellyChannelDefinitionsDTO {
             group = CHANNEL_GROUP_RELAY_CONTROL; // map meter1..n to meter
         } else if (group.contains(CHANNEL_GROUP_LIGHT_CHANNEL)) {
             group = CHANNEL_GROUP_LIGHT_CHANNEL;
+        } else if (group.contains(CHANNEL_GROUP_STATUS)) {
+            group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
         String channelId = group + "#" + channel;
         return channelDefinitions.get(channelId);
@@ -287,9 +290,6 @@ public class ShellyChannelDefinitionsDTO {
             final ChannelTypeUID channelTypeUID = channelDef.typeId.contains("system:")
                     ? new ChannelTypeUID(channelDef.typeId)
                     : new ChannelTypeUID(BINDING_ID, channelDef.typeId);
-
-            // Channel channel = ChannelBuilder.create(channelUID, channelId).withType(channelTypeUID)
-            // .withLabel(channelDef.label).withDescription(channelDef.description).build();
             Channel channel = ChannelBuilder.create(channelUID, channelDef.itemType).withType(channelTypeUID).build();
             newChannels.put(channelId, channel);
         }

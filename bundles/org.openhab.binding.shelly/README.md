@@ -14,6 +14,7 @@ This Binding integrated Shelly devices.
 | shelly25-roller    | Shelly 2.5 in Roller Mode                              | SHSW-25   |
 | shelly4pro         | Shelly 4x Relay Switch                                 | SHSW-44   |
 | shellydimmer       | Shelly Dimmer                                          | SHDM-1    |
+| shellyix3          | Shelly ix3                                             | SHIX3-1   |
 | shellyplug         | Shelly Plug                                            | SHPLG2-1  |
 | shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
@@ -393,6 +394,17 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 
 The Dimmer should be calibrated using the Shelly App.
 
+### Shelly ix3 (thing-type: shellyix3)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|status    |input1       |Switch   |yes      |State of Input 1                                                       |
+|          |input2       |Switch   |yes      |State of Input 2                                                       |
+|          |input3       |Switch   |yes      |State of Input 3                                                       |
+|          |button       |Trigger  |yes      |Event trigger: SHORT_PRESSED, DOUBLE_PRESSED, PRESSED or LONG_PRESSED  |
+|          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpushc                       |
+|          |eventCount   |Number   |yes      |Number of button events                                                |
+
 ### Shelly Bulb (thing-type: shellybulb)
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
@@ -557,7 +569,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
-|sensors   |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpushc                       |
+|status    |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpushc                       |
 |          |eventCount   |Number   |yes      |Number of button events                                                |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels             |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |

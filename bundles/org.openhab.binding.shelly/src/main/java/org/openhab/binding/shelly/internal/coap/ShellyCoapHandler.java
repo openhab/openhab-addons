@@ -493,15 +493,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 handleInput(sen, s, rGroup, updates);
                                 break;
                             case "input event": // Shelly Button 1
-                                String type = getString(s.valueStr);
-                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSORS_EVENTTYPE,
-                                        getStringType(type));
-                                thingHandler.triggerChannel(CHANNEL_GROUP_SENSOR, CHANNEL_BUTTON_TRIGGER,
-                                        mapButtonEvent(type));
+                                handleEvent(sen, getString(s.valueStr), 0, updates);
                                 break;
-                            case "input event counter": // Shelly Button 1
-                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSORS_EVENTCOUNT,
-                                        getDecimal(s.value));
+                            case "input event counter": // Shelly Button 1/ix3
+                                handleEvent(sen, "", getInteger((int) s.value), updates);
                                 break;
                             case "flood":
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -624,8 +619,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         } else if (profile.isDimmer || profile.isRoller) {
             // Dimmer and Roller things have 2 inputs
             iChannel = CHANNEL_INPUT + String.valueOf(idx);
+        } else if (profile.isIX3) {
+            iGroup = CHANNEL_GROUP_STATUS + idx;
         } else if (profile.isButton) {
-            iGroup = CHANNEL_GROUP_SENSOR;
+            iGroup = CHANNEL_GROUP_STATUS;
         } else {
             // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
             iGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
@@ -637,25 +634,52 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             if ((s.value != 0) && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
                     || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
                     || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
-                String trigger = "";
-                switch ((int) s.value) {
-                    case 0:
-                        trigger = CommonTriggerEvents.RELEASED;
-                        break;
-                    case 1:
-                        trigger = CommonTriggerEvents.SHORT_PRESSED;
-                        break;
-                    case 2:
-                        trigger = CommonTriggerEvents.LONG_PRESSED;
-                        break;
-                }
-                if (!trigger.isEmpty()) {
-                    logger.debug("{}: Update button state with {}", thingName, trigger);
-                    thingHandler.triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, trigger);
-                }
+                triggerButton(iGroup, (int) s.value);
             }
+        } else if (profile.isButton || profile.isIX3) {
+            triggerButton(iGroup, (int) s.value);
         }
         updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
+    }
+
+    private void handleEvent(CoIotDescrSen sen, String type, Integer count, Map<String, State> updates) {
+        if (!type.isEmpty()) {
+            // event type
+            int idx = getSensorNumber("input event", sen.id);
+            if (idx <= 0) {
+                return;
+            }
+            String group = thingHandler.getProfile().isButton ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
+            updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, getStringType(type));
+            thingHandler.triggerChannel(group, CHANNEL_BUTTON_TRIGGER, mapButtonEvent(type));
+        } else {
+            // event count
+            int idx = getSensorNumber("input event counter", sen.id);
+            if (idx <= 0) {
+                return;
+            }
+            String group = thingHandler.getProfile().isButton ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
+            updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
+        }
+    }
+
+    private void triggerButton(String iGroup, int value) {
+        String trigger = "";
+        switch (value) {
+            case 0:
+                trigger = CommonTriggerEvents.RELEASED;
+                break;
+            case 1:
+                trigger = CommonTriggerEvents.SHORT_PRESSED;
+                break;
+            case 2:
+                trigger = CommonTriggerEvents.LONG_PRESSED;
+                break;
+        }
+        if (!trigger.isEmpty()) {
+            logger.debug("{}: Update button state with {}", thingName, trigger);
+            thingHandler.triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, trigger);
+        }
     }
 
     /**

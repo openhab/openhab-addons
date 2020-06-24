@@ -80,6 +80,7 @@ public class ShellyDeviceProfile {
     public boolean isSense = false; // true if thing is a Shelly Sense
     public boolean isDW = false; // true of Door Window sensor
     public boolean isButton = false; // true for a Shelly Button 1
+    public boolean isIX3 = false; // true for a Shelly IX
 
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
@@ -125,6 +126,7 @@ public class ShellyDeviceProfile {
         if ((numRelays > 0) && (settings.relays == null)) {
             numRelays = 0;
         }
+        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER) || deviceType.equalsIgnoreCase(SHELLYDT_DIMMER2);
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(settings.device.numRollers);
 
@@ -190,8 +192,10 @@ public class ShellyDeviceProfile {
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
-        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isSense;
+        isIX3 = thingType.equals(THING_TYPE_SHELLYIX3_STR);
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR);
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton; // we assume that Sense is connected to the charger
+        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isSense;
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton; // we assume that Sense is connected to // the
+                                                                     // charger
     }
 }
