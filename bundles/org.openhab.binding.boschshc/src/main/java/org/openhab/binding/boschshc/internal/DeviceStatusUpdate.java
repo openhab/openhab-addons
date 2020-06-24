@@ -23,18 +23,14 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 public class DeviceStatusUpdate {
-
     /**
-     * {"result":[ ..{
-     * ...."path":"/devices/hdm:HomeMaticIP:3014F711A0001916D859A8A9/services/PowerSwitch",
-     * ...."@type":"DeviceServiceData", ...."id":"PowerSwitch", ...."state":{
-     * ......"@type":"powerSwitchState", ......"automaticPowerOffTime":0,
-     * ......"switchState":"ON" ....},
-     * ...."deviceId":"hdm:HomeMaticIP:3014F711A0001916D859A8A9"} ],"jsonrpc":"2.0"}
+     * Url path of the service the update came from.
      */
-
     String path;
 
+    /**
+     * The type of message.
+     */
     @SerializedName("@type")
     String type;
 
@@ -49,7 +45,7 @@ public class DeviceStatusUpdate {
     JsonElement state;
 
     /**
-     * Id of device the update is for
+     * Id of device the update is for.
      */
     String deviceId;
 
