@@ -92,7 +92,7 @@
 			<required>true</required>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" unit="ms" required="false">
+		<parameter name="refreshInterval" type="integer" min="2000" unit="ms" required="false">
 			<label>Refresh Interval</label>
 			<description>The refresh interval to poll Netatmo API (in ms).</description>
 			<default>300000</default>
@@ -141,7 +141,7 @@
 			<description>UUID of the home</description>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" unit="ms" required="false">
+		<parameter name="refreshInterval" type="integer" min="2000" unit="ms" required="false">
 			<label>Refresh Interval</label>
 			<description>The refresh interval to poll Netatmo API (in ms).</description>
 			<default>300000</default>

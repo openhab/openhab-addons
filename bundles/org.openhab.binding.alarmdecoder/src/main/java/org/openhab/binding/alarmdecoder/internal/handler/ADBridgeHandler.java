@@ -345,7 +345,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
      * contact channels are initialized into the UNDEF state. This method is called when there is reason to assume that
      * there are no faulted zones, because the alarm panel is in state READY. Zone handlers that have not yet received
      * updates can then set their contact states to CLOSED. Only executes the first time panel is ready after bridge
-     * connect/reconnect. Currently only notifies ZoneHandler and RFZoneHandler things.
+     * connect/reconnect.
      */
     private void notifyChildHandlersPanelReady() {
         if (!panelReadyReceived) {
@@ -355,7 +355,7 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             // Notify child zone handlers by calling notifyPanelReady() for each
             for (Thing thing : getThing().getThings()) {
                 ADThingHandler handler = (ADThingHandler) thing.getHandler();
-                if (handler != null && (handler instanceof ZoneHandler || handler instanceof RFZoneHandler)) {
+                if (handler != null) {
                     handler.notifyPanelReady();
                 }
             }

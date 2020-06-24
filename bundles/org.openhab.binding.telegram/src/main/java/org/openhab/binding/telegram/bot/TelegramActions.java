@@ -151,7 +151,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "message") @Nullable String message) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegramAnswer(chatId, replyId, message)) {
                     return false;
                 }
@@ -170,7 +170,7 @@ public class TelegramActions implements ThingActions {
     public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegram(chatId, message)) {
                     return false;
                 }
@@ -193,7 +193,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "buttons") @Nullable String... buttons) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegramQuery(chatId, message, replyId, buttons)) {
                     return false;
                 }
@@ -264,7 +264,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "args") @Nullable Object... args) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegram(chatId, message, args)) {
                     return false;
                 }
@@ -377,7 +377,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "password") @Nullable String password) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegramPhoto(chatId, photoURL, caption, username, password)) {
                     return false;
                 }
