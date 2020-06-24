@@ -15,9 +15,9 @@ package org.openhab.binding.teleinfo.internal.serial;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TooManyListenersException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +56,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private SerialPortManager serialPortManager;
     private org.eclipse.smarthome.io.transport.serial.SerialPort serialPort;
     private TeleinfoReceiveThread receiveThread;
-    private Timer keepAliveThread;
+    private ScheduledFuture<?> keepAliveThread;
     private @Nullable TeleinfoSerialControllerConfiguration config;
     private long invalidFrameCounter = 0;
 
@@ -73,10 +73,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
         openSerialPortAndStartReceiving();
 
-        keepAliveThread = new Timer("Teleinfo-KeepAliveThread-timer", true);
-        keepAliveThread.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
+        keepAliveThread = scheduler.scheduleWithFixedDelay(() -> {
                 logger.debug("Check Teleinfo receiveThread status...");
                 logger.debug("isInitialized() = {}", isInitialized());
                 if (receiveThread != null) {
@@ -88,8 +85,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
                     stopReceivingAndCloseSerialPort();
                     openSerialPortAndStartReceiving();
                 }
-            }
-        }, 60000, 60000);
+            }, 60, 60, TimeUnit.SECONDS);
 
         if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
             logger.info("Teleinfo Serial is initialized, but the bridge is currently OFFLINE due to errors");
@@ -101,8 +97,11 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     @Override
     public void dispose() {
         logger.info("Teleinfo Serial is stopping...");
-        keepAliveThread.cancel();
-        keepAliveThread = null;
+        if(keepAliveThread != null) {
+            if(!keepAliveThread.isCancelled())
+                keepAliveThread.cancel(true);
+            keepAliveThread = null;
+        }
         stopReceivingAndCloseSerialPort();
         logger.info("Teleinfo Serial is stopped");
 
