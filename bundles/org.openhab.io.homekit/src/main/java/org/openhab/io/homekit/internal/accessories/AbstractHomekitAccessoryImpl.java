@@ -12,14 +12,15 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -28,9 +29,10 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -169,18 +171,6 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T getItemConfiguration(@NonNull HomekitTaggedItem item, @NonNull String key, @NonNull T defaultValue) {
-        final @Nullable Map<String, Object> configuration = item.getConfiguration();
-        if (configuration != null) {
-            Object value = configuration.get(key);
-            if (value != null && value.getClass().equals(defaultValue.getClass())) {
-                return (T) value;
-            }
-        }
-        return defaultValue;
-    }
-
     /**
      * return configuration attached to the root accessory, e.g. groupItem.
      * Note: result will be casted to the type of the default value.
@@ -192,7 +182,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return configuration value
      */
     protected <T> T getAccessoryConfiguration(@NonNull String key, @NonNull T defaultValue) {
-        return getItemConfiguration(accessory, key, defaultValue);
+        return accessory.getConfiguration(key, defaultValue);
     }
 
     /**
@@ -209,8 +199,58 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     protected <T> T getAccessoryConfiguration(@NonNull HomekitCharacteristicType characteristicType,
             @NonNull String key, @NonNull T defaultValue) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
-        return characteristic.isPresent() ? getItemConfiguration(characteristic.get(), key, defaultValue)
-                : defaultValue;
+        return characteristic.isPresent() ? characteristic.get().getConfiguration(key, defaultValue) : defaultValue;
+    }
+
+    /**
+     * update mapping with values from item configuration.
+     * it checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
+     * replace the value.
+     * 
+     * @param characteristicType characteristicType to identify item
+     * @param map mapping to update
+     */
+    protected void updateMapping(HomekitCharacteristicType characteristicType, Map<?, String> map) {
+        getCharacteristic(characteristicType).ifPresent(c -> {
+            final Map<String, Object> configuration = c.getConfiguration();
+            if (configuration != null) {
+                map.replaceAll((k, current_value) -> {
+                    final Object new_value = configuration.get(current_value);
+                    return (new_value instanceof String) ? (String) new_value : current_value;
+                });
+            }
+        });
+    }
+
+    /**
+     * takes item state as value and retrieves the key for that value from mapping.
+     * e.g. used to map StringItem value to HomeKit Enum
+     * 
+     * @param characteristicType characteristicType to identify item
+     * @param mapping mapping
+     * @param defaultValue default value if nothing found in mapping
+     * @param <T> type of the result derived from
+     * @return key for the value
+     */
+    protected <T> T getKeyFromMapping(final HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+            final T defaultValue) {
+        final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
+        if (c.isPresent()) {
+            final State state = c.get().getItem().getState();
+            logger.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", characteristicType.getTag(),
+                    state, mapping);
+            if (state instanceof StringType) {
+                return mapping.entrySet().stream().filter(entry -> state.toString().equalsIgnoreCase(entry.getValue()))
+                        .findAny().map(Entry::getKey).orElseGet(() -> {
+                            logger.warn(
+                                    "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
+                                    state.toString(), characteristicType.getTag(), c.get().getName(), mapping.values(),
+                                    defaultValue);
+                            return defaultValue;
+                        });
+            }
+        }
+        return defaultValue;
     }
 
     protected void addCharacteristic(HomekitTaggedItem characteristic) {
@@ -218,15 +258,18 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     private <T extends Quantity<T>> double convertAndRound(double value, Unit<T> from, Unit<T> to) {
-      double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
-      return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
+        double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
+        return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
-    protected double convertToCelsius(double degrees){
-      return convertAndRound(degrees, getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
+    protected double convertToCelsius(double degrees) {
+        return convertAndRound(degrees,
+                getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
     }
 
-    protected double convertFromCelsius(double degrees){
-      return convertAndRound(degrees, getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT, ImperialUnits.FAHRENHEIT);
+    protected double convertFromCelsius(double degrees) {
+        return convertAndRound(degrees,
+                getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT,
+                ImperialUnits.FAHRENHEIT);
     }
 }

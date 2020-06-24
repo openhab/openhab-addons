@@ -36,6 +36,8 @@ import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
+import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -58,6 +60,7 @@ public class LightsTest {
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
+        gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
         gson = gsonBuilder.create();
     }
 
@@ -78,7 +81,7 @@ public class LightsTest {
 
         lightThingHandler.messageReceived("", lightMessage);
         Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_bri), eq(new PercentType("21")));
-        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_ct), eq(new DecimalType("87.03170028818444")));
+        Mockito.verify(thingHandlerCallback).stateUpdated(eq(channelUID_ct), eq(new DecimalType("2500")));
     }
 
     @Test

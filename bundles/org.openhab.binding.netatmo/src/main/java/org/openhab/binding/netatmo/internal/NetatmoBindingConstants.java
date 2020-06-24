@@ -227,6 +227,8 @@ public class NetatmoBindingConstants {
 
     public static final String CHANNEL_WELCOME_HOME_EVENT = "welcomeHomeEvent";
 
+    public static final String CHANNEL_CAMERA_EVENT = "cameraEvent";
+
     public static final String CHANNEL_WELCOME_PERSON_LASTSEEN = "welcomePersonLastSeen";
     public static final String CHANNEL_WELCOME_PERSON_ATHOME = "welcomePersonAtHome";
     public static final String CHANNEL_WELCOME_PERSON_AVATAR_URL = "welcomePersonAvatarUrl";
@@ -268,6 +270,10 @@ public class NetatmoBindingConstants {
     public static final String WELCOME_PICTURE_URL = "https://api.netatmo.com/api/getcamerapicture";
     public static final String WELCOME_PICTURE_IMAGEID = "image_id";
     public static final String WELCOME_PICTURE_KEY = "key";
+
+    // Presence outdoor camera specific channels
+    public static final String CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE = "cameraFloodlightAutoMode";
+    public static final String CHANNEL_CAMERA_FLOODLIGHT = "cameraFloodlight";
 
     // List of all supported physical devices and modules
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Stream

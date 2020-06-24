@@ -48,6 +48,8 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERY_SENSOR = new ThingTypeUID(BINDING_ID, "batterysensor");
     public static final ThingTypeUID THING_TYPE_CARBONMONOXIDE_SENSOR = new ThingTypeUID(BINDING_ID,
             "carbonmonoxidesensor");
+    // Special sensor - Thermostat
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     // lights
     public static final ThingTypeUID THING_TYPE_ONOFF_LIGHT = new ThingTypeUID(BINDING_ID, "onofflight");
@@ -88,6 +90,10 @@ public class BindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
     public static final String CHANNEL_CARBONMONOXIDE = "carbonmonoxide";
+    public static final String CHANNEL_HEATSETPOINT = "heatsetpoint";
+    public static final String CHANNEL_THERMOSTAT_MODE = "mode";
+    public static final String CHANNEL_TEMPERATURE_OFFSET = "offset";
+    public static final String CHANNEL_VALVE_POSITION = "valve";
 
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
@@ -101,4 +107,13 @@ public class BindingConstants {
     public static final String CONFIG_APIKEY = "apikey";
 
     public static final String UNIQUE_ID = "uid";
+
+    public static final String PROPERTY_CT_MIN = "ctmin";
+    public static final String PROPERTY_CT_MAX = "ctmax";
+
+    // CT value range according to ZCL Spec
+    public static final int ZCL_CT_UNDEFINED = 0; // 0x0000
+    public static final int ZCL_CT_MIN = 1;
+    public static final int ZCL_CT_MAX = 65279; // 0xFEFF
+    public static final int ZCL_CT_INVALID = 65535; // 0xFFFF
 }

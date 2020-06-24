@@ -27,7 +27,8 @@ These sensors are supported:
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 | Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxide`     |
 
-Additionally lights and window coverings (blinds) are supported:
+
+Additionally lights, window coverings (blinds) and thermostats are supported:
 
 | Device type                          | Resource Type                          | Thing type           |
 |--------------------------------------|----------------------------------------|----------------------|
@@ -36,6 +37,7 @@ Additionally lights and window coverings (blinds) are supported:
 | Color Light (w/o temperature)        | Color dimmable light                   | `colorlight`         |
 | Extended Color Light (w/temperature) | Extended color light                   | `extendedcolorlight` |
 | Blind / Window Covering              | Window covering device                 | `windowcovering`     |
+| Thermostat                           | ZHAThermostat                          | `thermostat`         |
 
 ## Discovery
 
@@ -118,7 +120,7 @@ The sensor devices support some of the following channels:
 | light_level     | Number                   |      R      | Current light level                                                                       | lightsensor                                  |
 | dark            | Switch                   |      R      | Light level is below the darkness threshold                                               | lightsensor, sometimes for presencesensor    |
 | daylight        | Switch                   |      R      | Light level is above the daylight threshold                                               | lightsensor                                  |
-| temperature     | Number:Temperature       |      R      | Current temperature in ˚C                                                                 | temperaturesensor, some Xiaomi sensors       |
+| temperature     | Number:Temperature       |      R      | Current temperature in ˚C                                                                 | temperaturesensor, some Xiaomi sensors,thermostat|
 | humidity        | Number:Dimensionless     |      R      | Current humidity in %                                                                     | humiditysensor                               |
 | pressure        | Number:Pressure          |      R      | Current pressure in hPa                                                                   | pressuresensor                               |
 | open            | Contact                  |      R      | Status of contacts: `OPEN`; `CLOSED`                                                      | openclosesensor                              |
@@ -133,6 +135,7 @@ The sensor devices support some of the following channels:
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
 | carbonmonoxide  | Switch                   |      R      | `ON` = carbon monoxide detected                                                           | carbonmonoxide                               |
 
+
 **NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
 The specification of your sensor depends on the deCONZ capabilities.
 Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
@@ -144,8 +147,12 @@ Other devices support
 | brightness        | Dimmer                   |     R/W     | Brightness of the light               | `dimmablelight`                               |                                 
 | switch            | Switch                   |     R/W     | State of a ON/OFF device              | `onofflight`                                  |
 | color             | Color                    |     R/W     | Color of an multi-color light         | `colorlight`, `extendedcolorlight`            |
-| color_temperature | Number                   |     R/W     | `0`->`100` represents cold -> warm    | `colortemperaturelight`, `extendedcolorlight` |
+| color_temperature | Number                   |     R/W     | Color temperature in kelvin. The value range is determined by each individual light          | `colortemperaturelight`, `extendedcolorlight` |
 | position          | Rollershutter            |     R/W     | Position of the blind                 | `windowcovering`                              |
+| heatsetpoint      | Number:Temperature       |     R/W     | Target Temperature in °C              | `thermostat`                                  |
+| valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                  |
+| mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                  |
+| offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                  |
 
 ### Trigger Channels
 
