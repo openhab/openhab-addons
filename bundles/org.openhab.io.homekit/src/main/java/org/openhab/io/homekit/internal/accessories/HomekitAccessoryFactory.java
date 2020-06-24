@@ -262,7 +262,7 @@ public class HomekitAccessoryFactory {
             MetadataRegistry metadataRegistry) {
         return item.getGroupNames().stream().flatMap(name -> {
             Item groupItem = itemRegistry.get(name);
-            if (groupItem instanceof GroupItem) {
+            if ((groupItem instanceof GroupItem) && ((GroupItem) groupItem).getBaseItem() == null) {
                 return Stream.of((GroupItem) groupItem);
             } else {
                 return Stream.empty();

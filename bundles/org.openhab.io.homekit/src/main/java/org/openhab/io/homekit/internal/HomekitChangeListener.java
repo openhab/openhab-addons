@@ -227,9 +227,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
                 .getAccessoryTypes(item, metadataRegistry);
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
-        logger.trace("Item {} has groups {}", item.getName(), groups);
-        if (!accessoryTypes.isEmpty() && groups.isEmpty()) { // it has homekit accessory type and is not part of bigger
-                                                             // homekit group item
+        if (!accessoryTypes.isEmpty() && groups.stream().noneMatch(g -> g.getBaseItem() != null)) {
+            // it has homekit accessory type and is not part of bigger homekit group item without baseItem, i.e. not
+            // Group:Switch
             logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
             final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
             accessoryTypes.stream().forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
