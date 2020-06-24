@@ -12,14 +12,14 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.OCCUPANCY_DETECTED_STATE;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -38,26 +38,23 @@ public class HomekitOccupancySensorImpl extends AbstractHomekitAccessoryImpl imp
     public HomekitOccupancySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.occupancySensedReader = new BooleanItemReader(
-                getItem(HomekitCharacteristicType.OCCUPANCY_DETECTED_STATE, GenericItem.class), OnOffType.ON,
-                OpenClosedType.OPEN);
+        occupancySensedReader = createBooleanReader(OCCUPANCY_DETECTED_STATE, OnOffType.ON, OpenClosedType.OPEN);
         getServices().add(new OccupancySensorService(this));
     }
 
     @Override
     public CompletableFuture<OccupancyDetectedEnum> getOccupancyDetected() {
-        return (this.occupancySensedReader.getValue() != null && this.occupancySensedReader.getValue())
-                ? CompletableFuture.completedFuture(OccupancyDetectedEnum.DETECTED)
-                : CompletableFuture.completedFuture(OccupancyDetectedEnum.NOT_DETECTED);
+        return CompletableFuture.completedFuture(
+                occupancySensedReader.getValue() ? OccupancyDetectedEnum.DETECTED : OccupancyDetectedEnum.NOT_DETECTED);
     }
 
     @Override
     public void subscribeOccupancyDetected(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.OCCUPANCY_DETECTED_STATE, callback);
+        subscribe(OCCUPANCY_DETECTED_STATE, callback);
     }
 
     @Override
     public void unsubscribeOccupancyDetected() {
-        unsubscribe(HomekitCharacteristicType.OCCUPANCY_DETECTED_STATE);
+        unsubscribe(OCCUPANCY_DETECTED_STATE);
     }
 }

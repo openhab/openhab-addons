@@ -33,7 +33,7 @@ import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitAccessoryUpdater {
-    private Logger logger = LoggerFactory.getLogger(HomekitAccessoryUpdater.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryUpdater.class);
     private final ConcurrentMap<ItemKey, Subscription> subscriptionsByName = new ConcurrentHashMap<>();
 
     public void subscribe(GenericItem item, HomekitCharacteristicChangeCallback callback) {
@@ -78,7 +78,7 @@ public class HomekitAccessoryUpdater {
     }
 
     @FunctionalInterface
-    private static interface Subscription extends StateChangeListener {
+    private interface Subscription extends StateChangeListener {
 
         @Override
         void stateChanged(Item item, State oldState, State newState);

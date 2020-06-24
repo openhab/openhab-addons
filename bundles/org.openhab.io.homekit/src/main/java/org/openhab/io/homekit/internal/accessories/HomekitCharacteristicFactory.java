@@ -151,7 +151,6 @@ public class HomekitCharacteristicFactory {
     // METHODS TO CREATE SINGLE CHARACTERISTIC FROM OH ITEM
 
     // supporting methods
-    @SuppressWarnings("null")
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(final HomekitTaggedItem item,
             T offEnum, T onEnum, T defaultEnum) {
         final State state = item.getItem().getState();
@@ -160,7 +159,7 @@ public class HomekitCharacteristicFactory {
         } else if (state instanceof OpenClosedType) {
             return CompletableFuture.completedFuture(state.equals(OpenClosedType.CLOSED) ? offEnum : onEnum);
         } else if (state instanceof DecimalType) {
-            return CompletableFuture.completedFuture(state.as(DecimalType.class).intValue() == 0 ? offEnum : onEnum);
+            return CompletableFuture.completedFuture(((DecimalType) state).intValue() == 0 ? offEnum : onEnum);
         } else if (state instanceof UnDefType) {
             return CompletableFuture.completedFuture(defaultEnum);
         }
@@ -189,14 +188,13 @@ public class HomekitCharacteristicFactory {
         }
     }
 
-    @SuppressWarnings("null")
     private static int getIntFromItem(final HomekitTaggedItem taggedItem) {
         int value = 0;
         final State state = taggedItem.getItem().getState();
         if (state instanceof PercentType) {
-            value = state.as(PercentType.class).intValue();
+            value = ((PercentType) state).intValue();
         } else if (state instanceof DecimalType) {
-            value = state.as(DecimalType.class).intValue();
+            value = ((DecimalType) state).intValue();
         } else if (state instanceof UnDefType) {
             logger.debug("Item state {} is UNDEF {}.", state, taggedItem.getName());
         } else {
@@ -237,6 +235,7 @@ public class HomekitCharacteristicFactory {
 
     private static Supplier<CompletableFuture<Double>> getDoubleSupplier(final HomekitTaggedItem taggedItem) {
         return () -> {
+            @Nullable
             final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
             return CompletableFuture.completedFuture(value != null ? value.doubleValue() : 0.0);
         };
@@ -317,7 +316,7 @@ public class HomekitCharacteristicFactory {
 
     private static HoldPositionCharacteristic createHoldPositionCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new HoldPositionCharacteristic(OnOffType::from);
+        return new HoldPositionCharacteristic(value -> ((SwitchItem) taggedItem.getItem()).send(OnOffType.from(value)));
     }
 
     private static CarbonMonoxideLevelCharacteristic createCarbonMonoxideLevelCharacteristic(
@@ -379,7 +378,7 @@ public class HomekitCharacteristicFactory {
     private static HueCharacteristic createHueCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new HueCharacteristic(() -> {
-            Double value = 0.0;
+            double value = 0.0;
             State state = taggedItem.getItem().getState();
             if (state instanceof HSBType) {
                 value = ((HSBType) state).getHue().doubleValue();
@@ -420,7 +419,7 @@ public class HomekitCharacteristicFactory {
     private static SaturationCharacteristic createSaturationCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new SaturationCharacteristic(() -> {
-            Double value = 0.0;
+            double value = 0.0;
             State state = taggedItem.getItem().getState();
             if (state instanceof HSBType) {
                 value = ((HSBType) state).getSaturation().doubleValue();
@@ -449,7 +448,9 @@ public class HomekitCharacteristicFactory {
     private static CurrentFanStateCharacteristic createCurrentFanStateCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new CurrentFanStateCharacteristic(() -> {
+            @Nullable
             final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            @Nullable
             CurrentFanStateEnum currentFanStateEnum = value != null ? CurrentFanStateEnum.fromCode(value.intValue())
                     : null;
             if (currentFanStateEnum == null) {
@@ -463,7 +464,9 @@ public class HomekitCharacteristicFactory {
     private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new TargetFanStateCharacteristic(() -> {
+            @Nullable
             final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            @Nullable
             TargetFanStateEnum targetFanStateEnum = value != null ? TargetFanStateEnum.fromCode(value.intValue())
                     : null;
             if (targetFanStateEnum == null) {
@@ -522,8 +525,9 @@ public class HomekitCharacteristicFactory {
             HomekitAccessoryUpdater updater) {
         return new SetDurationCharacteristic(() -> {
             int value = getIntFromItem(taggedItem);
-            if (value == 0) { // check for default duration
-                final Object duration = taggedItem.getConfiguration().get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
+            final @Nullable Map<String, Object> itemConfiguration = taggedItem.getConfiguration();
+            if ((value == 0) && (itemConfiguration != null)) { // check for default duration
+                final Object duration = itemConfiguration.get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
                 if (duration instanceof BigDecimal) {
                     value = ((BigDecimal) duration).intValue();
                     if (taggedItem.getItem() instanceof NumberItem) {

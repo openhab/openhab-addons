@@ -12,12 +12,14 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_DOOR_STATE;
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.OBSTRUCTION_STATUS;
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_DOOR_STATE;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
@@ -25,7 +27,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -43,24 +44,25 @@ import io.github.hapjava.services.impl.GarageDoorOpenerService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl implements GarageDoorOpenerAccessory {
-    private Logger logger = LoggerFactory.getLogger(HomekitGarageDoorOpenerImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitGarageDoorOpenerImpl.class);
+    private final BooleanItemReader obstructionReader;
 
     public HomekitGarageDoorOpenerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.getServices().add(new GarageDoorOpenerService(this));
+        obstructionReader = createBooleanReader(OBSTRUCTION_STATUS, OnOffType.ON, OpenClosedType.OPEN);
+        getServices().add(new GarageDoorOpenerService(this));
     }
 
     @Override
     public CompletableFuture<CurrentDoorStateEnum> getCurrentDoorState() {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
-                HomekitCharacteristicType.CURRENT_DOOR_STATE);
+        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(CURRENT_DOOR_STATE);
         final HomekitSettings settings = getSettings();
         String stringValue = settings.doorCurrentStateClosed;
         if (characteristic.isPresent()) {
             stringValue = characteristic.get().getItem().getState().toString();
         } else {
-            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.CURRENT_DOOR_STATE);
+            logger.warn("Missing mandatory characteristic {}", CURRENT_DOOR_STATE);
         }
         CurrentDoorStateEnum mode;
 
@@ -75,7 +77,7 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
         } else if (stringValue.equalsIgnoreCase(settings.doorCurrentStateStopped)) {
             mode = CurrentDoorStateEnum.SOPPED;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-            logger.warn("Current door state not available. Relaying value of CLOSED to Homekit");
+            logger.warn("Current door state not available. Relaying value of CLOSED to HomeKit");
             mode = CurrentDoorStateEnum.CLOSED;
         } else {
             logger.warn("Unrecognized current door state: {}. Expected {}, {}, {}, {} or {} strings in value.",
@@ -88,14 +90,13 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
 
     @Override
     public CompletableFuture<TargetDoorStateEnum> getTargetDoorState() {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
-                HomekitCharacteristicType.TARGET_DOOR_STATE);
+        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(TARGET_DOOR_STATE);
         Item item;
 
         if (characteristic.isPresent()) {
             item = characteristic.get().getItem();
         } else {
-            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_DOOR_STATE);
+            logger.warn("Missing mandatory characteristic {}", TARGET_DOOR_STATE);
             return CompletableFuture.completedFuture(TargetDoorStateEnum.CLOSED);
         }
         TargetDoorStateEnum mode;
@@ -109,7 +110,6 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
                 mode = TargetDoorStateEnum.CLOSED;
             } else if (stringValue.equalsIgnoreCase(settings.doorTargetStateOpen)) {
                 mode = TargetDoorStateEnum.OPEN;
-                ;
             } else {
                 logger.warn(
                         "Unsupported value {} for {}. Only {} and {} supported. Check HomeKit settings if you want to change the mapping",
@@ -126,23 +126,17 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
 
     @Override
     public CompletableFuture<Boolean> getObstructionDetected() {
-        final @Nullable Item item = getItem(HomekitCharacteristicType.OBSTRUCTION_STATUS, GenericItem.class);
-        if (item == null) {
-            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.OBSTRUCTION_STATUS);
-        }
-        return CompletableFuture
-                .completedFuture(item.getState() == OnOffType.ON || item.getState() == OpenClosedType.OPEN);
+        return CompletableFuture.completedFuture(obstructionReader.getValue());
     }
 
     @Override
     public CompletableFuture<Void> setTargetDoorState(final TargetDoorStateEnum targetDoorStateEnum) {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
-                HomekitCharacteristicType.TARGET_DOOR_STATE);
+        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(TARGET_DOOR_STATE);
         Item item;
         if (characteristic.isPresent()) {
             item = characteristic.get().getItem();
         } else {
-            logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_DOOR_STATE);
+            logger.warn("Missing mandatory characteristic {}", TARGET_DOOR_STATE);
             return CompletableFuture.completedFuture(null);
         }
 
@@ -162,31 +156,31 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
 
     @Override
     public void subscribeCurrentDoorState(final HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.CURRENT_DOOR_STATE, callback);
+        subscribe(CURRENT_DOOR_STATE, callback);
     }
 
     @Override
     public void subscribeTargetDoorState(final HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.TARGET_DOOR_STATE, callback);
+        subscribe(TARGET_DOOR_STATE, callback);
     }
 
     @Override
     public void subscribeObstructionDetected(final HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.OBSTRUCTION_STATUS, callback);
+        subscribe(OBSTRUCTION_STATUS, callback);
     }
 
     @Override
     public void unsubscribeCurrentDoorState() {
-        unsubscribe(HomekitCharacteristicType.CURRENT_DOOR_STATE);
+        unsubscribe(CURRENT_DOOR_STATE);
     }
 
     @Override
     public void unsubscribeTargetDoorState() {
-        unsubscribe(HomekitCharacteristicType.TARGET_DOOR_STATE);
+        unsubscribe(TARGET_DOOR_STATE);
     }
 
     @Override
     public void unsubscribeObstructionDetected() {
-        unsubscribe(HomekitCharacteristicType.OBSTRUCTION_STATUS);
+        unsubscribe(OBSTRUCTION_STATUS);
     }
 }

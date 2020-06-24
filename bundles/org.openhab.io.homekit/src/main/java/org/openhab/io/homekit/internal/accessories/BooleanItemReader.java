@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ContactItem;
@@ -30,11 +31,11 @@ import org.slf4j.LoggerFactory;
  * @author Tim Harper - Initial contribution
  *
  */
+@NonNullByDefault
 public class BooleanItemReader {
     private final Item item;
     private final OnOffType trueOnOffValue;
     private final OpenClosedType trueOpenClosedValue;
-
     private final Logger logger = LoggerFactory.getLogger(BooleanItemReader.class);
 
     /**
@@ -54,7 +55,7 @@ public class BooleanItemReader {
     }
 
     Boolean getValue() {
-        State state = item.getState();
+        final State state = item.getState();
         if (state instanceof OnOffType) {
             return state.equals(trueOnOffValue);
         } else if (state instanceof OpenClosedType) {
@@ -62,7 +63,8 @@ public class BooleanItemReader {
         } else if (state instanceof StringType) {
             return state.toString().equalsIgnoreCase("Open") || state.toString().equalsIgnoreCase("Opened");
         } else {
-            return null;
+            logger.debug("Unexpected item state,  returning false. Item {}, State {}", item.getName(), state);
+            return false;
         }
     }
 

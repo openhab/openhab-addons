@@ -211,6 +211,7 @@ public class HomekitAccessoryFactory {
     public static List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> getAccessoryTypes(Item item,
             MetadataRegistry metadataRegistry) {
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessories = new ArrayList<>();
+        @Nullable
         Metadata metadata = metadataRegistry.get(new MetadataKey(METADATA_KEY, item.getUID()));
         boolean legacyMode = metadata == null;
         String[] tags = !legacyMode ? metadata.getValue().split(",") : item.getTags().toArray(new String[0]); // fallback
@@ -246,6 +247,7 @@ public class HomekitAccessoryFactory {
     }
 
     public static @Nullable Map<String, Object> getItemConfiguration(Item item, MetadataRegistry metadataRegistry) {
+        @Nullable
         Metadata metadata = metadataRegistry.get(new MetadataKey(METADATA_KEY, item.getUID()));
         return metadata != null ? metadata.getConfiguration() : null;
     }
@@ -261,6 +263,7 @@ public class HomekitAccessoryFactory {
     public static List<GroupItem> getAccessoryGroups(Item item, ItemRegistry itemRegistry,
             MetadataRegistry metadataRegistry) {
         return item.getGroupNames().stream().flatMap(name -> {
+            @Nullable
             Item groupItem = itemRegistry.get(name);
             if ((groupItem instanceof GroupItem) && ((GroupItem) groupItem).getBaseItem() == null) {
                 return Stream.of((GroupItem) groupItem);

@@ -13,11 +13,11 @@
 package org.openhab.io.homekit.internal.accessories;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
-import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -42,24 +42,25 @@ import io.github.hapjava.services.impl.LockMechanismService;
 public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements LockMechanismAccessory {
 
     public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         getServices().add(new LockMechanismService(this));
     }
 
     @Override
     public CompletableFuture<LockCurrentStateEnum> getLockCurrentState() {
-        @Nullable
-
-        final State state = getItem(HomekitCharacteristicType.LOCK_CURRENT_STATE, GenericItem.class).getState();
-        if (state instanceof DecimalType) {
-            return CompletableFuture.completedFuture(LockCurrentStateEnum.fromCode(
-                state.as(DecimalType.class).intValue()));
-        } else if (state instanceof OnOffType) {
-            return CompletableFuture.completedFuture(
-                state == OnOffType.ON ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED);
+        final Optional<GenericItem> item = getItem(HomekitCharacteristicType.LOCK_CURRENT_STATE, GenericItem.class);
+        LockCurrentStateEnum lockState = LockCurrentStateEnum.UNKNOWN;
+        if (item.isPresent()) {
+            final State state = item.get().getState();
+            if (state instanceof DecimalType) {
+                lockState=LockCurrentStateEnum.fromCode(state.as(DecimalType.class).intValue());
+            }
+            else if (state instanceof OnOffType) {
+                lockState = state == OnOffType.ON ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED;
+            }
         }
-        return CompletableFuture.completedFuture(LockCurrentStateEnum.UNKNOWN);
+        return CompletableFuture.completedFuture(lockState);
     }
 
     @Override
@@ -71,31 +72,30 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
                     state == OnOffType.ON ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);
         }
         return CompletableFuture.completedFuture(LockTargetStateEnum.UNSECURED);
-        // Apple HAP specification has onyl SECURED and UNSECURED values for lock target state.
+        // Apple HAP specification has only SECURED and UNSECURED values for lock target state.
         // unknown does not supported for target state.
     }
 
     @Override
     public CompletableFuture<Void> setLockTargetState(final LockTargetStateEnum state) {
-        @Nullable
-        Item item = getItem(HomekitCharacteristicType.LOCK_TARGET_STATE, SwitchItem.class);
-        if (item != null)
+        getItem(HomekitCharacteristicType.LOCK_TARGET_STATE, SwitchItem.class).ifPresent(item -> {
             switch (state) {
                 case SECURED:
                     // Close the door
                     if (item instanceof SwitchItem) {
-                        ((SwitchItem) item).send(OnOffType.ON);
+                        item.send(OnOffType.ON);
                     }
                     break;
                 case UNSECURED:
                     // Open the door
                     if (item instanceof SwitchItem) {
-                        ((SwitchItem) item).send(OnOffType.OFF);
+                        item.send(OnOffType.OFF);
                     }
                     break;
                 default:
                     break;
             }
+        });
         return CompletableFuture.completedFuture(null);
     }
 

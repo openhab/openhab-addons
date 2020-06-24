@@ -41,7 +41,8 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private byte[] privateKey;
     private final String pin;
 
-    public HomekitAuthInfoImpl(final Storage storage, final String pin) throws InvalidAlgorithmParameterException {
+    public HomekitAuthInfoImpl(final Storage<String> storage, final String pin)
+            throws InvalidAlgorithmParameterException {
         this.storage = storage;
         this.pin = pin;
         initializeStorage();
@@ -90,7 +91,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     @Override
     public boolean hasUser() {
         Collection<String> keys = storage.getKeys();
-        return keys.stream().filter(k -> isUserKey(k)).count() > 0;
+        return keys.stream().anyMatch(this::isUserKey);
     }
 
     public void clear() {

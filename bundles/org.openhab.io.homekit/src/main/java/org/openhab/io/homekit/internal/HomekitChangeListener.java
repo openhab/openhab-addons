@@ -16,14 +16,12 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
-
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -36,7 +34,6 @@ import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.homekit.internal.accessories.HomekitAccessoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.server.impl.HomekitRoot;
 
@@ -58,7 +55,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private HomekitSettings settings;
     private int lastAccessoryCount;
 
-    private Set<String> pendingUpdates = new HashSet<>();
+    private final Set<String> pendingUpdates = new HashSet<>();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -83,7 +80,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                 Clock.systemUTC(), this::applyUpdates);
 
         itemRegistry.addRegistryChangeListener(this);
-        itemRegistry.getItems().stream().forEach(this::createRootAccessories);
+        itemRegistry.getItems().forEach(this::createRootAccessories);
         initialiseRevision();
         logger.info("Created {} HomeKit items.", accessoryRegistry.getAllAccessories().size());
     }
@@ -159,10 +156,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     private synchronized void applyUpdates() {
         logger.trace("apply updates");
-        Iterator<String> iter = pendingUpdates.iterator();
 
-        while (iter.hasNext()) {
-            String name = iter.next();
+        for (final String name : pendingUpdates) {
             accessoryRegistry.remove(name);
             logger.trace(" add items {}", name);
             getItemOptional(name).ifPresent(this::createRootAccessories);
@@ -220,7 +215,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      * creates one or more HomeKit items for given openhab item.
      * one openhab item can linked to several HomeKit accessories or characteristics.
      * 
-     * @param item
+     * @param item openhab item
      */
     private void createRootAccessories(Item item) {
         logger.trace("create root accessory {}", item.getLabel());
@@ -232,7 +227,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             // Group:Switch
             logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
             final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
-            accessoryTypes.stream().forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
+            accessoryTypes.forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
                     rootAccessory.getKey(), HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
         }
     }

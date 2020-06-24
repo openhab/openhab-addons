@@ -33,7 +33,7 @@ public interface Homekit {
      *
      * @throws IOException
      */
-    public void refreshAuthInfo() throws IOException;
+    void refreshAuthInfo() throws IOException;
 
     /**
      * HomeKit requests normally require authentication via the pairing mechanism. Use this
@@ -52,5 +52,5 @@ public interface Homekit {
     /**
      * clear all pairings with HomeKit clients
      */
-    public void clearHomekitPairings();
+    void clearHomekitPairings();
 }

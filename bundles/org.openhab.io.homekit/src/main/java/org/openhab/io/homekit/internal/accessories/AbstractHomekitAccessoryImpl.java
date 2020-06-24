@@ -29,6 +29,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -59,7 +61,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final List<Service> services;
 
     public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> characteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         this.characteristics = characteristics;
         this.accessory = accessory;
         this.updater = updater;
@@ -146,7 +148,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         if (taggedItem.isPresent()) {
             final State state = taggedItem.get().getItem().getStateAs(type);
             if (state != null) {
-                return (T) state.as(type);
+                return state.as(type);
             }
         }
         logger.debug("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
@@ -155,20 +157,21 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     @SuppressWarnings("unchecked")
-    protected @Nullable <T extends Item> T getItem(HomekitCharacteristicType characteristic, Class<T> type) {
+    protected <T extends Item> Optional<T> getItem(HomekitCharacteristicType characteristic, Class<T> type) {
         final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(characteristic);
         if (taggedItem.isPresent()) {
-            if (type.isInstance(taggedItem.get().getItem()))
-                return (T) taggedItem.get().getItem();
-            else
+            if (type.isInstance(taggedItem.get().getItem())) {
+                return Optional.of((T) taggedItem.get().getItem());
+            } else {
                 logger.warn("Unsupported item type for characteristic {} at accessory {}. Expected {}, got {}",
-                        characteristic, accessory.getItem().getLabel(), type, taggedItem.get().getItem().getClass());
+                        characteristic, accessory.getItem().getName(), type, taggedItem.get().getItem().getClass());
+            }
         } else {
             logger.warn("Mandatory characteristic {} not found at accessory {}. ", characteristic,
-                    accessory.getItem().getLabel());
+                    accessory.getItem().getName());
 
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -198,8 +201,8 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      */
     protected <T> T getAccessoryConfiguration(@NonNull HomekitCharacteristicType characteristicType,
             @NonNull String key, @NonNull T defaultValue) {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
-        return characteristic.isPresent() ? characteristic.get().getConfiguration(key, defaultValue) : defaultValue;
+        return getCharacteristic(characteristicType)
+                .map(homekitTaggedItem -> homekitTaggedItem.getConfiguration(key, defaultValue)).orElse(defaultValue);
     }
 
     /**
@@ -253,7 +256,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return defaultValue;
     }
 
-    protected void addCharacteristic(HomekitTaggedItem characteristic) {
+    protected void addCharacteristic(@NonNull final HomekitTaggedItem characteristic) {
         characteristics.add(characteristic);
     }
 
@@ -271,5 +274,14 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return convertAndRound(degrees,
                 getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT,
                 ImperialUnits.FAHRENHEIT);
+    }
+
+    protected @NonNull BooleanItemReader createBooleanReader(
+            @NonNull final HomekitCharacteristicType characteristicType, @NonNull final OnOffType trueOnOffValue,
+            @NonNull final OpenClosedType trueOpenClosedValue) throws IncompleteAccessoryException {
+        return new BooleanItemReader(
+                getItem(characteristicType, GenericItem.class)
+                        .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),
+                trueOnOffValue, trueOpenClosedValue);
     }
 }

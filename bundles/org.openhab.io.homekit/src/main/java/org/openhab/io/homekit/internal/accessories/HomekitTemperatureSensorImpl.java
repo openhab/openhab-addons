@@ -36,7 +36,7 @@ import io.github.hapjava.services.impl.TemperatureSensorService;
 class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implements TemperatureSensorAccessory {
 
     public HomekitTemperatureSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         getServices().add(new TemperatureSensorService(this));
     }

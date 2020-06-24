@@ -35,7 +35,7 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl impl
     private final static String CONFIG_MULTIPLICATOR = "homekitMultiplicator";
 
     public HomekitHumiditySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         getServices().add(new HumiditySensorService(this));
     }

@@ -48,10 +48,10 @@ import io.github.hapjava.services.impl.ThermostatService;
  * @author Andy Lintner - Initial contribution
  */
 class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements ThermostatAccessory {
-    private Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
 
     public HomekitThermostatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         this.getServices().add(new ThermostatService(this));
     }
