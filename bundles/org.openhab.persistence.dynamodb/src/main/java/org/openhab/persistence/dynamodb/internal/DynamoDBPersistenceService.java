@@ -223,7 +223,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
                 public void run() {
                     try {
                         DynamoDBPersistenceService.this.flushBufferedData();
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                         // We want to catch all unexpected exceptions since all unhandled exceptions make
                         // ScheduledExecutorService halt the regular running of the task.
                         // It is better to print out the exception, and try again
