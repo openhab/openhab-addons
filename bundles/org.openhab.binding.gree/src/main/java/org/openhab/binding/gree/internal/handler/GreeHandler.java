@@ -59,11 +59,11 @@ import org.slf4j.LoggerFactory;
 public class GreeHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GreeHandler.class);
     private final GreeTranslationProvider messages;
+    private final GreeDeviceFinder deviceFinder;
+    private final String thingId;
     private GreeConfiguration config = new GreeConfiguration();
-    private GreeDeviceFinder deviceFinder = new GreeDeviceFinder();
     private GreeAirDevice device = new GreeAirDevice();
     private Optional<DatagramSocket> clientSocket = Optional.empty();
-    private final String thingId;
     private boolean forceRefresh = false;
 
     private @Nullable ScheduledFuture<?> refreshTask;
@@ -73,8 +73,7 @@ public class GreeHandler extends BaseThingHandler {
         super(thing);
         this.messages = messages;
         this.deviceFinder = deviceFinder;
-        String label = getThing().getLabel();
-        this.thingId = label != null ? label : getThing().getUID().getId();
+        this.thingId = getThing().getUID().getId();
     }
 
     @Override
@@ -528,13 +527,11 @@ public class GreeHandler extends BaseThingHandler {
         if (refreshTask == null) {
             return;
         }
-        synchronized (refreshTask) {
-            ScheduledFuture<?> task = refreshTask;
-            if ((task != null) && !task.isCancelled()) {
-                task.cancel(true);
-            }
-            refreshTask = null;
+        ScheduledFuture<?> task = refreshTask;
+        if (task != null) {
+            task.cancel(true);
         }
+        refreshTask = null;
     }
 
     @Override

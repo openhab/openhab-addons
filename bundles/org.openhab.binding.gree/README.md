@@ -32,7 +32,7 @@ Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.thi
 
 The Air Conditioner's IP address is mandatory, all other parameters are optional. 
 If the broadcast is not set (default) it will be derived from openHAB's network setting (PaperUI:Configuration:System:Network Settings). 
-Change this only for good reasons.
+Only change this if you have a good reason to.
 
 ## Channels
 
@@ -61,7 +61,7 @@ The following channels are supported for fans:
 |               |           | Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5, Down : 6                                     |
 
 
-When changing the mode the air conditioner will be turned on (unless is off is selected).
+When changing mode, the air conditioner will be turned on unless "off" is selected.
 
 ## Full Example
 
@@ -121,7 +121,7 @@ Frame label="Options"
 
 **Example**
 
-This example shows who to make the GREE Air Conditioner controllable by Google HA (A/C mode + temperature)
+This example shows how to make a GREE Air Conditioner controllable by Google HA (A/C mode + temperature)
 
 **Items**
 
@@ -143,6 +143,6 @@ when
 then        
         if(GreeAirConditioner_Mode.state == "cool" ) {
             logInfo("A/C", "Cooling has be turned on")
-         } 
+        } 
 end
 ```
