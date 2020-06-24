@@ -100,10 +100,9 @@
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
     <module>org.openhab.binding.gardena</module>
-    <module>org.openhab.binding.goecharger</module>
-    <module>org.openhab.binding.gree</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
+    <module>org.openhab.binding.goecharger</module>
     <module>org.openhab.binding.gree</module>
     <module>org.openhab.binding.groheondus</module>
     <module>org.openhab.binding.harmonyhub</module>
