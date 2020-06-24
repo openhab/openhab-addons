@@ -154,7 +154,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
         }
 
         protected abstract void handlePolledData(ModbusRegisterArray registers);
-
     }
 
     /**
@@ -216,7 +215,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Instances of this handler should get a reference to the modbus manager
      *
-     * @param thing         the thing to handle
+     * @param thing the thing to handle
      * @param modbusManager the modbus manager
      */
     public StiebelEltronHandler(Thing thing, ModbusManager modbusManager) {
@@ -225,7 +224,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     }
 
     /**
-     * @param address    address of the value to be written on the modbus
+     * @param address address of the value to be written on the modbus
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
@@ -412,7 +411,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemInformationData(registers);
                 }
-
             };
             poller.registerPollTask(500, 36, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
             systemInformationPoller = poller;
@@ -423,7 +421,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledEnergyData(registers);
                 }
-
             };
             poller.registerPollTask(3500, 16, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
             energyPoller = poller;
@@ -434,7 +431,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemStateData(registers);
                 }
-
             };
             poller.registerPollTask(2500, 2, ModbusReadFunctionCode.READ_INPUT_REGISTERS);
             systemStatePoller = poller;
@@ -445,7 +441,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 protected void handlePolledData(ModbusRegisterArray registers) {
                     handlePolledSystemParameterData(registers);
                 }
-
             };
             poller.registerPollTask(1500, 11, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
             systemParameterPoller = poller;
@@ -552,7 +547,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Returns high value * 1000 + low value
      *
      * @param high the high value
-     * @param low  the low valze
+     * @param low the low valze
      * @return the scaled value as a DecimalType
      */
     protected State getEnergyQuantity(int high, int low) {
@@ -745,5 +740,4 @@ public class StiebelEltronHandler extends BaseThingHandler {
     ChannelUID channelUID(String group, String id) {
         return new ChannelUID(getThing().getUID(), group, id);
     }
-
 }

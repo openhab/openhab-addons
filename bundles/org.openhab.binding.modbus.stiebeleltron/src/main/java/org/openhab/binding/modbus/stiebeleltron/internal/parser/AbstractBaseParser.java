@@ -124,5 +124,4 @@ public class AbstractBaseParser {
     protected Long extractUnit32(ModbusRegisterArray raw, int index, long def) {
         return extractOptionalUInt32(raw, index).orElse(def);
     }
-
 }

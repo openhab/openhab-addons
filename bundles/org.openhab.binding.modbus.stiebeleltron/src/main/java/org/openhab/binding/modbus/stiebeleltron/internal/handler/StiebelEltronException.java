@@ -28,5 +28,5 @@ public class StiebelEltronException extends Exception {
 
     public StiebelEltronException(String message) {
         super(message);
-    }    
+    }
 }

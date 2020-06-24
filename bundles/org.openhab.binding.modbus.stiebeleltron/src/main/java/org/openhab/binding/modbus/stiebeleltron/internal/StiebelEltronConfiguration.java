@@ -43,5 +43,4 @@ public class StiebelEltronConfiguration {
     public void setMaxTries(int maxTries) {
         this.maxTries = maxTries;
     }
-
 }
