@@ -52,9 +52,12 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-* On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Monoprice amplifier):
+* On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load. 
+  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+* Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
+  See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/)
+  (take care, the baud rate is specific to the Monoprice amplifier):
 
 ```
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
@@ -64,23 +67,23 @@ Some notes:
 
 The following channels are available:
 
-| Channel ID                    | Item Type            | Description                                                                                                   |
-|-------------------------------|----------------------|---------------------------------------------------------------------------------------------------------------|
-| all:allon                     | Switch               | Turn all zones on simultaneously (except those specified by the ignoreZones config option)                    |
-| all:alloff                    | Switch               | Turn all zones off simultaneously (except those specified by the ignoreZones config option)                   |
-| all:allsource                 | Number               | Select the source input for all zones simultaneously (1-6) (except ignoreZones)                               |
-| all:allvolume                 | Dimmer               | Control the volume for all zones simultaneously (0-100%) [translates to 0-38] (except ignoreZones)            |
-| all:allmute                   | Switch               | Mute or unmute all zones simultaneously (except ignoreZones)                                                  |
-| zoneN#power (where N= 1-18)   | Switch               | Turn the power for a zone on or off                                                                           |
-| zoneN#source (where N= 1-18)  | Number               | Select the source input for a zone (1-6)                                                                      |
-| zoneN#volume (where N= 1-18)  | Dimmer               | Control the volume for a zone (0-100%) [translates to 0-38]                                                   |
-| zoneN#mute (where N= 1-18)    | Switch               | Mute or unmute a zone                                                                                         |
-| zoneN#treble (where N= 1-18)  | Number               | Adjust the treble control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                        |
-| zoneN#bass (where N= 1-18)    | Number               | Adjust the bass control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                          |
-| zoneN#balance (where N= 1-18) | Number               | Adjust the balance control for a zone (-10 to 10) -10=left, 0=center, 10=right                                |
-| zoneN#dnd (where N= 1-18)     | Switch               | Turn on or off the Do Not Disturb for the zone (for when the controller's external page trigger is activated) |
-| zoneN#page (where N= 1-18)    | Contact              | Indicates if the page input is activated for the zone                                                         |
-| zoneN#keypad (where N= 1-18)  | Contact              | Indicates if the physical keypad is attached to a zone                                                        |
+| Channel ID                    | Item Type | Description                                                                                                   |
+|-------------------------------|-----------|---------------------------------------------------------------------------------------------------------------|
+| all:allon                     | Switch    | Turn all zones on simultaneously (except those specified by the ignoreZones config option)                    |
+| all:alloff                    | Switch    | Turn all zones off simultaneously (except those specified by the ignoreZones config option)                   |
+| all:allsource                 | Number    | Select the source input for all zones simultaneously (1-6) (except ignoreZones)                               |
+| all:allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to 0-38] (except ignoreZones)            |
+| all:allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                  |
+| zoneN#power (where N= 1-18)   | Switch    | Turn the power for a zone on or off                                                                           |
+| zoneN#source (where N= 1-18)  | Number    | Select the source input for a zone (1-6)                                                                      |
+| zoneN#volume (where N= 1-18)  | Dimmer    | Control the volume for a zone (0-100%) [translates to 0-38]                                                   |
+| zoneN#mute (where N= 1-18)    | Switch    | Mute or unmute a zone                                                                                         |
+| zoneN#treble (where N= 1-18)  | Number    | Adjust the treble control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                        |
+| zoneN#bass (where N= 1-18)    | Number    | Adjust the bass control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                          |
+| zoneN#balance (where N= 1-18) | Number    | Adjust the balance control for a zone (-10 to 10) -10=left, 0=center, 10=right                                |
+| zoneN#dnd (where N= 1-18)     | Switch    | Turn on or off the Do Not Disturb for the zone (for when the controller's external page trigger is activated) |
+| zoneN#page (where N= 1-18)    | Contact   | Indicates if the page input is activated for the zone                                                         |
+| zoneN#keypad (where N= 1-18)  | Contact   | Indicates if the physical keypad is attached to a zone                                                        |
 
 ## Full Example
 
