@@ -47,7 +47,7 @@ import io.github.hapjava.services.impl.SecuritySystemService;
  */
 public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl implements SecuritySystemAccessory {
     private final Logger logger = LoggerFactory.getLogger(HomekitSecuritySystemImpl.class);
-    private final Map<CurrentSecuritySystemStateEnum, String> currentStateMapping = new EnumMap(
+    private final Map<CurrentSecuritySystemStateEnum, String> currentStateMapping = new EnumMap<CurrentSecuritySystemStateEnum, String>(
             CurrentSecuritySystemStateEnum.class) {
         {
             put(CurrentSecuritySystemStateEnum.DISARMED, "DISARMED");
@@ -55,10 +55,9 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
             put(CurrentSecuritySystemStateEnum.STAY_ARM, "STAY_ARM");
             put(CurrentSecuritySystemStateEnum.NIGHT_ARM, "NIGHT_ARM");
             put(CurrentSecuritySystemStateEnum.TRIGGERED, "TRIGGERED");
-
         }
     };
-    private final Map<TargetSecuritySystemStateEnum, String> targetStateMapping = new EnumMap(
+    private final Map<TargetSecuritySystemStateEnum, String> targetStateMapping = new EnumMap<TargetSecuritySystemStateEnum, String>(
             TargetSecuritySystemStateEnum.class) {
         {
             put(TargetSecuritySystemStateEnum.DISARM, "DISARM");
