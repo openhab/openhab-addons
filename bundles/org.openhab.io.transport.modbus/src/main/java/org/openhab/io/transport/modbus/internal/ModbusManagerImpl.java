@@ -486,7 +486,7 @@ public class ModbusManagerImpl implements ModbusManager {
 
     private <R> void invokeCallbackWithError(R request, ModbusCallback callback, Exception error) {
         try {
-            logger.trace("Calling write response callback {} for request {}. Error was {} {}", callback, request,
+            logger.trace("Calling error response callback {} for request {}. Error was {} {}", callback, request,
                     error.getClass().getName(), error.getMessage());
             if (request instanceof ModbusReadRequestBlueprint) {
                 ((ModbusReadCallback) callback)
