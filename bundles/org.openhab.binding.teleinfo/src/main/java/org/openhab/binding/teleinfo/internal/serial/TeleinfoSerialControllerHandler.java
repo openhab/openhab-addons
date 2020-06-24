@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -149,7 +148,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
         config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
 
-        if (config.serialport == null || StringUtils.isBlank(config.serialport)) {
+        if (config.serialport == null || config.serialport.isBlank()) {
             logger.error("Teleinfo port is not set.");
             return;
         }
