@@ -23,8 +23,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -53,8 +53,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.kaleidescape")
 public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeDiscoveryService.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
-            Arrays.asList(THING_TYPE_PLAYER_ZONE));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER_ZONE);
 
     @Activate
     public KaleidescapeDiscoveryService() {

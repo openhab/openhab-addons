@@ -53,7 +53,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
 
     @Override
     public synchronized void open() throws KaleidescapeException {
-        logger.info("Opening IP connection on IP {} port {}", this.address, this.port);
+        logger.debug("Opening IP connection on IP {} port {}", this.address, this.port);
         try {
             Socket clientSocket = new Socket(this.address, this.port);
             clientSocket.setSoTimeout(100);
@@ -61,7 +61,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new KaleidescapeReaderThread(this);
+            Thread thread = new KaleidescapeReaderThread(this, this.address + "." + this.port);
             setReaderThread(thread);
             thread.start();
 

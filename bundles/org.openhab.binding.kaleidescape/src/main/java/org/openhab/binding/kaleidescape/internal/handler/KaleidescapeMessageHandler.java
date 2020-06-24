@@ -62,21 +62,18 @@ public enum KaleidescapeMessageHandler {
         }
     },
     DEVICE_POWER_STATE {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 1:1
+        // power_state, zone 1 state, zone n state
+        private final Pattern p = Pattern.compile("^(\\d{1}):(.*)$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
-            // example: 1:1
-            // power_state, zone 1 state, zone n state
-            final Pattern p = Pattern.compile("^(\\d{1}):(.*)$");
-
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                if (("1").equals(matcher.group(1))) {
-                    handler.updateChannel(KaleidescapeBindingConstants.POWER, OnOffType.ON);
-                } else if (("0").equals(matcher.group(1))) {
-                    handler.updateChannel(KaleidescapeBindingConstants.POWER, OnOffType.OFF);
-                }
+                handler.updateChannel(KaleidescapeBindingConstants.POWER,
+                        ("1").equals(matcher.group(1)) ? OnOffType.ON : OnOffType.OFF);
             } else {
                 logger.debug("DEVICE_POWER_STATE - no match on message: {}", message);
             }
@@ -90,15 +87,15 @@ public enum KaleidescapeMessageHandler {
         }
     },
     PLAY_STATUS {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 0:0:00:00000:00000:000:00000:00000
+        // mode, speed, title_num, title_length, title_loc, chapter_num, chapter_length, chapter_loc
+        private final Pattern p = Pattern
+                .compile("^(\\d{1}):(\\d{1}):(\\d{2}):(\\d{5}):(\\d{5}):(\\d{3}):(\\d{5}):(\\d{5})$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
-            // example: 0:0:00:00000:00000:000:00000:00000
-            // mode, speed, title_num, title_length, title_loc, chapter_num, chapter_length, chapter_loc
-            final Pattern p = Pattern
-                    .compile("^(\\d{1}):(\\d{1}):(\\d{2}):(\\d{5}):(\\d{5}):(\\d{3}):(\\d{5}):(\\d{5})$");
-
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.PLAY_MODE,
@@ -143,15 +140,15 @@ public enum KaleidescapeMessageHandler {
         }
     },
     VIDEO_MODE {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 00:00:00
+        // composite, component, hdmi
+        private final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2})$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
             handler.updateChannel(KaleidescapeBindingConstants.VIDEO_MODE, new StringType(message));
-
-            // example: 00:00:00
-            // composite, component, hdmi
-            final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2})$");
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
@@ -169,15 +166,15 @@ public enum KaleidescapeMessageHandler {
         }
     },
     VIDEO_COLOR {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 02:01:24:01
+        // eotf, color_space, color_depth, color_sampling
+        private final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2}):(\\d{2})$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
             handler.updateChannel(KaleidescapeBindingConstants.VIDEO_COLOR, new StringType(message));
-
-            // example: 02:01:24:01
-            // eotf, color_space, color_depth, color_sampling
-            final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2}):(\\d{2})$");
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
@@ -189,15 +186,15 @@ public enum KaleidescapeMessageHandler {
         }
     },
     CONTENT_COLOR {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 02:01:24:01
+        // eotf, color_space, color_depth, color_sampling
+        private final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2}):(\\d{2})$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
             handler.updateChannel(KaleidescapeBindingConstants.CONTENT_COLOR, new StringType(message));
-
-            // example: 02:01:24:01
-            // eotf, color_space, color_depth, color_sampling
-            final Pattern p = Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2}):(\\d{2})$");
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
@@ -253,14 +250,14 @@ public enum KaleidescapeMessageHandler {
         }
     },
     MUSIC_TITLE {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: You:Radiohead:Pablo Honey:1.9b5f4d786d7e2c49-t301_577:1.R_1493833:2.200c5
+        // track, artist, album, track handle, album handle, now playing handle
+        private final Pattern p = Pattern.compile("^(.*):(.*):(.*):(.*):(.*):(.*)$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
-            // example: You:Radiohead:Pablo Honey:1.9b5f4d786d7e2c49-t301_577:1.R_1493833:2.200c5
-            // track, artist, album, track handle, album handle, now playing handle
-            final Pattern p = Pattern.compile("^(.*):(.*):(.*):(.*):(.*):(.*)$");
-
             // first replace delimited : in track/artist/album name with ||, fix it later in formatString()
             Matcher matcher = p.matcher(message.replace("\\:", "||"));
             if (matcher.find()) {
@@ -287,15 +284,15 @@ public enum KaleidescapeMessageHandler {
         }
     },
     MUSIC_PLAY_STATUS {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 2:0:00207:+00000:000.00
+        // 2:0:00331:+00183:055.29
+        // mode, speed, track length, track position, track progress %
+        private final Pattern p = Pattern.compile("^(\\d{1}):(\\d{1}):(\\d{5}):(.\\d{5}):(\\d{3}\\.\\d{2})$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
-            // example: 2:0:00207:+00000:000.00
-            // 2:0:00331:+00183:055.29
-            // mode, speed, track length, track position, track progress %
-            final Pattern p = Pattern.compile("^(\\d{1}):(\\d{1}):(\\d{5}):(.\\d{5}):(\\d{3}\\.\\d{2})$");
-
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 handler.updateChannel(KaleidescapeBindingConstants.MUSIC_PLAY_MODE,
@@ -317,30 +314,24 @@ public enum KaleidescapeMessageHandler {
         }
     },
     MUSIC_NOW_PLAYING_STATUS {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 00013:00000:0:0:0000000238:2.200c5
+        // total # tracks in list, list index, repeat, random, generation, now_playing handle
+        // only using repeat & random right now
+        private final Pattern p = Pattern.compile("^(\\d{5}):(\\d{5}):(\\d{1}):(\\d{1}):(\\d{10}):(.*)$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
-            // example: 00013:00000:0:0:0000000238:2.200c5
-            // total # tracks in list, list index, repeat, random, generation, now_playing handle
-            // only using repeat & random right now
-            final Pattern p = Pattern.compile("^(\\d{5}):(\\d{5}):(\\d{1}):(\\d{1}):(\\d{10}):(.*)$");
-
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 // update REPEAT switch state
-                if (("1").equals(matcher.group(3))) {
-                    handler.updateChannel(KaleidescapeBindingConstants.MUSIC_REPEAT, OnOffType.ON);
-                } else {
-                    handler.updateChannel(KaleidescapeBindingConstants.MUSIC_REPEAT, OnOffType.OFF);
-                }
+                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_REPEAT,
+                        ("1").equals(matcher.group(3)) ? OnOffType.ON : OnOffType.OFF);
 
                 // update RANDOM switch state
-                if (("1").equals(matcher.group(4))) {
-                    handler.updateChannel(KaleidescapeBindingConstants.MUSIC_RANDOM, OnOffType.ON);
-                } else {
-                    handler.updateChannel(KaleidescapeBindingConstants.MUSIC_RANDOM, OnOffType.OFF);
-                }
+                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_RANDOM,
+                        ("1").equals(matcher.group(4)) ? OnOffType.ON : OnOffType.OFF);
             } else {
                 logger.debug("MUSIC_NOW_PLAYING_STATUS - no match on message: {}", message);
             }
@@ -355,15 +346,15 @@ public enum KaleidescapeMessageHandler {
         }
     },
     CONTENT_DETAILS {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // g1=meta id, g2=meta type, g3=data
+        // example: 6:Year:1995
+        // or: 10:Genres:Pop\/Rock
+        private final Pattern p = Pattern.compile("^(\\d{1,2}):([^:^/]*):(.*)$");
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
-            // g1=meta id, g2=meta type, g3=data
-            // example: 6:Year:1995
-            // or: 10:Genres:Pop\/Rock
-            final Pattern p = Pattern.compile("^(\\d{1,2}):([^:^/]*):(.*)$");
-
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 String metaType = matcher.group(2).toLowerCase();
@@ -459,9 +450,9 @@ public enum KaleidescapeMessageHandler {
         }
     },
     USER_DEFINED_EVENT {
-        public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
 
+        public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: SELECT_KALEIDESCAPE_INPUT
             try {
                 switch (message) {
@@ -542,13 +533,13 @@ public enum KaleidescapeMessageHandler {
         }
     },
     SYSTEM_VERSION {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 16:8.6.0-21023
+        // protocol version, kOS version
+        private final Pattern p = Pattern.compile("^(\\d{2}):(.*)$");
+
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
-            // example: 16:8.6.0-21023
-            // protocol version, kOS version
-            final Pattern p = Pattern.compile("^(\\d{2}):(.*)$");
-
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_PROTOCOL_VERSION, matcher.group(1));
@@ -559,13 +550,13 @@ public enum KaleidescapeMessageHandler {
         }
     },
     DEVICE_INFO {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
+        // example: 07:000000000000558F:00:192.168.001.100
+        // device type (deprecated), serial number, cpdid, ip address
+        private final Pattern p = Pattern.compile("^(\\d{2}):(.*):(\\d{2}):(.*)$");
+
         public void handleMessage(String message, KaleidescapeHandler handler) {
-            final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
-
-            // example: 07:000000000000558F:00:192.168.001.100
-            // device type (deprecated), serial number, cpdid, ip address
-            final Pattern p = Pattern.compile("^(\\d{2}):(.*):(\\d{2}):(.*)$");
-
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_SERIAL_NUMBER,

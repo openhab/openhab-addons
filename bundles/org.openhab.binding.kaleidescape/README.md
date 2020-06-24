@@ -1,12 +1,16 @@
 # Kaleidescape Binding
 
-This binding is used to control and retrieve information from a Kaleidescape movie player. All movie player components including the original K-Player series, M Class Players, 
-Cinema One, Alto, and Strato are supported. The 4 zone audio only KMUSIC-4000 is not supported at this time. As there are many good control options already available for these 
-components, this binding focuses primarily on retrieving information for display purposes and to use in rules for controlling other Things such lighting, projector lens control, 
-masking, etc. Basic playback transport controls are provided and any other command that is supported by the control protocol can be sent to the component through rules based 
-commands. See Kaleidescape-System-Control-Protocol-Reference-Manual.pdf for a reference of available commands. To simplify the design of the binding code, a different Thing 
-instance is created for each component in a multi-zone system and each Thing maintains its own socket connection to the target component. Overall this binding supports the 
-majority of information and commands available in the Kaleidescape control protocol but is by no means exhaustive. Any feedback or suggestions for improvement are welcome.
+This binding is used to control and retrieve information from a Kaleidescape movie player.
+All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
+The 4 zone audio only KMUSIC-4000 is not supported at this time.
+As there are many good control options already available for these components, this binding focuses primarily on retrieving information
+ for display purposes and to use in rules for controlling other Things such lighting, projector lens control, masking, etc.
+Basic playback transport controls are provided and any other command that is supported by the control protocol can be sent to the component through rules based commands.
+See Kaleidescape-System-Control-Protocol-Reference-Manual.pdf for a reference of available commands.
+To simplify the design of the binding code, a different Thing instance is created for each component
+ in a multi-zone system and each Thing maintains its own socket connection to the target component.
+Overall this binding supports the majority of information and commands available in the Kaleidescape control protocol but is by no means exhaustive.
+Any feedback or suggestions for improvement are welcome.
 
 The binding supports two different kinds of connections:
 
@@ -20,9 +24,9 @@ It has the `player` id.
 
 ## Discovery
 
-Manually initiated Auto-discovery is supported if Kaleidescape components are accessible on the same IP subnet of the openHAB server. Since discovery involves scanning all IP
-addresses in the subnet range for an open socket, the discovery must be initiated by the user. In the Paper UI Inbox, select Search For Things at the bottom and then choose the
-Kaleidescape System Binding to initiate discovery.
+Manually initiated Auto-discovery is supported if Kaleidescape components are accessible on the same IP subnet of the openHAB server.
+Since discovery involves scanning all IP addresses in the subnet range for an open socket, the discovery must be initiated by the user.
+In the Paper UI Inbox, select Search For Things at the bottom and then choose the Kaleidescape System Binding to initiate discovery.
 
 ## Binding Configuration
 
@@ -45,13 +49,16 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-* The only caveat of note about this binding is the updatePeriod configuration parameter. When set to the default of 0, the component only sends running time update messages 
-* sporadically (as an example: when the movie chapter changes) while content is playing. In this case, the running time channels will also only sporadically update. When
-* updatePeriod is set to 1 (values greater than 1 are not supported by the control protocol), the component sends running time status update messages every second. Be aware
-* that this could cause performance impacts to your openHAB system.
+* The only caveat of note about this binding is the updatePeriod configuration parameter.
+* When set to the default of 0, the component only sends running time update messages sporadically (as an example: when the movie chapter changes) while content is playing.
+* In this case, the running time channels will also only sporadically update.
+* When updatePeriod is set to 1 (values greater than 1 are not yet supported by the control protocol), the component sends running time status update messages every second.
+* Be aware that this could cause performance impacts to your openHAB system.
 
-* On Linux, you may get an error stating the serial port cannot be opened when the Kaleidescape binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Kaleidescape and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+* On Linux, you may get an error stating the serial port cannot be opened when the Kaleidescape binding tries to load.
+  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Kaleidescape and RFXcom.
+  See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 
 ## Channels
 
@@ -138,8 +145,8 @@ The following channels are available:
 kaleidescape.things:
 
 ```java
-kaleidescape:player:myzone1 "M500 Living Rm" [componentType="Player", host="192.168.1.10", port="10000", updatePeriod=0, volumeEnabled=true, initialVolume=20]
-kaleidescape:player:myzone2 "My Cinema One" [componentType="Cinema One", host="192.168.1.11", port="10000", updatePeriod=0, volumeEnabled=true, initialVolume=20]
+kaleidescape:player:myzone1 "M500 Living Rm" [componentType="Player", host="192.168.1.10", updatePeriod=0, volumeEnabled=true, initialVolume=20]
+kaleidescape:player:myzone2 "My Cinema One" [componentType="Cinema One", host="192.168.1.11", updatePeriod=0, volumeEnabled=true, initialVolume=20]
 ```
 
 kaleidescape.items:

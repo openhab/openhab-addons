@@ -14,6 +14,8 @@ package org.openhab.binding.kaleidescape.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -129,7 +131,7 @@ public class KaleidescapeBindingConstants {
 
     // make a list of all allowed metatdata channels,
     // used to filter out what we don't want from the component
-    public static ArrayList<String> metadataChannels = new ArrayList<String>(
+    public static final Set<String> metadataChannels = new HashSet<String>(
             Arrays.asList(DETAIL_TITLE, DETAIL_ALBUM_TITLE, DETAIL_COVER_URL, DETAIL_HIRES_COVER_URL, DETAIL_RATING,
                     DETAIL_YEAR, DETAIL_RUNNING_TIME, DETAIL_ACTORS, DETAIL_ARTIST, DETAIL_DIRECTORS, DETAIL_GENRES,
                     DETAIL_RATING_REASON, DETAIL_SYNOPSIS, DETAIL_REVIEW, DETAIL_COLOR_DESCRIPTION, DETAIL_COUNTRY,

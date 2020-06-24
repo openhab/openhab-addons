@@ -40,7 +40,7 @@ public abstract class KaleidescapeConnector {
     public static final String END_CMD = ":\r";
     public static final String STANDBY_MSG = "Device is in standby";
 
-    private static final Pattern PATTERN = Pattern.compile("^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
+    private final Pattern PATTERN = Pattern.compile("^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeConnector.class);
 
@@ -101,19 +101,12 @@ public abstract class KaleidescapeConnector {
      */
     protected void cleanup() {
         Thread readerThread = this.readerThread;
-        if (readerThread != null) {
-            readerThread.interrupt();
-            try {
-                readerThread.join();
-            } catch (InterruptedException e) {
-            }
-            this.readerThread = null;
-        }
         OutputStream dataOut = this.dataOut;
         if (dataOut != null) {
             try {
                 dataOut.close();
             } catch (IOException e) {
+                logger.debug("Error closing dataOut: {}", e.getMessage());
             }
             this.dataOut = null;
         }
@@ -122,8 +115,18 @@ public abstract class KaleidescapeConnector {
             try {
                 dataIn.close();
             } catch (IOException e) {
+                logger.debug("Error closing dataIn: {}", e.getMessage());
             }
             this.dataIn = null;
+        }
+        if (readerThread != null) {
+            readerThread.interrupt();
+            try {
+                readerThread.join(3000);
+            } catch (InterruptedException e) {
+                logger.warn("Error joining readerThread: {}", e.getMessage());
+            }
+            this.readerThread = null;
         }
     }
 
@@ -171,9 +174,7 @@ public abstract class KaleidescapeConnector {
      */
     public void sendCommand(@Nullable String cmd) throws KaleidescapeException {
         String messageStr = BEGIN_CMD + cmd + END_CMD;
-        byte[] message;
 
-        message = messageStr.getBytes(StandardCharsets.US_ASCII);
         logger.debug("Send command {}", messageStr);
 
         OutputStream dataOut = this.dataOut;
@@ -181,10 +182,9 @@ public abstract class KaleidescapeConnector {
             throw new KaleidescapeException("Send command \"" + messageStr + "\" failed: output stream is null");
         }
         try {
-            dataOut.write(message);
+            dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException e) {
-            logger.debug("Send command \"{}\" failed: {}", messageStr, e.getMessage());
             throw new KaleidescapeException("Send command \"" + cmd + "\" failed: " + e.getMessage());
         }
     }

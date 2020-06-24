@@ -26,7 +26,7 @@ public interface KaleidescapeMessageEventListener extends EventListener {
     /**
      * Event handler method for incoming Kaleidescape message events
      *
-     * @param event the event object
+     * @param event the KaleidescapeMessageEvent object
      */
     public void onNewMessageEvent(KaleidescapeMessageEvent event);
 }

@@ -56,7 +56,7 @@ public class KaleidescapeSerialConnector extends KaleidescapeConnector {
 
     @Override
     public synchronized void open() throws KaleidescapeException {
-        logger.info("Opening serial connection on port {}", serialPortName);
+        logger.debug("Opening serial connection on port {}", serialPortName);
         try {
             SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
             if (portIdentifier == null) {
@@ -84,7 +84,7 @@ public class KaleidescapeSerialConnector extends KaleidescapeConnector {
                 }
             }
 
-            Thread thread = new KaleidescapeReaderThread(this);
+            Thread thread = new KaleidescapeReaderThread(this, this.serialPortName);
             setReaderThread(thread);
             thread.start();
 

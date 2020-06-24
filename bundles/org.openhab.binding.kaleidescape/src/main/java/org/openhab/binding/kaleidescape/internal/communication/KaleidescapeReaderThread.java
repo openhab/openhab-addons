@@ -41,9 +41,10 @@ public class KaleidescapeReaderThread extends Thread {
      *
      * @param connector the object that should handle the received message
      */
-    public KaleidescapeReaderThread(KaleidescapeConnector connector) {
-        super(KaleidescapeBindingConstants.BINDING_ID);
+    public KaleidescapeReaderThread(KaleidescapeConnector connector, String uid) {
+        super(KaleidescapeBindingConstants.BINDING_ID + "-" + uid);
         this.connector = connector;
+        setDaemon(true);
     }
 
     @Override
