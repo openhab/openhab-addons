@@ -2,7 +2,7 @@
 
 This extension adds support for the Stiebel Eltron modbus protocol.
 
-A Internet Service Gateway (ISG) with an installed modbus extension is required in order to run this binding. In case the modbus extension is not yet installed on the ISG, the ISG Updater Tool for the update can be found here: https://www.stiebel-eltron.de/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/internet_servicegateway/isg_web/downloads.html
+An Internet Service Gateway (ISG) with an installed modbus extension is required in order to run this binding. In case the modbus extension is not yet installed on the ISG, the ISG Updater Tool for the update can be found here: https://www.stiebel-eltron.de/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/internet_servicegateway/isg_web/downloads.html
 
 
 
@@ -203,4 +203,3 @@ Number:Energy stiebel_eltron_consumption_water_total            "Water heating p
 		}
 
 ```
-
