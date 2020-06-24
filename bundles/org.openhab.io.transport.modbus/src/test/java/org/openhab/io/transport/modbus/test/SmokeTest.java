@@ -715,6 +715,7 @@ public class SmokeTest extends IntegrationTestSupport {
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 15, 1), 200, 0, result -> {
                         if (result.getRegisters() != null) {
                             expectedReceived.incrementAndGet();
+                            successfulCountDownLatch.countDown();
                         } else if (result.hasError()) {
                             if (spi.getDigitalInCount() > 0) {
                                 // No errors expected after server filled with data
