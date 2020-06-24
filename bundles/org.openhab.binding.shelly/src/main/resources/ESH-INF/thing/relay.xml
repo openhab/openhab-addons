@@ -203,18 +203,18 @@
 		<config-description-ref uri="thing-type:shelly:dimmer" />
 	</thing-type>
 
-    <thing-type id="shellydimmer2">
-        <label>Shelly Dimmer 2 (SHDM-2")</label>
-        <description>Shelly Dimmer with 2 Switches</description>
-        <category>DimmableLight</category>
-        <channel-groups>
-            <channel-group id="relay" typeId="dimmerChannel" />
-            <channel-group id="meter" typeId="meter" />
-            <channel-group id="device" typeId="deviceStatus" />
-        </channel-groups>
+	<thing-type id="shellydimmer2">
+		<label>Shelly Dimmer 2 (SHDM-2")</label>
+		<description>Shelly Dimmer with 2 Switches</description>
+		<category>DimmableLight</category>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel" />
+			<channel-group id="meter" typeId="meter" />
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
 
-        <config-description-ref uri="thing-type:shelly:dimmer" />
-    </thing-type>
+		<config-description-ref uri="thing-type:shelly:dimmer" />
+	</thing-type>
 
 	<thing-type id="shellyix3">
 		<label>Shelly ix3 (SHIX3-1)</label>
