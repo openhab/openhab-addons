@@ -20,7 +20,7 @@ package org.openhab.binding.modbus.stiebeleltron.internal.dto;
  */
 public class SystemInformationBlock {
 
-    public short temperature_fek;
+    public short temperatureFek;
     public short temperature_fek_setpoint;
     public short humidity_ffk;
     public short dewpoint_ffk;
