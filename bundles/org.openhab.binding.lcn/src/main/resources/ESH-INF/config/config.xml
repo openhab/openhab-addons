@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+	https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:lcn:pckGateway">
+		<parameter name="hostname" type="text" required="true">
+			<label>Hostname</label>
+			<description>The hostname or the IP address of the PCK gateway</description>
+			<context>network-address</context>
+			<required>true</required>
+		</parameter>
+		<parameter name="port" type="integer" required="true" min="1" max="65535">
+			<label>Port</label>
+			<description>The IP port of the PCK gateway</description>
+			<default>4114</default>
+			<required>true</required>
+		</parameter>
+		<parameter name="username" type="text" required="true">
+			<label>Username</label>
+			<description>The login username of the PCK gateway</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="password" type="text" required="true">
+			<label>Password</label>
+			<description>The login password of the PCK gateway</description>
+			<context>password</context>
+		</parameter>
+		<parameter name="mode" type="text" required="true">
+			<label>Dimming Mode</label>
+			<description><![CDATA[<strong>IMPORTANT:</strong> Dimming range of all modules. Must be the same value as configured in LCN-PRO (Options/Settings/Expert Settings). If you <em>only</em> have modules with firmware newer than Feb. 2013, you probably want to choose 0 - 200.]]></description>
+			<default>native200</default>
+			<options>
+				<option value="native50">0 - 50</option>
+				<option value="native200">0 - 200</option>
+			</options>
+			<required>true</required>
+		</parameter>
+		<parameter name="timeoutMs" type="integer" required="true" unit="ms">
+			<label>Connection Timeout</label>
+			<description>Period after which an LCN command is resent, when no acknowledge has been received (in ms).</description>
+			<default>3500</default>
+			<required>true</required>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:lcn:module">
+		<parameter name="moduleId" type="integer" required="true" min="5" max="254">
+			<label>Module ID</label>
+			<description>The module ID, configured in LCN-PRO</description>
+		</parameter>
+		<parameter name="segmentId" type="integer" required="true" min="0" max="128">
+			<label>Segment ID</label>
+			<description>The segment ID the module is in (0 if no segments are present)</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:lcn:group">
+		<parameter name="groupId" type="integer" required="true" min="3" max="254">
+			<label>Group Number</label>
+			<description>The group number, configured in LCN-PRO</description>
+		</parameter>
+		<parameter name="moduleId" type="integer" required="true" min="5" max="254">
+			<label>Module ID</label>
+			<description>The module ID of any module in the group. The state of this module is used for visualization of the
+				group as representative for all modules.</description>
+		</parameter>
+		<parameter name="segmentId" type="integer" required="true" min="0" max="128">
+			<label>Segment ID</label>
+			<description>The segment ID of all modules in this group (0 if no segments are present)</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:lcn:variable">
+		<parameter name="unit" type="text" required="true">
+			<label>Unit</label>
+			<description>Unit of the sensor</description>
+			<default>native</default>
+			<options>
+				<option value="native">LCN Native</option>
+				<option value="temperature">Temperature (°C or °F)</option>
+				<option value="light">Light (Lux)</option>
+				<option value="co2">CO₂ (ppm)</option>
+				<option value="power">Power (W)</option>
+				<option value="energy">Energy (kWh)</option>
+				<option value="current">Current (mA)</option>
+				<option value="voltage">Voltage (V)</option>
+				<option value="angle">Angle (°)</option>
+				<option value="windspeed">Windspeed (m/s)</option>
+			</options>
+			<required>true</required>
+		</parameter>
+		<parameter name="parameter" type="integer" min="1">
+			<label>Pulses per kWh</label>
+			<description>Only for S0 counters (power or energy)</description>
+			<default>1000</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

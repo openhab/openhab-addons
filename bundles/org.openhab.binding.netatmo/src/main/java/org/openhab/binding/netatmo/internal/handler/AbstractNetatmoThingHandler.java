@@ -30,6 +30,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -71,14 +72,16 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     public static final Unit<Dimensionless> API_CO2_UNIT = SmartHomeUnits.PARTS_PER_MILLION;
     public static final Unit<Dimensionless> API_NOISE_UNIT = SmartHomeUnits.DECIBEL;
 
+    protected final TimeZoneProvider timeZoneProvider;
     protected final MeasurableChannels measurableChannels = new MeasurableChannels();
     protected Optional<RadioHelper> radioHelper;
     protected Optional<BatteryHelper> batteryHelper;
     protected Configuration config;
     protected NetatmoBridgeHandler bridgeHandler;
 
-    AbstractNetatmoThingHandler(@NonNull Thing thing) {
+    AbstractNetatmoThingHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -120,7 +123,7 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
 
     protected abstract void initializeThing();
 
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         Optional<State> result;
 
         result = batteryHelper.flatMap(helper -> helper.getNAThingProperty(channelId));
@@ -137,8 +140,15 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     protected void updateChannels() {
-        getThing().getChannels().stream().filter(channel -> channel.getKind() != ChannelKind.TRIGGER)
+        updateDataChannels();
+
+        triggerEventChannels();
+    }
+
+    private void updateDataChannels() {
+        getThing().getChannels().stream().filter(channel -> !channel.getKind().equals(ChannelKind.TRIGGER))
                 .forEach(channel -> {
+
                     String channelId = channel.getUID().getId();
                     if (isLinked(channelId)) {
                         State state = getNAThingProperty(channelId);
@@ -147,6 +157,23 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
                         }
                     }
                 });
+    }
+
+    /**
+     * Triggers all event/trigger channels
+     * (when a channel is triggered, a rule can get all other information from the updated non-trigger channels)
+     */
+    private void triggerEventChannels() {
+        getThing().getChannels().stream().filter(channel -> channel.getKind().equals(ChannelKind.TRIGGER))
+                .forEach(channel -> triggerChannelIfRequired(channel.getUID().getId()));
+    }
+
+    /**
+     * Triggers the trigger channel with the given channel id when required (when an update is available)
+     *
+     * @param channelId channel id
+     */
+    protected void triggerChannelIfRequired(@NonNull String channelId) {
     }
 
     @Override

@@ -317,9 +317,9 @@ DateTime LogoDate { channel="plclogo:datetime:Logo:VW150:date" }
 Switch  LogoVB1_S { channel="plclogo:pulse:Logo:VB0_1:state"}
 Switch  LogoVB1_O { channel="plclogo:pulse:Logo:VB0_1:observed"}
 
-String   Diagnostic { channel="plclogo:device:Logo:diagnostic }
-DateTime RTC        { channel="plclogo:device:Logo:rtc }
-String   DayOfWeek  { channel="plclogo:device:Logo:weekday }
+String   Diagnostic { channel="plclogo:device:Logo:diagnostic"}
+DateTime RTC        { channel="plclogo:device:Logo:rtc"}
+String   DayOfWeek  { channel="plclogo:device:Logo:weekday"}
 ```
 
 Configuration of two Siemens LOGO!
@@ -353,7 +353,7 @@ Switch  Logo1_Q2    { channel="plclogo:digital:Logo1:Outputs:Q2" }
 Number  Logo1_VW100 { channel="plclogo:memory:Logo1:VW100:value" }
 Switch  Logo1_VB0_S { channel="plclogo:pulse:Logo1:VB0_0:state"}
 Contact Logo1_VB0_O { channel="plclogo:pulse:Logo1:VB0_0:observed"}
-DateTime Logo1_RTC  { channel="plclogo:device:Logo1:rtc }
+DateTime Logo1_RTC  { channel="plclogo:device:Logo1:rtc"}
 
 Contact Logo2_I1    { channel="plclogo:digital:Logo2:Inputs:I1" }
 Contact Logo2_I2    { channel="plclogo:digital:Logo2:Inputs:I2" }
@@ -362,7 +362,7 @@ Switch  Logo2_Q2    { channel="plclogo:digital:Logo2:Outputs:Q2" }
 Number  Logo2_VD102 { channel="plclogo:memory:Logo2:VD102:value" }
 Switch  Logo2_VB1_S { channel="plclogo:pulse:Logo2:VB0_1:state"}
 Switch  Logo2_VB1_O { channel="plclogo:pulse:Logo2:VB0_1:observed"}
-DateTime Logo2_RTC  { channel="plclogo:device:Logo2:rtc }
+DateTime Logo2_RTC  { channel="plclogo:device:Logo2:rtc"}
 ```
 
 ## Troubleshooting

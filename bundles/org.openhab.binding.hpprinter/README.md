@@ -1,29 +1,25 @@
 # HP Printer Binding
 
-Get HP Printer statistics from an _Embedded Web Server_ over Network.
+This binding supports [HP Printers](https://store.hp.com/us/en/cv/printers), which are reachable through IP on the local network.
 
 ## Supported Things
 
-There is only one thing named `printer`. All channels are added dynamically depending on the type of printer and its capabilities.
+There is only one thing type named `printer`.
+All channels are added dynamically depending on the type of printer and its capabilities.
 
 ## Discovery
 
-This Binding will auto-discover any HP Printer on the network via Bonjour. 
+This binding uses mDNS for discovering HP Printers on the local network. 
 
 ## Thing Configuration
 
-The available settings are:
-| Setting                           | Name            | Type    | Required | Default |
+The configuration parameters are:
+
+| Parameter                         | Name            | Type    | Required | Default |
 | --------------------------------- | --------------- | ------- | -------- | ------- |
-| IP Address                        | ipAddress       | string  | yes      |         |
-| Usage Refresh Interval (seconds)  | usageInterval   | number  |          | 30      |
-| Status Refresh Interval (seconds) | statusInterval  | number  |          | 4       |
-
-### Sample Configuration
-
-```
-Thing hpprinter:printer:djprinter "Printer" @ "Office" [ ipAddress="192.168.1.1", usageInterval="30", statusInterval="4" ]
-```
+| IP Address                        | ipAddress       | String  | yes      |         |
+| Usage Refresh Interval (seconds)  | usageInterval   | Integer |          | 30      |
+| Status Refresh Interval (seconds) | statusInterval  | Integer |          | 4       |
 
 ## Channels
 
@@ -77,16 +73,23 @@ Thing hpprinter:printer:djprinter "Printer" @ "Office" [ ipAddress="192.168.1.1"
 | Chrome Page Count                          | app         | totalChrome           | Number               |
 | Google Cloud Print Count                   | other       | cloudPrint            | Number               |
 
-Note:
+Notes:
 
-* All channels are dynamic and will not be added or visible in Paper UI if not supported.
-* The word colour in channel names are American spelling ("color").
-* The `colorLevel`, `colorMarkingUsed` and `colorPagesRemaining` channels are used on Printers that have only a single colour cartridge instead of separate Cyan, Magenta and Yellow cartridges.
-* The `scanner` group is for the Scanning Engine which consists of Scan, Copy and other operations; the `scan` group is for scanner operations only.
-* If no `status` group channels are selected, then those relevant data endpoints on the *Embedded Web Server* will not be polled for status information.
-* Some channels are *Advanced channels* not selected by default in Paper UI. To add them, click the *Show More* button in the thing configuration. 
+* All channels are dynamically added at runtime.
+* The word color in channel names follows American spelling ("color").
+* The `colorLevel`, `colorMarkingUsed` and `colorPagesRemaining` channels are used on printers that have only a single color cartridge instead of separate Ccyan, magenta and yellow cartridges.
+* The `scanner` group is for the scanning engine which consists of scan, copy and other operations; the `scan` group is for scanner operations only.
+* If no `status` group channels are selected, then those relevant data endpoints on the *Embedded Web Server* are not polled for status information.
 
-### Sample Items
+## Full Textual Example
+
+### Thing File
+
+```
+Thing hpprinter:printer:djprinter "Printer" @ "Office" [ ipAddress="192.168.1.1", usageInterval="30", statusInterval="4" ]
+```
+
+### Item File
 
 ```
 String PrinterStatus "Status" { channel="pprinter:printer:djprinter:status#status" }
@@ -101,7 +104,7 @@ Number PrinterTotalColourPages "Total Colour Pages" { channel="hpprinter:printer
 Number PrinterTotalMonochromePages "Total Monochrome Pages" { channel="hpprinter:printer:djprinter:usage#totalMonochromeCount" }
 ```
 
-### Sample Sitemap Items
+### Sitemap File
 
 Black Ink displayed as a whole percentage - `60 %`
 
@@ -133,5 +136,3 @@ Scanner Document Feeder loaded with text status display - `ON` or `OFF`
 ```
 Text item=hpprinter_printer_djprinter_status_scannerAdfLoaded label="ADF Loaded [%s]"
 ```
-
-> If you want the *Scanner Document Feeder* or *Tray Empty/Open* channels to display a different message, you can use the *Map Transformations*. Search for `Map Transformation Service` in the openHAB documentation for more information.

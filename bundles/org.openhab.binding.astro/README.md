@@ -24,6 +24,8 @@ All Things require the parameter `geolocation` (as `<latitude>,<longitude>[,<alt
 The altitude segment is optional and sharpens results provided by the Radiation group.
 Optionally, a refresh `interval` (in seconds) can be defined to also calculate positional data like azimuth and elevation.
 
+Season calculation can be switched from equinox based calculation to meteorological based (starting on the first day of the given month).
+This is done by setting `useMeteorologicalSeason` to true in the advanced setting of the sun.
 
 ## Channels
 
