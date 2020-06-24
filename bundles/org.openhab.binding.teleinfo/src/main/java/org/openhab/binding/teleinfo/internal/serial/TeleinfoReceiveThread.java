@@ -97,11 +97,4 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
     public void setListener(TeleinfoReceiveThreadListener listener) {
         this.listener = listener;
     }
-
-    @SuppressWarnings("null")
-    private void skipInputStreamBuffer() throws IOException {
-        logger.trace("skipInputStreamBuffer() [start]");
-        serialPort.getInputStream().skip(serialPort.getInputStream().available());
-        logger.trace("skipInputStreamBuffer() [end]");
-    }
 }
