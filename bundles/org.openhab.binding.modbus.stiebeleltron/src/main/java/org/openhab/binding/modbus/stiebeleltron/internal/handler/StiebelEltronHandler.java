@@ -546,7 +546,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @return the scaled value as a DecimalType
      */
     protected State getScaled(Number value, Unit<?> unit) {
-        return new QuantityType<>(BigDecimal.valueOf(value.longValue(), 1), unit);
+        return QuantityType.valueOf(value.doubleValue(), unit);
     }
 
     /**
