@@ -221,7 +221,17 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
             writeBufferedDataFuture = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    DynamoDBPersistenceService.this.flushBufferedData();
+                    try {
+                        DynamoDBPersistenceService.this.flushBufferedData();
+                    } catch (RuntimeException e) {
+                        // We want to catch all unexpected exceptions since all unhandled exceptions make
+                        // ScheduledExecutorService halt the regular running of the task.
+                        // It is better to print out the exception, and try again
+                        // (on next cycle)
+                        logger.warn(
+                                "Execution of scheduled flushing of buffered data failed unexpectedly. Ignoring exception, trying again according to configured commit interval of {} ms.",
+                                commitIntervalMillis, e);
+                    }
                 }
             }, 0, commitIntervalMillis, TimeUnit.MILLISECONDS);
         }
