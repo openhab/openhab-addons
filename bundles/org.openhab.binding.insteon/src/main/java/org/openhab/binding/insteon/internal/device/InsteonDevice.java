@@ -552,9 +552,10 @@ public class InsteonDevice {
      *
      * @param group the insteon group of the broadcast message
      * @param a the type of group message came in (action etc)
+     * @param cmd1 cmd1 from the message received
      * @return true if this is message is NOT a duplicate
      */
-    public boolean getGroupState(int group, GroupMessage a) {
+    public boolean getGroupState(int group, GroupMessage a, byte cmd1) {
         GroupMessageStateMachine m = groupState.get(group);
         if (m == null) {
             m = new GroupMessageStateMachine();
@@ -568,7 +569,7 @@ public class InsteonDevice {
         }
 
         logger.trace("{} updating group {} state to {}", address, group, a);
-        return (m.action(a, address, group));
+        return (m.action(a, address, group, cmd1));
     }
 
     @Override
