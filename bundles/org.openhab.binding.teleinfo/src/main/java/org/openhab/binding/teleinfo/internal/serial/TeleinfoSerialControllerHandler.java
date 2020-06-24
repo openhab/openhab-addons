@@ -148,7 +148,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
         config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
 
-        if (config.serialport == null || config.serialport.isBlank()) {
+        if (config.serialport == null || config.serialport.trim().isEmpty()) {
             logger.error("Teleinfo port is not set.");
             return;
         }
