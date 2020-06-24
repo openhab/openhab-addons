@@ -259,12 +259,12 @@ public abstract class MessageHandler {
                 // from the original broadcaster, with which the device
                 // confirms that it got all cleanup replies successfully.
                 GroupMessage gm = (cmd1 == 0x06) ? GroupMessage.SUCCESS : GroupMessage.BCAST;
-                isDuplicate = !feature.getDevice().getGroupState(group, gm);
+                isDuplicate = !feature.getDevice().getGroupState(group, gm, cmd1);
             } else if (t == MsgType.ALL_LINK_CLEANUP) {
                 // the cleanup messages are direct messages, so the
                 // group # is not in the toAddress, but in cmd2
                 int group = msg.getByte("command2") & 0xff;
-                isDuplicate = !feature.getDevice().getGroupState(group, GroupMessage.CLEAN);
+                isDuplicate = !feature.getDevice().getGroupState(group, GroupMessage.CLEAN, (byte) 0);
             }
         } catch (IllegalArgumentException e) {
             logger.warn("cannot parse msg: {}", msg, e);
