@@ -34,6 +34,7 @@ import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
@@ -69,6 +70,8 @@ public class BaseIntegrationTest {
         ITEMS.put("datetime", new DateTimeItem("datetime"));
         ITEMS.put("call", new CallItem("call"));
         ITEMS.put("location", new LocationItem("location"));
+        ITEMS.put("player_playpause", new PlayerItem("player_playpause"));
+        ITEMS.put("player_rewindfastforward", new PlayerItem("player_rewindfastforward"));
 
         service = new DynamoDBPersistenceService();
         service.setItemRegistry(new ItemRegistry() {

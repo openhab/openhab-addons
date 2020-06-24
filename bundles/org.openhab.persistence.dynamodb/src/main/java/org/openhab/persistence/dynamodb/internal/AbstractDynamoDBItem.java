@@ -30,6 +30,7 @@ import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
@@ -39,7 +40,9 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
@@ -76,6 +79,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         ITEM_CLASS_MAP.put(SwitchItem.class, DynamoDBBigDecimalItem.class);
         ITEM_CLASS_MAP.put(DimmerItem.class, DynamoDBBigDecimalItem.class); // inherited from SwitchItem (!)
         ITEM_CLASS_MAP.put(ColorItem.class, DynamoDBStringItem.class); // inherited from DimmerItem
+        ITEM_CLASS_MAP.put(PlayerItem.class, DynamoDBStringItem.class);
     }
 
     public static final Class<DynamoDBItem<?>> getDynamoItemClass(Class<? extends Item> itemClass)
@@ -120,7 +124,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
         } else if (state instanceof StringListType) {
             return new DynamoDBStringItem(name, state.toFullString(), time);
         } else {
-            // HSBType, PointType and StringType
+            // HSBType, PointType, PlayPauseType and StringType
             return new DynamoDBStringItem(name, state.toFullString(), time);
         }
     }
@@ -136,6 +140,13 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                     state[0] = new HSBType(dynamoStringItem.getState());
                 } else if (item instanceof LocationItem) {
                     state[0] = new PointType(dynamoStringItem.getState());
+                } else if (item instanceof PlayerItem) {
+                    String value = dynamoStringItem.getState();
+                    try {
+                        state[0] = PlayPauseType.valueOf(value);
+                    } catch (IllegalArgumentException e) {
+                        state[0] = RewindFastforwardType.valueOf(value);
+                    }
                 } else if (item instanceof DateTimeItem) {
                     try {
                         // Parse ZoneDateTime from string. DATEFORMATTER assumes UTC in case it is not clear
