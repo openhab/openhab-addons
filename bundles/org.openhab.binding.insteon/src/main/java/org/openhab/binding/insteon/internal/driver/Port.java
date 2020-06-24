@@ -374,7 +374,7 @@ public class Port {
             ArrayList<Byte> l = new ArrayList<>();
             for (int i = 0; i < len; i++) {
                 if (rng.nextInt(100) >= dropRate) {
-                    l.add(new Byte(buffer[i]));
+                    l.add(buffer[i]);
                 }
             }
             for (int i = 0; i < l.size(); i++) {

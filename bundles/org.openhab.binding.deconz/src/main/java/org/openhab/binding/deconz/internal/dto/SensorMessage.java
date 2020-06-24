@@ -22,24 +22,17 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class SensorMessage {
-    // For websocket change events
-    public String e = ""; // "changed"
-    public String r = ""; // "sensors"
-    public String t = ""; // "event"
-    public String id = ""; // "3"
-
-    // for rest API
-    public String manufacturername = "";
-    public String modelid = "";
-    public String name = "";
-    public String swversion = "";
+public class SensorMessage extends DeconzBaseMessage {
     public String type = "";
-    /** the API endpoint **/
-    public String ep = "";
-    public @Nullable SensorConfig config;
 
-    // websocket and rest api
-    public String uniqueid = ""; // "00:0b:57:ff:fe:94:6b:dd-01-1000"
+    public @Nullable SensorConfig config;
     public @Nullable SensorState state;
+
+    @Override
+    public String toString() {
+        return "SensorMessage{" + "type='" + type + '\'' + ", config=" + config + ", state=" + state + ", e='" + e
+                + '\'' + ", r='" + r + '\'' + ", t='" + t + '\'' + ", id='" + id + '\'' + ", manufacturername='"
+                + manufacturername + '\'' + ", modelid='" + modelid + '\'' + ", name='" + name + '\'' + ", swversion='"
+                + swversion + '\'' + ", ep='" + ep + '\'' + ", uniqueid='" + uniqueid + '\'' + '}';
+    }
 }

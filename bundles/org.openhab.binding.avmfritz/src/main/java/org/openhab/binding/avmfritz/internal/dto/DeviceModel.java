@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -28,7 +32,10 @@ public class DeviceModel extends AVMFritzBaseModel {
 
     private TemperatureModel temperature;
     private AlertModel alert;
-    private ButtonModel button;
+
+    @XmlElement(name = "button", type = ButtonModel.class)
+    private List<ButtonModel> buttons;
+
     private ETSUnitInfoModel etsiunitinfo;
 
     public TemperatureModel getTemperature() {
@@ -47,12 +54,15 @@ public class DeviceModel extends AVMFritzBaseModel {
         this.alert = alertModel;
     }
 
-    public ButtonModel getButton() {
-        return button;
+    public List<ButtonModel> getButtons() {
+        if (buttons == null) {
+            return Collections.emptyList();
+        }
+        return buttons;
     }
 
-    public void setButton(ButtonModel buttonModel) {
-        this.button = buttonModel;
+    public void setButtons(List<ButtonModel> buttons) {
+        this.buttons = buttons;
     }
 
     public ETSUnitInfoModel getEtsiunitinfo() {
@@ -65,8 +75,8 @@ public class DeviceModel extends AVMFritzBaseModel {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(super.toString()).append(temperature).append(alert).append(button)
-                .append(etsiunitinfo).toString();
+        return new StringBuilder().append(super.toString()).append(temperature).append(alert).append(getButtons())
+                .append(etsiunitinfo).append("]").toString();
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
