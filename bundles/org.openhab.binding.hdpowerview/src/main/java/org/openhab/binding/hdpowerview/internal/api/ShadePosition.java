@@ -157,7 +157,7 @@ public class ShadePosition {
                         /*
                          * Primary rail of a single action bottom-up shade
                          *
-                         * All these types use the same coordinate system; which is inverted in 
+                         * All these types use the same coordinate system; which is inverted in
                          * relation to that of OpenHAB
                          * 
                          * If the slats have a defined position then the shade position must by

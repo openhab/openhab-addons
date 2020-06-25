@@ -90,7 +90,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 if (command instanceof PercentType) {
                     moveShade(PosSeq.PRIMARY, PosKind.REGULAR, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    moveShade(PosSeq.PRIMARY, PosKind.REGULAR, ((UpDownType) command).equals(UpDownType.UP) ? 0 : 100);
+                    moveShade(PosSeq.PRIMARY, PosKind.REGULAR, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     logger.warn("PowerView shades do not support StopMove commands");
                 }
@@ -100,7 +100,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 if (command instanceof PercentType) {
                     moveShade(PosSeq.PRIMARY, PosKind.VANE, ((PercentType) command).intValue());
                 } else if (command instanceof OnOffType) {
-                    moveShade(PosSeq.PRIMARY, PosKind.VANE, ((OnOffType) command).equals(OnOffType.ON) ? 100 : 0);
+                    moveShade(PosSeq.PRIMARY, PosKind.VANE, OnOffType.ON.equals(command) ? 100 : 0);
                 }
                 break;
 
