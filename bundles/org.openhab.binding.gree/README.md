@@ -125,7 +125,6 @@ This example shows how to make a GREE Air Conditioner controllable by Google HA 
 
 **Items**
 
-
 ```
 Group Gree_Modechannel              "Gree"                { ga="Thermostat" } // allows mapping for Google Home Assistent
 Switch   GreeAirConditioner_Power   "Aircon"              {channel="gree:airconditioner:a1234561:power", ga="Switch"}
