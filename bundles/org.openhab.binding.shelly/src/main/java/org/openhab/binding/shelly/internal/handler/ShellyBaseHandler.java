@@ -394,8 +394,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 } else if (profile.hasBattery) {
                     logger.debug("{}: Ignore API Timeout for battery powered device", thingName);
                 } else {
-                    logger.debug("{}: Watchdog expired ({}/{} {}sec, period={})", thingName, watchdog.getStartTime(),
-                            now(), watchdog.getTime(), profile.updatePeriod);
+                    logger.debug("{}: Watchdog expired after {}sec,", thingName, profile.updatePeriod);
                     if (isThingOnline()) {
                         status = "offline.status-error-watchdog";
                     }
