@@ -146,4 +146,12 @@ public class ScaleTransformServiceTest {
         String transformedResponse = processor.transform(existingscale, source);
         Assert.assertEquals("Correcte (992) !", transformedResponse);
     }
+
+    @Test
+    public void testValueExceedsRange() throws TransformationException {
+        String existingscale = "scale/spektrum.scale";
+        String source = "2409";
+        String transformedResponse = processor.transform(existingscale, source);
+        Assert.assertEquals("", transformedResponse);
+    }
 }
