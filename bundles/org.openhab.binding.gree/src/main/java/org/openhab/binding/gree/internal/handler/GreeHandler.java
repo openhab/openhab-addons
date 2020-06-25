@@ -20,6 +20,7 @@ import java.net.DatagramSocket;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -67,6 +68,7 @@ public class GreeHandler extends BaseThingHandler {
     private boolean forceRefresh = false;
 
     private @Nullable ScheduledFuture<?> refreshTask;
+    private @Nullable Future<?> initializeFuture;
     private long lastRefreshTime = 0;
 
     public GreeHandler(Thing thing, GreeTranslationProvider messages, GreeDeviceFinder deviceFinder) {
@@ -91,7 +93,7 @@ public class GreeHandler extends BaseThingHandler {
 
         // Start the automatic refresh cycles
         startAutomaticRefresh();
-        scheduler.execute(this::initializeThing);
+        initializeFuture = scheduler.submit(this::initializeThing);
     }
 
     private void initializeThing() {
@@ -372,6 +374,7 @@ public class GreeHandler extends BaseThingHandler {
         if (refreshTask == null) {
             refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
             logger.debug("{}: Automatic refresh started ({} second interval)", thingId, config.refresh);
+            forceRefresh = true;
         }
     }
 
@@ -542,5 +545,8 @@ public class GreeHandler extends BaseThingHandler {
             clientSocket = Optional.empty();
         }
         stopRefrestTask();
+        if (initializeFuture != null) {
+            initializeFuture.cancel(true);
+        }
     }
 }
