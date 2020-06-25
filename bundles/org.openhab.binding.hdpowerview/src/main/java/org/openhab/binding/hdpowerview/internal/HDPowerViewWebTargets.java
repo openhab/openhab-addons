@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal;
 
+import java.time.Instant;
+
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -48,6 +50,16 @@ public class HDPowerViewWebTargets {
     private WebTarget sceneActivate;
     private WebTarget scenes;
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
+
+    /*
+     * the hub returns a 423 error (resource locked) daily just after midnight;
+     * which means it is temporarily undergoing maintenance; so we use "soft"
+     * exception handling during the five minute maintenance period after a 423
+     * error is received
+     */
+    private final int maintenancePeriod = 300;
+    private Instant maintenanceScheduledEnd = Instant.now().minusSeconds(2 * maintenancePeriod);
+
     public final Gson gson;
 
     public HDPowerViewWebTargets(Client client, String ipAddress) {
@@ -86,22 +98,28 @@ public class HDPowerViewWebTargets {
     private String invoke(Invocation invocation, WebTarget target) throws ProcessingException, HubMaintenanceException {
         logger.trace("API request = {}", target.getUri());
         Response response;
-        synchronized (this) {
-            response = invocation.invoke();
+        try {
+            synchronized (this) {
+                response = invocation.invoke();
+            }
+        } catch (ProcessingException e) {
+            if (Instant.now().isBefore(maintenanceScheduledEnd)) {
+                // throw "softer" exception during maintenance window
+                logger.debug("Hub still undergoing maintenance");
+                throw new HubMaintenanceException("Hub still undergoing maintenance");
+            }
+            throw e;
         }
         int statusCode = response.getStatus();
         if (statusCode == 423) {
-            /*
-             * the hub returns a 423 error (resource locked) daily just after midnight;
-             * which means it is temporarily busy for maintenance, so we should not worry
-             * too much about this message
-             */
-            logger.debug("Hub is undergoing temporary maintenance");
+            // set end of maintenance window, and throw a "softer" exception
+            maintenanceScheduledEnd = Instant.now().plusSeconds(maintenancePeriod);
+            logger.debug("Hub undergoing maintenance");
             if (response.hasEntity()) {
                 response.readEntity(String.class);
             }
             response.close();
-            throw new HubMaintenanceException("Hub temporary maintenance");
+            throw new HubMaintenanceException("Hub undergoing maintenance");
         }
         if (statusCode != 200) {
             logger.warn("Hub returned HTTP error '{}' while invoking {}", statusCode, target.getUri());

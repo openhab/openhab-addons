@@ -95,7 +95,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             } catch (ProcessingException | JsonParseException e) {
                 logger.warn("Unexpected error: {}", e.getMessage());
             } catch (HubMaintenanceException e) {
-                logger.debug("Hub temporariliy down for maintenance");
+                // exceptions are logged in HDPowerViewWebTargets
             }
             stopScan();
         };

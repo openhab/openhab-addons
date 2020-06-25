@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -41,6 +43,7 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
@@ -90,7 +93,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 try {
                     webTargets.activateScene(Integer.parseInt(channelUID.getId()));
                 } catch (HubMaintenanceException e) {
-                    logger.debug("Hub temporariliy down for maintenance");
+                    // exceptions are logged in HDPowerViewWebTargets
                 } catch (NumberFormatException | ProcessingException e) {
                     logger.debug("Unexpected error {}", e.getMessage());
                 }
@@ -159,7 +162,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         } catch (HubMaintenanceException e) {
-            logger.debug("Hub temporariliy down for maintenance");
+            // exceptions are logged in HDPowerViewWebTargets
         }
     }
 
@@ -170,33 +173,38 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (shades == null) {
             throw new JsonParseException("Missing 'shades' element");
         }
-        List<ShadeData> shadeData = shades.shadeData;
-        if (shadeData == null) {
+        List<ShadeData> shadesData = shades.shadeData;
+        if (shadesData == null) {
             throw new JsonParseException("Missing 'shades.shadeData' element");
         }
-        logger.debug("Received data for {} shades", shadeData.size());
+        logger.debug("Received data for {} shades", shadesData.size());
 
-        Map<String, ShadeData> shadeIdData = getShadeDataById(shadeData);
+        Map<String, ShadeData> shadeIdData = getShadeDataById(shadesData);
         List<Thing> things = getThing().getThings();
         if (shadeIdData.size() != things.size()) {
             logger.debug("Shade count in hub ({}) != Shade count in binding ({})", shadeIdData.size(), things.size());
         }
 
         for (Thing thing : things) {
-            String thingId = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
-            HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
-            if (thingHandler == null) {
-                logger.debug("Shade '{}' missing handler", thingId);
-                continue;
-            }
-            if (!shadeIdData.containsKey(thingId)) {
-                thingHandler.onReceiveUpdate(null);
-                logger.debug("Shade '{}' not found in hub", thingId);
-                continue;
-            }
-            logger.debug("Updating shade '{}'", thingId);
-            thingHandler.onReceiveUpdate(shadeIdData.get(thingId));
+            String shadeId = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
+            ShadeData shadeData = shadeIdData.get(shadeId);
+            updateShadeThing(shadeId, thing, shadeData);
         }
+    }
+
+    private void updateShadeThing(String shadeId, Thing thing, @Nullable ShadeData shadeData) {
+        HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
+        if (thingHandler == null) {
+            logger.debug("Shade '{}' missing handler", shadeId);
+            return;
+        }
+        if (shadeData == null) {
+            thingHandler.onReceiveUpdate(null);
+            logger.debug("Shade '{}' has no data in hub", shadeId);
+            return;
+        }
+        logger.debug("Updating shade '{}'", shadeId);
+        thingHandler.onReceiveUpdate(shadeData);
     }
 
     private void pollScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
@@ -267,12 +275,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void refreshShadeCache() {
-        Map<String, Thing> things = getThingsByShadeId();
-        for (String shadeId : things.keySet()) {
+        Map<String, Thing> shadeIdThings = getThingsByShadeId();
+        for (Entry<String, Thing> shadeIdThing : shadeIdThings.entrySet()) {
             try {
-                webTargets.refreshShade(shadeId);
+                String shadeId = shadeIdThing.getKey();
+                @Nullable
+                Shade shade = webTargets.refreshShade(shadeId);
+                updateShadeThing(shadeId, shadeIdThing.getValue(), shade != null ? shade.shade : null);
             } catch (HubMaintenanceException e) {
-                logger.debug("Hub temporariliy down for maintenance");
+                // exceptions are logged in HDPowerViewWebTargets
             } catch (ProcessingException e) {
                 logger.debug("Unexpected error {}", e.getMessage());
             }
