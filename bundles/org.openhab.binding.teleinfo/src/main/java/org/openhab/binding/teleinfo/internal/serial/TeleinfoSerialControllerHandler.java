@@ -86,11 +86,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
                 }
             }, 60, 60, TimeUnit.SECONDS);
 
-        if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
-            logger.info("Teleinfo Serial is initialized, but the bridge is currently OFFLINE due to errors");
-        } else {
-            logger.info("Teleinfo Serial is initialized");
-        }
     }
 
     @Override
@@ -185,17 +180,12 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
         } catch (PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_INUSE);
-            logger.error(
-                    "An error occurred during serial port connection. Detail: \"port is currently already in use (by '{}')\"",
-                    currentOwner);
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_UNSUPPORTED);
-            logger.error("An error occurred during serial port connection. Detail: \"{}\"", e.getLocalizedMessage(), e);
         } catch (TooManyListenersException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_LISTENERS);
-            logger.error("An error occurred during serial port connection. Detail: \"{}\"", e.getLocalizedMessage(), e);
         }
         logger.debug("startReceiving [end]");
     }
