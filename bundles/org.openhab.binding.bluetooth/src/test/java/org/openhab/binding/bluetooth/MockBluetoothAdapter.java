@@ -53,7 +53,7 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
     }
 
     @Override
-    public BluetoothAddress getAddress() {
+    public @Nullable BluetoothAddress getAddress() {
         return address;
     }
 

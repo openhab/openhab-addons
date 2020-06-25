@@ -51,28 +51,28 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
      */
     private Map<BluetoothAddress, RoamingBluetoothDevice> devices = new HashMap<>();
 
-    // Our BT address
-    private @NonNullByDefault({}) BluetoothAddress adapterAddress;
-
     public RoamingBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
     public void initialize() {
-        Object address = getConfig().get(BluetoothBindingConstants.CONFIGURATION_ADDRESS);
-        if (address != null) {
-            adapterAddress = new BluetoothAddress(address.toString());
+        updateStatus();
+    }
+
+    private void updateStatus() {
+        if (adapters.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No Physical Bluetooth adapters found");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
-            return;
+            updateStatus(ThingStatus.ONLINE);
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void dispose() {
-        updateStatus(ThingStatus.OFFLINE);
+        // nothing that needs to be done here.
+        // Listener cleanup will be performed by the discovery participant anyway.
     }
 
     @Override
@@ -115,6 +115,10 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
                 roamingDevice.addBluetoothDevice(adapter.getDevice(roamingDevice.getAddress()));
             }
         }
+
+        if (getThing().getStatus() == ThingStatus.OFFLINE) {
+            updateStatus();
+        }
     }
 
     @Override
@@ -131,6 +135,9 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
             }
         }
 
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            updateStatus();
+        }
     }
 
     @Override
@@ -158,8 +165,9 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public BluetoothAddress getAddress() {
-        return adapterAddress;
+    public @Nullable BluetoothAddress getAddress() {
+        // roaming adapters don't have bluetooth addresses
+        return null;
     }
 
     @Override

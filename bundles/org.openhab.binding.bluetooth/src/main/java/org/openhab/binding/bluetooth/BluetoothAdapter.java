@@ -63,6 +63,7 @@ public interface BluetoothAdapter extends Identifiable<ThingUID> {
      * @return the {@link BluetoothAddress} of the adapter
      * @throws IllegalStateException if the adapter is not initialized
      */
+    @Nullable
     BluetoothAddress getAddress();
 
     /**

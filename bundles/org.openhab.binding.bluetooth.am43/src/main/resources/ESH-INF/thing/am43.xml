@@ -8,6 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bluegiga"/>
 			<bridge-type-ref id="bluez"/>
+			<bridge-type-ref id="roaming"/>
 		</supported-bridge-type-refs>
 
 		<label>AM43 Blind Drive Motor</label>

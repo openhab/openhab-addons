@@ -17,6 +17,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -146,7 +147,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
     }
 
     @Override
-    public BluetoothAddress getAddress() {
+    public @Nullable BluetoothAddress getAddress() {
         return adapterAddress;
     }
 
