@@ -861,9 +861,6 @@ public enum ComfoAirCommandType {
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
 
         if (commandType != null) {
-            if (commandType.read_command == 0) {
-                return null;
-            }
             return new ComfoAirCommand(key);
         }
         return null;
