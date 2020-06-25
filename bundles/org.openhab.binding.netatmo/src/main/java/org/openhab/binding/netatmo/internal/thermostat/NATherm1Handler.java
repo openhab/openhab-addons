@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -40,6 +41,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.internal.NATherm1StateDescriptionProvider;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,14 +76,21 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
         updateProperties(moduleData.getFirmware(), moduleData.getType());
     }
 
+    private @Nullable ThermostatApi getThermostatApi() {
+        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
+        return bridgeHandler == null ? null : bridgeHandler.getThermostatApi();
+    }
+
     @Override
     public void updateChannels(Object moduleObject) {
         if (isRefreshRequired()) {
             measurableChannels.getAsCsv().ifPresent(csvParams -> {
-                ThermostatApi thermostatApi = getBridgeHandler().getThermostatApi();
-                NAMeasureResponse measures = thermostatApi.getmeasure(getParentId(), "max", csvParams, getId(), null,
-                        null, 1, true, true);
-                measurableChannels.setMeasures(measures);
+                ThermostatApi thermostatApi = getThermostatApi();
+                if (thermostatApi != null) {
+                    NAMeasureResponse measures = thermostatApi.getmeasure(getParentId(), "max", csvParams, getId(),
+                            null, null, 1, true, true);
+                    measurableChannels.setMeasures(measures);
+                }
             });
             setRefreshRequired(false);
         }
@@ -277,10 +286,12 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                         break;
                     }
                     case CHANNEL_PLANNING: {
-                        getBridgeHandler().getThermostatApi().switchschedule(getParentId(), getId(),
-                                command.toString());
-                        updateState(channelUID, new StringType(command.toString()));
-                        invalidateParentCacheAndRefresh();
+                        ThermostatApi thermostatApi = getThermostatApi();
+                        if (thermostatApi != null) {
+                            thermostatApi.switchschedule(getParentId(), getId(), command.toString());
+                            updateState(channelUID, new StringType(command.toString()));
+                            invalidateParentCacheAndRefresh();
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -290,9 +301,11 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
     }
 
     private void pushSetpointUpdate(String target_mode, Integer setpointEndtime, Float setpointTemp) {
-        getBridgeHandler().getThermostatApi().setthermpoint(getParentId(), getId(), target_mode, setpointEndtime,
-                setpointTemp);
-        invalidateParentCacheAndRefresh();
+        ThermostatApi thermostatApi = getThermostatApi();
+        if (thermostatApi != null) {
+            thermostatApi.setthermpoint(getParentId(), getId(), target_mode, setpointEndtime, setpointTemp);
+            invalidateParentCacheAndRefresh();
+        }
     }
 
     private int getSetpointEndTime() {
