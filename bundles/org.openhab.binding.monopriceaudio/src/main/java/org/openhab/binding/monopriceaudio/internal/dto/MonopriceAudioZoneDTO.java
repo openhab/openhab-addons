@@ -24,10 +24,10 @@ public class MonopriceAudioZoneDTO {
     private String power;
     private String mute;
     private String dnd;
-    private String volume;
-    private String treble;
-    private String bass;
-    private String balance;
+    private int volume;
+    private int treble;
+    private int bass;
+    private int balance;
     private String source;
     private String keypad;
 
@@ -83,35 +83,35 @@ public class MonopriceAudioZoneDTO {
         return ("01").equals(this.dnd);
     }
 
-    public String getVolume() {
+    public int getVolume() {
         return this.volume;
     }
 
-    public void setVolume(String volume) {
+    public void setVolume(int volume) {
         this.volume = volume;
     }
 
-    public String getTreble() {
+    public int getTreble() {
         return this.treble;
     }
 
-    public void setTreble(String treble) {
+    public void setTreble(int treble) {
         this.treble = treble;
     }
 
-    public String getBass() {
+    public int getBass() {
         return this.bass;
     }
 
-    public void setBass(String bass) {
+    public void setBass(int bass) {
         this.bass = bass;
     }
 
-    public String getBalance() {
+    public int getBalance() {
         return this.balance;
     }
 
-    public void setBalance(String balance) {
+    public void setBalance(int balance) {
         this.balance = balance;
     }
 
@@ -139,6 +139,7 @@ public class MonopriceAudioZoneDTO {
     public String toString() {
         // Re-construct the original status message from the controller
         // This is used to determine if something changed from the last polling update
-        return zone + page + power + mute + dnd + volume + treble + bass + balance + source + keypad;
+        return zone + page + power + mute + dnd + (String.format("%02d", volume)) + (String.format("%02d", treble))
+                + (String.format("%02d", bass)) + (String.format("%02d", balance)) + source + keypad;
     }
 }

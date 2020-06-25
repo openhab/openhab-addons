@@ -39,7 +39,7 @@ The thing has the following configuration parameters:
 | Serial Port          | serialPort       | Serial port to use for connecting to the Monoprice whole house amplifier device                                                | Serial port name | |
 | Address              | host             | Host name or IP address of the machine connected to the Monoprice whole house amplifier device (serial over IP)                | Host name or IP  | |
 | Port                 | port             | Communication port (serial over IP).                                                                                           | TCP port number  | |
-| Number of Zones      | numZones         | (Optional) Number of zones on the amplifier to utilize in the binding (up to 18 zones with 3 amplifiers connected together)    | 1-18; default 6  | |
+| Number of Zones      | numZones         | (Optional) Number of amplifier zones to utilize in the binding (up to 18 zones with 3 amplifiers connected together)           | 1-18; default 6  | |
 | Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the controller to check for zone updates                                  | 5-60; default 15 | |
 | Ignore Zones         | ignoreZones      | (Optional) A comma seperated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     | |
 | Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 | |
@@ -52,12 +52,12 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-* On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load. 
-  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+* On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
+* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
-  See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+* See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 * Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/)
-  (take care, the baud rate is specific to the Monoprice amplifier):
+* (take care, the baud rate is specific to the Monoprice amplifier):
 
 ```
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
@@ -69,13 +69,12 @@ The following channels are available:
 
 | Channel ID                    | Item Type | Description                                                                                                   |
 |-------------------------------|-----------|---------------------------------------------------------------------------------------------------------------|
-| all:allon                     | Switch    | Turn all zones on simultaneously (except those specified by the ignoreZones config option)                    |
-| all:alloff                    | Switch    | Turn all zones off simultaneously (except those specified by the ignoreZones config option)                   |
-| all:allsource                 | Number    | Select the source input for all zones simultaneously (1-6) (except ignoreZones)                               |
-| all:allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to 0-38] (except ignoreZones)            |
-| all:allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                  |
+| all#allpower                  | Switch    | Turn all zones on or off simultaneously (those specified by the ignoreZones config option will not turn on)   |
+| all#allsource                 | Number    | Select the input source for all zones simultaneously (1-6) (except ignoreZones)                               |
+| all#allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to 0-38] (except ignoreZones)            |
+| all#allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                  |
 | zoneN#power (where N= 1-18)   | Switch    | Turn the power for a zone on or off                                                                           |
-| zoneN#source (where N= 1-18)  | Number    | Select the source input for a zone (1-6)                                                                      |
+| zoneN#source (where N= 1-18)  | Number    | Select the input source for a zone (1-6)                                                                      |
 | zoneN#volume (where N= 1-18)  | Dimmer    | Control the volume for a zone (0-100%) [translates to 0-38]                                                   |
 | zoneN#mute (where N= 1-18)    | Switch    | Mute or unmute a zone                                                                                         |
 | zoneN#treble (where N= 1-18)  | Number    | Adjust the treble control for a zone (-7 to 7) -7=none, 0=flat, 7=full                                        |
@@ -101,8 +100,7 @@ monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=4444,
 monoprice.items:
 
 ```java
-Switch all_allon "All Zones On" { channel="monopriceaudio:amplifier:myamp:all#allon" }
-Switch all_alloff "All Zones Off" { channel="monopriceaudio:amplifier:myamp:all#alloff" }
+Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }
 Dimmer all_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp:all#allvolume" }
 Switch all_mute "Mute" { channel="monopriceaudio:amplifier:myamp:all#allmute" }
@@ -126,8 +124,8 @@ monoprice.sitemap:
 ```perl
 sitemap monoprice label="Audio Control" {
     Frame label="All Zones" {
-        Switch item=all_allon mappings=[ON=" "]
-        Switch item=all_alloff mappings=[ON=" "]
+        Switch item=all_allpower label="All Zones On" mappings=[ON=" "]
+        Switch item=all_allpower label="All Zones Off" mappings=[OFF=" "]
         Selection item=all_source
         Setpoint item=all_volume minValue=0 maxValue=100 step=1
         Switch item=all_mute

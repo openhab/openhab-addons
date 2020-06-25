@@ -74,7 +74,7 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            throw new MonopriceAudioException("Opening IP connection failed: " + e.getMessage());
+            throw new MonopriceAudioException("Opening IP connection failed: " + e.getMessage(), e);
         }
     }
 
@@ -119,7 +119,7 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
         } catch (SocketTimeoutException e) {
             return 0;
         } catch (IOException e) {
-            throw new MonopriceAudioException("readInput failed: " + e.getMessage());
+            throw new MonopriceAudioException("readInput failed: " + e.getMessage(), e);
         }
     }
 }

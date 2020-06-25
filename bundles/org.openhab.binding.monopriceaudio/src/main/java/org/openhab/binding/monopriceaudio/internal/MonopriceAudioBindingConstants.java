@@ -40,8 +40,7 @@ public class MonopriceAudioBindingConstants {
     public static final String CHANNEL_TYPE_DND = "dnd";
     public static final String CHANNEL_TYPE_PAGE = "page";
     public static final String CHANNEL_TYPE_KEYPAD = "keypad";
-    public static final String CHANNEL_TYPE_ALLON = "allon";
-    public static final String CHANNEL_TYPE_ALLOFF = "alloff";
+    public static final String CHANNEL_TYPE_ALLPOWER = "allpower";
     public static final String CHANNEL_TYPE_ALLSOURCE = "allsource";
     public static final String CHANNEL_TYPE_ALLVOLUME = "allvolume";
     public static final String CHANNEL_TYPE_ALLMUTE = "allmute";

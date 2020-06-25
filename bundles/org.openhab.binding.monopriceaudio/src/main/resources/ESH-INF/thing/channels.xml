@@ -165,8 +165,7 @@
 		<label>All Zones</label>
 		<description>Control All Zones Simultaneously</description>
 		<channels>
-			<channel id="allon" typeId="allon"/>
-			<channel id="alloff" typeId="alloff"/>
+			<channel id="allpower" typeId="allpower"/>
 			<channel id="allsource" typeId="source"/>
 			<channel id="allvolume" typeId="system.volume"/>
 			<channel id="allmute" typeId="system.mute"/>
@@ -479,16 +478,10 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="allon">
+	<channel-type id="allpower">
 		<item-type>Switch</item-type>
 		<label>All On</label>
-		<description>Turn All Zones On</description>
-	</channel-type>
-
-	<channel-type id="alloff">
-		<item-type>Switch</item-type>
-		<label>All Off</label>
-		<description>Turn All Zones Off</description>
+		<description>Turn All Zones On or Off</description>
 	</channel-type>
 
 	<channel-type id="source">

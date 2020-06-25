@@ -156,7 +156,7 @@ public abstract class MonopriceAudioConnector {
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
-            throw new MonopriceAudioException("readInput failed: " + e.getMessage());
+            throw new MonopriceAudioException("readInput failed: " + e.getMessage(), e);
         }
     }
 

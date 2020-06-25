@@ -98,16 +98,17 @@ public class MonopriceAudioSerialConnector extends MonopriceAudioConnector {
             logger.debug("Serial connection opened");
         } catch (PortInUseException e) {
             setConnected(false);
-            throw new MonopriceAudioException("Opening serial connection failed: Port in Use Exception");
+            throw new MonopriceAudioException("Opening serial connection failed: Port in Use Exception", e);
         } catch (UnsupportedCommOperationException e) {
             setConnected(false);
-            throw new MonopriceAudioException("Opening serial connection failed: Unsupported Comm Operation Exception");
+            throw new MonopriceAudioException("Opening serial connection failed: Unsupported Comm Operation Exception",
+                    e);
         } catch (UnsupportedEncodingException e) {
             setConnected(false);
-            throw new MonopriceAudioException("Opening serial connection failed: Unsupported Encoding Exception");
+            throw new MonopriceAudioException("Opening serial connection failed: Unsupported Encoding Exception", e);
         } catch (IOException e) {
             setConnected(false);
-            throw new MonopriceAudioException("Opening serial connection failed: IO Exception");
+            throw new MonopriceAudioException("Opening serial connection failed: IO Exception", e);
         }
     }
 

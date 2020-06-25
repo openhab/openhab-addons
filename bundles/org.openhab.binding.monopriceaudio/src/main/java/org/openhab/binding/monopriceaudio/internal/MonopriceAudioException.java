@@ -26,6 +26,10 @@ public class MonopriceAudioException extends Exception {
     public MonopriceAudioException() {
     }
 
+    public MonopriceAudioException(String message, Throwable t) {
+        super(message, t);
+    }
+
     public MonopriceAudioException(String message) {
         super(message);
     }
