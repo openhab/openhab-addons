@@ -78,14 +78,36 @@ If the shade has rotatable vanes it will also have a dimmer channel `vane` which
 If the shade is a combined top-down / bottom-up shade then it will also have a roller shutter channel `secondary` which controls the position of the secondary rail.
 All of these channels are implemented in the binding, but if it has no physical implementation on the shade, then the respective channels have no purpose.
 
-| Channel    | Item Type     | Description                                                                                                                                                 |
-|------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Channel    | Item Type     | Description |
+|------------|---------------|------------|
 | position   | Rollershutter | The vertical position of the shade. Up/Down commands will move the shade to its completely up or completely down position. Move/Stop commands are ignored.  |
 | secondary  | Rollershutter | The secondary vertical position of the shade. This channel only applies in the case of shades with combined top-down and bottom-up motors. The function is identical to the (primary) position channel above. |
 | vane       | Dimmer        | The amount the slats on the shade are open. Setting this value will completely close the shade first, as the slats can only be controlled in that position. |
 | batteryLow | Switch        | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
 
-### Refreshing the PowerView Hub Cache
+### Roller Shutter Up/Down Position vs. Open/Close State
+
+The `position` and `secondary` channels are Rollershutter types.
+For vertical shades, the binding maps the vertical position of the "rail" of the shades to the Rollershutter `UP` / `DOWN` position, and its respective percent value.
+And for horizontal shades, it maps the horizontal position to the Rollershutter `UP` / `DOWN` position, and its respective percent value.
+Depending on whether the shade is a top-down, bottom-up, left-right, right-left, or dual action shade, the `OPEN` and `CLOSED` position of the shades will differ as follows..
+
+| Type of Shade            | Channel           | Rail & Rollershutter Position | Open/Closed State | Percent |
+|--------------------------|-------------------|-------------------------------|-------------------|---------|
+| Single action top-down   | `position`        | `UP`                          | `OPEN`            | 0%      |
+|                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
+| Single action bottom-up  | `position`        | `UP`                          | ***`CLOSED`***    | 0%      |
+|                          |                   | `DOWN`                        | ***`OPEN`***      | 100%    |
+| Single action left-right | `position`        | `UP`                          | `OPEN`            | 0%      |
+|                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
+| Single action right-left | `position`        | `UP`                          | `OPEN`            | 0%      |
+|                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
+| Dual action (lower rail) | `position`        | `UP`                          | `OPEN`            | 0%      |
+|                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
+| Dual action (upper rail) | ***`secondary`*** | `UP`                          | ***`CLOSED`***    | 0%      |
+|                          |                   | `DOWN`                        | ***`OPEN`***      | 100%    |
+
+## Refreshing the PowerView Hub Cache
 
 The hub maintains a cache of the last known state of its shades, and this binding delivers those values.
 Usually the shades will moved by this binding, so since the hub is always involved in the process, it can update its cache accordingly.
