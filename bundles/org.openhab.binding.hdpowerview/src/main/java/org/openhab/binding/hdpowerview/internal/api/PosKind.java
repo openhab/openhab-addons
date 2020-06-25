@@ -33,12 +33,12 @@ public enum PosKind {
     public static PosKind get(int key) {
         switch (key) {
             case 1:
-                return PosKind.REGULAR;
+                return REGULAR;
             case 2:
-                return PosKind.INVERTED;
+                return INVERTED;
             case 3:
-                return PosKind.VANE;
+                return VANE;
         }
-        return PosKind.ERROR;
+        return ERROR;
     }
 }

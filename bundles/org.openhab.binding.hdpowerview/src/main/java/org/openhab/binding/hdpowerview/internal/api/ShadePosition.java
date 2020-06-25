@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.api;
 
+import static org.openhab.binding.hdpowerview.internal.api.PosKind.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -90,7 +92,7 @@ public class ShadePosition {
 
     public static ShadePosition create(ShadePosition primary, @Nullable PosKind secondaryKind,
             @Nullable Integer secondaryPercent) {
-        ShadePosition clone = new ShadePosition(PosKind.REGULAR, 0, secondaryKind, secondaryPercent);
+        ShadePosition clone = new ShadePosition(REGULAR, 0, secondaryKind, secondaryPercent);
         clone.position1 = primary.position1;
         clone.posKind1 = primary.posKind1;
         return clone;
