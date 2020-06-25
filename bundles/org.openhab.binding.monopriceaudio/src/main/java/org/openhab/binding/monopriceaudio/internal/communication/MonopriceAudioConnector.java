@@ -204,7 +204,7 @@ public abstract class MonopriceAudioConnector {
             dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException e) {
-            throw new MonopriceAudioException("Send command \"" + cmd.getValue() + "\" failed: " + e.getMessage());
+            throw new MonopriceAudioException("Send command \"" + cmd.getValue() + "\" failed: " + e.getMessage(), e);
         }
     }
 
