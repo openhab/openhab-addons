@@ -26,11 +26,14 @@ import javax.ws.rs.client.ClientBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.api.PosKind;
+import org.openhab.binding.hdpowerview.internal.api.PosSeq;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-import org.openhab.binding.hdpowerview.internal.api.ShadePositionKind;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
@@ -93,47 +96,46 @@ public class HDPowerViewJUnitTests {
 
             // ==== exercise some code ====
             ShadePosition test;
-            PercentType pos;
+            State pos;
 
             // shade fully up
-            test = ShadePosition.create(ShadePositionKind.PRIMARY, 0);
+            test = ShadePosition.create(PosKind.REGULAR, 0);
             assertNotNull(test);
-            pos = test.getPercent(ShadePositionKind.PRIMARY);
-            assertNotNull(pos);
-            assertEquals(0, pos.intValue());
-            pos = test.getPercent(ShadePositionKind.VANE);
-            assertNotNull(pos);
-            assertEquals(0, pos.intValue());
+            pos = test.getState(PosSeq.PRIMARY, PosKind.REGULAR);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(0, ((PercentType) pos).intValue());
+            pos = test.getState(PosSeq.PRIMARY, PosKind.VANE);
+            assertTrue(UnDefType.UNDEF.equals(pos));
 
             // shade fully down (method 1)
-            test = ShadePosition.create(ShadePositionKind.PRIMARY, 100);
+            test = ShadePosition.create(PosKind.REGULAR, 100);
             assertNotNull(test);
-            pos = test.getPercent(ShadePositionKind.PRIMARY);
-            assertNotNull(pos);
-            assertEquals(100, pos.intValue());
-            pos = test.getPercent(ShadePositionKind.VANE);
-            assertNotNull(pos);
-            assertEquals(0, pos.intValue());
+            pos = test.getState(PosSeq.PRIMARY, PosKind.REGULAR);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(100, ((PercentType) pos).intValue());
+            pos = test.getState(PosSeq.PRIMARY, PosKind.VANE);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(0, ((PercentType) pos).intValue());
 
             // shade fully down (method 2)
-            test = ShadePosition.create(ShadePositionKind.VANE, 0);
+            test = ShadePosition.create(PosKind.VANE, 0);
             assertNotNull(test);
-            pos = test.getPercent(ShadePositionKind.PRIMARY);
-            assertNotNull(pos);
-            assertEquals(100, pos.intValue());
-            pos = test.getPercent(ShadePositionKind.VANE);
-            assertNotNull(pos);
-            assertEquals(0, pos.intValue());
+            pos = test.getState(PosSeq.PRIMARY, PosKind.REGULAR);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(100, ((PercentType) pos).intValue());
+            pos = test.getState(PosSeq.PRIMARY, PosKind.VANE);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(0, ((PercentType) pos).intValue());
 
             // shade fully down (method 2) and vane fully open
-            test = ShadePosition.create(ShadePositionKind.VANE, 100);
+            test = ShadePosition.create(PosKind.VANE, 100);
             assertNotNull(test);
-            pos = test.getPercent(ShadePositionKind.PRIMARY);
-            assertNotNull(pos);
-            assertEquals(100, pos.intValue());
-            pos = test.getPercent(ShadePositionKind.VANE);
-            assertNotNull(pos);
-            assertEquals(100, pos.intValue());
+            pos = test.getState(PosSeq.PRIMARY, PosKind.REGULAR);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(100, ((PercentType) pos).intValue());
+            pos = test.getState(PosSeq.PRIMARY, PosKind.VANE);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(100, ((PercentType) pos).intValue());
 
             @Nullable
             String shadeId = null;
@@ -148,18 +150,30 @@ public class HDPowerViewJUnitTests {
                 String json = loadJson("duette");
                 assertNotNull(json);
                 assertNotEquals("", json);
+
                 shades = webTargets.gson.fromJson(json, Shades.class);
                 assertNotNull(shades);
+
                 assertEquals(1, shades.shadeData.size());
                 shadeData = shades.shadeData.get(0);
+
                 assertEquals("Gardin 1", shadeData.getName());
                 assertEquals("63778", shadeData.id);
+
                 shadePos = shadeData.positions;
                 assertNotNull(shadePos);
-                assertEquals(ShadePositionKind.PRIMARY, shadePos.getPosKind());
-                assertEquals(59, shadePos.getPercent(ShadePositionKind.PRIMARY).intValue());
-                assertEquals(65, shadePos.getPercent(ShadePositionKind.SECONDARY).intValue());
-                assertEquals(0, shadePos.getPercent(ShadePositionKind.VANE).intValue());
+                assertEquals(PosKind.REGULAR, shadePos.getPosKind());
+
+                pos = shadePos.getState(PosSeq.PRIMARY, PosKind.REGULAR);
+                assertEquals(PercentType.class, pos.getClass());
+                assertEquals(59, ((PercentType) pos).intValue());
+
+                pos = shadePos.getState(PosSeq.SECONDARY, PosKind.INVERTED);
+                assertEquals(PercentType.class, pos.getClass());
+                assertEquals(65, ((PercentType) pos).intValue());
+
+                pos = shadePos.getState(PosSeq.PRIMARY, PosKind.VANE);
+                assertEquals(UnDefType.class, pos.getClass());
             } catch (JsonParseException e) {
                 fail(e.getMessage());
             }
@@ -174,6 +188,7 @@ public class HDPowerViewJUnitTests {
                 assertNotNull(shadePos);
                 shadeId = shades.shadeData.get(0).id;
                 assertNotNull(shadeId);
+
                 for (ShadeData shadeData : shades.shadeData) {
                     String shadeName = shadeData.getName();
                     assertNotNull(shadeName);
@@ -190,6 +205,7 @@ public class HDPowerViewJUnitTests {
                 assertTrue(scenes.sceneData.size() > 0);
                 sceneId = scenes.sceneData.get(0).id;
                 assertTrue(sceneId > 0);
+
                 for (Scene scene : scenes.sceneData) {
                     String sceneName = scene.getName();
                     assertNotNull(sceneName);
@@ -210,26 +226,32 @@ public class HDPowerViewJUnitTests {
             }
 
             // ==== move a specific shade ====
-            if (allowShadeMovementCommands) {
-                try {
-                    assertNotNull(shadeId);
-                    assertNotNull(shade);
-                    @Nullable
-                    ShadeData shadeData = shade.shade;
-                    assertNotNull(shadeData);
-                    ShadePosition positions = shadeData.positions;
-                    assertNotNull(positions);
-                    ShadePositionKind kind = positions.getPosKind();
-                    assertNotNull(kind);
-                    int position = positions.getPercent(kind).intValue();
-                    position = position + ((position <= 10) ? 5 : -5);
-                    ShadePosition newPos = ShadePosition.create(kind, position);
-                    assertNotNull(newPos);
+            try {
+                assertNotNull(shadeId);
+                assertNotNull(shade);
+                @Nullable
+                ShadeData shadeData = shade.shade;
+                assertNotNull(shadeData);
+                ShadePosition positions = shadeData.positions;
+                assertNotNull(positions);
+                PosKind kind = positions.getPosKind();
+                assertNotNull(kind);
+
+                pos = positions.getState(PosSeq.PRIMARY, kind);
+                assertEquals(PercentType.class, pos.getClass());
+
+                int position = ((PercentType) pos).intValue();
+                position = position + ((position <= 10) ? 5 : -5);
+
+                ShadePosition newPos = ShadePosition.create(kind, position);
+                assertNotNull(newPos);
+
+                if (allowShadeMovementCommands) {
                     shade = webTargets.moveShade(shadeId, newPos);
                     assertNotNull(shade);
-                } catch (ProcessingException | HubMaintenanceException e) {
-                    fail(e.getMessage());
                 }
+            } catch (ProcessingException | HubMaintenanceException e) {
+                fail(e.getMessage());
             }
 
             // ==== activate a specific scene ====

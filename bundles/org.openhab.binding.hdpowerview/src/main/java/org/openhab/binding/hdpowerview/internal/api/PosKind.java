@@ -13,44 +13,32 @@
 package org.openhab.binding.hdpowerview.internal.api;
 
 /**
- * A shade type, as returned by the HD Power View Hub.
+ * Shade position kind, as returned by the HD Power View Hub.
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
  */
-public enum ShadePositionKind {
+public enum PosKind {
+    REGULAR(1),
+    INVERTED(2),
+    VANE(3),
+    ERROR(4);
 
-    /*-
-     * The types of position are defined as follows: 
-     *   0 = None 
-     *   1 = Primary rail
-     *   2 = Secondary rail
-     *   3 = Vane tilt
-     *   4 = Error
-     */
-    PRIMARY(1),
-    SECONDARY(2),
-    VANE(3);
+    public final int key;
 
-    private final int key;
-
-    ShadePositionKind(int key) {
+    PosKind(int key) {
         this.key = key;
     }
 
-    public int getKey() {
-        return key;
-    }
-
-    public static ShadePositionKind get(int key) {
+    public static PosKind get(int key) {
         switch (key) {
             case 1:
-                return ShadePositionKind.PRIMARY;
+                return PosKind.REGULAR;
             case 2:
-                return ShadePositionKind.SECONDARY;
+                return PosKind.INVERTED;
             case 3:
-                return ShadePositionKind.VANE;
+                return PosKind.VANE;
         }
-        return null;
+        return PosKind.ERROR;
     }
 }
