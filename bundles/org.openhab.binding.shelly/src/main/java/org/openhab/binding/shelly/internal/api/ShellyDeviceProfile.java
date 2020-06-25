@@ -102,8 +102,8 @@ public class ShellyDeviceProfile {
             settingsJson = json;
             settings = gson.fromJson(json, ShellySettingsGlobal.class);
         } catch (IllegalArgumentException | JsonSyntaxException e) {
-            throw new ShellyApiException(e,
-                    thingName + ": Unable to transform settings JSON " + e.toString() + ", json='" + json + "'");
+            throw new ShellyApiException(
+                    thingName + ": Unable to transform settings JSON " + e.toString() + ", json='" + json + "'", e);
         }
 
         // General settings
@@ -136,7 +136,6 @@ public class ShellyDeviceProfile {
             // RGBW2 doesn't report, but has one
             numMeters = inColor ? 1 : getInteger(settings.device.numOutputs);
         }
-        isDimmer = deviceType.equalsIgnoreCase(SHELLYDT_DIMMER);
         isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
 
         if (settings.sleepMode != null) {

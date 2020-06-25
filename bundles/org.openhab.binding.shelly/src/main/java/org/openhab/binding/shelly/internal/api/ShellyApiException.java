@@ -49,7 +49,7 @@ public class ShellyApiException extends Exception {
         apiResult = res;
     }
 
-    public ShellyApiException(Exception exception, String message) {
+    public ShellyApiException(String message, Exception exception) {
         super(message, exception);
     }
 

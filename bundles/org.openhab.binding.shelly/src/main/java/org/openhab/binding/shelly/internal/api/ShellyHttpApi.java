@@ -99,7 +99,7 @@ public class ShellyHttpApi {
      */
     public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
         String json = request(SHELLY_URL_SETTINGS);
-        if (json.contains("\"type\":\"SHDM-1\"")) {
+        if (json.contains("\"type\":\"SHDM-1\"") || json.contains("\"type\":\"SHDM-2\"")) {
             logger.trace("{}: Detected a Shelly Dimmer: fix Json (replace lights[] tag with dimmers[]", thingName);
             json = fixDimmerJson(json);
         }
@@ -133,10 +133,18 @@ public class ShellyHttpApi {
      * @throws ShellyApiException
      */
     public ShellySettingsStatus getStatus() throws ShellyApiException {
-        String json = request(SHELLY_URL_STATUS);
-        ShellySettingsStatus status = gson.fromJson(json, ShellySettingsStatus.class);
-        status.json = json;
-        return status;
+        String json = "";
+        try {
+            json = request(SHELLY_URL_STATUS);
+            // Dimmer2 returns invalid json type for loaderror :-(
+            json = json.replace("\"loaderror\":0,", "\"loaderror\":false,");
+            json = json.replace("\"loaderror\":1,", "\"loaderror\":true,");
+            ShellySettingsStatus status = gson.fromJson(json, ShellySettingsStatus.class);
+            status.json = json;
+            return status;
+        } catch (JsonSyntaxException e) {
+            throw new ShellyApiException("Unable to parse JSON: " + json, e);
+        }
     }
 
     public ShellyStatusRelay getRelayStatus(Integer relayIndex) throws ShellyApiException {
@@ -458,12 +466,11 @@ public class ShellyHttpApi {
      * @param uri: URI (e.g. "/settings")
      */
     public <T> T callApi(String uri, Class<T> classOfT) throws ShellyApiException {
-        String json = "Invalid API result";
         try {
-            json = request(uri);
+            String json = request(uri);
             return gson.fromJson(json, classOfT);
         } catch (JsonSyntaxException e) {
-            throw new ShellyApiException(e, "Unable to convert JSON");
+            throw new ShellyApiException("Unable to convert JSON", e);
         }
     }
 
