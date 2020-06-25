@@ -13,6 +13,8 @@
 package org.openhab.binding.hdpowerview.internal.handler;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
+import static org.openhab.binding.hdpowerview.internal.api.PosKind.*;
+import static org.openhab.binding.hdpowerview.internal.api.PosSeq.*;
 
 import javax.ws.rs.ProcessingException;
 
@@ -88,9 +90,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
-                    moveShade(PosSeq.PRIMARY, PosKind.REGULAR, ((PercentType) command).intValue());
+                    moveShade(PRIMARY, REGULAR, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    moveShade(PosSeq.PRIMARY, PosKind.REGULAR, UpDownType.UP.equals(command) ? 0 : 100);
+                    moveShade(PRIMARY, REGULAR, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     logger.warn("PowerView shades do not support StopMove commands");
                 }
@@ -98,17 +100,17 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_VANE:
                 if (command instanceof PercentType) {
-                    moveShade(PosSeq.PRIMARY, PosKind.VANE, ((PercentType) command).intValue());
+                    moveShade(PRIMARY, VANE, ((PercentType) command).intValue());
                 } else if (command instanceof OnOffType) {
-                    moveShade(PosSeq.PRIMARY, PosKind.VANE, OnOffType.ON.equals(command) ? 100 : 0);
+                    moveShade(PRIMARY, VANE, OnOffType.ON.equals(command) ? 100 : 0);
                 }
                 break;
 
             case CHANNEL_SHADE_SECONDARY_POSITION:
                 if (command instanceof PercentType) {
-                    moveShade(PosSeq.SECONDARY, PosKind.INVERTED, ((PercentType) command).intValue());
+                    moveShade(SECONDARY, INVERTED, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    moveShade(PosSeq.SECONDARY, PosKind.INVERTED, UpDownType.UP.equals(command) ? 0 : 100);
+                    moveShade(SECONDARY, INVERTED, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     logger.warn("PowerView shades do not support StopMove commands");
                 }
@@ -128,9 +130,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private void updateBindingStates(ShadePosition shadePos) {
         if (shadePos != null) {
-            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(PosSeq.PRIMARY, PosKind.REGULAR));
-            updateState(CHANNEL_SHADE_VANE, shadePos.getState(PosSeq.PRIMARY, PosKind.VANE));
-            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(PosSeq.SECONDARY, PosKind.INVERTED));
+            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(PRIMARY, REGULAR));
+            updateState(CHANNEL_SHADE_VANE, shadePos.getState(PRIMARY, VANE));
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(SECONDARY, INVERTED));
         } else {
             updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
@@ -160,8 +162,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                         @Nullable
                         ShadeData oldData = oldShade.shade;
                         if (oldData != null && oldData.positions != null) {
-                            newPos = ShadePosition.create(oldData.positions, PosKind.INVERTED, percent);
-                            webTargets.moveShade(shadeId, newPos);
+                            // only send commands if hub already has a valid secondary shade status
+                            if (!UnDefType.UNDEF.equals(oldData.positions.getState(SECONDARY, INVERTED))) {
+                                newPos = ShadePosition.create(oldData.positions, INVERTED, percent);
+                                webTargets.moveShade(shadeId, newPos);
+                            }
                         }
                     }
             }
