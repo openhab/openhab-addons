@@ -123,7 +123,8 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                 if (newDeviceReading != null) {
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Successfully updated device {} readings! Now updating channels", getId());
-                    this.device = newDeviceReading;
+                    DEVICE device = newDeviceReading;
+                    this.device = device;
                     updateProperties(device);
                     Integer dataTimeStamp = getDataTimestamp();
                     if (dataTimeStamp != null) {
