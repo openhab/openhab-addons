@@ -118,7 +118,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
         } catch (SocketTimeoutException e) {
             return 0;
         } catch (IOException e) {
-            throw new KaleidescapeException("readInput failed: " + e.getMessage());
+            throw new KaleidescapeException("readInput failed: " + e.getMessage(), e);
         }
     }
 }

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.kaleidescape.internal;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,10 +44,11 @@ public class KaleidescapeBindingConstants {
     public static final String CINEMA_ONE = "Cinema One";
     public static final String ALTO = "Alto";
     public static final String STRATO = "Strato";
+    public static final String STRATO_S = "Strato S";
     public static final String DISC_VAULT = "Disc Vault";
 
-    public static final ArrayList<String> ALLOWED_DEVICES = new ArrayList<String>(
-            Arrays.asList(PLAYER, CINEMA_ONE, ALTO, STRATO, DISC_VAULT));
+    public static final Set<String> ALLOWED_DEVICES = new HashSet<String>(
+            Arrays.asList(PLAYER, CINEMA_ONE, ALTO, STRATO, STRATO_S, DISC_VAULT));
 
     // List of all Channels
     public static final String POWER = "ui#power";
@@ -108,6 +108,10 @@ public class KaleidescapeBindingConstants {
 
     // metadata details - the values are keyed to what is sent by the component
     // prefaced with 'detail_' when updating the channel
+    public static final String CONTENT_HANDLE = "content_handle";
+    public static final String ALBUM_CONTENT_HANDLE = "album_content_handle";
+    public static final String MOVIE = "movie";
+    public static final String ALBUM = "album";
     public static final String DETAIL_TYPE = "type";
     public static final String DETAIL_TITLE = "title"; // movie
     public static final String DETAIL_ALBUM_TITLE = "album_title"; // album
@@ -131,16 +135,68 @@ public class KaleidescapeBindingConstants {
 
     // make a list of all allowed metatdata channels,
     // used to filter out what we don't want from the component
-    public static final Set<String> metadataChannels = new HashSet<String>(
+    public static final Set<String> METADATA_CHANNELS = new HashSet<String>(
             Arrays.asList(DETAIL_TITLE, DETAIL_ALBUM_TITLE, DETAIL_COVER_URL, DETAIL_HIRES_COVER_URL, DETAIL_RATING,
                     DETAIL_YEAR, DETAIL_RUNNING_TIME, DETAIL_ACTORS, DETAIL_ARTIST, DETAIL_DIRECTORS, DETAIL_GENRES,
                     DETAIL_RATING_REASON, DETAIL_SYNOPSIS, DETAIL_REVIEW, DETAIL_COLOR_DESCRIPTION, DETAIL_COUNTRY,
                     DETAIL_ASPECT_RATIO, DETAIL_DISC_LOCATION));
 
+    public static final String STANDBY_MSG = "Device is in standby";
     public static final String PROPERTY_COMPONENT_TYPE = "Component Type";
     public static final String PROPERTY_FRIENDLY_NAME = "Friendly Name";
     public static final String PROPERTY_SERIAL_NUMBER = "Serial Number";
     public static final String PROPERTY_CONTROL_PROTOCOL_ID = "Control Protocol ID";
     public static final String PROPERTY_SYSTEM_VERSION = "System Version";
     public static final String PROPERTY_PROTOCOL_VERSION = "Protocol Version";
+
+    public static final String GET_DEVICE_TYPE_NAME = "GET_DEVICE_TYPE_NAME";
+    public static final String GET_FRIENDLY_NAME = "GET_FRIENDLY_NAME";
+    public static final String GET_DEVICE_INFO = "GET_DEVICE_INFO";
+    public static final String GET_SYSTEM_VERSION = "GET_SYSTEM_VERSION";
+    public static final String GET_DEVICE_POWER_STATE = "GET_DEVICE_POWER_STATE";
+    public static final String GET_CINEMASCAPE_MASK = "GET_CINEMASCAPE_MASK";
+    public static final String GET_CINEMASCAPE_MODE = "GET_CINEMASCAPE_MODE";
+    public static final String GET_SCALE_MODE = "GET_SCALE_MODE";
+    public static final String GET_SCREEN_MASK = "GET_SCREEN_MASK";
+    public static final String GET_SCREEN_MASK2 = "GET_SCREEN_MASK2";
+    public static final String GET_VIDEO_MODE = "GET_VIDEO_MODE";
+    public static final String GET_UI_STATE = "GET_UI_STATE";
+    public static final String GET_HIGHLIGHTED_SELECTION = "GET_HIGHLIGHTED_SELECTION";
+    public static final String GET_CHILD_MODE_STATE = "GET_CHILD_MODE_STATE";
+    public static final String GET_MOVIE_LOCATION = "GET_MOVIE_LOCATION";
+    public static final String GET_MOVIE_MEDIA_TYPE = "GET_MOVIE_MEDIA_TYPE";
+    public static final String GET_PLAYING_TITLE_NAME = "GET_PLAYING_TITLE_NAME";
+    public static final String GET_PLAY_STATUS = "GET_PLAY_STATUS";
+    public static final String GET_MUSIC_NOW_PLAYING_STATUS = "GET_MUSIC_NOW_PLAYING_STATUS";
+    public static final String GET_MUSIC_PLAY_STATUS = "GET_MUSIC_PLAY_STATUS";
+    public static final String GET_MUSIC_TITLE = "GET_MUSIC_TITLE";
+    public static final String GET_SYSTEM_READINESS_STATE = "GET_SYSTEM_READINESS_STATE";
+    public static final String GET_VIDEO_COLOR = "GET_VIDEO_COLOR";
+    public static final String GET_CONTENT_COLOR = "GET_CONTENT_COLOR";
+    public static final String SET_STATUS_CUE_PERIOD_1 = "SET_STATUS_CUE_PERIOD:1";
+
+    public static final String LEAVE_STANDBY = "LEAVE_STANDBY";
+    public static final String ENTER_STANDBY = "ENTER_STANDBY";
+
+    public static final String PLAY = "PLAY";
+    public static final String PAUSE = "PAUSE";
+    public static final String NEXT = "NEXT";
+    public static final String PREVIOUS = "PREVIOUS";
+    public static final String SCAN_FORWARD = "SCAN_FORWARD";
+    public static final String SCAN_REVERSE = "SCAN_REVERSE";
+
+    public static final String MUSIC_REPEAT_ON = "MUSIC_REPEAT_ON";
+    public static final String MUSIC_REPEAT_OFF = "MUSIC_REPEAT_OFF";
+    public static final String MUSIC_RANDOM_ON = "MUSIC_RANDOM_ON";
+    public static final String MUSIC_RANDOM_OFF = "MUSIC_RANDOM_OFF";
+
+    public static final String SEND_EVENT_VOLUME_CAPABILITIES_15 = "SEND_EVENT:VOLUME_CAPABILITIES=15";
+    public static final String SEND_EVENT_VOLUME_LEVEL_EQ = "SEND_EVENT:VOLUME_LEVEL=";
+    public static final String SEND_EVENT_MUTE = "SEND_EVENT:MUTE_";
+    public static final String MUTE_ON = "ON_FB";
+    public static final String MUTE_OFF = "OFF_FB";
+
+    public static final String ONE = "1";
+    public static final String ZERO = "0";
+    public static final String EMPTY = "";
 }

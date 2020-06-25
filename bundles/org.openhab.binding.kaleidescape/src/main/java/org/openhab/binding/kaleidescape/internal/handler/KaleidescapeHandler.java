@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -45,9 +46,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
-import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeThingActions;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeConnector;
@@ -83,14 +84,14 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     private @Nullable KaleidescapeThingConfiguration config;
     private long lastEventReceived = 0;
     private int updatePeriod = 0;
-    private String componentType = "";
+    private String componentType = EMPTY;
 
     protected KaleidescapeConnector connector = new KaleidescapeDefaultConnector();
     protected int metaRuntimeMultiple = 1;
     protected int volume = 0;
     protected boolean volumeEnabled = false;
     protected boolean isMuted = false;
-    protected String friendlyName = "";
+    protected String friendlyName = EMPTY;
     protected Object sequenceLock = new Object();
 
     public KaleidescapeHandler(Thing thing, SerialPortManager serialPortManager, HttpClient httpClient) {
@@ -151,7 +152,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         if (config.volumeEnabled) {
             this.volumeEnabled = true;
             this.volume = config.initialVolume;
-            this.updateState(KaleidescapeBindingConstants.VOLUME, new PercentType(BigDecimal.valueOf(this.volume)));
+            this.updateState(VOLUME, new PercentType(BigDecimal.valueOf(this.volume)));
+            this.updateState(MUTE, OnOffType.OFF);
         } else {
             channels.removeIf(c -> (c.getUID().getId().equals(VOLUME)));
             channels.removeIf(c -> (c.getUID().getId().equals(MUTE)));
@@ -230,33 +232,38 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             }
 
             try {
+                if (command instanceof RefreshType) {
+                    handleRefresh(channel);
+                    return;
+                }
+
                 switch (channel) {
                     case POWER:
                         if (command instanceof OnOffType) {
-                            connector.sendCommand(command == OnOffType.ON ? "LEAVE_STANDBY" : "ENTER_STANDBY");
+                            connector.sendCommand(command == OnOffType.ON ? LEAVE_STANDBY : ENTER_STANDBY);
                         }
                         break;
                     case VOLUME:
                         if (command instanceof PercentType) {
                             this.volume = (int) ((PercentType) command).doubleValue();
                             logger.debug("Got volume command {}", this.volume);
-                            connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + this.volume);
+                            connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + this.volume);
                         }
                         break;
                     case MUTE:
                         if (command instanceof OnOffType) {
                             this.isMuted = command == OnOffType.ON ? true : false;
                         }
-                        connector.sendCommand("SEND_EVENT:MUTE_" + (this.isMuted ? "ON" : "OFF") + "_FB");
+                        connector.sendCommand(SEND_EVENT_MUTE + (this.isMuted ? MUTE_ON : MUTE_OFF));
                         break;
                     case MUSIC_REPEAT:
                         if (command instanceof OnOffType) {
-                            connector.sendCommand(command == OnOffType.ON ? "MUSIC_REPEAT_ON" : "MUSIC_REPEAT_OFF");
+                            connector.sendCommand(command == OnOffType.ON ? MUSIC_REPEAT_ON : MUSIC_REPEAT_OFF);
                         }
                         break;
                     case MUSIC_RANDOM:
                         if (command instanceof OnOffType) {
-                            connector.sendCommand(command == OnOffType.ON ? "MUSIC_RANDOM_ON" : "MUSIC_RANDOM_OFF");
+                            connector.sendCommand(command == OnOffType.ON ? MUSIC_RANDOM_ON : MUSIC_RANDOM_OFF);
                         }
                         break;
                     case CONTROL:
@@ -308,9 +315,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         lastEventReceived = System.currentTimeMillis();
 
         // check if we are in standby
-        if (KaleidescapeConnector.STANDBY_MSG.equals(evt.getKey())) {
+        if (STANDBY_MSG.equals(evt.getKey())) {
             if (!ThingStatusDetail.BRIDGE_OFFLINE.equals(thing.getStatusInfo().getStatusDetail())) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.BRIDGE_OFFLINE, KaleidescapeConnector.STANDBY_MSG);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.BRIDGE_OFFLINE, STANDBY_MSG);
             }
             return;
         }
@@ -339,32 +346,31 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 if (!connector.isConnected()) {
                     logger.debug("Trying to reconnect...");
                     closeConnection();
-                    String error = "";
+                    String error = EMPTY;
                     if (openConnection()) {
                         try {
-                            Set<String> initialCommands = new HashSet<String>(Arrays.asList("GET_DEVICE_TYPE_NAME",
-                                    "GET_FRIENDLY_NAME", "GET_DEVICE_INFO", "GET_SYSTEM_VERSION",
-                                    "GET_DEVICE_POWER_STATE", "GET_CINEMASCAPE_MASK", "GET_CINEMASCAPE_MODE",
-                                    "GET_SCALE_MODE", "GET_SCREEN_MASK", "GET_SCREEN_MASK2", "GET_VIDEO_MODE",
-                                    "GET_UI_STATE", "GET_HIGHLIGHTED_SELECTION", "GET_CHILD_MODE_STATE",
-                                    "GET_MOVIE_LOCATION", "GET_MOVIE_MEDIA_TYPE", "GET_PLAYING_TITLE_NAME"));
+                            Set<String> initialCommands = new HashSet<String>(Arrays.asList(GET_DEVICE_TYPE_NAME,
+                                    GET_FRIENDLY_NAME, GET_DEVICE_INFO, GET_SYSTEM_VERSION, GET_DEVICE_POWER_STATE,
+                                    GET_CINEMASCAPE_MASK, GET_CINEMASCAPE_MODE, GET_SCALE_MODE, GET_SCREEN_MASK,
+                                    GET_SCREEN_MASK2, GET_VIDEO_MODE, GET_UI_STATE, GET_HIGHLIGHTED_SELECTION,
+                                    GET_CHILD_MODE_STATE, GET_PLAY_STATUS, GET_MOVIE_LOCATION, GET_MOVIE_MEDIA_TYPE,
+                                    GET_PLAYING_TITLE_NAME));
 
                             // Premiere Players and Cinema One support music
                             if (PLAYER.equals(this.componentType) || CINEMA_ONE.equals(this.componentType)) {
-                                initialCommands
-                                        .addAll(new ArrayList<String>(Arrays.asList("GET_MUSIC_NOW_PLAYING_STATUS",
-                                                "GET_MUSIC_PLAY_STATUS", "GET_MUSIC_TITLE")));
+                                initialCommands.addAll(new ArrayList<String>(Arrays.asList(GET_MUSIC_NOW_PLAYING_STATUS,
+                                        GET_MUSIC_PLAY_STATUS, GET_MUSIC_TITLE)));
                             }
 
                             // everything after Premiere Player supports GET_SYSTEM_READINESS_STATE
                             if (!PLAYER.equals(this.componentType)) {
-                                initialCommands.add("GET_SYSTEM_READINESS_STATE");
+                                initialCommands.add(GET_SYSTEM_READINESS_STATE);
                             }
 
                             // only Strato supports the GET_*_COLOR commands
                             if (STRATO.equals(this.componentType)) {
                                 initialCommands.addAll(
-                                        new ArrayList<String>(Arrays.asList("GET_VIDEO_COLOR", "GET_CONTENT_COLOR")));
+                                        new ArrayList<String>(Arrays.asList(GET_VIDEO_COLOR, GET_CONTENT_COLOR)));
                             }
 
                             initialCommands.forEach(command -> {
@@ -376,7 +382,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                             });
 
                             if (this.updatePeriod == 1) {
-                                connector.sendCommand("SET_STATUS_CUE_PERIOD:1");
+                                connector.sendCommand(SET_STATUS_CUE_PERIOD_1);
                             }
                         } catch (KaleidescapeException e) {
                             error = "First command after connection failed";
@@ -386,7 +392,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     } else {
                         error = "Reconnection failed";
                     }
-                    if (!error.equals("")) {
+                    if (!error.equals(EMPTY)) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
                         return;
                     }
@@ -453,24 +459,145 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     private void handleControlCommand(Command command) throws KaleidescapeException {
         if (command instanceof PlayPauseType) {
             if (command == PlayPauseType.PLAY) {
-                connector.sendCommand("PLAY");
+                connector.sendCommand(PLAY);
             } else if (command == PlayPauseType.PAUSE) {
-                connector.sendCommand("PAUSE");
+                connector.sendCommand(PAUSE);
             }
         } else if (command instanceof NextPreviousType) {
             if (command == NextPreviousType.NEXT) {
-                connector.sendCommand("NEXT");
+                connector.sendCommand(NEXT);
             } else if (command == NextPreviousType.PREVIOUS) {
-                connector.sendCommand("PREVIOUS");
+                connector.sendCommand(PREVIOUS);
             }
         } else if (command instanceof RewindFastforwardType) {
             if (command == RewindFastforwardType.FASTFORWARD) {
-                connector.sendCommand("SCAN_FORWARD");
+                connector.sendCommand(SCAN_FORWARD);
             } else if (command == RewindFastforwardType.REWIND) {
-                connector.sendCommand("SCAN_REVERSE");
+                connector.sendCommand(SCAN_REVERSE);
             }
         } else {
             logger.warn("Unknown control command: {}", command);
+        }
+    }
+
+    private void handleRefresh(String channel) throws KaleidescapeException {
+        switch (channel) {
+            case POWER:
+                connector.sendCommand(GET_DEVICE_POWER_STATE);
+                break;
+            case VOLUME:
+                updateState(channel, new PercentType(BigDecimal.valueOf(this.volume)));
+                break;
+            case MUTE:
+                updateState(MUTE, this.isMuted ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case TITLE_NAME:
+                connector.sendCommand(GET_PLAYING_TITLE_NAME);
+                break;
+            case PLAY_MODE:
+            case PLAY_SPEED:
+            case TITLE_NUM:
+            case TITLE_LENGTH:
+            case TITLE_LOC:
+            case CHAPTER_NUM:
+            case CHAPTER_LENGTH:
+            case CHAPTER_LOC:
+                connector.sendCommand(GET_PLAY_STATUS);
+                break;
+            case MOVIE_MEDIA_TYPE:
+                connector.sendCommand(GET_MOVIE_MEDIA_TYPE);
+                break;
+            case MOVIE_LOCATION:
+                connector.sendCommand(GET_MOVIE_LOCATION);
+                break;
+            case VIDEO_MODE:
+            case VIDEO_MODE_COMPOSITE:
+            case VIDEO_MODE_COMPONENT:
+            case VIDEO_MODE_HDMI:
+                connector.sendCommand(GET_VIDEO_MODE);
+                break;
+            case VIDEO_COLOR:
+            case VIDEO_COLOR_EOTF:
+                connector.sendCommand(GET_VIDEO_COLOR);
+                break;
+            case CONTENT_COLOR:
+            case CONTENT_COLOR_EOTF:
+                connector.sendCommand(GET_CONTENT_COLOR);
+                break;
+            case SCALE_MODE:
+                connector.sendCommand(GET_SCALE_MODE);
+                break;
+            case ASPECT_RATIO:
+            case SCREEN_MASK:
+                connector.sendCommand(GET_SCREEN_MASK);
+                break;
+            case SCREEN_MASK2:
+                connector.sendCommand(GET_SCREEN_MASK2);
+                break;
+            case CINEMASCAPE_MASK:
+                connector.sendCommand(GET_CINEMASCAPE_MASK);
+                break;
+            case CINEMASCAPE_MODE:
+                connector.sendCommand(GET_CINEMASCAPE_MODE);
+                break;
+            case UI_STATE:
+                connector.sendCommand(GET_UI_STATE);
+                break;
+            case CHILD_MODE_STATE:
+                connector.sendCommand(GET_CHILD_MODE_STATE);
+                break;
+            case SYSTEM_READINESS_STATE:
+                connector.sendCommand(GET_SYSTEM_READINESS_STATE);
+                break;
+            case HIGHLIGHTED_SELECTION:
+                connector.sendCommand(GET_HIGHLIGHTED_SELECTION);
+                break;
+            case USER_DEFINED_EVENT:
+            case USER_INPUT:
+            case USER_INPUT_PROMPT:
+                updateState(channel, new StringType(EMPTY));
+                break;
+            case MUSIC_REPEAT:
+            case MUSIC_RANDOM:
+                connector.sendCommand(GET_MUSIC_NOW_PLAYING_STATUS);
+                break;
+            case MUSIC_TRACK:
+            case MUSIC_ARTIST:
+            case MUSIC_ALBUM:
+            case MUSIC_TRACK_HANDLE:
+            case MUSIC_ALBUM_HANDLE:
+            case MUSIC_NOWPLAY_HANDLE:
+                connector.sendCommand(GET_MUSIC_TITLE);
+                break;
+            case MUSIC_PLAY_MODE:
+            case MUSIC_PLAY_SPEED:
+            case MUSIC_TRACK_LENGTH:
+            case MUSIC_TRACK_POSITION:
+            case MUSIC_TRACK_PROGRESS:
+                connector.sendCommand(GET_MUSIC_PLAY_STATUS);
+                break;
+            case DETAIL_TYPE:
+            case DETAIL_TITLE:
+            case DETAIL_ALBUM_TITLE:
+            case DETAIL_COVER_ART:
+            case DETAIL_COVER_URL:
+            case DETAIL_HIRES_COVER_URL:
+            case DETAIL_RATING:
+            case DETAIL_YEAR:
+            case DETAIL_RUNNING_TIME:
+            case DETAIL_ACTORS:
+            case DETAIL_ARTIST:
+            case DETAIL_DIRECTORS:
+            case DETAIL_GENRES:
+            case DETAIL_RATING_REASON:
+            case DETAIL_SYNOPSIS:
+            case DETAIL_REVIEW:
+            case DETAIL_COLOR_DESCRIPTION:
+            case DETAIL_COUNTRY:
+            case DETAIL_ASPECT_RATIO:
+            case DETAIL_DISC_LOCATION:
+                updateState(channel, new StringType(EMPTY));
+                break;
         }
     }
 }

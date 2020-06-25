@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KaleidescapeStatusCodes {
-    public static final String UNUSED = "unused";
-    public static final String UNKNOWN = "unknown";
-    public static final String RESERVED = "reserved";
+    private static final String UNUSED = "unused";
+    private static final String UNKNOWN = "unknown";
+    private static final String RESERVED = "reserved";
 
     // map to lookup play mode
     public static final Map<String, String> PLAY_MODE = new HashMap<>();

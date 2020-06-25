@@ -14,6 +14,7 @@ package org.openhab.binding.kaleidescape.internal.handler;
 
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
+import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
@@ -72,8 +73,7 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.POWER,
-                        ("1").equals(matcher.group(1)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(POWER, (ONE).equals(matcher.group(1)) ? OnOffType.ON : OnOffType.OFF);
             } else {
                 logger.debug("DEVICE_POWER_STATE - no match on message: {}", message);
             }
@@ -98,27 +98,25 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.PLAY_MODE,
+                handler.updateChannel(PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.PLAY_SPEED, new StringType(matcher.group(2)));
+                handler.updateChannel(PLAY_SPEED, new StringType(matcher.group(2)));
 
-                handler.updateChannel(KaleidescapeBindingConstants.TITLE_NUM,
-                        new DecimalType(Integer.parseInt(matcher.group(3))));
+                handler.updateChannel(TITLE_NUM, new DecimalType(Integer.parseInt(matcher.group(3))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.TITLE_LENGTH,
+                handler.updateChannel(TITLE_LENGTH,
                         new QuantityType<Time>(Integer.parseInt(matcher.group(4)), handler.apiSecondUnit));
 
-                handler.updateChannel(KaleidescapeBindingConstants.TITLE_LOC,
+                handler.updateChannel(TITLE_LOC,
                         new QuantityType<Time>(Integer.parseInt(matcher.group(5)), handler.apiSecondUnit));
 
-                handler.updateChannel(KaleidescapeBindingConstants.CHAPTER_NUM,
-                        new DecimalType(Integer.parseInt(matcher.group(6))));
+                handler.updateChannel(CHAPTER_NUM, new DecimalType(Integer.parseInt(matcher.group(6))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.CHAPTER_LENGTH,
+                handler.updateChannel(CHAPTER_LENGTH,
                         new QuantityType<Time>(Integer.parseInt(matcher.group(7)), handler.apiSecondUnit));
 
-                handler.updateChannel(KaleidescapeBindingConstants.CHAPTER_LOC,
+                handler.updateChannel(CHAPTER_LOC,
                         new QuantityType<Time>(Integer.parseInt(matcher.group(8)), handler.apiSecondUnit));
             } else {
                 logger.debug("PLAY_STATUS - no match on message: {}", message);
@@ -152,13 +150,13 @@ public enum KaleidescapeMessageHandler {
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.VIDEO_MODE_COMPOSITE,
+                handler.updateChannel(VIDEO_MODE_COMPOSITE,
                         new StringType(KaleidescapeStatusCodes.VIDEO_MODE.get(matcher.group(1))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.VIDEO_MODE_COMPONENT,
+                handler.updateChannel(VIDEO_MODE_COMPONENT,
                         new StringType(KaleidescapeStatusCodes.VIDEO_MODE.get(matcher.group(2))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.VIDEO_MODE_HDMI,
+                handler.updateChannel(VIDEO_MODE_HDMI,
                         new StringType(KaleidescapeStatusCodes.VIDEO_MODE.get(matcher.group(3))));
             } else {
                 logger.debug("VIDEO_MODE - no match on message: {}", message);
@@ -178,7 +176,7 @@ public enum KaleidescapeMessageHandler {
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.VIDEO_COLOR_EOTF,
+                handler.updateChannel(VIDEO_COLOR_EOTF,
                         new StringType(KaleidescapeStatusCodes.EOTF.get(matcher.group(1))));
             } else {
                 logger.debug("VIDEO_COLOR - no match on message: {}", message);
@@ -198,7 +196,7 @@ public enum KaleidescapeMessageHandler {
 
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.CONTENT_COLOR_EOTF,
+                handler.updateChannel(CONTENT_COLOR_EOTF,
                         new StringType(KaleidescapeStatusCodes.EOTF.get(matcher.group(1))));
             } else {
                 logger.debug("CONTENT_COLOR - no match on message: {}", message);
@@ -218,7 +216,7 @@ public enum KaleidescapeMessageHandler {
 
             // per API reference rev 3.3.1, ASPECT_RATIO message should not be used
             // the first element of SCREEN_MASK now provides this info
-            if (!message.equals("")) {
+            if (!message.equals(EMPTY)) {
                 String[] msgSplit = message.split(":", 2);
                 handler.updateChannel(KaleidescapeBindingConstants.ASPECT_RATIO,
                         new StringType(KaleidescapeStatusCodes.ASPECT_RATIO.get(msgSplit[0])));
@@ -261,23 +259,20 @@ public enum KaleidescapeMessageHandler {
             // first replace delimited : in track/artist/album name with ||, fix it later in formatString()
             Matcher matcher = p.matcher(message.replace("\\:", "||"));
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_TRACK,
+                handler.updateChannel(MUSIC_TRACK,
                         new StringType(KaleidescapeFormatter.formatString(matcher.group(1))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_ARTIST,
+                handler.updateChannel(MUSIC_ARTIST,
                         new StringType(KaleidescapeFormatter.formatString(matcher.group(2))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_ALBUM,
+                handler.updateChannel(MUSIC_ALBUM,
                         new StringType(KaleidescapeFormatter.formatString(matcher.group(3))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_TRACK_HANDLE,
-                        new StringType(matcher.group(4)));
+                handler.updateChannel(MUSIC_TRACK_HANDLE, new StringType(matcher.group(4)));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_ALBUM_HANDLE,
-                        new StringType(matcher.group(5)));
+                handler.updateChannel(MUSIC_ALBUM_HANDLE, new StringType(matcher.group(5)));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_NOWPLAY_HANDLE,
-                        new StringType(matcher.group(6)));
+                handler.updateChannel(MUSIC_NOWPLAY_HANDLE, new StringType(matcher.group(6)));
             } else {
                 logger.debug("MUSIC_TITLE - no match on message: {}", message);
             }
@@ -295,18 +290,18 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_PLAY_MODE,
+                handler.updateChannel(MUSIC_PLAY_MODE,
                         new StringType(KaleidescapeStatusCodes.PLAY_MODE.get(matcher.group(1))));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_PLAY_SPEED, new StringType(matcher.group(2)));
+                handler.updateChannel(MUSIC_PLAY_SPEED, new StringType(matcher.group(2)));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_TRACK_LENGTH,
+                handler.updateChannel(MUSIC_TRACK_LENGTH,
                         new QuantityType<Time>(Integer.parseInt(matcher.group(3)), handler.apiSecondUnit));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_TRACK_POSITION,
+                handler.updateChannel(MUSIC_TRACK_POSITION,
                         new QuantityType<Time>(Integer.parseInt(matcher.group(4)), handler.apiSecondUnit));
 
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_TRACK_PROGRESS,
+                handler.updateChannel(MUSIC_TRACK_PROGRESS,
                         new DecimalType(BigDecimal.valueOf(Math.round(Double.parseDouble(matcher.group(5))))));
             } else {
                 logger.debug("MUSIC_PLAY_STATUS - no match on message: {}", message);
@@ -326,12 +321,10 @@ public enum KaleidescapeMessageHandler {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
                 // update REPEAT switch state
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_REPEAT,
-                        ("1").equals(matcher.group(3)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(MUSIC_REPEAT, (ONE).equals(matcher.group(3)) ? OnOffType.ON : OnOffType.OFF);
 
                 // update RANDOM switch state
-                handler.updateChannel(KaleidescapeBindingConstants.MUSIC_RANDOM,
-                        ("1").equals(matcher.group(4)) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateChannel(MUSIC_RANDOM, (ONE).equals(matcher.group(4)) ? OnOffType.ON : OnOffType.OFF);
             } else {
                 logger.debug("MUSIC_NOW_PLAYING_STATUS - no match on message: {}", message);
             }
@@ -361,39 +354,38 @@ public enum KaleidescapeMessageHandler {
                 String value = KaleidescapeFormatter.formatString(matcher.group(3));
 
                 // the CONTENT_DETAILS message with id=1 tells us what type of meta data is coming
-                if ("1".equals(matcher.group(1))) {
-                    if (("content_handle").equals(metaType)) {
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_TYPE, new StringType("movie"));
+                if (ONE.equals(matcher.group(1))) {
+                    if ((CONTENT_HANDLE).equals(metaType)) {
+                        handler.updateDetailChannel(DETAIL_TYPE, new StringType(MOVIE));
                         handler.metaRuntimeMultiple = 60;
 
                         // null out album specific
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_ALBUM_TITLE, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_ARTIST, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_REVIEW, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_ALBUM_TITLE, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_ARTIST, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_REVIEW, UnDefType.NULL);
 
-                    } else if (("album_content_handle").equals(metaType)) {
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_TYPE, new StringType("album"));
+                    } else if ((ALBUM_CONTENT_HANDLE).equals(metaType)) {
+                        handler.updateDetailChannel(DETAIL_TYPE, new StringType(ALBUM));
                         handler.metaRuntimeMultiple = 1;
 
                         // null out movie specific
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_TITLE, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_RATING, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_ACTORS, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_DIRECTORS, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_RATING_REASON, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_SYNOPSIS, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COLOR_DESCRIPTION,
-                                UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COUNTRY, UnDefType.NULL);
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_ASPECT_RATIO, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_TITLE, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_RATING, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_ACTORS, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_DIRECTORS, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_RATING_REASON, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_SYNOPSIS, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_COLOR_DESCRIPTION, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_COUNTRY, UnDefType.NULL);
+                        handler.updateDetailChannel(DETAIL_ASPECT_RATIO, UnDefType.NULL);
 
                     } else {
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_TYPE, UnDefType.UNDEF);
+                        handler.updateDetailChannel(DETAIL_TYPE, UnDefType.UNDEF);
                     }
                     // otherwise update the channel if it is one we care about
-                } else if (KaleidescapeBindingConstants.metadataChannels.contains(metaType)) {
+                } else if (METADATA_CHANNELS.contains(metaType)) {
                     // special case for cover art image
-                    if (KaleidescapeBindingConstants.DETAIL_COVER_URL.equals(metaType)) {
+                    if (DETAIL_COVER_URL.equals(metaType)) {
                         handler.updateDetailChannel(metaType, new StringType(value));
                         if (!value.isEmpty()) {
                             try {
@@ -401,25 +393,22 @@ public enum KaleidescapeMessageHandler {
                                         .timeout(20, TimeUnit.SECONDS).send();
                                 int httpStatus = contentResponse.getStatus();
                                 if (httpStatus == OK_200) {
-                                    handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART,
+                                    handler.updateDetailChannel(DETAIL_COVER_ART,
                                             new RawType(contentResponse.getContent()));
                                 } else {
-                                    handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART,
-                                            UnDefType.NULL);
+                                    handler.updateDetailChannel(DETAIL_COVER_ART, UnDefType.NULL);
                                 }
                             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                                 logger.debug("Error updating Cover Art Image channel for url: {}", value);
-                                handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART,
-                                        UnDefType.NULL);
+                                handler.updateDetailChannel(DETAIL_COVER_ART, UnDefType.NULL);
                             }
                         } else {
-                            handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_COVER_ART, UnDefType.NULL);
+                            handler.updateDetailChannel(DETAIL_COVER_ART, UnDefType.NULL);
                         }
                         // special case for running time to create a QuantityType<Time>
-                    } else if (KaleidescapeBindingConstants.DETAIL_RUNNING_TIME.equals(metaType)) {
-                        handler.updateDetailChannel(KaleidescapeBindingConstants.DETAIL_RUNNING_TIME,
-                                new QuantityType<Time>(Integer.parseInt(value) * handler.metaRuntimeMultiple,
-                                        handler.apiSecondUnit));
+                    } else if (DETAIL_RUNNING_TIME.equals(metaType)) {
+                        handler.updateDetailChannel(DETAIL_RUNNING_TIME, new QuantityType<Time>(
+                                Integer.parseInt(value) * handler.metaRuntimeMultiple, handler.apiSecondUnit));
                         // everything else just send it as a string
                     } else {
                         handler.updateDetailChannel(metaType, new StringType(value));
@@ -461,10 +450,9 @@ public enum KaleidescapeMessageHandler {
                     case "VOLUME_QUERY":
                         if (handler.volumeEnabled) {
                             synchronized (handler.sequenceLock) {
-                                handler.connector.sendCommand("SEND_EVENT:VOLUME_CAPABILITIES=15");
-                                handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
-                                handler.connector
-                                        .sendCommand("SEND_EVENT:MUTE_" + (handler.isMuted ? "ON" : "OFF") + "_FB");
+                                handler.connector.sendCommand(SEND_EVENT_VOLUME_CAPABILITIES_15);
+                                handler.connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + handler.volume);
+                                handler.connector.sendCommand(SEND_EVENT_MUTE + (handler.isMuted ? MUTE_ON : MUTE_OFF));
                             }
                         }
                         break;
@@ -472,9 +460,8 @@ public enum KaleidescapeMessageHandler {
                         if (handler.volumeEnabled) {
                             synchronized (handler.sequenceLock) {
                                 handler.volume++;
-                                handler.updateChannel(KaleidescapeBindingConstants.VOLUME,
-                                        new PercentType(BigDecimal.valueOf(handler.volume)));
-                                handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
+                                handler.updateChannel(VOLUME, new PercentType(BigDecimal.valueOf(handler.volume)));
+                                handler.connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + handler.volume);
                             }
                         }
                         break;
@@ -482,9 +469,8 @@ public enum KaleidescapeMessageHandler {
                         if (handler.volumeEnabled) {
                             synchronized (handler.sequenceLock) {
                                 handler.volume--;
-                                handler.updateChannel(KaleidescapeBindingConstants.VOLUME,
-                                        new PercentType(BigDecimal.valueOf(handler.volume)));
-                                handler.connector.sendCommand("SEND_EVENT:VOLUME_LEVEL=" + handler.volume);
+                                handler.updateChannel(VOLUME, new PercentType(BigDecimal.valueOf(handler.volume)));
+                                handler.connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + handler.volume);
                             }
                         }
                         break;
@@ -498,9 +484,8 @@ public enum KaleidescapeMessageHandler {
                                 state = OnOffType.ON;
                                 handler.isMuted = true;
                             }
-                            handler.connector
-                                    .sendCommand("SEND_EVENT:MUTE_" + (handler.isMuted ? "ON" : "OFF") + "_FB");
-                            handler.updateChannel(KaleidescapeBindingConstants.MUTE, state);
+                            handler.connector.sendCommand(SEND_EVENT_MUTE + (handler.isMuted ? MUTE_ON : MUTE_OFF));
+                            handler.updateChannel(MUTE, state);
                         }
                         break;
                     // the default is to just publish all other USER_DEFINED_EVENTs
@@ -542,8 +527,8 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_PROTOCOL_VERSION, matcher.group(1));
-                handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_SYSTEM_VERSION, matcher.group(2));
+                handler.updateThingProperty(PROPERTY_PROTOCOL_VERSION, matcher.group(1));
+                handler.updateThingProperty(PROPERTY_SYSTEM_VERSION, matcher.group(2));
             } else {
                 logger.debug("SYSTEM_VERSION - no match on message: {}", message);
             }
@@ -559,11 +544,12 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_SERIAL_NUMBER,
-                        matcher.group(2).replaceFirst("^0+(?!$)", "")); // take off leading zeros
+                handler.updateThingProperty(PROPERTY_SERIAL_NUMBER, matcher.group(2).replaceFirst("^0+(?!$)", EMPTY)); // take
+                                                                                                                       // off
+                                                                                                                       // leading
+                                                                                                                       // zeros
 
-                handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_CONTROL_PROTOCOL_ID,
-                        matcher.group(3));
+                handler.updateThingProperty(PROPERTY_CONTROL_PROTOCOL_ID, matcher.group(3));
             } else {
                 logger.debug("DEVICE_INFO - no match on message: {}", message);
             }
@@ -572,14 +558,14 @@ public enum KaleidescapeMessageHandler {
     DEVICE_TYPE_NAME {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: 'Player' or 'Strato'
-            handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_COMPONENT_TYPE, message);
+            handler.updateThingProperty(PROPERTY_COMPONENT_TYPE, message);
         }
     },
     FRIENDLY_NAME {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: 'Living Room'
             handler.friendlyName = message;
-            handler.updateThingProperty(KaleidescapeBindingConstants.PROPERTY_FRIENDLY_NAME, message);
+            handler.updateThingProperty(PROPERTY_FRIENDLY_NAME, message);
         }
     };
 

@@ -97,16 +97,17 @@ public class KaleidescapeSerialConnector extends KaleidescapeConnector {
             logger.debug("Serial connection opened");
         } catch (PortInUseException e) {
             setConnected(false);
-            throw new KaleidescapeException("Opening serial connection failed: Port in Use Exception");
+            throw new KaleidescapeException("Opening serial connection failed: Port in Use Exception", e);
         } catch (UnsupportedCommOperationException e) {
             setConnected(false);
-            throw new KaleidescapeException("Opening serial connection failed: Unsupported Comm Operation Exception");
+            throw new KaleidescapeException("Opening serial connection failed: Unsupported Comm Operation Exception",
+                    e);
         } catch (UnsupportedEncodingException e) {
             setConnected(false);
-            throw new KaleidescapeException("Opening serial connection failed: Unsupported Encoding Exception");
+            throw new KaleidescapeException("Opening serial connection failed: Unsupported Encoding Exception", e);
         } catch (IOException e) {
             setConnected(false);
-            throw new KaleidescapeException("Opening serial connection failed: IO Exception");
+            throw new KaleidescapeException("Opening serial connection failed: IO Exception", e);
         }
     }
 

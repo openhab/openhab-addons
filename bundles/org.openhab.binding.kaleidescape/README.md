@@ -37,18 +37,20 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label        | Parameter ID  | Description                                                      | Accepted values                               |
-|------------------------|---------------|------------------------------------------------------------------|-----------------------------------------------|
-| Component type         | componentType | The type of Kaleidescape component                               | 'Player', 'Cinema One', 'Alto', or 'Strato' | |
-| Address                | host          | Host name or IP address of the Kaleidescape component            | A host name or IP address                   | |
-| Port                   | port          | Communication port of the IP connection                          | 10000 (default - should not need to change) | |
-| Serial Port            | serialPort    | Serial port for connecting directly a component                  | Serial port name (optional)                 | |
-| Update Period          | updatePeriod  | Tells the component how often time status updates should be sent | 0 or 1 (default 0)                          | |
-| Volume Control Enabled | volumeEnabled | Enable the volume and mute controls in the K iPad & phone apps   | Boolean (default false)                     | |
-| Initial Volume Setting | initialVolume | Initial volume level set when the binding starts up              | 0 to 75 (default 25)                        | |
+| Parameter Label        | Parameter ID  | Description                                                      | Accepted values                                        |
+|------------------------|---------------|------------------------------------------------------------------|--------------------------------------------------------|
+| Component type         | componentType | The type of Kaleidescape component                               | 'Player', 'Cinema One', 'Alto', or 'Strato'          | |
+| Address                | host          | Host name or IP address of the Kaleidescape component            | A host name or IP address                            | |
+| Port                   | port          | Communication port of the IP connection                          | 10000 (default - should not need to change)          | |
+| Serial Port            | serialPort    | Serial port for connecting directly a component                  | Serial port name (optional)                          | |
+| Update Period          | updatePeriod  | Tells the component how often time status updates should be sent | 0 or 1 are the currently accepted values (default 0) | |
+| Volume Control Enabled | volumeEnabled | Enable the volume and mute controls in the K iPad & phone apps   | Boolean (default false)                              | |
+| Initial Volume Setting | initialVolume | Initial volume level set when the binding starts up              | 0 to 75 (default 25)                                 | |
 
 Some notes:
 
+* Due to a bug in the control protocol, a Strato C player will be identified as a Premiere 'Player' by the auto discovery process.
+* The thing configuration parameter 'Component type' should be manually updated to correctly identify the Strato C as a 'Strato' component.
 * The only caveat of note about this binding is the updatePeriod configuration parameter.
 * When set to the default of 0, the component only sends running time update messages sporadically (as an example: when the movie chapter changes) while content is playing.
 * In this case, the running time channels will also only sporadically update.
@@ -56,9 +58,9 @@ Some notes:
 * Be aware that this could cause performance impacts to your openHAB system.
 
 * On Linux, you may get an error stating the serial port cannot be opened when the Kaleidescape binding tries to load.
-  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. Kaleidescape and RFXcom.
-  See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+* See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 
 ## Channels
 

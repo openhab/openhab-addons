@@ -26,6 +26,10 @@ public class KaleidescapeException extends Exception {
     public KaleidescapeException() {
     }
 
+    public KaleidescapeException(String message, Throwable t) {
+        super(message, t);
+    }
+
     public KaleidescapeException(String message) {
         super(message);
     }

@@ -43,10 +43,10 @@ public class KaleidescapeDiscoveryJob implements Runnable {
 
     private KaleidescapeDiscoveryService discoveryClass;
 
-    private String ipAddress = "";
-    private String componentType = "";
-    private String friendlyName = "";
-    private String serialNumber = "";
+    private String ipAddress = EMPTY;
+    private String componentType = EMPTY;
+    private String friendlyName = EMPTY;
+    private String serialNumber = EMPTY;
 
     public KaleidescapeDiscoveryJob(KaleidescapeDiscoveryService service, String ip) {
         this.discoveryClass = service;
@@ -110,6 +110,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
 
             String line;
             String videoZone = null;
+            String audioZone = null;
             int lineCount = 0;
 
             while ((line = reader.readLine()) != null) {
@@ -118,6 +119,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
                 switch (strArr[1]) {
                     case "NUM_ZONES":
                         videoZone = strArr[2];
+                        audioZone = strArr[3];
                         break;
                     case "DEVICE_TYPE_NAME":
                         componentType = strArr[2];
@@ -147,9 +149,24 @@ public class KaleidescapeDiscoveryJob implements Runnable {
             if ("01".equals(videoZone)) {
                 // now check if we are one of the allowed types
                 if (ALLOWED_DEVICES.contains(componentType)) {
+                    // A Strato S, just call it 'Strato'
+                    if (STRATO_S.equals(componentType)) {
+                        componentType = STRATO;
+                        return true;
+                    }
+
+                    // A 'Player' without an audio zone is really a Strato C
+                    // does not work yet, Strato erroneously reports "01" for audio zones
+                    // so we are unable to differentiate a Strato C from a Premiere player
+                    if ("00".equals(audioZone) && PLAYER.equals(componentType)) {
+                        componentType = STRATO;
+                        return true;
+                    }
+
                     // A Disc Vault with a video zone (the M700 vault), just call it a 'Player'
                     if (DISC_VAULT.equals(componentType)) {
                         componentType = PLAYER;
+                        return true;
                     }
                     return true;
                 }

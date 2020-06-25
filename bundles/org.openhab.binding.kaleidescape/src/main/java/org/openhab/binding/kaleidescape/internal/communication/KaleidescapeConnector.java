@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +36,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class KaleidescapeConnector {
-    public static final String SUCCESS_MSG = "01/1/000:/89";
-    public static final String BEGIN_CMD = "01/1/";
-    public static final String END_CMD = ":\r";
-    public static final String STANDBY_MSG = "Device is in standby";
+    private static final String SUCCESS_MSG = "01/1/000:/89";
+    private static final String BEGIN_CMD = "01/1/";
+    private static final String END_CMD = ":\r";
 
-    private final Pattern PATTERN = Pattern.compile("^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
+    private final Pattern pattern = Pattern.compile("^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeConnector.class);
 
@@ -152,7 +152,7 @@ public abstract class KaleidescapeConnector {
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
-            throw new KaleidescapeException("readInput failed: " + e.getMessage());
+            throw new KaleidescapeException("readInput failed: " + e.getMessage(), e);
         }
     }
 
@@ -185,7 +185,7 @@ public abstract class KaleidescapeConnector {
             dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException e) {
-            throw new KaleidescapeException("Send command \"" + cmd + "\" failed: " + e.getMessage());
+            throw new KaleidescapeException("Send command \"" + cmd + "\" failed: " + e.getMessage(), e);
         }
     }
 
@@ -225,13 +225,13 @@ public abstract class KaleidescapeConnector {
             // g1=zoneid, g2=sequence, g3=message name, g4=message, g5=checksum
             // pattern : "^(\\d{2})/./(\\d{3})\\:([^:^/]*)\\:(.*?)\\:/(\\d{2})$");
 
-            Matcher matcher = PATTERN.matcher(message);
+            Matcher matcher = pattern.matcher(message);
             if (matcher.find()) {
                 dispatchKeyValue(matcher.group(3), matcher.group(4));
             } else {
                 logger.debug("no match on message: {}", message);
-                if (message.contains(STANDBY_MSG)) {
-                    dispatchKeyValue(STANDBY_MSG, "");
+                if (message.contains(KaleidescapeBindingConstants.STANDBY_MSG)) {
+                    dispatchKeyValue(KaleidescapeBindingConstants.STANDBY_MSG, "");
                 }
             }
         }
