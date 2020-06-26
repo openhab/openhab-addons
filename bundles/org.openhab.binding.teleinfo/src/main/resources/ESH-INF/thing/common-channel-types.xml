@@ -19,17 +19,17 @@
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true">
 			<options>
-				<option value="TH">TH</option>
-				<option value="HC">HC</option>
-				<option value="HP">HP</option>
-				<option value="HN">HN</option>
-				<option value="PM">PM</option>
-				<option value="HCJB">HCJB</option>
-				<option value="HCJW">HCJW</option>
-				<option value="HCJR">HCJR</option>
-				<option value="HPJB">HPJB</option>
-				<option value="HPJW">HPJW</option>
-				<option value="HPJR">HPJR</option>
+				<option value="TH">Hourly</option>
+				<option value="HC">Low Rate Pricing</option>
+				<option value="HP">High Rate Pricing</option>
+				<option value="HN">Standard Rate Pricing</option>
+				<option value="PM">Mobile High Rate Pricing</option>
+				<option value="HCJB">Low Rate Blue Day Pricing</option>
+				<option value="HCJW">Low Rate White Day Pricing</option>
+				<option value="HCJR">Low Rate Red Day Pricing</option>
+				<option value="HPJB">High Rate Blue Day Pricing</option>
+				<option value="HPJW">High Rate White Day Pricing</option>
+				<option value="HPJR">High Rate Red Day Pricing</option>
 			</options>
 		</state>
 	</channel-type>
