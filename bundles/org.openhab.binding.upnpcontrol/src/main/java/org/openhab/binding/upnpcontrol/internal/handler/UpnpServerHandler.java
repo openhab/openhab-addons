@@ -457,7 +457,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 mediaQueue.add(currentEntry);
             }
             if (mediaQueue.isEmpty()) {
-                logger.debug("Nothing to serve from server {} to renderer {}", mediaQueue, thing.getLabel(),
+                logger.debug("Nothing to serve from server {} to renderer {}", thing.getLabel(),
                         handler.getThing().getLabel());
             } else {
                 handler.registerQueue(mediaQueue);
