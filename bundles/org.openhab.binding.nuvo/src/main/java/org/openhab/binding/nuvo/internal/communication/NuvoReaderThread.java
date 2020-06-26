@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.nuvo.internal.communication;
 
-import java.io.InterruptedIOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -79,9 +78,6 @@ public class NuvoReaderThread extends Thread {
                     }
                 }
             }
-        } catch (InterruptedIOException e) {
-            Thread.currentThread().interrupt();
-            logger.debug("Interrupted via InterruptedIOException");
         } catch (NuvoException e) {
             logger.debug("Reading failed: {}", e.getMessage(), e);
             connector.handleIncomingMessage(NuvoConnector.COMMAND_ERROR.getBytes());
