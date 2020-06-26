@@ -48,6 +48,7 @@ import org.openhab.binding.upnpcontrol.internal.UpnpDynamicStateDescriptionProvi
 import org.openhab.binding.upnpcontrol.internal.UpnpEntry;
 import org.openhab.binding.upnpcontrol.internal.UpnpProtocolMatcher;
 import org.openhab.binding.upnpcontrol.internal.UpnpXMLParser;
+import org.openhab.binding.upnpcontrol.internal.config.UpnpControlServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +86,8 @@ public class UpnpServerHandler extends UpnpHandler {
 
     private UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     private UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
+
+    protected UpnpControlServerConfiguration config = getConfigAs(UpnpControlServerConfiguration.class);
 
     public UpnpServerHandler(Thing thing, UpnpIOService upnpIOService,
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
@@ -131,7 +134,7 @@ public class UpnpServerHandler extends UpnpHandler {
 
         getProtocolInfo();
 
-        browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", getConfig().get(SORT_CRITERIA).toString());
+        browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -144,10 +147,9 @@ public class UpnpServerHandler extends UpnpHandler {
             case UPNPRENDERER:
                 if (command instanceof StringType) {
                     currentRendererHandler = (upnpRenderers.get(((StringType) command).toString()));
-                    if (Boolean.parseBoolean(getConfig().get(CONFIG_FILTER).toString())) {
+                    if (config.filter) {
                         // only refresh title list if filtering by renderer capabilities
-                        browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0",
-                                getConfig().get(SORT_CRITERIA).toString());
+                        browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
                     }
                 } else if ((command instanceof RefreshType) && (currentRendererHandler != null)) {
                     updateState(channelUID, StringType.valueOf(currentRendererHandler.getThing().getLabel()));
@@ -163,7 +165,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 }
                 logger.debug("Setting currentId to {}", currentId);
                 if (!currentId.isEmpty()) {
-                    browse(currentId, "BrowseDirectChildren", "*", "0", "0", getConfig().get(SORT_CRITERIA).toString());
+                    browse(currentId, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
                 }
             case BROWSE:
                 if (command instanceof StringType) {
@@ -190,8 +192,7 @@ public class UpnpServerHandler extends UpnpHandler {
                         }
                         updateState(thing.getChannel(CURRENTID).getUID(), StringType.valueOf(currentEntry.getId()));
                         logger.debug("Browse target {}", browseTarget);
-                        browse(browseTarget, "BrowseDirectChildren", "*", "0", "0",
-                                getConfig().get(SORT_CRITERIA).toString());
+                        browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
                     }
                 }
                 break;
@@ -211,7 +212,7 @@ public class UpnpServerHandler extends UpnpHandler {
                         }
                         updateState(thing.getChannel(CURRENTID).getUID(), StringType.valueOf(currentEntry.getId()));
                         logger.debug("Search container {} for {}", searchContainer, criteria);
-                        search(searchContainer, criteria, "*", "0", "0", getConfig().get(SORT_CRITERIA).toString());
+                        search(searchContainer, criteria, "*", "0", "0", config.sortcriteria);
                     }
                 }
                 break;
@@ -251,9 +252,8 @@ public class UpnpServerHandler extends UpnpHandler {
         logger.debug("Navigating to node {} on server {}", currentEntry.getId(), thing.getLabel());
 
         // Optionally, filter only items that can be played on the renderer
-        String filter = getConfig().get(CONFIG_FILTER).toString();
-        logger.debug("Filtering content on server {}: {}", thing.getLabel(), filter);
-        List<UpnpEntry> resultList = Boolean.parseBoolean(filter) ? filterEntries(titleList, true) : titleList;
+        logger.debug("Filtering content on server {}: {}", thing.getLabel(), config.filter);
+        List<UpnpEntry> resultList = config.filter ? filterEntries(titleList, true) : titleList;
 
         List<CommandOption> commandOptionList = new ArrayList<>();
         // Add a directory up selector if not in the directory root

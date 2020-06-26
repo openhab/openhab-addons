@@ -288,11 +288,11 @@ public class UpnpRendererHandler extends UpnpHandler {
             inputs.put("InstanceID", Integer.toString(avTransportId));
             inputs.put("CurrentURI", URI);
             inputs.put("CurrentURIMetaData", URIMetaData);
-        } catch (NumberFormatException ex) {
-            logger.error("Action Invalid Value Format Exception {}", ex.getMessage());
-        }
 
-        invokeAction("AVTransport", "SetAVTransportURI", inputs);
+            invokeAction("AVTransport", "SetAVTransportURI", inputs);
+        } catch (NumberFormatException ex) {
+            logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
+        }
     }
 
     /**
@@ -307,11 +307,11 @@ public class UpnpRendererHandler extends UpnpHandler {
             inputs.put("InstanceID", Integer.toString(avTransportId));
             inputs.put("NextURI", nextURI);
             inputs.put("NextURIMetaData", nextURIMetaData);
-        } catch (NumberFormatException ex) {
-            logger.error("Action Invalid Value Format Exception {}", ex.getMessage());
-        }
 
-        invokeAction("AVTransport", "SetNextAVTransportURI", inputs);
+            invokeAction("AVTransport", "SetNextAVTransportURI", inputs);
+        } catch (NumberFormatException ex) {
+            logger.debug("Action Invalid Value Format Exception {}", ex.getMessage());
+        }
     }
 
     /**
@@ -772,9 +772,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             return;
         }
         if (trackPositionRefresh == null) {
-            trackPositionRefresh = scheduler.scheduleWithFixedDelay(() -> {
-                getPositionInfo();
-            }, 1, 1, TimeUnit.SECONDS);
+            trackPositionRefresh = scheduler.scheduleWithFixedDelay(this::getPositionInfo, 1, 1, TimeUnit.SECONDS);
         }
     }
 
