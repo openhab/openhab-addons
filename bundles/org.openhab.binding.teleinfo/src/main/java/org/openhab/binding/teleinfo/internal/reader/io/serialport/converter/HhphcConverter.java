@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HhphcConverter implements Converter {
 
-    private static Logger logger = LoggerFactory.getLogger(HhphcConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(HhphcConverter.class);
 
     @Override
     public Object convert(String value) throws ConversionException {

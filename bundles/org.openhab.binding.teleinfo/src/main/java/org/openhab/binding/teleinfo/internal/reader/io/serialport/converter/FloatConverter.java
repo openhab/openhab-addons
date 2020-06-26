@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FloatConverter implements Converter {
 
-    private static Logger logger = LoggerFactory.getLogger(FloatConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(FloatConverter.class);
 
     @Override
     public Object convert(String value) throws ConversionException {

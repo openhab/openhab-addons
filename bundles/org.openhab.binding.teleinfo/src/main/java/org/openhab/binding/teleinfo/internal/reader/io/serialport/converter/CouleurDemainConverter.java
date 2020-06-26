@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CouleurDemainConverter implements Converter {
 
-    private static Logger logger = LoggerFactory.getLogger(CouleurDemainConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(CouleurDemainConverter.class);
 
     @Override
     public Object convert(String value) throws ConversionException {

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StringConverter implements Converter {
 
-    private static Logger logger = LoggerFactory.getLogger(StringConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(StringConverter.class);
 
     @Override
     public Object convert(String value) throws ConversionException {

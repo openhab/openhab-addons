@@ -82,7 +82,7 @@ public class TeleinfoInputStream extends InputStream {
     public static long DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME = 33400;
     public static long DEFAULT_TIMEOUT_READING_FRAME = 33400;
 
-    private static final Logger logger = LoggerFactory.getLogger(TeleinfoInputStream.class);
+    private final Logger logger = LoggerFactory.getLogger(TeleinfoInputStream.class);
     private static final Map<Class<?>, Converter> LABEL_VALUE_CONVERTERS;
 
     private BufferedReader bufferedReader = null;

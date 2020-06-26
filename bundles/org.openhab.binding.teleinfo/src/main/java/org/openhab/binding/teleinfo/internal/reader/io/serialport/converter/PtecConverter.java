@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PtecConverter implements Converter {
 
-    private static Logger logger = LoggerFactory.getLogger(PtecConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(PtecConverter.class);
 
     @Override
     public Object convert(String value) throws ConversionException {
