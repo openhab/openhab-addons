@@ -172,10 +172,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             receiveThread = new TeleinfoReceiveThread(serialPort, this, config.autoRepairInvalidADPSgroupLine);
             receiveThread.start();
 
-            // RXTX serial port library causes high CPU load
-            // Start event listener, which will just sleep and slow down event loop
-            serialPort.addEventListener(receiveThread);
-            serialPort.notifyOnDataAvailable(true);
             logger.info("Connected to serial port '{}'", config.serialport);
         } catch (PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -183,9 +179,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
         } catch (UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_UNSUPPORTED);
-        } catch (TooManyListenersException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    ERROR_OFFLINE_SERIAL_LISTENERS);
         }
         logger.debug("startReceiving [end]");
     }

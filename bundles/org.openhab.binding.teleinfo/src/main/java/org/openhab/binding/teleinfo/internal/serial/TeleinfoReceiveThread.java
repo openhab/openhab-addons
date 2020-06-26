@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class TeleinfoReceiveThread extends Thread implements SerialPortEventListener {
+public class TeleinfoReceiveThread extends Thread {
 
     private final Logger logger = LoggerFactory.getLogger(TeleinfoReceiveThread.class);
 
@@ -45,15 +45,6 @@ public class TeleinfoReceiveThread extends Thread implements SerialPortEventList
         this.serialPort = serialPort;
         this.listener = listener;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
-    }
-
-    @Override
-    public void serialEvent(SerialPortEvent event) {
-        try {
-            logger.trace("RXTX library CPU load workaround, sleep forever");
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (InterruptedException e) {
-        }
     }
 
     @Override
