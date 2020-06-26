@@ -23,8 +23,8 @@
 			<channel id="lastUpdate" typeId="lastUpdateType" />
 		</channels>
 
-		<config-description-ref uri="thing-type:teleinfo:adco"/>
-		
+		<config-description-ref uri="binding:teleinfo:adco"/>
+
 	</thing-type>
 
 </thing:thing-descriptions>

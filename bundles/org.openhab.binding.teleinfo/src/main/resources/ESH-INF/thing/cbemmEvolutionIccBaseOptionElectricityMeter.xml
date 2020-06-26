@@ -21,7 +21,8 @@
 			<channel id="base" typeId="baseType" />
 		</channels>
 
-		<config-description-ref uri="thing-type:teleinfo:adco"/>
+		<config-description-ref uri="binding:teleinfo:adco"/>
+		
 	</thing-type>
 
 </thing:thing-descriptions>
