@@ -13,9 +13,9 @@
 package org.openhab.binding.robonect.internal.config;
 
 /**
- * 
+ *
  * This class acts simply a structure for holding the thing configuration.
- * 
+ *
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectConfig {
@@ -29,6 +29,8 @@ public class RobonectConfig {
     private int pollInterval;
 
     private int offlineTimeout;
+
+    private String timezone;
 
     public String getHost() {
         return host;
@@ -48,5 +50,9 @@ public class RobonectConfig {
 
     public int getOfflineTimeout() {
         return offlineTimeout;
+    }
+
+    public String getTimezone() {
+        return timezone;
     }
 }

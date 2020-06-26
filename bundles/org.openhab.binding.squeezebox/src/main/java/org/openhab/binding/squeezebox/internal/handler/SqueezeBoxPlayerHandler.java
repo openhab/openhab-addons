@@ -179,8 +179,12 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         }
         String mac = getConfigAs(SqueezeBoxPlayerConfig.class).mac;
 
-        // Some of the code below is not designed to handle REFRESH
+        // Some of the code below is not designed to handle REFRESH, only reply to channels where cached values exist
         if (command == RefreshType.REFRESH) {
+            String channelID = channelUID.getId();
+            if (stateMap.containsKey(channelID)) {
+                updateState(channelID, stateMap.get(channelID));
+            }
             return;
         }
 

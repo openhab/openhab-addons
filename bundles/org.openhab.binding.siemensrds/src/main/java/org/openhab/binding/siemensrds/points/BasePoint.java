@@ -43,6 +43,7 @@ public abstract class BasePoint {
     public static final String DEGREES_CELSIUS = "\260C";
     public static final String DEGREES_FAHRENHEIT = "\260F";
     public static final String DEGREES_KELVIN = "K";
+    public static final String PERCENT_RELATIVE_HUMIDITY = "%r.H.";
 
     public static final int UNDEFINED_VALUE = -1;
 
@@ -133,12 +134,19 @@ public abstract class BasePoint {
          */
         String descr = this.descr;
         if (descr != null) {
-            if (DEGREES_CELSIUS.equals(descr)) {
-                return SIUnits.CELSIUS;
-            } else if (DEGREES_FAHRENHEIT.equals(descr)) {
-                return ImperialUnits.FAHRENHEIT;
-            } else if (DEGREES_KELVIN.equals(descr)) {
-                return Units.KELVIN;
+            switch (descr) {
+                case DEGREES_CELSIUS: {
+                    return SIUnits.CELSIUS;
+                }
+                case DEGREES_FAHRENHEIT: {
+                    return ImperialUnits.FAHRENHEIT;
+                }
+                case DEGREES_KELVIN: {
+                    return Units.KELVIN;
+                }
+                case PERCENT_RELATIVE_HUMIDITY: {
+                    return Units.PERCENT;
+                }
             }
         }
         return AbstractUnit.ONE;

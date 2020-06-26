@@ -13,9 +13,7 @@
 package org.openhab.binding.hue.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.FullLight;
-import org.openhab.binding.hue.internal.HueBridge;
 
 /**
  * The {@link LightStatusListener} is notified when a light status has changed or a light has been removed or added.
@@ -27,35 +25,47 @@ import org.openhab.binding.hue.internal.HueBridge;
 public interface LightStatusListener {
 
     /**
+     * This method returns the light id of the listener
+     * 
+     * @return
+     */
+    String getLightId();
+
+    /**
      * This method is called whenever the state of the given light has changed. The new state can be obtained by
      * {@link FullLight#getState()}.
      *
-     * @param bridge The bridge the changed light is connected to.
      * @param light The light which received the state update.
+     * @return
      */
-    void onLightStateChanged(@Nullable HueBridge bridge, FullLight light);
+    boolean onLightStateChanged(FullLight light);
 
     /**
      * This method is called whenever a light is removed.
-     *
-     * @param bridge The bridge the removed light was connected to.
-     * @param light The light which is removed.
      */
-    void onLightRemoved(@Nullable HueBridge bridge, FullLight light);
+    void onLightRemoved();
 
     /**
      * This method is called whenever a light is reported as gone.
-     *
-     * @param bridge The bridge the reported light was connected to.
-     * @param light The light which is reported as gone.
      */
-    void onLightGone(@Nullable HueBridge bridge, FullLight light);
+    void onLightGone();
 
     /**
      * This method is called whenever a light is added.
      *
-     * @param bridge The bridge the added light was connected to.
      * @param light The light which is added.
      */
-    void onLightAdded(@Nullable HueBridge bridge, FullLight light);
+    void onLightAdded(FullLight light);
+
+    /**
+     * The thing will block state updates for set time.
+     * 
+     * @param bypassTime
+     */
+    void setPollBypass(long bypassTime);
+
+    /**
+     * Unblock state updates.
+     */
+    void unsetPollBypass();
 }

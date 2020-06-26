@@ -97,17 +97,19 @@ A sample HABPanel remote control widget can be found [in this github repository.
 
 ## Console Commands
 
-The binding provides two specific commands you can use in the console.
+The binding provides a few commands you can use in the console.
 Enter the command `lgwebos` to get the usage.
 
 ```
 openhab> lgwebos
 Usage: smarthome:lgwebos <thingUID> applications - list applications
 Usage: smarthome:lgwebos <thingUID> channels - list channels
+Usage: smarthome:lgwebos <thingUID> accesskey - show the access key
 ```
 
 The command `applications` reports in the console the list of all applications with their id and name.
 The command `channels` reports in the console the list of all channels with their id, number and name.
+The command `accesskey` reports in the console the access key used to connect to your TV.
 
 ## Example
 
