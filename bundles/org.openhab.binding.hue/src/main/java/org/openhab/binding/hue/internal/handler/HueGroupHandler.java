@@ -135,8 +135,9 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             }
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof HueBridgeHandler) {
-                hueClient = (HueClient) handler;
-                hueClient.registerGroupStatusListener(this);
+                HueClient bridgeHandler = (HueClient) handler;
+                hueClient = bridgeHandler;
+                bridgeHandler.registerGroupStatusListener(this);
             } else {
                 return null;
             }
@@ -164,6 +165,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             return;
         }
 
+        Integer lastColorTemp;
         StateUpdate groupState = null;
         switch (channel) {
             case CHANNEL_COLOR:
@@ -174,15 +176,11 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                     } else {
                         groupState = LightStateConverter.toColorLightState(hsbCommand, group.getState());
                         groupState.setOn(true);
-                        if (groupState != null) {
-                            groupState.setTransitionTime(fadeTime);
-                        }
+                        groupState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof PercentType) {
                     groupState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    groupState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
@@ -195,9 +193,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
                     groupState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    groupState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
@@ -210,9 +206,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
                     groupState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    groupState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
@@ -221,10 +215,11 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                         groupState.setTransitionTime(fadeTime);
                     }
                 }
-                if (groupState != null && lastSentColorTemp != null) {
+                lastColorTemp = this.lastSentColorTemp;
+                if (groupState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    groupState.setColorTemperature(lastSentColorTemp);
+                    groupState.setColorTemperature(lastColorTemp);
                     groupState.setTransitionTime(fadeTime);
                 }
                 break;
@@ -232,10 +227,11 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                 if (command instanceof OnOffType) {
                     groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 }
-                if (groupState != null && lastSentColorTemp != null) {
+                lastColorTemp = this.lastSentColorTemp;
+                if (groupState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    groupState.setColorTemperature(lastSentColorTemp);
+                    groupState.setColorTemperature(lastColorTemp);
                     groupState.setTransitionTime(fadeTime);
                 }
                 break;
@@ -431,9 +427,10 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
      * restoration.
      */
     private void cancelScheduledFuture() {
+        ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
         if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
-            scheduledFuture = null;
+            this.scheduledFuture = null;
         }
     }
 
