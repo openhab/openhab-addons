@@ -23,7 +23,19 @@
 			<channel-group id="menuP2" typeId="menuP2" />
 			<channel-group id="menuP9" typeId="menuP9" />
 			<channel-group id="inputs" typeId="inputs" />
-			<channel-group id="analog" typeId="analog" />
+			<channel-group id="analog1" typeId="analog">
+					<label>Analog Inputs 1</label>
+			</channel-group>
+			<channel-group id="analog2" typeId="analog">
+					<label>Analog Inputs 2</label>
+			</channel-group>
+			<channel-group id="analog3" typeId="analog">
+					<label>Analog Inputs 3</label>
+			</channel-group>
+			<channel-group id="analog4" typeId="analog">
+					<label>Analog Inputs 4</label>
+			</channel-group>
+			<channel-group id="analogRF" typeId="analogRF" />
 			<channel-group id="errors" typeId="errors" />
 			<channel-group id="resets" typeId="resets" />
 		</channel-groups>
@@ -220,41 +232,26 @@
 	<channel-group-type id="analog">
 		<label>Analog Inputs</label>
 		<channels>
-			<channel id="isAnalog1" typeId="is_analog1" />
-			<channel id="isAnalog2" typeId="is_analog2" />
-			<channel id="isAnalog3" typeId="is_analog3" />
-			<channel id="isAnalog4" typeId="is_analog4" />
+			<channel id="isAnalog" typeId="is_analog" />
+			<channel id="analogMode" typeId="analog_mode" />
+			<channel id="analogNegative" typeId="analog_negative" />
+			<channel id="analogVolt" typeId="analog_volt" />
+			<channel id="analogMin" typeId="analog_min" />
+			<channel id="analogMax" typeId="analog_max" />
+			<channel id="analogValue" typeId="analog_value" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="analogRF">
+		<label>RF Input</label>
+		<channels>
 			<channel id="isRF" typeId="is_RF" />
-			<channel id="analog1Mode" typeId="analog1_mode" />
-			<channel id="analog2Mode" typeId="analog2_mode" />
-			<channel id="analog3Mode" typeId="analog3_mode" />
-			<channel id="analog4Mode" typeId="analog4_mode" />
 			<channel id="RFMode" typeId="RF_mode" />
-			<channel id="analog1Negative" typeId="analog1_negative" />
-			<channel id="analog2Negative" typeId="analog2_negative" />
-			<channel id="analog3Negative" typeId="analog3_negative" />
-			<channel id="analog4Negative" typeId="analog4_negative" />
 			<channel id="RFNegative" typeId="RF_negative" />
-			<channel id="analog1Volt" typeId="analog1_volt" />
-			<channel id="analog1Min" typeId="analog1_min" />
-			<channel id="analog1Max" typeId="analog1_max" />
-			<channel id="analog1Value" typeId="analog1_value" />
-			<channel id="analog2Volt" typeId="analog2_volt" />
-			<channel id="analog2Min" typeId="analog2_min" />
-			<channel id="analog2Max" typeId="analog2_max" />
-			<channel id="analog2Value" typeId="analog2_value" />
-			<channel id="analog3Volt" typeId="analog3_volt" />
-			<channel id="analog3Min" typeId="analog3_min" />
-			<channel id="analog3Max" typeId="analog3_max" />
-			<channel id="analog3Value" typeId="analog3_value" />
-			<channel id="analog4Volt" typeId="analog4_volt" />
-			<channel id="analog4Min" typeId="analog4_min" />
-			<channel id="analog4Max" typeId="analog4_max" />
-			<channel id="analog4Value" typeId="analog4_value" />
 			<channel id="RFMin" typeId="RF_min" />
 			<channel id="RFMax" typeId="RF_max" />
 			<channel id="RFValue" typeId="RF_value" />
-			<channel id="analogMode" typeId="analog_mode" />
+			<channel id="analogPriority" typeId="analog_priority" />
 		</channels>
 	</channel-group-type>
 
@@ -1049,34 +1046,10 @@
 		<state min="0" max="120" step="1" readOnly="false" />
 	</channel-type>
 
-	<channel-type id="is_analog1" advanced="true">
+	<channel-type id="is_analog" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Analog Input 1 Availability</label>
-		<description>Availability of analog input 1</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="is_analog2" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 2 Availability</label>
-		<description>Availability of analog input 2</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="is_analog3" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 3 Availability</label>
-		<description>Availability of analog input 3</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="is_analog4" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 4 Availability</label>
-		<description>Availability of analog input 4</description>
+		<label>Analog Input Availability</label>
+		<description>Availability of analog input</description>
 		<category>Switch</category>
 		<state readOnly="false" />
 	</channel-type>
@@ -1089,34 +1062,10 @@
 		<state readOnly="false" />
 	</channel-type>
 
-	<channel-type id="analog1_mode" advanced="true">
+	<channel-type id="analog_mode" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Analog Input 1 State</label>
-		<description>State of analog input 1</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog2_mode" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 2 State</label>
-		<description>State of analog input 2</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog3_mode" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 3 State</label>
-		<description>State of analog input 3</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog4_mode" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 4 State</label>
-		<description>State of analog input 1</description>
+		<label>Analog Input State</label>
+		<description>State of analog input</description>
 		<category>Switch</category>
 		<state readOnly="false" />
 	</channel-type>
@@ -1129,34 +1078,10 @@
 		<state readOnly="false" />
 	</channel-type>
 
-	<channel-type id="analog1_negative" advanced="true">
+	<channel-type id="analog_negative" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Analog Input 1 Postive/Negative</label>
-		<description>Postive/Negative state of analog input 1</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog2_negative" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 2 Postive/Negative</label>
-		<description>Postive/Negative state of analog input 2</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog3_negative" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 3 Postive/Negative</label>
-		<description>Postive/Negative state of analog input 3</description>
-		<category>Switch</category>
-		<state readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog4_negative" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Analog Input 4 Postive/Negative</label>
-		<description>Postive/Negative state of analog input 1</description>
+		<label>Analog Input Postive/Negative</label>
+		<description>Postive/Negative state of analog input</description>
 		<category>Switch</category>
 		<state readOnly="false" />
 	</channel-type>
@@ -1169,130 +1094,34 @@
 		<state readOnly="false" />
 	</channel-type>
 
-	<channel-type id="analog1_volt" advanced="true">
+	<channel-type id="analog_volt" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Analog Input 1 Voltage Level</label>
-		<description>Voltage level of analog input 1</description>
+		<label>Analog Input Voltage Level</label>
+		<description>Voltage level of analog input</description>
 		<category>Number</category>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="analog1_min" advanced="true">
+	<channel-type id="analog_min" advanced="true">
 		<item-type>Number</item-type>
-		<label>Analog Input 1 Min</label>
-		<description>Minimum setting for analog input 1</description>
+		<label>Analog Input Min</label>
+		<description>Minimum setting for analog input</description>
+		<category>Number</category>
+		<state min="0" max="99" step="1" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="analog_max" advanced="true">
+		<item-type>Number</item-type>
+		<label>Analog Input Max</label>
+		<description>Maximum setting for analog input</description>
 		<category>Number</category>
 		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
-	<channel-type id="analog1_max" advanced="true">
+	<channel-type id="analog_value" advanced="true">
 		<item-type>Number</item-type>
-		<label>Analog Input 1 Max</label>
-		<description>Maximum setting for analog input 1</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog1_value" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 1 Target</label>
-		<description>Target setting for analog input 1</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog2_volt" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Analog Input 2 Voltage Level</label>
-		<description>Voltage level of analog input 2</description>
-		<category>Number</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="analog2_min" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 2 Min</label>
-		<description>Minimum setting for analog input 2</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog2_max" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 2 Max</label>
-		<description>Maximum setting for analog input 2</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog2_value" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 2 Target</label>
-		<description>Target setting for analog input 2</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog3_volt" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Analog Input 3 Voltage Level</label>
-		<description>Voltage level of analog input 3</description>
-		<category>Number</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="analog3_min" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 3 Min</label>
-		<description>Minimum setting for analog input 3</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog3_max" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 3 Max</label>
-		<description>Maximum setting for analog input 3</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog3_value" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 3 Target</label>
-		<description>Target setting for analog input 3</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog4_volt" advanced="true">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Analog Input 4 Voltage Level</label>
-		<description>Voltage level of analog input 4</description>
-		<category>Number</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="analog4_min" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 4 Min</label>
-		<description>Minimum setting for analog input 4</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog4_max" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 4 Max</label>
-		<description>Maximum setting for analog input 4</description>
-		<category>Number</category>
-		<state min="0" max="100" step="1" readOnly="false" />
-	</channel-type>
-
-	<channel-type id="analog4_value" advanced="true">
-		<item-type>Number</item-type>
-		<label>Analog Input 4 Target</label>
-		<description>Target setting for analog input 4</description>
+		<label>Analog Input Target</label>
+		<description>Target setting for analog input</description>
 		<category>Number</category>
 		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
@@ -1321,9 +1150,9 @@
 		<state min="0" max="100" step="1" readOnly="false" />
 	</channel-type>
 
-	<channel-type id="analog_mode" advanced="true">
+	<channel-type id="analog_priority" advanced="true">
 		<item-type>Number</item-type>
-		<label>Analog Mode</label>
+		<label>Analog Priority</label>
 		<description>Priority of control</description>
 		<category>Number</category>
 		<state readOnly="false">
