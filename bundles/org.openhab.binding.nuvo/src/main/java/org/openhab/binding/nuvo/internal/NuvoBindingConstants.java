@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class NuvoBindingConstants {
 
-    private static final String BINDING_ID = "nuvo";
+    public static final String BINDING_ID = "nuvo";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AMP = new ThingTypeUID(BINDING_ID, "amplifier");
@@ -60,4 +60,26 @@ public class NuvoBindingConstants {
     public static final String CHANNEL_TRACK_LENGTH = "track_length";
     public static final String CHANNEL_TRACK_POSITION = "track_position";
     public static final String CHANNEL_BUTTON_PRESS = "button_press";
+
+    // Message types
+    public static final String TYPE_VERSION = "version";
+    public static final String TYPE_ALLOFF = "alloff";
+    public static final String TYPE_ALLMUTE = "allmute";
+    public static final String TYPE_PAGE = "page";
+    public static final String TYPE_SOURCE_UPDATE = "source_update";
+    public static final String TYPE_ZONE_UPDATE = "zone_update";
+    public static final String TYPE_ZONE_BUTTON = "zone_button";
+    public static final String TYPE_ZONE_CONFIG = "zone_config";
+
+    // misc
+    public static final String ON = "ON";
+    public static final String OFF = "OFF";
+    public static final String ONE = "1";
+    public static final String ZERO = "0";
+    public static final String BLANK = "";
+    public static final String DISPLINE = "DISPLINE";
+    public static final String DISPINFO = "DISPINFO,"; // yes comma here
+    public static final String NAME_QUOTE = "NAME\"";
+    public static final String MUTE = "MUTE";
+    public static final String VOL = "VOL";
 }

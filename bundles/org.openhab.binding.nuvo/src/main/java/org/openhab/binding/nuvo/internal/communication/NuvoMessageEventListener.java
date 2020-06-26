@@ -13,7 +13,6 @@
 package org.openhab.binding.nuvo.internal.communication;
 
 import java.util.EventListener;
-import java.util.EventObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,7 +27,7 @@ public interface NuvoMessageEventListener extends EventListener {
     /**
      * Event handler method for incoming Nuvo message events
      *
-     * @param event the event object
+     * @param event the NuvoMessageEvent object
      */
-    public void onNewMessageEvent(EventObject event);
+    public void onNewMessageEvent(NuvoMessageEvent event);
 }

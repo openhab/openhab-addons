@@ -21,11 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum NuvoCommand {
-
-    BEGIN_CMD("*"),
-    END_CMD("\r"),
-    QUERY("?"),
-    EQ_QUERY("EQ?"),
     GET_CONTROLLER_VERSION("VER"),
     ALLMUTE_ON("MUTE1"),
     ALLMUTE_OFF("MUTE0"),
@@ -34,6 +29,7 @@ public enum NuvoCommand {
     PAGE_OFF("PAGE0"),
     CFGTIME("CFGTIME"),
     STATUS("STATUS"),
+    EQ_QUERY("EQ?"),
     DISPINFO("DISPINFO"),
     DISPLINE("DISPLINE"),
     DISPLINE1("DISPLINE1"),

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nuvo.internal.communication;
 
+import static org.openhab.binding.nuvo.internal.NuvoBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -36,20 +38,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class NuvoConnector {
-    private final Logger logger = LoggerFactory.getLogger(NuvoConnector.class);
-
-    public static final String COMMAND_ERROR = "#?";
-    public static final String COMMAND_OK = "#OK";
-
-    // Message types
-    public static final String TYPE_VERSION = "version";
-    public static final String TYPE_ALLOFF = "alloff";
-    public static final String TYPE_ALLMUTE = "allmute";
-    public static final String TYPE_PAGE = "page";
-    public static final String TYPE_SOURCE_UPDATE = "source_update";
-    public static final String TYPE_ZONE_UPDATE = "zone_update";
-    public static final String TYPE_ZONE_BUTTON = "zone_button";
-    public static final String TYPE_ZONE_CONFIG = "zone_config";
+    private static final String COMMAND_OK = "#OK";
+    private static final String BEGIN_CMD = "*";
+    private static final String END_CMD = "\r";
+    private static final String QUERY = "?";
+    private static final String VER_STR = "#VER\"NV-";
+    private static final String ALL_OFF = "#ALLOFF";
+    private static final String MUTE = "#MUTE";
+    private static final String PAGE = "#PAGE";
 
     private static final byte[] WAKE_STR = "\r".getBytes(StandardCharsets.US_ASCII);
 
@@ -58,10 +54,9 @@ public abstract class NuvoConnector {
     private static final Pattern ZONE_BUTTON_PATTERN = Pattern.compile("^#Z(\\d{1,2})(S\\d{1})(.*)$");
     private static final Pattern ZONE_CFG_PATTERN = Pattern.compile("^#ZCFG(\\d{1,2}),(.*)$");
 
-    private static final String VER_STR = "#VER\"NV-";
-    private static final String ALL_OFF = "#ALLOFF";
-    private static final String MUTE = "#MUTE";
-    private static final String PAGE = "#PAGE";
+    private final Logger logger = LoggerFactory.getLogger(NuvoConnector.class);
+
+    protected static final String COMMAND_ERROR = "#?";
 
     /** The output stream */
     protected @Nullable OutputStream dataOut;
@@ -131,19 +126,12 @@ public abstract class NuvoConnector {
      */
     protected void cleanup() {
         Thread readerThread = this.readerThread;
-        if (readerThread != null) {
-            readerThread.interrupt();
-            try {
-                readerThread.join();
-            } catch (InterruptedException e) {
-            }
-            this.readerThread = null;
-        }
         OutputStream dataOut = this.dataOut;
         if (dataOut != null) {
             try {
                 dataOut.close();
             } catch (IOException e) {
+                logger.debug("Error closing dataOut: {}", e.getMessage());
             }
             this.dataOut = null;
         }
@@ -152,8 +140,18 @@ public abstract class NuvoConnector {
             try {
                 dataIn.close();
             } catch (IOException e) {
+                logger.debug("Error closing dataIn: {}", e.getMessage());
             }
             this.dataIn = null;
+        }
+        if (readerThread != null) {
+            readerThread.interrupt();
+            try {
+                readerThread.join(3000);
+            } catch (InterruptedException e) {
+                logger.warn("Error joining readerThread: {}", e.getMessage());
+            }
+            this.readerThread = null;
         }
     }
 
@@ -179,7 +177,7 @@ public abstract class NuvoConnector {
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
-            throw new NuvoException("readInput failed: " + e.getMessage());
+            throw new NuvoException("readInput failed: " + e.getMessage(), e);
         }
     }
 
@@ -192,7 +190,7 @@ public abstract class NuvoConnector {
      * @throws NuvoException - In case of any problem
      */
     public void sendQuery(NuvoEnum zone, NuvoCommand cmd) throws NuvoException {
-        sendCommand(zone.getId() + cmd.getValue() + NuvoCommand.QUERY.getValue());
+        sendCommand(zone.getId() + cmd.getValue() + QUERY);
     }
 
     /**
@@ -253,11 +251,9 @@ public abstract class NuvoConnector {
      * @throws NuvoException - In case of any problem
      */
     public void sendCommand(String command) throws NuvoException {
-        String messageStr = NuvoCommand.BEGIN_CMD.getValue() + command + NuvoCommand.END_CMD.getValue();
+        String messageStr = BEGIN_CMD + command + END_CMD;
 
         logger.debug("sending command: {}", messageStr);
-
-        byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
 
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
@@ -271,10 +267,10 @@ public abstract class NuvoConnector {
                 dataOut.flush();
                 Thread.sleep(5);
             }
-            dataOut.write(message);
+            dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException | InterruptedException e) {
-            throw new NuvoException("Send command \"" + command + "\" failed: " + e.getMessage());
+            throw new NuvoException("Send command \"" + command + "\" failed: " + e.getMessage(), e);
         }
     }
 
@@ -319,17 +315,17 @@ public abstract class NuvoConnector {
         }
 
         if (message.equals(ALL_OFF)) {
-            dispatchKeyValue(TYPE_ALLOFF, "", "");
+            dispatchKeyValue(TYPE_ALLOFF, BLANK, BLANK);
             return;
         }
 
         if (message.contains(MUTE)) {
-            dispatchKeyValue(TYPE_ALLMUTE, "", message.substring(message.length() - 1));
+            dispatchKeyValue(TYPE_ALLMUTE, BLANK, message.substring(message.length() - 1));
             return;
         }
 
         if (message.contains(PAGE)) {
-            dispatchKeyValue(TYPE_PAGE, "", message.substring(message.length() - 1));
+            dispatchKeyValue(TYPE_PAGE, BLANK, message.substring(message.length() - 1));
             return;
         }
 

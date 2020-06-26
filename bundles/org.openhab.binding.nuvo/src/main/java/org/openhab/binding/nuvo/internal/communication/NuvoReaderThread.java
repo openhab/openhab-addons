@@ -16,6 +16,7 @@ import java.io.InterruptedIOException;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.nuvo.internal.NuvoBindingConstants;
 import org.openhab.binding.nuvo.internal.NuvoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,10 @@ public class NuvoReaderThread extends Thread {
      *
      * @param connector the object that should handle the received message
      */
-    public NuvoReaderThread(NuvoConnector connector) {
+    public NuvoReaderThread(NuvoConnector connector, String uid) {
+        super(NuvoBindingConstants.BINDING_ID + "-" + uid);
         this.connector = connector;
+        setDaemon(true);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class NuvoIpConnector extends NuvoConnector {
 
     @Override
     public synchronized void open() throws NuvoException {
-        logger.info("Opening IP connection on IP {} port {}", this.address, this.port);
+        logger.debug("Opening IP connection on IP {} port {}", this.address, this.port);
         try {
             Socket clientSocket = new Socket(this.address, this.port);
             clientSocket.setSoTimeout(100);
@@ -63,7 +63,7 @@ public class NuvoIpConnector extends NuvoConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new NuvoReaderThread(this);
+            Thread thread = new NuvoReaderThread(this, this.address + "." + this.port);
             setReaderThread(thread);
             thread.start();
 
@@ -74,7 +74,7 @@ public class NuvoIpConnector extends NuvoConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            throw new NuvoException("Opening IP connection failed: " + e.getMessage());
+            throw new NuvoException("Opening IP connection failed: " + e.getMessage(), e);
         }
     }
 
@@ -120,7 +120,7 @@ public class NuvoIpConnector extends NuvoConnector {
         } catch (SocketTimeoutException e) {
             return 0;
         } catch (IOException e) {
-            throw new NuvoException("readInput failed: " + e.getMessage());
+            throw new NuvoException("readInput failed: " + e.getMessage(), e);
         }
     }
 }

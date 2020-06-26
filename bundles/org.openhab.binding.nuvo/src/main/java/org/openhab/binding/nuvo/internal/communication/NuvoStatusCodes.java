@@ -25,6 +25,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class NuvoStatusCodes {
+    private static final String L = "L";
+    private static final String C = "C";
+    private static final String R = "R";
+    private static final String DASH = "-";
+    private static final String ZERO = "0";
 
     // map to lookup play mode
     public static final Map<String, String> PLAY_MODE = new HashMap<>();
@@ -53,27 +58,25 @@ public class NuvoStatusCodes {
      */
     public static String getBalanceFromStr(String value) {
         // example L2; return 2 | C; return 0 | R10; return -10
-        if (value.substring(0, 1).equals("L")) {
+        if (value.substring(0, 1).equals(L)) {
             return (value.substring(1));
-        } else if (value.equals("C")) {
-            return "0";
-        } else if (value.substring(0, 1).equals("R")) {
-            return ("-" + value.substring(1));
-        } else {
-            return "0";
+        } else if (value.equals(C)) {
+            return ZERO;
+        } else if (value.substring(0, 1).equals(R)) {
+            return (DASH + value.substring(1));
         }
+        return ZERO;
     }
 
     // see above comment
     public static String getBalanceFromInt(Integer value) {
         if (value < 0) {
-            return ("L" + Integer.toString(value * -1));
+            return (L + Integer.toString(value * -1));
         } else if (value == 0) {
-            return "C";
+            return C;
         } else if (value > 0) {
-            return ("R" + Integer.toString(value));
-        } else {
-            return "C";
+            return (R + Integer.toString(value));
         }
+        return C;
     }
 }

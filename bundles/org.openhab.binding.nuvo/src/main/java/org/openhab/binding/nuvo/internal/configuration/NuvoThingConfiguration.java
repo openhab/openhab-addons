@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class NuvoThingConfiguration {
 
-    public @NonNullByDefault({}) String serialPort;
+    public @Nullable String serialPort;
     public @Nullable String host;
     public @Nullable Integer port;
     public @Nullable Integer numZones;

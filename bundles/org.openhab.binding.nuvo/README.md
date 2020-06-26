@@ -43,12 +43,11 @@ The thing has the following configuration parameters:
 Some notes:
 
 * If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
-*
 * Source display_line1 thru 4 can only be updated on non NuvoNet sources.
-*
 * The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
 *
-* On Linux, you may get an error stating the serial port cannot be opened when the Nuvo binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+* On Linux, you may get an error stating the serial port cannot be opened when the Nuvo binding tries to load.
+* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. Nuvo and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 * Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Nuvo amplifier):
 
@@ -75,16 +74,16 @@ The following channels are available:
 | zoneN#balance (where N= 1-20)        | Number      | Adjust the balance control for a zone (-18 to 18 [in increments of 2]) -18=left, 0=center, 18=right           |
 | zoneN#loudness (where N= 1-20)       | Switch      | Turn on or off the loudness compensation setting for the zone                                                 |
 | zoneN#dnd (where N= 1-20)            | Switch      | Turn on or off the Do Not Disturb for the zone (for when the amplifiers's Page All Zones feature is activated)|
-| zoneN#lock (where N= 1-20)           | Number      | Indicates if this zone is currently locked (ReadOnly 0-1)                                                     |
+| zoneN#lock (where N= 1-20)           | Contact     | Indicates if this zone is currently locked                                                                    |
 | zoneN#party (where N= 1-20)          | Switch      | Turn on or off the party mode feature with this zone as the host                                              |
-| sourceN:display_line1 (where N= 1-6) | String      | 1st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
-| sourceN:display_line2 (where N= 1-6) | String      | 2st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
-| sourceN:display_line3 (where N= 1-6) | String      | 3st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
-| sourceN:display_line4 (where N= 1-6) | String      | 4st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
-| sourceN:play_mode (where N= 1-6)     | String      | The current playback mode of the source, ie: Playing, Paused, etc. (ReadOnly) See rules example for updating  |
-| sourceN:track_length (where N= 1-6)  | Number:Time | The total running time of the current playing track (ReadOnly) See rules example for updating                 |
-| sourceN:track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating               |
-| sourceN:button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source (ReadOnly)                           |
+| sourceN#display_line1 (where N= 1-6) | String      | 1st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
+| sourceN#display_line2 (where N= 1-6) | String      | 2st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
+| sourceN#display_line3 (where N= 1-6) | String      | 3st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
+| sourceN#display_line4 (where N= 1-6) | String      | 4st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
+| sourceN#play_mode (where N= 1-6)     | String      | The current playback mode of the source, ie: Playing, Paused, etc. (ReadOnly) See rules example for updating  |
+| sourceN#track_length (where N= 1-6)  | Number:Time | The total running time of the current playing track (ReadOnly) See rules example for updating                 |
+| sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating               |
+| sourceN#button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source (ReadOnly)                           |
 
 ## Full Example
 
@@ -118,7 +117,7 @@ Number nuvo_z1_bass "Bass Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1
 Number nuvo_z1_balance "Balance Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#balance" }
 Switch nuvo_z1_loudness "Loudness" { channel="nuvo:amplifier:myamp:zone1#loudness" }
 Switch nuvo_z1_dnd "Do Not Disturb" { channel="nuvo:amplifier:myamp:zone1#dnd" }
-Number nuvo_z1_lock "Zone Locked [%s]" { channel="nuvo:amplifier:myamp:zone1#lock" }
+Switch nuvo_z1_lock "Zone Locked [%s]" { channel="nuvo:amplifier:myamp:zone1#lock" }
 Switch nuvo_z1_party "Party Mode" { channel="nuvo:amplifier:myamp:zone1#party" }
 
 // > repeat for zones 2-20 (substitute z1 and zone1) < //
@@ -257,7 +256,7 @@ sitemap nuvo label="Audio Control" {
         Setpoint item=nuvo_z1_balance label="Balance Adjustment [%d]" minValue=-18 maxValue=18 step=2 visibility=[nuvo_z1_power==ON]
         Switch item=nuvo_z1_loudness visibility=[nuvo_z1_power==ON]
         Switch item=nuvo_z1_dnd visibility=[nuvo_z1_power==ON]
-        Text item=nuvo_z1_lock icon="lock"
+        Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock"
         Switch item=nuvo_z1_party visibility=[nuvo_z1_power==ON]
     }
     

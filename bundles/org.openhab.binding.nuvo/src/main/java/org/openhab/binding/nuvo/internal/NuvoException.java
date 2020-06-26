@@ -26,6 +26,10 @@ public class NuvoException extends Exception {
     public NuvoException() {
     }
 
+    public NuvoException(String message, Throwable t) {
+        super(message, t);
+    }
+
     public NuvoException(String message) {
         super(message);
     }

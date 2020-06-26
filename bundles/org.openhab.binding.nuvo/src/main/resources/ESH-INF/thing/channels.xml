@@ -125,7 +125,7 @@
 				<label>Address</label>
 				<description>Host Name or IP Address of the Machine Connected to the Nuvo Amplifier (Serial over IP)</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
 				<description>Communication Port (serial over IP). For IP Connection to the Nuvo Amplifier</description>
 				<default>4444</default>
@@ -137,8 +137,10 @@
 			</parameter>
 			<parameter name="clockSync" type="boolean" required="false">
 				<label>Sync Clock On GConcerto</label>
-				<description>If Set to true, the Binding Will Sync the Internal Clock On the Grand Concerto to Match the openHAB Host's
-					System Clock. The Sync Job Runs at Binding Startup and Once an Hour Thereafter. The Essentia G Has No RTC, So This
+				<description>If Set to true, the Binding Will Sync the Internal Clock On the Grand Concerto to Match the openHAB
+					Host's
+					System Clock. The Sync Job Runs at Binding Startup and Once an Hour Thereafter. The Essentia G Has No RTC, So
+					This
 					Setting Has No Effect On That Component.</description>
 				<default>false</default>
 			</parameter>
@@ -684,10 +686,15 @@
 	</channel-type>
 
 	<channel-type id="lock">
-		<item-type>Number</item-type>
+		<item-type>Contact</item-type>
 		<label>Locked</label>
 		<description>Indicates If This Zone Is Locked</description>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Unlocked</option>
+				<option value="OPEN">Locked</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="party">

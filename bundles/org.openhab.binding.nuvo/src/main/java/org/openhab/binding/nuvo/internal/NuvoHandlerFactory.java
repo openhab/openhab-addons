@@ -16,8 +16,6 @@ import static org.openhab.binding.nuvo.internal.NuvoBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,12 +40,11 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.nuvo", service = ThingHandlerFactory.class)
 public class NuvoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_AMP).collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final @NonNullByDefault({}) SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) NuvoStateDescriptionOptionProvider stateDescriptionProvider;
+    private final @NonNullByDefault({}) NuvoStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -55,8 +52,10 @@ public class NuvoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Activate
-    public NuvoHandlerFactory(final @Reference NuvoStateDescriptionOptionProvider provider) {
+    public NuvoHandlerFactory(final @Reference NuvoStateDescriptionOptionProvider provider,
+            final @Reference SerialPortManager serialPortManager) {
         this.stateDescriptionProvider = provider;
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -68,14 +67,5 @@ public class NuvoHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 }
