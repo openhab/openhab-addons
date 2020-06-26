@@ -38,11 +38,11 @@
 
 	<channel-type id="last_seen">
 		<item-type>DateTime</item-type>
-    <label>Last Seen</label>
-    <description>The date and time when the sensor was last seen.</description>
-    <category>Time</category>
-    <state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
-  </channel-type>
+		<label>Last Seen</label>
+		<description>The date and time when the sensor was last seen.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
 
 	<thing-type id="powersensor">
 		<supported-bridge-type-refs>
@@ -53,7 +53,7 @@
 		<channels>
 			<channel typeId="power" id="power"/>
 			<channel typeId="last_updated" id="last_updated"/>
-            <channel typeId="last_seen" id="last_seen"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -94,7 +94,7 @@
 		<channels>
 			<channel typeId="consumption" id="consumption"></channel>
 			<channel typeId="last_updated" id="last_updated"></channel>
-            <channel typeId="last_seen" id="last_seen"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -119,7 +119,7 @@
 			<channel typeId="buttonevent" id="buttonevent"/>
 			<channel typeId="button" id="button"/>
 			<channel typeId="last_updated" id="last_updated"/>
-            <channel typeId="last_seen" id="last_seen"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
