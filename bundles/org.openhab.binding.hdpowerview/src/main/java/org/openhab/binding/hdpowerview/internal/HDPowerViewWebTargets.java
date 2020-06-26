@@ -62,6 +62,9 @@ public class HDPowerViewWebTargets {
 
     public final Gson gson;
 
+    private static final String CONN_HDR = "Connection";
+    private static final String CONN_VAL = "close"; // "keep-alive"
+
     public HDPowerViewWebTargets(Client client, String ipAddress) {
         base = client.target("http://" + ipAddress + "/api");
         shades = base.path("shades/");
@@ -72,7 +75,7 @@ public class HDPowerViewWebTargets {
     }
 
     public @Nullable Shades getShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        String json = invoke(shades.request().buildGet(), shades);
+        String json = invoke(shades.request().header(CONN_HDR, CONN_VAL).buildGet(), shades);
         return gson.fromJson(json, Shades.class);
     }
 
@@ -81,18 +84,19 @@ public class HDPowerViewWebTargets {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shade.resolveTemplate("id", shadeId);
         String json = gson.toJson(new ShadeMove(shadeId, position));
-        json = invoke(target.request().buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target);
+        json = invoke(target.request().header(CONN_HDR, CONN_VAL)
+                .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target);
         return gson.fromJson(json, Shade.class);
     }
 
     public @Nullable Scenes getScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        String json = invoke(scenes.request().buildGet(), scenes);
+        String json = invoke(scenes.request().header(CONN_HDR, CONN_VAL).buildGet(), scenes);
         return gson.fromJson(json, Scenes.class);
     }
 
     public void activateScene(int sceneId) throws ProcessingException, HubMaintenanceException {
         WebTarget target = sceneActivate.queryParam("sceneId", sceneId);
-        invoke(target.request().buildGet(), target);
+        invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target);
     }
 
     private String invoke(Invocation invocation, WebTarget target) throws ProcessingException, HubMaintenanceException {
@@ -143,7 +147,7 @@ public class HDPowerViewWebTargets {
     public @Nullable Shade refreshShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shade.resolveTemplate("id", shadeId).queryParam("refresh", true);
-        String json = invoke(target.request().buildGet(), target);
+        String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target);
         return gson.fromJson(json, Shade.class);
     }
 }
