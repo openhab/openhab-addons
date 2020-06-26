@@ -17,15 +17,17 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
 
 /**
  * The {@link TeleinfoAbstractControllerHandler} class defines a skeleton for controller handlers.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandler {
 
     private List<TeleinfoControllerHandlerListener> listeners = Collections.synchronizedList(new ArrayList<>());

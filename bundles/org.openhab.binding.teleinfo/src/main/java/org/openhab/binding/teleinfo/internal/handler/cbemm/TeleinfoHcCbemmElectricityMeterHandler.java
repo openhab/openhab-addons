@@ -15,10 +15,11 @@ package org.openhab.binding.teleinfo.internal.handler.cbemm;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmHcOption;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmHcOption;
 
 /**
  * The {@link TeleinfoHcCbemmElectricityMeterHandler} class defines a handler for a HC CBEMM Electricity Meters thing.
@@ -26,6 +27,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmHcOption;
  * @author Nicolas SIBERIL - Initial contribution
  * @author Olivier MARCEAU - Change ADCO property to parameter
  */
+@NonNullByDefault
 public class TeleinfoHcCbemmElectricityMeterHandler extends TeleinfoAbstractCbemmElectricityMeterHandler {
 
     public TeleinfoHcCbemmElectricityMeterHandler(Thing thing) {

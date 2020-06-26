@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
-import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class HhphcConverter implements Converter {
 
     private final Logger logger = LoggerFactory.getLogger(HhphcConverter.class);

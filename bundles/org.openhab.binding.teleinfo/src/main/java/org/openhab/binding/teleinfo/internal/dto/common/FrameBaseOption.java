@@ -10,23 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.common;
+package org.openhab.binding.teleinfo.internal.dto.common;
 
 /**
- * The {@link Ptec} enumeration defines all PTEC values.
+ * The {@link FrameBaseOption} interface defines common attributes for Base option.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public enum Ptec {
-    TH,
-    HC,
-    HP,
-    HN,
-    PM,
-    HCJB,
-    HCJW,
-    HCJR,
-    HPJB,
-    HPJW,
-    HPJR
+public interface FrameBaseOption {
+
+    int getBase();
+
+    void setBase(int base);
+
 }

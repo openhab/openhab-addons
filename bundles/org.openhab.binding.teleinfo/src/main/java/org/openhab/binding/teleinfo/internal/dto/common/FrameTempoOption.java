@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.common;
+package org.openhab.binding.teleinfo.internal.dto.common;
 
 /**
  * The {@link FrameTempoOption} interface defines common attributes for Tempo option.

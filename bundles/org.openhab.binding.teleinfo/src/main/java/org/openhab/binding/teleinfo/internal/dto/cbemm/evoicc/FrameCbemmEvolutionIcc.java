@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc;
+package org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc;
 
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemm;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemm;
 
 /**
  * The {@link FrameCbemmEvolutionIcc} class defines CBEMM Evolution ICC Teleinfo frames.

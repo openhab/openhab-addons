@@ -15,10 +15,11 @@ package org.openhab.binding.teleinfo.internal.handler.cbemm.evoicc;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.CHANNEL_CBEMM_EVOLUTION_ICC_PAPP;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIcc;
 import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoAbstractCbemmElectricityMeterHandler;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIcc;
 
 /**
  * The {@link TeleinfoAbstractCbemmEvoIccElectricityMeterHandler} class defines a skeleton for CBEMM Evolution ICC
@@ -27,6 +28,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolu
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public abstract class TeleinfoAbstractCbemmEvoIccElectricityMeterHandler
         extends TeleinfoAbstractCbemmElectricityMeterHandler {
 

@@ -10,17 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.common;
+package org.openhab.binding.teleinfo.internal.dto.common;
 
 /**
- * The {@link FrameBaseOption} interface defines common attributes for Base option.
+ * The {@link FrameEjpOption} interface defines common attributes for EJP option.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public interface FrameBaseOption {
+public interface FrameEjpOption {
 
-    int getBase();
+    int getEjphpm();
 
-    void setBase(int base);
+    void setEjphpm(int ejphpm);
+
+    int getEjphn();
+
+    void setEjphn(int ejphn);
+
+    Integer getPejp();
+
+    void setPejp(Integer pejp);
 
 }

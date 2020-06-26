@@ -17,15 +17,16 @@ import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetm;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLong;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmShort;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractElectricityMeterHandler;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetm;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLong;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmShort;
 
 /**
  * The {@link TeleinfoAbstractCbetmElectricityMeterHandler} class defines a skeleton for CBETM Electricity Meters
@@ -33,6 +34,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmShort;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends TeleinfoAbstractElectricityMeterHandler {
 
     public TeleinfoAbstractCbetmElectricityMeterHandler(Thing thing) {

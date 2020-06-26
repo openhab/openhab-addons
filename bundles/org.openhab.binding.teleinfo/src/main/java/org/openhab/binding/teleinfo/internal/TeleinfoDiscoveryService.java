@@ -20,29 +20,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.common.AbstractUID;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmHcOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongHcOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameAdco;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoControllerHandlerListener;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmHcOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongHcOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameAdco;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class TeleinfoDiscoveryService extends AbstractDiscoveryService implements TeleinfoControllerHandlerListener {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
@@ -106,7 +106,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
     }
 
     @Override
-    public void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull Frame frame) {
+    public void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, Frame frame) {
         detectNewElectricityMeterFromReceivedFrame(frame);
     }
 

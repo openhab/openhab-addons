@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.common;
+package org.openhab.binding.teleinfo.internal.dto.common;
 
 /**
  * The {@link FrameHcOption} interface defines common attributes for HC option.

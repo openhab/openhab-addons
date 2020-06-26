@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class FloatConverter implements Converter {
 
     private final Logger logger = LoggerFactory.getLogger(FloatConverter.class);

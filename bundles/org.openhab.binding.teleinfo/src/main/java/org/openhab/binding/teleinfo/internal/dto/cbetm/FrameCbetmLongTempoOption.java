@@ -10,19 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc;
+package org.openhab.binding.teleinfo.internal.dto.cbetm;
 
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
 
 /**
- * The {@link FrameCbemmEvolutionIccTempoOption} class defines a CBEMM Evolution ICC Teleinfo frame with Tempo option.
+ * The {@link FrameCbetmLongTempoOption} class defines a CBETM Teleinfo frame with Tempo option.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class FrameCbemmEvolutionIccTempoOption extends FrameCbemmEvolutionIcc implements FrameTempoOption {
+public class FrameCbetmLongTempoOption extends FrameCbetmLong implements FrameTempoOption {
 
-    private static final long serialVersionUID = -1606685089266015480L;
+    private static final long serialVersionUID = 333018110121838463L;
 
     private int bbrhpjr;
     private int bbrhcjr;
@@ -35,7 +35,7 @@ public class FrameCbemmEvolutionIccTempoOption extends FrameCbemmEvolutionIcc im
     private ProgrammeCircuit1 programmeCircuit1;
     private ProgrammeCircuit2 programmeCircuit2;
 
-    public FrameCbemmEvolutionIccTempoOption() {
+    public FrameCbetmLongTempoOption() {
         // default constructor
     }
 

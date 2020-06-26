@@ -13,12 +13,15 @@
 package org.openhab.binding.teleinfo.internal.reader;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
 
 /**
  * The {@link TeleinfoReaderListenerAdaptor} class defines an adaptor at {@link TeleinfoReaderListener} interface.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public abstract class TeleinfoReaderListenerAdaptor implements TeleinfoReaderListener {
 
     @Override

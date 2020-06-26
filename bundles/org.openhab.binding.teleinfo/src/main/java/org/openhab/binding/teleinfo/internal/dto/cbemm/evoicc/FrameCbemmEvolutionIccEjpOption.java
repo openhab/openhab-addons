@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc;
+package org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc;
 
-import org.openhab.binding.teleinfo.internal.reader.common.FrameEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameEjpOption;
 
 /**
  * The {@link FrameCbemmEvolutionIccEjpOption} class defines a CBEMM Evolution ICC Teleinfo frame with EJP option.

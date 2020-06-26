@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link FrameUtil} class defines a utility class for {@link FrameCbetmLong}.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class FrameUtil {
 
     private FrameUtil() {

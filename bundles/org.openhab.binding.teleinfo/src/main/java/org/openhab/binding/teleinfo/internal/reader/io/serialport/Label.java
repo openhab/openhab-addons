@@ -13,9 +13,9 @@
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.CouleurDemain;
-import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
-import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.CouleurDemain;
 
 /**
  * The {@link Label} enum defines all Teleinfo labels and their format.

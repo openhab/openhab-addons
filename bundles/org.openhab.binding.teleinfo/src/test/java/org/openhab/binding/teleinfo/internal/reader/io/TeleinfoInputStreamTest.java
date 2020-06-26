@@ -19,16 +19,16 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit1;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit2;
-import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
-import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.ProgrammeCircuit1;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.ProgrammeCircuit2;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.util.TestUtils;
 

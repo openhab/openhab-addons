@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.common;
+package org.openhab.binding.teleinfo.internal.dto.common;
 
-import org.openhab.binding.teleinfo.internal.reader.Frame;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
 
 /**
  * The {@link FrameAdco} class defines common attributes for CBEMM and CBETM Teleinfo frames.

@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.cbemm;
+package org.openhab.binding.teleinfo.internal.dto.cbemm;
 
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
 
 /**
  * The {@link FrameCbemmTempoOption} class defines a CBEMM Teleinfo frame with Tempo option.

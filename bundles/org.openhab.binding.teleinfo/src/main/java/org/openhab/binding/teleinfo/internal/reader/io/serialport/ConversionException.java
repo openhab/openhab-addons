@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link ConversionException} class defines a conversion exception.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class ConversionException extends Exception {
 
     private static final long serialVersionUID = -1109821041874271681L;
@@ -28,8 +32,9 @@ public class ConversionException extends Exception {
         this(valueToConvert, null);
     }
 
-    public ConversionException(String valueToConvert, Throwable cause) {
+    public ConversionException(String valueToConvert,@Nullable Throwable cause) {
         super(String.format(ERROR_MESSAGE, valueToConvert), cause);
+        this.valueToConvert = valueToConvert;
     }
 
     public String getValueToConvert() {

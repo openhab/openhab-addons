@@ -15,6 +15,7 @@ package org.openhab.binding.teleinfo.internal.handler;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -28,10 +29,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameHcOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingHandler
         implements TeleinfoControllerHandlerListener {
     private final Logger logger = LoggerFactory.getLogger(TeleinfoAbstractElectricityMeterHandler.class);

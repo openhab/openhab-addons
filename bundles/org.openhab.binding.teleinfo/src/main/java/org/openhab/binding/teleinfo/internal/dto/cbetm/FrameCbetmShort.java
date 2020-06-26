@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.cbetm;
+package org.openhab.binding.teleinfo.internal.dto.cbetm;
 
 /**
  * The {@link FrameCbetmShort} class defines a CBETM Short Teleinfo frames.

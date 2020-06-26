@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
-import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
-import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
 import org.openhab.binding.teleinfo.internal.reader.io.TeleinfoInputStream;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.slf4j.Logger;
@@ -30,15 +30,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class TeleinfoReceiveThread extends Thread {
 
     private final Logger logger = LoggerFactory.getLogger(TeleinfoReceiveThread.class);
 
-    private SerialPort serialPort;
-    private TeleinfoReceiveThreadListener listener;
+    private @Nullable SerialPort serialPort;
+    private @Nullable TeleinfoReceiveThreadListener listener;
     private boolean autoRepairInvalidADPSgroupLine;
 
-    public TeleinfoReceiveThread(SerialPort serialPort, @NonNull final TeleinfoReceiveThreadListener listener,
+    public TeleinfoReceiveThread(@Nullable SerialPort serialPort, final @Nullable TeleinfoReceiveThreadListener listener,
             boolean autoRepairInvalidADPSgroupLine) {
         super("TeleinfoReceiveThread");
 
@@ -81,11 +82,11 @@ public class TeleinfoReceiveThread extends Thread {
         serialPort.removeEventListener();
     }
 
-    public TeleinfoReceiveThreadListener getListener() {
+    public @Nullable TeleinfoReceiveThreadListener getListener() {
         return listener;
     }
 
-    public void setListener(TeleinfoReceiveThreadListener listener) {
+    public void setListener(@Nullable TeleinfoReceiveThreadListener listener) {
         this.listener = listener;
     }
 }

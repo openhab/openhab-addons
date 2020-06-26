@@ -10,22 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc;
+package org.openhab.binding.teleinfo.internal.dto.cbetm;
 
-import org.openhab.binding.teleinfo.internal.reader.common.FrameBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameBaseOption;
 
 /**
- * The {@link FrameCbemmEvolutionIccBaseOption} class defines a CBEMM Evolution ICC Teleinfo frame with Base option.
+ * The {@link FrameCbetmLongBaseOption} class defines a CBETM Teleinfo frame with Base option.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class FrameCbemmEvolutionIccBaseOption extends FrameCbemmEvolutionIcc implements FrameBaseOption {
+public class FrameCbetmLongBaseOption extends FrameCbetmLong implements FrameBaseOption {
 
-    private static final long serialVersionUID = 1623781914779495089L;
+    private static final long serialVersionUID = 7248276012515193856L;
 
     private int base;
 
-    public FrameCbemmEvolutionIccBaseOption() {
+    public FrameCbetmLongBaseOption() {
         // default constructor
     }
 

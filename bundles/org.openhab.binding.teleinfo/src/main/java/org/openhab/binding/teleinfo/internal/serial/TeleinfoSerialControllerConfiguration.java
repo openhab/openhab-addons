@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.teleinfo.internal.serial;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TeleinfoSerialControllerConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class TeleinfoSerialControllerConfiguration {
 
-    public String serialport;
+    public String serialport = "";
     public boolean autoRepairInvalidADPSgroupLine = true;
 
 }

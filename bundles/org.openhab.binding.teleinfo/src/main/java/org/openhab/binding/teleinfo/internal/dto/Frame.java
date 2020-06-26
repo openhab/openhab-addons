@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader;
+package org.openhab.binding.teleinfo.internal.dto;
 
 import java.io.Serializable;
 import java.time.LocalDate;

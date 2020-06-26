@@ -13,7 +13,8 @@
 package org.openhab.binding.teleinfo.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
 
 /**
  * The {@link TeleinfoControllerHandlerListener} interface defines all events pushed by a
@@ -21,6 +22,7 @@ import org.openhab.binding.teleinfo.internal.reader.Frame;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public interface TeleinfoControllerHandlerListener {
 
     void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull final Frame frame);

@@ -10,25 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.common;
+package org.openhab.binding.teleinfo.internal.dto.common;
 
 /**
- * The {@link FrameEjpOption} interface defines common attributes for EJP option.
+ * The {@link Ptec} enumeration defines all PTEC values.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public interface FrameEjpOption {
-
-    int getEjphpm();
-
-    void setEjphpm(int ejphpm);
-
-    int getEjphn();
-
-    void setEjphn(int ejphn);
-
-    Integer getPejp();
-
-    void setPejp(Integer pejp);
-
+public enum Ptec {
+    TH,
+    HC,
+    HP,
+    HN,
+    PM,
+    HCJB,
+    HCJW,
+    HCJR,
+    HPJB,
+    HPJW,
+    HPJR
 }

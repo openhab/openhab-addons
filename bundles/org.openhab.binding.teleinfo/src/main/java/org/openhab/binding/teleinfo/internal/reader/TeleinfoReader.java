@@ -15,11 +15,14 @@ package org.openhab.binding.teleinfo.internal.reader;
 import java.io.Closeable;
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TeleinfoReader} interface defines a mechanism to read Teleinfo frames.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public interface TeleinfoReader extends Closeable {
 
     void open() throws IOException;

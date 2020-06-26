@@ -15,12 +15,12 @@ package org.openhab.binding.teleinfo.internal.serial;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import java.io.IOException;
-import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -33,8 +33,8 @@ import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerHandler
         implements TeleinfoReceiveThreadListener {
 
@@ -53,9 +54,9 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private static final int SERIAL_PORT_DELAY_RETRY_IN_SECONDS = 60;
 
     private SerialPortManager serialPortManager;
-    private org.eclipse.smarthome.io.transport.serial.SerialPort serialPort;
-    private TeleinfoReceiveThread receiveThread;
-    private ScheduledFuture<?> keepAliveThread;
+    private @Nullable SerialPort serialPort;
+    private @Nullable TeleinfoReceiveThread receiveThread;
+    private @Nullable ScheduledFuture<?> keepAliveThread;
     private @Nullable TeleinfoSerialControllerConfiguration config;
     private long invalidFrameCounter = 0;
 

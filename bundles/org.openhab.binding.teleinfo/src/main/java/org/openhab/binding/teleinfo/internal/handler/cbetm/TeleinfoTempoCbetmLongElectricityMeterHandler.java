@@ -15,11 +15,12 @@ package org.openhab.binding.teleinfo.internal.handler.cbetm;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.THING_TEMPO_CBETM_ELECTRICITY_METER_PROPERTY_ADCO;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetm;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongTempoOption;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
-import org.openhab.binding.teleinfo.internal.reader.Frame;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetm;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongTempoOption;
 
 /**
  * The {@link TeleinfoTempoCbetmLongElectricityMeterHandler} class defines a handler for a TEMPO CBETM Electricity
@@ -29,6 +30,7 @@ import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongTempoOpt
  * @author Nicolas SIBERIL - Initial contribution
  * @author Olivier MARCEAU - Change ADCO property to parameter
  */
+@NonNullByDefault
 public class TeleinfoTempoCbetmLongElectricityMeterHandler extends TeleinfoAbstractCbetmElectricityMeterHandler {
 
     public TeleinfoTempoCbetmLongElectricityMeterHandler(Thing thing) {

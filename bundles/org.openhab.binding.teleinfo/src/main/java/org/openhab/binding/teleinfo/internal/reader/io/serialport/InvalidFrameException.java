@@ -14,11 +14,14 @@ package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link InvalidFrameException} class defines an exception for invalid frames.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class InvalidFrameException extends Exception {
 
     private static final long serialVersionUID = 4729529258857792922L;
@@ -31,6 +34,7 @@ public class InvalidFrameException extends Exception {
 
     public InvalidFrameException(String message) {
         super(message, null);
+        timestamp = new Date();
     }
 
     public InvalidFrameException(String message, Throwable cause) {

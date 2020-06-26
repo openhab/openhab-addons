@@ -16,11 +16,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
+
 /**
  * The {@link TeleinfoReaderAdaptor} class defines an adaptor at {@link TeleinfoReader} interface.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public abstract class TeleinfoReaderAdaptor implements TeleinfoReader {
 
     private List<TeleinfoReaderListener> listeners = new ArrayList<>();

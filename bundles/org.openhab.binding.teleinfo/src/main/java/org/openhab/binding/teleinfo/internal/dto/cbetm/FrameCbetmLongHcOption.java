@@ -10,25 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc;
+package org.openhab.binding.teleinfo.internal.dto.cbetm;
 
-import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption;
-import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameHcOption;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
 
 /**
- * The {@link FrameCbemmEvolutionIccHcOption} class defines a CBEMM Evolution ICC Teleinfo frame with HC option.
+ * The {@link FrameCbetmLongHcOption} class defines a CBETM Teleinfo frame with HC/HP option.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class FrameCbemmEvolutionIccHcOption extends FrameCbemmEvolutionIcc implements FrameHcOption {
+public class FrameCbetmLongHcOption extends FrameCbetmLong implements FrameHcOption {
 
-    private static final long serialVersionUID = 3133144820515675037L;
+    private static final long serialVersionUID = -590729310348196198L;
 
     private int hchc;
     private int hchp;
     private Hhphc hhphc;
 
-    public FrameCbemmEvolutionIccHcOption() {
+    public FrameCbetmLongHcOption() {
         // default constructor
     }
 

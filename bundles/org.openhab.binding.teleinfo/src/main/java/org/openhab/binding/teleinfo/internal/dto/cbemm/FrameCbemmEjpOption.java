@@ -10,24 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.reader.cbetm;
+package org.openhab.binding.teleinfo.internal.dto.cbemm;
 
-import org.openhab.binding.teleinfo.internal.reader.common.FrameEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameEjpOption;
 
 /**
- * The {@link FrameCbetmLongEjpOption} class defines a CBETM Teleinfo frame with EJP option.
+ * The {@link FrameCbemmEjpOption} class defines a CBEMM Teleinfo frame with EJP option.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
-public class FrameCbetmLongEjpOption extends FrameCbetmLong implements FrameEjpOption {
+public class FrameCbemmEjpOption extends FrameCbemm implements FrameEjpOption {
 
-    private static final long serialVersionUID = 1104569000621483323L;
+    private static final long serialVersionUID = -1934715078822532494L;
 
     private int ejphpm;
     private int ejphn;
     private Integer pejp;
 
-    public FrameCbetmLongEjpOption() {
+    public FrameCbemmEjpOption() {
         // default constructor
     }
 
@@ -60,4 +60,5 @@ public class FrameCbetmLongEjpOption extends FrameCbetmLong implements FrameEjpO
     public void setPejp(Integer pejp) {
         this.pejp = pejp;
     }
+
 }

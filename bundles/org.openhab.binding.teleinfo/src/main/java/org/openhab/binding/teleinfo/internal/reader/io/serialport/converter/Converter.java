@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionExce
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public interface Converter {
 
     public Object convert(String value) throws ConversionException;

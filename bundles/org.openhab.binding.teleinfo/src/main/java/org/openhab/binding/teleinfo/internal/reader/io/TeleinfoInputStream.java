@@ -29,32 +29,34 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.openhab.binding.teleinfo.internal.reader.Frame;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemm;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmHcOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.FrameCbemmTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIcc;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
-import org.openhab.binding.teleinfo.internal.reader.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLong;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongHcOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmLongTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.cbetm.FrameCbetmShort;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameBaseOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameEjpOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameHcOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.CouleurDemain;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit1;
-import org.openhab.binding.teleinfo.internal.reader.common.FrameTempoOption.ProgrammeCircuit2;
-import org.openhab.binding.teleinfo.internal.reader.common.Hhphc;
-import org.openhab.binding.teleinfo.internal.reader.common.Ptec;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemm;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmHcOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIcc;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
+import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLong;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongHcOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmShort;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameBaseOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameEjpOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameHcOption;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.CouleurDemain;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.ProgrammeCircuit1;
+import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.ProgrammeCircuit2;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.FrameUtil;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
@@ -77,6 +79,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
+@NonNullByDefault
 public class TeleinfoInputStream extends InputStream {
 
     public static long DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME = 33400;
@@ -85,9 +88,9 @@ public class TeleinfoInputStream extends InputStream {
     private final Logger logger = LoggerFactory.getLogger(TeleinfoInputStream.class);
     private static final Map<Class<?>, Converter> LABEL_VALUE_CONVERTERS;
 
-    private BufferedReader bufferedReader = null;
-    private InputStream teleinfoInputStream = null;
-    private String groupLine = null;
+    private BufferedReader bufferedReader;
+    private InputStream teleinfoInputStream;
+    private @Nullable String groupLine;
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
     private long waitNextHeaderFrameTimeoutInMs;
     private long readingFrameTimeoutInMs;
@@ -112,7 +115,7 @@ public class TeleinfoInputStream extends InputStream {
                 autoRepairInvalidADPSgroupLine);
     }
 
-    public TeleinfoInputStream(final InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInMs,
+    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInMs,
             long readingFrameTimeoutInMs, boolean autoRepairInvalidADPSgroupLine) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
@@ -147,11 +150,11 @@ public class TeleinfoInputStream extends InputStream {
      *             header of next frame is expired (33,4 ms)
      * @throws IOException
      */
-    public synchronized Frame readNextFrame() throws InvalidFrameException, TimeoutException, IOException {
+    public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, TimeoutException, IOException {
         logger.debug("readNextFrame() [start]");
 
         // seek the next header frame
-        Future<Void> seekNextHeaderFrameTask = executorService.submit(()->{
+        Future<@Nullable Void> seekNextHeaderFrameTask = executorService.submit(()->{
             while (!isHeaderFrame(groupLine)) {
                 groupLine = bufferedReader.readLine();
                 if (logger.isTraceEnabled()) {
@@ -294,7 +297,7 @@ public class TeleinfoInputStream extends InputStream {
         throw new UnsupportedOperationException("The 'read()' is not supported");
     }
 
-    private boolean isHeaderFrame(final String line) {
+    private boolean isHeaderFrame(final @Nullable String line) {
         // A new teleinfo trame begin with '3' and '2' bytes (END OF TEXT et START OF TEXT)
         return (line != null && line.length() > 1 && line.codePointAt(0) == 3 && line.codePointAt(1) == 2);
     }
