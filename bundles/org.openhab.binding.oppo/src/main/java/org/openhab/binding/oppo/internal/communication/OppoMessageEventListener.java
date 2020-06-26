@@ -13,7 +13,6 @@
 package org.openhab.binding.oppo.internal.communication;
 
 import java.util.EventListener;
-import java.util.EventObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -28,7 +27,7 @@ public interface OppoMessageEventListener extends EventListener {
     /**
      * Event handler method for incoming Oppo message events
      *
-     * @param event the event object
+     * @param event the OppoMessageEvent object
      */
-    public void onNewMessageEvent(EventObject event);
+    public void onNewMessageEvent(OppoMessageEvent event);
 }

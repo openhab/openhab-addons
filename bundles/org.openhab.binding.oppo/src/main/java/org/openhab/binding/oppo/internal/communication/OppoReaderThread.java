@@ -15,6 +15,7 @@ package org.openhab.binding.oppo.internal.communication;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.oppo.internal.OppoBindingConstants;
 import org.openhab.binding.oppo.internal.OppoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +28,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OppoReaderThread extends Thread {
-
-    private final Logger logger = LoggerFactory.getLogger(OppoReaderThread.class);
-
     private static final int READ_BUFFER_SIZE = 16;
     private static final int SIZE = 64;
     private static final char TERM_CHAR = '\r';
+
+    private final Logger logger = LoggerFactory.getLogger(OppoReaderThread.class);
 
     private OppoConnector connector;
 
@@ -41,8 +41,10 @@ public class OppoReaderThread extends Thread {
      *
      * @param connector the object that should handle the received message
      */
-    public OppoReaderThread(OppoConnector connector) {
+    public OppoReaderThread(OppoConnector connector, String uid) {
+        super(OppoBindingConstants.BINDING_ID + "-" + uid);
         this.connector = connector;
+        setDaemon(true);
     }
 
     @Override

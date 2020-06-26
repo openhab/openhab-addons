@@ -35,14 +35,14 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class OppoConnector {
-    private final Logger logger = LoggerFactory.getLogger(OppoConnector.class);
-
     private static final Pattern QRY_PATTERN = Pattern.compile("^@(Q[A-Z0-9]{2}|VUP|VDN) OK (.*)$");
     private static final Pattern STUS_PATTERN = Pattern.compile("^@(U[A-Z0-9]{2}) (.*)$");
 
     private static final String NOP_OK = "@NOP OK";
     private static final String NOP = "NOP";
     private static final String OK = "OK";
+
+    private final Logger logger = LoggerFactory.getLogger(OppoConnector.class);
 
     private String beginCmd = "#";
     private String endCmd = "\r";
@@ -115,19 +115,12 @@ public abstract class OppoConnector {
      */
     protected void cleanup() {
         Thread readerThread = this.readerThread;
-        if (readerThread != null) {
-            readerThread.interrupt();
-            try {
-                readerThread.join();
-            } catch (InterruptedException e) {
-            }
-            this.readerThread = null;
-        }
         OutputStream dataOut = this.dataOut;
         if (dataOut != null) {
             try {
                 dataOut.close();
             } catch (IOException e) {
+                logger.debug("Error closing dataOut: {}", e.getMessage());
             }
             this.dataOut = null;
         }
@@ -136,8 +129,18 @@ public abstract class OppoConnector {
             try {
                 dataIn.close();
             } catch (IOException e) {
+                logger.debug("Error closing dataIn: {}", e.getMessage());
             }
             this.dataIn = null;
+        }
+        if (readerThread != null) {
+            readerThread.interrupt();
+            try {
+                readerThread.join(3000);
+            } catch (InterruptedException e) {
+                logger.warn("Error joining readerThread: {}", e.getMessage());
+            }
+            this.readerThread = null;
         }
     }
 
@@ -162,7 +165,7 @@ public abstract class OppoConnector {
         try {
             return dataIn.read(dataBuffer);
         } catch (IOException e) {
-            throw new OppoException("readInput failed: " + e.getMessage());
+            throw new OppoException("readInput failed: " + e.getMessage(), e);
         }
     }
 
@@ -200,18 +203,16 @@ public abstract class OppoConnector {
         String messageStr = beginCmd + command + endCmd;
         logger.debug("Sending command: {}", messageStr);
 
-        byte[] message = messageStr.getBytes(StandardCharsets.US_ASCII);
-
         OutputStream dataOut = this.dataOut;
         if (dataOut == null) {
             throw new OppoException("Send command \"" + messageStr + "\" failed: output stream is null");
         }
         try {
-            dataOut.write(message);
+            dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
         } catch (IOException e) {
             logger.debug("Send command \"{}\" failed: {}", messageStr, e.getMessage());
-            throw new OppoException("Send command \"" + command + "\" failed: " + e.getMessage());
+            throw new OppoException("Send command \"" + command + "\" failed: " + e.getMessage(), e);
         }
     }
 

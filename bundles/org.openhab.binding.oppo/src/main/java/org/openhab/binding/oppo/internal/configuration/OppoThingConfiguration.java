@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class OppoThingConfiguration {
     public @Nullable Integer model;
-    public @NonNullByDefault({}) String serialPort;
+    public @Nullable String serialPort;
     public @Nullable String host;
     public @Nullable Integer port;
     public boolean verboseMode;

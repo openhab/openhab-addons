@@ -63,7 +63,7 @@
 				<label>Address</label>
 				<description>Host Name or IP Address of the Oppo Player or Machine Used for Serial Over IP.</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false">
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
 				<description>(Optional) Communication Port for Serial Over IP Connection. Leave blank If Connecting Directly to the
 					Player.</description>

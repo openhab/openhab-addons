@@ -16,7 +16,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OppoIpConnector extends OppoConnector {
-
     private final Logger logger = LoggerFactory.getLogger(OppoIpConnector.class);
 
     private @Nullable String address;
@@ -55,7 +53,7 @@ public class OppoIpConnector extends OppoConnector {
 
     @Override
     public synchronized void open() throws OppoException {
-        logger.info("Opening IP connection on IP {} port {}", this.address, this.port);
+        logger.debug("Opening IP connection on IP {} port {}", this.address, this.port);
         try {
             Socket clientSocket = new Socket(this.address, this.port);
             clientSocket.setSoTimeout(100);
@@ -63,7 +61,7 @@ public class OppoIpConnector extends OppoConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new OppoReaderThread(this);
+            Thread thread = new OppoReaderThread(this, this.address + "." + this.port);
             setReaderThread(thread);
             thread.start();
 
@@ -74,7 +72,7 @@ public class OppoIpConnector extends OppoConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            throw new OppoException("Opening IP connection failed: " + e.getMessage());
+            throw new OppoException("Opening IP connection failed: " + e.getMessage(), e);
         }
     }
 
@@ -107,7 +105,6 @@ public class OppoIpConnector extends OppoConnector {
      * @throws OppoException - If the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
-     * @throws InterruptedIOException - if the thread was interrupted during the reading of the input stream
      */
     @Override
     protected int readInput(byte[] dataBuffer) throws OppoException {
@@ -120,7 +117,7 @@ public class OppoIpConnector extends OppoConnector {
         } catch (SocketTimeoutException e) {
             return 0;
         } catch (IOException e) {
-            throw new OppoException("readInput failed: " + e.getMessage());
+            throw new OppoException("readInput failed: " + e.getMessage(), e);
         }
     }
 }

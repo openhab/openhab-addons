@@ -16,8 +16,6 @@ import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,17 +39,17 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.oppo", service = ThingHandlerFactory.class)
 public class OppoHandlerFactory extends BaseThingHandlerFactory {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_PLAYER).collect(Collectors.toSet()));
+    private final SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
-
-    private @NonNullByDefault({}) OppoStateDescriptionOptionProvider stateDescriptionProvider;
+    private final OppoStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
-    public OppoHandlerFactory(final @Reference OppoStateDescriptionOptionProvider provider) {
+    public OppoHandlerFactory(final @Reference OppoStateDescriptionOptionProvider provider,
+            final @Reference SerialPortManager serialPortManager) {
         this.stateDescriptionProvider = provider;
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -69,14 +67,5 @@ public class OppoHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         }
         return null;
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 }

@@ -23,8 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class OppoBindingConstants {
-
-    private static final String BINDING_ID = "oppo";
+    public static final String BINDING_ID = "oppo";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
@@ -66,4 +65,67 @@ public class OppoBindingConstants {
     public static final String CHANNEL_HDMI_MODE = "hdmi_mode";
     public static final String CHANNEL_HDR_MODE = "hdr_mode"; // 203 and 205 only
     public static final String CHANNEL_REMOTE_BUTTON = "remote_button";
+
+    // misc
+    public static final String BLANK = "";
+    public static final String SPACE = " ";
+    public static final String SLASH = "/";
+    public static final String UNDERSCORE = "_";
+    public static final String ON = "ON";
+    public static final String OFF = "OFF";
+    public static final String ONE = "1";
+    public static final String ZERO = "0";
+    public static final String UNDEF = "UNDEF";
+    public static final String VERBOSE_2 = "2";
+    public static final String VERBOSE_3 = "3";
+    public static final String MUTE = "MUTE";
+    public static final String MUT = "MUT";
+    public static final String UMT = "UMT";
+
+    public static final String NOP = "NOP";
+    public static final String UTC = "UTC";
+    public static final String QTE = "QTE";
+    public static final String QTR = "QTR";
+    public static final String QCE = "QCE";
+    public static final String QCR = "QCR";
+    public static final String QVR = "QVR";
+    public static final String QPW = "QPW";
+    public static final String UPW = "UPW";
+    public static final String QVL = "QVL";
+    public static final String UVL = "UVL";
+    public static final String VUP = "VUP";
+    public static final String VDN = "VDN";
+    public static final String QIS = "QIS";
+    public static final String UIS = "UIS";
+    public static final String UPL = "UPL";
+    public static final String QTK = "QTK";
+    public static final String QCH = "QCH";
+    public static final String QPL = "QPL";
+    public static final String QRP = "QRP";
+    public static final String QZM = "QZM";
+    public static final String UDT = "UDT";
+    public static final String QDT = "QDT";
+    public static final String UAT = "UAT";
+    public static final String QAT = "QAT";
+    public static final String UST = "UST";
+    public static final String QST = "QST";
+    public static final String UAR = "UAR";
+    public static final String UVO = "UVO";
+    public static final String U3D = "U3D";
+    public static final String QSH = "QSH";
+    public static final String QOP = "QOP";
+    public static final String QHD = "QHD";
+    public static final String QHR = "QHR";
+
+    public static final String NO_DISC = "NO DISC";
+    public static final String LOADING = "LOADING";
+    public static final String OPEN = "OPEN";
+    public static final String CLOSE = "CLOSE";
+    public static final String STOP = "STOP";
+    public static final String PLAY = "PLAY";
+
+    public static final String T = "T";
+    public static final String X = "X";
+    public static final String C = "C";
+    public static final String K = "K";
 }

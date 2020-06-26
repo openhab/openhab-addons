@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OppoSerialConnector extends OppoConnector {
-
     private final Logger logger = LoggerFactory.getLogger(OppoSerialConnector.class);
 
     private String serialPortName;
@@ -57,7 +56,7 @@ public class OppoSerialConnector extends OppoConnector {
 
     @Override
     public synchronized void open() throws OppoException {
-        logger.info("Opening serial connection on port {}", serialPortName);
+        logger.debug("Opening serial connection on port {}", serialPortName);
         try {
             SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
             if (portIdentifier == null) {
@@ -85,7 +84,7 @@ public class OppoSerialConnector extends OppoConnector {
                 }
             }
 
-            Thread thread = new OppoReaderThread(this);
+            Thread thread = new OppoReaderThread(this, this.serialPortName);
             setReaderThread(thread);
             thread.start();
 
@@ -98,16 +97,16 @@ public class OppoSerialConnector extends OppoConnector {
             logger.debug("Serial connection opened");
         } catch (PortInUseException e) {
             setConnected(false);
-            throw new OppoException("Opening serial connection failed: Port in Use Exception");
+            throw new OppoException("Opening serial connection failed: Port in Use Exception", e);
         } catch (UnsupportedCommOperationException e) {
             setConnected(false);
-            throw new OppoException("Opening serial connection failed: Unsupported Comm Operation Exception");
+            throw new OppoException("Opening serial connection failed: Unsupported Comm Operation Exception", e);
         } catch (UnsupportedEncodingException e) {
             setConnected(false);
-            throw new OppoException("Opening serial connection failed: Unsupported Encoding Exception");
+            throw new OppoException("Opening serial connection failed: Unsupported Encoding Exception", e);
         } catch (IOException e) {
             setConnected(false);
-            throw new OppoException("Opening serial connection failed: IO Exception");
+            throw new OppoException("Opening serial connection failed: IO Exception", e);
         }
     }
 

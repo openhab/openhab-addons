@@ -1,8 +1,10 @@
 # Oppo UDP-203/205, BDP-103/105, BDP-93/95 & BDP-83 Blu-ray player Binding
 
-This binding can be used to control the Oppo UDP-203/205 or BDP-83/93/95/103/105 Blu-ray player
-Almost all features of the various models of this player line are supported by the binding. Since I only have a BDP-103 to test with there might be some issues with
-other models that will need to be fixed. Please report any issues found. Also review the notes below for some important usage caveats.
+This binding can be used to control the Oppo UDP-203/205 or BDP-83/93/95/103/105 Blu-ray player.
+Almost all features of the various models of this player line are supported by the binding.
+Since I only have a BDP-103 to test with there might be some issues with other models that will need to be fixed.
+Please report any issues found.
+Also review the notes below for some important usage caveats.
 
 The binding supports three different kinds of connections:
 
@@ -22,8 +24,8 @@ It has the `player` id.
 
 ## Discovery
 
-Manually initiated Auto-discovery is supported if the player is accessible on the same IP subnet of the openHAB server. In the Paper UI Inbox, select Search For Things
-at the bottom and then choose the Oppo Blu-ray Player Binding to initiate discovery.
+Manually initiated Auto-discovery is supported if the player is accessible on the same IP subnet of the openHAB server.
+In the Paper UI Inbox, select Search For Things at the bottom and then choose the Oppo Blu-ray Player Binding to initiate discovery.
 
 ## Binding Configuration
 
@@ -44,22 +46,25 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-* If using direct IP connection on the BDP series (83/93/95/103/105), verbose mode is not supported. For some reason on these models, the unsolicited
-* time code update messages are not generated over the IP socket. If per-second time updates are required on these models, a direct serial or serial
-* over IP connection to the player is required. The UDP-20x series should be fully functional over direct IP connection but I don't have one to test with.
+* If using direct IP connection on the BDP series (83/93/95/103/105), verbose mode is not supported.
+* For some reason on these models, the unsolicited time code update messages are not generated over the IP socket.
+* If per-second time updates are required on these models, a direct serial or serial over IP connection to the player is required.
+* The UDP-20x series should be fully functional over direct IP connection but I don't have one to test with.
 *
-* As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing. Be aware that this
-* could cause performance impacts to your openHAB system. In non-verbose (the default), the binding will poll the player every 30 seconds to update
-* play time, track and chapter information instead.
+* As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
+* Be aware that this could cause performance impacts to your openHAB system.
+* In non-verbose (the default), the binding will poll the player every 30 seconds to update play time, track and chapter information instead.
 *
 * In order for the direct IP connection to work while the player is turned off, the Standby Mode setting must be set to "Quick Start" in the Device Setup menu.
 * Likewise if the player is turned off, it may not be discoverable by the Binding's discovery scan.
 *
-* If you experience any issues using the binding, first ensure that the player's firmware is up to date with the latest available version (especially on the 
-* older models). For the older models, some of the features in the control API were added after the players were shipped.
+* If you experience any issues using the binding, first ensure that the player's firmware is up to date with the latest available version (especially on the older models). 
+* For the older models, some of the features in the control API were added after the players were shipped.
 *
-* On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+* On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
+* You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom.
+* See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
 * Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Oppo player):
 
 ```

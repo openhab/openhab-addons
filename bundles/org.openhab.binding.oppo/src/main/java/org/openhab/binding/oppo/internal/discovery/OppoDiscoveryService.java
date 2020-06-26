@@ -20,10 +20,8 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -54,10 +52,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.oppo")
 public class OppoDiscoveryService extends AbstractDiscoveryService {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER);
 
     private final Logger logger = LoggerFactory.getLogger(OppoDiscoveryService.class);
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_PLAYER));
 
     /**
      * Address SDDP broadcasts on
@@ -185,7 +182,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
      * @param message possibly null, possibly empty SDDP message
      */
     private void messageReceive(String message) {
-        if (message == null || message.trim().length() == 0) {
+        if (message.trim().length() == 0) {
             return;
         }
 
@@ -253,7 +250,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 }
             }
 
-            if (host != null && model != null) {
+            if (model != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_PLAYER, host.replace(".", "_"));
                 HashMap<String, Object> properties = new HashMap<>();
                 properties.put("model", model);

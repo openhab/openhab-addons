@@ -26,6 +26,10 @@ public class OppoException extends Exception {
     public OppoException() {
     }
 
+    public OppoException(String message, Throwable t) {
+        super(message, t);
+    }
+
     public OppoException(String message) {
         super(message);
     }

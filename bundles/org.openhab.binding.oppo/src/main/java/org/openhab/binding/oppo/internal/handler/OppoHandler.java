@@ -16,7 +16,6 @@ import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +46,7 @@ import org.openhab.binding.oppo.internal.OppoException;
 import org.openhab.binding.oppo.internal.OppoStateDescriptionOptionProvider;
 import org.openhab.binding.oppo.internal.communication.OppoCommand;
 import org.openhab.binding.oppo.internal.communication.OppoConnector;
+import org.openhab.binding.oppo.internal.communication.OppoDefaultConnector;
 import org.openhab.binding.oppo.internal.communication.OppoIpConnector;
 import org.openhab.binding.oppo.internal.communication.OppoMessageEvent;
 import org.openhab.binding.oppo.internal.communication.OppoMessageEventListener;
@@ -65,42 +65,34 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OppoHandler extends BaseThingHandler implements OppoMessageEventListener {
+    private static final long RECON_POLLING_INTERVAL = 60;
+    private static final long POLLING_INTERVAL = 30;
+    private static final long INITIAL_POLLING_DELAY = 10;
+    private static final long SLEEP_BETWEEN_CMD = 100;
+
+    private static final Pattern TIME_CODE_PATTERN = Pattern
+            .compile("^(\\d{3}) (\\d{3}) ([A-Z]{1}) (\\d{2}:\\d{2}:\\d{2})$");
 
     private final Logger logger = LoggerFactory.getLogger(OppoHandler.class);
 
-    private static final Pattern TIME_CODE_PATTERN = Pattern.compile("^(\\d{3}) (\\d{3}) ([A-Z]{1}) (\\d{2}:\\d{2}:\\d{2})$");
-
-    private static final long RECON_POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(60);
-    private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(30);
-    private static final long INITIAL_POLLING_DELAY = TimeUnit.SECONDS.toSeconds(10);
-    private static final long SLEEP_BETWEEN_CMD = TimeUnit.MILLISECONDS.toMillis(100);
-
-    private static final String ON = "ON";
-    private static final String OFF = "OFF";
-    private static final String UNDEF = "UNDEF";
-    private static final String VERBOSE_2 = "2";
-    private static final String VERBOSE_3 = "3";
-
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
-    private @Nullable ScheduledFuture<?> clockSyncJob;
 
     private OppoStateDescriptionOptionProvider stateDescriptionProvider;
     private SerialPortManager serialPortManager;
+    private OppoConnector connector = new OppoDefaultConnector();
 
-    private @Nullable OppoConnector connector;
-
-    List<StateOption> inputSourceOptions = new ArrayList<>();
-    List<StateOption> hdmiModeOptions = new ArrayList<>();
+    private List<StateOption> inputSourceOptions = new ArrayList<>();
+    private List<StateOption> hdmiModeOptions = new ArrayList<>();
 
     private long lastEventReceived = System.currentTimeMillis();
-    private Object sequenceLock = new Object();
-    private String versionString = "";
+    private String versionString = BLANK;
     private String verboseMode = VERBOSE_2;
+    private String currentChapter = BLANK;
+    private String currentTimeMode = T;
+    private String currentPlayMode = BLANK;
     private boolean isUDP20X = false;
-    private String currentChapter = "";
-    private String currentTimeMode = "T";
-    private String currentPlayMode = "";
+    private Object sequenceLock = new Object();
 
     /**
      * Constructor
@@ -118,83 +110,86 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
         // Check configuration settings
         String configError = null;
-        String model = "";
+        String model = BLANK;
         boolean override = false;
 
         if (config.model == null) {
             configError = "player model must be specified";
+            return;
+        }
+
+        model = config.model.toString();
+        if ((config.serialPort == null || config.serialPort.isEmpty())
+                && (config.host == null || config.host.isEmpty())) {
+            configError = "undefined serialPort and host configuration settings; please set one of them";
+        } else if (config.host == null || config.host.isEmpty()) {
+            if (config.serialPort.toLowerCase().startsWith("rfc2217")) {
+                configError = "use host and port configuration settings for a serial over IP connection";
+            }
         } else {
-            model = config.model.toString();
-            if ((config.serialPort == null || config.serialPort.isEmpty())
-                    && (config.host == null || config.host.isEmpty())) {
-                configError = "undefined serialPort and host configuration settings; please set one of them";
-            } else if (config.host == null || config.host.isEmpty()) {
-                if (config.serialPort.toLowerCase().startsWith("rfc2217")) {
-                    configError = "use host and port configuration settings for a serial over IP connection";
+            if (config.port == null) {
+                if ((MODEL83).equals(model)) {
+                    config.port = BDP83_PORT;
+                    override = true;
+                } else if ((MODEL103).equals(model) || (MODEL105).equals(model)) {
+                    config.port = BDP10X_PORT;
+                    override = true;
+                } else {
+                    config.port = BDP20X_PORT;
                 }
-            } else {
-                if (config.port == null) {
-                    if ((MODEL83).equals(model)) {
-                        config.port = BDP83_PORT;
-                        override = true;
-                    } else if ((MODEL103).equals(model) || (MODEL105).equals(model)) {
-                        config.port = BDP10X_PORT;
-                        override = true;
-                    } else {
-                        config.port = BDP20X_PORT;
-                    }
-                } else if (config.port <= 0) {
-                    configError = "invalid port configuration setting";
-                }
+            } else if (config.port <= 0) {
+                configError = "invalid port configuration setting";
             }
         }
 
         if (configError != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
-        } else {
-            if (config.serialPort != null) {
-                connector = new OppoSerialConnector(serialPortManager, config.serialPort);
-            } else {
-                connector = new OppoIpConnector(config.host, config.port);
-                connector.overrideCmdPreamble(override);
-            }
-
-            if (config.verboseMode) {
-                this.verboseMode = VERBOSE_3;
-            }
-
-            if (MODEL203.equals(model) || MODEL205.equals(model)) {
-                this.isUDP20X = true;
-            }
-
-            this.buildOptionDropdowns(model);
-            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SOURCE),
-                    inputSourceOptions);
-            stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_HDMI_MODE),
-                    hdmiModeOptions);
-
-            // remove channels not needed for this model
-            List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
-
-            if (MODEL83.equals(model)) {
-                channels.removeIf(c -> (c.getUID().getId().equals(CHANNEL_SUB_SHIFT)
-                        || c.getUID().getId().equals(CHANNEL_OSD_POSITION)));
-            }
-
-            if (MODEL83.equals(model) || MODEL103.equals(model) || MODEL105.equals(model)) {
-                channels.removeIf(c -> (c.getUID().getId().equals(CHANNEL_ASPECT_RATIO)
-                        || c.getUID().getId().equals(CHANNEL_HDR_MODE)));
-            }
-
-            // no query to determine this, so set the default value at startup
-            updateChannelState(CHANNEL_TIME_MODE, currentTimeMode);
-
-            updateThing(editThing().withChannels(channels).build());
-
-            updateStatus(ThingStatus.UNKNOWN);
-            scheduleReconnectJob();
-            schedulePollingJob();
+            return;
         }
+
+        if (config.serialPort != null) {
+            String serialPort = config.serialPort;
+            connector = new OppoSerialConnector(serialPortManager, serialPort);
+        } else {
+            connector = new OppoIpConnector(config.host, config.port);
+            connector.overrideCmdPreamble(override);
+        }
+
+        if (config.verboseMode) {
+            this.verboseMode = VERBOSE_3;
+        }
+
+        if (MODEL203.equals(model) || MODEL205.equals(model)) {
+            this.isUDP20X = true;
+        }
+
+        this.buildOptionDropdowns(model);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SOURCE),
+                inputSourceOptions);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_HDMI_MODE),
+                hdmiModeOptions);
+
+        // remove channels not needed for this model
+        List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
+
+        if (MODEL83.equals(model)) {
+            channels.removeIf(c -> (c.getUID().getId().equals(CHANNEL_SUB_SHIFT)
+                    || c.getUID().getId().equals(CHANNEL_OSD_POSITION)));
+        }
+
+        if (MODEL83.equals(model) || MODEL103.equals(model) || MODEL105.equals(model)) {
+            channels.removeIf(c -> (c.getUID().getId().equals(CHANNEL_ASPECT_RATIO)
+                    || c.getUID().getId().equals(CHANNEL_HDR_MODE)));
+        }
+
+        // no query to determine this, so set the default value at startup
+        updateChannelState(CHANNEL_TIME_MODE, currentTimeMode);
+
+        updateThing(editThing().withChannels(channels).build());
+
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduleReconnectJob();
+        schedulePollingJob();
     }
 
     @Override
@@ -230,13 +225,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             try {
                 switch (channel) {
                     case CHANNEL_POWER:
-                        if (command instanceof OnOffType && command == OnOffType.ON) {
-                            connector.sendCommand(OppoCommand.POWER_ON);
-                            Thread.sleep(SLEEP_BETWEEN_CMD);
-                            connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
-                        } else if (command instanceof OnOffType && command == OnOffType.OFF) {
-                            connector.sendCommand(OppoCommand.POWER_OFF);
-                            currentPlayMode = "";
+                        if (command instanceof OnOffType) {
+                            connector.sendCommand(
+                                    command == OnOffType.ON ? OppoCommand.POWER_ON : OppoCommand.POWER_OFF);
                         }
                         break;
                     case CHANNEL_VOLUME:
@@ -245,10 +236,12 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     case CHANNEL_MUTE:
-                        if (command instanceof OnOffType && command == OnOffType.ON) {
-                            connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, "MUTE");
-                        } else if (command instanceof OnOffType && command == OnOffType.OFF) {
-                            connector.sendCommand(OppoCommand.MUTE);
+                        if (command instanceof OnOffType) {
+                            if (command == OnOffType.ON) {
+                                connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, MUTE);
+                            } else {
+                                connector.sendCommand(OppoCommand.MUTE);
+                            }
                         }
                         break;
                     case CHANNEL_SOURCE:
@@ -312,7 +305,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         logger.warn("Unknown Command {} from channel {}", command, channel);
                         break;
                 }
-            } catch (OppoException | InterruptedException e) {
+            } catch (OppoException e) {
                 logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
@@ -341,7 +334,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * Close the connection with the Oppo player
      */
     private synchronized void closeConnection() {
-        if (connector != null && connector.isConnected()) {
+        if (connector.isConnected()) {
             connector.close();
             connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
@@ -354,8 +347,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * @param event the event to process
      */
     @Override
-    public void onNewMessageEvent(EventObject event) {
-        OppoMessageEvent evt = (OppoMessageEvent) event;
+    public void onNewMessageEvent(OppoMessageEvent evt) {
         logger.debug("onNewMessageEvent: key {} = {}", evt.getKey(), evt.getValue());
         lastEventReceived = System.currentTimeMillis();
 
@@ -365,175 +357,181 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
         }
 
-        try {
-            switch (key) {
-                case "NOP": // ignore
-                    break;
-                case "UTC":
-                    // Player sent a time code update ie: 000 000 T 00:00:01
-                    // g1 = title(movie only; cd always 000), g2 = chapter(movie)/track(cd), g3 = time display code, g4
-                    // = time
-                    Matcher matcher = TIME_CODE_PATTERN.matcher(updateData);
-                    if (matcher.find()) {
-                        // only update these when chapter/track changes to prevent spamming the channels with
-                        // unnecessary updates
-                        if (!currentChapter.equals(matcher.group(2))) {
-                            currentChapter = matcher.group(2);
-                            connector.sendCommand(OppoCommand.QUERY_TITLE_TRACK); // for CDs this will get track 1/x
-                                                                                  // also
-                            connector.sendCommand(OppoCommand.QUERY_CHAPTER); // for movies shows chapter 1/x; always
-                                                                              // 0/0 for CDs
+        synchronized (sequenceLock) {
+            try {
+                switch (key) {
+                    case NOP: // ignore
+                        break;
+                    case UTC:
+                        // Player sent a time code update ie: 000 000 T 00:00:01
+                        // g1 = title(movie only; cd always 000), g2 = chapter(movie)/track(cd), g3 = time display code,
+                        // g4
+                        // = time
+                        Matcher matcher = TIME_CODE_PATTERN.matcher(updateData);
+                        if (matcher.find()) {
+                            // only update these when chapter/track changes to prevent spamming the channels with
+                            // unnecessary updates
+                            if (!currentChapter.equals(matcher.group(2))) {
+                                currentChapter = matcher.group(2);
+                                connector.sendCommand(OppoCommand.QUERY_TITLE_TRACK); // for CDs this will get track 1/x
+                                                                                      // also
+                                connector.sendCommand(OppoCommand.QUERY_CHAPTER); // for movies shows chapter 1/x;
+                                                                                  // always
+                                                                                  // 0/0 for CDs
+                            }
+
+                            if (!currentTimeMode.equals(matcher.group(3))) {
+                                currentTimeMode = matcher.group(3);
+                                updateChannelState(CHANNEL_TIME_MODE, currentTimeMode);
+                            }
+                            updateChannelState(CHANNEL_TIME_DISPLAY, matcher.group(4));
+                        } else {
+                            logger.debug("no match on message: {}", updateData);
                         }
-
-                        if (!currentTimeMode.equals(matcher.group(3))) {
-                            currentTimeMode = matcher.group(3);
-                            updateChannelState(CHANNEL_TIME_MODE, currentTimeMode);
+                        break;
+                    case QTE:
+                    case QTR:
+                    case QCE:
+                    case QCR:
+                        // these are used with verbose mode 2
+                        updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
+                        break;
+                    case QVR:
+                        this.versionString = updateData;
+                        break;
+                    case QPW:
+                        updateChannelState(CHANNEL_POWER, updateData);
+                        if (OFF.equals(updateData)) {
+                            currentPlayMode = BLANK;
                         }
+                        break;
+                    case UPW:
+                        updateChannelState(CHANNEL_POWER, ONE.equals(updateData) ? ON : OFF);
+                        if (ZERO.equals(updateData)) {
+                            currentPlayMode = BLANK;
+                        }
+                        break;
+                    case QVL:
+                    case UVL:
+                    case VUP:
+                    case VDN:
+                        if (MUTE.equals(updateData) || MUT.equals(updateData)) { // query sends MUTE, update sends MUT
+                            updateChannelState(CHANNEL_MUTE, ON);
+                        } else if (UMT.equals(updateData)) {
+                            updateChannelState(CHANNEL_MUTE, OFF);
+                        } else {
+                            updateChannelState(CHANNEL_VOLUME, updateData);
+                            updateChannelState(CHANNEL_MUTE, OFF);
+                        }
+                        break;
+                    case QIS:
+                    case UIS:
+                        // example: 0 BD-PLAYER, split off just the number
+                        updateChannelState(CHANNEL_SOURCE, updateData.split(SPACE)[0]);
+                        break;
+                    case UPL:
+                        // we got the playback status update, throw it away and call the query because the text output
+                        // is
+                        // better
+                        connector.sendCommand(OppoCommand.QUERY_PLAYBACK_STATUS);
+                        break;
+                    case QTK:
+                        // example: 02/10, split off both numbers
+                        updateChannelState(CHANNEL_CURRENT_TITLE, updateData.split(SLASH)[0]);
+                        updateChannelState(CHANNEL_TOTAL_TITLE, updateData.split(SLASH)[1]);
+                        break;
+                    case QCH:
+                        // example: 03/03, split off the both numbers
+                        updateChannelState(CHANNEL_CURRENT_CHAPTER, updateData.split(SLASH)[0]);
+                        updateChannelState(CHANNEL_TOTAL_CHAPTER, updateData.split(SLASH)[1]);
+                        break;
+                    case QPL:
+                        // if playback has stopped, we have to zero out Time, Title and Track info and so on manually
+                        if (NO_DISC.equals(updateData) || LOADING.equals(updateData) || OPEN.equals(updateData)
+                                || CLOSE.equals(updateData) || STOP.equals(updateData)) {
+                            updateChannelState(CHANNEL_CURRENT_TITLE, UNDEF);
+                            updateChannelState(CHANNEL_TOTAL_TITLE, UNDEF);
+                            updateChannelState(CHANNEL_CURRENT_CHAPTER, UNDEF);
+                            updateChannelState(CHANNEL_TOTAL_CHAPTER, UNDEF);
+                            updateChannelState(CHANNEL_TIME_DISPLAY, UNDEF);
+                            updateChannelState(CHANNEL_AUDIO_TYPE, UNDEF);
+                            updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
+                        }
+                        updateChannelState(CHANNEL_PLAY_MODE, updateData);
 
-                        updateChannelState(CHANNEL_TIME_DISPLAY, matcher.group(4));
-                    } else {
-                        logger.debug("no match on message: {}", updateData);
-                    }
-                    break;
-                case "QTE":
-                case "QTR":
-                case "QCE":
-                case "QCR":
-                    // these are used with verbose mode 2
-                    updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
-                    break;
-                case "QVR":
-                    this.versionString = updateData;
-                    break;
-                case "QPW":
-                    updateChannelState(CHANNEL_POWER, updateData);
-                    if (OFF.equals(updateData)) {
-                        currentPlayMode = "";
-                    }
-                    break;
-                case "UPW":
-                    updateChannelState(CHANNEL_POWER, "1".equals(updateData) ? ON : OFF);
-                    if ("0".equals(updateData)) {
-                        currentPlayMode = "";
-                    }
-                    break;
-                case "QVL":
-                case "UVL":
-                case "VUP":
-                case "VDN":
-                    if ("MUTE".equals(updateData) || "MUT".equals(updateData)) { // query sends MUTE, update sends MUT
-                        updateChannelState(CHANNEL_MUTE, ON);
-                    } else if ("UMT".equals(updateData)) {
-                        updateChannelState(CHANNEL_MUTE, OFF);
-                    } else {
-                        updateChannelState(CHANNEL_VOLUME, updateData);
-                        updateChannelState(CHANNEL_MUTE, OFF);
-                    }
-                    break;
-                case "QIS":
-                case "UIS":
-                    // example: 0 BD-PLAYER, split off just the number
-                    updateChannelState(CHANNEL_SOURCE, updateData.split(" ")[0]);
-                    break;
-                case "UPL":
-                    // we got the playback status update, throw it away and call the query because the text output is
-                    // better
-                    connector.sendCommand(OppoCommand.QUERY_PLAYBACK_STATUS);
-                    break;
-                case "QTK":
-                    // example: 02/10, split off both numbers
-                    updateChannelState(CHANNEL_CURRENT_TITLE, updateData.split("/")[0]);
-                    updateChannelState(CHANNEL_TOTAL_TITLE, updateData.split("/")[1]);
-                    break;
-                case "QCH":
-                    // example: 03/03, split off the both numbers
-                    updateChannelState(CHANNEL_CURRENT_CHAPTER, updateData.split("/")[0]);
-                    updateChannelState(CHANNEL_TOTAL_CHAPTER, updateData.split("/")[1]);
-                    break;
-                case "QPL":
-                    // if playback has stopped, we have to zero out Time, Title and Track info and so on manually
-                    if ("NO DISC".equals(updateData) || "LOADING".equals(updateData) || "OPEN".equals(updateData)
-                            || "CLOSE".equals(updateData) || "STOP".equals(updateData)) {
-                        updateChannelState(CHANNEL_CURRENT_TITLE, UNDEF);
-                        updateChannelState(CHANNEL_TOTAL_TITLE, UNDEF);
-                        updateChannelState(CHANNEL_CURRENT_CHAPTER, UNDEF);
-                        updateChannelState(CHANNEL_TOTAL_CHAPTER, UNDEF);
-                        updateChannelState(CHANNEL_TIME_DISPLAY, UNDEF);
-                        updateChannelState(CHANNEL_AUDIO_TYPE, UNDEF);
-                        updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
-                    }
-                    updateChannelState(CHANNEL_PLAY_MODE, updateData);
-
-                    // if switching to play mode then query the subtitle type...
-                    // because if subtitles were on when playback stopped, they got nulled out above
-                    // and the subtitle update message ("UST") is not sent when play starts like it is for audio
-                    if ("PLAY".equals(updateData)) {
+                        // if switching to play mode then query the subtitle type...
+                        // because if subtitles were on when playback stopped, they got nulled out above
+                        // and the subtitle update message ("UST") is not sent when play starts like it is for audio
+                        if (PLAY.equals(updateData)) {
+                            connector.sendCommand(OppoCommand.QUERY_SUBTITLE_TYPE);
+                        }
+                        currentPlayMode = updateData;
+                        break;
+                    case QRP:
+                        updateChannelState(CHANNEL_REPEAT_MODE, updateData);
+                        break;
+                    case QZM:
+                        updateChannelState(CHANNEL_ZOOM_MODE, updateData);
+                        break;
+                    case UDT:
+                        // we got the disc type status update, throw it away
+                        // and call the query because the text output is better
+                        connector.sendCommand(OppoCommand.QUERY_DISC_TYPE);
+                    case QDT:
+                        updateChannelState(CHANNEL_DISC_TYPE, updateData);
+                        break;
+                    case UAT:
+                        // we got the audio type status update, throw it away
+                        // and call the query because the text output is better
+                        connector.sendCommand(OppoCommand.QUERY_AUDIO_TYPE);
+                        break;
+                    case QAT:
+                        updateChannelState(CHANNEL_AUDIO_TYPE, updateData);
+                        break;
+                    case UST:
+                        // we got the subtitle type status update, throw it away
+                        // and call the query because the text output is better
                         connector.sendCommand(OppoCommand.QUERY_SUBTITLE_TYPE);
-                    }
-                    currentPlayMode = updateData;
-                    break;
-                case "QRP":
-                    updateChannelState(CHANNEL_REPEAT_MODE, updateData);
-                    break;
-                case "QZM":
-                    updateChannelState(CHANNEL_ZOOM_MODE, updateData);
-                    break;
-                case "UDT":
-                    // we got the disc type status update, throw it away
-                    // and call the query because the text output is better
-                    connector.sendCommand(OppoCommand.QUERY_DISC_TYPE);
-                case "QDT":
-                    updateChannelState(CHANNEL_DISC_TYPE, updateData);
-                    break;
-                case "UAT":
-                    // we got the audio type status update, throw it away
-                    // and call the query because the text output is better
-                    connector.sendCommand(OppoCommand.QUERY_AUDIO_TYPE);
-                    break;
-                case "QAT":
-                    updateChannelState(CHANNEL_AUDIO_TYPE, updateData);
-                    break;
-                case "UST":
-                    // we got the subtitle type status update, throw it away
-                    // and call the query because the text output is better
-                    connector.sendCommand(OppoCommand.QUERY_SUBTITLE_TYPE);
-                    break;
-                case "QST":
-                    updateChannelState(CHANNEL_SUBTITLE_TYPE, updateData);
-                    break;
-                case "UAR": // 203 & 205 only
-                    updateChannelState(CHANNEL_ASPECT_RATIO, updateData);
-                    break;
-                case "UVO":
-                    // example: _480I60 1080P60 - 1st source res, 2nd output res
-                    updateChannelState(CHANNEL_SOURCE_RESOLUTION, updateData.replace("_", "").split(" ")[0]);
-                    updateChannelState(CHANNEL_OUTPUT_RESOLUTION, updateData.replace("_", "").split(" ")[1]);
-                    break;
-                case "U3D":
-                    updateChannelState(CHANNEL_3D_INDICATOR, updateData);
-                    break;
-                case "QSH":
-                    updateChannelState(CHANNEL_SUB_SHIFT, updateData);
-                    break;
-                case "QOP":
-                    updateChannelState(CHANNEL_OSD_POSITION, updateData);
-                    break;
-                case "QHD":
-                    if (this.isUDP20X) {
-                        updateChannelState(CHANNEL_HDMI_MODE, updateData);
-                    } else {
-                        handleHdmiModeUpdate(updateData);
-                    }
-                    break;
-                case "QHR": // 203 & 205 only
-                    updateChannelState(CHANNEL_HDR_MODE, updateData);
-                    break;
-                default:
-                    logger.debug("onNewMessageEvent: unhandled key {}, value: {}", key, updateData);
-                    break;
+                        break;
+                    case QST:
+                        updateChannelState(CHANNEL_SUBTITLE_TYPE, updateData);
+                        break;
+                    case UAR: // 203 & 205 only
+                        updateChannelState(CHANNEL_ASPECT_RATIO, updateData);
+                        break;
+                    case UVO:
+                        // example: _480I60 1080P60 - 1st source res, 2nd output res
+                        updateChannelState(CHANNEL_SOURCE_RESOLUTION,
+                                updateData.replace(UNDERSCORE, BLANK).split(SPACE)[0]);
+                        updateChannelState(CHANNEL_OUTPUT_RESOLUTION,
+                                updateData.replace(UNDERSCORE, BLANK).split(SPACE)[1]);
+                        break;
+                    case U3D:
+                        updateChannelState(CHANNEL_3D_INDICATOR, updateData);
+                        break;
+                    case QSH:
+                        updateChannelState(CHANNEL_SUB_SHIFT, updateData);
+                        break;
+                    case QOP:
+                        updateChannelState(CHANNEL_OSD_POSITION, updateData);
+                        break;
+                    case QHD:
+                        if (this.isUDP20X) {
+                            updateChannelState(CHANNEL_HDMI_MODE, updateData);
+                        } else {
+                            handleHdmiModeUpdate(updateData);
+                        }
+                        break;
+                    case QHR: // 203 & 205 only
+                        updateChannelState(CHANNEL_HDR_MODE, updateData);
+                        break;
+                    default:
+                        logger.debug("onNewMessageEvent: unhandled key {}, value: {}", key, updateData);
+                        break;
+                }
+            } catch (OppoException e) {
+                logger.debug("Exception processing event from player: {}", e.getMessage());
             }
-        } catch (OppoException e) {
-            logger.debug("Exception processing event from player: {}", e.getMessage());
         }
     }
 
@@ -549,8 +547,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 logger.debug("Trying to reconnect...");
                 closeConnection();
                 String error = null;
-                if (openConnection()) {
-                    synchronized (sequenceLock) {
+                synchronized (sequenceLock) {
+                    if (openConnection()) {
                         try {
                             long prevUpdateTime = lastEventReceived;
 
@@ -570,21 +568,21 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
                             // prevUpdateTime should have changed if a message was received from the player
                             if (prevUpdateTime == lastEventReceived) {
-                                error = "Controller not responding to status requests";
+                                error = "Player not responding to status requests";
                             }
                         } catch (OppoException | InterruptedException e) {
                             error = "First command after connection failed";
                             logger.debug("{}: {}", error, e.getMessage());
                         }
+                    } else {
+                        error = "Reconnection failed";
                     }
-                } else {
-                    error = "Reconnection failed";
-                }
-                if (error != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
-                    closeConnection();
-                } else {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
+                    if (error != null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                        closeConnection();
+                    } else {
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
+                    }
                 }
             }
         }, 1, RECON_POLLING_INTERVAL, TimeUnit.SECONDS);
@@ -617,18 +615,18 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 synchronized (sequenceLock) {
                     try {
                         // for Verbose mode 2 get the current play back time if we are playing, otherwise just do NO_OP
-                        if (VERBOSE_2.equals(this.verboseMode) && "PLAY".equals(currentPlayMode)) {
+                        if (VERBOSE_2.equals(this.verboseMode) && PLAY.equals(currentPlayMode)) {
                             switch (currentTimeMode) {
-                                case "T":
+                                case T:
                                     connector.sendCommand(OppoCommand.QUERY_TITLE_ELAPSED);
                                     break;
-                                case "X":
+                                case X:
                                     connector.sendCommand(OppoCommand.QUERY_TITLE_REMAIN);
                                     break;
-                                case "C":
+                                case C:
                                     connector.sendCommand(OppoCommand.QUERY_CHAPTER_ELAPSED);
                                     break;
-                                case "K":
+                                case K:
                                     connector.sendCommand(OppoCommand.QUERY_CHAPTER_REMAIN);
                                     break;
                             }
