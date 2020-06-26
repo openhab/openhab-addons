@@ -5,7 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="cbemm_base_electricitymeter" listed="false">
-		<label>Single-phase Electricity meter with BASE option - CBEMM (aka "Compteur Bleu Electronique Monophasé Multitarif")</label>
+		<label>CBEMM BASE</label>
+		<description>Single-phase Electricity meter with BASE option - CBEMM (aka "Compteur Bleu Electronique Monophasé Multitarif")</description>
 
 		<channels>
 			<channel id="isousc" typeId="isouscType" />

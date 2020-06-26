@@ -5,7 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="cbetm_hc_electricitymeter" listed="false">
-		<label>Three-phase Electricity meter with HC option - CBETM (aka "Compteur Bleu Electronique Triphasé Multitarif")</label>
+		<label>CBETM HC/HP</label>
+		<description>Three-phase Electricity meter with HC option - CBETM (aka "Compteur Bleu Electronique Triphasé Multitarif")</description>
 
 		<channels>
 			<channel id="frameType" typeId="frameTypeType" />
