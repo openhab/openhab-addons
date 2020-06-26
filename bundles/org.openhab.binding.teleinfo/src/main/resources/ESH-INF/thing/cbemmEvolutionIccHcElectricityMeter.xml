@@ -30,16 +30,7 @@
 				<limitToOptions>false</limitToOptions>
 			</parameter>
 		</config-description>
-		<!-- <config-description> -->
-		<!-- <parameter name="hchcKWhPricing" type="integer" required="true" min="0"> -->
-		<!-- <label>Pricing of 1 kWh during HCHC period</label> -->
-		<!-- <unitLabel>euro</unitLabel> -->
-		<!-- </parameter> -->
-		<!-- <parameter name="hchpKWhPricing" type="integer" required="true" min="0"> -->
-		<!-- <label>Pricing of 1 kWh during HCHP period</label> -->
-		<!-- <unitLabel>euro</unitLabel> -->
-		<!-- </parameter> -->
-		<!-- </config-description> -->
+		
 	</thing-type>
 
 </thing:thing-descriptions>
