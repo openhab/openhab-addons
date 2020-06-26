@@ -136,11 +136,11 @@ public class TeleinfoBindingConstants {
             "cbetm_tempo_electricitymeter");
     public static final String THING_TEMPO_CBETM_ELECTRICITY_METER_PROPERTY_ADCO = THING_HC_CBETM_ELECTRICITY_METER_PROPERTY_ADCO;
 
-    public final static String ERROR_OFFLINE_SERIAL_NOT_FOUND = "@text/teleinfo.thingstate.serial_notfound";
-    public final static String ERROR_OFFLINE_SERIAL_INUSE = "@text/teleinfo.thingstate.serial_inuse";
-    public final static String ERROR_OFFLINE_SERIAL_UNSUPPORTED = "@text/teleinfo.thingstate.serial_unsupported";
-    public final static String ERROR_OFFLINE_SERIAL_LISTENERS = "@text/teleinfo.thingstate.serial_listeners";
-    public final static String ERROR_OFFLINE_CONTROLLER_OFFLINE = "@text/teleinfo.thingstate.controller_offline";
-    public final static String ERROR_UNKNOWN_RETRY_IN_PROGRESS = "@text/teleinfo.thingstate.controller_unknown_retry_inprogress";
+    public static final String ERROR_OFFLINE_SERIAL_NOT_FOUND = "@text/teleinfo.thingstate.serial_notfound";
+    public static final String ERROR_OFFLINE_SERIAL_INUSE = "@text/teleinfo.thingstate.serial_inuse";
+    public static final String ERROR_OFFLINE_SERIAL_UNSUPPORTED = "@text/teleinfo.thingstate.serial_unsupported";
+    public static final String ERROR_OFFLINE_SERIAL_LISTENERS = "@text/teleinfo.thingstate.serial_listeners";
+    public static final String ERROR_OFFLINE_CONTROLLER_OFFLINE = "@text/teleinfo.thingstate.controller_offline";
+    public static final String ERROR_UNKNOWN_RETRY_IN_PROGRESS = "@text/teleinfo.thingstate.controller_unknown_retry_inprogress";
 
 }
