@@ -30,13 +30,7 @@
 			<channel id="lastUpdate" typeId="lastUpdateType" />
 		</channels>
 
-		<config-description>
-			<parameter name="adco" type="text" required="true" pattern="^\w{12}$">
-				<label>ADCO</label>
-				<description>Electricity meter identifier (format: 12 characters / e.g: '031528042289')</description>
-				<limitToOptions>false</limitToOptions>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:teleinfo:adco"/>
 
 	</thing-type>
 
