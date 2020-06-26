@@ -22,6 +22,8 @@ import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,6 +64,8 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
 
     private final WizLightingPacketConverter converter = new WizLightingPacketConverter();
 
+    private @Nullable ScheduledFuture<?> bulbBackgroudDiscovery;
+
     /**
      * Constructor of the discovery service.
      *
@@ -79,6 +83,30 @@ public class WizLightingDiscoveryService extends AbstractDiscoveryService {
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_THING_TYPES;
+    }
+
+    /**
+     * This method is called when {@link AbstractDiscoveryService#setBackgroundDiscoveryEnabled(boolean)}
+     * is called with true as parameter and when the component is being activated
+     * (see {@link AbstractDiscoveryService#activate()}.
+     *
+     * This will also serve to "re-discover" any bulbs that have changed to a new IP address.
+     */
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start WiZ lighting background discovery");
+        if (bulbBackgroudDiscovery == null || bulbBackgroudDiscovery.isCancelled()) {
+            bulbBackgroudDiscovery = scheduler.scheduleWithFixedDelay(this::startScan, 1, 60, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop WiZ lighting background discovery");
+        if (bulbBackgroudDiscovery != null && !bulbBackgroudDiscovery.isCancelled()) {
+            bulbBackgroudDiscovery.cancel(true);
+            bulbBackgroudDiscovery = null;
+        }
     }
 
     @Override

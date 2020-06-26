@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -400,12 +401,38 @@ public class WizLightingHandler extends BaseThingHandler {
 
     /**
      * Method called by {@link WizLightingMediator} when any "unsolicited" messages
-     * come in on the listening socket and appear to be a WiZ bulb "Unsolicited"
-     * messages from the bulb are usually heartbeat or sync states.
+     * come in on the listening socket and appear to be a WiZ bulb. "Unsolicited"
+     * messages from the bulb are could be:
+     * - a "firstBeat" broadcast to the subnet by the bulb on first powering up
+     * - an "hb" (heartbeat) specifically directed to OpenHab within 30 seconds of registration
+     * - or a response to a registration request broadcast by this binding to all bulbs on the subnet
+     *
+     * @note The mediator finds the correct handler for the bulb based on the (unchanging) bulb
+     *       MAC address. If the mediator matches a message to the handler by MAC address, but the IP address
+     *       the message came from doesn't match the bulb's configured IP address, this will update the
+     *       bulb's configuration to reflect whatever the current IP is.
      *
      * @param receivedMessage the received {@link WizLightingResponse}.
      */
     public synchronized void newReceivedResponseMessage(final WizLightingResponse receivedMessage) {
+        Boolean updatePropertiesAfterParams = false;
+
+        // Check if the bulb still has the same IP address it had previously
+        // If not, we need to update the configuration for the thing.
+        if (receivedMessage.getWizResponseIpAddress() != MISSING_INVALID_IP_ADDRESS
+                && receivedMessage.getWizResponseIpAddress() != this.getBulbIpAddress()) {
+            // get the old config
+            Configuration priorConfig = getConfig();
+            // change the ip address property
+            priorConfig.put(CONFIG_IP_ADDRESS, receivedMessage.getWizResponseIpAddress());
+            // save the changes to the thing
+            updateConfiguration(priorConfig);
+            // and then refresh the config within the handler
+            this.config = getConfigAs(WizLightingDeviceConfiguration.class);
+            // finally, make note that we want to update properties
+            updatePropertiesAfterParams = true;
+        }
+
         // Grab the ID number and mark the bulb online
         requestId = receivedMessage.getId();
         updateTimestamps();
@@ -414,6 +441,12 @@ public class WizLightingHandler extends BaseThingHandler {
         WizLightingSyncState params = receivedMessage.getSyncState();
         if (params != null) {
             updateStatesFromParams(params);
+        }
+
+        // After updating state, we'll update all other bulb parameters from bulbs that
+        // presented with a new IP address.
+        if (updatePropertiesAfterParams) {
+            updateBulbProperties();
         }
     }
 
@@ -578,7 +611,7 @@ public class WizLightingHandler extends BaseThingHandler {
         if (hasConfigurationError() || disposed) {
             return;
         }
-        logger.trace("Updating metadata for bulb at {}", config.bulbIpAddress);
+        logger.trace("Updating metadata for bulb at {}", config.bulbMacAddress);
         WizLightingResponse registrationResponse = sendRequestPacket(WizLightingMethodType.GetSystemConfig, null);
         if (registrationResponse != null) {
             SystemConfigResult responseResult = registrationResponse.getSystemConfigResults();
