@@ -57,9 +57,9 @@ public class TeleinfoInputStreamTest {
             Assert.assertEquals(0, frameCbetmLongBaseOption.getIinst1());
             Assert.assertEquals(2, frameCbetmLongBaseOption.getIinst2());
             Assert.assertEquals(0, frameCbetmLongBaseOption.getIinst3());
-            Assert.assertEquals(new Integer(26), frameCbetmLongBaseOption.getImax1());
-            Assert.assertEquals(new Integer(18), frameCbetmLongBaseOption.getImax2());
-            Assert.assertEquals(new Integer(27), frameCbetmLongBaseOption.getImax3());
+            Assert.assertEquals(26, frameCbetmLongBaseOption.getImax1().intValue());
+            Assert.assertEquals(18, frameCbetmLongBaseOption.getImax2().intValue());
+            Assert.assertEquals(27, frameCbetmLongBaseOption.getImax3().intValue());
             Assert.assertEquals(7990, frameCbetmLongBaseOption.getPmax());
             Assert.assertEquals(540, frameCbetmLongBaseOption.getPapp());
             Assert.assertEquals("00", frameCbetmLongBaseOption.getPpot());
@@ -82,7 +82,7 @@ public class TeleinfoInputStreamTest {
             Assert.assertEquals(7617931, frameCbemmEvolutionIccHcOption.getHchp());
             Assert.assertEquals(Ptec.HP, frameCbemmEvolutionIccHcOption.getPtec());
             Assert.assertEquals(3, frameCbemmEvolutionIccHcOption.getIinst());
-            Assert.assertEquals(new Integer(44), frameCbemmEvolutionIccHcOption.getImax());
+            Assert.assertEquals(44, frameCbemmEvolutionIccHcOption.getImax().intValue());
             Assert.assertEquals(680, frameCbemmEvolutionIccHcOption.getPapp());
             Assert.assertNull(frameCbemmEvolutionIccHcOption.getAdps());
             Assert.assertEquals(Hhphc.A, frameCbemmEvolutionIccHcOption.getHhphc());
@@ -108,9 +108,9 @@ public class TeleinfoInputStreamTest {
             Assert.assertEquals(10, frameCbetmLongEjpOption.getIinst1());
             Assert.assertEquals(5, frameCbetmLongEjpOption.getIinst2());
             Assert.assertEquals(8, frameCbetmLongEjpOption.getIinst3());
-            Assert.assertEquals(new Integer(38), frameCbetmLongEjpOption.getImax1());
-            Assert.assertEquals(new Integer(42), frameCbetmLongEjpOption.getImax2());
-            Assert.assertEquals(new Integer(44), frameCbetmLongEjpOption.getImax3());
+            Assert.assertEquals(38, frameCbetmLongEjpOption.getImax1().intValue());
+            Assert.assertEquals(42, frameCbetmLongEjpOption.getImax2().intValue());
+            Assert.assertEquals(44, frameCbetmLongEjpOption.getImax3().intValue());
             Assert.assertEquals(17480, frameCbetmLongEjpOption.getPmax());
             Assert.assertEquals(5800, frameCbetmLongEjpOption.getPapp());
             Assert.assertEquals("00", frameCbetmLongEjpOption.getPpot());
@@ -138,7 +138,7 @@ public class TeleinfoInputStreamTest {
             Assert.assertEquals(Ptec.HPJR, frameCbemmEvolutionIccTempoOption.getPtec());
             Assert.assertNull(frameCbemmEvolutionIccTempoOption.getDemain());
             Assert.assertEquals(3, frameCbemmEvolutionIccTempoOption.getIinst());
-            Assert.assertEquals(new Integer(37), frameCbemmEvolutionIccTempoOption.getImax());
+            Assert.assertEquals(37, frameCbemmEvolutionIccTempoOption.getImax().intValue());
             Assert.assertEquals(620, frameCbemmEvolutionIccTempoOption.getPapp());
             Assert.assertNull(frameCbemmEvolutionIccTempoOption.getAdps());
             Assert.assertEquals(Hhphc.Y, frameCbemmEvolutionIccTempoOption.getHhphc());
@@ -161,7 +161,7 @@ public class TeleinfoInputStreamTest {
             Assert.assertEquals(190575, frameCbemmEvolutionIccBaseOption.getBase());
             Assert.assertEquals(Ptec.TH, frameCbemmEvolutionIccBaseOption.getPtec());
             Assert.assertEquals(1, frameCbemmEvolutionIccBaseOption.getIinst());
-            Assert.assertEquals(new Integer(90), frameCbemmEvolutionIccBaseOption.getImax());
+            Assert.assertEquals(90, frameCbemmEvolutionIccBaseOption.getImax().intValue());
             Assert.assertEquals(270, frameCbemmEvolutionIccBaseOption.getPapp());
             Assert.assertNull(frameCbemmEvolutionIccBaseOption.getAdps());
         }
@@ -177,7 +177,7 @@ public class TeleinfoInputStreamTest {
             Assert.assertNotNull(frame);
             Assert.assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
             FrameCbemmEvolutionIccBaseOption frameCbemmEvolutionIccBaseOption = (FrameCbemmEvolutionIccBaseOption) frame;
-            Assert.assertEquals(new Integer(37), frameCbemmEvolutionIccBaseOption.getAdps());
+            Assert.assertEquals(37, frameCbemmEvolutionIccBaseOption.getAdps().intValue());
         }
     }
 }
