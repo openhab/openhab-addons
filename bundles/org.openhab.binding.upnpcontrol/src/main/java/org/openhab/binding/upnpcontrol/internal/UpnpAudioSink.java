@@ -89,13 +89,11 @@ public class UpnpAudioSink implements AudioSink {
     }
 
     @Override
-    @NonNullByDefault(value = {})
     public Set<AudioFormat> getSupportedFormats() {
         return handler.getSupportedAudioFormats();
     }
 
     @Override
-    @NonNullByDefault(value = {})
     public Set<Class<? extends AudioStream>> getSupportedStreams() {
         return SUPPORTED_STREAMS;
     }

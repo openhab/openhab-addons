@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UpnpDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Map<ChannelUID, @Nullable StateDescription> descriptions = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, @Nullable StateDescription> descriptions = new ConcurrentHashMap<>();
 
     public void setDescription(ChannelUID channelUID, @Nullable StateDescription description) {
         logger.debug("Adding state description for channel {}", channelUID);

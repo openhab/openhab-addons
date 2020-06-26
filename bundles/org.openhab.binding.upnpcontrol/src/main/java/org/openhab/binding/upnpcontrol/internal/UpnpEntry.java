@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,6 +32,8 @@ import org.eclipse.jdt.annotation.Nullable;
 public class UpnpEntry {
 
     private static final String DIRECTORY_ROOT = "0";
+
+    private static final Pattern CONTAINER_PATTERN = Pattern.compile("object.container");
 
     private String id;
     private String refId;
@@ -148,11 +151,7 @@ public class UpnpEntry {
     }
 
     public List<String> getProtocolList() {
-        List<String> protocolList = new ArrayList<>();
-        for (UpnpEntryRes entryRes : resList) {
-            protocolList.add(entryRes.getProtocolInfo());
-        }
-        return protocolList;
+        return resList.stream().map(UpnpEntryRes::getProtocolInfo).collect(Collectors.toList());
     }
 
     /**
@@ -163,8 +162,7 @@ public class UpnpEntry {
     }
 
     public boolean isContainer() {
-        Pattern pattern = Pattern.compile("object.container");
-        Matcher matcher = pattern.matcher(getUpnpClass());
+        Matcher matcher = CONTAINER_PATTERN.matcher(getUpnpClass());
         return (matcher.find());
     }
 

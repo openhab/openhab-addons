@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UpnpDynamicCommandDescriptionProvider implements DynamicCommandDescriptionProvider {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Map<ChannelUID, @Nullable CommandDescription> descriptions = new ConcurrentHashMap<>();
+    private final Map<ChannelUID, @Nullable CommandDescription> descriptions = new ConcurrentHashMap<>();
 
     public void setDescription(ChannelUID channelUID, @Nullable CommandDescription description) {
         logger.debug("Adding command description for channel {}", channelUID);

@@ -34,11 +34,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial contribution
  */
-@Component(service = { UpnpDiscoveryParticipant.class }, immediate = true)
+@Component(service = { UpnpDiscoveryParticipant.class })
 @NonNullByDefault
 public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -69,8 +69,8 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
         String model = device.getDetails().getModelDetails().getModelName();
         String serialNumber = device.getDetails().getSerialNumber();
 
-        logger.debug("Device type {}, manufacturer {}, model {}, SN# {}",
-                new Object[] { deviceType, manufacturer, model, serialNumber });
+        logger.debug("Device type {}, manufacturer {}, model {}, SN# {}", deviceType, manufacturer, model,
+                serialNumber);
 
         if (deviceType.equalsIgnoreCase("MediaRenderer")) {
             this.logger.debug("Media renderer found: {}, {}", manufacturer, model);

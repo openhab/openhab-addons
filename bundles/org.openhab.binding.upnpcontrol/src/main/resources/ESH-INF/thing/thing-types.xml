@@ -47,17 +47,15 @@
 				<description>The UDN identifies the UPnP Media Server</description>
 			</parameter>
 			<parameter name="filter" type="boolean" required="false">
-				<label>Filter content</label>
+				<label>Filter Content</label>
 				<description>Only list content which is playable on the selected renderer</description>
 				<default>false</default>
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="sortcriteria" type="text" required="false">
-				<label>Sort criteria</label>
-				<description>Sort criteria for the titles in the selection list and when sending for playing to a renderer.
-					The
-					criteria are defined in UPnP sort criteria format. Examples: +dc:title, -dc:creator, +upnp:album.
-					Supported sort
+				<label>Sort Criteria</label>
+				<description>Sort criteria for the titles in the selection list and when sending for playing to a renderer. The
+					criteria are defined in UPnP sort criteria format. Examples: +dc:title, -dc:creator, +upnp:album. Supported sort
 					criteria will depend on the media server</description>
 				<default>+dc:title</default>
 			</parameter>
@@ -156,7 +154,7 @@
 	</channel-type>
 	<channel-type id="currentid">
 		<item-type>String</item-type>
-		<label>Current media id</label>
+		<label>Current Media Id</label>
 		<description>Current id of media entry or container</description>
 	</channel-type>
 	<channel-type id="browse">

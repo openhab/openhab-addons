@@ -33,6 +33,7 @@ import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.upnpcontrol.internal.handler.UpnpRendererHandler;
 import org.openhab.binding.upnpcontrol.internal.handler.UpnpServerHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.upnpcontrol")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.upnpcontrol")
 @NonNullByDefault
 public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implements UpnpAudioSinkReg {
 
@@ -54,18 +55,26 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
     private ConcurrentMap<String, UpnpRendererHandler> upnpRenderers = new ConcurrentHashMap<>();
     private ConcurrentMap<String, UpnpServerHandler> upnpServers = new ConcurrentHashMap<>();
 
-    @NonNullByDefault(value = {})
-    private UpnpIOService upnpIOService;
-    @NonNullByDefault(value = {})
-    private AudioHTTPServer audioHTTPServer;
-    @NonNullByDefault(value = {})
-    private NetworkAddressService networkAddressService;
-    @NonNullByDefault(value = {})
-    private UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
-    @NonNullByDefault(value = {})
-    private UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
+    private final UpnpIOService upnpIOService;
+    private final AudioHTTPServer audioHTTPServer;
+    private final NetworkAddressService networkAddressService;
+    private final UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
+    private final UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
 
     private String callbackUrl = "";
+
+    @Activate
+    public UpnpControlHandlerFactory(final @Reference UpnpIOService upnpIOService,
+            final @Reference AudioHTTPServer audioHTTPServer,
+            final @Reference NetworkAddressService networkAddressService,
+            final @Reference UpnpDynamicStateDescriptionProvider dynamicStateDescriptionProvider,
+            final @Reference UpnpDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider) {
+        this.upnpIOService = upnpIOService;
+        this.audioHTTPServer = audioHTTPServer;
+        this.networkAddressService = networkAddressService;
+        this.upnpStateDescriptionProvider = dynamicStateDescriptionProvider;
+        this.upnpCommandDescriptionProvider = dynamicCommandDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -163,50 +172,5 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
             return "";
         }
         return "http://" + ipAddress + ":" + port;
-    }
-
-    @Reference
-    protected void setUpnpIOService(UpnpIOService upnpIOService) {
-        this.upnpIOService = upnpIOService;
-    }
-
-    protected void unsetUpnpIOService(UpnpIOService upnpIOService) {
-        this.upnpIOService = null;
-    }
-
-    @Reference
-    protected void setAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
-        this.audioHTTPServer = audioHTTPServer;
-    }
-
-    protected void unsetAudioHTTPServer(AudioHTTPServer audioHTTPServer) {
-        this.audioHTTPServer = null;
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(UpnpDynamicStateDescriptionProvider provider) {
-        this.upnpStateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(UpnpDynamicStateDescriptionProvider provider) {
-        this.upnpStateDescriptionProvider = null;
-    }
-
-    @Reference
-    protected void setDynamicCommandDescriptionProvider(UpnpDynamicCommandDescriptionProvider provider) {
-        this.upnpCommandDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicCommandDescriptionProvider(UpnpDynamicCommandDescriptionProvider provider) {
-        this.upnpCommandDescriptionProvider = null;
     }
 }

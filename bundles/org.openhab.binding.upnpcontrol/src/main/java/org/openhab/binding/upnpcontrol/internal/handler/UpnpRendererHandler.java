@@ -16,10 +16,11 @@ import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstan
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -66,10 +67,13 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UpnpRendererHandler.class);
 
-    private static final int SUBSCRIPTION_DURATION = 3600;
+    private static final int SUBSCRIPTION_DURATION_SECONDS = 3600;
+
+    // UPnP protocol pattern
+    private static final Pattern PROTOCOL_PATTERN = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
 
     private volatile boolean audioSupport;
-    protected volatile Set<AudioFormat> supportedAudioFormats = new HashSet<AudioFormat>();
+    protected volatile Set<AudioFormat> supportedAudioFormats = new HashSet<>();
     private volatile boolean audioSinkRegistered;
 
     private volatile UpnpAudioSinkReg audioSinkReg;
@@ -82,8 +86,9 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile PercentType soundVolume = new PercentType();
     private volatile List<String> sink = new ArrayList<>();
 
-    private volatile LinkedList<UpnpEntry> currentQueue = new LinkedList<>();
-    private volatile int queuePosition = -1;
+    private volatile ArrayList<UpnpEntry> currentQueue = new ArrayList<>();
+    private volatile UpnpIterator<UpnpEntry> queueIterator = new UpnpIterator<>(currentQueue.listIterator());
+    private volatile @Nullable UpnpEntry currentEntry = null;
     private volatile boolean playerStopped;
     private volatile boolean playing;
     private volatile String trackDuration = "00:00:00";
@@ -93,8 +98,76 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile @Nullable ScheduledFuture<?> subscriptionRefreshJob;
     private final Runnable subscriptionRefresh = () -> {
         removeSubscription("AVTransport");
-        addSubscription("AVTransport", SUBSCRIPTION_DURATION);
+        addSubscription("AVTransport", SUBSCRIPTION_DURATION_SECONDS);
     };
+
+    /**
+     * The {@link ListIterator} class does not keep a cursor position and therefore will not give the previous element
+     * when next was called before, or give the next element when previous was called before. This iterator will always
+     * go to previous/next.
+     */
+    private static class UpnpIterator<T> {
+        private final ListIterator<T> listIterator;
+
+        private boolean nextWasCalled = false;
+        private boolean previousWasCalled = false;
+
+        public UpnpIterator(ListIterator<T> listIterator) {
+            this.listIterator = listIterator;
+        }
+
+        public T next() {
+            if (previousWasCalled) {
+                previousWasCalled = false;
+                listIterator.next();
+            }
+            nextWasCalled = true;
+            return listIterator.next();
+        }
+
+        public T previous() {
+            if (nextWasCalled) {
+                nextWasCalled = false;
+                listIterator.previous();
+            }
+            previousWasCalled = true;
+            return listIterator.previous();
+        }
+
+        public boolean hasNext() {
+            if (previousWasCalled) {
+                return true;
+            } else {
+                return listIterator.hasNext();
+            }
+        }
+
+        public boolean hasPrevious() {
+            if (previousIndex() < 0) {
+                return false;
+            } else if (nextWasCalled) {
+                return true;
+            } else {
+                return listIterator.hasPrevious();
+            }
+        }
+
+        public int nextIndex() {
+            if (previousWasCalled) {
+                return listIterator.nextIndex() + 1;
+            } else {
+                return listIterator.nextIndex();
+            }
+        }
+
+        public int previousIndex() {
+            if (nextWasCalled) {
+                return listIterator.previousIndex() - 1;
+            } else {
+                return listIterator.previousIndex();
+            }
+        }
+    }
 
     public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg) {
         super(thing, upnpIOService);
@@ -123,25 +196,32 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     @Override
     public void dispose() {
-        if (subscriptionRefreshJob != null) {
-            subscriptionRefreshJob.cancel(true);
-        }
-        subscriptionRefreshJob = null;
+        cancelSubscriptionRefreshJob();
         removeSubscription("AVTransport");
-        upnpSubscribed = false;
 
         cancelTrackPositionRefresh();
 
         super.dispose();
     }
 
+    private void cancelSubscriptionRefreshJob() {
+        ScheduledFuture<?> refreshJob = subscriptionRefreshJob;
+
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+        }
+        subscriptionRefreshJob = null;
+
+        upnpSubscribed = false;
+    }
+
     private void initRenderer() {
         if (!upnpSubscribed) {
-            addSubscription("AVTransport", SUBSCRIPTION_DURATION);
+            addSubscription("AVTransport", SUBSCRIPTION_DURATION_SECONDS);
             upnpSubscribed = true;
 
-            subscriptionRefreshJob = scheduler.scheduleWithFixedDelay(subscriptionRefresh, SUBSCRIPTION_DURATION / 2,
-                    SUBSCRIPTION_DURATION / 2, TimeUnit.SECONDS);
+            subscriptionRefreshJob = scheduler.scheduleWithFixedDelay(subscriptionRefresh,
+                    SUBSCRIPTION_DURATION_SECONDS / 2, SUBSCRIPTION_DURATION_SECONDS / 2, TimeUnit.SECONDS);
         }
         getProtocolInfo();
         getTransportState();
@@ -153,8 +233,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Stop on UPnP AV Transport.
      */
     public void stop() {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
 
         invokeAction("AVTransport", "Stop", inputs);
     }
@@ -174,8 +253,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Pause on UPnP AV Transport.
      */
     public void pause() {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
 
         invokeAction("AVTransport", "Pause", inputs);
     }
@@ -184,8 +262,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Next on UPnP AV Transport.
      */
     protected void next() {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
 
         invokeAction("AVTransport", "Next", inputs);
     }
@@ -194,8 +271,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Previous on UPnP AV Transport.
      */
     protected void previous() {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(avTransportId));
+        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(avTransportId));
 
         invokeAction("AVTransport", "Previous", inputs);
     }
@@ -320,8 +396,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link onValueReceived}.
      */
     protected void getPositionInfo() {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(rcsId));
+        Map<String, String> inputs = Collections.singletonMap("InstanceID", Integer.toString(rcsId));
 
         invokeAction("AVTransport", "GetPositionInfo", inputs);
     }
@@ -342,11 +417,11 @@ public class UpnpRendererHandler extends UpnpHandler {
                 case CONTROL:
                     transportState = this.transportState;
                     State newState = UnDefType.UNDEF;
-                    if (transportState.equals("PLAYING")) {
+                    if ("PLAYING".equals(transportState)) {
                         newState = PlayPauseType.PLAY;
-                    } else if (transportState.equals("STOPPED")) {
+                    } else if ("STOPPED".equals(transportState)) {
                         newState = PlayPauseType.PAUSE;
-                    } else if (transportState.equals("PAUSED_PLAYBACK")) {
+                    } else if ("PAUSED_PLAYBACK".equals(transportState)) {
                         newState = PlayPauseType.PAUSE;
                     }
                     updateState(channelUID, newState);
@@ -400,11 +475,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (status) {
             initRenderer();
         } else {
-            if (subscriptionRefreshJob != null) {
-                subscriptionRefreshJob.cancel(true);
-            }
-            subscriptionRefreshJob = null;
-            upnpSubscribed = false;
+            cancelSubscriptionRefreshJob();
 
             updateState(CONTROL, PlayPauseType.PAUSE);
             cancelTrackPositionRefresh();
@@ -431,7 +502,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         switch (variable) {
             case "CurrentMute":
                 if (!((value == null) || (value.isEmpty()))) {
-                    soundMute = (Boolean.valueOf(value) ? OnOffType.ON : OnOffType.OFF);
+                    soundMute = OnOffType.from(Boolean.parseBoolean(value));
                     updateState(MUTE, soundMute);
                 }
                 break;
@@ -451,16 +522,16 @@ public class UpnpRendererHandler extends UpnpHandler {
                 if (!((value == null) || value.isEmpty())) {
                     if ("AVTransport".equals(service) && "LastChange".equals(variable)) {
                         Map<String, String> parsedValues = UpnpXMLParser.getAVTransportFromXML(value);
-                        for (String parsedValue : parsedValues.keySet()) {
+                        for (Map.Entry<String, String> entrySet : parsedValues.entrySet()) {
                             // Update the transport state after the update of the media information
                             // to not break the notification mechanism
-                            if (!parsedValue.equals("TransportState")) {
-                                onValueReceived(parsedValue, parsedValues.get(parsedValue), service);
+                            if (!"TransportState".equals(entrySet.getKey())) {
+                                onValueReceived(entrySet.getKey(), entrySet.getValue(), service);
                             }
-                            if (parsedValue.equals("AVTransportURI")) {
-                                onValueReceived("CurrentTrackURI", parsedValues.get(parsedValue), service);
-                            } else if (parsedValue.equals("AVTransportURIMetaData")) {
-                                onValueReceived("CurrentTrackMetaData", parsedValues.get(parsedValue), service);
+                            if ("AVTransportURI".equals(entrySet.getKey())) {
+                                onValueReceived("CurrentTrackURI", entrySet.getValue(), service);
+                            } else if ("AVTransportURIMetaData".equals(entrySet.getKey())) {
+                                onValueReceived("CurrentTrackMetaData", entrySet.getValue(), service);
                             }
                         }
                         if (parsedValues.get("TransportState") != null) {
@@ -493,15 +564,17 @@ public class UpnpRendererHandler extends UpnpHandler {
                 }
                 break;
             case "CurrentTrackURI":
-                if ((queuePosition < (currentQueue.size() - 1)
-                        && !currentQueue.get(queuePosition).getRes().equals(value)
-                        && currentQueue.get(queuePosition + 1).getRes().equals(value))) {
+                if (queueIterator.hasNext() && (currentEntry != null) && !currentEntry.getRes().equals(value)
+                        && currentQueue.get(queueIterator.nextIndex()).getRes().equals(value)) {
                     // Renderer advanced to next entry independent of openHAB UPnP control point.
                     // Advance in the queue to keep proper position status.
                     // Make the next entry available to renderers that support it.
-                    updateMetaDataState(currentQueue.get(queuePosition + 1));
-                    if (++queuePosition < (currentQueue.size() - 1)) {
-                        UpnpEntry next = currentQueue.get(queuePosition + 1);
+                    updateMetaDataState(currentQueue.get(queueIterator.nextIndex()));
+                    logger.trace("Renderer moved from '{}' to next entry '{}' in queue", currentEntry,
+                            currentQueue.get(queueIterator.nextIndex()));
+                    currentEntry = queueIterator.next();
+                    if (queueIterator.hasNext()) {
+                        UpnpEntry next = currentQueue.get(queueIterator.nextIndex());
                         setNextURI(next.getRes(), UpnpXMLParser.compileMetadataString(next));
                     }
                 }
@@ -509,17 +582,17 @@ public class UpnpRendererHandler extends UpnpHandler {
             case "CurrentTrackMetaData":
                 if (!((value == null) || (value.isEmpty()))) {
                     List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
-                    if (list.size() > 0) {
+                    if (!list.isEmpty()) {
                         updateMetaDataState(list.get(0));
                     }
                 }
                 break;
             case "CurrentTrackDuration":
-                updateState(TRACK_DURATION, StringType.valueOf(value));
                 trackDuration = value != null ? value : "00:00:00";
+                updateState(TRACK_DURATION, StringType.valueOf(trackDuration));
             case "RelTime":
-                updateState(TRACK_POSITION, StringType.valueOf(trackPosition));
                 trackPosition = value != null ? value : "00:00:00";
+                updateState(TRACK_POSITION, StringType.valueOf(trackPosition));
             default:
                 super.onValueReceived(variable, value, service);
                 break;
@@ -533,9 +606,8 @@ public class UpnpRendererHandler extends UpnpHandler {
 
         sink.addAll(Arrays.asList(value.split(",")));
 
-        Pattern pattern = Pattern.compile("(?:.*):(?:.*):(.*):(?:.*)");
         for (String protocol : sink) {
-            Matcher matcher = pattern.matcher(protocol);
+            Matcher matcher = PROTOCOL_PATTERN.matcher(protocol);
             if (matcher.find()) {
                 String format = matcher.group(1);
                 switch (format) {
@@ -549,7 +621,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                         supportedAudioFormats.add(AudioFormat.WAV);
                         break;
                 }
-                audioSupport = audioSupport ? audioSupport : Pattern.matches("audio.*", format);
+                audioSupport = audioSupport || Pattern.matches("audio.*", format);
             }
         }
 
@@ -572,6 +644,21 @@ public class UpnpRendererHandler extends UpnpHandler {
         audioSinkRegistered = true;
     }
 
+    private void clearCurrentEntry() {
+        updateState(TITLE, UnDefType.UNDEF);
+        updateState(ALBUM, UnDefType.UNDEF);
+        updateState(ALBUM_ART, UnDefType.UNDEF);
+        updateState(CREATOR, UnDefType.UNDEF);
+        updateState(ARTIST, UnDefType.UNDEF);
+        updateState(PUBLISHER, UnDefType.UNDEF);
+        updateState(GENRE, UnDefType.UNDEF);
+        updateState(TRACK_NUMBER, UnDefType.UNDEF);
+        updateState(TRACK_DURATION, UnDefType.UNDEF);
+        updateState(TRACK_POSITION, UnDefType.UNDEF);
+
+        currentEntry = null;
+    }
+
     /**
      * Register a new queue with media entries to the renderer. Set the next position at the first entry in the list.
      * If the renderer is currently playing, set the first entry in the list as the next media. If not playing, set it
@@ -579,33 +666,25 @@ public class UpnpRendererHandler extends UpnpHandler {
      *
      * @param queue
      */
-    public void registerQueue(LinkedList<UpnpEntry> queue) {
+    public void registerQueue(ArrayList<UpnpEntry> queue) {
         logger.debug("Registering queue on renderer {}", thing.getLabel());
         currentQueue = queue;
+        queueIterator = new UpnpIterator<>(currentQueue.listIterator());
         if (playing) {
-            // make the next entry available to renderers that support it
-            if (currentQueue.size() > 0) {
-                queuePosition = -1;
-                UpnpEntry next = currentQueue.get(0);
+            if (queueIterator.hasNext()) {
+                // make the next entry available to renderers that support it
+                logger.trace("Still playing, set new queue as next entry");
+                UpnpEntry next = currentQueue.get(queueIterator.nextIndex());
                 setNextURI(next.getRes(), UpnpXMLParser.compileMetadataString(next));
             }
         } else {
-            queuePosition = 0;
-            if (queue.isEmpty()) {
-                updateState(TITLE, UnDefType.UNDEF);
-                updateState(ALBUM, UnDefType.UNDEF);
-                updateState(ALBUM_ART, UnDefType.UNDEF);
-                updateState(CREATOR, UnDefType.UNDEF);
-                updateState(ARTIST, UnDefType.UNDEF);
-                updateState(PUBLISHER, UnDefType.UNDEF);
-                updateState(GENRE, UnDefType.UNDEF);
-                updateState(TRACK_NUMBER, UnDefType.UNDEF);
-                updateState(TRACK_DURATION, UnDefType.UNDEF);
-                updateState(TRACK_POSITION, UnDefType.UNDEF);
+            if (queueIterator.hasNext()) {
+                UpnpEntry entry = queueIterator.next();
+                updateMetaDataState(entry);
+                setCurrentURI(entry.getRes(), UpnpXMLParser.compileMetadataString(entry));
+                currentEntry = entry;
             } else {
-                UpnpEntry current = currentQueue.get(0);
-                updateMetaDataState(current);
-                setCurrentURI(current.getRes(), UpnpXMLParser.compileMetadataString(current));
+                clearCurrentEntry();
             }
         }
     }
@@ -614,47 +693,44 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Move to next position in queue and start playing.
      */
     private void serveNext() {
-        LinkedList<UpnpEntry> queue = currentQueue;
-        if (queuePosition >= (queue.size() - 1)) {
-            queuePosition = 0;
+        if (queueIterator.hasNext()) {
+            currentEntry = queueIterator.next();
+            logger.debug("Serve next media '{}' from queue on renderer {}", currentEntry, thing.getLabel());
+            serve();
+        } else {
             logger.debug("Cannot serve next, end of queue on renderer {}", thing.getLabel());
             cancelTrackPositionRefresh();
-            if (queue.isEmpty()) {
-                updateState(TITLE, UnDefType.UNDEF);
-                updateState(ALBUM, UnDefType.UNDEF);
-                updateState(ALBUM_ART, UnDefType.UNDEF);
-                updateState(CREATOR, UnDefType.UNDEF);
-                updateState(ARTIST, UnDefType.UNDEF);
-                updateState(PUBLISHER, UnDefType.UNDEF);
-                updateState(GENRE, UnDefType.UNDEF);
-                updateState(TRACK_NUMBER, UnDefType.UNDEF);
-                updateState(TRACK_DURATION, UnDefType.UNDEF);
-                updateState(TRACK_POSITION, UnDefType.UNDEF);
+            stop();
+            queueIterator = new UpnpIterator<>(currentQueue.listIterator()); // reset to beginning of queue
+            if (currentQueue.isEmpty()) {
+                clearCurrentEntry();
             } else {
-                updateMetaDataState(queue.get(0));
+                updateMetaDataState(currentQueue.get(queueIterator.nextIndex()));
+                currentEntry = queueIterator.next();
             }
-            return;
         }
-
-        UpnpEntry nextMedia = queue.get(++queuePosition);
-        logger.debug("Serve next media {} from queue on renderer {}", nextMedia, thing.getLabel());
-        serve(nextMedia);
     }
 
     /**
      * Move to previous position in queue and start playing.
      */
     private void servePrevious() {
-        LinkedList<UpnpEntry> queue = currentQueue;
-        if (queue.isEmpty() || (queuePosition == 0)) {
+        if (queueIterator.hasPrevious()) {
+            currentEntry = queueIterator.previous();
+            logger.debug("Serve previous media '{}' from queue on renderer {}", currentEntry, thing.getLabel());
+            serve();
+        } else {
             logger.debug("Cannot serve previous, already at start of queue on renderer {}", thing.getLabel());
             cancelTrackPositionRefresh();
-            return;
+            stop();
+            queueIterator = new UpnpIterator<>(currentQueue.listIterator()); // reset to beginning of queue
+            if (currentQueue.isEmpty()) {
+                clearCurrentEntry();
+            } else {
+                updateMetaDataState(currentQueue.get(queueIterator.nextIndex()));
+                currentEntry = queueIterator.next();
+            }
         }
-
-        UpnpEntry previousMedia = queue.get(--queuePosition);
-        logger.debug("Serve previous media {} from queue on renderer {}", previousMedia, thing.getLabel());
-        serve(previousMedia);
     }
 
     /**
@@ -662,26 +738,30 @@ public class UpnpRendererHandler extends UpnpHandler {
      *
      * @param media
      */
-    private void serve(UpnpEntry media) {
-        updateMetaDataState(media);
-        String res = media.getRes();
-        if (res.isEmpty()) {
-            logger.debug("Cannot serve media '{}', no URI", media);
-            return;
-        }
-        setCurrentURI(media.getRes(), UpnpXMLParser.compileMetadataString(media));
-        play();
-        scheduleTrackPositionRefresh();
+    private void serve() {
+        UpnpEntry entry = currentEntry;
+        if (entry != null) {
+            logger.trace("Ready to play '{}' from queue", currentEntry);
+            updateMetaDataState(entry);
+            String res = entry.getRes();
+            if (res.isEmpty()) {
+                logger.debug("Cannot serve media '{}', no URI", currentEntry);
+                return;
+            }
+            setCurrentURI(entry.getRes(), UpnpXMLParser.compileMetadataString(entry));
+            play();
+            scheduleTrackPositionRefresh();
 
-        // make the next entry available to renderers that support it
-        if (queuePosition < (currentQueue.size() - 1)) {
-            UpnpEntry next = currentQueue.get(queuePosition + 1);
-            setNextURI(next.getRes(), UpnpXMLParser.compileMetadataString(next));
+            // make the next entry available to renderers that support it
+            if (queueIterator.hasNext()) {
+                UpnpEntry next = currentQueue.get(queueIterator.nextIndex());
+                setNextURI(next.getRes(), UpnpXMLParser.compileMetadataString(next));
+            }
         }
     }
 
     /**
-     * Update the current track position every second it the channel is linked.
+     * Update the current track position every second if the channel is linked.
      */
     private void scheduleTrackPositionRefresh() {
         cancelTrackPositionRefresh();
@@ -699,10 +779,15 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     private void cancelTrackPositionRefresh() {
-        if (trackPositionRefresh != null) {
-            trackPositionRefresh.cancel(true);
+        ScheduledFuture<?> refresh = trackPositionRefresh;
+
+        if (refresh != null) {
+            refresh.cancel(true);
         }
         trackPositionRefresh = null;
+
+        trackPosition = "00:00:00";
+        updateState(TRACK_POSITION, StringType.valueOf(trackPosition));
     }
 
     /**
@@ -713,20 +798,26 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void updateMetaDataState(UpnpEntry media) {
         // The AVTransport passes the URI resource in the ID.
         // We don't want to update metadata if the metadata from the AVTransport is empty for the current entry.
-        boolean currentEntry = (currentQueue.isEmpty()) ? false
-                : media.getId().equals(currentQueue.get(queuePosition).getRes());
+        boolean isCurrent;
+        UpnpEntry entry = currentEntry;
+        if (entry == null) {
+            entry = new UpnpEntry(media.getId(), media.getId(), "", "object.item");
+            currentEntry = entry;
+            isCurrent = false;
+        } else {
+            isCurrent = media.getId().equals(entry.getRes());
+        }
         logger.trace("Media ID: {}", media.getId());
-        logger.trace("Current queue res: {}",
-                (currentQueue.isEmpty() || (queuePosition < 0)) ? "" : currentQueue.get(queuePosition).getRes());
-        logger.trace("Updating current entry: {}", currentEntry);
+        logger.trace("Current queue res: {}", entry.getRes());
+        logger.trace("Updating current entry: {}", isCurrent);
 
-        if (!(currentEntry && media.getTitle().isEmpty())) {
+        if (!(isCurrent && media.getTitle().isEmpty())) {
             updateState(TITLE, StringType.valueOf(media.getTitle()));
         }
-        if (!(currentEntry && (media.getAlbum().isEmpty() || media.getAlbum().matches("Unknown.*")))) {
+        if (!(isCurrent && (media.getAlbum().isEmpty() || media.getAlbum().matches("Unknown.*")))) {
             updateState(ALBUM, StringType.valueOf(media.getAlbum()));
         }
-        if (!(currentEntry
+        if (!(isCurrent
                 && (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")))) {
             if (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
                 updateState(ALBUM_ART, UnDefType.UNDEF);
@@ -734,7 +825,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                 State albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
                 if (albumArt == null) {
                     logger.debug("Failed to download the content of album art from URL {}", media.getAlbumArtUri());
-                    if (!currentEntry) {
+                    if (!isCurrent) {
                         updateState(ALBUM_ART, UnDefType.UNDEF);
                     }
                 } else {
@@ -742,19 +833,19 @@ public class UpnpRendererHandler extends UpnpHandler {
                 }
             }
         }
-        if (!(currentEntry && (media.getCreator().isEmpty() || media.getCreator().matches("Unknown.*")))) {
+        if (!(isCurrent && (media.getCreator().isEmpty() || media.getCreator().matches("Unknown.*")))) {
             updateState(CREATOR, StringType.valueOf(media.getCreator()));
         }
-        if (!(currentEntry && (media.getArtist().isEmpty() || media.getArtist().matches("Unknown.*")))) {
+        if (!(isCurrent && (media.getArtist().isEmpty() || media.getArtist().matches("Unknown.*")))) {
             updateState(ARTIST, StringType.valueOf(media.getArtist()));
         }
-        if (!(currentEntry && (media.getPublisher().isEmpty() || media.getPublisher().matches("Unknown.*")))) {
+        if (!(isCurrent && (media.getPublisher().isEmpty() || media.getPublisher().matches("Unknown.*")))) {
             updateState(PUBLISHER, StringType.valueOf(media.getPublisher()));
         }
-        if (!(currentEntry && (media.getGenre().isEmpty() || media.getGenre().matches("Unknown.*")))) {
+        if (!(isCurrent && (media.getGenre().isEmpty() || media.getGenre().matches("Unknown.*")))) {
             updateState(GENRE, StringType.valueOf(media.getGenre()));
         }
-        if (!(currentEntry && (media.getOriginalTrackNumber() == null))) {
+        if (!(isCurrent && (media.getOriginalTrackNumber() == null))) {
             Integer trackNumber = media.getOriginalTrackNumber();
             State trackNumberState = (trackNumber != null) ? new DecimalType(trackNumber) : UnDefType.UNDEF;
             updateState(TRACK_NUMBER, trackNumberState);

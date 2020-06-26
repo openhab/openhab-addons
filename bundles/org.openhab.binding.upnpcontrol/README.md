@@ -71,20 +71,21 @@ All media in the search result list, playable on the current selected `upnprende
 
 The `upnprenderer` has the following channels:
 
-* `volume`: playback volume
-* `mute`: mute playback
-* `control`: play, pause, next, previous control
-* `stop`: stop media playback
-* `title`: media title (read only)
-* `album`: media album (read only)
-* `albumart`: image for media album (read only)
-* `creator`: media creator (read only)
-* `artist`: media artist (read only)
-* `publisher`: media publisher (read only)
-* `genre`: media genre (read only)
-* `tracknumber`: track number of current track in album (read only)
-* `trackduration`: track duration of current track in album (read only)
-* `trackposition`: current position in track during playback or pause of media (read only)
+| Channel Type ID | Item Type | Access Mode | Description                                        |
+|-----------------|-----------|-------------|----------------------------------------------------|
+| `volume`        | Dimmer    |      RW     | playback volume                                    |
+| `control`       | Player    |      RW     | play, pause, next, previous control                |
+| `stop`          | Switch    |      RW     | stop media playback                                |
+| `title`         | String    |      R      | media title                                        |
+| `album`         | String    |      R      | media album                                        |
+| `albumart`      | Image     |      R      | image for media album                              |
+| `creator`       | String    |      R      | media creator                                      |
+| `artist`        | String    |      R      | media artist                                       |
+| `publisher`     | String    |      R      | media publisher                                    |
+| `genre`         | String    |      R      | media genre                                        |
+| `tracknumber`   | Number    |      R      | track number of current track in album             |
+| `trackduration` | String    |      R      | track duration of current track in album           |
+| `trackposition` | String    |      R      | current position in track during playback or pause |
 
 ## Audio Support
 

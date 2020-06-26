@@ -16,11 +16,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.upnpcontrol.internal.handler.UpnpRendererHandler;
 
 /**
+ * Interface class to be implemented in {@link UpnpControlHandlerFactory}, allows a {UpnpRendererHandler} to register
+ * itself as an audio sink when it supports audio. If it supports audio is only known after the communication with the
+ * renderer is established.
  *
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public interface UpnpAudioSinkReg {
 
-    public void registerAudioSink(UpnpRendererHandler handler);
+    /**
+     * Implemented method should create a new {@link UpnpAudioSink} and register the handler parameter as an audio sink.
+     *
+     * @param handler
+     */
+    void registerAudioSink(UpnpRendererHandler handler);
 }

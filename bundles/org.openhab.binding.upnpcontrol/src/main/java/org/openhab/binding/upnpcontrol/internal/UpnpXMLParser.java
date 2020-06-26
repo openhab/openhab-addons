@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ public class UpnpXMLParser {
     public static Map<String, String> getAVTransportFromXML(String xml) {
         if (xml.isEmpty()) {
             LOGGER.debug("Could not parse AV Transport from empty xml");
-            return new HashMap<String, String>();
+            return Collections.emptyMap();
         }
         AVTransportEventHandler handler = new AVTransportEventHandler();
         try {
@@ -171,76 +172,88 @@ public class UpnpXMLParser {
         @Override
         public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
                 @Nullable Attributes attributes) throws SAXException {
-            if (("container".equals(qName) || "item".equals(qName))) {
-                if (attributes != null) {
-                    if (attributes.getValue("id") != null) {
-                        id = attributes.getValue("id");
+            switch (qName) {
+                case "container":
+                case "item":
+                    if (attributes != null) {
+                        if (attributes.getValue("id") != null) {
+                            id = attributes.getValue("id");
+                        }
+                        if (attributes.getValue("refID") != null) {
+                            refId = attributes.getValue("refID");
+                        }
+                        if (attributes.getValue("parentID") != null) {
+                            parentId = attributes.getValue("parentID");
+                        }
                     }
-                    if (attributes.getValue("refID") != null) {
-                        refId = attributes.getValue("refID");
+                    break;
+                case "res":
+                    if (attributes != null) {
+                        String protocolInfo = attributes.getValue("protocolInfo");
+                        Long size;
+                        try {
+                            size = Long.parseLong(attributes.getValue("size"));
+                        } catch (NumberFormatException e) {
+                            size = null;
+                        }
+                        String duration = attributes.getValue("duration");
+                        String importUri = attributes.getValue("importUri");
+                        resList.add(0, new UpnpEntryRes(protocolInfo, size, duration, importUri));
+                        element = Element.RES;
                     }
-                    if (attributes.getValue("parentID") != null) {
-                        parentId = attributes.getValue("parentID");
+                    break;
+                case "dc:title":
+                    element = Element.TITLE;
+                    break;
+                case "upnp:class":
+                    element = Element.CLASS;
+                    break;
+                case "dc:creator":
+                    element = Element.CREATOR;
+                    break;
+                case "upnp:artist":
+                    element = Element.ARTIST;
+                    break;
+                case "dc:publisher":
+                    element = Element.PUBLISHER;
+                    break;
+                case "upnp:genre":
+                    element = Element.GENRE;
+                    break;
+                case "upnp:album":
+                    element = Element.ALBUM;
+                    break;
+                case "upnp:albumArtURI":
+                    element = Element.ALBUM_ART_URI;
+                    break;
+                case "upnp:originalTrackNumber":
+                    element = Element.TRACK_NUMBER;
+                    break;
+                default:
+                    if (ignore.isEmpty()) {
+                        ignore.add("");
+                        ignore.add("DIDL-Lite");
+                        ignore.add("type");
+                        ignore.add("ordinal");
+                        ignore.add("description");
+                        ignore.add("writeStatus");
+                        ignore.add("storageUsed");
+                        ignore.add("supported");
+                        ignore.add("pushSource");
+                        ignore.add("icon");
+                        ignore.add("playlist");
+                        ignore.add("date");
+                        ignore.add("rating");
+                        ignore.add("userrating");
+                        ignore.add("episodeSeason");
+                        ignore.add("childCountContainer");
+                        ignore.add("modificationTime");
+                        ignore.add("containerContent");
                     }
-                }
-            } else if ("res".equals(qName)) {
-                if (attributes != null) {
-                    String protocolInfo = attributes.getValue("protocolInfo");
-                    Long size;
-                    try {
-                        size = Long.parseLong(attributes.getValue("size"));
-                    } catch (NumberFormatException e) {
-                        size = null;
+                    if (!ignore.contains(localName)) {
+                        LOGGER.debug("Did not recognise element named {}", localName);
                     }
-                    String duration = attributes.getValue("duration");
-                    String importUri = attributes.getValue("importUri");
-                    resList.add(0, new UpnpEntryRes(protocolInfo, size, duration, importUri));
-                    element = Element.RES;
-                }
-            } else if ("dc:title".equals(qName)) {
-                element = Element.TITLE;
-            } else if ("upnp:class".equals(qName)) {
-                element = Element.CLASS;
-            } else if ("dc:creator".equals(qName)) {
-                element = Element.CREATOR;
-            } else if ("upnp:artist".equals(qName)) {
-                element = Element.ARTIST;
-            } else if ("dc:publisher".equals(qName)) {
-                element = Element.PUBLISHER;
-            } else if ("upnp:genre".equals(qName)) {
-                element = Element.GENRE;
-            } else if ("upnp:album".equals(qName)) {
-                element = Element.ALBUM;
-            } else if ("upnp:albumArtURI".equals(qName)) {
-                element = Element.ALBUM_ART_URI;
-            } else if ("upnp:originalTrackNumber".equals(qName)) {
-                element = Element.TRACK_NUMBER;
-            } else {
-                if (ignore.isEmpty()) {
-                    ignore.add("");
-                    ignore.add("DIDL-Lite");
-                    ignore.add("type");
-                    ignore.add("ordinal");
-                    ignore.add("description");
-                    ignore.add("writeStatus");
-                    ignore.add("storageUsed");
-                    ignore.add("supported");
-                    ignore.add("pushSource");
-                    ignore.add("icon");
-                    ignore.add("playlist");
-                    ignore.add("date");
-                    ignore.add("rating");
-                    ignore.add("userrating");
-                    ignore.add("episodeSeason");
-                    ignore.add("childCountContainer");
-                    ignore.add("modificationTime");
-                    ignore.add("containerContent");
-                }
-
-                if (!ignore.contains(localName)) {
-                    LOGGER.debug("Did not recognise element named {}", localName);
-                }
-                element = null;
+                    element = null;
             }
         }
 
