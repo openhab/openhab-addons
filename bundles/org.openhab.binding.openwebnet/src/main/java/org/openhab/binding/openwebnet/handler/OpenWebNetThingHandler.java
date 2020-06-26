@@ -33,6 +33,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet.message.Where;
+import org.openwebnet.message.WhereLightAutom;
+import org.openwebnet.message.WhereZigBee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +53,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     protected @Nullable OpenWebNetBridgeHandler bridgeHandler;
     protected @Nullable String ownId; // OpenWebNet identifier for this device: WHO.WHERE
-    protected @Nullable String deviceWhere; // this device WHERE address
+    protected @Nullable Where deviceWhere; // this device Where address
 
     public OpenWebNetThingHandler(Thing thing) {
         super(thing);
@@ -62,15 +65,19 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() != null) {
             bridgeHandler = (OpenWebNetBridgeHandler) bridge.getHandler();
-            deviceWhere = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
-            if (deviceWhere == null) {
+            String deviceWhereStr = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
+            if (deviceWhereStr == null) {
                 logger.warn("WHERE parameter in configuration is null or invalid for thing {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "WHERE parameter in configuration is null or invalid");
                 return;
             } else {
-                // TODO check range for WHERE
-                ownId = bridgeHandler.ownIdFromDeviceWhere(deviceWhere, this);
+                if (bridgeHandler.isBusGateway()) {
+                    deviceWhere = new WhereLightAutom(deviceWhereStr);
+                } else {
+                    deviceWhere = new WhereZigBee(deviceWhereStr);
+                }
+                ownId = bridgeHandler.ownIdFromDeviceWhere(deviceWhere.value(), this);
                 final String oid = ownId;
                 Map<String, String> properties = editProperties();
                 properties.put(PROPERTY_OWNID, oid);
@@ -155,8 +162,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("dispose() for {}", getThing().getUID());
         if (bridgeHandler != null && ownId != null) {
-            String id = ownId;
-            bridgeHandler.unregisterDevice(id);
+            String oid = ownId;
+            bridgeHandler.unregisterDevice(oid);
         }
         super.dispose();
     }

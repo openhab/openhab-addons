@@ -42,6 +42,7 @@ public class OpenWebNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUS_GATEWAY = new ThingTypeUID(BINDING_ID, "bus_gateway");
     public static final String THING_LABEL_BUS_GATEWAY = "BUS Gateway";
     // generic (unknown) device
+    // FIXME change to THING_TYPE_GENERI_DEVICE and THING_LABEL_GENERIC_DEVICE
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final String THING_LABEL_DEVICE = "GENERIC Device";
     // other thing types

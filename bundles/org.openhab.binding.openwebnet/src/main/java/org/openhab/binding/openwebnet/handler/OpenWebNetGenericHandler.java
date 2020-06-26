@@ -36,7 +36,7 @@ public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetGenericHandler.class);
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.GENERIC_SUPPORTED_THING_TYPES;
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.GENERIC_SUPPORTED_THING_TYPES;
 
     public OpenWebNetGenericHandler(Thing thing) {
         super(thing);

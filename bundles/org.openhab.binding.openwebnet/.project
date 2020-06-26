@@ -3,6 +3,7 @@
 	<name>org.openhab.binding.openwebnet</name>
 	<comment></comment>
 	<projects>
+		<project>openwebnet-java</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
