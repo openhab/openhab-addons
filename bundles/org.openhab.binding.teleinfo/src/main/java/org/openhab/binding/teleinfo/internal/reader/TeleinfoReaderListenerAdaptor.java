@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.teleinfo.internal.reader;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
 
@@ -25,7 +24,7 @@ import org.openhab.binding.teleinfo.internal.dto.Frame;
 public abstract class TeleinfoReaderListenerAdaptor implements TeleinfoReaderListener {
 
     @Override
-    public void onFrameReceived(@NonNull TeleinfoReader reader, @NonNull Frame frame) {
+    public void onFrameReceived(TeleinfoReader reader, Frame frame) {
         // NOP
     }
 

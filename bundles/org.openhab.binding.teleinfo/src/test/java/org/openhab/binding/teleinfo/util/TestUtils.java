@@ -16,10 +16,13 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
 *
 * @author Nicolas SIBERIL - Initial contribution
 */
+@NonNullByDefault
 public final class TestUtils {
 
     private TestUtils() {

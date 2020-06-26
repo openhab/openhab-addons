@@ -15,7 +15,6 @@ package org.openhab.binding.teleinfo.internal.serial;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;

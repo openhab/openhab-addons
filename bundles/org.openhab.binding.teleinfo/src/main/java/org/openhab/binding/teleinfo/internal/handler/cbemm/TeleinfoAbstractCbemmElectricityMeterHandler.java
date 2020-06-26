@@ -16,7 +16,6 @@ import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import java.math.BigDecimal;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -40,7 +39,7 @@ public abstract class TeleinfoAbstractCbemmElectricityMeterHandler extends Telei
         super(thing);
     }
 
-    protected void updateStatesForCommonCbemmChannels(@NonNull FrameCbemm frame) {
+    protected void updateStatesForCommonCbemmChannels(FrameCbemm frame) {
         // update common channels
         updateState(CHANNEL_CBEMM_ISOUSC, new DecimalType(frame.getIsousc()));
         updateState(CHANNEL_CBEMM_PTEC, new StringType(frame.getPtec().name()));

@@ -14,7 +14,6 @@ package org.openhab.binding.teleinfo.internal.handler;
 
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -83,17 +82,17 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         // no commands supported
     }
 
-    protected void updateStatesForBaseFrameOption(@NonNull FrameBaseOption frameBaseOption) {
+    protected void updateStatesForBaseFrameOption(FrameBaseOption frameBaseOption) {
         updateState(CHANNEL_BASE_FRAME_BASE, new DecimalType(frameBaseOption.getBase()));
     }
 
-    protected void updateStatesForHcFrameOption(@NonNull FrameHcOption frameHcOption) {
+    protected void updateStatesForHcFrameOption(FrameHcOption frameHcOption) {
         updateState(CHANNEL_HC_FRAME_HCHC, new DecimalType(frameHcOption.getHchc()));
         updateState(CHANNEL_HC_FRAME_HCHP, new DecimalType(frameHcOption.getHchp()));
         updateState(CHANNEL_HC_FRAME_HHPHC, new StringType(frameHcOption.getHhphc().name()));
     }
 
-    protected void updateStatesForTempoFrameOption(@NonNull FrameTempoOption frameTempoOption) {
+    protected void updateStatesForTempoFrameOption(FrameTempoOption frameTempoOption) {
         updateState(CHANNEL_TEMPO_FRAME_BBRHPJR, new DecimalType(frameTempoOption.getBbrhpjr()));
         updateState(CHANNEL_TEMPO_FRAME_BBRHCJR, new DecimalType(frameTempoOption.getBbrhcjr()));
         updateState(CHANNEL_TEMPO_FRAME_BBRHPJW, new DecimalType(frameTempoOption.getBbrhpjw()));
@@ -113,7 +112,7 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         }
     }
 
-    protected void updateStatesForEjpFrameOption(@NonNull FrameEjpOption frameEjpOption) {
+    protected void updateStatesForEjpFrameOption(FrameEjpOption frameEjpOption) {
         updateState(CHANNEL_EJP_FRAME_EJPHN, new DecimalType(frameEjpOption.getEjphn()));
         updateState(CHANNEL_EJP_FRAME_EJPHPM, new DecimalType(frameEjpOption.getEjphpm()));
 
@@ -143,7 +142,7 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
     }
 
     @Override
-    protected void updateStatus(@NonNull ThingStatus status) {
+    protected void updateStatus(ThingStatus status) {
         this.updateStatus(status, ThingStatusDetail.NONE, null);
     }
 }

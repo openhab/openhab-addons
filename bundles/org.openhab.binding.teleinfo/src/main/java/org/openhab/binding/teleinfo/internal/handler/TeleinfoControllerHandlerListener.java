@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.teleinfo.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
 
@@ -25,6 +24,6 @@ import org.openhab.binding.teleinfo.internal.dto.Frame;
 @NonNullByDefault
 public interface TeleinfoControllerHandlerListener {
 
-    void onFrameReceived(@NonNull TeleinfoAbstractControllerHandler controllerHandler, @NonNull final Frame frame);
+    void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, final Frame frame);
 
 }

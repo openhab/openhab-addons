@@ -19,7 +19,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -60,7 +59,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private @Nullable TeleinfoSerialControllerConfiguration config;
     private long invalidFrameCounter = 0;
 
-    public TeleinfoSerialControllerHandler(@NonNull Bridge thing, SerialPortManager serialPortManager) {
+    public TeleinfoSerialControllerHandler(Bridge thing, SerialPortManager serialPortManager) {
         super(thing);
         this.serialPortManager = serialPortManager;
     }
@@ -108,27 +107,27 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     @Override
-    public void onFrameReceived(@NonNull TeleinfoReceiveThread receiveThread, @NonNull Frame frame) {
+    public void onFrameReceived(TeleinfoReceiveThread receiveThread, Frame frame) {
         updateStatus(ThingStatus.ONLINE);
         fireOnFrameReceivedEvent(frame);
     }
 
     @Override
-    public void onInvalidFrameReceived(@NonNull TeleinfoReceiveThread receiveThread,
-            @NonNull InvalidFrameException error) {
+    public void onInvalidFrameReceived(TeleinfoReceiveThread receiveThread,
+            InvalidFrameException error) {
         invalidFrameCounter++;
         updateState(THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER, new DecimalType(invalidFrameCounter));
     }
 
     @Override
-    public void onSerialPortInputStreamIOException(@NonNull TeleinfoReceiveThread receiveThread,
-            @NonNull IOException e) {
+    public void onSerialPortInputStreamIOException(TeleinfoReceiveThread receiveThread,
+            IOException e) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
     }
 
     @Override
-    public boolean continueOnReadNextFrameTimeoutException(@NonNull TeleinfoReceiveThread receiveThread,
-            @NonNull TimeoutException e) {
+    public boolean continueOnReadNextFrameTimeoutException(TeleinfoReceiveThread receiveThread,
+            TimeoutException e) {
         logger.warn("Retry in progress. Next retry in {} seconds...", SERIAL_PORT_DELAY_RETRY_IN_SECONDS);
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
         try {

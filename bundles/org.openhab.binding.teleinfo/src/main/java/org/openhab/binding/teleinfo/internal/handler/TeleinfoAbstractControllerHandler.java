@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -32,7 +31,7 @@ public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandle
 
     private List<TeleinfoControllerHandlerListener> listeners = Collections.synchronizedList(new ArrayList<>());
 
-    public TeleinfoAbstractControllerHandler(@NonNull Bridge bridge) {
+    public TeleinfoAbstractControllerHandler(Bridge bridge) {
         super(bridge);
     }
 
