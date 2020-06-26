@@ -11,16 +11,11 @@ This binding supports one Thing type `airconditioner`.
 ## Discovery
 
 Once the GREE is on the network (WiFi active) it could be discovery automatically.
-An IP broadcast message is sent and every responding units gets added to the Inbox. 
+An IP broadcast message is sent and every responding unit gets added to the Inbox. 
 
 ## Binding Configuration
 
 No binding configuration is required.
-
-#### Manual Thing Creation
-
-Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.  See example below.
-
 
 ## Thing Configuration
 
@@ -42,9 +37,9 @@ The following channels are supported for fans:
 |---------------|-----------|---------------------------------------------------------------------------------------------------|
 | power         | Switch    | Power on/off the Air Conditioner                                                                  |
 | mode          | String    | Sets the operating mode of the Air Conditioner                                                    |
-|               |           | Mode can be one of auto/cool/eco/dry/fan/heat or on/off                                     |
+|               |           | Mode can be one of auto/cool/eco/dry/fan/heat or on/off                                           |
 |               |           | Check the Air Conditioner's operating manual for supported modes.                                 |
-| temperature   | Number    | Sets the desired room temperature                                                                 |
+| temperature   | Number:Temperature | Sets the desired room temperature                                                        |
 | air           | Switch    | Set on/off the Air Conditioner's Air function if applicable to the Air Conditioner model          |
 | dry           | Switch    | Set on/off the Air Conditioner's Dry function if applicable to the Air Conditioner model          |
 | health        | Switch    | Set on/off the Air Conditioner's Health function if applicable to the Air Conditioner model       |
@@ -79,7 +74,6 @@ Number AirconMode                   { channel="gree:airconditioner:a1234561:mode
 Switch AirconTurbo                  { channel="gree:airconditioner:a1234561:turbo" }
 Switch AirconLight                  { channel="gree:airconditioner:a1234561:light" }
 Number AirconTemp "Temperature [%.1f °C]" {channel="gree:airconditioner:a1234561:temperature" }
-Number AirconTempSet                { channel="gree:airconditioner:a1234561:temperature" }
 Number AirconSwingVertical          { channel="gree:airconditioner:a1234561:swingUpDown" }
 Number AirconSwingHorizontal        { channel="gree:airconditioner:a1234561:swingLeftRight" }
 Number AirconFanSpeed               { channel="gree:airconditioner:a1234561:windspeed" }
