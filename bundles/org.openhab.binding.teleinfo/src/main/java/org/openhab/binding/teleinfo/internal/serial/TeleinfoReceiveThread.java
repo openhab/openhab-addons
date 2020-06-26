@@ -51,8 +51,8 @@ public class TeleinfoReceiveThread extends Thread {
     public void run() {
         logger.debug("Starting Teleinfo thread: Receive");
         try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
-                TeleinfoInputStream.DEFAULT_TIMEOUT_WAIT_NEXT_HEADER_FRAME * 100,
-                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 100, autoRepairInvalidADPSgroupLine)) {
+                TeleinfoInputStream.defaultTimeoutNextHeaderFrame * 100,
+                TeleinfoInputStream.defaultTimeoutReadingFrame * 100, autoRepairInvalidADPSgroupLine)) {
             while (!interrupted()) {
                 try {
                     Frame nextFrame = teleinfoStream.readNextFrame();
