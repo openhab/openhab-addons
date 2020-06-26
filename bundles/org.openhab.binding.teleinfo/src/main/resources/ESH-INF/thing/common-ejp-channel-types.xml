@@ -9,7 +9,7 @@
 		<label>EJPHPM</label>
 		<description>EJPHPM</description>
 		<category>Energy</category>
-		<state pattern="%d Wh" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="ejphnType">
@@ -17,7 +17,7 @@
 		<label>EJPHN</label>
 		<description>EJPHN</description>
 		<category>Energy</category>
-		<state pattern="%d Wh" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="pejpType">
@@ -25,6 +25,6 @@
 		<label>PEJP</label>
 		<description>PEJP</description>
 		<category>Energy</category>
-		<state pattern="%d min" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

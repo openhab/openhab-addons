@@ -9,7 +9,7 @@
 		<label>IMAX</label>
 		<description>IMAX</description>
 		<category>Energy</category>
-		<state pattern="%d A" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="iinstType">
@@ -17,7 +17,7 @@
 		<label>IINST</label>
 		<description>IINST</description>
 		<category>Energy</category>
-		<state pattern="%d A" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="currentPowerType">
@@ -25,7 +25,7 @@
 		<label>currentpower</label>
 		<description>Instantaneous power</description>
 		<category>Energy</category>
-		<state pattern="%d W" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 		<config-description>
 			<parameter name="powerFactor" type="integer">
 				<label>Power factor</label>
@@ -48,7 +48,7 @@
 		<label>ADPS</label>
 		<description>ADPS</description>
 		<category>Energy</category>
-		<state pattern="%d A" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>

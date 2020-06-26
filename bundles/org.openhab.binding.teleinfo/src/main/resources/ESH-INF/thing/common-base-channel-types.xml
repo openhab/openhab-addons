@@ -9,7 +9,7 @@
 		<label>BASE</label>
 		<description>BASE</description>
 		<category>Energy</category>
-		<state pattern="%d Wh" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>

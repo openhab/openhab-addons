@@ -9,7 +9,7 @@
 		<label>HCHC</label>
 		<description>HCHC</description>
 		<category>Energy</category>
-		<state pattern="%d Wh" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 	<channel-type id="hchpType">
@@ -17,7 +17,7 @@
 		<label>HCHP</label>
 		<description>HCHP</description>
 		<category>Energy</category>
-		<state pattern="%d Wh" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
 
 </thing:thing-descriptions>
