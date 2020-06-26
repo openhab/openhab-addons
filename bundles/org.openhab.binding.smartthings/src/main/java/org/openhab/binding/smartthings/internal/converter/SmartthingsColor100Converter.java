@@ -29,9 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converter class for Color Control.
- * This can't use the default because when closing the door the command that comes in is "closed" but "close" need to be
- * sent to Smartthings
+ * Converter class for Smartthings capability "Color Control".
+ * In this case the color being delivered by Smartthings is in the for #hhssbb where hh=hue in hex, ss=saturation in hex
+ * and bb=brightness in hex
+ * And, the hue is a value from 0 to 100% but openHAB expects the hue in 0 to 360
  *
  * @author Bob Raker - Initial contribution
  */
@@ -54,7 +55,7 @@ public class SmartthingsColor100Converter extends SmartthingsConverter {
         // The easiest way to do this is to create a new HSBType with the hue component changed.
         if (command instanceof HSBType) {
             HSBType hsb = (HSBType) command;
-            double hue = (hsb.getHue().doubleValue() / 3.60) + 0.5; // add .5 to round
+            double hue = Math.round((hsb.getHue().doubleValue() / 3.60)); // add .5 to round
             long hueInt = (long) hue;
             HSBType hsb100 = new HSBType(new DecimalType(hueInt), hsb.getSaturation(), hsb.getBrightness());
             // now use the default converter to convert to a JSON string
@@ -104,5 +105,4 @@ public class SmartthingsColor100Converter extends SmartthingsConverter {
         state = HSBType.fromRGB(rgb[0], rgb[1], rgb[2]);
         return state;
     }
-
 }

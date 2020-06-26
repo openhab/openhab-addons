@@ -22,7 +22,8 @@ import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 
 /**
  * Converter class for Door Control.
- * This can't use the default because when closing the door the command that comes in is "closed" but "close" need to be
+ * This can't use the default because when closing the door the command that comes in as "closed" but "close" needs to
+ * be
  * sent to Smartthings
  *
  * @author Bob Raker - Initial contribution
@@ -51,5 +52,4 @@ public class SmartthingsOpenCloseControlConverter extends SmartthingsConverter {
 
         return state;
     }
-
 }

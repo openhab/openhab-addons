@@ -3,7 +3,7 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>Smartthings Binding</name>
-	<description>This is the binding for Smartthings.</description>
+	<name>Samsung Smartthings Binding</name>
+	<description>This is the binding for the Samsung Smartthings hub.</description>
 	<author>Bob Raker</author>
 </binding:binding>

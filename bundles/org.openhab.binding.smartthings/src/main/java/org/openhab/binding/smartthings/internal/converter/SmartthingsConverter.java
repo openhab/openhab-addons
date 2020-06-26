@@ -55,7 +55,6 @@ public abstract class SmartthingsConverter {
     private Logger logger = LoggerFactory.getLogger(SmartthingsConverter.class);
 
     protected String smartthingsName;
-    @Nullable
     protected String thingTypeId;
 
     SmartthingsConverter(Thing thing) {
@@ -93,15 +92,13 @@ public abstract class SmartthingsConverter {
         } else if (command instanceof OnOffType) { // Need to surround with double quotes
             value = surroundWithQuotes(command.toString().toLowerCase());
         } else if (command instanceof OpenClosedType) { // Need to surround with double quotes
-            // OpenClosedType needs some tweeking. OpenClosedType.OPEN is fine but if the type is OpenClosedType.CLOSED
-            // need to send close, not closed.
-            // String commandStr = (command.toString().equalsIgnoreCase("open")) ? "open" : "close";
-            // value = surroundWithQuotes(commandStr.toLowerCase());
             value = surroundWithQuotes(command.toString().toLowerCase());
         } else if (command instanceof PercentType) {
             value = command.toString();
-        } else if (command instanceof PointType) { // Not really sure how to deal with this one and don't see a use for
-                                                   // it in Smartthings right now
+        } else if (command instanceof PointType) { // There is not a comparable type in Smartthings, log and send value
+            logger.warn(
+                    "Warning - PointType Command is not supported by Smartthings. Please configure to use a different command type. CapabilityKey: {}, displayName: {}, capabilityAttribute {}",
+                    thingTypeId, smartthingsName, channelUid.getId());
             value = command.toFullString();
         } else if (command instanceof RefreshType) { // Need to surround with double quotes
             value = surroundWithQuotes(command.toString().toLowerCase());
@@ -118,6 +115,9 @@ public abstract class SmartthingsConverter {
         } else if (command instanceof UpDownType) { // Need to surround with double quotes
             value = surroundWithQuotes(command.toString().toLowerCase());
         } else {
+            logger.warn(
+                    "Warning - The Smartthings converter does not know how to handle the {} command. The Smartthingsonverter class should be updated.  CapabilityKey: {}, displayName: {}, capabilityAttribute {}",
+                    command.getClass().getName(), thingTypeId, smartthingsName, channelUid.getId());
             value = command.toString().toLowerCase();
         }
 
@@ -150,8 +150,8 @@ public abstract class SmartthingsConverter {
         switch (acceptedChannelType) {
             case "Color":
                 logger.warn(
-                        "Conversion of Color Contol-color is not currently supported. Need to provide support for message {}.",
-                        deviceValue);
+                        "Conversion of Color is not supported by the default Smartthings to opemHAB converter. The ThingType should specify an appropriate converter. Device name: {}, Attribute: {}.",
+                        dataFromSmartthings.deviceDisplayName, deviceType);
                 return UnDefType.UNDEF;
             case "Contact":
                 return "open".equals(deviceValue) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
@@ -198,7 +198,7 @@ public abstract class SmartthingsConverter {
                 // which GSON returns as a LinkedTreeMap
                 if (deviceValue instanceof String) {
                     return new StringType((String) deviceValue);
-                } else if (deviceValue instanceof Map) {
+                } else if (deviceValue instanceof Map<?, ?>) {
                     Map<String, String> map = (Map<String, String>) deviceValue;
                     String s = String.format("%.0f,%.0f,%.0f", map.get("x"), map.get("y"), map.get("z"));
                     return new StringType(s);
@@ -214,5 +214,4 @@ public abstract class SmartthingsConverter {
                 return UnDefType.UNDEF;
         }
     }
-
 }

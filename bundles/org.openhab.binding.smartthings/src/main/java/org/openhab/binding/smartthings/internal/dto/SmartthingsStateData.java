@@ -12,25 +12,15 @@
  */
 package org.openhab.binding.smartthings.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
 /**
  * Data object for smartthings state data
  *
  * @author Bob Raker - Initial contribution
  */
-@NonNullByDefault
 public class SmartthingsStateData {
-    @Nullable
     public String deviceDisplayName;
-    @Nullable
     public String capabilityAttribute;
-    @Nullable
     public String value;
-    public long hubTime;
-    public long openHabStartTime;
-    public long hubEndTime;
 
     public SmartthingsStateData() {
         // These values will always be overridden when the object is initialized by GSon
@@ -45,9 +35,6 @@ public class SmartthingsStateData {
         sb.append(", deviceDisplayName :").append(deviceDisplayName);
         sb.append(", capabilityAttribute :").append(capabilityAttribute);
         sb.append(", value :").append(value);
-        sb.append(", hubTime :").append(hubTime);
-        sb.append("openHabStartTime :").append(openHabStartTime);
-        sb.append(", hubEndTime :").append(hubEndTime);
         return sb.toString();
     }
 }

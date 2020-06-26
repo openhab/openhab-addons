@@ -26,7 +26,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.osgi.framework.BundleContext;
-//import org.eclipse.equinox.event.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,6 @@ public class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler {
 
     private SmartthingsHandlerFactory smartthingsHandlerFactory;
     private BundleContext bundleContext;
-    // private SmartthingsDiscoveryService smartthingsDiscoveryService;
 
     public SmartthingsBridgeHandler(Bridge bridge, SmartthingsHandlerFactory smartthingsHandlerFactory,
             BundleContext bundleContext) {
@@ -52,7 +50,6 @@ public class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler {
         this.smartthingsHandlerFactory = smartthingsHandlerFactory;
         this.bundleContext = bundleContext;
         config = getThing().getConfiguration().as(SmartthingsBridgeConfig.class);
-        logger.debug("SmartthingsBridgeHandler constructor completed");
     }
 
     @Override

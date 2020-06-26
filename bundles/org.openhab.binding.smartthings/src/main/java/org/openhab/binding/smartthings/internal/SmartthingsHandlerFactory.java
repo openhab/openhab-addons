@@ -15,9 +15,7 @@ package org.openhab.binding.smartthings.internal;
 import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -36,13 +34,10 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
@@ -64,10 +59,9 @@ import com.google.gson.Gson;
 public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory, EventHandler {
 
     private Logger logger = LoggerFactory.getLogger(SmartthingsHandlerFactory.class);
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    private @NonNullByDefault({}) SmartthingsBridgeHandler bridgeHandler;
-    private @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistry;
+    private @NonNullByDefault({}) SmartthingsBridgeHandler bridgeHandler = null;
+    private @NonNullByDefault({}) ThingUID bridgeUID;
     private Gson gson;
     private List<SmartthingsThingHandler> thingHandlers = new ArrayList<SmartthingsThingHandler>();
 
@@ -81,44 +75,40 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
     public SmartthingsHandlerFactory() {
         // Get a Gson instance
         gson = new Gson();
-        // testing by bob
-        ChannelTypeRegistry ctr = getChannelTypeRegistry();
-    }
-
-    @Override
-    @Activate
-    public void activate(org.osgi.service.component.ComponentContext componentContext) {
-        super.activate(componentContext);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.debug("SmartthingsHandlerFactory is now processing ThingTypeUID {}", thingTypeUID.getAsString());
 
         if (thingTypeUID.equals(THING_TYPE_SMARTTHINGS)) {
+            // This binding only supports one bridge. If the user tries to add a second bridge register and error and
+            // ignore
+            if (bridgeHandler != null) {
+                logger.warn(
+                        "The Smartthings binding only supports one bridge. Please change your configuration to only use one Bridge. This bridge {} will be ignored.",
+                        thing.getUID().getAsString());
+                return null;
+            }
             bridgeHandler = new SmartthingsBridgeHandler((Bridge) thing, this, bundleContext);
+            bridgeUID = thing.getUID();
+            logger.debug("SmartthingsHandlerFactory created BridgeHandler for {}", thingTypeUID.getAsString());
             return bridgeHandler;
         } else if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             // Everything but the bridge is handled by this one handler
+            // Make sure this thing belongs to the registered Bridge
+            if (bridgeUID != null && !bridgeUID.equals(thing.getBridgeUID())) {
+                logger.warn("Thing: {} is being ignored because it does not belong to the registered bridge.",
+                        thing.getLabel());
+                return null;
+            }
             SmartthingsThingHandler thingHandler = new SmartthingsThingHandler(thing, this);
             thingHandlers.add(thingHandler);
+            logger.debug("SmartthingsHandlerFactory created ThingHandler for {}, {}",
+                    thing.getConfiguration().get("smartthingsName"), thing.getUID().getAsString());
             return thingHandler;
         }
         return null;
-    }
-
-    /**
-     * Remove handler of things.
-     */
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof SmartthingsBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            serviceReg.unregister();
-            discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-        }
     }
 
     /**
@@ -131,30 +121,22 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
      * @throws TimeoutException
      * @throws ExecutionException
      */
-    public @Nullable Map<String, Object> sendDeviceCommand(String path, String data)
+    public void sendDeviceCommand(String path, String data)
             throws InterruptedException, TimeoutException, ExecutionException {
         ContentResponse response = httpClient
                 .newRequest(bridgeHandler.getSmartthingsIp(), bridgeHandler.getSmartthingsPort())
                 .timeout(3, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
                 .content(new StringContentProvider(data), "application/json").send();
 
-        Map<String, Object> result = null;
         int status = response.getStatus();
-        if (status == 200) {
-            String responseStr = response.getContentAsString();
-            if (responseStr != null && responseStr.length() > 0) {
-                result = new HashMap<String, Object>();
-                result = gson.fromJson(responseStr, result.getClass());
-            }
-        } else if (status == 202) {
-            logger.info(
+        if (status == 202) {
+            logger.debug(
                     "Sent message \"{}\" with path \"{}\" to the Smartthings hub, recieved HTTP status {} (This is the normal code from Smartthings)",
                     data, path, status);
         } else {
-            logger.info("Sent message \"{}\" with path \"{}\" to the Smartthings hub, recieved HTTP status {}", data,
+            logger.warn("Sent message \"{}\" with path \"{}\" to the Smartthings hub, recieved HTTP status {}", data,
                     path, status);
         }
-        return result;
     }
 
     /**
@@ -164,11 +146,9 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
      * @param event The event sent
      */
     @Override
-    public void handleEvent(@Nullable Event event) {
+    public synchronized void handleEvent(@Nullable Event event) {
         if (event != null) {
-            String topic = event.getTopic();
             String data = (String) event.getProperty("data");
-            logger.trace("Event received on topic: {}", topic);
             SmartthingsStateData stateData = new SmartthingsStateData();
             stateData = gson.fromJson(data, stateData.getClass());
             SmartthingsThingHandler handler = findHandler(stateData);
@@ -182,19 +162,20 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
         for (SmartthingsThingHandler handler : thingHandlers) {
             // There have been some reports of handler.getSmartthingsName() returning a null.
             // Need to find out where null is coming from
-            if (handler.getSmartthingsName() == null) {
+            if (handler.getSmartthingsName() != null) {
+                if (handler.getSmartthingsName().equals(stateData.deviceDisplayName)) {
+                    for (Channel ch : handler.getThing().getChannels()) {
+                        String chId = ch.getUID().getId();
+                        if (chId.equals(stateData.capabilityAttribute)) {
+                            return handler;
+                        }
+                    }
+                }
+            } else {
                 logger.warn(
                         "A thing handler \"smartthings name\" is unexpectedly null: for thing {} with display name: {} and with attribute: {}",
                         handler.toString(), stateData.deviceDisplayName, stateData.capabilityAttribute);
                 return null;
-            }
-            if (handler.getSmartthingsName().equals(stateData.deviceDisplayName)) {
-                for (Channel ch : handler.getThing().getChannels()) {
-                    String chId = ch.getUID().getId();
-                    if (chId.equals(stateData.capabilityAttribute)) {
-                        return handler;
-                    }
-                }
             }
         }
 
@@ -205,31 +186,15 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
     }
 
     @Reference
-    public void setChannelTypeService(ChannelTypeRegistry registry) {
-        channelTypeRegistry = registry;
-    }
-
-    public void unsetChannelTypeService(ChannelTypeRegistry registry) {
-        channelTypeRegistry = null;
-    }
-
-    public ChannelTypeRegistry getChannelTypeRegistry() {
-        return channelTypeRegistry;
-    }
-
-    @Reference
     protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        logger.debug("setHttpClientFactory this: {}", this.toString());
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     protected void unsetHttpClientFactory() {
-        logger.debug("unsetHttpClientFactory this: {}", this.toString());
         this.httpClient = null;
     }
 
     public SmartthingsBridgeHandler getBridgeHandler() {
         return bridgeHandler;
     }
-
 }

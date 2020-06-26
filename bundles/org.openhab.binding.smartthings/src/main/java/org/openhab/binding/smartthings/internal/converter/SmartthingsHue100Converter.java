@@ -26,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Special converter for Smartthings hue values in the 0-100% range. OH2 uses 0-360 degrees
+ * Converter class for Smartthings capability "Color Control".
+ * The Smartthings "Color Control" capability represents the hue values in the 0-100% range. OH2 uses 0-360 degrees
+ * For this converter only the hue is coming into openHAB and it is a number
  *
  * @author Bob Raker - Initial contribution
  */
@@ -48,16 +50,9 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
             double hue = hsb.getHue().doubleValue() / 3.60;
             String value = String.format("[%.0f, %d, %d ]", hue, hsb.getSaturation().intValue(),
                     hsb.getBrightness().intValue());
-            // debug message
-            String logMsg = String.format("OpenHAB HSB = %s, Smartthings HSB = %s, RGB = #%6X (%.0f, %.0f, %.0f)",
-                    hsb.toString(), value, hsb.getRGB(), hsb.getRed().doubleValue() * 3.6,
-                    hsb.getGreen().doubleValue() * 3.6, hsb.getBlue().doubleValue() * 3.6);
-            logger.debug("{}", logMsg);
-
             jsonMsg = String.format(
                     "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
                     thingTypeId, smartthingsName, channelUid.getId(), value);
-
         } else {
             jsonMsg = defaultConvertToSmartthings(channelUid, command);
         }
@@ -98,5 +93,4 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
             return defaultConvertToOpenHab(acceptedChannelType, dataFromSmartthings);
         }
     }
-
 }

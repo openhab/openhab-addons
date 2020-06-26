@@ -1,5 +1,5 @@
 # Installation of Smartthings code
-To use the Smartthings OpenHAB binding code needs to be installed on the Smartthings Hub.  Currently the Smartthings code is bundled with the binding. 
+To use the Smartthings, openHAB binding code needs to be installed on the Smartthings Hub.  Currently the Smartthings code is bundled with the binding. 
 
 ## Installation of artifacts on the Smartthings HUB
 The following steps need to be done on the Smartthings hub using the web based [Smartthings developers tools](https://graph.api.smartthings.com/). 
@@ -11,13 +11,11 @@ These steps assume you already have a Smartthings Hub and have set it up. And, y
 4. Verify your hub is listed.
 
 ### Copying Smartthings files
-The files are located in the Git repo in the **contrib** directory structure.
-This is located in the openHAB Addons directory which is located [here](https://github.com/openhab/openhab2-addons/tree/master/addons/binding/org.openhab.binding.smartthings/contrib).
-If you are manually installing this binding from the BobRak repo it is located [here](https://github.com/BobRak/OpenHAB-Smartthings/tree/master/org.openhab.binding.smartthings/contrib)
+The files are located in the GitHub [repository](https://github.com/openhab/openhab2-addons/tree/master/addons/binding/org.openhab.binding.smartthings/contrib).
 
 The following files need to be deployed
-* OpenHabAppV2 - This is a SmartApp that receives requests from OpenHAB and returns the needed data
-* OpenHabDeviceHandler - This is a lower level module that provides a connection between OpenHAB and the Hub using the LAN connection
+* OpenHabAppV2 - This is a SmartApp that receives requests from openHAB and returns the needed data
+* OpenHabDeviceHandler - This is a lower level module that provides a connection between openHAB and the Hub using the LAN connection
 
 ### Install OpenHabAppV2
 1. Locate OpenHabAppV2.groovy in the /contrib/SmartApps Directory.
@@ -59,9 +57,9 @@ The following files need to be deployed
     * Hub: (Select from the dropdown)
 5. Click on the **Create** button near the bottom left
 6. In the Preferences section enter the following:
-     * ip: (This is the IP address of your OpenHAB server)
+     * ip: (This is the IP address of your openHAB server)
      * mac: (This is the same as the Device Network ID but with : between segments
-     * port: 8080 (This is the port of the OpenHAB application on your server)
+     * port: 8080 (This is the port of the openHAB application on your server)
      * Save the preferences
 
 ## Configuration in the Smartthings Classic App
@@ -72,7 +70,7 @@ Next the App needs to be configured using **the Smartthings Classic App on your 
 4. Click on **+ Add a SmartApp**
 5. Scroll to the bottom and select **My Apps**
 6. Select **OpenHabAppV2**
-     * In the selection screen select the devices you want to interact with OpenHAB. **Warning** devices not enabled (lacking the check mark in the box for the specific device) will be ** ignored ** by OpenHAB. 
+     * In the selection screen select the devices you want to interact with openHAB. **Warning** devices not enabled (lacking the check mark in the box for the specific device) will be **ignored** by openHAB. 
      * Near the bottom of the screen is **Notify this virtual device**, click on it and select **OpenHabDevice**. 
      * Finally click **Done** on the upper right.
 

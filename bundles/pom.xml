@@ -244,8 +244,8 @@
     <module>org.openhab.binding.sleepiq</module>
     <module>org.openhab.binding.smaenergymeter</module>
     <module>org.openhab.binding.smartmeter</module>
-    <module>org.openhab.binding.smartthings</module>
     <module>org.openhab.binding.smhi</module>
+    <module>org.openhab.binding.smartthings</module>
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>

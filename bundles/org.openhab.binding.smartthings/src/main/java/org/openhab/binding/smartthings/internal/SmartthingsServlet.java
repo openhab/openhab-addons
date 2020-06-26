@@ -14,12 +14,13 @@ package org.openhab.binding.smartthings.internal;
 
 import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -36,6 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.http.HttpService;
+import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,27 +54,32 @@ import com.google.gson.Gson;
 public class SmartthingsServlet extends HttpServlet {
     private static final String PATH = "/smartthings";
     private Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);
-    private @Nullable HttpService httpService;
+    private @NonNullByDefault({}) HttpService httpService;
     private @Nullable EventAdmin eventAdmin;
-    private @Nullable Gson gson;
+    private Gson gson = new Gson();
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        gson = new Gson();
+        if (httpService == null) {
+            logger.info("SmartthingsServlet.activate: httpService is unexpectedly null");
+            return;
+        }
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
             logger.info("Started Smartthings servlet at {}", PATH);
-        } catch (Exception e) {
+        } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start Smartthings servlet service: {}", e.getMessage());
         }
     }
 
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
-        try {
-            httpService.unregister(PATH);
-        } catch (IllegalArgumentException ignored) {
+        if (httpService != null) {
+            try {
+                httpService.unregister(PATH);
+            } catch (IllegalArgumentException ignored) {
+            }
         }
     }
 
@@ -94,15 +101,6 @@ public class SmartthingsServlet extends HttpServlet {
         this.eventAdmin = null;
     }
 
-    // @Reference
-    protected void setGson(Gson gson) {
-        this.gson = gson;
-    }
-
-    protected void unsetGson() {
-        this.gson = null;
-    }
-
     @Override
     protected void service(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
@@ -111,13 +109,9 @@ public class SmartthingsServlet extends HttpServlet {
             return;
         }
         String path = req.getRequestURI();
-        logger.debug("Smartthings servlet service() called with: {}: {} {}", req.getRemoteAddr(), req.getMethod(),
-                path);
 
         // See what is in the path
         String[] pathParts = path.replace(PATH + "/", "").split("/");
-        logger.debug("Smartthing servlet function requested: {} with Method: {}", pathParts[0], req.getMethod());
-
         if (pathParts.length != 1) {
             logger.warn(
                     "Smartthing servlet recieved a path with zero or more than one parts. Only one part is allowed. path {}",
@@ -125,45 +119,27 @@ public class SmartthingsServlet extends HttpServlet {
             return;
         }
 
-        if (pathParts[0].equals("state")) {
-            // This is device state info returned from Smartthings
-            Reader rdr = req.getReader();
-            StringBuffer sb = new StringBuffer();
-            int c;
-            while ((c = rdr.read()) != -1) {
-                sb.append((char) c);
-            }
-            rdr.close();
-            logger.trace("Smartthing servlet processing \"state\" request. data: {}", sb);
-            publishEvent(STATE_EVENT_TOPIC, "data", sb.toString());
-        } else if (pathParts[0].equals("discovery")) {
-            // This is discovery data returned from Smartthings
-            Reader rdr = req.getReader();
-            StringBuffer sb = new StringBuffer();
-            int c;
-            while ((c = rdr.read()) != -1) {
-                sb.append((char) c);
-            }
-            rdr.close();
-            logger.trace("Smartthing servlet processing \"discovery\" request. data: {}", sb);
-            publishEvent(DISCOVERY_EVENT_TOPIC, "data", sb.toString());
-        } else if (pathParts[0].equals("error")) {
-            // This is an error message from smartthings
-            Reader rdr = req.getReader();
-            StringBuffer sb = new StringBuffer();
-            int c;
-            while ((c = rdr.read()) != -1) {
-                sb.append((char) c);
-            }
-            rdr.close();
-            logger.trace("Smartthing servlet processing \"error\" request. data: {}", sb);
-            Map<String, Object> map = new HashMap<String, Object>();
-            map = gson.fromJson(sb.toString(), map.getClass());
-            StringBuffer msg = new StringBuffer("Error message from Smartthings: ");
-            msg.append(map.get("message"));
-            logger.warn("{}", msg);
-        } else {
-            logger.warn("Smartthing servlet recieved a path that is not supported {}", pathParts[0]);
+        BufferedReader rdr = new BufferedReader(req.getReader());
+        String s = rdr.lines().collect(Collectors.joining());
+        switch (pathParts[0]) {
+            case "state":
+                // This is device state info returned from Smartthings
+                logger.trace("Smartthing servlet processing \"state\" request. data: {}", s);
+                publishEvent(STATE_EVENT_TOPIC, "data", s);
+                break;
+            case "discovery":
+                // This is discovery data returned from Smartthings
+                logger.trace("Smartthing servlet processing \"discovery\" request. data: {}", s);
+                publishEvent(DISCOVERY_EVENT_TOPIC, "data", s);
+                break;
+            case "error":
+                // This is an error message from smartthings
+                Map<String, Object> map = new HashMap<String, Object>();
+                map = gson.fromJson(s, map.getClass());
+                logger.warn("Error message from Smartthings: {}", map.get("message"));
+                break;
+            default:
+                logger.warn("Smartthings servlet recieved a path that is not supported {}", pathParts[0]);
         }
 
         // A user @fx submitted a pull request stating:
@@ -190,7 +166,10 @@ public class SmartthingsServlet extends HttpServlet {
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(name, data);
         Event event = new Event(topic, props);
-        eventAdmin.postEvent(event);
+        if (eventAdmin != null) {
+            eventAdmin.postEvent(event);
+        } else {
+            logger.info("SmartthingsServlet:publishEvent eventAdmin is unexpectedly null");
+        }
     }
-
 }

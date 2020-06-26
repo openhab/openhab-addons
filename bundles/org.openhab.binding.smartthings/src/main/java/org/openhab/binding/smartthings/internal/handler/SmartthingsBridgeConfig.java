@@ -39,5 +39,4 @@ public class SmartthingsBridgeConfig {
         sb.append(", smartthingsPort = ").append(smartthingsPort);
         return sb.toString();
     }
-
 }

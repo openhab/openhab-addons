@@ -50,5 +50,4 @@ public class SmartthingsDefaultConverter extends SmartthingsConverter {
         State state = defaultConvertToOpenHab(acceptedChannelType, dataFromSmartthings);
         return state;
     }
-
 }

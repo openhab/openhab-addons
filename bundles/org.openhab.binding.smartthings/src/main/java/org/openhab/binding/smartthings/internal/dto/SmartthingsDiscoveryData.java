@@ -12,20 +12,12 @@
  */
 package org.openhab.binding.smartthings.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * Mapping object for data returned from smartthings hub
  *
  * @author Bob Raker - Initial contribution
  */
-@NonNullByDefault
 public class SmartthingsDiscoveryData {
-    // private Logger logger = LoggerFactory.getLogger(SmartthingsDiscoveryData.class);
-    public long openHabStartTime;
-    public long hubTime;
-    // @Nullable
-    // public String @Nullable [] data;
     public String[] data;
 
     public SmartthingsDiscoveryData() {
@@ -35,8 +27,6 @@ public class SmartthingsDiscoveryData {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("openHabStartTime :").append(openHabStartTime);
-        sb.append(", hubTime :").append(hubTime);
         sb.append(", data: ");
         for (int i = 0; i < data.length; i++) {
             sb.append(data[i]).append(" ");

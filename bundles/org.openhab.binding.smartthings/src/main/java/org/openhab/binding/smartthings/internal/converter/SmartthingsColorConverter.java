@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Converter class for Door Control.
- * This can't use the default because when closing the door the command that comes in is "closed" but "close" need to be
- * sent to Smartthings
+ * Converter class for Smartthings "Color" capability and not the "Color Control" capability.
+ * The Smartthings Color capability seems to be a later capability where the hue is in the standard 0 - 360 range and
+ * therefore doesn't need to be converted for openHAB
  *
  * @author Bob Raker - Initial contribution
  */
@@ -88,5 +88,4 @@ public class SmartthingsColorConverter extends SmartthingsConverter {
         State state = HSBType.fromRGB(rgb[0], rgb[1], rgb[2]);
         return state;
     }
-
 }

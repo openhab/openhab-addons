@@ -69,8 +69,9 @@ public class SmartthingsBindingConstants {
             new ThingTypeUID(BINDING_ID, "thermostatOperatingState"),
             new ThingTypeUID(BINDING_ID, "thermostatSetpoint"), new ThingTypeUID(BINDING_ID, "threeAxis"),
             new ThingTypeUID(BINDING_ID, "timedSession"), new ThingTypeUID(BINDING_ID, "touchSensor"),
-            new ThingTypeUID(BINDING_ID, "valve"), new ThingTypeUID(BINDING_ID, "ultravioletIndex"),
-            new ThingTypeUID(BINDING_ID, "voltageMeasurement"), new ThingTypeUID(BINDING_ID, "waterSensor"),
+            new ThingTypeUID(BINDING_ID, "ultravioletIndex"), new ThingTypeUID(BINDING_ID, "valve"),
+            new ThingTypeUID(BINDING_ID, "voltageMeasurement"), new ThingTypeUID(BINDING_ID, "washerMode"),
+            new ThingTypeUID(BINDING_ID, "washerOperatingState"), new ThingTypeUID(BINDING_ID, "waterSensor"),
             new ThingTypeUID(BINDING_ID, "windowShade")).collect(Collectors.toSet()));
 
     // Event Handler Topics

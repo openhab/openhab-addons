@@ -11,12 +11,14 @@
 
 		<config-description>
 			<parameter name="smartthingsIp" type="text" required="true">
-				<label>IP address</label>
+				<context>network-address</context>
+				<label>IP Address</label>
 				<description>IP address of the Smartthings Hub</description>
 			</parameter>
-			<parameter name="smartthingsPort" type="integer" required="true">
-				<label>IP port number</label>
+			<parameter name="smartthingsPort" type="integer" min="0" max="65535" required="false">
+				<label>IP Port Number</label>
 				<description>Port number of the Smartthings Hub</description>
+				<default>39500</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -34,19 +36,10 @@
 		<description>Acceleration Sensor</description>
 		<channels>
 			<channel id="acceleration" typeId="acceleration-channel">
-				<label>acceleration</label>
+				<label>Acceleration</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="airConditionerMode">
@@ -60,16 +53,7 @@
 				<label>Air Conditioner Mode</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="alarm">
@@ -83,41 +67,21 @@
 				<label>Alarm</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
-
-	<!-- TODO: Audio Notification - has no attributes but has commands - not sure how to handle -->
 
 	<thing-type id="battery">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Battery status</label>
+		<label>Battery Status</label>
 		<description>An indication of the status of the battery</description>
 		<channels>
 			<channel id="battery" typeId="battery-channel">
-				<label>battery</label>
+				<label>Battery</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="beacon">
@@ -128,19 +92,10 @@
 		<description>The presence value of the beacon</description>
 		<channels>
 			<channel id="presence" typeId="presence-channel">
-				<label>presence</label>
+				<label>Presence</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="bulb">
@@ -151,19 +106,10 @@
 		<description>Allows for the control of a bulb device</description>
 		<channels>
 			<channel id="switch" typeId="switch-channel">
-				<label>bulb</label>
+				<label>Bulb</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="button">
@@ -177,75 +123,47 @@
 				<label>Button</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="carbonDioxideMeasurement">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>CarbonDioxideMeasurement</label>
+		<label>Carbon Dioxide Measurement</label>
 		<description>Carbon Dioxide Measurement</description>
 		<channels>
 			<channel id="carbonDioxide" typeId="carbonDioxide-channel">
-				<label>CarbonDioxide</label>
+				<label>Carbon Dioxide</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
 	</thing-type>
 
 	<thing-type id="carbonMonoxideDetector">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>carbonMonoxideDetector</label>
+		<label>carbon Monoxide Detector</label>
 		<description>Carbon Monoxide Detector</description>
 		<channels>
 			<channel id="carbonMonoxide" typeId="carbonMonoxide-channel">
-				<label>CarbonMonoxide</label>
+				<label>Carbon Monoxide</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="colorControl">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>ColorControl</label>
+		<label>Color Control</label>
 		<description>Color Control</description>
 		<channels>
 			<channel id="hue" typeId="hue-channel">
 				<label>Hue</label>
 				<properties>
-					<!-- The Smartthings colorControl:hue hsa a range of 0-100% where OH2 uses the normal 0-360 degrees -->
+					<!-- The Smartthings colorControl:hue has a range of 0-100% where OH2 uses the normal 0-360 degrees -->
 					<property name="smartthings-converter">hue100</property>
 				</properties>
 			</channel>
@@ -255,21 +173,12 @@
 			<channel id="color" typeId="color-channel">
 				<label>Color</label>
 				<properties>
-					<!-- The Smartthings colorControl:color hsa a hue component range of 0-100% where OH2 uses the normal 0-360 degrees -->
+					<!-- The Smartthings colorControl:color has a hue component range of 0-100% where OH2 uses the normal 0-360 degrees -->
 					<property name="smartthings-converter">color100</property>
 				</properties>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- This is the new "proposed" color control -->
@@ -291,39 +200,21 @@
 				<label>Switch Level</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="colorTemperature">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>ColorTemperature</label>
+		<label>Color Temperature</label>
 		<description>Color Temperature</description>
 		<channels>
 			<channel id="colorTemperature" typeId="colorTemperature-channel">
-				<label>ColorTemperature</label>
+				<label>Color Temperature</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="consumable">
@@ -337,16 +228,7 @@
 				<label>Consumable</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 
@@ -354,30 +236,21 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Contact sensor</label>
+		<label>Contact Sensor</label>
 		<description>Allows reading the value of a contact sensor device</description>
 		<channels>
 			<channel id="contact" typeId="contact-channel">
 				<label>Contact</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="doorControl">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Door control</label>
+		<label>Door Control</label>
 		<description>Allow for the control of a door</description>
 		<channels>
 			<channel id="door" typeId="door-control-channel">
@@ -387,91 +260,55 @@
 				</properties>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="dryerMode">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Dryer mode</label>
+		<label>Dryer Mode</label>
 		<description>Controls a dryer temperature</description>
 		<channels>
 			<channel id="dryerMode" typeId="dryer-mode-channel">
 				<label>Dryer Mode</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="dryerOperatingState">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Dryer operating state</label>
+		<label>Dryer Operating State</label>
 		<description>Dryer operating state info</description>
 		<channels>
 			<channel id="machineState" typeId="machine-state-channel">
-				<label>Machine state</label>
+				<label>Machine State</label>
 			</channel>
 			<channel id="dryerJobState" typeId="dryer-job-state-channel">
-				<label>Dryer job state</label>
+				<label>Dryer Job State</label>
 			</channel>
 			<channel id="completionTime" typeId="completion-time-channel">
-				<label>Completion time</label>
+				<label>Completion Time</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="energyMeter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Energy meter</label>
+		<label>Energy Meter</label>
 		<description>Read the energy consumption of an energy metering device</description>
 		<channels>
 			<channel id="energy" typeId="energy-channel">
 				<label>Energy</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Estimated Time Of Arrival -->
@@ -479,23 +316,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>estimatedTimeOfArrival</label>
+		<label>estimated Time of Arrival</label>
 		<description>Estimated Time Of Arrival</description>
 		<channels>
 			<channel id="estimatedTimeOfArrival" typeId="estimatedTimeOfArrival-channel">
-				<label>estimatedTimeOfArrival</label>
+				<label>Estimated Time of Arrival</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Garage Door Control -->
@@ -513,16 +341,7 @@
 				</properties>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Holdable Button -->
@@ -530,7 +349,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>holdableButton</label>
+		<label>Holdable Button</label>
 		<description>holdableButton</description>
 		<channels>
 			<channel id="button" typeId="button-channel">
@@ -540,16 +359,7 @@
 				<label>Button</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Illuminance Measurement -->
@@ -557,23 +367,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>IlluminanceMeasurement</label>
+		<label>Illuminance Measurement</label>
 		<description>Illuminance Measurement</description>
 		<channels>
 			<channel id="illuminance" typeId="illuminance-channel">
-				<label>IlluminanceMeasurement</label>
+				<label>Illuminance Measurement</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Image Capture -->
@@ -581,23 +382,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>ImageCapture</label>
+		<label>Image Capture</label>
 		<description>Allows for the capture of an image on devices that support it</description>
 		<channels>
 			<channel id="imageCapture" typeId="imageCapture-channel">
-				<label>ImageCapture</label>
+				<label>Image Capture</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Indicator -->
@@ -612,16 +404,7 @@
 				<label>Indicator</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Infrared Level -->
@@ -633,19 +416,10 @@
 		<description>Allows for the control of the infrared level attribute of a device</description>
 		<channels>
 			<channel id="infraredLevel" typeId="infraredLevel-channel">
-				<label>infraredLevel</label>
+				<label>Infrared Level</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Light -->
@@ -660,16 +434,7 @@
 				<label>Switch</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Lock -->
@@ -684,16 +449,7 @@
 				<label>Lock</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Lock Only -->
@@ -705,19 +461,10 @@
 		<description>Allow for the lock control of a lock device</description>
 		<channels>
 			<channel id="lock" typeId="lock-only-channel">
-				<label>Lock</label>
+				<label>Lock Only</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Media controller -->
@@ -735,16 +482,7 @@
 				<label>Current Activity</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Motion Sensor -->
@@ -756,19 +494,10 @@
 		<description>Allows for the ability to read motion sensor device states</description>
 		<channels>
 			<channel id="motion" typeId="motion-channel">
-				<label>motion</label>
+				<label>Motion</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Music Player -->
@@ -780,31 +509,22 @@
 		<description>Allows for control of a music playing device</description>
 		<channels>
 			<channel id="status" typeId="status-channel">
-				<label>status</label>
+				<label>Status</label>
 			</channel>
 			<channel id="level" typeId="volumeLevel-channel">
-				<label>level</label>
+				<label>Level</label>
 			</channel>
 			<channel id="trackDescription" typeId="trackDescription-channel">
-				<label>status</label>
+				<label>Track Description</label>
 			</channel>
 			<channel id="trackData" typeId="trackData-channel">
-				<label>status</label>
+				<label>Track Data</label>
 			</channel>
 			<channel id="mute" typeId="mute-channel">
-				<label>status</label>
+				<label>Mute</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Outlet -->
@@ -819,16 +539,7 @@
 				<label>Outlet</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- pHMeasurement -->
@@ -843,16 +554,7 @@
 				<label>pH Measurement</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 
@@ -860,23 +562,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Power meter</label>
+		<label>PowerMeter</label>
 		<description>Allows for reading the power consumption from devices that report it</description>
 		<channels>
 			<channel id="power" typeId="power-channel">
 				<label>Power</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Power Source -->
@@ -884,23 +577,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>PowerSource</label>
+		<label>Power Source</label>
 		<description>The current power source for the device</description>
 		<channels>
 			<channel id="powerSource" typeId="powerSource-channel">
-				<label>PowerSource</label>
+				<label>Power Source</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Presence Sensor -->
@@ -908,23 +592,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>presenceSensor</label>
+		<label>Presence Sensor</label>
 		<description>The ability to see the current status of a presence sensor device</description>
 		<channels>
 			<channel id="presence" typeId="presence-channel">
-				<label>presence</label>
+				<label>Presence</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Relative Humidity Measurement -->
@@ -932,46 +607,28 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>HumiditySensor</label>
+		<label>Humidity Sensor</label>
 		<description>Allow reading the relative humidity from devices that support it</description>
 		<channels>
 			<channel id="humidity" typeId="humidity-channel">
 				<label>Humidity</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="relaySwitch">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>RelaySwitch</label>
+		<label>Relay Switch</label>
 		<description>Relay Switch</description>
 		<channels>
 			<channel id="switch" typeId="switch-channel">
 				<label>Switch</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- shock sensor -->
@@ -979,23 +636,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>ShockSensor</label>
+		<label>Shock Sensor</label>
 		<description>A Device that senses whether or not there is a shock</description>
 		<channels>
 			<channel id="shock" typeId="shock-channel">
-				<label>shock</label>
+				<label>Shock</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Signal Strength -->
@@ -1007,22 +655,13 @@
 		<description>Gives the ability to read the signal stregth of Devices that support it</description>
 		<channels>
 			<channel id="lqi" typeId="lqi-channel">
-				<label>LinkQualityIndicator</label>
+				<label>Link Quality Indicator</label>
 			</channel>
 			<channel id="rssi" typeId="rssi-channel">
 				<label>Received Signal Strength Indication</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Sleep sensor -->
@@ -1030,23 +669,14 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>sleepSensor</label>
+		<label>Sleep Sensor</label>
 		<description>A Device that senses whether or not someone is sleeping</description>
 		<channels>
 			<channel id="sleeping" typeId="sleeping-channel">
-				<label>sleeping value</label>
+				<label>Sleeping Value</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- smoke detector -->
@@ -1061,19 +691,10 @@
 				<label>Smoke</label>
 			</channel>
 			<channel id="carbonMonoxide" typeId="carbonMonoxide-channel">
-				<label>Smoke</label>
+				<label>Carbon Monoxide</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Sound Pressure Level -->
@@ -1085,19 +706,10 @@
 		<description>Sound Pressure Level</description>
 		<channels>
 			<channel id="soundPressureLevel" typeId="soundPressureLevel-channel">
-				<label>soundPressureLevel</label>
+				<label>Sound Pressure Level</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Sound Sensor -->
@@ -1112,16 +724,7 @@
 				<label>Sound Sensor</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Speech Recognition -->
@@ -1136,16 +739,7 @@
 				<label>Speech Recognition</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Step Sensor -->
@@ -1163,16 +757,7 @@
 				<label>Current Step Count</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 
@@ -1187,16 +772,7 @@
 				<label>Switch</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Switch Level -->
@@ -1214,16 +790,7 @@
 				<label>Switch</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Tamper Alert -->
@@ -1235,43 +802,24 @@
 		<description>Tamper Alert</description>
 		<channels>
 			<channel id="tamper" typeId="tamper-channel">
-				<label>tamper</label>
+				<label>Tamper</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
-
 
 	<thing-type id="temperatureMeasurement">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Temperature</label>
+		<label>Temperature Measurement</label>
 		<description>Get the temperature from a Device that reports current temperature</description>
 		<channels>
 			<channel id="temperature" typeId="temperature-channel">
 				<label>Temperature</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Thermostat -->
@@ -1298,19 +846,10 @@
 				<label>Thermostat Fan Mode</label>
 			</channel>
 			<channel id="thermostatOperatingState" typeId="thermostatOperatingState-channel">
-				<label>thermostatOperatingState</label>
+				<label>Thermostat Operating State</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Thermostat Cooling Setpoint -->
@@ -1325,16 +864,7 @@
 				<label>Cooling Setpoint</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Thermostat Fan Mode -->
@@ -1349,16 +879,7 @@
 				<label>Thermostat Fan Mode</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Thermostat Heating Setpoint -->
@@ -1373,16 +894,7 @@
 				<label>Heating Setpoint</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Thermostat Mode -->
@@ -1397,16 +909,7 @@
 				<label>Thermostat Mode</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Thermostat Operating State -->
@@ -1418,19 +921,10 @@
 		<description>Thermostat Operating State</description>
 		<channels>
 			<channel id="thermostatOperatingState" typeId="thermostatOperatingState-channel">
-				<label>thermostatOperatingState</label>
+				<label>Thermostat Operating State</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Thermostat Setpoint -->
@@ -1445,16 +939,7 @@
 				<label>Thermostat Setpoint</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="threeAxis">
@@ -1465,19 +950,10 @@
 		<description>Gives the three axis coordinates for devices that support it</description>
 		<channels>
 			<channel id="threeAxis" typeId="three-axis-channel">
-				<label>Three axis</label>
+				<label>Three Axis</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Timed Session -->
@@ -1495,16 +971,7 @@
 				<label>Time Remaining</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Touch Sensor -->
@@ -1516,19 +983,10 @@
 		<description>Touch Sensor</description>
 		<channels>
 			<channel id="touch" typeId="touch-channel">
-				<label>touch</label>
+				<label>Touch</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Ultraviolet Index -->
@@ -1543,16 +1001,7 @@
 				<label>Ultraviolet Index</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Valve -->
@@ -1563,8 +1012,6 @@
 		<label>Valve</label>
 		<description>Allows for the control of a valve device</description>
 		<channels>
-			<!-- <channel id="contact" typeId="contact-channel"> <label>Valve as Contact</label> <properties> <property name="smartthings-converter">openCloseControl</property> 
-				</properties> </channel> -->
 			<channel id="valve" typeId="valve-channel">
 				<label>Valve</label>
 				<properties>
@@ -1572,16 +1019,7 @@
 				</properties>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Voltage Measurement -->
@@ -1596,16 +1034,7 @@
 				<label>Voltage</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Washing machine related -->
@@ -1613,52 +1042,34 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Washer mode</label>
+		<label>Washer Mode</label>
 		<description>Controls a washer temperature</description>
 		<channels>
 			<channel id="washerMode" typeId="washer-mode-channel">
 				<label>Washer Mode</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<thing-type id="washerOperatingState">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings" />
 		</supported-bridge-type-refs>
-		<label>Washer operating state</label>
+		<label>Washer Operating State</label>
 		<description>Washer operating state info</description>
 		<channels>
 			<channel id="machineState" typeId="machine-state-channel">
-				<label>Machine state</label>
+				<label>Machine State</label>
 			</channel>
 			<channel id="washerJobState" typeId="washer-job-state-channel">
-				<label>Washer job state</label>
+				<label>Washer Job State</label>
 			</channel>
 			<channel id="completionTime" typeId="completion-time-channel">
-				<label>Completion time</label>
+				<label>Completion Time</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Water Sensor -->
@@ -1670,19 +1081,10 @@
 		<description>Get the status off of a water sensor device</description>
 		<channels>
 			<channel id="water" typeId="water-channel">
-				<label>water</label>
+				<label>Water</label>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
 
 	<!-- Window Shade -->
@@ -1694,33 +1096,22 @@
 		<description>Window Shade</description>
 		<channels>
 			<channel id="windowShade" typeId="windowShade-channel">
-				<label>windowShade</label>
+				<label>Window Shade</label>
 				<properties>
 					<property name="smartthings-converter">openCloseControl</property>
 				</properties>
 			</channel>
 		</channels>
-		<config-description>
-			<parameter name="smartthingsName" type="text" required="true">
-				<label>Smartthings Name</label>
-				<description>User assigned Smartthings device name</description>
-			</parameter>
-			<parameter name="smartthingsLocation" type="text">
-				<label>Smartthings Location</label>
-				<description>Where the device is located</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
 	</thing-type>
-
-
 
 	<!-- ============= -->
 	<!-- Channel Types -->
 	<!-- ============= -->
 	<channel-type id="acceleration-channel">
 		<item-type>String</item-type>
-		<label>Smartthings Binding Channel</label>
-		<description>Sample channel for Smartthings Binding</description>
+		<label>Acceleration</label>
+		<description>Acceleration</description>
 		<category>Motion</category>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -1746,9 +1137,6 @@
 				<option value="heat">Heat</option>
 				<option value="emergencyHeat">Emergency heat</option>
 			</options>
-
-
-
 		</state>
 	</channel-type>
 
@@ -1791,7 +1179,7 @@
 
 	<channel-type id="carbonDioxide-channel">
 		<item-type>Number</item-type>
-		<label>carbon Dioxide</label>
+		<label>Carbon Dioxide</label>
 		<category>CarbonDioxide</category>
 	</channel-type>
 
@@ -1809,25 +1197,25 @@
 
 	<channel-type id="hue-channel">
 		<item-type>Number</item-type>
-		<label>hue</label>
+		<label>Hue</label>
 		<category>Color</category>
 	</channel-type>
 
 	<channel-type id="saturation-channel">
 		<item-type>Number</item-type>
-		<label>saturation</label>
+		<label>Saturation</label>
 		<category>Color</category>
 	</channel-type>
 
 	<channel-type id="color-channel">
 		<item-type>Color</item-type>
-		<label>color</label>
+		<label>Color</label>
 		<category>Color</category>
 	</channel-type>
 
 	<channel-type id="colorValue-channel">
 		<item-type>Color</item-type>
-		<label>color value</label>
+		<label>Color Value</label>
 		<category>Color</category>
 	</channel-type>
 
@@ -1840,7 +1228,7 @@
 	<channel-type id="consumable-channel">
 		<!-- For now assume that this will work for both the consumableStatus setConsumableStatus -->
 		<item-type>String</item-type>
-		<label>Consumable status</label>
+		<label>Consumable Status</label>
 		<state>
 			<options>
 				<option value="good">Good</option>
@@ -1854,16 +1242,22 @@
 
 	<channel-type id="door-control-channel">
 		<item-type>String</item-type>
-		<label>Door status</label>
+		<label>Door Status</label>
 		<category>Door</category>
-		<!-- <state readOnly="true" pattern="%s"> <options> <option value="closed">Closed</option> <option value="closing">Closing</option> 
-			<option value="open">Open</option> <option value="opening">Opening</option> <option value="unknown">Unknown</option> </options> 
-			</state> -->
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="closed">Closed</option>
+				<option value="closing">Closing</option>
+				<option value="open">Open</option>
+				<option value="opening">Opening</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="dryer-mode-channel">
 		<item-type>String</item-type>
-		<label>Dryer temperature</label>
+		<label>Dryer Temperature</label>
 		<state>
 			<options>
 				<option value="regular">Regular</option>
@@ -1875,12 +1269,12 @@
 
 	<channel-type id="dryer-job-state-channel">
 		<item-type>String</item-type>
-		<label>Dryer job state</label>
+		<label>Dryer Job State</label>
 	</channel-type>
 
 	<channel-type id="machine-state-channel">
 		<item-type>String</item-type>
-		<label>Machine operating state</label>
+		<label>Machine Operating State</label>
 		<state>
 			<options>
 				<option value="pause">Pause</option>
@@ -1904,17 +1298,17 @@
 
 	<channel-type id="estimatedTimeOfArrival-channel">
 		<item-type>String</item-type>
-		<label>Estimated Time Of Arrival</label>
+		<label>Estimated Time of Arrival</label>
 	</channel-type>
 
 	<channel-type id="numberOfButtons-channel">
 		<item-type>Number</item-type>
-		<label>Number Of Buttons</label>
+		<label>Number of Buttons</label>
 	</channel-type>
 
 	<channel-type id="illuminance-channel">
 		<item-type>Number</item-type>
-		<label>illuminance</label>
+		<label>Illuminance</label>
 	</channel-type>
 
 	<channel-type id="imageCapture-channel">
@@ -1925,19 +1319,19 @@
 
 	<channel-type id="indicatorStatus-channel">
 		<item-type>String</item-type>
-		<label>Indicator status</label>
+		<label>Indicator Status</label>
 		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="infraredLevel-channel">
 		<item-type>Number</item-type>
-		<label>Current infrared light level</label>
+		<label>Current Infrared Light Level</label>
 		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="lock-channel">
 		<item-type>String</item-type>
-		<label>Lock state</label>
+		<label>Lock State</label>
 		<category></category>
 		<state>
 			<options>
@@ -1951,7 +1345,7 @@
 
 	<channel-type id="lock-only-channel">
 		<item-type>String</item-type>
-		<label>Lock state</label>
+		<label>Lock Only State</label>
 		<category></category>
 		<state>
 			<options>
@@ -1962,19 +1356,19 @@
 
 	<channel-type id="activities-channel">
 		<item-type>String</item-type>
-		<label>Media activity</label>
+		<label>Media Activity</label>
 		<category>Player</category>
 	</channel-type>
 
 	<channel-type id="currentActivity-channel">
 		<item-type>String</item-type>
-		<label>Current media activity</label>
+		<label>Current Media Activity</label>
 		<category>Player</category>
 	</channel-type>
 
 	<channel-type id="motion-channel">
 		<item-type>String</item-type>
-		<label>Motion sensor</label>
+		<label>Motion Sensor</label>
 		<category></category>
 		<state readOnly="true">
 			<options>
@@ -1986,31 +1380,31 @@
 
 	<channel-type id="status-channel">
 		<item-type>String</item-type>
-		<label>Current status</label>
+		<label>Current Status</label>
 		<category>Player</category>
 	</channel-type>
 
 	<channel-type id="level-channel">
 		<item-type>Dimmer</item-type>
-		<label>Light level</label>
+		<label>Light Level</label>
 		<category>DimmableLight</category>
 	</channel-type>
 
 	<channel-type id="volumeLevel-channel">
 		<item-type>Number</item-type>
-		<label>Volume level</label>
+		<label>Volume Level</label>
 		<category>SoundVolume</category>
 	</channel-type>
 
 	<channel-type id="trackDescription-channel">
 		<item-type>String</item-type>
-		<label>Description of current track</label>
+		<label>Description of Current Track</label>
 		<category>Player</category>
 	</channel-type>
 
 	<channel-type id="trackData-channel">
 		<item-type>String</item-type>
-		<label>Track data</label>
+		<label>Track Data</label>
 		<category>Player</category>
 	</channel-type>
 
@@ -2028,13 +1422,13 @@
 
 	<channel-type id="pH-channel">
 		<item-type>Number</item-type>
-		<label>pH level</label>
+		<label>pH Level</label>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="powerSource-channel">
 		<item-type>String</item-type>
-		<label>Power source</label>
+		<label>Power Source</label>
 		<category></category>
 		<state readOnly="true">
 			<options>
@@ -2060,7 +1454,7 @@
 
 	<channel-type id="humidity-channel">
 		<item-type>Number</item-type>
-		<label>Relative humidity</label>
+		<label>Relative Humidity</label>
 		<category></category>
 	</channel-type>
 
@@ -2078,13 +1472,13 @@
 
 	<channel-type id="lqi-channel">
 		<item-type>Number</item-type>
-		<label>Link quality indication</label>
+		<label>Link Quality Indication</label>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="rssi-channel">
 		<item-type>Number</item-type>
-		<label>Received signal strength indication</label>
+		<label>Received Signal Strength Indication</label>
 		<category></category>
 	</channel-type>
 
@@ -2114,13 +1508,13 @@
 
 	<channel-type id="soundPressureLevel-channel">
 		<item-type>Number</item-type>
-		<label>Sound pressure level</label>
+		<label>Sound Pressure Level</label>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="sound-channel">
 		<item-type>String</item-type>
-		<label>Sound detected</label>
+		<label>Sound Detected</label>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="detected">Detected</option>
@@ -2131,19 +1525,19 @@
 
 	<channel-type id="phraseSpoken-channel">
 		<item-type>String</item-type>
-		<label>Spoken phrase</label>
+		<label>Spoken Phrase</label>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="goal-channel">
 		<item-type>Number</item-type>
-		<label>Current step goal</label>
+		<label>Current Step Goal</label>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="steps-channel">
 		<item-type>Number</item-type>
-		<label>Current step count</label>
+		<label>Current Step Count</label>
 		<category></category>
 	</channel-type>
 
@@ -2156,7 +1550,7 @@
 
 	<channel-type id="tamper-channel">
 		<item-type>String</item-type>
-		<label>Tamper alert sensor</label>
+		<label>Tamper Alert Sensor</label>
 		<category></category>
 		<state readOnly="true">
 			<options>
@@ -2168,31 +1562,31 @@
 
 	<channel-type id="temperature-channel">
 		<item-type>Number</item-type>
-		<label>Current temperature</label>
+		<label>Current Temperature</label>
 		<category>Temperature</category>
 	</channel-type>
 
 	<channel-type id="heatingSetpoint-channel">
 		<item-type>Number</item-type>
-		<label>Heating setpoint</label>
+		<label>Heating Setpoint</label>
 		<category>Temperature</category>
 	</channel-type>
 
 	<channel-type id="coolingSetpoint-channel">
 		<item-type>Number</item-type>
-		<label>Cooling setpoint</label>
+		<label>Cooling Setpoint</label>
 		<category>Temperature</category>
 	</channel-type>
 
 	<channel-type id="thermostatSetpoint-channel">
 		<item-type>Number</item-type>
-		<label>Current setpoint</label>
+		<label>Current Setpoint</label>
 		<category>Temperature</category>
 	</channel-type>
 
 	<channel-type id="thermostatMode-channel">
 		<item-type>String</item-type>
-		<label>Thermostat mode</label>
+		<label>Thermostat Mode</label>
 		<category>Temperature</category>
 		<state>
 			<options>
@@ -2209,7 +1603,7 @@
 
 	<channel-type id="thermostatFanMode-channel">
 		<item-type>String</item-type>
-		<label>Fan mode</label>
+		<label>Fan Mode</label>
 		<category>Temperature</category>
 		<state readOnly="true">
 			<options>
@@ -2222,7 +1616,7 @@
 
 	<channel-type id="thermostatOperatingState-channel">
 		<item-type>String</item-type>
-		<label>Operating state</label>
+		<label>Operating State</label>
 		<category>Temperature</category>
 		<state readOnly="true">
 			<options>
@@ -2239,26 +1633,26 @@
 
 	<channel-type id="timeRemaining-channel">
 		<item-type>Number</item-type>
-		<label>Time remaining</label>
+		<label>Time Remaining</label>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="completion-time-channel">
 		<item-type>String</item-type>
-		<label>Completion time</label>
+		<label>Completion Time</label>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="three-axis-channel">
 		<item-type>String</item-type>
-		<label>Three axis channel</label>
+		<label>Three Axis</label>
 		<description>This string contains the x, y, z coordinates</description>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="sessionStatus-channel">
 		<item-type>String</item-type>
-		<label>Timed session status</label>
+		<label>Timed Session Status</label>
 		<category></category>
 		<state readOnly="true">
 			<options>
@@ -2272,7 +1666,7 @@
 
 	<channel-type id="touch-channel">
 		<item-type>String</item-type>
-		<label>Device touched, or not</label>
+		<label>Device Touched, or Not</label>
 		<category></category>
 		<state readOnly="true">
 			<options>
@@ -2302,13 +1696,13 @@
 
 	<channel-type id="voltage-channel">
 		<item-type>Number</item-type>
-		<label>Voltage measurement</label>
+		<label>Voltage Measurement</label>
 		<category></category>
 	</channel-type>
 
 	<channel-type id="washer-mode-channel">
 		<item-type>String</item-type>
-		<label>Washer mode</label>
+		<label>Washer Mode</label>
 		<state>
 			<options>
 				<option value="regular">Regular</option>
@@ -2321,12 +1715,12 @@
 
 	<channel-type id="washer-job-state-channel">
 		<item-type>String</item-type>
-		<label>Washer job state</label>
+		<label>Washer Job State</label>
 	</channel-type>
 
 	<channel-type id="water-channel">
 		<item-type>String</item-type>
-		<label>Water sensor</label>
+		<label>Water Sensor</label>
 		<category></category>
 		<state readOnly="true">
 			<options>
@@ -2338,7 +1732,7 @@
 
 	<channel-type id="windowShade-channel">
 		<item-type>String</item-type>
-		<label>Window shade</label>
+		<label>Window Shade</label>
 		<category></category>
 		<state>
 			<options>

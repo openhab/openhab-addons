@@ -18,13 +18,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -56,6 +54,8 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     private String smartthingsName;
     private SmartthingsHandlerFactory smartthingsHandlerFactory;
     private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<ChannelUID, SmartthingsConverter>();
+
+    private final String smartthingsConverterName = "smartthings-converter";
 
     public SmartthingsThingHandler(Thing thing, SmartthingsHandlerFactory smartthingsHandlerFactory) {
         super(thing);
@@ -112,7 +112,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 // Smartthings will not return a response to this message but will send it's response message
                 // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.info("Attempt to send command to the Smartthings hub failed with exception", e);
+                logger.warn("Attempt to send command to the Smartthings hub failed with exception: {}", e.getMessage());
             }
         }
     }
@@ -159,19 +159,14 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         }
 
         updateState(matchingChannel.getUID(), state);
-        logger.debug("Smartthings updated State for channel: {} to {}", matchingChannel.getUID().getAsString(),
+        logger.trace("Smartthings updated State for channel: {} to {}", matchingChannel.getUID().getAsString(),
                 state.toString());
-
-        // Output timing information
-        long openHabTime = (stateData.openHabStartTime > 0) ? System.currentTimeMillis() - stateData.openHabStartTime
-                : 0;
-        logger.debug("State timing data, Request time until data received and processed {}, Hub processing time: {} ",
-                openHabTime, stateData.hubTime);
     }
 
     @Override
     public void initialize() {
-        if (!validateConfig(this.config)) {
+        config = getThing().getConfiguration().as(SmartthingsThingConfig.class);
+        if (!validateConfig(config)) {
             return;
         }
         smartthingsName = config.smartthingsName;
@@ -179,15 +174,15 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         // Create converters for each channel
         for (Channel ch : thing.getChannels()) {
             @Nullable
-            String converterName = ch.getProperties().get("smartthings-converter"); // Will be null if no explicit
-                                                                                    // converter was specified
-            if (converterName == null || converterName.length() == 0) {
+            String converterName = ch.getProperties().get(smartthingsConverterName); // Will be null if no
+                                                                                     // explicit
+            // converter was specified
+            if (converterName == null || converterName.isEmpty()) {
                 // A converter was Not specified so use the channel id
                 converterName = ch.getUID().getId();
             }
 
             // Try to get the converter
-            @Nullable
             SmartthingsConverter cvtr = getConverter(converterName);
             if (cvtr == null) {
                 // If there is no channel specific converter the get the "default" converter
@@ -198,7 +193,6 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
                 // cvtr should never be null because there should always be a "default" converter
                 converters.put(ch.getUID(), cvtr);
             }
-
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -216,98 +210,24 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             Constructor<?> constr = Class.forName(converterClassName.toString()).getDeclaredConstructor(Thing.class);
             constr.setAccessible(true);
             SmartthingsConverter cvtr = (SmartthingsConverter) constr.newInstance(thing);
-            logger.debug("Using converter {}", converterName);
             return cvtr;
         } catch (ClassNotFoundException e) {
             // Most of the time there is no channel specific converter, the default converter is all that is needed.
             logger.trace("No Custom converter exists for {} ({})", converterName, converterClassName);
         } catch (NoSuchMethodException e) {
-            logger.info("NoSuchMethodException occurred for {} ({}) {}", converterName, converterClassName,
+            logger.warn("NoSuchMethodException occurred for {} ({}) {}", converterName, converterClassName,
                     e.getMessage());
         } catch (InvocationTargetException e) {
-            logger.info("InvocationTargetException occurred for {} ({}) {}", converterName, converterClassName,
+            logger.warn("InvocationTargetException occurred for {} ({}) {}", converterName, converterClassName,
                     e.getMessage());
         } catch (IllegalAccessException e) {
-            logger.info("IllegalAccessException occurred for {} ({}) {}", converterName, converterClassName,
+            logger.warn("IllegalAccessException occurred for {} ({}) {}", converterName, converterClassName,
                     e.getMessage());
         } catch (InstantiationException e) {
-            logger.info("InstantiationException occurred for {} ({}) {}", converterName, converterClassName,
+            logger.warn("InstantiationException occurred for {} ({}) {}", converterName, converterClassName,
                     e.getMessage());
         }
         return null;
-    }
-
-    /**
-     * Handle an update to the configuration
-     */
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        logger.debug("Received configuration update for thing: {}", thing.getUID().getAsString());
-
-        boolean configChanged = false;
-
-        Configuration configuration = editConfiguration();
-        // Examine each new config parameter and if it is different than the existing then update it
-        for (Entry<String, Object> configurationParameter : configurationParameters.entrySet()) {
-            String paramName = configurationParameter.getKey();
-            Object valueObject = configurationParameter.getValue();
-            Object existingValue = configuration.get(paramName);
-
-            // Only 2 parameters to check and verify: smartthingsName and smartthingsLocation which is optional
-            if (paramName.equals("smartthingsName")) {
-                if (!(valueObject instanceof String)) {
-                    logger.info(
-                            "Configuration update of smartthingsName for {} is not valid because the new value is missing or is not a String, change ignored",
-                            thing.getUID().getAsString());
-                    return;
-                }
-
-                String valueString = (String) valueObject;
-                if (valueString.length() == 0) {
-                    logger.info(
-                            "Configuration update of smartthingsName for {} is not valid because the new value is 0 length, change ignored",
-                            thing.getUID().getAsString());
-                    return;
-                }
-
-                if (!existingValue.equals(valueString)) {
-                    // Found a change
-                    configuration.put("smartthingsName", valueString);
-                    configChanged = true;
-                    logger.info("Configuration updated for {} smartthingsName changed from {} to {}",
-                            thing.getUID().getAsString(), existingValue, valueString);
-                }
-            }
-
-            if (paramName.equals("smartthingsLocation")) {
-                if (!(valueObject instanceof String) && (existingValue == null || !(existingValue instanceof String))) {
-                    // OK No change
-                    return;
-                }
-
-                String valueString = (String) valueObject;
-                if (valueString.equals(existingValue)) {
-                    // OK No change
-                    return;
-                }
-
-                // Found a change
-                configuration.put("smartthingsLocation", valueString);
-                configChanged = true;
-                logger.info("Configuration updated for {} smartthingsLocation changed from {} to {}",
-                        thing.getUID().getAsString(), existingValue, valueString);
-            }
-        }
-
-        if (configChanged) {
-            // Persist changes
-            updateConfiguration(configuration);
-        }
-    }
-
-    @Override
-    public void dispose() {
-        logger.info("Disposing of the Smartthings Thing Handler");
     }
 
     private boolean validateConfig(SmartthingsThingConfig config) {
@@ -348,5 +268,4 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         sb.append(", thing label: ").append(this.thing.getLabel());
         return sb.toString();
     }
-
 }

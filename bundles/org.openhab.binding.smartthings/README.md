@@ -6,11 +6,11 @@ This binding integrates the Samsung Smartthings Hub into OpenHAB. This is implem
 
 ## Supported things
 
-This binding supports all of the Smartthings devices that are defined in the [Smartthings Capabilities list](http://docs.smartthings.com/en/latest/capabilities-reference.html). If you find a device that doesn't work [follow these instructions](Troubleshooting.md) to collect the required data so it can be added in a future release.
+This binding supports most of the Smartthings devices that are defined in the [Smartthings Capabilities list](http://docs.smartthings.com/en/latest/capabilities-reference.html). If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
 
 ## Discovery
 
-Discovery allows OpenHAB to examine a binding and automatically find the Things available on that binding. Discovery is supported and has been extensively tested.
+Discovery allows openHAB to examine a binding and automatically find the Things available on that binding. Discovery is supported and has been extensively tested.
 
 Discovery is not run automatically on startup. Therefore to run the discovery process perform the following:
 
@@ -27,26 +27,27 @@ Discovery is not run automatically on startup. Therefore to run the discovery pr
 
 ## Smartthings Configuration
 
-Prior to running the binding the Smartthings hub must have the required OpenHAB software installed. [Follow these instructions](SmartthingsInstallation.md)
+Prior to running the binding the Smartthings hub must have the required openHAB software installed. [Follow these instructions](doc/SmartthingsInstallation.md)
 
-** The binding will not work until this part has been completed, do not skip this part of the setup. **
+**The binding will not work until this part has been completed, do not skip this part of the setup.**
 
-## OpenHAB Configuration
+## openHAB Configuration
 
-This binding is an OpenHAB 2 binding and uses the Bridge / Thing design with the Smartthings Hub being the Bridge and the controlled modules being the Things. The following definitions are specified in the .things file.
+This binding is an openHAB 2 binding and uses the Bridge / Thing design with the Smartthings Hub being the Bridge and the controlled modules being the Things. The following definitions are specified in the .things file.
 
 ### Bridge Configuration
 
-The bridge requires the IP address and port used to connect the OpenHAB server to the Smarrthings Hub.
+The bridge requires the IP address and port used to connect the openHAB server to the Smartthings Hub.
 
     Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthingsPort=39500 ] {
 
 where:
 
 * **smartthings:smartthings:Home** identifies this is a smartthings hub named Home. The first two segments must be smartthings:smartthings. You can choose any unique name for the the last segment. The last segment is used when you identify items connected to this hubthingTypeId. 
-* **smartthingsIp** is the IP address of theSmartthings Hub. Your router should be configured such that the Smartthings Hub is always assigned to this IP address.
-* **smartthingsPort** is the port the Smartthings hub listens on. 39500 is the port assigned my Smartthings so it should be used unless you have a good reason for using another port.
+* **smartthingsIp** is the IP address of the Smartthings Hub. Your router should be configured such that the Smartthings Hub is always assigned to this IP address.
+* **smartthingsPort** is the port the Smartthings hub listens on. 39500 is the port assigned by Smartthings so it should be used unless you have a good reason for using another port.
 
+**Warning** This binding only supports one Bridge. If you try to configure a second bridge it will be ignored.
 
 ### Thing Configuration
 
@@ -56,7 +57,7 @@ Each attached thing must specify the type of device and it's Smartthings device 
     
 where:
 
-* **thingTypeId** corresponds to the "Preferences Reference" in the Smartthings Capabilities document but without the capability. prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the <thingTypeId> is switchLevel.
+* **thingTypeId** corresponds to the "Preferences Reference" in the Smartthings Capabilities document but without the capability. prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
 * **name** is what you want to call this thing and is used in defining the items that use this thing. 
 * **deviceName** is the name you assigned to the device when you discovered and connected to it in the Smartthings App
 
@@ -86,7 +87,7 @@ The parts (separated by :) are defined as:
 2. **thingTypeId** specifies the type of the thing  you are connecting to. This is the same as described in the last section.
 3. **hubName** identifies the name of the hub specified above. This corresponds to the third segment in the **Bridge** definition.
 4. **thingName** identifes the thing this is attached to and is the "name" you specified in the **Thing** definition.
-5. **channelId** corresponds the the attribute in the [Smartthings Capabilities list](http://docs.smartthings.com/en/latest/capabilities-reference.html). for switch it would be "switch".
+5. **channelId** corresponds the the attribute in the [Smartthings Capabilities list](http://docs.smartthings.com/en/latest/capabilities-reference.html). For switch it would be "switch".
 
 **Example**
 
@@ -99,7 +100,7 @@ The parts (separated by :) are defined as:
     String  SimulatedValve       "Simulated valve"                            { channel="smartthings:valve:Home:SimulatedValve:valve" }
 
 **Special note about Dimmers**
-There is a conceptual difference between how openHAB and Smartthings configures the dimmer and switch parts of a Dimmer. The Smartthings dimmer (capability name: switchLevel) is only able to accept a numeric value between 0 and 100 representing the brightness percentage. The openHAB dimmer is able to accept both the percentage and on/off. The openHAB PaperUI shows a dimmer with both a slider and switch. The Off/On part of the level is not able to track changes made in the Smartthings App. However the openHab Dimmer has been defined with both level and switch channels. Therefore the dimmer and associated switch will work well together if the swithLevel Thing is selected in the discovery inbox. The Switch Thing can be left in the inbox. For an example see the KitchenLights thing and items above.
+There is a conceptual difference between how openHAB and Smartthings configures the dimmer and switch parts of a Dimmer. The Smartthings dimmer (capability name: switchLevel) is only able to accept a numeric value between 0 and 100 representing the brightness percentage. The openHAB dimmer is able to accept both the percentage and on/off. The openHAB PaperUI shows a dimmer with both a slider and switch. The Off/On part of the level is not able to track changes made in the Smartthings App. However the openHab Dimmer has been defined with both level and switch channels. Therefore the dimmer and associated switch will work well together if the switchLevel Thing is selected in the discovery inbox. The Switch Thing can be left in the inbox. For an example see the KitchenLights thing and items above.
 
 **Special note about Valves**
 Smarttings includes a **valve** which can be Open or Closed but openHAB does not include a Valve item type. Therefore, the valve is defined as a having an item type of String. And, therefore the item needs to be defined with an item type of string. It can be controlled in the sitemap by specifying the Element type of Switch and providing a mapping of: mappings=[open="Open", closed="Close"]. Such as:
@@ -139,7 +140,7 @@ Here is a sample configuration for a RGB bulb, such as a Sengled model E11-N1EA 
 
 ## References
 
-1. [OpenHAB configuration documentation](http://docs.openhab.org/configuration/index.html)
+1. [openHAB configuration documentation](http://docs.openhab.org/configuration/index.html)
 2. [Smartthings Capabilities Reference](http://docs.smartthings.com/en/latest/capabilities-reference.html)
 3. [Smartthings Developers Documentation](http://docs.smartthings.com/en/latest/index.html)
 4. [Smartthings Development Environment](https://graph.api.smartthings.com/)

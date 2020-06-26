@@ -32,7 +32,6 @@ import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDiscoveryData;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
@@ -51,9 +50,9 @@ import com.google.gson.Gson;
 @Component(service = { DiscoveryService.class,
         EventHandler.class }, immediate = true, configurationPid = "discovery.smartthings", property = "event.topics=org/openhab/binding/smartthings/discovery")
 public class SmartthingsDiscoveryService extends AbstractDiscoveryService implements EventHandler {
-    private static final int SEARCH_TIME = 30;
-    private static final int INITIAL_DELAY = 10; // Delay 10 sec to give time for bridge and things to be created
-    private static final int SCAN_INTERVAL = 600;
+    private static final int DISCOVERY_TIMEOUT_SEC = 30;
+    private static final int INITIAL_DELAY_SEC = 10; // Delay 10 sec to give time for bridge and things to be created
+    private static final int SCAN_INTERVAL_SEC = 600;
 
     private final Pattern findIllegalChars = Pattern.compile("[^A-Za-z0-9_-]");
 
@@ -64,7 +63,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     @Nullable
     private SmartthingsHandlerFactory smartthingsHandlerFactory;
 
-    private SmartthingsScan scanningRunnable;
     @Nullable
     private ScheduledFuture<?> scanningJob;
 
@@ -72,28 +70,24 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      * default constructor
      */
     public SmartthingsDiscoveryService() {
-        super(SmartthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-
+        super(SmartthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SEC);
         gson = new Gson();
-        this.scanningRunnable = new SmartthingsScan();
-        logger.debug("Initializing discovery service with default constructor.");
-    }
-
-    @Override
-    @Activate
-    protected void activate(@Nullable Map<String, @Nullable Object> config) {
-        super.activate(config);
     }
 
     @Reference
     protected void setThingHandlerFactory(ThingHandlerFactory handlerFactory) {
-        logger.debug("Setting handlerFactory {}", handlerFactory);
-        smartthingsHandlerFactory = (SmartthingsHandlerFactory) handlerFactory;
+        if (handlerFactory instanceof SmartthingsHandlerFactory) {
+            smartthingsHandlerFactory = (SmartthingsHandlerFactory) handlerFactory;
+        } else {
+            logger.debug("Ignoring setThingHandlerFactory for {}", handlerFactory.getClass().getName());
+        }
     }
 
     protected void unsetThingHandlerFactory(ThingHandlerFactory handlerFactory) {
-        logger.debug("Unsetting handlerFactory");
-        this.smartthingsHandlerFactory = null;
+        // Make sure it is this handleFactory that should be unset
+        if (handlerFactory == smartthingsHandlerFactory) {
+            this.smartthingsHandlerFactory = null;
+        }
     }
 
     /**
@@ -118,18 +112,10 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      */
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("SmartthingsDiscoveryService Starting background scan");
-        if (scanningJob == null || scanningJob.isCancelled()) {
-            logger.debug("Starting background scanning job");
-            if (scanningRunnable != null) {
-                this.scanningJob = scheduler.scheduleWithFixedDelay(this.scanningRunnable, INITIAL_DELAY, SCAN_INTERVAL,
-                        TimeUnit.SECONDS);
-                logger.debug("Background scanning job started");
-            } else {
-                logger.debug("Background scanning job NOT started because the runnable has not been started yet");
-            }
-        } else {
-            logger.debug("ScanningJob active");
+        if (scanningJob == null) {
+            this.scanningJob = scheduler.scheduleWithFixedDelay(this::sendSmartthingsDiscoveryRequest,
+                    INITIAL_DELAY_SEC, SCAN_INTERVAL_SEC, TimeUnit.SECONDS);
+            logger.debug("Discovery background scanning job started");
         }
     }
 
@@ -138,8 +124,9 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      */
     @Override
     protected void stopBackgroundDiscovery() {
-        if (scanningJob != null && !scanningJob.isCancelled()) {
-            scanningJob.cancel(false);
+        final ScheduledFuture<?> currentScanningJob = scanningJob;
+        if (currentScanningJob != null) {
+            currentScanningJob.cancel(false);
             scanningJob = null;
         }
     }
@@ -148,11 +135,12 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      * Start the discovery process by sending a discovery request to the Smartthings Hub
      */
     private void sendSmartthingsDiscoveryRequest() {
-        if (smartthingsHandlerFactory != null) {
+        final SmartthingsHandlerFactory currentSmartthingsHandlerFactory = smartthingsHandlerFactory;
+        if (currentSmartthingsHandlerFactory != null) {
             try {
                 String discoveryMsg = String.format("{\"discovery\": \"yes\", \"openHabStartTime\": %d}",
                         System.currentTimeMillis());
-                smartthingsHandlerFactory.sendDeviceCommand("/discovery", discoveryMsg);
+                currentSmartthingsHandlerFactory.sendDeviceCommand("/discovery", discoveryMsg);
                 // Smartthings will not return a response to this message but will send it's response message
                 // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -167,6 +155,10 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      */
     @Override
     public void handleEvent(@Nullable Event event) {
+        if (event == null) {
+            logger.info("SmartthingsDiscoveryService.handleEvent: event is uexpectedly null");
+            return;
+        }
         String topic = event.getTopic();
         String data = (String) event.getProperty("data");
         if (data == null) {
@@ -182,9 +174,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         // First the SmarthingsDiscoveryData is converted from json to java. Then each data string is converted into
         // device data
         SmartthingsDiscoveryData discoveryData = gson.fromJson(data, SmartthingsDiscoveryData.class);
-        long openHabStartTime = discoveryData.openHabStartTime;
-        long hubTime = discoveryData.hubTime;
-        long transmissionCompleteTime = System.currentTimeMillis();
 
         if (discoveryData.data != null) {
             for (String deviceStr : discoveryData.data) {
@@ -192,11 +181,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
                 createDevice(deviceData);
             }
         }
-
-        // Log processing time
-        logger.info(
-                "Discovery timing data, Request time until data received {}, Request time until data recieved and processed {}, Hub processing time: {} ",
-                transmissionCompleteTime - openHabStartTime, System.currentTimeMillis() - openHabStartTime, hubTime);
     }
 
     /**
@@ -205,7 +189,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
      * @param deviceData Device data from the hub
      */
     private void createDevice(SmartthingsDeviceData deviceData) {
-        logger.info("Discovery: Creating device: ThingType {} with name {}", deviceData.capability, deviceData.name);
+        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceData.capability, deviceData.name);
 
         // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
         String name = deviceData.name; // Note: this is necessary for null analysis to work
@@ -216,40 +200,25 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         }
         String deviceNameNoSpaces = name.replaceAll("\\s", "_");
         String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        ThingUID bridgeUid = smartthingsHandlerFactory.getBridgeHandler().getThing().getUID();
+        final SmartthingsHandlerFactory currentSmartthingsHandlerFactory = smartthingsHandlerFactory;
+        if (currentSmartthingsHandlerFactory == null) {
+            logger.info(
+                    "SmartthingsDiscoveryService: smartthingshandlerfactory is unexpectedly null, could not create device {}",
+                    deviceData);
+            return;
+        }
+        ThingUID bridgeUid = currentSmartthingsHandlerFactory.getBridgeHandler().getThing().getUID();
         String bridgeId = bridgeUid.getId();
         String uidStr = String.format("smartthings:%s:%s:%s", deviceData.capability, bridgeId, smartthingsDeviceName);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put("smartthingsName", name);
-        properties.put("deviceId", deviceData.getNonNullId());
+        properties.put("deviceId", deviceData.id);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
-                .withRepresentationProperty(deviceData.getNonNullId()).withBridge(bridgeUid).withLabel(name).build();
+                .withRepresentationProperty(deviceData.id).withBridge(bridgeUid).withLabel(name).build();
 
         thingDiscovered(discoveryResult);
     }
 
-    /**
-     * Scanning worker class.
-     */
-    @NonNullByDefault
-    public class SmartthingsScan implements Runnable {
-
-        /**
-         * Constructor.
-         *
-         */
-        public SmartthingsScan() {
-        }
-
-        /**
-         * Poll Smartthings hub one time.
-         */
-        @Override
-        public void run() {
-            logger.debug("Starting Smartthings scan");
-            sendSmartthingsDiscoveryRequest();
-        }
-    }
 }
