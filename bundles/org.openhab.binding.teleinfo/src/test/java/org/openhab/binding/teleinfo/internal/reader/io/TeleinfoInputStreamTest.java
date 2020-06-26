@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
@@ -36,12 +37,12 @@ import org.openhab.binding.teleinfo.util.TestUtils;
 *
 * @author Nicolas SIBERIL - Initial contribution
 */
+@NonNullByDefault
 public class TeleinfoInputStreamTest {
 
     @Test
     public void testReadNextFrameCbetmBase1()
             throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
-
         try (TeleinfoInputStream in = new TeleinfoInputStream(
                 new FileInputStream(TestUtils.getTestFile("cbetm-base-option-1.raw")))) {
             Frame frame = in.readNextFrame();
@@ -68,7 +69,6 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testReadNextFrameCbemmEvoIccHc1()
             throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
-
         try (TeleinfoInputStream in = new TeleinfoInputStream(
                 new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-hc-option-1.raw")))) {
             Frame frame = in.readNextFrame();
@@ -92,7 +92,6 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testReadNextFrameCbetmEjp1()
             throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
-
         try (TeleinfoInputStream in = new TeleinfoInputStream(
                 new FileInputStream(TestUtils.getTestFile("cbetm-ejp-option-1.raw")))) {
             Frame frame = in.readNextFrame();
@@ -121,7 +120,6 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testReadNextFrameCbemmEvoIccTempo1()
             throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
-
         try (TeleinfoInputStream in = new TeleinfoInputStream(
                 new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-tempo-option-1.raw")))) {
             Frame frame = in.readNextFrame();
@@ -152,11 +150,9 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testReadNextFrameCbemmEvoIccBase1()
             throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
-
         try (TeleinfoInputStream in = new TeleinfoInputStream(
                 new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-base-option-1.raw")))) {
             Frame frame = in.readNextFrame();
-
             Assert.assertNotNull(frame);
             Assert.assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
             FrameCbemmEvolutionIccBaseOption frameCbemmEvolutionIccBaseOption = (FrameCbemmEvolutionIccBaseOption) frame;
@@ -174,7 +170,6 @@ public class TeleinfoInputStreamTest {
     @Test
     public void testInvalidADPSgrouplineWithAutoRepairActivated()
             throws FileNotFoundException, IOException, InvalidFrameException, TimeoutException {
-
         try (TeleinfoInputStream in = new TeleinfoInputStream(
                 new FileInputStream(TestUtils.getTestFile("invalid-adps-groupline.raw")), true)) {
             Frame frame = in.readNextFrame();
