@@ -105,7 +105,6 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
      * @throws KaleidescapeException - If the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
-     * @throws InterruptedIOException - if the thread was interrupted during the reading of the input stream
      */
     @Override
     protected int readInput(byte[] dataBuffer) throws KaleidescapeException {
