@@ -52,7 +52,7 @@
 
 	<channel-type id="lastUpdateType">
 		<item-type>DateTime</item-type>
-		<label>Last update</label>
+		<label>Last Update</label>
 		<description>Timestamp of last received Teleinfo frame</description>
 		<state readOnly="true" />
 	</channel-type>
