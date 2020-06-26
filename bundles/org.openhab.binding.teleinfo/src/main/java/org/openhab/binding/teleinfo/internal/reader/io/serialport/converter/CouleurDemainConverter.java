@@ -13,7 +13,7 @@
 package org.openhab.binding.teleinfo.internal.reader.io.serialport.converter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.CouleurDemain;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link CouleurDemainConverter} class defines a converter to translate a Teleinfo String value into
- * {@link Ptec} object.
+ * {@link org.openhab.binding.teleinfo.internal.dto.common.Ptec} object.
  *
  * @author Nicolas SIBERIL - Initial contribution
  */
@@ -31,7 +31,7 @@ public class CouleurDemainConverter implements Converter {
     private final Logger logger = LoggerFactory.getLogger(CouleurDemainConverter.class);
 
     @Override
-    public Object convert(String value) throws ConversionException {
+    public @Nullable Object convert(String value) throws ConversionException {
         logger.debug("convert(String) [start]");
         if (logger.isTraceEnabled()) {
             logger.trace("value = {}", value);
