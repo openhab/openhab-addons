@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.math.BigDecimal;
 

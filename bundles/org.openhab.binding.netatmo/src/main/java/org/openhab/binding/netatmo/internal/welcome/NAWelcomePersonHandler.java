@@ -18,6 +18,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -43,8 +44,8 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
     private String avatarURL;
     private NAWelcomeEvent lastEvent;
 
-    public NAWelcomePersonHandler(@NonNull Thing thing) {
-        super(thing);
+    public NAWelcomePersonHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -68,10 +69,11 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
     }
 
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_PERSON_LASTSEEN:
-                return module != null ? toDateTimeType(module.getLastSeen()) : UnDefType.UNDEF;
+                return module != null ? toDateTimeType(module.getLastSeen(), timeZoneProvider.getTimeZone())
+                        : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_ATHOME:
                 return module != null ? module.getOutOfSight() ? OnOffType.OFF : OnOffType.ON : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_AVATAR_URL:
@@ -83,7 +85,8 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
                         ? toStringType(lastEvent.getMessage().replace("<b>", "").replace("</b>", ""))
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTTIME:
-                return lastEvent != null ? toDateTimeType(lastEvent.getTime()) : UnDefType.UNDEF;
+                return lastEvent != null ? toDateTimeType(lastEvent.getTime(), timeZoneProvider.getTimeZone())
+                        : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTEVENT:
                 return getLastEventURL() != null ? HttpUtil.downloadImage(getLastEventURL()) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTEVENT_URL:

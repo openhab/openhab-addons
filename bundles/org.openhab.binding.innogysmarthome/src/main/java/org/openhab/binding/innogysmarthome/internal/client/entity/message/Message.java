@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.message;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -85,11 +87,13 @@ public class Message {
     /**
      * Defines whether the message has been viewed by a user.
      */
+    @SerializedName("read")
     private boolean isRead;
 
     /**
      * Defines whether it is an alert or a message, default is message.
      */
+    @SerializedName("class")
     private String messageClass;
     /**
      * Timestamp when the message was created.
@@ -103,7 +107,7 @@ public class Message {
      *
      * Optional.
      */
-    private List<String> deviceLinkList;
+    private List<String> devices;
 
     /**
      * Container for all parameters of the message. The parameters are contained in Property entities.
@@ -188,17 +192,17 @@ public class Message {
     }
 
     /**
-     * @return the deviceLinkList
+     * @return the devices
      */
-    public List<String> getDeviceLinkList() {
-        return deviceLinkList;
+    public List<String> getDevices() {
+        return devices;
     }
 
     /**
-     * @param deviceLinkList the deviceLinkList to set
+     * @param devices the devices to set
      */
-    public void setDeviceLinkList(List<String> deviceLinkList) {
-        this.deviceLinkList = deviceLinkList;
+    public void setDevices(List<String> devices) {
+        this.devices = devices;
     }
 
     /**
@@ -209,7 +213,7 @@ public class Message {
     }
 
     /**
-     * @param dataPropertyList the dataPropertyList to set
+     * @param properties the dataPropertyList to set
      */
     public void setProperties(MessageProperties properties) {
         this.properties = properties;

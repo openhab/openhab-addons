@@ -24,6 +24,7 @@ Tested TV models:
 | UE50MU6179  | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode`, `channel`, `sourceApp`, `url` |
 | UE43MU6199  | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                |
 | UE46F6510SS  | PARTIAL | Supported channels: `volume`, `mute`, `channel` (at least)                                                                |
+| UE58RU7179UXZG | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode` (at least) |
 
 ## Discovery
 

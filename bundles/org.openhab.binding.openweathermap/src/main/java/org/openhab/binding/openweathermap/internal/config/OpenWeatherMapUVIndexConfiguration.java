@@ -23,14 +23,5 @@ import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapUVIndex
  */
 @NonNullByDefault
 public class OpenWeatherMapUVIndexConfiguration extends OpenWeatherMapLocationConfiguration {
-
-    private int forecastDays;
-
-    public int getForecastDays() {
-        return forecastDays;
-    }
-
-    public void setForecastDays(int forecastDays) {
-        this.forecastDays = forecastDays;
-    }
+    public int forecastDays;
 }

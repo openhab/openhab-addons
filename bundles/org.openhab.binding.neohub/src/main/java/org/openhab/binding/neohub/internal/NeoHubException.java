@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NeoHubException} is a custom exception for NeoHub
  *
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
-public class NeoHubException extends RuntimeException {
+@NonNullByDefault
+public class NeoHubException extends Exception {
 
     private static final long serialVersionUID = -7358712540781217363L;
 

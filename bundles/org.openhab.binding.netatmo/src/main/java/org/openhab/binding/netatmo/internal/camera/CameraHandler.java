@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.netatmo.internal.camera;
 
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toStringType;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -33,12 +33,12 @@ import io.swagger.client.model.NAWelcomeCamera;
  *         NAWelcomeCameraHandler)
  *
  */
-public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
+public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
 
-    public CameraHandler(@NonNull Thing thing) {
-        super(thing);
+    protected CameraHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
 
     @SuppressWarnings("null")
     @Override
-    protected State getNAThingProperty(String channelId) {
+    protected State getNAThingProperty(@NonNull String channelId) {
         switch (channelId) {
             case CHANNEL_CAMERA_STATUS:
                 return getStatusState();
@@ -133,7 +133,7 @@ public class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
     }
 
     @SuppressWarnings("null")
-    private String getVpnUrl() {
+    protected String getVpnUrl() {
         return (module == null) ? null : module.getVpnUrl();
     }
 

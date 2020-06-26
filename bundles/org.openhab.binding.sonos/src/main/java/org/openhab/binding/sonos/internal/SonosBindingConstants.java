@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -26,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed ESH-PREFIX and cleaned up warnings
  */
+@NonNullByDefault
 public class SonosBindingConstants {
 
     public static final String BINDING_ID = "sonos";

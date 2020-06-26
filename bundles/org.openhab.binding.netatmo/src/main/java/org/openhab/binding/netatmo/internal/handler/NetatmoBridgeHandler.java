@@ -260,7 +260,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     }
 
     public NAStationDataBody getStationsDataBody(String equipmentId) {
-        NAStationDataBody data = getStationApi().getstationsdata(equipmentId).getBody();
+        NAStationDataBody data = getStationApi().getstationsdata(equipmentId, false).getBody();
         updateStatus(ThingStatus.ONLINE);
         return data;
     }
