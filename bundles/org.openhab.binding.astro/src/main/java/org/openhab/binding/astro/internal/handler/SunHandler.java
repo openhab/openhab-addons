@@ -14,8 +14,10 @@ package org.openhab.binding.astro.internal.handler;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.THING_TYPE_SUN;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +31,10 @@ import org.openhab.binding.astro.internal.calc.SunCalc;
 import org.openhab.binding.astro.internal.job.DailyJobSun;
 import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.model.Planet;
+import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
+import org.openhab.binding.astro.internal.model.SunPhaseName;
 
 /**
  * The SunHandler is responsible for updating calculated sun data.
@@ -55,18 +60,10 @@ public class SunHandler extends AstroThingHandler {
     }
 
     @Override
-    public void publishDailyInfo() {
-        initializeSun();
-        publishPositionalInfo();
-    }
-
-    @Override
     public void publishPositionalInfo() {
-        initializeSun();
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        sunCalc.setPositionalInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, thingConfig.altitude, sun);
+        sun = getSunAt(ZonedDateTime.now());
+        sunCalc.setPositionalInfo(Calendar.getInstance(), thingConfig.getLatitude(), thingConfig.getLongitude(),
+                thingConfig.getAltitude(), sun);
         publishPlanet();
     }
 
@@ -91,10 +88,23 @@ public class SunHandler extends AstroThingHandler {
         return new DailyJobSun(thing.getUID().getAsString(), this);
     }
 
-    private void initializeSun() {
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        sun = sunCalc.getSunInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, thingConfig.altitude, thingConfig.useMeteorologicalSeason);
+    private Sun getSunAt(ZonedDateTime date) {
+        return sunCalc.getSunInfo(GregorianCalendar.from(date), thingConfig.getLatitude(), thingConfig.getLongitude(),
+                thingConfig.getAltitude(), thingConfig.useMeteorologicalSeason);
     }
+
+    public @Nullable ZonedDateTime getEventTime(SunPhaseName sunPhase, ZonedDateTime date, boolean begin) {
+        Range eventRange = getSunAt(date).getAllRanges().get(sunPhase);
+        Calendar cal = begin ? eventRange.getStart() : eventRange.getEnd();
+        return ZonedDateTime.ofInstant(cal.toInstant(), date.getZone());
+    }
+
+    @Override
+    protected @Nullable Position getPositionAt(ZonedDateTime date) {
+        Sun localSun = getSunAt(date);
+        sunCalc.setPositionalInfo(GregorianCalendar.from(date), thingConfig.getLatitude(), thingConfig.getLongitude(),
+                thingConfig.getAltitude(), localSun);
+        return localSun.getPosition();
+    }
+
 }
