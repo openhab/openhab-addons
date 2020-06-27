@@ -119,6 +119,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
         public @Nullable Boolean speakerProvisioned;
     }
 
+    @SuppressWarnings("unused")
     private static class SendConversationJson {
 
         public @Nullable String conversationId;
