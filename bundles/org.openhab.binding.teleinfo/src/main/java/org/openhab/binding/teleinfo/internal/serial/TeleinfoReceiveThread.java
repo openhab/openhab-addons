@@ -34,11 +34,11 @@ public class TeleinfoReceiveThread extends Thread {
 
     private final Logger logger = LoggerFactory.getLogger(TeleinfoReceiveThread.class);
 
-    private @Nullable SerialPort serialPort;
+    private SerialPort serialPort;
     private @Nullable TeleinfoReceiveThreadListener listener;
     private boolean autoRepairInvalidADPSgroupLine;
 
-    public TeleinfoReceiveThread(@Nullable SerialPort serialPort, final @Nullable TeleinfoReceiveThreadListener listener,
+    public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoReceiveThreadListener listener,
             boolean autoRepairInvalidADPSgroupLine) {
         super("TeleinfoReceiveThread");
 
@@ -54,22 +54,26 @@ public class TeleinfoReceiveThread extends Thread {
                 TeleinfoInputStream.defaultTimeoutNextHeaderFrame * 100,
                 TeleinfoInputStream.defaultTimeoutReadingFrame * 100, autoRepairInvalidADPSgroupLine)) {
             while (!interrupted()) {
-                try {
-                    Frame nextFrame = teleinfoStream.readNextFrame();
-                    listener.onFrameReceived(this, nextFrame);
-                } catch (InvalidFrameException e) {
-                    logger.error("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
-                    listener.onInvalidFrameReceived(this, e);
-                } catch (TimeoutException e) {
-                    logger.error("Got timeout during frame reading", e);
-                    if (!listener.continueOnReadNextFrameTimeoutException(this, e)) {
+                TeleinfoReceiveThreadListener listener = this.listener;
+                if(listener != null) {
+                    try {
+                        Frame nextFrame = teleinfoStream.readNextFrame();
+                        if(nextFrame != null)
+                            listener.onFrameReceived(this, nextFrame);
+                    } catch (InvalidFrameException e) {
+                        logger.error("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
+                        listener.onInvalidFrameReceived(this, e);
+                    } catch (TimeoutException e) {
+                        logger.error("Got timeout during frame reading", e);
+                        if (!listener.continueOnReadNextFrameTimeoutException(this, e)) {
+                            break;
+                        }
+                        // skipInputStreamBuffer();
+                    } catch (IOException e) {
+                        logger.error("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
+                        listener.onSerialPortInputStreamIOException(this, e);
                         break;
                     }
-                    // skipInputStreamBuffer();
-                } catch (IOException e) {
-                    logger.error("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
-                    listener.onSerialPortInputStreamIOException(this, e);
-                    break;
                 }
             }
         } catch (IOException e) {

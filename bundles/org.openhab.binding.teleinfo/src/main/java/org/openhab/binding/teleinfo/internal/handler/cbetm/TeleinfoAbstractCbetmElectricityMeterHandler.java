@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetm;
@@ -45,17 +46,26 @@ public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends Telei
         updateState(CHANNEL_CBETM_IINST2, new DecimalType(frameCbetm.getIinst2()));
         updateState(CHANNEL_CBETM_IINST3, new DecimalType(frameCbetm.getIinst3()));
 
-        BigDecimal powerFactor1 = (BigDecimal) getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER1).getConfiguration()
-                .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-        updateState(CHANNEL_CBETM_CURRENT_POWER1, new DecimalType(frameCbetm.getIinst1() * powerFactor1.intValue()));
+        Channel powerFactor1Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER1);
+        if(powerFactor1Channel != null) {
+            BigDecimal powerFactor1 = (BigDecimal) powerFactor1Channel.getConfiguration()
+                    .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
+            updateState(CHANNEL_CBETM_CURRENT_POWER1, new DecimalType(frameCbetm.getIinst1() * powerFactor1.intValue()));
+        }
+        
+        Channel powerFactor2Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER2);
+        if(powerFactor2Channel != null) {
+            BigDecimal powerFactor2 = (BigDecimal) powerFactor2Channel.getConfiguration()
+                    .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
+            updateState(CHANNEL_CBETM_CURRENT_POWER2, new DecimalType(frameCbetm.getIinst2() * powerFactor2.intValue()));
+        }
 
-        BigDecimal powerFactor2 = (BigDecimal) getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER2).getConfiguration()
-                .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-        updateState(CHANNEL_CBETM_CURRENT_POWER2, new DecimalType(frameCbetm.getIinst2() * powerFactor2.intValue()));
-
-        BigDecimal powerFactor3 = (BigDecimal) getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER3).getConfiguration()
-                .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-        updateState(CHANNEL_CBETM_CURRENT_POWER3, new DecimalType(frameCbetm.getIinst3() * powerFactor3.intValue()));
+        Channel powerFactor3Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER3);
+        if(powerFactor3Channel != null) {
+            BigDecimal powerFactor3 = (BigDecimal) powerFactor3Channel.getConfiguration()
+                    .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
+            updateState(CHANNEL_CBETM_CURRENT_POWER3, new DecimalType(frameCbetm.getIinst3() * powerFactor3.intValue()));
+        }
 
         if (frameCbetm instanceof FrameCbetmLong) {
             FrameCbetmLong frameCbetmLong = (FrameCbetmLong) frameCbetm;

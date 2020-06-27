@@ -56,7 +56,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private @Nullable SerialPort serialPort;
     private @Nullable TeleinfoReceiveThread receiveThread;
     private @Nullable ScheduledFuture<?> keepAliveThread;
-    private @Nullable TeleinfoSerialControllerConfiguration config;
     private long invalidFrameCounter = 0;
 
     public TeleinfoSerialControllerHandler(Bridge thing, SerialPortManager serialPortManager) {
@@ -76,10 +75,11 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             }
             logger.debug("Check Teleinfo receiveThread status...");
             logger.debug("isInitialized() = {}", isInitialized());
-            if (receiveThread != null) {
-                logger.debug("receiveThread.isAlive() = {}", receiveThread.isAlive());
+            TeleinfoReceiveThread receiveThreadRef = receiveThread ;
+            if (receiveThreadRef != null) {
+                logger.debug("receiveThread.isAlive() = {}", receiveThreadRef.isAlive());
             }
-            if (isInitialized() && (receiveThread == null || (receiveThread != null && !receiveThread.isAlive()))) {
+            if (isInitialized() && (receiveThreadRef == null || !receiveThreadRef.isAlive())) {
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
                 logger.info("Try to restart Teleinfo receiving...");
                 stopReceivingAndCloseSerialPort();
@@ -91,9 +91,10 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     @Override
     public void dispose() {
         logger.info("Teleinfo Serial is stopping...");
-        if(keepAliveThread != null) {
-            if(!keepAliveThread.isCancelled())
-                keepAliveThread.cancel(true);
+        ScheduledFuture<?> keepAliveThreadRef = keepAliveThread;
+        if(keepAliveThreadRef != null) {
+            if(!keepAliveThreadRef.isCancelled())
+                keepAliveThreadRef.cancel(true);
             keepAliveThread = null;
         }
         stopReceivingAndCloseSerialPort();
@@ -141,9 +142,10 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private void openSerialPortAndStartReceiving() {
         logger.debug("startReceiving [start]");
 
-        config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
+        TeleinfoSerialControllerConfiguration config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
 
-        if (config.serialport == null || config.serialport.trim().isEmpty()) {
+        
+        if (config.serialport.trim().isEmpty()) {
             logger.error("Teleinfo port is not set.");
             return;
         }
@@ -165,11 +167,12 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             SerialPort commPort = portIdentifier.open("org.openhab.binding.teleinfo", 5000);
             serialPort = commPort;
 
-            serialPort.setSerialPortParams(1200, SerialPort.DATABITS_7, SerialPort.STOPBITS_1, SerialPort.PARITY_EVEN);
-            serialPort.enableReceiveThreshold(1);
-            serialPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT);
+            commPort.setSerialPortParams(1200, SerialPort.DATABITS_7, SerialPort.STOPBITS_1, SerialPort.PARITY_EVEN);
+            commPort.enableReceiveThreshold(1);
+            commPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT);
             logger.debug("Starting receive thread");
-            receiveThread = new TeleinfoReceiveThread(serialPort, this, config.autoRepairInvalidADPSgroupLine);
+            TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this, config.autoRepairInvalidADPSgroupLine);
+            this.receiveThread = receiveThread;
             receiveThread.start();
 
             logger.info("Connected to serial port '{}'", config.serialport);
@@ -186,17 +189,19 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private void stopReceivingAndCloseSerialPort() {
         logger.debug("stopReceiving [start]");
 
-        if (receiveThread != null) {
-            receiveThread.interrupt();
+        TeleinfoReceiveThread receiveThreadRef = receiveThread;
+        if (receiveThreadRef != null) {
+            receiveThreadRef.interrupt();
             try {
-                receiveThread.join();
+                receiveThreadRef.join();
             } catch (InterruptedException e) {
             }
-            receiveThread.setListener(null);
+            receiveThreadRef.setListener(null);
             receiveThread = null;
         }
-        if (serialPort != null) {
-            serialPort.close();
+        SerialPort serialPortRef = serialPort;
+        if (serialPortRef != null) {
+            serialPortRef.close();
             serialPort = null;
         }
 

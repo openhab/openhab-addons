@@ -189,56 +189,55 @@ public class TeleinfoInputStream extends InputStream {
                 Map<Label, Object> frameValues = new HashMap<>();
                 while ((groupLine = bufferedReader.readLine()) != null && !isHeaderFrame(groupLine)) {
                     logger.trace("groupLine = {}", groupLine);
-
-                    String[] groupLineTokens = groupLine.split("\\s");
-                    if (groupLineTokens.length != 2 && groupLineTokens.length != 3) {
-                        final String error = String.format("The groupLine '%1$s' is incomplete", groupLine);
-                        throw new InvalidFrameException(error);
-                    }
-                    String labelStr = groupLineTokens[0];
-                    String valueString = groupLineTokens[1];
-
-                    // verify integrity (through checksum)
-                    char checksum = (groupLineTokens.length == 3 ? groupLineTokens[2].charAt(0) : ' ');
-                    char computedChecksum = FrameUtil.computeGroupLineChecksum(labelStr, valueString);
-                    if (computedChecksum != checksum) {
-                        logger.trace("computedChecksum = {}", computedChecksum);
-                        logger.trace("checksum = {}", checksum);
-                        final String error = String.format(
-                                "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
-                                groupLine, checksum, computedChecksum);
-                        throw new InvalidFrameException(error);
-                    }
-
-                    Label label;
-                    try {
-                        label = Label.valueOf(labelStr);
-                    } catch (IllegalArgumentException e) {
-                        if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
-                            // in this hardware issue, label variable is composed by label name and value. E.g: ADPS032
-                            logger.warn("Try to auto repair malformed ADPS groupLine '{}'", labelStr);
-                            label = Label.ADPS;
-                            valueString = labelStr.substring(Label.ADPS.name().length());
-                        } else {
-                            final String error = String.format("The label '%s' is unknown", labelStr);
+                    String groupLineRef = groupLine;
+                    if(groupLineRef != null) {
+                        String[] groupLineTokens = groupLineRef.split("\\s");
+                        if (groupLineTokens.length != 2 && groupLineTokens.length != 3) {
+                            final String error = String.format("The groupLine '%1$s' is incomplete", groupLineRef);
                             throw new InvalidFrameException(error);
                         }
-                    }
-
-                    Class<?> labelType = label.getType();
-                    Converter converter = LABEL_VALUE_CONVERTERS.get(labelType);
-                    if (converter == null) {
-                        final String error = String.format("No converter founded for '%s' label type", labelType);
-                        throw new IllegalStateException(error);
-                    }
-                    try {
-                        Object value = converter.convert(valueString);
-
-                        frameValues.put(label, value);
-                    } catch (ConversionException e) {
-                        final String error = String.format("An error occurred during '%s' value conversion",
-                                valueString);
-                        throw new InvalidFrameException(error, e);
+                        String labelStr = groupLineTokens[0];
+                        String valueString = groupLineTokens[1];
+    
+                        // verify integrity (through checksum)
+                        char checksum = (groupLineTokens.length == 3 ? groupLineTokens[2].charAt(0) : ' ');
+                        char computedChecksum = FrameUtil.computeGroupLineChecksum(labelStr, valueString);
+                        if (computedChecksum != checksum) {
+                            logger.trace("computedChecksum = {}", computedChecksum);
+                            logger.trace("checksum = {}", checksum);
+                            final String error = String.format(
+                                    "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
+                                    groupLineRef, checksum, computedChecksum);
+                            throw new InvalidFrameException(error);
+                        }
+    
+                        Label label;
+                        try {
+                            label = Label.valueOf(labelStr);
+                        } catch (IllegalArgumentException e) {
+                            if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
+                                // in this hardware issue, label variable is composed by label name and value. E.g: ADPS032
+                                logger.warn("Try to auto repair malformed ADPS groupLine '{}'", labelStr);
+                                label = Label.ADPS;
+                                valueString = labelStr.substring(Label.ADPS.name().length());
+                            } else {
+                                final String error = String.format("The label '%s' is unknown", labelStr);
+                                throw new InvalidFrameException(error);
+                            }
+                        }
+    
+                        Class<?> labelType = label.getType();
+                        Converter converter = LABEL_VALUE_CONVERTERS.get(labelType);
+                        try {
+                            Object value = converter.convert(valueString);
+                            if(value != null) {
+                                frameValues.put(label, value);
+                            }
+                        } catch (ConversionException e) {
+                            final String error = String.format("An error occurred during '%s' value conversion",
+                                    valueString);
+                            throw new InvalidFrameException(error, e);
+                        }
                     }
                 }
 
