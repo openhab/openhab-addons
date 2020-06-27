@@ -33,4 +33,8 @@ public class MqttBindingConstants {
 
     public static final String HOMIE_PROPERTY_VERSION = "homieversion";
     public static final String HOMIE_PROPERTY_HEARTBEAT_INTERVAL = "heartbeat_interval";
+
+    public static final int HOMIE_DEVICE_TIMEOUT = 5000;
+    public static final int HOMIE_SUBSCRIBE_TIMEOUT = 500;
+    public static final int HOMIE_ATTRIBUTE_TIMEOUT = 200;
 }
