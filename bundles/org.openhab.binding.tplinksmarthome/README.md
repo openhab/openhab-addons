@@ -99,6 +99,12 @@ Switching, Brightness and Color is done using the `color` channel.
 * LED On/Off
 * Wi-Fi signal strength (RSSI)
 
+### KP105 Kasa Wi-Fi Smart Plug - Slim Edition
+
+* Power On/Off
+* LED On/Off
+* Wi-Fi signal strength (RSSI)
+
 ### KP200 Smart Wi-Fi Power Outlet, 2-Sockets
 
 * Power On/Off Group
@@ -285,7 +291,7 @@ All devices support some of the following channels:
 
 | Channel Type ID     | Item Type                | Description                                    | Thing types supporting this channel                                                                |
 |---------------------|--------------------------|------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| switch              | Switch                   | Power the device on or off.                    | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP200, KP303, KP400, RE270K, RE370K |
+| switch              | Switch                   | Power the device on or off.                    | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP105, KP200, KP303, KP400, RE270K, RE370K |
 | brightness          | Dimmer                   | Set the brightness of device or dimmer.        | HS220, KB100, KL50, KL60, KL110, KL120, LB100, LB110, LB120, LB200                                 |
 | colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL130, LB120, LB130, LB230                                                           |
 | colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL130, LB120, LB130, LB230                                                           |
