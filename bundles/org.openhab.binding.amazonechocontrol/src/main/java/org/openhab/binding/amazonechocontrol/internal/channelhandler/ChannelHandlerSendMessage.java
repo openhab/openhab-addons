@@ -87,7 +87,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
                         + "/messages";
                 connection.makeRequestAndReturnString("POST", sendUrl, sendConversationBody, true, null);
             }
-            RefreshChannel();
+            refreshChannel();
         }
         return false;
     }
@@ -98,10 +98,11 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
         return tryHandleCommand(devices[0], connection, channelId, command);
     }
 
-    private void RefreshChannel() {
+    private void refreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
+    @SuppressWarnings("unused")
     private static class AccountJson {
 
         public @Nullable String commsId;

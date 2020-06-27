@@ -99,12 +99,12 @@ public class ChannelHandlerAccountAnnouncement extends ChannelHandler {
                 }
                 thingHandler.startAnnouncment(devices, speak, body, title, volume);
             }
-            RefreshChannel();
+            refreshChannel();
         }
         return false;
     }
 
-    private void RefreshChannel() {
+    private void refreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 

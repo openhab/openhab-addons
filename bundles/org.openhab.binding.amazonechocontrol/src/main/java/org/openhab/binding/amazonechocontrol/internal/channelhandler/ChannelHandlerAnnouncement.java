@@ -91,7 +91,7 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                 }
                 thingHandler.startAnnouncment(device, speak, body, title, volume);
             }
-            RefreshChannel();
+            refreshChannel();
         }
         return false;
     }
@@ -102,7 +102,7 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
         return tryHandleCommand(devices[0], connection, channelId, command);
     }
 
-    private void RefreshChannel() {
+    private void refreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
