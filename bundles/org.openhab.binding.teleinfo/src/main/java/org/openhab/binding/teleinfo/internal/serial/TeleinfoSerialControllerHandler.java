@@ -68,24 +68,24 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     public void initialize() {
         logger.info("Initializing Teleinfo Serial controller");
         invalidFrameCounter = 0;
-        updateStatus(ThingStatus.UNKNOWN);
-
-        openSerialPortAndStartReceiving();
 
         keepAliveThread = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Check Teleinfo receiveThread status...");
-                logger.debug("isInitialized() = {}", isInitialized());
-                if (receiveThread != null) {
-                    logger.debug("receiveThread.isAlive() = {}", receiveThread.isAlive());
-                }
-                if (isInitialized() && (receiveThread == null || (receiveThread != null && !receiveThread.isAlive()))) {
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
-                    logger.info("Try to restart Teleinfo receiving...");
-                    stopReceivingAndCloseSerialPort();
-                    openSerialPortAndStartReceiving();
-                }
-            }, 60, 60, TimeUnit.SECONDS);
-
+            if(!isInitialized() ) {
+                updateStatus(ThingStatus.UNKNOWN);
+                openSerialPortAndStartReceiving();
+            }
+            logger.debug("Check Teleinfo receiveThread status...");
+            logger.debug("isInitialized() = {}", isInitialized());
+            if (receiveThread != null) {
+                logger.debug("receiveThread.isAlive() = {}", receiveThread.isAlive());
+            }
+            if (isInitialized() && (receiveThread == null || (receiveThread != null && !receiveThread.isAlive()))) {
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
+                logger.info("Try to restart Teleinfo receiving...");
+                stopReceivingAndCloseSerialPort();
+                openSerialPortAndStartReceiving();
+            }
+        }, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
