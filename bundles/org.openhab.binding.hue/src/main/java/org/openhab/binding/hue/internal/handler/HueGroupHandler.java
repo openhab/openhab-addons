@@ -427,10 +427,10 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
      * restoration.
      */
     private void cancelScheduledFuture() {
-        ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
-        if (scheduledFuture != null) {
-            scheduledFuture.cancel(true);
-            this.scheduledFuture = null;
+        ScheduledFuture<?> scheduledJob = scheduledFuture;
+        if (scheduledJob != null) {
+            scheduledJob.cancel(true);
+            scheduledFuture = null;
         }
     }
 

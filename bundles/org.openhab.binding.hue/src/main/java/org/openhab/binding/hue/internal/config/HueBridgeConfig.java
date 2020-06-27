@@ -42,8 +42,8 @@ public class HueBridgeConfig {
     }
 
     public int getPort() {
-        Integer port = this.port;
-        return (port != null) ? port.intValue() : HTTPS.equals(protocol) ? 443 : 80;
+        Integer thePort = this.port;
+        return (thePort != null) ? thePort.intValue() : HTTPS.equals(protocol) ? 443 : 80;
     }
 
     public void setPort(int port) {
