@@ -104,11 +104,11 @@ public class ChannelHandlerAccountAnnouncement extends ChannelHandler {
         return false;
     }
 
-    void RefreshChannel() {
+    private void RefreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
-    static class AnnouncementRequestJson {
+    private static class AnnouncementRequestJson {
 
         public @Nullable Boolean sound;
         public @Nullable String title;

@@ -102,11 +102,11 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
         return tryHandleCommand(devices[0], connection, channelId, command);
     }
 
-    void RefreshChannel() {
+    private void RefreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
-    static class AnnouncementRequestJson {
+    private static class AnnouncementRequestJson {
 
         public @Nullable Boolean sound;
         public @Nullable String title;

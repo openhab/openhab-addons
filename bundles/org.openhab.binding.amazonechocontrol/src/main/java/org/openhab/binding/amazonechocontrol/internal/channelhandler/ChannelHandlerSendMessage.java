@@ -98,11 +98,11 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
         return tryHandleCommand(devices[0], connection, channelId, command);
     }
 
-    void RefreshChannel() {
+    private void RefreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
-    static class AccountJson {
+    private static class AccountJson {
 
         public @Nullable String commsId;
         public @Nullable String directedId;
@@ -119,7 +119,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
         public @Nullable Boolean speakerProvisioned;
     }
 
-    static class SendConversationJson {
+    private static class SendConversationJson {
 
         public @Nullable String conversationId;
         public @Nullable String clientMessageId;
@@ -130,7 +130,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
         public Payload payload = new Payload();
         public Integer status = 1;
 
-        static class Payload {
+        private static class Payload {
 
             public @Nullable String text;
         }
