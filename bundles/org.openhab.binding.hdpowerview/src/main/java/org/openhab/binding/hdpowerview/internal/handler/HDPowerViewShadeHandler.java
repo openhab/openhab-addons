@@ -70,7 +70,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == RefreshType.REFRESH) {
+        if (RefreshType.REFRESH.equals(command)) {
             HDPowerViewHubHandler bridge = getBridgeHandler();
             if (bridge != null) {
                 HDPowerViewWebTargets webTargets = bridge.getWebTargets();

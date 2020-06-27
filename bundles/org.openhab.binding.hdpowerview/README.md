@@ -145,10 +145,17 @@ Note: You can also force the hub to refresh itself by sending a `Refresh` comman
 ```
 import org.eclipse.smarthome.core.types.RefreshType
 
-sendCommand(ITEM_NAME, RefreshType.REFRESH)
+rule "Hub Refresh (every 20 minutes)"
+when
+    Time cron "0 1/20 0 ? * * *"
+then
+    sendCommand(HUB_ITEM_NAME, RefreshType.REFRESH) // refresh all shades in HUB
+
+    sendCommand(SHADE_ITEM_NAME, RefreshType.REFRESH) // refresh single shade that ITEM is bound to
+end
 ```
 
-or
+Alternate syntax (omitting the `org.eclipse.smarthome.core.types.RefreshType` import statement):
 
 ```
 sendCommand(ITEM_NAME, "REFRESH")

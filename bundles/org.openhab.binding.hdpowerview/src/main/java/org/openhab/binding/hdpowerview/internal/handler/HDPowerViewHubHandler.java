@@ -38,6 +38,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
@@ -83,13 +84,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_HUB_REFRESH_CACHE.equals(channelUID.getId()) && command.equals(OnOffType.ON)) {
+        if (RefreshType.REFRESH.equals(command)
+                || (CHANNEL_HUB_REFRESH_CACHE.equals(channelUID.getId()) && OnOffType.ON.equals(command))) {
             new Thread(refreshShadeCacheTask).start();
             return;
         }
+
         Channel channel = getThing().getChannel(channelUID.getId());
         if (channel != null && sceneChannelTypeUID.equals(channel.getChannelTypeUID())) {
-            if (command.equals(OnOffType.ON)) {
+            if (OnOffType.ON.equals(command)) {
                 try {
                     webTargets.activateScene(Integer.parseInt(channelUID.getId()));
                 } catch (HubMaintenanceException e) {
