@@ -70,7 +70,7 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_HUMIDITY, DATE_MIN_HUM);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_HUMIDITY, DATE_MAX_HUM);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_DAY, types, channels, channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_DAY, types, channels, channelMeasurements);
         }
     }
 
@@ -90,7 +90,7 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_WEEK, DATE_MIN_TEMP);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_WEEK, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types, channels, channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_WEEK, types, channels, channelMeasurements);
         }
     }
 
@@ -110,8 +110,7 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_MONTH, DATE_MIN_TEMP);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_MONTH, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types, channels,
-                    channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_MONTH, types, channels, channelMeasurements);
         }
     }
 

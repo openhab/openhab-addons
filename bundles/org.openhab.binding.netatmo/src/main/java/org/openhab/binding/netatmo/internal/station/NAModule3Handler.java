@@ -55,13 +55,13 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
         List<String> types = Arrays.asList(SUM_RAIN);
 
         if (isLinked(CHANNEL_SUM_RAIN_THIS_WEEK)) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types,
-                    Arrays.asList(CHANNEL_SUM_RAIN_THIS_WEEK), channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_WEEK, types, Arrays.asList(CHANNEL_SUM_RAIN_THIS_WEEK),
+                    channelMeasurements);
         }
 
         if (isLinked(CHANNEL_SUM_RAIN_THIS_MONTH)) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types,
-                    Arrays.asList(CHANNEL_SUM_RAIN_THIS_MONTH), channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_MONTH, types, Arrays.asList(CHANNEL_SUM_RAIN_THIS_MONTH),
+                    channelMeasurements);
         }
     }
 

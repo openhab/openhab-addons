@@ -111,7 +111,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_PRESSURE, DATE_MIN_PRESSURE);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_PRESSURE, DATE_MAX_PRESSURE);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getId(), null, ONE_DAY, types, channels, channelMeasurements);
+            getMeasurements(getId(), null, ONE_DAY, types, channels, channelMeasurements);
         }
     }
 
@@ -139,7 +139,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_WEEK, DATE_MIN_TEMP);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_WEEK, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getId(), null, ONE_WEEK, types, channels, channelMeasurements);
+            getMeasurements(getId(), null, ONE_WEEK, types, channels, channelMeasurements);
         }
     }
 
@@ -167,7 +167,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_MONTH, DATE_MIN_TEMP);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_MONTH, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getId(), null, ONE_MONTH, types, channels, channelMeasurements);
+            getMeasurements(getId(), null, ONE_MONTH, types, channels, channelMeasurements);
         }
     }
 
