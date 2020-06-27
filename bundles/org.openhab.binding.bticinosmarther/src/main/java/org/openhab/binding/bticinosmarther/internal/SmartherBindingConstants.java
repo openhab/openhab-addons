@@ -77,14 +77,12 @@ public class SmartherBindingConstants {
     public static final String PROPERTY_MODULE_NAME = "moduleName";
     public static final String PROPERTY_DEVICE_TYPE = "deviceType";
 
-    // List of all common Channel ids
-    public static final String CHANNEL_FETCH_CONFIG = "config#fetchConfig";
-
-    // List of all bridge Channel ids
-    public static final String CHANNEL_API_CALLS_HANDLED = "status#apiCallsHandled";
-    public static final String CHANNEL_NOTIFS_RECEIVED = "status#notifsReceived";
-    public static final String CHANNEL_NOTIFS_REJECTED = "status#notifsRejected";
-    public static final String CHANNEL_ACCESS_TOKEN = "config#accessToken";
+    // List of all bridge Status Channel ids
+    public static final String CHANNEL_STATUS_API_CALLS_HANDLED = "status#apiCallsHandled";
+    public static final String CHANNEL_STATUS_NOTIFS_RECEIVED = "status#notifsReceived";
+    public static final String CHANNEL_STATUS_NOTIFS_REJECTED = "status#notifsRejected";
+    // List of all bridge Config Channel ids
+    public static final String CHANNEL_CONFIG_FETCH_LOCATIONS = "config#fetchLocations";
 
     // List of all module Measures Channel ids
     public static final String CHANNEL_MEASURES_TEMPERATURE = "measures#temperature";
@@ -106,6 +104,8 @@ public class SmartherBindingConstants {
     public static final String CHANNEL_SETTINGS_ENDHOUR = "settings#endHour";
     public static final String CHANNEL_SETTINGS_ENDMINUTE = "settings#endMinute";
     public static final String CHANNEL_SETTINGS_POWER = "settings#power";
+    // List of all module Config Channel ids
+    public static final String CHANNEL_CONFIG_FETCH_PROGRAMS = "config#fetchPrograms";
 
     // List of all adressable things
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

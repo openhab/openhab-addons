@@ -42,7 +42,6 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -183,13 +182,15 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
-            case CHANNEL_FETCH_CONFIG:
+            case CHANNEL_CONFIG_FETCH_LOCATIONS:
                 if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
-                        logger.debug("Bridge[{}] Manually triggered channel to refresh the Bridge config",
+                        logger.debug(
+                                "Bridge[{}] Manually triggered channel to remotely fetch the updated client locations list",
                                 thing.getUID());
-                        schedulePoll();
-                        updateChannelState(CHANNEL_FETCH_CONFIG, OnOffType.OFF);
+                        expireCache();
+                        getLocations();
+                        updateChannelState(CHANNEL_CONFIG_FETCH_LOCATIONS, OnOffType.OFF);
                     }
                     return;
                 }
@@ -369,8 +370,8 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onAccessTokenResponse(@Nullable AccessTokenResponse tokenResponse) {
-        updateChannelState(CHANNEL_ACCESS_TOKEN,
-                new StringType((tokenResponse == null) ? null : tokenResponse.getAccessToken()));
+        logger.trace("Bridge[{}] Got access token: {}", thing.getUID(),
+                (tokenResponse != null) ? tokenResponse.getAccessToken() : "none");
     }
 
     // ===========================================================================
@@ -430,7 +431,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
     private void updateApiCallsCounter() {
         final BridgeStatus localBridgeStatus = this.bridgeStatus;
         if (localBridgeStatus != null) {
-            updateChannelState(CHANNEL_API_CALLS_HANDLED,
+            updateChannelState(CHANNEL_STATUS_API_CALLS_HANDLED,
                     new DecimalType(localBridgeStatus.incrementApiCallsHandled()));
         }
     }
@@ -670,7 +671,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             final BridgeStatus localBridgeStatus = this.bridgeStatus;
             if (localBridgeStatus != null) {
                 logger.debug("Bridge[{}] Notification received: [id={}]", thing.getUID(), notification.getId());
-                updateChannelState(CHANNEL_NOTIFS_RECEIVED,
+                updateChannelState(CHANNEL_STATUS_NOTIFS_RECEIVED,
                         new DecimalType(localBridgeStatus.incrementNotificationsReceived()));
 
                 final String plantId = sender.getPlant().getId();
@@ -683,7 +684,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
                     maybeModuleHandler.get().handleNotification(notification);
                 } else {
                     logger.debug("Bridge[{}] Notification rejected: no module handler available", thing.getUID());
-                    updateChannelState(CHANNEL_NOTIFS_REJECTED,
+                    updateChannelState(CHANNEL_STATUS_NOTIFS_REJECTED,
                             new DecimalType(localBridgeStatus.incrementNotificationsRejected()));
                 }
             }

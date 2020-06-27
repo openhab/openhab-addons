@@ -73,7 +73,7 @@
 		<label>Configuration</label>
 		<description>Convenience configuration channels for the module</description>
 		<channels>
-			<channel id="fetchConfig" typeId="config-fetchconfig" />
+			<channel id="fetchPrograms" typeId="config-fetchprograms" />
 		</channels>
 	</channel-group-type>
 
@@ -212,10 +212,10 @@
 		<description>Power on, send new operational settings to the module</description>
 	</channel-type>
 
-	<channel-type id="config-fetchconfig" advanced="true">
+	<channel-type id="config-fetchprograms" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Fetch Remote Config</label>
-		<description>This is a convenience switch to trigger a call to the Smarther API gateway, in order to fetch updated module configuration.</description>
+		<label>Fetch Programs List</label>
+		<description>This is a convenience switch to trigger a call to the Smarther API gateway, to manually fetch the updated module programs list.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

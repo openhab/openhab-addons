@@ -41,11 +41,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Chronothermostat;
+import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.BoostTime;
+import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.Mode;
 import org.openhab.binding.bticinosmarther.internal.api.dto.ModuleStatus;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Notification;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Program;
-import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.BoostTime;
-import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.Mode;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherIllegalPropertyValueException;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherSubscriptionAlreadyExistsException;
@@ -259,13 +259,15 @@ public class SmartherModuleHandler extends BaseThingHandler {
                     return;
                 }
                 break;
-            case CHANNEL_FETCH_CONFIG:
+            case CHANNEL_CONFIG_FETCH_PROGRAMS:
                 if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
-                        logger.debug("Module[{}] Manually triggered channel to refresh the Module config",
+                        logger.debug(
+                                "Module[{}] Manually triggered channel to remotely fetch the updated programs list",
                                 thing.getUID());
                         expireCache();
-                        updateChannelState(CHANNEL_FETCH_CONFIG, OnOffType.OFF);
+                        refreshProgramsList();
+                        updateChannelState(CHANNEL_CONFIG_FETCH_PROGRAMS, OnOffType.OFF);
                     }
                     return;
                 }
@@ -569,13 +571,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
                     }
 
                     // Refresh the programs list for "automatic" mode
-                    final ExpiringCache<List<Program>> localProgramCache = this.programCache;
-                    if (localProgramCache != null) {
-                        final List<Program> programs = localProgramCache.getValue();
-                        if (programs != null) {
-                            dynamicStateDescriptionProvider.setPrograms(programChannelUID, programs);
-                        }
-                    }
+                    refreshProgramsList();
 
                     updateModuleStatus();
 
@@ -663,6 +659,19 @@ public class SmartherModuleHandler extends BaseThingHandler {
      */
     public boolean isLinkedTo(String plantId, String moduleId) {
         return (config.getPlantId().equals(plantId) && config.getModuleId().equals(moduleId));
+    }
+
+    /**
+     * Convenience method to refresh the module programs list from cache.
+     */
+    private void refreshProgramsList() {
+        final ExpiringCache<List<Program>> localProgramCache = this.programCache;
+        if (localProgramCache != null) {
+            final List<Program> programs = localProgramCache.getValue();
+            if (programs != null) {
+                dynamicStateDescriptionProvider.setPrograms(programChannelUID, programs);
+            }
+        }
     }
 
     /**

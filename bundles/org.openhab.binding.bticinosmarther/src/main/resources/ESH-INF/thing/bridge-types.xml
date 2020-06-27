@@ -66,8 +66,7 @@
 		<label>Configuration</label>
 		<description>Convenience configuration channels for the bridge</description>
 		<channels>
-			<channel id="fetchConfig" typeId="config-fetchconfig" />
-			<channel id="accessToken" typeId="config-accesstoken" />
+			<channel id="fetchLocations" typeId="config-fetchlocations" />
 		</channels>
 	</channel-group-type>
 
@@ -93,17 +92,10 @@
 		<state readOnly="true" min="0" pattern="%d" />
 	</channel-type>
 
-	<channel-type id="config-fetchconfig" advanced="true">
+	<channel-type id="config-fetchlocations" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Fetch Remote Config</label>
-		<description>This is a convenience switch to trigger a call to the Smarther API gateway, in order to fetch updated bridge configuration.</description>
-	</channel-type>
-
-	<channel-type id="config-accesstoken" advanced="true">
-		<item-type>String</item-type>
-		<label>Access Token</label>
-		<description>The access token used to authorize calls to the BTicino/Legrand API gateway. It can be used from rules or client-side scripting to make calls to API gateway.</description>
-		<state readOnly="true"/>
+		<label>Fetch Locations List</label>
+		<description>This is a convenience switch to trigger a call to the Smarther API gateway, to manually fetch the updated client locations list.</description>
 	</channel-type>
 
 </thing:thing-descriptions>
