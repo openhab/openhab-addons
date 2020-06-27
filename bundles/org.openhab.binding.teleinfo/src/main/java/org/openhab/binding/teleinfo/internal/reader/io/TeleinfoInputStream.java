@@ -89,7 +89,6 @@ public class TeleinfoInputStream extends InputStream {
     private static final Map<Class<?>, Converter> LABEL_VALUE_CONVERTERS;
 
     private BufferedReader bufferedReader;
-    private InputStream teleinfoInputStream;
     private @Nullable String groupLine;
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
     private long waitNextHeaderFrameTimeoutInMs;
@@ -126,7 +125,6 @@ public class TeleinfoInputStream extends InputStream {
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
 
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
-        this.teleinfoInputStream = teleinfoInputStream;
 
         groupLine = null;
     }
