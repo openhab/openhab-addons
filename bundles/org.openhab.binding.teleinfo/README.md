@@ -65,6 +65,8 @@ Channel availabity depends on the electricity connection (single or three phase)
 | iinst1   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 1                | Three  | All   |
 | iinst2   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 2                | Three  | All   |
 | iinst3   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 3                | Three  | All   |
+| ppot     | `String`                  | Electrical potential presence                            | Three  | All   |
+| pmax     | `Number:Energy`           | Maximum consumed electric power on all phases            | Three  | All   |
 | papp     | `Number`                  | Instantaneous apparent power (Unit: `VA`)                | Three, single (ICC evolution only) | All   |
 | hhphc    | `String`                  | Pricing schedule group                                   | All    | HCHP  |
 | hchc     | `Number:Energy`           | Total consumed energy at low rate pricing                | All    | HCHP  |
