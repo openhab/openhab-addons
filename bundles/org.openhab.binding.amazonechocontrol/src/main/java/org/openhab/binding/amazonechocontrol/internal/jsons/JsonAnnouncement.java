@@ -13,13 +13,14 @@
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 
 /**
  *
- * @author Trinitus01
+ * @author Tom Blum (Trinitus01) - Initial contribution
  */
 @NonNullByDefault
 public class JsonAnnouncement {

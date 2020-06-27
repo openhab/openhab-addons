@@ -126,7 +126,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
     private boolean updateStartCommand = true;
-    private boolean updateSound = true;
     private @Nullable Integer noticationVolumeLevel;
     private @Nullable Boolean ascendingAlarm;
     private @Nullable JsonPlaylists playLists;
@@ -339,7 +338,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
                 if (command instanceof QuantityType<?>) {
                     QuantityType<?> value = (QuantityType<?>) command;
-                    @Nullable QuantityType<?> seconds = value.toUnit(SmartHomeUnits.SECOND);
+                    @Nullable
+                    QuantityType<?> seconds = value.toUnit(SmartHomeUnits.SECOND);
                     if (seconds != null) {
                         mediaPosition = seconds.longValue();
                     }
@@ -579,16 +579,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     }
                 }
             }
-            if (channelId.equals(CHANNEL_SOUND)) {
-                if (command instanceof StringType) {
-                    String soundStringId = ((StringType) command).toFullString();
-                    if (StringUtils.isNotEmpty(soundStringId)) {
-                        waitForUpdate = 1000;
-                        updateSound = true;
-                        startSound(connection, device, soundStringId);
-                    }
-                }
-            }
             if (channelId.equals(CHANNEL_TEXT_TO_SPEECH_VOLUME)) {
                 if (command instanceof PercentType) {
                     PercentType value = (PercentType) command;
@@ -728,22 +718,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             startIgnoreVolumeChange();
             volume = textToSpeechVolume;
         }
-        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
-            String bodyText = text.replaceAll("<[^>]+>", "");
-            connection.sendAnnouncement(device, text, bodyText, null, volume, lastKnownVolume);
-        } else {
-            connection.textToSpeech(device, text, volume, lastKnownVolume);
-        }
-    }
-    
-    private void startSound(Connection connection, Device device, String soundStringId)
-            throws IOException, URISyntaxException {
-        Integer volume = null;
-        if (textToSpeechVolume != 0) {
-            startIgnoreVolumeChange();
-            volume = textToSpeechVolume;
-        }
-        connection.sound(device, soundStringId, volume, lastKnownVolume);
+        connection.textToSpeech(device, text, volume, lastKnownVolume);
     }
 
     @Override
@@ -762,7 +737,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (volume != null) {
             startIgnoreVolumeChange();
         }
-        connection.sendAnnouncement(device, speak, bodyText, title, volume, lastKnownVolume);
+        connection.announcement(device, speak, bodyText, title, volume, lastKnownVolume);
     }
 
     @Override
@@ -781,7 +756,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (volume != null) {
             startIgnoreVolumeChange();
         }
-        connection.sendAnnouncement(devices, speak, bodyText, title, volume, lastKnownVolume);
+        connection.announcement(devices, speak, bodyText, title, volume, lastKnownVolume);
     }
 
     private void stopCurrentNotification() {
@@ -1135,10 +1110,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 updateTextToSpeech = false;
                 updateState(CHANNEL_TEXT_TO_SPEECH, new StringType(""));
             }
-            if (updateSound) {
-                updateSound = false;
-                updateState(CHANNEL_SOUND, new StringType(""));
-            }
             if (updatePlayMusicVoiceCommand) {
                 updatePlayMusicVoiceCommand = false;
                 updateState(CHANNEL_PLAY_MUSIC_VOICE_COMMAND, new StringType(""));
@@ -1285,7 +1256,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     }
 
     private void startIgnoreVolumeChange() {
-        @Nullable ScheduledFuture<?> oldIgnoreVolumeChange = this.ignoreVolumeChange;
+        @Nullable
+        ScheduledFuture<?> oldIgnoreVolumeChange = this.ignoreVolumeChange;
         if (oldIgnoreVolumeChange != null) {
             oldIgnoreVolumeChange.cancel(false);
         }
@@ -1302,8 +1274,10 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             case "PUSH_VOLUME_CHANGE":
                 JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
                         JsonCommandPayloadPushVolumeChange.class);
-                @Nullable Integer volumeSetting = volumeChange.volumeSetting;
-                @Nullable Boolean muted = volumeChange.isMuted;
+                @Nullable
+                Integer volumeSetting = volumeChange.volumeSetting;
+                @Nullable
+                Boolean muted = volumeChange.isMuted;
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
                 } else if (volumeSetting != null) {

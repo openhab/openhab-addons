@@ -41,7 +41,6 @@
 			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
-			<channel id="sound" typeId="sound"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
@@ -96,7 +95,6 @@
 			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
-			<channel id="sound" typeId="sound"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
@@ -151,7 +149,6 @@
 			<channel id="amazonMusic" typeId="amazonMusic"/>
 			<channel id="announcement" typeId="announcement"/>
 			<channel id="textToSpeech" typeId="textToSpeech"/>
-			<channel id="sound" typeId="sound"/>
 			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
 			<channel id="remind" typeId="remind"/>
 			<channel id="nextReminder" typeId="nextReminder"/>
@@ -397,11 +394,6 @@
 		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a
 			secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe
 			it?&lt;/speak&gt;</description>
-	</channel-type>
-	<channel-type id="sound" advanced="true">
-		<item-type>String</item-type>
-		<label>Sound</label>
-		<description>Play a sound (Write only). It is possile to use sounds from the Alexa Skills Kit Sound Library (only those in the Alexa App are working).</description>
 	</channel-type>
 	<channel-type id="textToSpeechVolume" advanced="true">
 		<item-type>Dimmer</item-type>

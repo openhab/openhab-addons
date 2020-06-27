@@ -27,7 +27,6 @@ It provides features to control and view the current state of echo devices:
 - get information about the next alarm, reminder and timer
 - send a message to the echo devices
 - send an announcement to the echo devices
-- play a sound
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -148,7 +147,6 @@ It will be configured at runtime by using the save channel to store the current 
 | save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
 | playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
-| sound                 | String      | W           | echo, echoshow, echospot      | Write Only! Play a sound. It is possile to use sounds from the Alexa Skills Kit Sound Library (only those in the Alexa App are working).</description>
 
 ## Advanced Feature Technically Experienced Users
 
@@ -238,7 +236,6 @@ String Echo_Living_Room_PlayAlarmSound         "Play Alarm Sound"               
 String Echo_Living_Room_StartRoutine           "Start Routine"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
 Dimmer Echo_Living_Room_NotificationVolume     "Notification volume"                   (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:notificationVolume"}
 Switch Echo_Living_Room_AscendingAlarm         "Ascending alarm"                       (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:ascendingAlarm"}
-String Echo_Living_Room_Sound                  "Play sound"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:sound"}
 
 // Feedbacks
 String Echo_Living_Room_LastVoiceCommand       "Last voice command"                    (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:lastVoiceCommand"}
@@ -469,19 +466,6 @@ when
     Item Spotify_Start_Wheater_Switch changed to ON
 then
      Echo_Living_Room_StartCommand.sendCommand('FlashBriefing.flashbriefing1')
-end
-```
-
-### Let Alexa play a sound from a rule:
-
-1) Create a rule with a trigger of your choice
-
-```php
-rule "Play sound if the door opens"
-when
-    Item Door_Contact changed to OPEN
-then
-    Echo_Living_Room_Sound.sendCommand('amzn_sfx_trumpet_bugle_04')
 end
 ```
 

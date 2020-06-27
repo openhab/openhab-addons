@@ -29,7 +29,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link ChannelHandlerAccountAnnouncement} is responsible for the account
  * announcement channel
  *
- * @author Trinitus01
+ * @author Tom Blum (Trinitus01) - Initial contribution
  */
 public class ChannelHandlerAccountAnnouncement extends ChannelHandler {
 

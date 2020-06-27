@@ -82,7 +82,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
                 conversationJson.time = LocalDateTime.now().toString();
                 conversationJson.payload.text = commandValue;
 
-                String sendConversationBody = this.gson.toJson(new SendConversationJson[]{conversationJson});
+                String sendConversationBody = this.gson.toJson(new SendConversationJson[] { conversationJson });
                 String sendUrl = baseUrl + "/users/" + senderCommsId + "/conversations/" + receiverCommsId
                         + "/messages";
                 connection.makeRequestAndReturnString("POST", sendUrl, sendConversationBody, true, null);

@@ -13,11 +13,12 @@
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import java.util.Set;
+
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
- * @author Trinitus01
+ * @author Tom Blum (Trinitus01) - Initial contribution
  */
 public class JsonTextToSpeech {
 

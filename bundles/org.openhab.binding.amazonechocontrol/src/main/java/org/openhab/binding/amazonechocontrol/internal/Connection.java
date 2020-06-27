@@ -25,18 +25,24 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -50,11 +56,15 @@ import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncement;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementContent;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget.TargetDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBootstrapResult.Authentication;
@@ -62,9 +72,20 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificati
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDeviceNotificationState.DeviceNotificationState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEqualizer;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Cookie;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMediaState;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequest;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSounds;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationsResponse;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaySearchPhraseOperationPayload;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayValidationResult;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayerState;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaylists;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppRequest;
@@ -76,6 +97,8 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppRespo
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Success;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRegisterAppResponse.Tokens;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRenewTokenResponse;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonTextToSpeech;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonUsersMeResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
@@ -89,28 +112,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncement;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Payload;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAutomation.Trigger;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEnabledFeeds;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonEqualizer;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonFeed;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonMusicProvider;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationRequest;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationResponse;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSound;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationSounds;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonNotificationsResponse;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlaySearchPhraseOperationPayload;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonPlayValidationResult;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSound;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonTextToSpeech;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -146,15 +147,17 @@ public class Connection {
     private @Nullable String accountCustomerId;
     private @Nullable String customerName;
 
-    private Map<String, JsonAnnouncement> announcements = new HashMap<>();
-    private Map<String, JsonTextToSpeech> textToSpeeches = new HashMap<>();
-    private Map<String, JsonSound> sounds = new HashMap<>();
+    private Map<String, JsonAnnouncement> announcements = new LinkedHashMap<>();
+    private Map<String, JsonTextToSpeech> textToSpeeches = new LinkedHashMap<>();
     private @Nullable ScheduledFuture<?> announcementTimer;
     private @Nullable ScheduledFuture<?> textToSpeechTimer;
-    private @Nullable ScheduledFuture<?> soundTimer;
 
     private final Gson gson;
     private final Gson gsonWithNullSerialization;
+
+    private LinkedBlockingQueue<JsonTextToSpeech> textToSpeechQueue = new LinkedBlockingQueue<>();
+    private AtomicBoolean textToSpeechQueueRunning = new AtomicBoolean();
+    private ScheduledFuture<?> textToSpeechSenderUnblockFuture;
 
     public Connection(@Nullable Connection oldConnection, Gson gson) {
         this.gson = gson;
@@ -780,7 +783,8 @@ public class Connection {
         if (response != null) {
             org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Tokens tokens = response.tokens;
             if (tokens != null) {
-                @Nullable Map<String, Cookie[]> cookiesMap = tokens.cookies;
+                @Nullable
+                Map<String, Cookie[]> cookiesMap = tokens.cookies;
                 if (cookiesMap != null) {
                     for (String domain : cookiesMap.keySet()) {
                         Cookie[] cookies = cookiesMap.get(domain);
@@ -884,15 +888,15 @@ public class Connection {
         loginTime = null;
         verifyTime = null;
         deviceName = null;
-        
+
         if (announcementTimer != null) {
             announcementTimer.cancel(true);
         }
         if (textToSpeechTimer != null) {
             textToSpeechTimer.cancel(true);
         }
-        if (soundTimer != null) {
-            soundTimer.cancel(true);
+        if (textToSpeechSenderUnblockFuture != null) {
+            textToSpeechSenderUnblockFuture.cancel(true);
         }
     }
 
@@ -984,7 +988,7 @@ public class Connection {
         String json = makeRequestAndReturnString(alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
                 + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                : this.accountCustomerId));
+                        : this.accountCustomerId));
         JsonPlaylists playlists = parseJson(json, JsonPlaylists.class);
         return playlists;
     }
@@ -1060,10 +1064,10 @@ public class Connection {
         } else {
             makeRequest("POST",
                     alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                    + "&deviceType=" + device.deviceType + "&guideId=" + stationId
-                    + "&contentType=station&callSign=&mediaOwnerCustomerId="
-                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                    : this.accountCustomerId),
+                            + "&deviceType=" + device.deviceType + "&guideId=" + stationId
+                            + "&contentType=station&callSign=&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId),
                     "", true, true, null, 0);
         }
     }
@@ -1075,10 +1079,10 @@ public class Connection {
             String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                    + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                    : this.accountCustomerId)
-                    + "&shuffle=false",
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId)
+                            + "&shuffle=false",
                     command, true, true, null, 0);
         }
     }
@@ -1091,10 +1095,10 @@ public class Connection {
             String command = "{\"playlistId\":\"" + playListId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
-                    + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                    : this.accountCustomerId)
-                    + "&shuffle=false",
+                            + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
+                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                                    : this.accountCustomerId)
+                            + "&shuffle=false",
                     command, true, true, null, 0);
         }
     }
@@ -1128,7 +1132,8 @@ public class Connection {
             int standardVolume = jsonAnnouncement.standardVolume;
 
             try {
-                sendAnnouncement(devices.toArray(new Device[devices.size()]), speak, bodyText, title, ttsVolume, standardVolume);
+                announcement(devices.toArray(new Device[devices.size()]), speak, bodyText, title, ttsVolume,
+                        standardVolume);
             } catch (Exception e) {
                 logger.error("send announcement fails with unexpected error", e);
             }
@@ -1136,7 +1141,7 @@ public class Connection {
         announcements.clear();
     }
 
-    public synchronized void sendAnnouncement(Device device, String speak, String bodyText, @Nullable String title,
+    public synchronized void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, int standardVolume) throws IOException, URISyntaxException {
         if (announcementTimer != null) {
             announcementTimer.cancel(true);
@@ -1155,12 +1160,12 @@ public class Connection {
             jsonAnnouncement = announcements.get(json);
         }
         jsonAnnouncement.devices.add(device);
-        announcementTimer = scheduler.scheduleWithFixedDelay(() -> {
+        announcementTimer = scheduler.schedule(() -> {
             sendAnnouncement();
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 1, TimeUnit.SECONDS);
     }
 
-    public void sendAnnouncement(Device[] devices, String speak, String bodyText, @Nullable String title,
+    public void announcement(Device[] devices, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, int standardVolume) throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expireAfter", "PT5S");
@@ -1202,7 +1207,8 @@ public class Connection {
         parameters.put("target", target);
 
         String accountCustomerId = this.accountCustomerId;
-        String customerId = StringUtils.isEmpty(accountCustomerId) ? devices[0].deviceOwnerCustomerId : accountCustomerId;
+        String customerId = StringUtils.isEmpty(accountCustomerId) ? devices[0].deviceOwnerCustomerId
+                : accountCustomerId;
 
         if (customerId != null) {
             parameters.put("customerId", customerId);
@@ -1216,22 +1222,15 @@ public class Connection {
         }
         for (String json : textToSpeeches.keySet()) {
             JsonTextToSpeech jsonTextToSpeech = textToSpeeches.get(json);
-            Set<Device> devices = jsonTextToSpeech.devices;
-            logger.debug("devices {}", devices.size());
-            String text = jsonTextToSpeech.text;
-            Integer ttsVolume = jsonTextToSpeech.ttsVolume;
-            int standardVolume = jsonTextToSpeech.standardVolume;
-
-            try {
-                textToSpeech(devices.toArray(new Device[devices.size()]), text, ttsVolume, standardVolume);
-            } catch (Exception e) {
-                logger.error("send textToSpeech fails with unexpected error", e);
+            textToSpeechQueue.add(jsonTextToSpeech);
+            if (textToSpeechQueueRunning.compareAndSet(false, true)) {
+                queuedTextToSpeech();
             }
         }
         textToSpeeches.clear();
     }
 
-    public void textToSpeech(Device device, String text, @Nullable Integer ttsVolume, int standardVolume)
+    public synchronized void textToSpeech(Device device, String text, @Nullable Integer ttsVolume, int standardVolume)
             throws IOException, URISyntaxException {
         if (textToSpeechTimer != null) {
             textToSpeechTimer.cancel(true);
@@ -1248,66 +1247,35 @@ public class Connection {
             jsonTextToSpeech = textToSpeeches.get(json);
         }
         jsonTextToSpeech.devices.add(device);
-        textToSpeechTimer = scheduler.scheduleWithFixedDelay(() -> {
+        textToSpeechTimer = scheduler.schedule(() -> {
             sendTextToSpeech();
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 1, TimeUnit.SECONDS);
     }
 
-    public void textToSpeech(Device[] devices, String text, @Nullable Integer ttsVolume, int standardVolume)
-            throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("textToSpeak", text);
-        executeSequenceCommandWithVolume(devices, "Alexa.Speak", parameters, ttsVolume, standardVolume);
-    }
-    
-    private void sendSound() {
-        if (soundTimer != null) {
-            soundTimer.cancel(true);
-        }
-        for (String json : sounds.keySet()) {
-            JsonSound jsonSound = sounds.get(json);
-            Set<Device> devices = jsonSound.devices;
+    public void queuedTextToSpeech() {
+        JsonTextToSpeech jsonTextToSpeech = textToSpeechQueue.poll();
+        if (jsonTextToSpeech != null) {
+            Set<Device> devices = jsonTextToSpeech.devices;
             logger.debug("devices {}", devices.size());
-            String soundStringId = jsonSound.soundStringId;
-            Integer soundVolume = jsonSound.soundVolume;
-            int standardVolume = jsonSound.standardVolume;
+            String text = jsonTextToSpeech.text;
+            Integer ttsVolume = jsonTextToSpeech.ttsVolume;
+            int standardVolume = jsonTextToSpeech.standardVolume;
 
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("textToSpeak", text);
             try {
-                sound(devices.toArray(new Device[devices.size()]), soundStringId, soundVolume, standardVolume);
-            } catch (Exception e) {
-                logger.error("send sound fails with unexpected error", e);
+                executeSequenceCommandWithVolume(devices.toArray(new Device[devices.size()]), "Alexa.Speak", parameters,
+                        ttsVolume, standardVolume);
+            } catch (IOException | URISyntaxException e) {
+                logger.error("send textToSpeech fails with unexpected error", e);
             }
-        }
-        sounds.clear();
-    }
-
-    public void sound(Device device, String soundStringId, @Nullable Integer soundVolume, int standardVolume)
-            throws IOException, URISyntaxException {
-        if (soundTimer != null) {
-            soundTimer.cancel(true);
-        }
-        JsonSound jsonSound = new JsonSound();
-        jsonSound.soundStringId = soundStringId;
-        String json = gson.toJson(jsonSound);
-        if (!sounds.containsKey(json)) {
-            jsonSound.devices = new HashSet<>();
-            jsonSound.soundVolume = soundVolume;
-            jsonSound.standardVolume = standardVolume;
-            sounds.put(json, jsonSound);
+            int delay = text.length() * 150;
+            textToSpeechSenderUnblockFuture = scheduler.schedule(this::queuedTextToSpeech, delay,
+                    TimeUnit.MILLISECONDS);
         } else {
-            jsonSound = sounds.get(json);
+            textToSpeechQueueRunning.set(false);
+            textToSpeechSenderUnblockFuture = null;
         }
-        jsonSound.devices.add(device);
-        soundTimer = scheduler.scheduleWithFixedDelay(() -> {
-            sendSound();
-        }, 1, 1, TimeUnit.SECONDS);
-    }
-    
-    public void sound(Device[] devices, String soundStringId, @Nullable Integer soundVolume, int standardVolume)
-            throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("soundStringId", soundStringId);
-        executeSequenceCommandWithVolume(devices, "Alexa.Sound", parameters, soundVolume, standardVolume);
     }
 
     private void executeSequenceCommandWithVolume(@Nullable Device[] devices, String command,
@@ -1323,16 +1291,16 @@ public class Connection {
                 nodesToExecute.add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
             }
         }
-        
+
         // add command
-        if ("Alexa.Speak".equals(command) || "Alexa.Sound".equals(command)) {
+        if ("Alexa.Speak".equals(command)) {
             for (Device device : devices) {
                 nodesToExecute.add(createExecutionNode(device, command, parameters));
             }
         } else {
             nodesToExecute.add(createExecutionNode(devices[0], command, parameters));
         }
-        
+
         if (ttsVolume != null) {
             // add standardVolume
             for (int i = 0; i < devices.length; i++) {
@@ -1341,12 +1309,12 @@ public class Connection {
                 nodesToExecute.add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
             }
         }
-        
+
         executeSequenceNodes(nodesToExecute);
     }
 
     // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play, Alexa.GoodMorning.Play,
-    // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach), Alexa.Sound
+    // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
     public void executeSequenceCommand(@Nullable Device device, String command,
             @Nullable Map<String, Object> parameters) throws IOException, URISyntaxException {
         JsonObject nodeToExecute = createExecutionNode(device, command, parameters);
@@ -1370,7 +1338,10 @@ public class Connection {
 
     private void executeSequenceNodes(JsonArray nodesToExecute) throws IOException, URISyntaxException {
         JsonObject serialNode = new JsonObject();
-        serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.SerialNode");
+        // THIS TYPE PRODUCE A ECHO SERIAL (STEP BY STEP) OUTPUT
+        // serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.SerialNode");
+        // THIS TYPE PRODUCE A ECHO PARALLEL OUTPUT
+        serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
 
         serialNode.add("nodesToExecute", nodesToExecute);
 
@@ -1383,12 +1354,10 @@ public class Connection {
         if (device != null) {
             operationPayload.addProperty("deviceType", device.deviceType);
             operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
-            // NECESSARY TO SET LOCALE, ELSE SOUND WONT WORK
-            // WHY WAS IT EMPTY?
-            operationPayload.addProperty("locale", "ALEXA_CURRENT_LOCALE");
+            operationPayload.addProperty("locale", "");
             operationPayload.addProperty("customerId",
                     StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                    : this.accountCustomerId);
+                            : this.accountCustomerId);
         }
         if (parameters != null) {
             for (String key : parameters.keySet()) {
@@ -1459,7 +1428,7 @@ public class Connection {
             String customerId = "\"customerId\":\"ALEXA_CUSTOMER_ID\"";
             String newCustomerId = "\"customerId\":\""
                     + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
-                    : this.accountCustomerId)
+                            : this.accountCustomerId)
                     + "\"";
             sequenceJson = sequenceJson.replace(customerId.subSequence(0, customerId.length()),
                     newCustomerId.subSequence(0, newCustomerId.length()));
@@ -1506,7 +1475,7 @@ public class Connection {
     public JsonNotificationSound[] getNotificationSounds(Device device) throws IOException, URISyntaxException {
         String json = makeRequestAndReturnString(
                 alexaServer + "/api/notification/sounds?deviceSerialNumber=" + device.serialNumber + "&deviceType="
-                + device.deviceType + "&softwareVersion=" + device.softwareVersion);
+                        + device.deviceType + "&softwareVersion=" + device.softwareVersion);
         JsonNotificationSounds result = parseJson(json, JsonNotificationSounds.class);
         JsonNotificationSound[] notificationSounds = result.notificationSounds;
         if (notificationSounds != null) {

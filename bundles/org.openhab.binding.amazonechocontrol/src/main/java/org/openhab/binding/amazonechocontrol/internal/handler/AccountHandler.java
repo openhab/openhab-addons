@@ -23,8 +23,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,6 +50,7 @@ import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.IWebSocketCommandHandler;
 import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerAccountAnnouncement;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerSendMessage;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
@@ -75,7 +78,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerAccountAnnouncement;
 
 /**
  * Handles the connection to the amazon server.
@@ -103,6 +105,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     private final Gson gson;
     int checkDataCounter;
     private List<ChannelHandler> channelHandlers = new ArrayList<>();
+
+    private LinkedBlockingQueue<@Nullable String> pushActivityQueue = new LinkedBlockingQueue<>();
+    private AtomicBoolean pushActivityQueueRunning = new AtomicBoolean();
+    private ScheduledFuture<?> pushActivitySenderUnblockFuture;
 
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage, Gson gson) {
         super(bridge);
@@ -152,7 +158,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             String channelId = channelUID.getId();
             for (ChannelHandler channelHandler : channelHandlers) {
                 if (channelHandler instanceof ChannelHandlerAccountAnnouncement) {
-                    Device[] devices = jsonSerialNumberDeviceMapping.values().toArray(new Device[jsonSerialNumberDeviceMapping.values().size()]);
+                    Device[] devices = jsonSerialNumberDeviceMapping.values()
+                            .toArray(new Device[jsonSerialNumberDeviceMapping.values().size()]);
                     if (channelHandler.tryHandleCommand(devices, connection, channelId, command)) {
                         return;
                     }
@@ -282,25 +289,34 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private void cleanup() {
         logger.debug("cleanup {}", getThing().getUID().getAsString());
-        @Nullable ScheduledFuture<?> refreshJob = this.checkDataJob;
+        @Nullable
+        ScheduledFuture<?> refreshJob = this.checkDataJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
             this.checkDataJob = null;
         }
-        @Nullable ScheduledFuture<?> refreshLogin = this.checkLoginJob;
+        @Nullable
+        ScheduledFuture<?> refreshLogin = this.checkLoginJob;
         if (refreshLogin != null) {
             refreshLogin.cancel(true);
             this.checkLoginJob = null;
         }
-        @Nullable ScheduledFuture<?> foceCheckDataJob = this.foceCheckDataJob;
+        @Nullable
+        ScheduledFuture<?> foceCheckDataJob = this.foceCheckDataJob;
         if (foceCheckDataJob != null) {
             foceCheckDataJob.cancel(true);
             this.foceCheckDataJob = null;
         }
-        @Nullable ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
+        @Nullable
+        ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
         if (refreshDataDelayed != null) {
             refreshDataDelayed.cancel(true);
             this.refreshAfterCommandJob = null;
+        }
+        @Nullable
+        ScheduledFuture<?> pushActivitySenderUnblockFuture = this.pushActivitySenderUnblockFuture;
+        if (pushActivitySenderUnblockFuture != null) {
+            pushActivitySenderUnblockFuture.cancel(true);
         }
         Connection connection = this.connection;
         if (connection != null) {
@@ -338,7 +354,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     if (!currentConnection.getIsLoggedIn()) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                                 "Please login in through web site: http(s)://<YOUROPENHAB>:<YOURPORT>/amazonechocontrol/"
-                                + URLEncoder.encode(uid.getId(), "UTF8"));
+                                        + URLEncoder.encode(uid.getId(), "UTF8"));
                     }
                 } catch (ConnectionException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -498,7 +514,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 for (EchoHandler child : echoHandlers) {
                     Device device = findDeviceJson(child);
 
-                    @Nullable JsonNotificationSound[] notificationSounds = null;
+                    @Nullable
+                    JsonNotificationSound[] notificationSounds = null;
                     JsonPlaylists playlists = null;
                     if (device != null && currentConnection.getIsLoggedIn()) {
                         // update notification sounds
@@ -724,11 +741,11 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     void handleWebsocketCommand(JsonPushCommand pushCommand) {
         String command = pushCommand.command;
         if (command != null) {
-            @Nullable ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
+            @Nullable
+            ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
             switch (command) {
                 case "PUSH_ACTIVITY":
                     handlePushActivity(pushCommand.payload);
-                    // refresh data 200ms after last command
                     if (refreshDataDelayed != null) {
                         refreshDataDelayed.cancel(false);
                     }
@@ -737,7 +754,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     break;
                 case "PUSH_DOPPLER_CONNECTION_CHANGE":
                 case "PUSH_BLUETOOTH_STATE_CHANGE":
-                    // refresh data 200ms after last command
                     if (refreshDataDelayed != null) {
                         refreshDataDelayed.cancel(false);
                     }
@@ -755,7 +771,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                             && payload.endsWith("}")) {
                         JsonCommandPayloadPushDevice devicePayload = gson.fromJson(payload,
                                 JsonCommandPayloadPushDevice.class);
-                        @Nullable DopplerId dopplerId = devicePayload.dopplerId;
+                        @Nullable
+                        DopplerId dopplerId = devicePayload.dopplerId;
                         if (dopplerId != null) {
                             handlePushDeviceCommand(dopplerId, command, payload);
                         }
@@ -766,47 +783,65 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     private void handlePushDeviceCommand(DopplerId dopplerId, String command, String payload) {
-        @Nullable EchoHandler echoHandler = findEchoHandlerBySerialNumber(dopplerId.deviceSerialNumber);
+        @Nullable
+        EchoHandler echoHandler = findEchoHandlerBySerialNumber(dopplerId.deviceSerialNumber);
         if (echoHandler != null) {
             echoHandler.handlePushCommand(command, payload);
         }
     }
 
+    // NEED TO RUN IN A DELAYED QUEUE, ELSE TOO MANY REQUESTS
     private void handlePushActivity(@Nullable String payload) {
-        JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload, JsonCommandPayloadPushActivity.class);
-
-        Key key = pushActivity.key;
-        if (key == null) {
-            return;
+        pushActivityQueue.add(payload);
+        if (pushActivityQueueRunning.compareAndSet(false, true)) {
+            queuedPushActivity();
         }
+    }
 
-        Connection connection = this.connection;
-        if (connection == null || !connection.getIsLoggedIn()) {
-            return;
-        }
-        Activity[] activities = connection.getActivities(10, pushActivity.timestamp);
-        Activity currentActivity = null;
-        String search = key.registeredUserId + "#" + key.entryId;
-        for (Activity activity : activities) {
-            if (StringUtils.equals(activity.id, search)) {
-                currentActivity = activity;
-                break;
+    private void queuedPushActivity() {
+        @Nullable
+        String payload = pushActivityQueue.poll();
+        if (payload != null) {
+            JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload, JsonCommandPayloadPushActivity.class);
+
+            Key key = pushActivity.key;
+            if (key == null) {
+                return;
             }
-        }
-        if (currentActivity == null) {
-            return;
-        }
 
-        @Nullable SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
-        if (sourceDeviceIds != null) {
-            for (SourceDeviceId sourceDeviceId : sourceDeviceIds) {
-                if (sourceDeviceId != null) {
-                    EchoHandler echoHandler = findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber);
-                    if (echoHandler != null) {
-                        echoHandler.handlePushActivity(currentActivity);
+            Connection connection = this.connection;
+            if (connection == null || !connection.getIsLoggedIn()) {
+                return;
+            }
+            Activity[] activities = connection.getActivities(10, pushActivity.timestamp);
+            Activity currentActivity = null;
+            String search = key.registeredUserId + "#" + key.entryId;
+            for (Activity activity : activities) {
+                if (StringUtils.equals(activity.id, search)) {
+                    currentActivity = activity;
+                    break;
+                }
+            }
+            if (currentActivity == null) {
+                return;
+            }
+
+            @Nullable
+            SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
+            if (sourceDeviceIds != null) {
+                for (SourceDeviceId sourceDeviceId : sourceDeviceIds) {
+                    if (sourceDeviceId != null) {
+                        EchoHandler echoHandler = findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber);
+                        if (echoHandler != null) {
+                            echoHandler.handlePushActivity(currentActivity);
+                        }
                     }
                 }
             }
+            pushActivitySenderUnblockFuture = scheduler.schedule(this::queuedPushActivity, 3, TimeUnit.SECONDS);
+        } else {
+            pushActivityQueueRunning.set(false);
+            pushActivitySenderUnblockFuture = null;
         }
     }
 

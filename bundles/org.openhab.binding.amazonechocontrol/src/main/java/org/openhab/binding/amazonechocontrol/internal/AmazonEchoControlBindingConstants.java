@@ -69,7 +69,6 @@ public class AmazonEchoControlBindingConstants {
     public static final String CHANNEL_AMAZON_MUSIC = "amazonMusic";
     public static final String CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID = "amazonMusicPlayListId";
     public static final String CHANNEL_TEXT_TO_SPEECH = "textToSpeech";
-    public static final String CHANNEL_SOUND = "sound";
     public static final String CHANNEL_TEXT_TO_SPEECH_VOLUME = "textToSpeechVolume";
     public static final String CHANNEL_REMIND = "remind";
     public static final String CHANNEL_PLAY_ALARM_SOUND = "playAlarmSound";
