@@ -52,5 +52,4 @@ public class FrameCbetmShort extends FrameCbetm {
     public void setAdir3(Integer adir3) {
         this.adir3 = adir3;
     }
-
 }

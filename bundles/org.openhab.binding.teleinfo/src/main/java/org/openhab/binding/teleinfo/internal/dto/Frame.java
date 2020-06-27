@@ -47,5 +47,4 @@ public abstract class Frame implements Serializable {
     public void setTimestamp(LocalDate timestamp) {
         this.timestamp = timestamp;
     }
-
 }

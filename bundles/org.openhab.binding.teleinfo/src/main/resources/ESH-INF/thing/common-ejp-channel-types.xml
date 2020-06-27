@@ -9,7 +9,7 @@
 		<label>EJPHPM</label>
 		<description>Total consumed energy at high rate pricing</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ejphnType">
@@ -17,7 +17,7 @@
 		<label>EJPHN</label>
 		<description>Total consumed energy at low rate pricing</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pejpType">
@@ -25,6 +25,6 @@
 		<label>PEJP</label>
 		<description>Prior notice to EJP start</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -61,5 +61,4 @@ public class HhphcConverter implements Converter {
         logger.debug("convert(String) [end]");
         return convertedValue;
     }
-
 }

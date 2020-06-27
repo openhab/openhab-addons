@@ -19,9 +19,9 @@ import java.net.URL;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
-*
-* @author Nicolas SIBERIL - Initial contribution
-*/
+ *
+ * @author Nicolas SIBERIL - Initial contribution
+ */
 @NonNullByDefault
 public final class TestUtils {
 

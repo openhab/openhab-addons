@@ -52,11 +52,11 @@ import org.openhab.binding.teleinfo.internal.dto.common.FrameBaseOption;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameEjpOption;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameHcOption;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption;
-import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
-import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.CouleurDemain;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.ProgrammeCircuit1;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.ProgrammeCircuit2;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.FrameUtil;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
@@ -151,7 +151,7 @@ public class TeleinfoInputStream extends InputStream {
     public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, TimeoutException, IOException {
 
         // seek the next header frame
-        Future<@Nullable Void> seekNextHeaderFrameTask = executorService.submit(()->{
+        Future<@Nullable Void> seekNextHeaderFrameTask = executorService.submit(() -> {
             while (!isHeaderFrame(groupLine)) {
                 groupLine = bufferedReader.readLine();
                 if (logger.isTraceEnabled()) {
@@ -189,7 +189,7 @@ public class TeleinfoInputStream extends InputStream {
                 while ((groupLine = bufferedReader.readLine()) != null && !isHeaderFrame(groupLine)) {
                     logger.trace("groupLine = {}", groupLine);
                     String groupLineRef = groupLine;
-                    if(groupLineRef != null) {
+                    if (groupLineRef != null) {
                         String[] groupLineTokens = groupLineRef.split("\\s");
                         if (groupLineTokens.length != 2 && groupLineTokens.length != 3) {
                             final String error = String.format("The groupLine '%1$s' is incomplete", groupLineRef);
@@ -197,7 +197,7 @@ public class TeleinfoInputStream extends InputStream {
                         }
                         String labelStr = groupLineTokens[0];
                         String valueString = groupLineTokens[1];
-    
+
                         // verify integrity (through checksum)
                         char checksum = (groupLineTokens.length == 3 ? groupLineTokens[2].charAt(0) : ' ');
                         char computedChecksum = FrameUtil.computeGroupLineChecksum(labelStr, valueString);
@@ -209,13 +209,14 @@ public class TeleinfoInputStream extends InputStream {
                                     groupLineRef, checksum, computedChecksum);
                             throw new InvalidFrameException(error);
                         }
-    
+
                         Label label;
                         try {
                             label = Label.valueOf(labelStr);
                         } catch (IllegalArgumentException e) {
                             if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
-                                // in this hardware issue, label variable is composed by label name and value. E.g: ADPS032
+                                // in this hardware issue, label variable is composed by label name and value. E.g:
+                                // ADPS032
                                 logger.warn("Try to auto repair malformed ADPS groupLine '{}'", labelStr);
                                 label = Label.ADPS;
                                 valueString = labelStr.substring(Label.ADPS.name().length());
@@ -224,12 +225,12 @@ public class TeleinfoInputStream extends InputStream {
                                 throw new InvalidFrameException(error);
                             }
                         }
-    
+
                         Class<?> labelType = label.getType();
                         Converter converter = LABEL_VALUE_CONVERTERS.get(labelType);
                         try {
                             Object value = converter.convert(valueString);
-                            if(value != null) {
+                            if (value != null) {
                                 frameValues.put(label, value);
                             }
                         } catch (ConversionException e) {
@@ -653,7 +654,7 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     private String computeProgrammeCircuitBinaryValue(char value) {
-        return String.format("%8s",Integer.toBinaryString(value)).replace(' ', '0');
+        return String.format("%8s", Integer.toBinaryString(value)).replace(' ', '0');
     }
 
     private Exception rethrowTaskExecutionException(ExecutionException e)

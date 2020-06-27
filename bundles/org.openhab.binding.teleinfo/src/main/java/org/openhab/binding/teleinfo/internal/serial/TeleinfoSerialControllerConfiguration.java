@@ -24,5 +24,4 @@ public class TeleinfoSerialControllerConfiguration {
 
     public String serialport = "";
     public boolean autoRepairInvalidADPSgroupLine = true;
-
 }

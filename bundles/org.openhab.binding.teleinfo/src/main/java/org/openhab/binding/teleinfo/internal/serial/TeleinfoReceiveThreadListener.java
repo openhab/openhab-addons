@@ -29,11 +29,9 @@ public interface TeleinfoReceiveThreadListener {
 
     void onFrameReceived(final TeleinfoReceiveThread receiveThread, final Frame frame);
 
-    void onInvalidFrameReceived(final TeleinfoReceiveThread receiveThread,
-            final InvalidFrameException error);
+    void onInvalidFrameReceived(final TeleinfoReceiveThread receiveThread, final InvalidFrameException error);
 
-    void onSerialPortInputStreamIOException(final TeleinfoReceiveThread receiveThread,
-            final IOException e);
+    void onSerialPortInputStreamIOException(final TeleinfoReceiveThread receiveThread, final IOException e);
 
     boolean continueOnReadNextFrameTimeoutException(final TeleinfoReceiveThread receiveThread,
             final TimeoutException e);

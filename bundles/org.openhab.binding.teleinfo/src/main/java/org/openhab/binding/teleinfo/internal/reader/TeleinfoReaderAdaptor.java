@@ -72,5 +72,4 @@ public abstract class TeleinfoReaderAdaptor implements TeleinfoReader {
     public List<TeleinfoReaderListener> getListeners() {
         return Collections.unmodifiableList(listeners);
     }
-
 }

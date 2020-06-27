@@ -33,5 +33,4 @@ public interface TeleinfoReader extends Closeable {
     void addListener(final TeleinfoReaderListener listener);
 
     void removeListener(final TeleinfoReaderListener listener);
-
 }

@@ -108,5 +108,4 @@ public abstract class FrameCbetmLong extends FrameCbetm {
     public void setPpot(String ppot) {
         this.ppot = ppot;
     }
-
 }

@@ -6,19 +6,20 @@
 
 	<thing-type id="cbemm_ejp_electricitymeter" listed="false">
 		<label>CBEMM EJP</label>
-		<description>Single-phase Electricity meter with EJP option - CBEMM (aka "Compteur Bleu Electronique Monophasé Multitarif")</description>
+		<description>Single-phase Electricity meter with EJP option - CBEMM (aka "Compteur Bleu Electronique Monophasé
+			Multitarif")</description>
 
 		<channels>
-			<channel id="isousc" typeId="isouscType" />
-			<channel id="ptec" typeId="ptecType" />
-			<channel id="imax" typeId="imaxType" />
-			<channel id="adps" typeId="adpsType" />
-			<channel id="iinst" typeId="iinstType" />
-			<channel id="currentPower" typeId="currentPowerType" />
-			<channel id="pejp" typeId="pejpType" />
-			<channel id="ejphpm" typeId="ejphpmType" />
-			<channel id="ejphn" typeId="ejphnType" />
-			<channel id="lastUpdate" typeId="lastUpdateType" />
+			<channel id="isousc" typeId="isouscType"/>
+			<channel id="ptec" typeId="ptecType"/>
+			<channel id="imax" typeId="imaxType"/>
+			<channel id="adps" typeId="adpsType"/>
+			<channel id="iinst" typeId="iinstType"/>
+			<channel id="currentPower" typeId="currentPowerType"/>
+			<channel id="pejp" typeId="pejpType"/>
+			<channel id="ejphpm" typeId="ejphpmType"/>
+			<channel id="ejphn" typeId="ejphnType"/>
+			<channel id="lastUpdate" typeId="lastUpdateType"/>
 		</channels>
 
 		<config-description-ref uri="binding:teleinfo:adco"/>

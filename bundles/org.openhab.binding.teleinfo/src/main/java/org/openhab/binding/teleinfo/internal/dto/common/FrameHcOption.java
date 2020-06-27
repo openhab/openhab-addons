@@ -30,5 +30,4 @@ public interface FrameHcOption {
     Hhphc getHhphc();
 
     void setHhphc(Hhphc hhphc);
-
 }

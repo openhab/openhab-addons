@@ -82,5 +82,4 @@ public abstract class FrameCbemm extends FrameAdco {
     public void setMotdetat(String motdetat) {
         this.motdetat = motdetat;
     }
-
 }

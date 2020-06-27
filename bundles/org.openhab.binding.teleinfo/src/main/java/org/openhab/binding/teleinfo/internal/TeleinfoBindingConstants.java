@@ -87,7 +87,7 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_CBETM_SHORT_ADIR3 = "adir3";
 
     public static final String THING_ELECTRICITY_METER_PROPERTY_ADCO = "adco";
-    
+
     public static final ThingTypeUID THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID = new ThingTypeUID(BINDING_ID,
             "cbemm_hc_electricitymeter");
     public static final String THING_HC_CBEMM_ELECTRICITY_METER_PROPERTY_ADCO = THING_ELECTRICITY_METER_PROPERTY_ADCO;
@@ -142,5 +142,4 @@ public class TeleinfoBindingConstants {
     public static final String ERROR_OFFLINE_SERIAL_LISTENERS = "@text/teleinfo.thingstate.serial_listeners";
     public static final String ERROR_OFFLINE_CONTROLLER_OFFLINE = "@text/teleinfo.thingstate.controller_offline";
     public static final String ERROR_UNKNOWN_RETRY_IN_PROGRESS = "@text/teleinfo.thingstate.controller_unknown_retry_inprogress";
-
 }

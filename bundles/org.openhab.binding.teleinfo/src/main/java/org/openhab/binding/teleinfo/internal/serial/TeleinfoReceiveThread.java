@@ -54,10 +54,10 @@ public class TeleinfoReceiveThread extends Thread {
                 TeleinfoInputStream.defaultTimeoutReadingFrame * 100, autoRepairInvalidADPSgroupLine)) {
             while (!interrupted()) {
                 TeleinfoReceiveThreadListener listener = this.listener;
-                if(listener != null) {
+                if (listener != null) {
                     try {
                         Frame nextFrame = teleinfoStream.readNextFrame();
-                        if(nextFrame != null)
+                        if (nextFrame != null)
                             listener.onFrameReceived(this, nextFrame);
                     } catch (InvalidFrameException e) {
                         logger.error("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());

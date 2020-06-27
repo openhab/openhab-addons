@@ -25,5 +25,4 @@ import org.openhab.binding.teleinfo.internal.reader.io.serialport.ConversionExce
 public interface Converter {
 
     public @Nullable Object convert(String value) throws ConversionException;
-
 }

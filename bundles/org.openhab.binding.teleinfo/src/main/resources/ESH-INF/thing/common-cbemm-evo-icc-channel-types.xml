@@ -9,7 +9,7 @@
 		<label>PAPP</label>
 		<description>Instantaneous apparent power</description>
 		<category>Energy</category>
-		<state pattern="%d VA" readOnly="true" />
+		<state pattern="%d VA" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

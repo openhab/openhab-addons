@@ -36,5 +36,4 @@ public abstract class FrameAdco extends Frame {
     public void setAdco(String adco) {
         this.adco = adco;
     }
-
 }

@@ -79,5 +79,4 @@ public class PtecConverter implements Converter {
         logger.debug("convert(String) [end]");
         return convertedValue;
     }
-
 }

@@ -9,7 +9,7 @@
 		<label>HCHC</label>
 		<description>Total consumed energy at low rate pricing</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="hchpType">
@@ -17,7 +17,7 @@
 		<label>HCHP</label>
 		<description>Total consumed energy at high rate pricing</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

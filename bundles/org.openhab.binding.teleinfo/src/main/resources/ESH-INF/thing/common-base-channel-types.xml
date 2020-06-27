@@ -9,7 +9,7 @@
 		<label>BASE</label>
 		<description>Total consumed energy</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

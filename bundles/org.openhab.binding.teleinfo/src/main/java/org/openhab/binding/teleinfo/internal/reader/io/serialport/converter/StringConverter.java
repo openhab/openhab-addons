@@ -38,5 +38,4 @@ public class StringConverter implements Converter {
         logger.debug("convert(String) [end]");
         return value;
     }
-
 }

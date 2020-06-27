@@ -32,7 +32,7 @@ public class ConversionException extends Exception {
         this(valueToConvert, null);
     }
 
-    public ConversionException(String valueToConvert,@Nullable Throwable cause) {
+    public ConversionException(String valueToConvert, @Nullable Throwable cause) {
         super(String.format(ERROR_MESSAGE, valueToConvert), cause);
         this.valueToConvert = valueToConvert;
     }

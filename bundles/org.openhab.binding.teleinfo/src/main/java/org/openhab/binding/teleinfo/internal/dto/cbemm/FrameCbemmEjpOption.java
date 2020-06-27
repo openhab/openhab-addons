@@ -60,5 +60,4 @@ public class FrameCbemmEjpOption extends FrameCbemm implements FrameEjpOption {
     public void setPejp(Integer pejp) {
         this.pejp = pejp;
     }
-
 }

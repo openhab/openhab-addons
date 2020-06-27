@@ -38,7 +38,8 @@ public class TeleinfoBaseCbemmEvoIccElectricityMeterHandler extends TeleinfoAbst
     public void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, Frame frame) {
         final FrameCbemmEvolutionIccBaseOption frameCbemmEvoIccBaseOption = (FrameCbemmEvolutionIccBaseOption) frame;
 
-        String adco = (String) getThing().getConfiguration().get(THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = (String) getThing().getConfiguration()
+                .get(THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO);
         if (frameCbemmEvoIccBaseOption.getAdco().equalsIgnoreCase(adco)) {
             updateStatesForCommonCbemmEvolutionIccChannels(frameCbemmEvoIccBaseOption);
             updateStatesForBaseFrameOption(frameCbemmEvoIccBaseOption);

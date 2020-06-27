@@ -68,13 +68,13 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
         invalidFrameCounter = 0;
 
         keepAliveThread = scheduler.scheduleWithFixedDelay(() -> {
-            if(!isInitialized() ) {
+            if (!isInitialized()) {
                 updateStatus(ThingStatus.UNKNOWN);
                 openSerialPortAndStartReceiving();
             }
             logger.debug("Check Teleinfo receiveThread status...");
             logger.debug("isInitialized() = {}", isInitialized());
-            TeleinfoReceiveThread receiveThreadRef = receiveThread ;
+            TeleinfoReceiveThread receiveThreadRef = receiveThread;
             if (receiveThreadRef != null) {
                 logger.debug("receiveThread.isAlive() = {}", receiveThreadRef.isAlive());
             }
@@ -90,8 +90,8 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     @Override
     public void dispose() {
         ScheduledFuture<?> keepAliveThreadRef = keepAliveThread;
-        if(keepAliveThreadRef != null) {
-            if(!keepAliveThreadRef.isCancelled())
+        if (keepAliveThreadRef != null) {
+            if (!keepAliveThreadRef.isCancelled())
                 keepAliveThreadRef.cancel(true);
             keepAliveThread = null;
         }
@@ -111,21 +111,18 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     @Override
-    public void onInvalidFrameReceived(TeleinfoReceiveThread receiveThread,
-            InvalidFrameException error) {
+    public void onInvalidFrameReceived(TeleinfoReceiveThread receiveThread, InvalidFrameException error) {
         invalidFrameCounter++;
         updateState(THING_SERIAL_CONTROLLER_CHANNEL_INVALID_FRAME_COUNTER, new DecimalType(invalidFrameCounter));
     }
 
     @Override
-    public void onSerialPortInputStreamIOException(TeleinfoReceiveThread receiveThread,
-            IOException e) {
+    public void onSerialPortInputStreamIOException(TeleinfoReceiveThread receiveThread, IOException e) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
     }
 
     @Override
-    public boolean continueOnReadNextFrameTimeoutException(TeleinfoReceiveThread receiveThread,
-            TimeoutException e) {
+    public boolean continueOnReadNextFrameTimeoutException(TeleinfoReceiveThread receiveThread, TimeoutException e) {
         logger.warn("Retry in progress. Next retry in {} seconds...", SERIAL_PORT_DELAY_RETRY_IN_SECONDS);
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
         try {
@@ -140,7 +137,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
         TeleinfoSerialControllerConfiguration config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
 
-        
         if (config.serialport.trim().isEmpty()) {
             logger.error("Teleinfo port is not set.");
             return;
@@ -167,7 +163,8 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             commPort.enableReceiveThreshold(1);
             commPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT);
             logger.debug("Starting receive thread");
-            TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this, config.autoRepairInvalidADPSgroupLine);
+            TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this,
+                    config.autoRepairInvalidADPSgroupLine);
             this.receiveThread = receiveThread;
             receiveThread.start();
 
@@ -198,6 +195,5 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             serialPortRef.close();
             serialPort = null;
         }
-
     }
 }

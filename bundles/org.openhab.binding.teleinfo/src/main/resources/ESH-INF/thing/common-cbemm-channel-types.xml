@@ -9,7 +9,7 @@
 		<label>IMAX</label>
 		<description>Maximum consumed electric current</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="iinstType">
@@ -17,7 +17,7 @@
 		<label>IINST</label>
 		<description>Instantaneous electric current</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentPowerType">
@@ -25,7 +25,7 @@
 		<label>currentpower</label>
 		<description>Instantaneous power</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 		<config-description>
 			<parameter name="powerFactor" type="integer">
 				<label>Nominal Voltage</label>
@@ -48,7 +48,7 @@
 		<label>ADPS</label>
 		<description>Excess electric current warning</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

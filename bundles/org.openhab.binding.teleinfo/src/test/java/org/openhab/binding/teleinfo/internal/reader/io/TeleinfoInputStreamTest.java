@@ -26,17 +26,17 @@ import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutio
 import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccTempoOption;
 import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongBaseOption;
 import org.openhab.binding.teleinfo.internal.dto.cbetm.FrameCbetmLongEjpOption;
-import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
-import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.ProgrammeCircuit1;
 import org.openhab.binding.teleinfo.internal.dto.common.FrameTempoOption.ProgrammeCircuit2;
+import org.openhab.binding.teleinfo.internal.dto.common.Hhphc;
+import org.openhab.binding.teleinfo.internal.dto.common.Ptec;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.util.TestUtils;
 
 /**
-*
-* @author Nicolas SIBERIL - Initial contribution
-*/
+ *
+ * @author Nicolas SIBERIL - Initial contribution
+ */
 @NonNullByDefault
 public class TeleinfoInputStreamTest {
 

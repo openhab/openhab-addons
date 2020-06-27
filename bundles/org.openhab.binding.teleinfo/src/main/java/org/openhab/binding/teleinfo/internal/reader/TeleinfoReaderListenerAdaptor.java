@@ -47,5 +47,4 @@ public abstract class TeleinfoReaderListenerAdaptor implements TeleinfoReaderLis
     public void onClosed(TeleinfoReader reader) {
         // NOP
     }
-
 }

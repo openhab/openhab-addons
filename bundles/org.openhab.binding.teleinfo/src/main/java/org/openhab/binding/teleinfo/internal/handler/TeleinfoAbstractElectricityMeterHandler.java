@@ -68,9 +68,10 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         }
 
         Bridge bridge = getBridge();
-        if(bridge != null) {
-            TeleinfoAbstractControllerHandler controllerHandler = (TeleinfoAbstractControllerHandler) bridge.getHandler();
-            if(controllerHandler != null) {
+        if (bridge != null) {
+            TeleinfoAbstractControllerHandler controllerHandler = (TeleinfoAbstractControllerHandler) bridge
+                    .getHandler();
+            if (controllerHandler != null) {
                 controllerHandler.addListener(this);
                 updateStatus(ThingStatus.ONLINE);
             }

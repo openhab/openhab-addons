@@ -138,5 +138,4 @@ public class FrameCbetmLongTempoOption extends FrameCbetmLong implements FrameTe
     public void setProgrammeCircuit2(ProgrammeCircuit2 programmeCircuit2) {
         this.programmeCircuit2 = programmeCircuit2;
     }
-
 }

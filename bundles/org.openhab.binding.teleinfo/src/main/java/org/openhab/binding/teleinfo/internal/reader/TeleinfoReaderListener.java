@@ -32,5 +32,4 @@ public interface TeleinfoReaderListener {
     void onClosing(final TeleinfoReader reader);
 
     void onClosed(final TeleinfoReader reader);
-
 }

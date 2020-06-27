@@ -47,24 +47,27 @@ public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends Telei
         updateState(CHANNEL_CBETM_IINST3, new DecimalType(frameCbetm.getIinst3()));
 
         Channel powerFactor1Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER1);
-        if(powerFactor1Channel != null) {
+        if (powerFactor1Channel != null) {
             BigDecimal powerFactor1 = (BigDecimal) powerFactor1Channel.getConfiguration()
                     .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-            updateState(CHANNEL_CBETM_CURRENT_POWER1, new DecimalType(frameCbetm.getIinst1() * powerFactor1.intValue()));
+            updateState(CHANNEL_CBETM_CURRENT_POWER1,
+                    new DecimalType(frameCbetm.getIinst1() * powerFactor1.intValue()));
         }
-        
+
         Channel powerFactor2Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER2);
-        if(powerFactor2Channel != null) {
+        if (powerFactor2Channel != null) {
             BigDecimal powerFactor2 = (BigDecimal) powerFactor2Channel.getConfiguration()
                     .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-            updateState(CHANNEL_CBETM_CURRENT_POWER2, new DecimalType(frameCbetm.getIinst2() * powerFactor2.intValue()));
+            updateState(CHANNEL_CBETM_CURRENT_POWER2,
+                    new DecimalType(frameCbetm.getIinst2() * powerFactor2.intValue()));
         }
 
         Channel powerFactor3Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER3);
-        if(powerFactor3Channel != null) {
+        if (powerFactor3Channel != null) {
             BigDecimal powerFactor3 = (BigDecimal) powerFactor3Channel.getConfiguration()
                     .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-            updateState(CHANNEL_CBETM_CURRENT_POWER3, new DecimalType(frameCbetm.getIinst3() * powerFactor3.intValue()));
+            updateState(CHANNEL_CBETM_CURRENT_POWER3,
+                    new DecimalType(frameCbetm.getIinst3() * powerFactor3.intValue()));
         }
 
         if (frameCbetm instanceof FrameCbetmLong) {

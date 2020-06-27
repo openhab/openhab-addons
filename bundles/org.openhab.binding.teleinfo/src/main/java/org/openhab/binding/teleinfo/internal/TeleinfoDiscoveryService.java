@@ -175,5 +175,4 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
 
         throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
     }
-
 }

@@ -22,5 +22,4 @@ public interface FrameBaseOption {
     int getBase();
 
     void setBase(int base);
-
 }

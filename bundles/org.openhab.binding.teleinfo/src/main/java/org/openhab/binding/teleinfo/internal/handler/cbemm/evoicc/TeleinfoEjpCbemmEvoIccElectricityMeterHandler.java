@@ -38,7 +38,8 @@ public class TeleinfoEjpCbemmEvoIccElectricityMeterHandler extends TeleinfoAbstr
     public void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, Frame frame) {
         final FrameCbemmEvolutionIccEjpOption frameCbemmEvoIccEjpOption = (FrameCbemmEvolutionIccEjpOption) frame;
 
-        String adco = (String) getThing().getConfiguration().get(THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = (String) getThing().getConfiguration()
+                .get(THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO);
         if (frameCbemmEvoIccEjpOption.getAdco().equalsIgnoreCase(adco)) {
             updateStatesForCommonCbemmEvolutionIccChannels(frameCbemmEvoIccEjpOption);
             updateStatesForEjpFrameOption(frameCbemmEvoIccEjpOption);

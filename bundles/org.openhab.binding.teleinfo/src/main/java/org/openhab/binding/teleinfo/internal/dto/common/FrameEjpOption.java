@@ -30,5 +30,4 @@ public interface FrameEjpOption {
     Integer getPejp();
 
     void setPejp(Integer pejp);
-
 }

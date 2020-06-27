@@ -57,7 +57,7 @@ public abstract class TeleinfoAbstractCbemmElectricityMeterHandler extends Telei
         updateState(CHANNEL_CBEMM_IINST, new DecimalType(frame.getIinst()));
 
         Channel currentPowerChannel = getThing().getChannel(CHANNEL_CBEMM_CURRENT_POWER);
-        if(currentPowerChannel != null) {
+        if (currentPowerChannel != null) {
             BigDecimal powerFactor = (BigDecimal) currentPowerChannel.getConfiguration()
                     .get(CHANNEL_CBEMM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
             updateState(CHANNEL_CBEMM_CURRENT_POWER, new DecimalType(frame.getIinst() * powerFactor.intValue()));

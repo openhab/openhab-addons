@@ -60,5 +60,4 @@ public class FrameCbemmEvolutionIccEjpOption extends FrameCbemmEvolutionIcc impl
     public void setPejp(Integer pejp) {
         this.pejp = pejp;
     }
-
 }

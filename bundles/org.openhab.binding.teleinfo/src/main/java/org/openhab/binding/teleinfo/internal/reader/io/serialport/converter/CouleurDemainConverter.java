@@ -58,5 +58,4 @@ public class CouleurDemainConverter implements Converter {
         logger.debug("convert(String) [end]");
         return convertedValue;
     }
-
 }

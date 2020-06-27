@@ -9,7 +9,7 @@
 		<label>ISOUSC</label>
 		<description>Subscribed electric current</description>
 		<category>Energy</category>
-		<state pattern="%d A" readOnly="true" />
+		<state pattern="%d A" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ptecType">
@@ -54,7 +54,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last received Teleinfo frame</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

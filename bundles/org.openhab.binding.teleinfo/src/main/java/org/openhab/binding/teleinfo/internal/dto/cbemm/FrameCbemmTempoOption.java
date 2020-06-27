@@ -138,5 +138,4 @@ public class FrameCbemmTempoOption extends FrameCbemm implements FrameTempoOptio
     public void setProgrammeCircuit2(ProgrammeCircuit2 programmeCircuit2) {
         this.programmeCircuit2 = programmeCircuit2;
     }
-
 }

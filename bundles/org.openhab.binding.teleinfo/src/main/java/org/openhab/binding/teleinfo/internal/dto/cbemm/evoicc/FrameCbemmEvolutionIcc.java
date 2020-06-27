@@ -36,5 +36,4 @@ public abstract class FrameCbemmEvolutionIcc extends FrameCbemm {
     public void setPapp(int papp) {
         this.papp = papp;
     }
-
 }

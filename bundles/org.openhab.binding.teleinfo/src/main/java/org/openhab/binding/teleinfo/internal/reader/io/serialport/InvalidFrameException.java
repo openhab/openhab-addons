@@ -45,5 +45,4 @@ public class InvalidFrameException extends Exception {
     public Date getTimestamp() {
         return timestamp;
     }
-
 }

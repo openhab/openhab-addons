@@ -9,7 +9,7 @@
 		<description>Teleinfo USB Stick with Serial Interface</description>
 
 		<channels>
-			<channel id="invalidFrameCounter" typeId="invalidFrameCounterType" />
+			<channel id="invalidFrameCounter" typeId="invalidFrameCounterType"/>
 		</channels>
 
 		<config-description>
@@ -21,7 +21,8 @@
 			</parameter>
 			<parameter name="autoRepairInvalidADPSgroupLine" type="boolean" required="false">
 				<label>Auto repair malformed ADPS data</label>
-				<description>Try to auto repair malformed ADPS data from hardware issues (e.g: "ADPS032" instead of "ADPS 032" expected/well-formed data)</description>
+				<description>Try to auto repair malformed ADPS data from hardware issues (e.g: "ADPS032" instead of "ADPS 032"
+					expected/well-formed data)</description>
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>

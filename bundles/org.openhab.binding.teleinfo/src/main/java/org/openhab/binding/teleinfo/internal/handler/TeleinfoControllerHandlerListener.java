@@ -25,5 +25,4 @@ import org.openhab.binding.teleinfo.internal.dto.Frame;
 public interface TeleinfoControllerHandlerListener {
 
     void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, final Frame frame);
-
 }

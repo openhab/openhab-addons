@@ -10,19 +10,19 @@
 			Monophasé Multitarif Evolution ICC")</description>
 
 		<channels>
-			<channel id="isousc" typeId="isouscType" />
-			<channel id="ptec" typeId="ptecType" />
-			<channel id="imax" typeId="imaxType" />
-			<channel id="adps" typeId="adpsType" />
-			<channel id="papp" typeId="pappType" />
-			<channel id="iinst" typeId="iinstType" />
-			<channel id="currentPower" typeId="currentPowerType" />
-			<channel id="lastUpdate" typeId="lastUpdateType" />
-			<channel id="base" typeId="baseType" />
+			<channel id="isousc" typeId="isouscType"/>
+			<channel id="ptec" typeId="ptecType"/>
+			<channel id="imax" typeId="imaxType"/>
+			<channel id="adps" typeId="adpsType"/>
+			<channel id="papp" typeId="pappType"/>
+			<channel id="iinst" typeId="iinstType"/>
+			<channel id="currentPower" typeId="currentPowerType"/>
+			<channel id="lastUpdate" typeId="lastUpdateType"/>
+			<channel id="base" typeId="baseType"/>
 		</channels>
 
 		<config-description-ref uri="binding:teleinfo:adco"/>
-		
+
 	</thing-type>
 
 </thing:thing-descriptions>

@@ -9,7 +9,7 @@
 		<label>BBRHPJR</label>
 		<description>Total consumed energy at high rate pricing on red days</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bbrhcjrType">
@@ -17,7 +17,7 @@
 		<label>BBRHCJR</label>
 		<description>Total consumed energy at low rate pricing on red days</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bbrhpjwType">
@@ -25,7 +25,7 @@
 		<label>BBRHPJW</label>
 		<description>Total consumed energy at high rate pricing on white days</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bbrhcjwType">
@@ -33,7 +33,7 @@
 		<label>BBRHCJW</label>
 		<description>Total consumed energy at low rate pricing on white days</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bbrhpjbType">
@@ -41,7 +41,7 @@
 		<label>BBRHPJB</label>
 		<description>Total consumed energy at high rate pricing on blue days</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="bbrhcjbType">
@@ -49,7 +49,7 @@
 		<label>BBRHCJB</label>
 		<description>Total consumed energy at low rate pricing on blue days</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="couleurDemainType">

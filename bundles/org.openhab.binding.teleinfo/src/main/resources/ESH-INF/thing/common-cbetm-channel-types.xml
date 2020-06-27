@@ -22,7 +22,7 @@
 		<label>IINST1</label>
 		<description>Instantaneous electric current on phase 1</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="iinst2Type">
@@ -30,7 +30,7 @@
 		<label>IINST2</label>
 		<description>Instantaneous electric current on phase 2</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="iinst3Type">
@@ -38,7 +38,7 @@
 		<label>IINST3</label>
 		<description>Instantaneous electric current on phase 3</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentPower1Type">
@@ -46,7 +46,7 @@
 		<label>currentpower1</label>
 		<description>Instantaneous power 1</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 		<config-description>
 			<parameter name="powerFactor" type="integer">
 				<label>Power factor</label>
@@ -69,7 +69,7 @@
 		<label>currentpower2</label>
 		<description>Instantaneous power 2</description>
 		<category>Energy</category>
-		<state pattern="%d W" readOnly="true" />
+		<state pattern="%d W" readOnly="true"/>
 		<config-description>
 			<parameter name="powerFactor" type="integer">
 				<label>Power factor</label>
@@ -92,7 +92,7 @@
 		<label>currentpower3</label>
 		<description>Instantaneous power 3</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 		<config-description>
 			<parameter name="powerFactor" type="integer">
 				<label>Power factor</label>
@@ -115,7 +115,7 @@
 		<label>IMAX1</label>
 		<description>Maximum consumed electric current on phase 1</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="imax2Type">
@@ -123,7 +123,7 @@
 		<label>IMAX2</label>
 		<description>Maximum consumed electric current on phase 2</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="imax3Type">
@@ -131,7 +131,7 @@
 		<label>IMAX3</label>
 		<description>Maximum consumed electric current on phase 3</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pmaxType">
@@ -139,7 +139,7 @@
 		<label>PMAX</label>
 		<description>Maximum consumed electric power on all phases</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="pappType">
@@ -147,7 +147,7 @@
 		<label>PAPP</label>
 		<description>Instantaneous apparent power</description>
 		<category>Energy</category>
-		<state pattern="%d VA" readOnly="true" />
+		<state pattern="%d VA" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="ppotType">
@@ -155,7 +155,7 @@
 		<label>PPOT</label>
 		<description>Electrical potential presence</description>
 		<category>Energy</category>
-		<state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="adir1Type">
@@ -163,7 +163,7 @@
 		<label>ADIR1</label>
 		<description>Excess electric current on phase 1 warning</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="adir2Type">
@@ -171,7 +171,7 @@
 		<label>ADIR2</label>
 		<description>Excess electric current on phase 2 warning</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="adir3Type">
@@ -179,6 +179,6 @@
 		<label>ADIR3</label>
 		<description>Excess electric current on phase 3 warning</description>
 		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
