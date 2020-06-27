@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -43,6 +43,7 @@ import io.swagger.client.model.NAStationDataBody;
  * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
+@NonNullByDefault
 public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
@@ -51,7 +52,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     }
 
     @Override
-    protected NAMain updateReadings() {
+    protected @Nullable NAMain updateReadings() {
         NAMain result = null;
         NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(getId());
         if (stationDataBody != null) {
@@ -167,9 +168,10 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
-        if (device != null) {
-            NADashboardData dashboardData = device.getDashboardData();
+    protected State getNAThingProperty(String channelId) {
+        NAMain mainDevice = device;
+        if (mainDevice != null) {
+            NADashboardData dashboardData = mainDevice.getDashboardData();
             if (dashboardData != null) {
                 switch (channelId) {
                     case CHANNEL_CO2:
@@ -288,8 +290,9 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
 
     @Override
     protected @Nullable Integer getDataTimestamp() {
-        if (device != null) {
-            Integer lastStored = device.getLastStatusStore();
+        NAMain mainDevice = device;
+        if (mainDevice != null) {
+            Integer lastStored = mainDevice.getLastStatusStore();
             if (lastStored != null) {
                 return lastStored;
             }
