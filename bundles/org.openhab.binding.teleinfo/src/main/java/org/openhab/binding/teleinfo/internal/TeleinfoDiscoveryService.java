@@ -119,7 +119,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
 
         ThingUID thingUID = getThingUID(frameAdco);
 
-        final Map<String, Object> properties = getThingProperties(thingUID.getThingTypeUID(), frameAdco);
+        final Map<String, Object> properties = getThingProperties(frameAdco);
         final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withLabel("Teleinfo ADCO " + frameAdco.getAdco()).withThingType(getThingTypeUID(frameAdco))
@@ -164,7 +164,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
         }
     }
 
-    private Map<String, Object> getThingProperties(final ThingTypeUID thingTypeId, final Frame teleinfoFrame) {
+    private Map<String, Object> getThingProperties(final Frame teleinfoFrame) {
         Map<String, Object> properties = new HashMap<String, Object>();
         if (teleinfoFrame instanceof FrameAdco) {
             final FrameAdco frameAdco = (FrameAdco) teleinfoFrame;
