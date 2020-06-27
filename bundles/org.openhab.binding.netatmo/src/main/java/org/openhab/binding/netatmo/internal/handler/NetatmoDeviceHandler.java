@@ -128,6 +128,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to connect Netatmo API : " + e.getLocalizedMessage());
                 }
+                NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
                 if (newDeviceReading != null) {
                     updateStatus(ThingStatus.ONLINE);
                     logger.debug("Successfully updated device {} readings! Now updating channels", getId());
@@ -139,20 +140,21 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                         strategy.setDataTimeStamp(dataTimeStamp, timeZoneProvider.getTimeZone());
                     }
                     radioHelper.ifPresent(helper -> helper.setModule(theDevice));
-                    NetatmoBridgeHandler handler = getBridgeHandler();
-                    if (handler != null) {
-                        handler.checkForNewThings(newDeviceReading);
+                    if (bridgeHandler != null) {
+                        bridgeHandler.checkForNewThings(newDeviceReading);
                     }
                 } else {
                     logger.debug("Failed to update device {} readings! Skip updating channels", getId());
                 }
                 // Be sure that all channels for the modules will be updated with refreshed data
-                childs.forEach((childId, moduleData) -> {
-                    Optional<AbstractNetatmoThingHandler> childHandler = getBridgeHandler().findNAThing(childId);
-                    childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
-                        naChildModule.setRefreshRequired(true);
+                if (bridgeHandler != null) {
+                    childs.forEach((childId, moduleData) -> {
+                        Optional<AbstractNetatmoThingHandler> childHandler = bridgeHandler.findNAThing(childId);
+                        childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+                            naChildModule.setRefreshRequired(true);
+                        });
                     });
-                });
+                }
             } else {
                 logger.debug("Data still valid for device {}", getId());
             }
@@ -198,14 +200,17 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     }
 
     private void updateChildModules() {
-        logger.debug("Updating child modules of {}", getId());
-        childs.forEach((childId, moduleData) -> {
-            Optional<AbstractNetatmoThingHandler> childHandler = getBridgeHandler().findNAThing(childId);
-            childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
-                logger.debug("Updating child module {}", naChildModule.getId());
-                naChildModule.updateChannels(moduleData);
+        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null) {
+            logger.debug("Updating child modules of {}", getId());
+            childs.forEach((childId, moduleData) -> {
+                Optional<AbstractNetatmoThingHandler> childHandler = bridgeHandler.findNAThing(childId);
+                childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+                    logger.debug("Updating child module {}", naChildModule.getId());
+                    naChildModule.updateChannels(moduleData);
+                });
             });
-        });
+        }
     }
 
     /*

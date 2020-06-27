@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NADashboardData;
@@ -42,7 +43,9 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     @Override
     protected @Nullable NAHealthyHomeCoach updateReadings() {
         NAHealthyHomeCoach result = null;
-        NAHealthyHomeCoachDataBody homecoachDataBody = getBridgeHandler().getHomecoachDataBody(getId());
+        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
+        NAHealthyHomeCoachDataBody homecoachDataBody = bridgeHandler == null ? null
+                : bridgeHandler.getHomecoachDataBody(getId());
         if (homecoachDataBody != null) {
             result = homecoachDataBody.getDevices().get(0);
         }

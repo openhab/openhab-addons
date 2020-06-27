@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NAPlug;
@@ -47,7 +48,9 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     @Override
     protected @Nullable NAPlug updateReadings() {
         NAPlug result = null;
-        NAThermostatDataBody thermostatDataBody = getBridgeHandler().getThermostatsDataBody(getId());
+        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
+        NAThermostatDataBody thermostatDataBody = bridgeHandler == null ? null
+                : bridgeHandler.getThermostatsDataBody(getId());
         if (thermostatDataBody != null) {
             result = thermostatDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);

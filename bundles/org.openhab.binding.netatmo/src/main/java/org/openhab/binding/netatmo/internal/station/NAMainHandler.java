@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
 import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
@@ -54,7 +55,8 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     @Override
     protected @Nullable NAMain updateReadings() {
         NAMain result = null;
-        NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(getId());
+        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
+        NAStationDataBody stationDataBody = bridgeHandler == null ? null : bridgeHandler.getStationsDataBody(getId());
         if (stationDataBody != null) {
             result = stationDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);
@@ -65,12 +67,14 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
 
         updateMeasurements();
 
-        childs.keySet().forEach((childId) -> {
-            Optional<AbstractNetatmoThingHandler> childHandler = getBridgeHandler().findNAThing(childId);
-            childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
-                naChildModule.updateMeasurements();
+        if (bridgeHandler != null) {
+            childs.keySet().forEach((childId) -> {
+                Optional<AbstractNetatmoThingHandler> childHandler = bridgeHandler.findNAThing(childId);
+                childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+                    naChildModule.updateMeasurements();
+                });
             });
-        });
+        }
 
         return result;
     }
