@@ -265,7 +265,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                         lightState.setTransitionTime(fadeTime);
                     }
                 }
-                lastColorTemp = this.lastSentColorTemp;
+                lastColorTemp = lastSentColorTemp;
                 if (lightState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
@@ -281,7 +281,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
                     }
                 }
-                lastColorTemp = this.lastSentColorTemp;
+                lastColorTemp = lastSentColorTemp;
                 if (lightState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off

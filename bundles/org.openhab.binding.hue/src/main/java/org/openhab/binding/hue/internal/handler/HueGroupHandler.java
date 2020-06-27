@@ -215,7 +215,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                         groupState.setTransitionTime(fadeTime);
                     }
                 }
-                lastColorTemp = this.lastSentColorTemp;
+                lastColorTemp = lastSentColorTemp;
                 if (groupState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
@@ -227,7 +227,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                 if (command instanceof OnOffType) {
                     groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 }
-                lastColorTemp = this.lastSentColorTemp;
+                lastColorTemp = lastSentColorTemp;
                 if (groupState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
