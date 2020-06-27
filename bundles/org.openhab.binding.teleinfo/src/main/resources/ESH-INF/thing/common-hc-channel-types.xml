@@ -7,7 +7,7 @@
 	<channel-type id="hchcType">
 		<item-type>Number:Energy</item-type>
 		<label>HCHC</label>
-		<description>HCHC</description>
+		<description>Total consumed energy at low rate pricing</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -15,7 +15,7 @@
 	<channel-type id="hchpType">
 		<item-type>Number:Energy</item-type>
 		<label>HCHP</label>
-		<description>HCHP</description>
+		<description>Total consumed energy at high rate pricing</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>

@@ -20,7 +20,7 @@
 	<channel-type id="iinst1Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IINST1</label>
-		<description>IINST1</description>
+		<description>Instantaneous electric current on phase 1</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -28,7 +28,7 @@
 	<channel-type id="iinst2Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IINST2</label>
-		<description>IINST2</description>
+		<description>Instantaneous electric current on phase 2</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -36,7 +36,7 @@
 	<channel-type id="iinst3Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IINST3</label>
-		<description>IINST3</description>
+		<description>Instantaneous electric current on phase 3</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -113,7 +113,7 @@
 	<channel-type id="imax1Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IMAX1</label>
-		<description>IMAX1</description>
+		<description>Maximum consumed electric current on phase 1</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -121,7 +121,7 @@
 	<channel-type id="imax2Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IMAX2</label>
-		<description>IMAX2</description>
+		<description>Maximum consumed electric current on phase 2</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -129,7 +129,7 @@
 	<channel-type id="imax3Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IMAX3</label>
-		<description>IMAX3</description>
+		<description>Maximum consumed electric current on phase 3</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -137,7 +137,7 @@
 	<channel-type id="pmaxType">
 		<item-type>Number:Power</item-type>
 		<label>PMAX</label>
-		<description>PMAX</description>
+		<description>Maximum consumed electric power on all phases</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -145,7 +145,7 @@
 	<channel-type id="pappType">
 		<item-type>Number</item-type>
 		<label>PAPP</label>
-		<description>PAPP</description>
+		<description>Instantaneous apparent power</description>
 		<category>Energy</category>
 		<state pattern="%d VA" readOnly="true" />
 	</channel-type>
@@ -153,7 +153,7 @@
 	<channel-type id="ppotType">
 		<item-type>String</item-type>
 		<label>PPOT</label>
-		<description>PPOT</description>
+		<description>Electrical potential presence</description>
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true" />
 	</channel-type>
@@ -161,7 +161,7 @@
 	<channel-type id="adir1Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ADIR1</label>
-		<description>ADIR1</description>
+		<description>Excess electric current on phase 1 warning</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -169,7 +169,7 @@
 	<channel-type id="adir2Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ADIR2</label>
-		<description>ADIR2</description>
+		<description>Excess electric current on phase 2 warning</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -177,7 +177,7 @@
 	<channel-type id="adir3Type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ADIR3</label>
-		<description>ADIR3</description>
+		<description>Excess electric current on phase 3 warning</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>

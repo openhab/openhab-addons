@@ -7,7 +7,7 @@
 	<channel-type id="ejphpmType">
 		<item-type>Number:Energy</item-type>
 		<label>EJPHPM</label>
-		<description>EJPHPM</description>
+		<description>Total consumed energy at high rate pricing</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -15,7 +15,7 @@
 	<channel-type id="ejphnType">
 		<item-type>Number:Energy</item-type>
 		<label>EJPHN</label>
-		<description>EJPHN</description>
+		<description>Total consumed energy at low rate pricing</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -23,7 +23,7 @@
 	<channel-type id="pejpType">
 		<item-type>Number:Time</item-type>
 		<label>PEJP</label>
-		<description>PEJP</description>
+		<description>Prior notice to EJP start</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>

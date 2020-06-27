@@ -7,7 +7,7 @@
 	<channel-type id="imaxType">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IMAX</label>
-		<description>IMAX</description>
+		<description>Maximum consumed electric current</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -15,7 +15,7 @@
 	<channel-type id="iinstType">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>IINST</label>
-		<description>IINST</description>
+		<description>Instantaneous electric current</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
@@ -46,7 +46,7 @@
 	<channel-type id="adpsType">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ADPS</label>
-		<description>ADPS</description>
+		<description>Excess electric current warning</description>
 		<category>Energy</category>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>

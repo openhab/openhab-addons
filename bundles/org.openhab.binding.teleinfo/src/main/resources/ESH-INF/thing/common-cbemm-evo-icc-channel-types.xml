@@ -7,7 +7,7 @@
 	<channel-type id="pappType">
 		<item-type>Number</item-type>
 		<label>PAPP</label>
-		<description>PAPP</description>
+		<description>Instantaneous apparent power</description>
 		<category>Energy</category>
 		<state pattern="%d VA" readOnly="true" />
 	</channel-type>

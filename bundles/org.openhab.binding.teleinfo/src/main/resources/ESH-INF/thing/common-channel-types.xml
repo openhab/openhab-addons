@@ -7,7 +7,7 @@
 	<channel-type id="isouscType">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ISOUSC</label>
-		<description>ISOUSC</description>
+		<description>Subscribed electric current</description>
 		<category>Energy</category>
 		<state pattern="%d A" readOnly="true" />
 	</channel-type>
@@ -15,7 +15,7 @@
 	<channel-type id="ptecType">
 		<item-type>String</item-type>
 		<label>PTEC</label>
-		<description>PTEC</description>
+		<description>Current pricing period</description>
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true">
 			<options>
@@ -37,7 +37,7 @@
 	<channel-type id="hhphcType">
 		<item-type>String</item-type>
 		<label>HHPHC</label>
-		<description>HHPHC</description>
+		<description>Pricing schedule group</description>
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true">
 			<options>
