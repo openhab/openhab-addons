@@ -149,7 +149,6 @@ public class TeleinfoInputStream extends InputStream {
      * @throws IOException
      */
     public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, TimeoutException, IOException {
-        logger.debug("readNextFrame() [start]");
 
         // seek the next header frame
         Future<@Nullable Void> seekNextHeaderFrameTask = executorService.submit(()->{
@@ -255,7 +254,6 @@ public class TeleinfoInputStream extends InputStream {
             frame.setTimestamp(LocalDate.now());
             frame.setId(UUID.randomUUID());
 
-            logger.debug("readNextFrame() [end]");
             return frame;
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);

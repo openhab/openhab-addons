@@ -65,7 +65,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
     @Override
     public void initialize() {
-        logger.info("Initializing Teleinfo Serial controller");
         invalidFrameCounter = 0;
 
         keepAliveThread = scheduler.scheduleWithFixedDelay(() -> {
@@ -90,7 +89,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
     @Override
     public void dispose() {
-        logger.info("Teleinfo Serial is stopping...");
         ScheduledFuture<?> keepAliveThreadRef = keepAliveThread;
         if(keepAliveThreadRef != null) {
             if(!keepAliveThreadRef.isCancelled())
@@ -98,7 +96,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             keepAliveThread = null;
         }
         stopReceivingAndCloseSerialPort();
-        logger.info("Teleinfo Serial is stopped");
 
         super.dispose();
     }
@@ -140,7 +137,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     private void openSerialPortAndStartReceiving() {
-        logger.debug("startReceiving [start]");
 
         TeleinfoSerialControllerConfiguration config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
 
@@ -183,11 +179,9 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_UNSUPPORTED);
         }
-        logger.debug("startReceiving [end]");
     }
 
     private void stopReceivingAndCloseSerialPort() {
-        logger.debug("stopReceiving [start]");
 
         TeleinfoReceiveThread receiveThreadRef = receiveThread;
         if (receiveThreadRef != null) {
@@ -205,6 +199,5 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             serialPort = null;
         }
 
-        logger.debug("stopReceiving [end]");
     }
 }

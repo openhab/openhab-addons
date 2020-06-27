@@ -49,7 +49,6 @@ public class TeleinfoReceiveThread extends Thread {
 
     @Override
     public void run() {
-        logger.debug("Starting Teleinfo thread: Receive");
         try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
                 TeleinfoInputStream.defaultTimeoutNextHeaderFrame * 100,
                 TeleinfoInputStream.defaultTimeoutReadingFrame * 100, autoRepairInvalidADPSgroupLine)) {
@@ -79,8 +78,6 @@ public class TeleinfoReceiveThread extends Thread {
         } catch (IOException e) {
             logger.error("An error occurred during serial port input stream opening", e);
         }
-
-        logger.debug("Terminates Teleinfo receive thread");
 
         serialPort.removeEventListener();
     }
