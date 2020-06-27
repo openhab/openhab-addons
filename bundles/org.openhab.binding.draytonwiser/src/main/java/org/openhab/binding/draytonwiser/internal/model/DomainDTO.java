@@ -23,7 +23,6 @@ public class DomainDTO {
     private List<HeatingChannelDTO> heatingChannel;
     private List<HotWaterDTO> hotWater;
     private List<RoomDTO> room;
-    private List<ScheduleDTO> schedule;
     private List<DeviceDTO> device;
     private List<SmartValveDTO> smartValve;
     private List<RoomStatDTO> roomStat;
@@ -59,14 +58,6 @@ public class DomainDTO {
 
     public void setRoom(final List<RoomDTO> room) {
         this.room = room;
-    }
-
-    public List<ScheduleDTO> getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(final List<ScheduleDTO> schedule) {
-        this.schedule = schedule;
     }
 
     public List<DeviceDTO> getDevice() {

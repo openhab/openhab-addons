@@ -130,15 +130,6 @@ public class DraytonWiserDTO {
         return null;
     }
 
-    public @Nullable ScheduleDTO getSchedule(final Integer scheduleId) {
-        for (final ScheduleDTO schedule : domain.getSchedule()) {
-            if (schedule != null && schedule.getId() != null && schedule.getId().equals(scheduleId)) {
-                return schedule;
-            }
-        }
-        return null;
-    }
-
     public @Nullable SmartValveDTO getSmartValve(final String serialNumber) {
         final Integer id = getIdFromSerialNumber(serialNumber);
 

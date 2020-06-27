@@ -107,10 +107,6 @@ public class DraytonWiserApi {
         sendMessageToHeatHub(ROOMS_ENDPOINT + roomId, "PATCH", payload);
     }
 
-    public void setRoomSchedule(final int scheduleId, final String scheduleJSON) {
-        sendMessageToHeatHub(SCHEDULES_ENDPOINT + scheduleId, "PATCH", scheduleJSON);
-    }
-
     public void setRoomBoostInactive(final int roomId) {
         final String payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(ROOMS_ENDPOINT + roomId, "PATCH", payload);
@@ -156,11 +152,6 @@ public class DraytonWiserApi {
     public void setEcoMode(final boolean ecoMode) {
         final String payload = "{\"EcoModeEnabled\":" + ecoMode + "}";
         sendMessageToHeatHub(SYSTEM_ENDPOINT, "PATCH", payload);
-    }
-
-    public void setSmartPlugSchedule(final int id, final String scheduleJSON) {
-        final String payload = scheduleJSON;
-        sendMessageToHeatHub(SCHEDULES_ENDPOINT + id, "PATCH", payload);
     }
 
     public void setSmartPlugManualMode(final int id, final boolean manualMode) {

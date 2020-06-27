@@ -33,7 +33,6 @@ import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApi;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
 import org.openhab.binding.draytonwiser.internal.model.RoomDTO;
 import org.openhab.binding.draytonwiser.internal.model.RoomStatDTO;
-import org.openhab.binding.draytonwiser.internal.model.ScheduleDTO;
 
 /**
  * The {@link RoomHandler} is responsible for handling commands, which are
@@ -80,11 +79,6 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
                     setWindowStateDetection(OnOffType.ON.equals(command));
                 }
                 break;
-            case CHANNEL_ROOM_MASTER_SCHEDULE:
-                if (command instanceof StringType) {
-                    setMasterScheduleState(command.toString());
-                }
-                break;
         }
     }
 
@@ -100,7 +94,6 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
         updateState(CHANNEL_ROOM_BOOST_REMAINING, this::getBoostRemainingState);
         updateState(CHANNEL_ROOM_WINDOW_STATE_DETECTION, this::getWindowDetectionState);
         updateState(CHANNEL_ROOM_WINDOW_STATE, this::getWindowState);
-        updateState(CHANNEL_ROOM_MASTER_SCHEDULE, this::getMasterSchedule);
     }
 
     @Override
@@ -189,10 +182,6 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
         }
     }
 
-    private void setMasterScheduleState(final String scheduleJSON) {
-        getApi().setRoomSchedule(getData().getScheduleId(), scheduleJSON);
-    }
-
     private State getWindowDetectionState() {
         return OnOffType.from(getData().getWindowDetectionActive());
     }
@@ -202,13 +191,5 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
             return OpenClosedType.OPEN;
         }
         return OpenClosedType.CLOSED;
-    }
-
-    private State getMasterSchedule() {
-        final Integer scheduleId = getData().getScheduleId();
-
-        return scheduleId == null ? StringType.EMPTY
-                : new StringType(
-                        DraytonWiserApi.GSON.toJson(getDraytonWiseDTO().getSchedule(scheduleId), ScheduleDTO.class));
     }
 }

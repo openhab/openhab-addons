@@ -26,7 +26,6 @@ public class RoomDTO {
     private Integer overrideSetpoint;
     private Integer roomStatId;
     private List<Integer> smartValveIds;
-    private Integer scheduleId;
     private String name;
     private String mode;
     private String demandType;
@@ -74,14 +73,6 @@ public class RoomDTO {
 
     public void setSmartValveIds(final List<Integer> smartValveIds) {
         this.smartValveIds = smartValveIds;
-    }
-
-    public Integer getScheduleId() {
-        return scheduleId;
-    }
-
-    public void setScheduleId(final Integer scheduleId) {
-        this.scheduleId = scheduleId;
     }
 
     public String getName() {

@@ -22,7 +22,6 @@ public class HotWaterDTO {
     @SerializedName("id")
     private Integer id;
     private String overrideType;
-    private Integer scheduleId;
     private String mode;
     private String waterHeatingState;
     private String hotWaterRelayState;
@@ -34,10 +33,6 @@ public class HotWaterDTO {
 
     public String getOverrideType() {
         return overrideType;
-    }
-
-    public Integer getScheduleId() {
-        return scheduleId;
     }
 
     public String getMode() {

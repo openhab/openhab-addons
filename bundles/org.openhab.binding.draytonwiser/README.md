@@ -9,7 +9,7 @@ The Drayton Wiser binding supports the following things:
 
 * Bridge - The network device in the controller that allows us to interact with the other devices in the system
 * Boiler Controller - The _HeatHub_ attached to the boiler. This also acts as the hub device.
-* Rooms - Virtual groups of _Room Thermostats_ and _TRVs_ that can have temperatures and schedules
+* Rooms - Virtual groups of _Room Thermostats_ and _TRVs_ that can have temperatures and humidities
 * Room Thermostats - Wireless thermostats which monitor temperature and humidity, and call for heat
 * Smart TRVs - Wireless TRVs that monitor temperature, alter the radiator valve state and call for heat
 * Hot Water - Virtual thing to manage hot water states
@@ -69,7 +69,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | Channel              | Item Type            | Description                                                                  |
 |----------------------|----------------------|------------------------------------------------------------------------------|
 | `currentTemperature` | Number:Temperature   | Currently reported temperature                                               |
-| `currentHumidity`    | Number:Humidity      | Currently reported humidity (if there is a room stat configured in this room |
+| `currentHumidity`    | Number:Dimensionless | Currently reported humidity (if there is a room stat configured in this room |
 | `currentDemand`      | Number:Dimensionless | Current heat demand percentage of the room                                   |
 | `heatRequest`        | Switch               | Is the room actively requesting heat from the controller                     |
 | `roomBoosted`        | Switch               | Is the room currently being boosted                                          |
@@ -81,7 +81,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | Channel                      | Item Type                | Description                                              |
 |------------------------------|--------------------------|----------------------------------------------------------|
 | `currentTemperature`         | Number:Temperature       | Currently reported temperature                           |
-| `currentHumidity`            | Number:Humidity          | Currently reported humidity                              |
+| `currentHumidity`            | Number:Dimensionless     | Currently reported humidity                              |
 | `currentSetPoint`            | Number:Temperature       | Currently reported set point                             |
 | `currentBatteryVoltage`      | Number:ElectricPotential | Currently reported battery voltage                       |
 | `currentWiserBatteryLevel`   | String                   | Human readable battery level                             |
@@ -132,7 +132,6 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `manualModeState`       | Switch       | Has manual mode been enabled               |
 | `hotWaterSetPoint`      | Switch       | The current hot water setpoint (on or off) |
 | `hotWaterBoostDuration` | Number       | Period in hours to boost the hot water     |
-| `masterSchedule`        | String       | The current schedule JSON for hot water    |
 
 #### Room
 
@@ -142,7 +141,6 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `manualModeState`      | Switch             | Has manual mode been enabled                   |
 | `roomBoostDuration`    | Number             | Period in hours to boost the room temperature  |
 | `windowStateDetection` | Switch             | Detect whether windows are open                |
-| `masterSchedule`       | String             | The current schedule JSON for the room         |
 
 #### Room Stat
 
@@ -164,10 +162,6 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `plugAwayAction`  | Switch       | Should the plug switch off when in away mode |
 | `manualModeState` | Switch       | Has manual mode been enabled                 |
 | `deviceLocked`    | Switch       | Are the Smart Plug controls locked           |
-| `masterSchedule`  | String       | The current schedule JSON for the smart plug |
-
-When updating the `masterSchedule` state, only the schedule portion of the JSON that is returned when querying the state is required.
-The `id`, `Type`, `CurrentSetPoint`, `NextEventTime` and `NextEventSetpoint` should not be sent.
 
 #### Known string responses for specific channels:
 

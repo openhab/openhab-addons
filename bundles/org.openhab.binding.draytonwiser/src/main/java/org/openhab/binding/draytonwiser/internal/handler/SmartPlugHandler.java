@@ -27,7 +27,6 @@ import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApi;
 import org.openhab.binding.draytonwiser.internal.handler.SmartPlugHandler.SmartPlugData;
 import org.openhab.binding.draytonwiser.internal.model.DeviceDTO;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
-import org.openhab.binding.draytonwiser.internal.model.ScheduleDTO;
 import org.openhab.binding.draytonwiser.internal.model.SmartPlugDTO;
 
 /**
@@ -64,9 +63,6 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
             case CHANNEL_SMARTPLUG_AWAY_ACTION:
                 setAwayAction(OnOffType.ON.equals(command));
                 break;
-            case CHANNEL_ROOM_MASTER_SCHEDULE:
-                setMasterScheduleState(command.toString());
-                break;
             case CHANNEL_MANUAL_MODE_STATE:
                 setManualMode(OnOffType.ON.equals(command));
                 break;
@@ -82,7 +78,6 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
         updateState(CHANNEL_ZIGBEE_CONNECTED, this::getZigbeeConnected);
         updateState(CHANNEL_DEVICE_LOCKED, this::getDeviceLocked);
         updateState(CHANNEL_MANUAL_MODE_STATE, this::getManualModeState);
-        updateState(CHANNEL_ROOM_MASTER_SCHEDULE, this::getMasterSchedule);
     }
 
     @Override
@@ -122,18 +117,6 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
 
     private void setDeviceLocked(final Boolean state) {
         getApi().setDeviceLocked(getData().device.getId(), state);
-    }
-
-    private void setMasterScheduleState(final String scheduleJSON) {
-        getApi().setSmartPlugSchedule(getData().smartPlug.getId(), scheduleJSON);
-    }
-
-    private State getMasterSchedule() {
-        final Integer scheduleId = getData().smartPlug.getScheduleId();
-
-        return scheduleId == null ? StringType.EMPTY
-                : new StringType(
-                        DraytonWiserApi.GSON.toJson(getDraytonWiseDTO().getSchedule(scheduleId), ScheduleDTO.class));
     }
 
     private State getManualModeState() {

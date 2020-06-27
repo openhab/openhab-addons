@@ -46,7 +46,6 @@ public class DraytonWiserBindingConstants {
     public static final String ROOMSTATS_ENDPOINT = "data/domain/RoomStat/";
     public static final String TRVS_ENDPOINT = "data/domain/SmartValve/";
     public static final String ROOMS_ENDPOINT = "data/domain/Room/";
-    public static final String SCHEDULES_ENDPOINT = "data/domain/Schedule/";
     public static final String HEATCHANNELS_ENDPOINT = "data/domain/HeatingChannel/";
     public static final String SYSTEM_ENDPOINT = "data/domain/System/";
     public static final String STATION_ENDPOINT = "data/network/Station/";
@@ -98,7 +97,6 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_ROOM_BOOST_REMAINING = "roomBoostRemaining";
     public static final String CHANNEL_ROOM_WINDOW_STATE_DETECTION = "windowStateDetection";
     public static final String CHANNEL_ROOM_WINDOW_STATE = "windowState";
-    public static final String CHANNEL_ROOM_MASTER_SCHEDULE = "masterSchedule";
     public static final String CHANNEL_DEVICE_LOCKED = "deviceLocked";
     public static final String CHANNEL_SMARTPLUG_OUTPUT_STATE = "plugOutputState";
     public static final String CHANNEL_SMARTPLUG_AWAY_ACTION = "plugAwayAction";

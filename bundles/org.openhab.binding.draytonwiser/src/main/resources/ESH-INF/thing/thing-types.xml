@@ -116,7 +116,6 @@
 			<channel id="roomBoostRemaining" typeId="boostRemaining-channel" />
 			<channel id="windowStateDetection" typeId="windowStateDetection-channel" />
 			<channel id="windowState" typeId="windowState-channel" />
-			<channel id="masterSchedule" typeId="masterSchedule-channel" />
 		</channels>
 
 		<config-description>
@@ -206,7 +205,6 @@
 			<channel id="currentSignalLQI" typeId="signalLQI-channel" />
 			<channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
 			<channel id="deviceLocked" typeId="deviceLocked-channel" />
-			<channel id="masterSchedule" typeId="masterSchedule-channel" />
 			<channel id="manualModeState" typeId="manualModeState-channel" />
 		</channels>
 
@@ -394,12 +392,6 @@
 		<item-type>Contact</item-type>
 		<label>Window State</label>
 		<description>Is the window open or closed</description>
-	</channel-type>
-
-	<channel-type id="masterSchedule-channel" advanced="true">
-		<item-type>String</item-type>
-		<label>Room Master Schedule</label>
-		<description>The complete JSON representation of the room schedule</description>
 	</channel-type>
 
 	<channel-type id="deviceLocked-channel" advanced="true">

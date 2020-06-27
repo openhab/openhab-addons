@@ -21,7 +21,6 @@ public class SmartPlugDTO {
 
     @SerializedName("id")
     private Integer id;
-    private Integer scheduleId;
     private String name;
     private String manualState;
     private String mode;
@@ -35,10 +34,6 @@ public class SmartPlugDTO {
 
     public Integer getId() {
         return id;
-    }
-
-    public Integer getScheduleId() {
-        return scheduleId;
     }
 
     public String getName() {
