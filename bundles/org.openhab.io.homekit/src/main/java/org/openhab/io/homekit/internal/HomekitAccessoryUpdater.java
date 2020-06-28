@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.StateChangeListener;
@@ -78,6 +79,7 @@ public class HomekitAccessoryUpdater {
     }
 
     @FunctionalInterface
+    @NonNullByDefault
     private interface Subscription extends StateChangeListener {
 
         @Override
@@ -90,8 +92,8 @@ public class HomekitAccessoryUpdater {
     }
 
     private static class ItemKey {
-        public GenericItem item;
-        public String key;
+        public final GenericItem item;
+        public final String key;
 
         public ItemKey(GenericItem item, String key) {
             this.item = item;

@@ -50,6 +50,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     @Override
     public void createUser(String username, byte[] publicKey) {
+        logger.trace("Create user {}", username);
         storage.put(createUserKey(username), Base64.getEncoder().encodeToString(publicKey));
     }
 
@@ -85,6 +86,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     @Override
     public void removeUser(String username) {
+        logger.trace("Remove user {}", username);
         storage.remove(createUserKey(username));
     }
 
@@ -95,6 +97,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     public void clear() {
+        logger.trace("Clear all users");
         for (String key : new HashSet<>(storage.getKeys())) {
             if (isUserKey(key)) {
                 storage.remove(key);

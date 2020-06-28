@@ -46,7 +46,8 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String LEGACY_SUBCMD_PRINT_ACCESSORY = "printAccessory";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
-    @Nullable private Homekit homekit;
+    @Nullable
+    private Homekit homekit;
 
     public HomekitCommandExtension() {
         super("homekit", "Interact with the HomeKit integration.");
@@ -136,7 +137,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
             }
         });
     }
-    
+
     @SuppressWarnings("null")
     private void printAccessory(String id, Console console) {
         homekit.getAccessories().forEach(v -> {

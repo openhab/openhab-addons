@@ -68,11 +68,17 @@ public class BooleanItemReader {
         }
     }
 
+    private OnOffType getOffValue(OnOffType onValue) {
+        return onValue == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
+    }
+
     void setValue(Boolean value) {
         if (item instanceof SwitchItem) {
-            ((SwitchItem) item).send(OnOffType.from(value));
+            ((SwitchItem) item).send(value ? trueOnOffValue : getOffValue(trueOnOffValue));
         } else if (item instanceof GroupItem) {
-            ((GroupItem) item).send(OnOffType.from(value));
+            ((GroupItem) item).send(value ? trueOnOffValue : getOffValue(trueOnOffValue));
+        } else {
+            logger.debug("Cannot set value {} for item {}. Only Switch and Group items are supported.", value, item);
         }
     }
 }

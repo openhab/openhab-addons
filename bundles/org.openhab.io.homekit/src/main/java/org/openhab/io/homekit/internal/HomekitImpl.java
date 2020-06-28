@@ -105,13 +105,14 @@ public class HomekitImpl implements Homekit {
                 stopBridge();
                 startBridge();
             }
-        } catch (IOException | InvalidAlgorithmParameterException e) {
+        } catch (IOException e) {
             logger.warn("Could not initialize HomeKit connector: {}", e.getMessage());
         }
     }
 
     private void stopBridge() {
-      @Nullable final HomekitRoot bridge = this.bridge;
+        @Nullable
+        final HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             changeListener.unsetBridge();
             bridge.stop();
@@ -120,7 +121,8 @@ public class HomekitImpl implements Homekit {
     }
 
     private void startBridge() throws IOException {
-        @Nullable final HomekitServer homekitServer = this.homekitServer;
+        @Nullable
+        final HomekitServer homekitServer = this.homekitServer;
         if (homekitServer != null && bridge == null) {
             final HomekitRoot bridge = homekitServer.createBridge(authInfo, settings.name, HomekitSettings.MANUFACTURER,
                     HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
@@ -152,7 +154,7 @@ public class HomekitImpl implements Homekit {
         }
     }
 
-    private void startHomekitServer() throws InvalidAlgorithmParameterException, IOException {
+    private void startHomekitServer() throws IOException {
         if (homekitServer == null) {
             networkInterface = InetAddress.getByName(settings.networkInterface);
             homekitServer = new HomekitServer(networkInterface, settings.port);
@@ -163,6 +165,7 @@ public class HomekitImpl implements Homekit {
     }
 
     private void stopHomekitServer() {
+        @Nullable
         final HomekitServer homekit = this.homekitServer;
         if (homekit != null) {
             if (bridge != null) {
@@ -182,7 +185,8 @@ public class HomekitImpl implements Homekit {
 
     @Override
     public void refreshAuthInfo() throws IOException {
-        @Nullable final HomekitRoot bridge = this.bridge;
+        @Nullable
+        final HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.refreshAuthInfo();
         }
@@ -190,7 +194,8 @@ public class HomekitImpl implements Homekit {
 
     @Override
     public void allowUnauthenticatedRequests(boolean allow) {
-        @Nullable final HomekitRoot bridge = this.bridge;
+        @Nullable
+        final HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.allowUnauthenticatedRequests(allow);
         }

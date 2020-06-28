@@ -154,7 +154,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
     }
 
     @Override
-    public void setTemperatureDisplayUnit(final TemperatureDisplayUnitEnum value) throws Exception {
+    public void setTemperatureDisplayUnit(final TemperatureDisplayUnitEnum value) {
         // TODO: add support for display unit change
     }
 

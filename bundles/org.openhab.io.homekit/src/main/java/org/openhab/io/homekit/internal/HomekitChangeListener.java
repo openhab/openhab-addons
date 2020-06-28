@@ -22,6 +22,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -34,6 +36,7 @@ import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.homekit.internal.accessories.HomekitAccessoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.server.impl.HomekitRoot;
 
@@ -43,6 +46,7 @@ import io.github.hapjava.server.impl.HomekitRoot;
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
     private final static String REVISION_CONFIG = "revision";
@@ -88,13 +92,13 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private void initialiseRevision() {
         int revision;
         try {
-            revision = Integer.valueOf(storage.get(REVISION_CONFIG));
+            revision = Integer.parseInt(storage.get(REVISION_CONFIG));
         } catch (java.lang.NumberFormatException e) {
             revision = 1;
             storage.put(REVISION_CONFIG, "" + revision);
         }
         try {
-            lastAccessoryCount = Integer.valueOf(storage.get(ACCESSORY_COUNT));
+            lastAccessoryCount = Integer.parseInt(storage.get(ACCESSORY_COUNT));
         } catch (java.lang.NumberFormatException e) {
             lastAccessoryCount = 0;
             storage.put(ACCESSORY_COUNT, "" + accessoryRegistry.getAllAccessories().size());
@@ -119,7 +123,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      * @param item The item that has been changed or removed.
      */
     private synchronized void markDirty(Item item) {
-        logger.trace("Mark dirty item {}", item.getLabel());
+        logger.trace("Mark dirty item {}", item.getName());
         pendingUpdates.add(item.getName());
         /*
          * If findMyAccessoryGroups fails because the accessory group has already been deleted, then we can count on a
@@ -156,7 +160,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     private synchronized void applyUpdates() {
         logger.trace("apply updates");
-
         for (final String name : pendingUpdates) {
             accessoryRegistry.remove(name);
             logger.trace(" add items {}", name);
@@ -218,7 +221,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      * @param item openhab item
      */
     private void createRootAccessories(Item item) {
-        logger.trace("create root accessory {}", item.getLabel());
+        logger.trace("create root accessory {}", item.getName());
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
                 .getAccessoryTypes(item, metadataRegistry);
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);

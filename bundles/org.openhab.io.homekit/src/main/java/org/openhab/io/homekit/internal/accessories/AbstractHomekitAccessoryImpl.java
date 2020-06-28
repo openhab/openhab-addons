@@ -156,7 +156,6 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     protected <T extends Item> Optional<T> getItem(HomekitCharacteristicType characteristic, Class<T> type) {
         final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(characteristic);
         if (taggedItem.isPresent()) {

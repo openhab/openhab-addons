@@ -453,7 +453,7 @@ public class HomekitAccessoryFactory {
 
     /**
      * check whether it is legacy characteristic and return new name in such case. otherwise return the input parameter
-     * unchangec.
+     * unchanged.
      * 
      * @param characteristicType characteristic to check
      * @return new characteristic type

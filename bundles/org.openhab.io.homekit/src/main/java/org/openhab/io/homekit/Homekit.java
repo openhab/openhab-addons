@@ -31,7 +31,7 @@ public interface Homekit {
      * Refreshes the saved authentication info from the underlying storage service. If you
      * make changes to the saved authentication info, call this.
      *
-     * @throws IOException
+     * @throws IOException exception in case new auth info could not be published via mDNS
      */
     void refreshAuthInfo() throws IOException;
 
