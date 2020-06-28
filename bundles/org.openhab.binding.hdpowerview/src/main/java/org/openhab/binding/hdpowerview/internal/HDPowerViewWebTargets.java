@@ -76,9 +76,7 @@ public class HDPowerViewWebTargets {
     }
 
     public @Nullable Shades getShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        logger.trace("API command GET {}", shades.getUri());
-        String json = invoke(shades.request().header(CONN_HDR, CONN_VAL).buildGet());
-        logger.trace("JSON response = {}", json);
+        String json = invoke(shades.request().header(CONN_HDR, CONN_VAL).buildGet(), shades, null);
         return gson.fromJson(json, Shades.class);
     }
 
@@ -86,30 +84,32 @@ public class HDPowerViewWebTargets {
             throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shade.resolveTemplate("id", shadeId);
-        logger.trace("API command PUT {}", target.getUri());
         String json = gson.toJson(new ShadeMove(shadeId, position));
         logger.trace("JSON request = {}", json);
         json = invoke(target.request().header(CONN_HDR, CONN_VAL)
-                .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)));
+                .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target, json);
         logger.trace("JSON response = {}", json);
         return gson.fromJson(json, Shade.class);
     }
 
     public @Nullable Scenes getScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        logger.trace("API command GET {}", scenes.getUri());
-        String json = invoke(scenes.request().header(CONN_HDR, CONN_VAL).buildGet());
-        logger.trace("JSON response = {}", json);
+        String json = invoke(scenes.request().header(CONN_HDR, CONN_VAL).buildGet(), scenes, null);
         return gson.fromJson(json, Scenes.class);
     }
 
     public void activateScene(int sceneId) throws ProcessingException, HubMaintenanceException {
         WebTarget target = sceneActivate.queryParam("sceneId", sceneId);
-        logger.trace("API command GET {}", target.getUri());
-        String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet());
-        logger.trace("JSON response = {}", json);
+        invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
     }
 
-    private String invoke(Invocation invocation) throws ProcessingException, HubMaintenanceException {
+    private String invoke(Invocation invocation, WebTarget target, @Nullable String jsonRequest)
+            throws ProcessingException, HubMaintenanceException {
+        if (logger.isTraceEnabled()) {
+            logger.trace("API command {} {}", jsonRequest == null ? "GET" : "PUT", target.getUri());
+            if (jsonRequest != null) {
+                logger.trace("JSON request = {}", jsonRequest);
+            }
+        }
         Response response;
         try {
             synchronized (this) {
@@ -148,28 +148,27 @@ public class HDPowerViewWebTargets {
             throw new ProcessingException("Missing response entity");
         }
         @SuppressWarnings("null")
-        String json = response.readEntity(String.class);
-        return json;
+        String jsonResponse = response.readEntity(String.class);
+        if (logger.isTraceEnabled()) {
+            logger.trace("JSON response = {}", jsonResponse);
+        }
+        return jsonResponse;
     }
 
     public @Nullable Shade refreshShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shade.resolveTemplate("id", shadeId).queryParam("refresh", true);
-        logger.trace("API command GET {}", target.getUri());
-        String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet());
-        logger.trace("JSON response = {}", json);
+        String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
         return gson.fromJson(json, Shade.class);
     }
 
     public @Nullable Shade stopShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shade.resolveTemplate("id", shadeId);
-        logger.trace("API command PUT {}", target.getUri());
         String json = gson.toJson(new ShadeStop(shadeId));
         logger.trace("JSON request = {}", json);
         json = invoke(target.request().header(CONN_HDR, CONN_VAL)
-                .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)));
-        logger.trace("JSON response = {}", json);
+                .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target, json);
         return gson.fromJson(json, Shade.class);
     }
 }
