@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="elgatokeylight"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="keylight">
+		<label>Elgato Key Light</label>
+		<description>An Elgato Key Light</description>
+		<category>Lightbulb</category>
+
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="brightness" typeId="system.brightness" />
+			<channel id="color_temperature" typeId="system.color-temperature" />
+		</channels>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host Address</label>
+				<description>The Host / IP Address used for communication to this device.</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Port number for communication to this device.</description>
+				<default>3671</default>
+			</parameter>
+			<parameter name="refreshIntervalSeconds" type="integer" required="true">
+				<label>Refresh Interval</label>
+				<description>Time in seconds the device should be polled for updates.</description>
+				<default>300</default>
+			</parameter>
+
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>
