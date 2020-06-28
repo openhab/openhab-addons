@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.welcome;
 import io.swagger.client.model.NAWelcomeEvent;
 import io.swagger.client.model.NAWelcomeHome;
 import io.swagger.client.model.NAWelcomeHomeData;
+import io.swagger.client.model.NAWelcomeSubEvent;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -31,14 +33,13 @@ import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- * @author Sven Strohschein
+ * @author Sven Strohschein - Initial contribution
  */
 @RunWith(MockitoJUnitRunner.class)
 public class NAWelcomeHomeHandlerTest {
@@ -48,35 +49,20 @@ public class NAWelcomeHomeHandlerTest {
     @Mock
     private TimeZoneProvider timeZoneProviderMock;
     private Thing welcomeHomeThing;
-    private NAWelcomeHomeHandler handler;
+    private NAWelcomeHomeHandlerAccessible handler;
     @Mock
     private NetatmoBridgeHandler bridgeHandlerMock;
 
     @Before
     public void before() {
         welcomeHomeThing = new ThingImpl(new ThingTypeUID("netatmo", "NAWelcomeHome"), "1");
-        handler = new NAWelcomeHomeHandler(welcomeHomeThing, timeZoneProviderMock) {
-            @Override
-            protected NetatmoBridgeHandler getBridgeHandler() {
-                return bridgeHandlerMock;
-            }
-
-            @Override
-            protected String getId() {
-                return DUMMY_HOME_ID;
-            }
-        };
+        handler = new NAWelcomeHomeHandlerAccessible(welcomeHomeThing);
     }
 
     @Test
     public void testUpdateReadings_with_Events() {
-        NAWelcomeEvent event_1 = new NAWelcomeEvent();
-        event_1.setType(NAWebhookCameraEvent.EventTypeEnum.PERSON.toString());
-        event_1.setTime(1592661881);
-
-        NAWelcomeEvent event_2 = new NAWelcomeEvent();
-        event_2.setType(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.toString());
-        event_2.setTime(1592661882);
+        NAWelcomeEvent event_1 = createEvent(1592661881, NAWebhookCameraEvent.EventTypeEnum.PERSON);
+        NAWelcomeEvent event_2 = createEvent(1592661882, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
 
         NAWelcomeHome home = new NAWelcomeHome();
         home.setId(DUMMY_HOME_ID);
@@ -95,13 +81,11 @@ public class NAWelcomeHomeHandlerTest {
         home.setEvents(Arrays.asList(event_2, event_1));
         //the second (last) event is still expected (independent from the order of these are added)
         assertEquals(new StringType("movement"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
-
     }
 
     @Test
     public void testUpdateReadings_with_1_Event() {
-        NAWelcomeEvent event = new NAWelcomeEvent();
-        event.setType(NAWebhookCameraEvent.EventTypeEnum.PERSON.toString());
+        NAWelcomeEvent event = createEvent(1592661881, NAWebhookCameraEvent.EventTypeEnum.PERSON);
 
         NAWelcomeHome home = new NAWelcomeHome();
         home.setId(DUMMY_HOME_ID);
@@ -146,5 +130,100 @@ public class NAWelcomeHomeHandlerTest {
         handler.updateReadings();
 
         assertEquals(UnDefType.UNDEF, handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+    }
+
+    @Test
+    public void testTriggerChannelIfRequired() {
+        NAWelcomeEvent event_1 = createPresenceEvent(1592661881, NAWelcomeSubEvent.TypeEnum.ANIMAL);
+        NAWelcomeEvent event_2 = createPresenceEvent(1592661882, NAWelcomeSubEvent.TypeEnum.HUMAN);
+        NAWelcomeEvent event_3 = createEvent(1592661883, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
+
+        NAWelcomeHome home = new NAWelcomeHome();
+        home.setId(DUMMY_HOME_ID);
+        home.setEvents(Collections.singletonList(event_1));
+
+        NAWelcomeHomeData homeData = new NAWelcomeHomeData();
+        homeData.setHomes(Collections.singletonList(home));
+
+        when(bridgeHandlerMock.getWelcomeDataBody(DUMMY_HOME_ID)).thenReturn(homeData);
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        //No triggered event is expected, because the binding is just started (with existing events).
+        assertEquals(0, handler.getTriggerChannelCount());
+
+        home.setEvents(Arrays.asList(event_1, event_2));
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        //1 triggered event is expected, because there is 1 new event since binding start (outdoor / detected human).
+        assertEquals(1, handler.getTriggerChannelCount());
+        assertEquals(new StringType("outdoor"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+
+        home.setEvents(Arrays.asList(event_1, event_2));
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        //No new triggered event is expected, because there are still the same events as before the refresh.
+        assertEquals(1, handler.getTriggerChannelCount());
+        assertEquals(new StringType("outdoor"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+
+        home.setEvents(Arrays.asList(event_1, event_2, event_3));
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        //1 new triggered event is expected (2 in sum), because there is 1 new event since the last triggered event (movement after outdoor / detected human).
+        assertEquals(2, handler.getTriggerChannelCount());
+        assertEquals(new StringType("movement"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+    }
+
+    private static NAWelcomeEvent createPresenceEvent(int eventTime, NAWelcomeSubEvent.TypeEnum detectedObjectType) {
+        NAWelcomeSubEvent subEvent = new NAWelcomeSubEvent();
+        subEvent.setTime(eventTime);
+        subEvent.setType(detectedObjectType);
+
+        NAWelcomeEvent event = createEvent(eventTime, NAWebhookCameraEvent.EventTypeEnum.OUTDOOR);
+        event.setEventList(Collections.singletonList(subEvent));
+        return event;
+    }
+
+    private static NAWelcomeEvent createEvent(int eventTime, NAWebhookCameraEvent.EventTypeEnum eventType) {
+        NAWelcomeEvent event = new NAWelcomeEvent();
+        event.setType(eventType.toString());
+        event.setTime(eventTime);
+        return event;
+    }
+
+    private class NAWelcomeHomeHandlerAccessible extends NAWelcomeHomeHandler {
+
+        private int triggerChannelCount;
+
+        private NAWelcomeHomeHandlerAccessible(Thing thing) {
+            super(thing, timeZoneProviderMock);
+        }
+
+        @Override
+        protected NetatmoBridgeHandler getBridgeHandler() {
+            return bridgeHandlerMock;
+        }
+
+        @Override
+        protected String getId() {
+            return DUMMY_HOME_ID;
+        }
+
+        @Override
+        protected void triggerChannel(@NonNull String channelID, @NonNull String event) {
+            triggerChannelCount++;
+            super.triggerChannel(channelID, event);
+        }
+
+        private int getTriggerChannelCount() {
+            return triggerChannelCount;
+        }
     }
 }
