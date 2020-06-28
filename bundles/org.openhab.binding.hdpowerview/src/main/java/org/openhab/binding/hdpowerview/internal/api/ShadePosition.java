@@ -49,7 +49,9 @@ public class ShadePosition {
      * Therefore one can make the assumption that if there is a non-zero position1
      * while posKind1 == 1, then position1 == 0 for the implied posKind1 == 3.
      * 
-     * The range of integer values for position1 is: 0..65535  
+     * The ranges of position integer values are
+     *      shades: 0..65535
+     *      vanes: 0..32767  
      * 
      * Shade fully up: (top-down: open, bottom-up: closed)
      *    posKind1: 1
@@ -65,10 +67,11 @@ public class ShadePosition {
      *
      * Shade fully down (closed) and vane fully up (open):
      *    posKind1: 3
-     *    position1: 65535
+     *    position1: 32767
      */
 
-    private static final int MAX_POS = 65535;
+    private static final int MAX_SHADE = 65535;
+    private static final int MAX_VANE = 32767;
 
     private int posKind1;
     private int position1;
@@ -103,24 +106,25 @@ public class ShadePosition {
         posKind1 = primaryKind.ordinal() + 1;
         switch (primaryKind) {
             case REGULAR:
-                /*-
-                 * Primary rail of a single action top-down shade, or 
-                 * Primary, lower, top-down, rail of a dual action shade
+                /*
+                 * Primary rail of a single action bottom-up shade, or
+                 * 
+                 * Primary, lower, bottom-up, rail of a dual action shade
                  */
             case INVERTED:
                 /*
-                 * Primary rail of a single action bottom-up shade
+                 * Primary rail of a single action top-down shade
                  *
                  * All these types use the same coordinate system; which is inverted in relation
                  * to that of OpenHAB
                  */
-                position1 = MAX_POS - (int) Math.round(primaryPercent / 100d * MAX_POS);
+                position1 = MAX_SHADE - (int) Math.round(primaryPercent / 100d * MAX_SHADE);
                 break;
             case VANE:
                 /*
-                 * Slat angle of the primary rail of a top-down single action shade
+                 * Vane angle of the primary rail of a bottom-up single action shade
                  */
-                position1 = (int) Math.round(primaryPercent / 100d * MAX_POS);
+                position1 = (int) Math.round(primaryPercent / 100d * MAX_VANE);
                 break;
             default:
                 position1 = 0;
@@ -133,13 +137,12 @@ public class ShadePosition {
         posKind2 = Integer.valueOf(secondaryKind.ordinal() + 1);
         switch (secondaryKind) {
             case INVERTED:
-                /*-
-                 * Secondary, upper, bottom-up rail of a dual action shade
+                /*
+                 * Secondary, upper, top-down rail of a dual action shade
                  * 
-                 * Uses a coordinate system that is NOT inverted in relation to
-                 * that of OpenHAB
+                 * Uses a coordinate system that is NOT inverted in relation to that of OpenHAB
                  */
-                position2 = Integer.valueOf((int) Math.round(secondaryPercent.doubleValue() / 100 * MAX_POS));
+                position2 = Integer.valueOf((int) Math.round(secondaryPercent.doubleValue() / 100 * MAX_SHADE));
                 break;
             default:
                 position2 = Integer.valueOf(0);
@@ -151,33 +154,34 @@ public class ShadePosition {
             case PRIMARY:
                 switch (kind) {
                     case REGULAR:
-                        /*-
-                         * Primary rail of a single action top-down shade, or 
-                         * Primary, lower, top-down, rail of a dual action shade
+                        /*
+                         * Primary rail of a single action bottom-up shade, or
+                         * 
+                         * Primary, lower, bottom-up, rail of a dual action shade
                          */
                     case INVERTED:
                         /*
-                         * Primary rail of a single action bottom-up shade
+                         * Primary rail of a single action top-down shade
                          *
-                         * All these types use the same coordinate system; which is inverted in
-                         * relation to that of OpenHAB
+                         * All these types use the same coordinate system; which is inverted in relation
+                         * to that of OpenHAB
                          * 
                          * If the slats have a defined position then the shade position must by
                          * definition be 100%
                          */
                         return posKind1 == 3 ? PercentType.HUNDRED
-                                : new PercentType(100 - (int) Math.round((double) position1 / MAX_POS * 100));
+                                : new PercentType(100 - (int) Math.round((double) position1 / MAX_SHADE * 100));
 
                     case VANE:
                         /*
-                         * Slat angle of the primary rail of a top-down single action shade
+                         * Vane angle of the primary rail of a bottom-up single action shade
                          * 
-                         * If the shades are not open, the slat position is undefined; if the the shades
-                         * are exactly open then the slats are at zero; otherwise return the actual slat
+                         * If the shades are not open, the vane position is undefined; if the the shades
+                         * are exactly open then the vanes are at zero; otherwise return the actual vane
                          * position itself
                          */
                         return posKind1 != 3 ? (position1 != 0 ? UnDefType.UNDEF : PercentType.ZERO)
-                                : new PercentType((int) Math.round((double) position1 / MAX_POS * 100));
+                                : new PercentType(Math.min((int) Math.round((double) position1 / MAX_VANE * 100), 100));
 
                     default:
                         break;
@@ -190,13 +194,12 @@ public class ShadePosition {
                     switch (kind) {
                         case REGULAR:
                         case INVERTED:
-                            /*-
-                             * Secondary, upper, bottom-up rail of a dual action shade
+                            /*
+                             * Secondary, upper, top-down rail of a dual action shade
                              * 
-                             * Uses a coordinate system that is NOT inverted in relation to
-                             * that of OpenHAB
+                             * Uses a coordinate system that is NOT inverted in relation to that of OpenHAB
                              */
-                            return new PercentType(100 - (int) Math.round(position2.doubleValue() / MAX_POS * 100));
+                            return new PercentType(100 - (int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
                         default:
                             break;
                     }
