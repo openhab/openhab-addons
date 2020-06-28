@@ -16,6 +16,7 @@ import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstan
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.jmdns.ServiceInfo;
 
@@ -42,6 +43,9 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);
 
+    public static final Pattern VALID_IP_V4_ADDRESS = Pattern
+            .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
+
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(THING_TYPE_HUB);
@@ -55,12 +59,14 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         for (String host : service.getHostAddresses()) {
-            ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
-            DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                    .withProperty(HDPowerViewHubConfiguration.HOST, host).withRepresentationProperty(host)
-                    .withLabel("PowerView Hub (" + host + ")").build();
-            logger.debug("mDNS discovered hub on host '{}'", host);
-            return hub;
+            if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
+                ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
+                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(HDPowerViewHubConfiguration.HOST, host).withRepresentationProperty(host)
+                        .withLabel("PowerView Hub (" + host + ")").build();
+                logger.debug("mDNS discovered hub on host '{}'", host);
+                return hub;
+            }
         }
         return null;
     }

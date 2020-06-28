@@ -52,7 +52,7 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
 
-    public static final Pattern VALID_IP_ADDRESS = Pattern
+    public static final Pattern VALID_IP_V4_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     /*
@@ -88,7 +88,7 @@ public class HDPowerViewJUnitTests {
          */
         boolean allowShadeMovementCommands = false;
 
-        if (VALID_IP_ADDRESS.matcher(hubIPAddress).matches()) {
+        if (VALID_IP_V4_ADDRESS.matcher(hubIPAddress).matches()) {
             // initialize stuff
             Client client = ClientBuilder.newClient();
             assertNotNull(client);
