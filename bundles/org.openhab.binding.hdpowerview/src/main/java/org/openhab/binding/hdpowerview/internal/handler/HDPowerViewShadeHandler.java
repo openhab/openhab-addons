@@ -18,6 +18,7 @@ import static org.openhab.binding.hdpowerview.internal.api.PosSeq.*;
 
 import javax.ws.rs.ProcessingException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
  */
+@NonNullByDefault
 public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
@@ -94,7 +96,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 } else if (command instanceof UpDownType) {
                     moveShade(PRIMARY, REGULAR, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
-                    logger.warn("PowerView shades do not support StopMove commands");
+                    if (StopMoveType.STOP.equals(command)) {
+                        stopShade();
+                    } else {
+                        logger.warn("PowerView shades do not support StopMove commands");
+                    }
                 }
                 break;
 
@@ -118,7 +124,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    void onReceiveUpdate(ShadeData shadeData) {
+    void onReceiveUpdate(@Nullable ShadeData shadeData) {
         if (shadeData != null) {
             updateStatus(ThingStatus.ONLINE);
             updateBindingStates(shadeData.positions);
@@ -128,7 +134,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private void updateBindingStates(ShadePosition shadePos) {
+    private void updateBindingStates(@Nullable ShadePosition shadePos) {
         if (shadePos != null) {
             updateState(CHANNEL_SHADE_POSITION, shadePos.getState(PRIMARY, REGULAR));
             updateState(CHANNEL_SHADE_VANE, shadePos.getState(PRIMARY, VANE));
@@ -147,29 +153,37 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
         HDPowerViewWebTargets webTargets = bridge.getWebTargets();
         String shadeId = getShadeId();
-        @Nullable
-        ShadePosition newPos = null;
         try {
+            if (webTargets == null) {
+                throw new ProcessingException("Web targets not configured");
+            }
+
+            @Nullable
+            ShadePosition newPos = null;
+
             switch (seq) {
                 case PRIMARY:
                     newPos = ShadePosition.create(kind, percent);
                     webTargets.moveShade(shadeId, newPos);
                     break;
                 case SECONDARY:
-                    @Nullable
                     Shade oldShade = webTargets.refreshShade(shadeId);
                     if (oldShade != null) {
-                        @Nullable
                         ShadeData oldData = oldShade.shade;
-                        if (oldData != null && oldData.positions != null) {
-                            // only send commands if hub already has a valid secondary shade status
-                            if (!UnDefType.UNDEF.equals(oldData.positions.getState(SECONDARY, INVERTED))) {
-                                newPos = ShadePosition.create(oldData.positions, INVERTED, percent);
-                                webTargets.moveShade(shadeId, newPos);
+                        if (oldData != null) {
+                            ShadePosition positions = oldData.positions;
+                            if (positions != null) {
+                                // only send commands if hub already has a valid secondary shade status
+                                if (!UnDefType.UNDEF.equals(positions.getState(SECONDARY, INVERTED))) {
+                                    newPos = ShadePosition.create(positions, INVERTED, percent);
+                                    webTargets.moveShade(shadeId, newPos);
+                                }
                             }
                         }
                     }
             }
+
+            updateBindingStates(newPos);
         } catch (ProcessingException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
@@ -177,10 +191,31 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             // exceptions are logged in HDPowerViewWebTargets
             return;
         }
-        updateBindingStates(newPos);
     }
 
     private String getShadeId() {
-        return getConfigAs(HDPowerViewShadeConfiguration.class).id;
+        String id = getConfigAs(HDPowerViewShadeConfiguration.class).id;
+        return id != null ? id : "??";
+    }
+
+    private void stopShade() {
+        HDPowerViewHubHandler bridge;
+        if ((bridge = getBridgeHandler()) == null) {
+            return;
+        }
+        HDPowerViewWebTargets webTargets = bridge.getWebTargets();
+        String shadeId = getShadeId();
+        try {
+            if (webTargets == null) {
+                throw new ProcessingException("Web targets not configured");
+            }
+            webTargets.stopShade(shadeId);
+        } catch (ProcessingException e) {
+            logger.warn("Unexpected error: {}", e.getMessage());
+            return;
+        } catch (HubMaintenanceException e) {
+            // exceptions are logged in HDPowerViewWebTargets
+            return;
+        }
     }
 }

@@ -26,6 +26,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -55,12 +56,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link HDPowerViewHubHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link HDPowerViewHubHandler} is responsible for handling commands, which
+ * are sent to one of the channels.
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
  */
+@NonNullByDefault
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
@@ -68,8 +70,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private long refreshInterval;
 
     private final Client client = ClientBuilder.newClient();
-    private HDPowerViewWebTargets webTargets;
-    private ScheduledFuture<?> pollFuture;
+    private @Nullable HDPowerViewWebTargets webTargets;
+    private @Nullable ScheduledFuture<?> pollFuture;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
@@ -94,6 +96,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (channel != null && sceneChannelTypeUID.equals(channel.getChannelTypeUID())) {
             if (OnOffType.ON.equals(command)) {
                 try {
+                    HDPowerViewWebTargets webTargets = this.webTargets;
+                    if (webTargets == null) {
+                        throw new ProcessingException("Web targets not initialized");
+                    }
                     webTargets.activateScene(Integer.parseInt(channelUID.getId()));
                 } catch (HubMaintenanceException e) {
                     // exceptions are logged in HDPowerViewWebTargets
@@ -111,13 +117,18 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (config.host == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
         }
-        webTargets = new HDPowerViewWebTargets(client, config.host);
+
+        String host = config.host;
+        if (host != null && !host.isEmpty()) {
+            webTargets = new HDPowerViewWebTargets(client, host);
+        }
+
         refreshInterval = config.refresh;
 
         schedulePoll();
     }
 
-    public HDPowerViewWebTargets getWebTargets() {
+    public @Nullable HDPowerViewWebTargets getWebTargets() {
         return webTargets;
     }
 
@@ -140,18 +151,20 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void schedulePoll() {
-        if (pollFuture != null) {
+        ScheduledFuture<?> pollFuture = this.pollFuture;
+        if (pollFuture != null && !pollFuture.isCancelled()) {
             pollFuture.cancel(false);
         }
         logger.debug("Scheduling poll for 500ms out, then every {} ms", refreshInterval);
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 500, refreshInterval, TimeUnit.MILLISECONDS);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 500, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     private synchronized void stopPoll() {
+        ScheduledFuture<?> pollFuture = this.pollFuture;
         if (pollFuture != null && !pollFuture.isCancelled()) {
             pollFuture.cancel(true);
-            pollFuture = null;
         }
+        this.pollFuture = null;
     }
 
     private synchronized void poll() {
@@ -170,28 +183,34 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void pollShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        Shades shades = webTargets.getShades();
-        updateStatus(ThingStatus.ONLINE);
+        HDPowerViewWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            throw new ProcessingException("Web targets not initialized");
+        }
 
+        Shades shades = webTargets.getShades();
         if (shades == null) {
             throw new JsonParseException("Missing 'shades' element");
         }
+
         List<ShadeData> shadesData = shades.shadeData;
         if (shadesData == null) {
             throw new JsonParseException("Missing 'shades.shadeData' element");
         }
+
+        updateStatus(ThingStatus.ONLINE);
         logger.debug("Received data for {} shades", shadesData.size());
 
-        Map<String, ShadeData> shadeIdData = getShadeDataById(shadesData);
-        List<Thing> things = getThing().getThings();
-        if (shadeIdData.size() != things.size()) {
-            logger.debug("Shade count in hub ({}) != Shade count in binding ({})", shadeIdData.size(), things.size());
-        }
-
-        for (Thing thing : things) {
-            String shadeId = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
-            ShadeData shadeData = shadeIdData.get(shadeId);
-            updateShadeThing(shadeId, thing, shadeData);
+        Map<String, ShadeData> idToData = getIdToData(shadesData);
+        Map<Thing, String> thingToId = getThingToId();
+        for (Entry<Thing, String> thingIdItem : thingToId.entrySet()) {
+            @SuppressWarnings("null")
+            Thing itemThing = thingIdItem.getKey();
+            @SuppressWarnings("null")
+            String itemId = thingIdItem.getValue();
+            @Nullable
+            ShadeData itemShadeData = idToData.get(itemId);
+            updateShadeThing(itemId, itemThing, itemShadeData);
         }
     }
 
@@ -202,89 +221,104 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
         if (shadeData == null) {
-            thingHandler.onReceiveUpdate(null);
             logger.debug("Shade '{}' has no data in hub", shadeId);
-            return;
+        } else {
+            logger.debug("Updating shade '{}'", shadeId);
         }
-        logger.debug("Updating shade '{}'", shadeId);
         thingHandler.onReceiveUpdate(shadeData);
     }
 
     private void pollScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
-        Scenes scenes = webTargets.getScenes();
+        HDPowerViewWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            throw new ProcessingException("Web targets not initialized");
+        }
 
+        Scenes scenes = webTargets.getScenes();
         if (scenes == null) {
             throw new JsonParseException("Missing 'scenes' element");
         }
+
         List<Scene> sceneData = scenes.sceneData;
         if (sceneData == null) {
             throw new JsonParseException("Missing 'scenes.sceneData' element");
         }
         logger.debug("Received data for {} scenes", sceneData.size());
 
-        Map<Integer, Channel> channels = getSceneChannelsById();
-
+        Map<String, Channel> idToChannel = getIdToChannel();
         for (Scene scene : sceneData) {
-            // remove existing scenes from the map
-            if (channels.remove(scene.id) == null) {
-                // Create the new scene
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), Integer.toString(scene.id, 10));
+            // remove existing scene channel from the map
+            String sceneId = Integer.toString(scene.id);
+            if (idToChannel.containsKey(sceneId)) {
+                idToChannel.remove(sceneId);
+                logger.debug("Keeping channel for existing scene '{}'", sceneId);
+            } else {
+                // create a new scene channel
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), sceneId);
                 Channel channel = ChannelBuilder.create(channelUID, "Switch").withType(sceneChannelTypeUID)
                         .withLabel(scene.getName()).withDescription("Activates the scene " + scene.getName()).build();
                 updateThing(editThing().withChannel(channel).build());
-                logger.debug("Creating new channel for scene '{}'", scene.id);
-                continue;
+                logger.debug("Creating new channel for scene '{}'", sceneId);
             }
-            logger.debug("Keeping channel for existing scene '{}'", scene.id);
         }
 
-        // Remove any previously created channels that no longer exist
-        if (!channels.isEmpty()) {
-            logger.debug("Removing {} orphan scene channels", channels.size());
+        // remove any previously created channels that no longer exist
+        if (!idToChannel.isEmpty()) {
+            logger.debug("Removing {} orphan scene channels", idToChannel.size());
             List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
-            allChannels.removeAll(channels.values());
+            allChannels.removeAll(idToChannel.values());
             updateThing(editThing().withChannels(allChannels).build());
         }
     }
 
-    private Map<String, Thing> getThingsByShadeId() {
-        Map<String, Thing> ret = new HashMap<>();
+    private Map<Thing, String> getThingToId() {
+        Map<Thing, String> ret = new HashMap<>();
         for (Thing thing : getThing().getThings()) {
             String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
-            ret.put(id, thing);
-        }
-        return ret;
-    }
-
-    private Map<String, ShadeData> getShadeDataById(List<ShadeData> shadeData) {
-        Map<String, ShadeData> ret = new HashMap<>();
-        if (shadeData != null) {
-            for (ShadeData shade : shadeData) {
-                ret.put(shade.id, shade);
+            if (id != null && !id.isEmpty()) {
+                ret.put(thing, id);
             }
         }
         return ret;
     }
 
-    private Map<Integer, Channel> getSceneChannelsById() {
-        Map<Integer, Channel> ret = new HashMap<>();
+    private Map<String, ShadeData> getIdToData(List<ShadeData> shadeData) {
+        Map<String, ShadeData> ret = new HashMap<>();
+        for (ShadeData shade : shadeData) {
+            String id = shade.id;
+            if (id != null && !id.isEmpty()) {
+                ret.put(id, shade);
+            }
+        }
+        return ret;
+    }
+
+    private Map<String, Channel> getIdToChannel() {
+        Map<String, Channel> ret = new HashMap<>();
         for (Channel channel : getThing().getChannels()) {
             if (sceneChannelTypeUID.equals(channel.getChannelTypeUID())) {
-                Integer id = Integer.parseInt(channel.getUID().getId());
-                ret.put(id, channel);
+                ret.put(channel.getUID().getId(), channel);
             }
         }
         return ret;
     }
 
     private void refreshShadeCache() {
-        Map<String, Thing> shadeIdThings = getThingsByShadeId();
-        for (Entry<String, Thing> shadeIdThing : shadeIdThings.entrySet()) {
+        HDPowerViewWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            throw new ProcessingException("Web targets not initialized");
+        }
+
+        Map<Thing, String> shadeIdThings = getThingToId();
+        for (Entry<Thing, String> entry : shadeIdThings.entrySet()) {
             try {
-                String shadeId = shadeIdThing.getKey();
+                @SuppressWarnings("null")
+                Thing thing = entry.getKey();
+                @SuppressWarnings("null")
+                String shadeId = entry.getValue();
                 @Nullable
                 Shade shade = webTargets.refreshShade(shadeId);
-                updateShadeThing(shadeId, shadeIdThing.getValue(), shade != null ? shade.shade : null);
+                updateShadeThing(shadeId, thing, shade != null ? shade.shade : null);
             } catch (HubMaintenanceException e) {
                 // exceptions are logged in HDPowerViewWebTargets
             } catch (ProcessingException e) {
