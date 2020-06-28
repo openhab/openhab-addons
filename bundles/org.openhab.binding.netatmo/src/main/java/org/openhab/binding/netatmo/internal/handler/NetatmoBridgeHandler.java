@@ -116,11 +116,11 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     private void connectionSucceed() {
         updateStatus(ThingStatus.ONLINE);
-        WelcomeWebHookServlet webHookServlet = this.webHookServlet;
+        WelcomeWebHookServlet servlet = webHookServlet;
         String webHookURI = getWebHookURI();
         WelcomeApi welcomeApi = getWelcomeApi();
-        if (welcomeApi != null && webHookServlet != null && webHookURI != null) {
-            webHookServlet.activate(this);
+        if (welcomeApi != null && servlet != null && webHookURI != null) {
+            servlet.activate(this);
             logger.debug("Setting up Netatmo Welcome WebHook");
             welcomeApi.addwebhook(webHookURI, WEBHOOK_APP);
         }
@@ -226,39 +226,39 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable PartnerApi getPartnerApi() {
-        APIMap apiMap = this.apiMap;
-        return apiMap != null ? (PartnerApi) apiMap.get(PartnerApi.class) : null;
+        APIMap map = apiMap;
+        return map != null ? (PartnerApi) map.get(PartnerApi.class) : null;
     }
 
     private @Nullable StationApi getStationApi() {
-        APIMap apiMap = this.apiMap;
-        return apiMap != null ? (StationApi) apiMap.get(StationApi.class) : null;
+        APIMap map = apiMap;
+        return map != null ? (StationApi) map.get(StationApi.class) : null;
     }
 
     private @Nullable HealthyhomecoachApi getHomeCoachApi() {
-        APIMap apiMap = this.apiMap;
-        return apiMap != null ? (HealthyhomecoachApi) apiMap.get(HealthyhomecoachApi.class) : null;
+        APIMap map = apiMap;
+        return map != null ? (HealthyhomecoachApi) map.get(HealthyhomecoachApi.class) : null;
     }
 
     public @Nullable ThermostatApi getThermostatApi() {
-        APIMap apiMap = this.apiMap;
-        return apiMap != null ? (ThermostatApi) apiMap.get(ThermostatApi.class) : null;
+        APIMap map = apiMap;
+        return map != null ? (ThermostatApi) map.get(ThermostatApi.class) : null;
     }
 
     public @Nullable WelcomeApi getWelcomeApi() {
-        APIMap apiMap = this.apiMap;
-        return apiMap != null ? (WelcomeApi) apiMap.get(WelcomeApi.class) : null;
+        APIMap map = apiMap;
+        return map != null ? (WelcomeApi) map.get(WelcomeApi.class) : null;
     }
 
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
 
-        WelcomeWebHookServlet webHookServlet = this.webHookServlet;
+        WelcomeWebHookServlet servlet = webHookServlet;
         WelcomeApi welcomeApi = getWelcomeApi();
-        if (welcomeApi != null && webHookServlet != null && getWebHookURI() != null) {
+        if (welcomeApi != null && servlet != null && getWebHookURI() != null) {
             logger.debug("Releasing Netatmo Welcome WebHook");
-            webHookServlet.deactivate();
+            servlet.deactivate();
             welcomeApi.dropwebhook(WEBHOOK_APP);
         }
 

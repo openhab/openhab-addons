@@ -236,8 +236,13 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     public void updateMeasurements() {
     }
 
-    public void getMeasurements(NetatmoBridgeHandler handler, String device, @Nullable String module, String scale,
-            List<String> types, List<String> channels, Map<String, Float> channelMeasurements) {
+    public void getMeasurements(String device, @Nullable String module, String scale, List<String> types,
+            List<String> channels, Map<String, Float> channelMeasurements) {
+        NetatmoBridgeHandler handler = getBridgeHandler();
+        if (handler == null) {
+            return;
+        }
+
         if (types.size() != channels.size()) {
             throw new IllegalArgumentException("types and channels lists are different sizes.");
         }
