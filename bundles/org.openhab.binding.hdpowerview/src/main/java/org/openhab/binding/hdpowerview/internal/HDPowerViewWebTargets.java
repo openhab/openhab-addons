@@ -64,7 +64,7 @@ public class HDPowerViewWebTargets {
     public final Gson gson;
 
     private static final String CONN_HDR = "Connection";
-    private static final String CONN_VAL = "close"; // "keep-alive"
+    private static final String CONN_VAL = "close"; // versus "keep-alive"
 
     public HDPowerViewWebTargets(Client client, String ipAddress) {
         base = client.target("http://" + ipAddress + "/api");
@@ -147,7 +147,7 @@ public class HDPowerViewWebTargets {
             response.close();
             throw new ProcessingException("Missing response entity");
         }
-        @Nullable
+        @SuppressWarnings("null")
         String json = response.readEntity(String.class);
         return json;
     }

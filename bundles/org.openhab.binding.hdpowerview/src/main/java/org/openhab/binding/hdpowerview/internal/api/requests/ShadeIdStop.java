@@ -24,8 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 class ShadeIdStop {
 
     int id;
-    @Nullable
-    String motion;
+    public @Nullable String motion;
 
     public ShadeIdStop(int id) {
         this.id = id;

@@ -63,7 +63,6 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        @Nullable
         ScheduledFuture<?> backgroundFuture = this.backgroundFuture;
         if (backgroundFuture != null && !backgroundFuture.isDone()) {
             backgroundFuture.cancel(true);
@@ -73,7 +72,6 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        @Nullable
         ScheduledFuture<?> backgroundFuture = this.backgroundFuture;
         if (backgroundFuture != null && !backgroundFuture.isDone()) {
             backgroundFuture.cancel(true);
@@ -92,17 +90,19 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                 Shades shades = webTargets.getShades();
                 if (shades != null && shades.shadeData != null) {
                     ThingUID bridgeUID = hub.getThing().getUID();
-                    @Nullable
                     List<ShadeData> shadesData = shades.shadeData;
                     if (shadesData != null) {
                         for (ShadeData shadeData : shadesData) {
-                            ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE, bridgeUID,
-                                    shadeData.id);
-                            DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
-                                    .withProperty(HDPowerViewShadeConfiguration.ID, shadeData.id)
-                                    .withLabel(shadeData.getName()).withBridge(bridgeUID).build();
-                            logger.debug("Hub discovered shade '{}'", shadeData.id);
-                            thingDiscovered(result);
+                            String id = shadeData.id;
+                            if (id != null && !id.isEmpty()) {
+                                ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE,
+                                        bridgeUID, id);
+                                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                                        .withProperty(HDPowerViewShadeConfiguration.ID, id)
+                                        .withLabel(shadeData.getName()).withBridge(bridgeUID).build();
+                                logger.debug("Hub discovered shade '{}'", id);
+                                thingDiscovered(result);
+                            }
                         }
                     }
                 }

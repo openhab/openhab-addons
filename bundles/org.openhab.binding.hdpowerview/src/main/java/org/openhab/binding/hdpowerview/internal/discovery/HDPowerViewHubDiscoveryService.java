@@ -59,7 +59,6 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        @Nullable
         ScheduledFuture<?> backgroundFuture = this.backgroundFuture;
         if (backgroundFuture != null && !backgroundFuture.isDone()) {
             backgroundFuture.cancel(true);
@@ -69,7 +68,6 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        @Nullable
         ScheduledFuture<?> backgroundFuture = this.backgroundFuture;
         if (backgroundFuture != null && !backgroundFuture.isDone()) {
             backgroundFuture.cancel(true);

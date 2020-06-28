@@ -25,8 +25,7 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 class ShadeIdPosition {
 
     int id;
-    @Nullable
-    ShadePosition positions;
+    public @Nullable ShadePosition positions;
 
     public ShadeIdPosition(int id, ShadePosition position) {
         this.id = id;

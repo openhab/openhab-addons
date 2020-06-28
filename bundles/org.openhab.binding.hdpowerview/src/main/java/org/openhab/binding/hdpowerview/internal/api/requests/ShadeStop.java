@@ -23,8 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ShadeStop {
 
-    @Nullable
-    ShadeIdStop shade;
+    public @Nullable ShadeIdStop shade;
 
     public ShadeStop(int id) {
         this.shade = new ShadeIdStop(id);
