@@ -45,7 +45,6 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
@@ -313,12 +312,17 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         for (Entry<Thing, String> entry : shadeIdThings.entrySet()) {
             try {
                 @SuppressWarnings("null")
-                Thing thing = entry.getKey();
-                @SuppressWarnings("null")
                 String shadeId = entry.getValue();
-                @Nullable
-                Shade shade = webTargets.refreshShade(shadeId);
-                updateShadeThing(shadeId, thing, shade != null ? shade.shade : null);
+                /*
+                 * it likes like there may be bug in the hub's response, so for the time being,
+                 * until this is resolved, suppress updating the thing status
+                 */
+                webTargets.refreshShade(shadeId);
+                // @Nullable
+                // Shade shade = webTargets.refreshShade(shadeId);
+                // @SuppressWarnings("null")
+                // Thing thing = entry.getKey();
+                // updateShadeThing(shadeId, thing, shade != null ? shade.shade : null);
             } catch (HubMaintenanceException e) {
                 // exceptions are logged in HDPowerViewWebTargets
             } catch (ProcessingException e) {
