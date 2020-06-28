@@ -157,7 +157,7 @@ public class Connection {
 
     private LinkedBlockingQueue<JsonTextToSpeech> textToSpeechQueue = new LinkedBlockingQueue<>();
     private AtomicBoolean textToSpeechQueueRunning = new AtomicBoolean();
-    private ScheduledFuture<?> textToSpeechSenderUnblockFuture;
+    private @Nullable ScheduledFuture<?> textToSpeechSenderUnblockFuture;
 
     public Connection(@Nullable Connection oldConnection, Gson gson) {
         this.gson = gson;
@@ -890,12 +890,16 @@ public class Connection {
         deviceName = null;
 
         if (announcementTimer != null) {
+            announcements.clear();
             announcementTimer.cancel(true);
         }
         if (textToSpeechTimer != null) {
+            textToSpeeches.clear();
             textToSpeechTimer.cancel(true);
         }
         if (textToSpeechSenderUnblockFuture != null) {
+            textToSpeechQueue.clear();
+            textToSpeechQueueRunning.set(false);
             textToSpeechSenderUnblockFuture.cancel(true);
         }
     }

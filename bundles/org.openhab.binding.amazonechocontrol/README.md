@@ -133,7 +133,6 @@ It will be configured at runtime by using the save channel to store the current 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
 | playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
-| accountAnnouncement   | String      | W           | account                       | Write Only! Display the announcement message on the display of all devices. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
@@ -144,6 +143,7 @@ It will be configured at runtime by using the save channel to store the current 
 | notificationVolume    | Dimmer      | R           | echo, echoshow, echospot      | Notification volume
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | Ascending alarm up to the configured volume
 | sendMessage           | String      | W           | account                       | Write Only! Sends a message to the Echo devices.
+| sendAnnouncement      | String      | W           | account                       | Write Only! Display the announcement message on the display of all Echo devices. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
 | playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
@@ -184,7 +184,7 @@ Take a look in the channel description above to know, which channels are support
 ```
 // Account
 String Echo_Living_Room_SendMessage            "SendMessage"                           {channel="amazonechocontrol:account:account1:sendMessage"}
-String Echo_Living_Room_AccountAnnouncement    "AccountAnnouncement"                   {channel="amazonechocontrol:account:account1:accountAnnouncement"}
+String Echo_Living_Room_SendAnnouncement       "SendAnnouncement"                      {channel="amazonechocontrol:account:account1:sendAnnouncement"}
 
 Group Alexa_Living_Room <player>
 

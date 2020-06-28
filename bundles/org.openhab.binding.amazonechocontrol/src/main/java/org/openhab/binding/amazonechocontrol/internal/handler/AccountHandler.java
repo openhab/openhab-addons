@@ -50,7 +50,7 @@ import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.IWebSocketCommandHandler;
 import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
-import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerAccountAnnouncement;
+import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerSendAnnouncement;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerSendMessage;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
@@ -108,7 +108,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private LinkedBlockingQueue<@Nullable String> pushActivityQueue = new LinkedBlockingQueue<>();
     private AtomicBoolean pushActivityQueueRunning = new AtomicBoolean();
-    private ScheduledFuture<?> pushActivitySenderUnblockFuture;
+    private @Nullable ScheduledFuture<?> pushActivitySenderUnblockFuture;
 
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage, Gson gson) {
         super(bridge);
@@ -116,7 +116,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         this.httpService = httpService;
         this.stateStorage = stateStorage;
         channelHandlers.add(new ChannelHandlerSendMessage(this, this.gson));
-        channelHandlers.add(new ChannelHandlerAccountAnnouncement(this, this.gson));
+        channelHandlers.add(new ChannelHandlerSendAnnouncement(this, this.gson));
     }
 
     @Override
@@ -157,7 +157,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
             String channelId = channelUID.getId();
             for (ChannelHandler channelHandler : channelHandlers) {
-                if (channelHandler instanceof ChannelHandlerAccountAnnouncement) {
+                if (channelHandler instanceof ChannelHandlerSendAnnouncement) {
                     Device[] devices = jsonSerialNumberDeviceMapping.values()
                             .toArray(new Device[jsonSerialNumberDeviceMapping.values().size()]);
                     if (channelHandler.tryHandleCommand(devices, connection, channelId, command)) {
@@ -317,6 +317,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         ScheduledFuture<?> pushActivitySenderUnblockFuture = this.pushActivitySenderUnblockFuture;
         if (pushActivitySenderUnblockFuture != null) {
             pushActivitySenderUnblockFuture.cancel(true);
+            this.pushActivitySenderUnblockFuture = null;
         }
         Connection connection = this.connection;
         if (connection != null) {

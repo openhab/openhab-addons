@@ -26,18 +26,18 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link ChannelHandlerAccountAnnouncement} is responsible for the account
+ * The {@link ChannelHandlerSendAnnouncement} is responsible for the account
  * announcement channel
  *
  * @author Tom Blum (Trinitus01) - Initial contribution
  */
-public class ChannelHandlerAccountAnnouncement extends ChannelHandler {
+public class ChannelHandlerSendAnnouncement extends ChannelHandler {
 
-    private static final String CHANNEL_NAME = "accountAnnouncement";
+    private static final String CHANNEL_NAME = "sendAnnouncement";
 
     protected final IAmazonThingHandler thingHandler;
 
-    public ChannelHandlerAccountAnnouncement(IAmazonThingHandler thingHandler, Gson gson) {
+    public ChannelHandlerSendAnnouncement(IAmazonThingHandler thingHandler, Gson gson) {
         super(thingHandler, gson);
         this.thingHandler = thingHandler;
     }
