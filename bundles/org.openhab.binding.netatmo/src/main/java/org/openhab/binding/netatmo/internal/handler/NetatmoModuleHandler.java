@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
-    private Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
     private ScheduledFuture<?> refreshJob;
     @Nullable
     protected MODULE module;
@@ -130,5 +130,9 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
 
     protected void setRefreshRequired(boolean refreshRequired) {
         this.refreshRequired = refreshRequired;
+    }
+
+    protected @NonNull Optional<MODULE> getModule() {
+        return Optional.ofNullable(module);
     }
 }
