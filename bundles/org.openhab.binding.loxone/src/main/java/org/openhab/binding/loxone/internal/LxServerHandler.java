@@ -575,12 +575,14 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
 
             socket.startResponseTimeout();
             logger.debug("[{}] Connecting to server : {} ", debugId, target);
-            wsClient.connect(socket, target, request);
+            wsClient.connect(socket, target, request).get();
             return true;
         } catch (Exception e) {
             logger.debug("[{}] Error starting websocket client: {}", debugId, e.getMessage());
             try {
-                wsClient.stop();
+                if (wsClient.isStarted()) {
+                    wsClient.stop();
+                }
             } catch (Exception e2) {
                 logger.debug("[{}] Error stopping websocket client: {}", debugId, e2.getMessage());
             }
@@ -603,7 +605,9 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
         socket.disconnect(code, reason);
         try {
             logger.debug("[{}] client stop", debugId);
-            wsClient.stop();
+            if (wsClient.isStarted()) {
+                wsClient.stop();
+            }
             logger.debug("[{}] client stopped", debugId);
         } catch (Exception e) {
             logger.debug("[{}] Exception disconnecting the websocket: ", e.getMessage());
