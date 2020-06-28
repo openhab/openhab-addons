@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -75,6 +76,7 @@ public class TibberHandler extends BaseThingHandler {
     private @Nullable Session session;
     private @Nullable WebSocketClient client;
     private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable Future<?> sessionFuture;
     private String rtEnabled = "false";
 
     public TibberHandler(Thing thing) {
@@ -326,7 +328,7 @@ public class TibberHandler extends BaseThingHandler {
             }
             try {
                 logger.debug("Connecting Websocket connection");
-                client.connect(socket, new URI(SUBSCRIPTION_URL), newRequest);
+                sessionFuture = client.connect(socket, new URI(SUBSCRIPTION_URL), newRequest);
             } catch (IOException e) {
                 logger.warn("Websocket Connect Exception: {}", e.getMessage());
             } catch (URISyntaxException e) {
@@ -353,6 +355,16 @@ public class TibberHandler extends BaseThingHandler {
             session.close(0, "Tibber websocket disposed");
             this.session = null;
             this.socket = null;
+        }
+        if (sessionFuture != null && !sessionFuture.isDone()) {
+            sessionFuture.cancel(true);
+        }
+        if (client != null && client.isStarted()) {
+            try {
+                client.stop();
+            } catch (Exception e) {
+                logger.warn("Failed to stop websocket client: {}", e.getMessage());
+            }
         }
     }
 
