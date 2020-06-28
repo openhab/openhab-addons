@@ -18,12 +18,13 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NAPlug;
@@ -37,16 +38,19 @@ import io.swagger.client.model.NAYearMonth;
  * @author Gaël L'hopital - Initial contribution OH2 version
  *
  */
+@NonNullByDefault
 public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
 
-    public NAPlugHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public NAPlugHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
     }
 
     @Override
-    protected NAPlug updateReadings() {
+    protected @Nullable NAPlug updateReadings() {
         NAPlug result = null;
-        NAThermostatDataBody thermostatDataBody = getBridgeHandler().getThermostatsDataBody(getId());
+        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
+        NAThermostatDataBody thermostatDataBody = bridgeHandler == null ? null
+                : bridgeHandler.getThermostatsDataBody(getId());
         if (thermostatDataBody != null) {
             result = thermostatDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);
@@ -63,12 +67,13 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
+    protected State getNAThingProperty(String channelId) {
+        NAPlug plugDevice = device;
         switch (channelId) {
             case CHANNEL_CONNECTED_BOILER:
-                return device != null ? toOnOffType(device.getPlugConnectedBoiler()) : UnDefType.UNDEF;
+                return plugDevice != null ? toOnOffType(plugDevice.getPlugConnectedBoiler()) : UnDefType.UNDEF;
             case CHANNEL_LAST_PLUG_SEEN:
-                return device != null ? toDateTimeType(device.getLastPlugSeen(), timeZoneProvider.getTimeZone())
+                return plugDevice != null ? toDateTimeType(plugDevice.getLastPlugSeen(), timeZoneProvider.getTimeZone())
                         : UnDefType.UNDEF;
             case CHANNEL_LAST_BILAN:
                 return toDateTimeType(getLastBilan());
@@ -77,8 +82,9 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
     }
 
     public @Nullable ZonedDateTime getLastBilan() {
-        if (device != null) {
-            NAYearMonth lastBilan = device.getLastBilan();
+        NAPlug plugDevice = device;
+        if (plugDevice != null) {
+            NAYearMonth lastBilan = plugDevice.getLastBilan();
             if (lastBilan != null) {
                 ZonedDateTime zonedDT = ZonedDateTime.of(lastBilan.getY(), lastBilan.getM(), 1, 0, 0, 0, 0,
                         ZonedDateTime.now().getZone());
@@ -90,8 +96,9 @@ public class NAPlugHandler extends NetatmoDeviceHandler<NAPlug> {
 
     @Override
     protected @Nullable Integer getDataTimestamp() {
-        if (device != null) {
-            Integer lastStored = device.getLastStatusStore();
+        NAPlug plugDevice = device;
+        if (plugDevice != null) {
+            Integer lastStored = plugDevice.getLastStatusStore();
             if (lastStored != null) {
                 return lastStored;
             }

@@ -15,7 +15,7 @@ package org.openhab.binding.netatmo.internal.station;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -30,6 +30,7 @@ import io.swagger.client.model.NAStationModule;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
 
     public NAModule2Handler(Thing thing, final TimeZoneProvider timeZoneProvider) {
@@ -42,9 +43,10 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
-        if (module != null) {
-            NADashboardData dashboardData = module.getDashboardData();
+    protected State getNAThingProperty(String channelId) {
+        NAStationModule stationModule = module;
+        if (stationModule != null) {
+            NADashboardData dashboardData = stationModule.getDashboardData();
             if (dashboardData != null) {
                 switch (channelId) {
                     case CHANNEL_WIND_ANGLE:
