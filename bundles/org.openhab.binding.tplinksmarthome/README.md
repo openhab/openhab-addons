@@ -300,7 +300,7 @@ All devices support some of the following channels:
 | eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | HS110, HS300                                                                                       |
 | current             | Number:ElectricCurrent   | Actual current usage in Ampere.                | HS110, HS300                                                                                       |
 | voltage             | Number:ElectricPotential | Actual voltage usage in Volt.                  | HS110, HS300                                                                                       |
-| led                 | Switch                   | Switch the status LED on the device on or off. | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP303, KP200, KP400          |
+| led                 | Switch                   | Switch the status LED on the device on or off. | HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS220, HS300, KP100, KP105, KP303, KP200, KP400          |
 | rssi                | Number:Power             | Wi-Fi signal strength indicator in dBm.        | All                                                                                                |
 
 The outlet devices (HS107, HS300, KP200, KP400) have group channels.
