@@ -263,10 +263,13 @@ public class HDPowerViewJUnitTests {
                 pos = positions.getState(PRIMARY, kind);
                 assertEquals(PercentType.class, pos.getClass());
 
+                pos = positions.getState(PRIMARY, REGULAR);
+                assertEquals(PercentType.class, pos.getClass());
+
                 int position = ((PercentType) pos).intValue();
                 position = position + ((position <= 10) ? 5 : -5);
 
-                ShadePosition newPos = ShadePosition.create(kind, position);
+                ShadePosition newPos = ShadePosition.create(REGULAR, position);
                 assertNotNull(newPos);
 
                 if (allowShadeMovementCommands) {
