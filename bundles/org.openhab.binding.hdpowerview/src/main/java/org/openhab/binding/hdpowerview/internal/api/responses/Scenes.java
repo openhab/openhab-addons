@@ -29,6 +29,12 @@ public class Scenes {
     public @Nullable List<Scene> sceneData;
     public @Nullable List<String> sceneIds;
 
+    /*
+     * the following SuppressWarnings annotation is because the Eclipse compiler
+     * does NOT expect a NonNullByDefault annotation on the inner class, since it is
+     * implicitly inherited from the outer class, whereas the Maven compiler always
+     * requires an explicit NonNullByDefault annotation on all classes
+     */
     @SuppressWarnings("null")
     @NonNullByDefault
     public static class Scene {
