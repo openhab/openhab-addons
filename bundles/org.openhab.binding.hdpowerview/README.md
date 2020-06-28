@@ -80,7 +80,7 @@ All of these channels appear in the binding, but only those which have a physica
 
 | Channel    | Item Type     | Description |
 |------------|---------------|------------|
-| position   | Rollershutter | The vertical position of the shade's rail -- _(see chapter "**Roller Shutter Up/Down Position vs. Open/Close State**" below)._ Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Move/Stop commands are are not supported and will be ignored. |
+| position   | Rollershutter | The vertical position of the shade's rail -- _(see chapter "**Roller Shutter Up/Down Position vs. Open/Close State**" below)._ Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
 | secondary  | Rollershutter | The vertical position of the secondary rail (if any). Its function is basically identical to the `position` channel above -- _(but see chapter "**Roller Shutter Up/Down Position vs. Open/Close State**" below)._ |
 | vane       | Dimmer        | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- _(see chapter "**Inter-dependency between Position and Vane Channels**" below)._ |
 | batteryLow | Switch        | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
@@ -95,9 +95,9 @@ Depending on whether the shade is a top-down, bottom-up, left-right, right-left,
 
 | Type of Shade            | Channel           | Rail & Rollershutter Position | Open/Closed State | Percent |
 |--------------------------|-------------------|-------------------------------|-------------------|---------|
-| Single action top-down   | `position`        | `UP`                          | `OPEN`            | 0%      |
+| Single action bottom-up  | `position`        | `UP`                          | `OPEN`            | 0%      |
 |                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
-| Single action bottom-up  | `position`        | `UP`                          | ***`CLOSED`***    | 0%      |
+| Single action top-down   | `position`        | `UP`                          | ***`CLOSED`***    | 0%      |
 |                          |                   | `DOWN`                        | ***`OPEN`***      | 100%    |
 | Single action left-right | `position`        | `UP`                          | `OPEN`            | 0%      |
 |                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
@@ -132,7 +132,7 @@ Table B: shows how the value of `position` depends on the value of `vane`..
 ## Refreshing the PowerView Hub Cache
 
 The hub maintains a cache of the last known state of its shades, and this binding delivers those values.
-Usually the shades will moved by this binding, so since the hub is always involved in the process, it updates this cache accordingly.
+Usually the shades will be moved by this binding, so since the hub is always involved in the moving process, it updates this cache accordingly.
 
 However  shades can also be moved manually without the hub’s knowledge.
 A person can manually move a shade by pressing a button on the side of the shade or via a remote control.
