@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.hdpowerview.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Shade position sequence, as returned by the HD Power View Hub.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public enum PosSeq {
     PRIMARY,
     SECONDARY;

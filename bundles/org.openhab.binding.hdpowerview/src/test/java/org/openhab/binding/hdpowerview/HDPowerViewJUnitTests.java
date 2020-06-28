@@ -19,6 +19,7 @@ import static org.openhab.binding.hdpowerview.internal.api.PosSeq.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.ProcessingException;
@@ -79,7 +80,7 @@ public class HDPowerViewJUnitTests {
          * available, and its IP address must be correctly configured in the
          * "hubIPAddress" string constant e.g. "192.168.1.123"
          */
-        String hubIPAddress = "192.168.1.xxx";
+        String hubIPAddress = "192.168.1.129";
 
         /*
          * NOTE: set allowShadeMovementCommands = true if you accept physically moving
@@ -147,6 +148,7 @@ public class HDPowerViewJUnitTests {
 
             // test the JSON parsing for a duette top down bottom up shade
             try {
+                @Nullable
                 ShadeData shadeData = null;
                 String json = loadJson("duette");
                 assertNotNull(json);
@@ -154,9 +156,13 @@ public class HDPowerViewJUnitTests {
 
                 shades = webTargets.gson.fromJson(json, Shades.class);
                 assertNotNull(shades);
+                @Nullable
+                List<ShadeData> shadesData = shades.shadeData;
+                assertNotNull(shadesData);
 
-                assertEquals(1, shades.shadeData.size());
-                shadeData = shades.shadeData.get(0);
+                assertEquals(1, shadesData.size());
+                shadeData = shadesData.get(0);
+                assertNotNull(shadeData);
 
                 assertEquals("Gardin 1", shadeData.getName());
                 assertEquals("63778", shadeData.id);
@@ -183,15 +189,25 @@ public class HDPowerViewJUnitTests {
             try {
                 shades = webTargets.getShades();
                 assertNotNull(shades);
-                assertTrue(shades.shadeData.size() > 0);
-                assertTrue(shades.shadeData.get(0).getName().length() > 0);
-                shadePos = shades.shadeData.get(0).positions;
+                @Nullable
+                List<ShadeData> shadesData = shades.shadeData;
+                assertNotNull(shadesData);
+                assertTrue(shadesData.size() > 0);
+                @Nullable
+                ShadeData shadeData;
+                shadeData = shadesData.get(0);
+                assertNotNull(shadeData);
+                assertTrue(shadeData.getName().length() > 0);
+                shadePos = shadeData.positions;
                 assertNotNull(shadePos);
-                shadeId = shades.shadeData.get(0).id;
+                @Nullable
+                ShadeData shadeZero = shadesData.get(0);
+                assertNotNull(shadeZero);
+                shadeId = shadeZero.id;
                 assertNotNull(shadeId);
 
-                for (ShadeData shadeData : shades.shadeData) {
-                    String shadeName = shadeData.getName();
+                for (ShadeData shadexData : shadesData) {
+                    String shadeName = shadexData.getName();
                     assertNotNull(shadeName);
                 }
             } catch (JsonParseException | ProcessingException | HubMaintenanceException e) {
@@ -203,11 +219,17 @@ public class HDPowerViewJUnitTests {
             try {
                 Scenes scenes = webTargets.getScenes();
                 assertNotNull(scenes);
-                assertTrue(scenes.sceneData.size() > 0);
-                sceneId = scenes.sceneData.get(0).id;
+                @Nullable
+                List<Scene> scenesData = scenes.sceneData;
+                assertNotNull(scenesData);
+                assertTrue(scenesData.size() > 0);
+                @Nullable
+                Scene sceneZero = scenesData.get(0);
+                assertNotNull(sceneZero);
+                sceneId = sceneZero.id;
                 assertTrue(sceneId > 0);
 
-                for (Scene scene : scenes.sceneData) {
+                for (Scene scene : scenesData) {
                     String sceneName = scene.getName();
                     assertNotNull(sceneName);
                 }

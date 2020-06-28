@@ -15,19 +15,25 @@ package org.openhab.binding.hdpowerview.internal.api.responses;
 import java.util.Base64;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * A list of Scenes, as returned by the HD Power View Hub
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 public class Scenes {
 
-    public List<Scene> sceneData;
-    public List<String> sceneIds;
+    public @Nullable List<Scene> sceneData;
+    public @Nullable List<String> sceneIds;
 
+    @SuppressWarnings("null")
+    @NonNullByDefault
     public static class Scene {
         public int id;
-        String name;
+        public String name = "";
         public int roomId;
         public int order;
         public int colorId;

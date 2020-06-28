@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.hdpowerview.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Shade position kind, as returned by the HD Power View Hub.
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
  */
+@NonNullByDefault
 public enum PosKind {
     REGULAR(1),
     INVERTED(2),

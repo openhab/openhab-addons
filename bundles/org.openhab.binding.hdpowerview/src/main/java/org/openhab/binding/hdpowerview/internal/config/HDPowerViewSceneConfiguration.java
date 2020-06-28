@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.hdpowerview.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Basic configuration for an HD Power View Scene
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 public class HDPowerViewSceneConfiguration {
 
     public static final String ID = "id";
