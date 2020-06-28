@@ -101,7 +101,7 @@ class WebSocketBase extends WebSocketAdapter {
 
         final Future<?> sessionFuture = this.sessionFuture;
         logger.trace("Closing session Future: {}", sessionFuture);
-        if (sessionFuture!= null && !sessionFuture.isDone()) {
+        if (sessionFuture != null && !sessionFuture.isDone()) {
             sessionFuture.cancel(true);
         }
     }
