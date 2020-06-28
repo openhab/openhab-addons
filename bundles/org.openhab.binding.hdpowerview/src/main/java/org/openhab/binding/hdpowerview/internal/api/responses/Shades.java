@@ -33,8 +33,8 @@ public class Shades {
     @SuppressWarnings("null")
     @NonNullByDefault
     public static class ShadeData {
-        public String id = "";
-        public String name = "";
+        public @Nullable String id;
+        public @Nullable String name;
         public int roomId;
         public int groupId;
         public int order;

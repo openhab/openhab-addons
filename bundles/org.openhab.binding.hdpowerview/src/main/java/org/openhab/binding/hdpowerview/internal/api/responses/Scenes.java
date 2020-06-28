@@ -33,7 +33,7 @@ public class Scenes {
     @NonNullByDefault
     public static class Scene {
         public int id;
-        public String name = "";
+        public @Nullable String name;
         public int roomId;
         public int order;
         public int colorId;
