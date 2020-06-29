@@ -49,6 +49,7 @@ public class Shades {
         public int batteryStatus;
         public boolean batteryIsLow;
         public @Nullable ShadePosition positions;
+        public @Nullable Boolean timedOut;
 
         public String getName() {
             return new String(Base64.getDecoder().decode(name));

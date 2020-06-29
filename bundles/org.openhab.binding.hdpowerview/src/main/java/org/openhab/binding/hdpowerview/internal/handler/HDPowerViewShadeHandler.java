@@ -73,19 +73,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH.equals(command)) {
-            HDPowerViewHubHandler bridge = getBridgeHandler();
-            if (bridge != null) {
-                HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-                if (webTargets != null) {
-                    try {
-                        webTargets.refreshShade(getShadeId());
-                    } catch (ProcessingException e) {
-                        logger.warn("Unexpected error: {}", e.getMessage());
-                    } catch (HubMaintenanceException e) {
-                        // exceptions are logged in HDPowerViewWebTargets
-                    }
-                }
-            }
+            refreshShade();
             return;
         }
 
@@ -99,7 +87,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     if (StopMoveType.STOP.equals(command)) {
                         stopShade();
                     } else {
-                        logger.warn("PowerView shades do not support StopMove commands");
+                        logger.warn("Unexpected StopMoveType command");
                     }
                 }
                 break;
@@ -118,7 +106,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 } else if (command instanceof UpDownType) {
                     moveShade(SECONDARY, INVERTED, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
-                    logger.warn("PowerView shades do not support StopMove commands");
+                    if (StopMoveType.STOP.equals(command)) {
+                        stopShade();
+                    } else {
+                        logger.warn("Unexpected StopMoveType command");
+                    }
                 }
                 break;
         }
@@ -147,43 +139,23 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private void moveShade(PosSeq seq, PosKind kind, int percent) {
-        HDPowerViewHubHandler bridge;
-        if ((bridge = getBridgeHandler()) == null) {
-            return;
-        }
-        HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-        String shadeId = getShadeId();
         try {
+            HDPowerViewHubHandler bridge;
+            if ((bridge = getBridgeHandler()) == null) {
+                throw new ProcessingException("Missing bridge handler");
+            }
+            HDPowerViewWebTargets webTargets = bridge.getWebTargets();
             if (webTargets == null) {
                 throw new ProcessingException("Web targets not configured");
             }
-
-            @Nullable
-            ShadePosition newPos = null;
-
+            String shadeId = getShadeId();
             switch (seq) {
                 case PRIMARY:
-                    newPos = ShadePosition.create(kind, percent);
-                    webTargets.moveShade(shadeId, newPos);
+                    webTargets.moveShade(shadeId, ShadePosition.create(kind, percent));
                     break;
                 case SECONDARY:
-                    Shade oldShade = webTargets.refreshShade(shadeId);
-                    if (oldShade != null) {
-                        ShadeData oldData = oldShade.shade;
-                        if (oldData != null) {
-                            ShadePosition positions = oldData.positions;
-                            if (positions != null) {
-                                // only send commands if hub already has a valid secondary shade status
-                                if (!UnDefType.UNDEF.equals(positions.getState(SECONDARY, INVERTED))) {
-                                    newPos = ShadePosition.create(positions, INVERTED, percent);
-                                    webTargets.moveShade(shadeId, newPos);
-                                }
-                            }
-                        }
-                    }
+                    webTargets.moveShade(shadeId, ShadePosition.create(REGULAR, 100, INVERTED, percent));
             }
-
-            updateBindingStates(newPos);
         } catch (ProcessingException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
@@ -199,16 +171,16 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private void stopShade() {
-        HDPowerViewHubHandler bridge;
-        if ((bridge = getBridgeHandler()) == null) {
-            return;
-        }
-        HDPowerViewWebTargets webTargets = bridge.getWebTargets();
-        String shadeId = getShadeId();
         try {
+            HDPowerViewHubHandler bridge;
+            if ((bridge = getBridgeHandler()) == null) {
+                throw new ProcessingException("Missing bridge handler");
+            }
+            HDPowerViewWebTargets webTargets = bridge.getWebTargets();
             if (webTargets == null) {
                 throw new ProcessingException("Web targets not configured");
             }
+            String shadeId = getShadeId();
             webTargets.stopShade(shadeId);
         } catch (ProcessingException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
@@ -216,6 +188,33 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
             return;
+        }
+    }
+
+    public void refreshShade() {
+        try {
+            HDPowerViewHubHandler bridge;
+            if ((bridge = getBridgeHandler()) == null) {
+                throw new ProcessingException("Missing bridge handler");
+            }
+            HDPowerViewWebTargets webTargets = bridge.getWebTargets();
+            if (webTargets == null) {
+                throw new ProcessingException("Web targets not configured");
+            }
+            String shadeId = getShadeId();
+            Shade shade = webTargets.refreshShade(shadeId);
+            if (shade != null) {
+                ShadeData shadeData = shade.shade;
+                if (shadeData != null) {
+                    if (Boolean.TRUE.equals(shadeData.timedOut)) {
+                        logger.warn("Shade {} wireless refresh time out", shadeId);
+                    }
+                }
+            }
+        } catch (ProcessingException e) {
+            logger.warn("Unexpected error: {}", e.getMessage());
+        } catch (HubMaintenanceException e) {
+            // exceptions are logged in HDPowerViewWebTargets
         }
     }
 }

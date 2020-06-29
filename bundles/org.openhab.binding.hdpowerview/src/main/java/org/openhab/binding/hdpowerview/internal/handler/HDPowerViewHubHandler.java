@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -75,10 +76,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
-    private final Runnable refreshShadeCacheTask = () -> {
-        refreshShadeCache();
-    };
-
     public HDPowerViewHubHandler(Bridge bridge) {
         super(bridge);
     }
@@ -87,7 +84,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH.equals(command)
                 || (CHANNEL_HUB_REFRESH_CACHE.equals(channelUID.getId()) && OnOffType.ON.equals(command))) {
-            new Thread(refreshShadeCacheTask).start();
+            new Thread(refreshAllShades).start();
             return;
         }
 
@@ -302,32 +299,19 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return ret;
     }
 
-    private void refreshShadeCache() {
-        HDPowerViewWebTargets webTargets = this.webTargets;
-        if (webTargets == null) {
-            throw new ProcessingException("Web targets not initialized");
-        }
-
-        Map<Thing, String> shadeIdThings = getThingToId();
-        for (Entry<Thing, String> entry : shadeIdThings.entrySet()) {
-            try {
-                @SuppressWarnings("null")
-                String shadeId = entry.getValue();
-                /*
-                 * it likes like there may be bug in the hub's response, so for the time being,
-                 * until this is resolved, suppress updating the thing status
-                 */
-                webTargets.refreshShade(shadeId);
-                // @Nullable
-                // Shade shade = webTargets.refreshShade(shadeId);
-                // @SuppressWarnings("null")
-                // Thing thing = entry.getKey();
-                // updateShadeThing(shadeId, thing, shade != null ? shade.shade : null);
-            } catch (HubMaintenanceException e) {
-                // exceptions are logged in HDPowerViewWebTargets
-            } catch (ProcessingException e) {
-                logger.debug("Unexpected error {}", e.getMessage());
+    private final Runnable refreshAllShades = () -> {
+        Map<Thing, String> thingToId = getThingToId();
+        for (Entry<Thing, String> thingIdItem : thingToId.entrySet()) {
+            @SuppressWarnings("null")
+            Thing itemThing = thingIdItem.getKey();
+            @SuppressWarnings("null")
+            String itemId = thingIdItem.getValue();
+            ThingHandler entryHandler = itemThing.getHandler();
+            if (entryHandler instanceof HDPowerViewShadeHandler) {
+                ((HDPowerViewShadeHandler) entryHandler).refreshShade();
+            } else {
+                logger.debug("Shade '{}' missing handler", itemId);
             }
         }
-    }
+    };
 }
