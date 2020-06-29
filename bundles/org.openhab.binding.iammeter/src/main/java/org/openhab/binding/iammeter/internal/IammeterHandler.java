@@ -57,7 +57,7 @@ public class IammeterHandler extends BaseThingHandler {
 
     private @Nullable IammeterConfiguration config;
 
-    private @Nullable ScheduledFuture pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public IammeterHandler(Thing thing) {
         super(thing);
@@ -104,7 +104,7 @@ public class IammeterHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Communication error with the device. Please retry later.");
+                            "Communication error with the device: " + e.getMessage());
                 } catch (JsonSyntaxException je) {
                     logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
                 } catch (Exception e) {
