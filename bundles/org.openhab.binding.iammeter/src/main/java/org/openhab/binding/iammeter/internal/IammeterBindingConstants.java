@@ -29,6 +29,4 @@ public class IammeterBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_POWERMETER = new ThingTypeUID(BINDING_ID, "powermeter");
 
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
 }
