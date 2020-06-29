@@ -756,8 +756,7 @@ public class ModbusManagerImpl implements ModbusManager {
         }
 
         @Override
-        public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request,
-                @Nullable ModbusReadCallback callback) {
+        public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback callback) {
             if (closed) {
                 throw new IllegalStateException("Communication interface is closed already!");
             }
@@ -777,7 +776,7 @@ public class ModbusManagerImpl implements ModbusManager {
 
         @Override
         public PollTask registerRegularPoll(ModbusReadRequestBlueprint request, long pollPeriodMillis,
-                long initialDelayMillis, @Nullable ModbusReadCallback callback) {
+                long initialDelayMillis, ModbusReadCallback callback) {
             synchronized (ModbusManagerImpl.this) {
                 if (closed) {
                     throw new IllegalStateException("Communication interface is closed already!");

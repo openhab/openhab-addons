@@ -50,8 +50,7 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      * @return future representing the polled task
      * @throws IllegalStateException when this communication has been closed already
      */
-    public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request,
-            @Nullable ModbusReadCallback callback);
+    public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback callback);
 
     /**
      * Register regularly polled task. The method returns immediately, and the execution of the poll task will happen in
@@ -67,7 +66,7 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      * @throws IllegalStateException when this communication has been closed already
      */
     public PollTask registerRegularPoll(ModbusReadRequestBlueprint request, long pollPeriodMillis,
-            long initialDelayMillis, @Nullable ModbusReadCallback callback);
+            long initialDelayMillis, ModbusReadCallback callback);
 
     /**
      * Unregister regularly polled task
