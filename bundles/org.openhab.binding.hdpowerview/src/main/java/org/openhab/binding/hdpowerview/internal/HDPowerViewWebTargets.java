@@ -45,11 +45,14 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class HDPowerViewWebTargets {
 
-    private WebTarget base;
-    private WebTarget shades;
-    private WebTarget shade;
-    private WebTarget sceneActivate;
-    private WebTarget scenes;
+    private static final String PUT = "PUT";
+    private static final String GET = "GET";
+    private static final String SCENE_ID = "sceneId";
+    private static final String ID = "id";
+    private static final String REFRESH = "refresh";
+    private static final String CONN_HDR = "Connection";
+    private static final String CONN_VAL = "close"; // versus "keep-alive"
+
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
 
     /*
@@ -61,10 +64,13 @@ public class HDPowerViewWebTargets {
     private final int maintenancePeriod = 300;
     private Instant maintenanceScheduledEnd = Instant.now().minusSeconds(2 * maintenancePeriod);
 
-    public final Gson gson;
+    private WebTarget base;
+    private WebTarget shades;
+    private WebTarget shade;
+    private WebTarget sceneActivate;
+    private WebTarget scenes;
 
-    private static final String CONN_HDR = "Connection";
-    private static final String CONN_VAL = "close"; // versus "keep-alive"
+    public final Gson gson;
 
     public HDPowerViewWebTargets(Client client, String ipAddress) {
         base = client.target("http://" + ipAddress + "/api");
@@ -80,16 +86,14 @@ public class HDPowerViewWebTargets {
         return gson.fromJson(json, Shades.class);
     }
 
-    public @Nullable Shade moveShade(String shadeIdString, ShadePosition position)
+    public void moveShade(String shadeIdString, ShadePosition position)
             throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
-        WebTarget target = shade.resolveTemplate("id", shadeId);
+        WebTarget target = shade.resolveTemplate(ID, shadeId);
         String json = gson.toJson(new ShadeMove(shadeId, position));
-        logger.trace("JSON request = {}", json);
-        json = invoke(target.request().header(CONN_HDR, CONN_VAL)
+        invoke(target.request().header(CONN_HDR, CONN_VAL)
                 .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target, json);
-        logger.trace("JSON response = {}", json);
-        return gson.fromJson(json, Shade.class);
+        return;
     }
 
     public @Nullable Scenes getScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
@@ -98,14 +102,14 @@ public class HDPowerViewWebTargets {
     }
 
     public void activateScene(int sceneId) throws ProcessingException, HubMaintenanceException {
-        WebTarget target = sceneActivate.queryParam("sceneId", sceneId);
+        WebTarget target = sceneActivate.queryParam(SCENE_ID, sceneId);
         invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
     }
 
     private String invoke(Invocation invocation, WebTarget target, @Nullable String jsonRequest)
             throws ProcessingException, HubMaintenanceException {
         if (logger.isTraceEnabled()) {
-            logger.trace("API command {} {}", jsonRequest == null ? "GET" : "PUT", target.getUri());
+            logger.trace("API command {} {}", jsonRequest == null ? GET : PUT, target.getUri());
             if (jsonRequest != null) {
                 logger.trace("JSON request = {}", jsonRequest);
             }
@@ -157,18 +161,18 @@ public class HDPowerViewWebTargets {
 
     public @Nullable Shade refreshShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
-        WebTarget target = shade.resolveTemplate("id", shadeId).queryParam("refresh", true);
+        WebTarget target = shade.resolveTemplate(ID, shadeId).queryParam(REFRESH, true);
         String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
         return gson.fromJson(json, Shade.class);
     }
 
-    public @Nullable Shade stopShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
+    public void stopShade(String shadeIdString) throws ProcessingException, HubMaintenanceException {
         int shadeId = Integer.parseInt(shadeIdString);
-        WebTarget target = shade.resolveTemplate("id", shadeId);
+        WebTarget target = shade.resolveTemplate(ID, shadeId);
         String json = gson.toJson(new ShadeStop(shadeId));
         logger.trace("JSON request = {}", json);
-        json = invoke(target.request().header(CONN_HDR, CONN_VAL)
+        invoke(target.request().header(CONN_HDR, CONN_VAL)
                 .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target, json);
-        return gson.fromJson(json, Shade.class);
+        return;
     }
 }
