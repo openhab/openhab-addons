@@ -79,7 +79,6 @@ public class IammeterHandler extends BaseThingHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                // execute some binding specific polling code
                 try {
                     refresh();
                     updateStatus(ThingStatus.ONLINE);
