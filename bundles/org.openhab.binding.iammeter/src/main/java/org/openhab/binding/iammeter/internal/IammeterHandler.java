@@ -74,7 +74,6 @@ public class IammeterHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
         config = getConfigAs(IammeterConfiguration.class);
 
         Runnable runnable = new Runnable() {
@@ -86,7 +85,6 @@ public class IammeterHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     // Very rudimentary Exception differentiation
                 } catch (IOException e) {
-                    logger.debug("Error reading response from Iammeter", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Communication error with the device. Please retry later.");
                 } catch (JsonSyntaxException je) {
@@ -106,7 +104,6 @@ public class IammeterHandler extends BaseThingHandler {
                     refresh();
                     updateStatus(ThingStatus.ONLINE);
                 } catch (IOException e) {
-                    logger.debug("Error reading response from Iammeter", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Communication error with the device. Please retry later.");
                 } catch (JsonSyntaxException je) {
@@ -118,14 +115,6 @@ public class IammeterHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
-
-        // logger.debug("Finished initializing!");
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     private void refresh() throws Exception {
@@ -136,7 +125,6 @@ public class IammeterHandler extends BaseThingHandler {
         String content = "";
         InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-        logger.debug("Attempting to load data from {} with parameter {}", url, content);
         String response = HttpUtil.executeUrl(httpMethod, url, stream, null, timeout);
         JsonElement iammeterDataElement = new JsonParser().parse(response);
         JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
@@ -144,7 +132,6 @@ public class IammeterHandler extends BaseThingHandler {
         boolean bRemoveChannels = false;
         String channelProfix = "";
         if (iammeterData.has("data") || (iammeterData.has("Data") && iammeterData.has("SN"))) {
-            logger.debug("Found 3080/3162");
             bRemoveChannels = true;
             if (iammeterData.has("data")) {
                 keyWord = "data";
@@ -158,7 +145,6 @@ public class IammeterHandler extends BaseThingHandler {
                 updateState(channel.getUID(), state);
             }
         } else if (iammeterData.has("Datas") && iammeterData.has("SN")) {
-            logger.debug("Found 3080T");
             keyWord = "Datas";
             for (IammeterWEM3080TChannel channelConfig : IammeterWEM3080TChannel.values()) {
                 Channel channel = getThing().getChannel(channelConfig.getId());
