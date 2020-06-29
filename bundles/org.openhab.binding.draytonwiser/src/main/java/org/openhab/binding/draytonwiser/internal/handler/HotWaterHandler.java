@@ -117,7 +117,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
             }
         }
 
-        updateState(new ChannelUID(getThing().getUID(), CHANNEL_HOT_WATER_BOOST_DURATION), DecimalType.ZERO);
+        updateState(CHANNEL_HOT_WATER_BOOST_DURATION, DecimalType.ZERO);
 
         return OnOffType.OFF;
     }

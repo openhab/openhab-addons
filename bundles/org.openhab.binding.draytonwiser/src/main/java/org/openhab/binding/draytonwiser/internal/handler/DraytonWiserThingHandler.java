@@ -48,15 +48,12 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ThingUID thingUID;
-
     private @Nullable DraytonWiserApi api;
     private @Nullable T data;
     private @Nullable DraytonWiserDTO draytonWiseDTO;
 
     protected DraytonWiserThingHandler(final Thing thing) {
         super(thing);
-        thingUID = getThing().getUID();
     }
 
     @Override
@@ -130,7 +127,7 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
     protected void updateState(final String channelId, final Supplier<State> stateFunction) {
         final State state = api == null || data == null ? UnDefType.UNDEF : stateFunction.get();
 
-        updateState(new ChannelUID(thingUID, channelId), state);
+        updateState(channelId, state);
     }
 
     /**
