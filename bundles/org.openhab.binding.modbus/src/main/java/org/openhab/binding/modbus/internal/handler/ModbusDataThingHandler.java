@@ -61,6 +61,7 @@ import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.Transformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.BitArray;
@@ -225,7 +226,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
 
         logger.trace("Submitting write task {} to endpoint {}", request, comms.getEndpoint());
-        comms.submitOneTimeWrite(request, this);
+        comms.submitOneTimeWrite(request, this, this::onError);
     }
 
     /**
@@ -328,7 +329,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         requests.stream().forEach(request -> {
             logger.trace("Submitting write request: {} to endpoint {} (based from transformation {})", request,
                     localComms.getEndpoint(), transformOutput);
-            localComms.submitOneTimeWrite(request, this);
+            localComms.submitOneTimeWrite(request, this, this::onError);
         });
     }
 
@@ -652,13 +653,13 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         });
     }
 
+    /**
+     * @TODO: it is very likely that this is never used.
+     *        It might indicate a potential bug, or just has been deprecated, and should be removed
+     */
     @Override
     public synchronized void handle(AsyncModbusReadResult result) {
-        if (result.hasError()) {
-            Exception error = result.getCause();
-            assert error != null;
-            onError(result.getRequest(), error);
-        } else if (result.getRegisters() != null) {
+        if (result.getRegisters() != null) {
             ModbusRegisterArray registers = result.getRegisters();
             assert registers != null;
             onRegisters(result.getRequest(), registers);
@@ -671,11 +672,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
     @Override
     public synchronized void handle(AsyncModbusWriteResult result) {
-        if (result.hasError()) {
-            Exception error = result.getCause();
-            assert error != null;
-            onError(result.getRequest(), error);
-        } else if (result.getResponse() != null) {
+        if (result.getResponse() != null) {
             ModbusResponse response = result.getResponse();
             assert response != null;
             onWriteResponse(result.getRequest(), response);
@@ -737,6 +734,9 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 thing.getUID(), values, readValueType, readIndex, numericState, boolValue, bits, request);
     }
 
+    /**
+     * @TODO: this is not used at the moment either
+     */
     private synchronized void onError(ModbusReadRequestBlueprint request, Exception error) {
         if (hasConfigurationError()) {
             return;
@@ -773,12 +773,13 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
-    private synchronized void onError(ModbusWriteRequestBlueprint request, Exception error) {
+    private synchronized void onError(AsyncModbusFailure<ModbusWriteRequestBlueprint> failure) {
         if (hasConfigurationError()) {
             return;
         } else if (!isWriteEnabled) {
             return;
         }
+        Exception error = failure.getCause();
         if (error instanceof ModbusConnectionException) {
             logger.error("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
@@ -805,7 +806,8 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
             updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error (%s) with write. Request: %s. Description: %s. Message: %s",
-                            error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
+                            error.getClass().getSimpleName(), failure.getRequest(), error.toString(),
+                            error.getMessage()));
         }
     }
 

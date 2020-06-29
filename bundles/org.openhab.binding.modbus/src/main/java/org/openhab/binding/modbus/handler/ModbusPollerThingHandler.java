@@ -33,8 +33,10 @@ import org.openhab.binding.modbus.internal.AtomicStampedValue;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
@@ -61,7 +63,8 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
      * @author Sami Salonen
      *
      */
-    private class ReadCallbackDelegator implements ModbusReadCallback {
+    private class ReadCallbackDelegator
+            implements ModbusReadCallback, ModbusFailureCallback<ModbusReadRequestBlueprint> {
 
         private volatile @Nullable AtomicStampedValue<AsyncModbusReadResult> lastResult;
 
@@ -82,14 +85,15 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             }
             logger.debug("Thing {} received response {}", thing.getUID(), result);
             childCallbacks.forEach(handler -> handler.handle(result));
-            if (result.hasError()) {
-                Exception error = result.getCause();
-                assert error != null;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
-            } else {
-                resetCommunicationError();
-            }
+            resetCommunicationError();
+        }
+
+        @Override
+        public synchronized void handle(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+            Exception error = failure.getCause();
+            assert error != null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
         }
 
         private void resetCommunicationError() {
@@ -294,7 +298,8 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Not polling");
         } else {
             logger.debug("Registering polling with ModbusManager");
-            pollTask = localComms.registerRegularPoll(localRequest, config.getRefresh(), 0, callbackDelegator);
+            pollTask = localComms.registerRegularPoll(localRequest, config.getRefresh(), 0, callbackDelegator,
+                    callbackDelegator);
             assert pollTask != null;
             updateStatus(ThingStatus.ONLINE);
         }
@@ -372,7 +377,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                     getThing().getUID());
             ModbusCommunicationInterface localComms = comms;
             if (localComms != null) {
-                localComms.submitOneTimePoll(localRequest, callbackDelegator);
+                localComms.submitOneTimePoll(localRequest, callbackDelegator, callbackDelegator);
             }
         }
     }
