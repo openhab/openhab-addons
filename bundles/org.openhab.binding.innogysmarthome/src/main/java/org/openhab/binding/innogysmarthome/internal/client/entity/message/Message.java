@@ -20,7 +20,7 @@ import java.util.List;
  * Defines the structure of a {@link Message}. Messages are part of the innogy system and besides other things are used
  * to raise battery warnings.
  *
- * @author Oliver Kuhl - Initial contribution 
+ * @author Oliver Kuhl - Initial contribution
  */
 public class Message {
     /** device related messages */
