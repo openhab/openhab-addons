@@ -85,7 +85,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             try {
                 HDPowerViewWebTargets webTargets = hub.getWebTargets();
                 if (webTargets == null) {
-                    throw new ProcessingException("Web targets not configured");
+                    throw new ProcessingException("Web targets not initialized");
                 }
                 Shades shades = webTargets.getShades();
                 if (shades != null && shades.shadeData != null) {
