@@ -803,43 +803,47 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         @Nullable
         String payload = pushActivityQueue.poll();
         if (payload != null) {
-            JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload, JsonCommandPayloadPushActivity.class);
+            try {
+                JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload,
+                        JsonCommandPayloadPushActivity.class);
 
-            Key key = pushActivity.key;
-            if (key == null) {
-                return;
-            }
-
-            Connection connection = this.connection;
-            if (connection == null || !connection.getIsLoggedIn()) {
-                return;
-            }
-            Activity[] activities = connection.getActivities(10, pushActivity.timestamp);
-            Activity currentActivity = null;
-            String search = key.registeredUserId + "#" + key.entryId;
-            for (Activity activity : activities) {
-                if (StringUtils.equals(activity.id, search)) {
-                    currentActivity = activity;
-                    break;
+                Key key = pushActivity.key;
+                if (key == null) {
+                    return;
                 }
-            }
-            if (currentActivity == null) {
-                return;
-            }
 
-            @Nullable
-            SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
-            if (sourceDeviceIds != null) {
-                for (SourceDeviceId sourceDeviceId : sourceDeviceIds) {
-                    if (sourceDeviceId != null) {
-                        EchoHandler echoHandler = findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber);
-                        if (echoHandler != null) {
-                            echoHandler.handlePushActivity(currentActivity);
+                Connection connection = this.connection;
+                if (connection == null || !connection.getIsLoggedIn()) {
+                    return;
+                }
+                Activity[] activities = connection.getActivities(10, pushActivity.timestamp);
+                Activity currentActivity = null;
+                String search = key.registeredUserId + "#" + key.entryId;
+                for (Activity activity : activities) {
+                    if (StringUtils.equals(activity.id, search)) {
+                        currentActivity = activity;
+                        break;
+                    }
+                }
+                if (currentActivity == null) {
+                    return;
+                }
+
+                @Nullable
+                SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
+                if (sourceDeviceIds != null) {
+                    for (SourceDeviceId sourceDeviceId : sourceDeviceIds) {
+                        if (sourceDeviceId != null) {
+                            EchoHandler echoHandler = findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber);
+                            if (echoHandler != null) {
+                                echoHandler.handlePushActivity(currentActivity);
+                            }
                         }
                     }
                 }
+            } finally {
+                pushActivitySenderUnblockFuture = scheduler.schedule(this::queuedPushActivity, 5, TimeUnit.SECONDS);
             }
-            pushActivitySenderUnblockFuture = scheduler.schedule(this::queuedPushActivity, 3, TimeUnit.SECONDS);
         } else {
             pushActivityQueueRunning.set(false);
             pushActivitySenderUnblockFuture = null;

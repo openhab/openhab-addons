@@ -517,7 +517,7 @@ public class Connection {
         return result;
     }
 
-    public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
+    public synchronized HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
             boolean autoredirect, @Nullable Map<String, String> customHeaders, int badRequestRepeats)
             throws IOException, URISyntaxException {
         String currentUrl = url;
@@ -1259,23 +1259,23 @@ public class Connection {
     public void queuedTextToSpeech() {
         JsonTextToSpeech jsonTextToSpeech = textToSpeechQueue.poll();
         if (jsonTextToSpeech != null) {
-            Set<Device> devices = jsonTextToSpeech.devices;
-            logger.debug("devices {}", devices.size());
             String text = jsonTextToSpeech.text;
-            Integer ttsVolume = jsonTextToSpeech.ttsVolume;
-            int standardVolume = jsonTextToSpeech.standardVolume;
-
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("textToSpeak", text);
             try {
+                Set<Device> devices = jsonTextToSpeech.devices;
+                logger.debug("devices {}", devices.size());
+                Integer ttsVolume = jsonTextToSpeech.ttsVolume;
+                int standardVolume = jsonTextToSpeech.standardVolume;
+
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("textToSpeak", text);
                 executeSequenceCommandWithVolume(devices.toArray(new Device[devices.size()]), "Alexa.Speak", parameters,
                         ttsVolume, standardVolume);
             } catch (IOException | URISyntaxException e) {
                 logger.error("send textToSpeech fails with unexpected error", e);
+            } finally {
+                textToSpeechSenderUnblockFuture = scheduler.schedule(this::queuedTextToSpeech, text.length() * 150,
+                        TimeUnit.MILLISECONDS);
             }
-            int delay = text.length() * 150;
-            textToSpeechSenderUnblockFuture = scheduler.schedule(this::queuedTextToSpeech, delay,
-                    TimeUnit.MILLISECONDS);
         } else {
             textToSpeechQueueRunning.set(false);
             textToSpeechSenderUnblockFuture = null;

@@ -379,7 +379,8 @@
 	<channel-type id="sendAnnouncement" advanced="false">
 		<item-type>String</item-type>
 		<label>SendAnnouncement</label>
-		<description>Display the announcement message on the display (Write only) of all Echo devices. See in the tutorial section of the binding
+		<description>Display the announcement message on the display (Write only) of all Echo devices. See in the tutorial
+			section of the binding
 			description to learn how it's possible to set the title and turn off the sound.</description>
 	</channel-type>
 	<channel-type id="announcement" advanced="true">
