@@ -39,6 +39,7 @@ import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConfiguration;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
@@ -334,17 +335,12 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         long refreshMillis = myconfig.getRefreshMillis();
         pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
-            if (result.hasError()) {
-                Exception error = (@NonNull Exception) result.getCause();
-                handleError(error);
-            } else {
-                ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
-                handlePolledData(registers);
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+            ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
+            handlePolledData(registers);
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
             }
-        });
+        }, this::handleError);
     }
 
     /**
@@ -388,17 +384,13 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     /**
      * Handle errors received during communication
      */
-    protected void handleError(@Nullable Exception error) {
+    protected void handleError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
         // Ignore all incoming data and errors if configuration is not correct
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = "";
-        String cls = "";
-        if (error != null) {
-            cls = error.getClass().getName();
-            msg = error.getMessage();
-        }
+        String msg = failure.getCause().getMessage();
+        String cls = failure.getCause().getClass().getName();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 String.format("Error with read: %s: %s", cls, msg));
     }

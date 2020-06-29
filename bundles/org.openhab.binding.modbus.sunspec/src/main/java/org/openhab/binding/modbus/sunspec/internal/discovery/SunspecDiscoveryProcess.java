@@ -33,6 +33,7 @@ import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.dto.CommonModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.CommonModelParser;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
@@ -160,14 +161,9 @@ public class SunspecDiscoveryProcess {
                 maxTries);
 
         comms.submitOneTimePoll(request, result -> {
-            if (result.hasError()) {
-                Exception error = (@NonNull Exception) result.getCause();
-                handleError(error);
-            } else {
-                ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
-                headerReceived(registers);
-            }
-        });
+            ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
+            headerReceived(registers);
+        }, this::handleError);
     }
 
     /**
@@ -202,14 +198,9 @@ public class SunspecDiscoveryProcess {
                 maxTries);
 
         comms.submitOneTimePoll(request, result -> {
-            if (result.hasError()) {
-                Exception error = (@NonNull Exception) result.getCause();
-                handleError(error);
-            } else {
-                ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
-                modelBlockReceived(registers);
-            }
-        });
+            ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
+            modelBlockReceived(registers);
+        }, this::handleError);
     }
 
     /**
@@ -262,14 +253,9 @@ public class SunspecDiscoveryProcess {
                 maxTries);
 
         comms.submitOneTimePoll(request, result -> {
-            if (result.hasError()) {
-                Exception error = (@NonNull Exception) result.getCause();
-                handleError(error);
-            } else {
-                ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
-                parseCommonBlock(registers);
-            }
-        });
+            ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
+            parseCommonBlock(registers);
+        }, this::handleError);
     }
 
     /**
@@ -333,25 +319,22 @@ public class SunspecDiscoveryProcess {
     /**
      * Handle errors received during communication
      */
-    private void handleError(Exception error) {
-        String msg = "";
-        String cls = "";
-
-        if (blocksFound > 1 && error instanceof ModbusSlaveErrorResponseException) {
-            int code = ((ModbusSlaveErrorResponseException) error).getExceptionCode();
+    private void handleError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+        if (blocksFound > 1 && failure.getCause() instanceof ModbusSlaveErrorResponseException) {
+            int code = ((ModbusSlaveErrorResponseException) failure.getCause()).getExceptionCode();
             if (code == ModbusSlaveErrorResponseException.ILLEGAL_DATA_ACCESS
                     || code == ModbusSlaveErrorResponseException.ILLEGAL_DATA_VALUE) {
                 // It is very likely that the slave does not report an end block (0xffff) after the main blocks
                 // so we treat this situation as normal.
                 logger.debug(
-                        "Seems like slave device does not report an end block. Continouing with the dectected blocks");
+                        "Seems like slave device does not report an end block. Continuing with the dectected blocks");
                 parsingFinished();
                 return;
             }
         }
 
-        cls = error.getClass().getName();
-        msg = error.getMessage();
+        String cls = failure.getCause().getClass().getName();
+        String msg = failure.getCause().getMessage();
 
         logger.warn("Error with read at address {}: {} {}", baseAddress, cls, msg);
 
