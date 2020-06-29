@@ -167,12 +167,10 @@ public class GardenaAccountHandler extends BaseBridgeHandler implements GardenaS
     }
 
     @Override
-    public void onConnectionLost() {
+    public void onError() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
-    }
-
-    @Override
-    public void onConnectionResumed() {
-        updateStatus(ThingStatus.ONLINE);
+        disposeGardena();
+        gardenaSmart = new GardenaSmartImpl();
+        scheduleReinitialize();
     }
 }

@@ -34,12 +34,7 @@ public interface GardenaSmartEventListener {
     public void onNewDevice(Device device);
 
     /**
-     * Called when the connection is lost to Gardena smart system.
+     * Called when an unrecoverable error occurs.
      */
-    public void onConnectionLost();
-
-    /**
-     * Called when the connection is resumed to Gardena smart system.
-     */
-    public void onConnectionResumed();
+    public void onError();
 }

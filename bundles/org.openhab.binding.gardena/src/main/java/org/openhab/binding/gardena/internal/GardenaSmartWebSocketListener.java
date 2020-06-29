@@ -30,10 +30,8 @@ public interface GardenaSmartWebSocketListener {
 
     /**
      * This method is called when the Gardena websocket services throws an onError.
-     *
-     * @param cause
      */
-    void onWebSocketError(Throwable cause);
+    void onWebSocketError();
 
     /**
      * This method is called, whenever a new event comes from the Gardena service.

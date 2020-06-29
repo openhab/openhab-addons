@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.gardena.internal.GardenaSmart;
+import org.openhab.binding.gardena.internal.GardenaSmartEventListener;
 import org.openhab.binding.gardena.internal.exception.GardenaDeviceNotFoundException;
 import org.openhab.binding.gardena.internal.exception.GardenaException;
 import org.openhab.binding.gardena.internal.model.Device;
@@ -198,6 +199,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             // ignore
         } catch (Exception ex) {
             logger.warn("{}", ex.getMessage(), ex);
+            ((GardenaSmartEventListener) getBridge().getHandler()).onError();
         }
     }
 

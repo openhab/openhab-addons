@@ -50,8 +50,6 @@ import com.google.gson.GsonBuilder;
 public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketListener {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartImpl.class);
 
-    private static final long RESTART_DELAY_SECONDS = 10;
-
     private Gson gson = new GsonBuilder().registerTypeAdapter(DataItem.class, new DataItemDeserializer()).create();
 
     private static final String URL_API_HUSQUARNA = "https://api.authentication.husqvarnagroup.dev/v1";
@@ -73,7 +71,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     private List<GardenaSmartWebSocket> webSockets = new ArrayList<>();
     private PostOAuth2Response token;
     private boolean initialized = false;
-    private ScheduledFuture<?> restartScheduledFuture;
     private HttpClientFactory httpClientFactory;
     private WebSocketFactory webSocketFactory;
 
@@ -268,9 +265,6 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
      */
     public void dispose() {
         logger.debug("Disposing GardenaSmart");
-        if (restartScheduledFuture != null) {
-            restartScheduledFuture.cancel(true);
-        }
         if (deviceToNotifyFuture != null) {
             deviceToNotifyFuture.cancel(true);
         }
@@ -296,14 +290,9 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         stopWebsockets();
         try {
             startWebsockets();
-            eventListener.onConnectionResumed();
         } catch (Exception ex) {
-            eventListener.onConnectionLost();
-            logger.warn("Restarting GardenaSmart Webservice failed: {}, try restart in {} seconds", ex.getMessage(),
-                    RESTART_DELAY_SECONDS);
-            restartScheduledFuture = scheduler.schedule(() -> {
-                restartWebsockets();
-            }, RESTART_DELAY_SECONDS, TimeUnit.SECONDS);
+            logger.warn("Restarting GardenaSmart Webservice failed: {}, restarting binding", ex.getMessage());
+            eventListener.onError();
         }
     }
 
@@ -339,8 +328,8 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     }
 
     @Override
-    public void onWebSocketError(Throwable cause) {
-        restartWebsockets();
+    public void onWebSocketError() {
+        eventListener.onError();
     }
 
     @Override

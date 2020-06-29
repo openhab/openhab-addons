@@ -140,7 +140,7 @@ public class GardenaSmartWebSocket {
         if (!closing) {
             logger.warn("Gardena Webservice error ({}): {}, restarting", location.name, cause.getMessage());
             logger.debug("{}", cause.getMessage(), cause);
-            socketEventListener.onWebSocketError(cause);
+            socketEventListener.onWebSocketError();
         }
     }
 
