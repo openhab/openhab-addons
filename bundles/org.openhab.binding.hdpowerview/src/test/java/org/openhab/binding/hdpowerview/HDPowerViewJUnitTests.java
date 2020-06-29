@@ -273,8 +273,7 @@ public class HDPowerViewJUnitTests {
                 assertNotNull(newPos);
 
                 if (allowShadeMovementCommands) {
-                    shade = webTargets.moveShade(shadeId, newPos);
-                    assertNotNull(shade);
+                    webTargets.moveShade(shadeId, newPos);
                 }
             } catch (ProcessingException | HubMaintenanceException e) {
                 fail(e.getMessage());
