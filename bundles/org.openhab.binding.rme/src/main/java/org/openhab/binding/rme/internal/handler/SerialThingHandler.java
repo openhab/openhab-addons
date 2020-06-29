@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.TooManyListenersException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -123,13 +122,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         if (serialPort != null) {
             serialPort.removeEventListener();
         }
-        IOUtils.closeQuietly(inputStream);
-        IOUtils.closeQuietly(outputStream);
-        if (serialPort != null) {
-            serialPort.close();
-            serialPort = null;
-        }
-
         if (readerThread != null) {
             try {
                 readerThread.interrupt();
@@ -137,6 +129,27 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
             } catch (InterruptedException e) {
             }
         }
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
+        }
+        if (outputStream != null) {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
+            }
+        }
+        if (serialPort != null) {
+            serialPort.close();
+        }
+        readerThread = null;
+        inputStream = null;
+        outputStream = null;
+        serialPort = null;
     }
 
     @Override
@@ -240,10 +253,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
         public void interrupt() {
             interrupted = true;
             super.interrupt();
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-            } // quietly close
         }
 
         @Override

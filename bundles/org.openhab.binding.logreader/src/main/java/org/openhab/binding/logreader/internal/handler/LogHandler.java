@@ -14,7 +14,8 @@ package org.openhab.binding.logreader.internal.handler;
 
 import static org.openhab.binding.logreader.internal.LogReaderBindingConstants.*;
 
-import java.util.Calendar;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -162,7 +163,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     @Override
     public void fileRotated() {
         logger.debug("Log rotated");
-        updateChannelIfLinked(CHANNEL_LOGROTATED, new DateTimeType(Calendar.getInstance()));
+        updateChannelIfLinked(CHANNEL_LOGROTATED, new DateTimeType(ZonedDateTime.now()));
     }
 
     @Override

@@ -17,7 +17,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -45,18 +45,18 @@ import io.swagger.client.model.NAWelcomeHomeData;
  * @author Ing. Peter Weiss - Welcome camera implementation
  *
  */
+@NonNullByDefault
 public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService implements NetatmoDataListener {
     private static final int SEARCH_TIME = 2;
-    @NonNull
     private final NetatmoBridgeHandler netatmoBridgeHandler;
 
-    public NetatmoModuleDiscoveryService(@NonNull NetatmoBridgeHandler netatmoBridgeHandler) {
+    public NetatmoModuleDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
         super(SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
         this.netatmoBridgeHandler = netatmoBridgeHandler;
     }
 
     @Override
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
         netatmoBridgeHandler.registerDataListener(this);
     }
@@ -93,7 +93,7 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                 });
             }
         }
-        if (netatmoBridgeHandler.configuration.readWelcome) {
+        if (netatmoBridgeHandler.configuration.readWelcome || netatmoBridgeHandler.configuration.readPresence) {
             NAWelcomeHomeData welcomeHomeData = netatmoBridgeHandler.getWelcomeDataBody(null);
             if (welcomeHomeData != null) {
                 welcomeHomeData.getHomes().forEach(home -> {
@@ -157,7 +157,8 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         }
     }
 
-    private void onDeviceAddedInternal(String id, String parentId, String type, String name, Integer firmwareVersion) {
+    private void onDeviceAddedInternal(String id, @Nullable String parentId, String type, String name,
+            @Nullable Integer firmwareVersion) {
         ThingUID thingUID = findThingUID(type, id);
         Map<String, Object> properties = new HashMap<>();
 

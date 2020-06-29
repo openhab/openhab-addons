@@ -19,6 +19,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -230,7 +232,8 @@ public class MeteoBlueHandler extends BaseThingHandler {
         // Build a State from this value
         State state = null;
         if (datapoint instanceof Calendar) {
-            state = new DateTimeType((Calendar) datapoint);
+            state = new DateTimeType(
+                    ZonedDateTime.ofInstant(((Calendar) datapoint).toInstant(), ZoneId.systemDefault()));
         } else if (datapoint instanceof Integer) {
             state = getStateForType(channel.getAcceptedItemType(), (Integer) datapoint);
         } else if (datapoint instanceof Number) {

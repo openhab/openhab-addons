@@ -14,6 +14,7 @@ package org.openhab.binding.daikin.internal.api;
 
 import java.util.Map;
 import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class SensorInfo {
     public Optional<Double> indoortemp = Optional.empty();
     public Optional<Double> indoorhumidity = Optional.empty();
     public Optional<Double> outdoortemp = Optional.empty();
+    public Optional<Double> compressorfrequency = Optional.empty();
 
     private SensorInfo() {
     }
@@ -42,8 +44,12 @@ public class SensorInfo {
 
         SensorInfo info = new SensorInfo();
         info.indoortemp = Optional.ofNullable(responseMap.get("htemp")).flatMap(value -> InfoParser.parseDouble(value));
-        info.indoorhumidity = Optional.ofNullable(responseMap.get("hhum")).flatMap(value -> InfoParser.parseDouble(value));
-        info.outdoortemp = Optional.ofNullable(responseMap.get("otemp")).flatMap(value -> InfoParser.parseDouble(value));
+        info.indoorhumidity = Optional.ofNullable(responseMap.get("hhum"))
+                .flatMap(value -> InfoParser.parseDouble(value));
+        info.outdoortemp = Optional.ofNullable(responseMap.get("otemp"))
+                .flatMap(value -> InfoParser.parseDouble(value));
+        info.compressorfrequency = Optional.ofNullable(responseMap.get("cmpfreq"))
+                .flatMap(value -> InfoParser.parseDouble(value));
 
         return info;
     }

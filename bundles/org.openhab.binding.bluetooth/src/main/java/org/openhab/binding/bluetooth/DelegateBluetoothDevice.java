@@ -163,5 +163,4 @@ public abstract class DelegateBluetoothDevice extends BluetoothDevice {
     protected void dispose() {
         getDelegate().dispose();
     }
-
 }

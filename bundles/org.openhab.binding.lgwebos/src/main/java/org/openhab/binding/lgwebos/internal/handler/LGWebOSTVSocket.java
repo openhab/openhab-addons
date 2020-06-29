@@ -310,7 +310,7 @@ public class LGWebOSTVSocket {
         };
 
         this.requests.put(id, new ServiceSubscription<>("dummy", payload, x -> x, dummyListener));
-        sendMessage(packet);
+        sendMessage(packet, !key.isEmpty());
     }
 
     private int nextRequestId() {
@@ -361,24 +361,45 @@ public class LGWebOSTVSocket {
     }
 
     private void sendMessage(JsonObject json) {
+        sendMessage(json, false);
+    }
+
+    private void sendMessage(JsonObject json, boolean checkKey) {
         String msg = GSON.toJson(json);
         Session s = this.session;
         try {
             if (s != null) {
-                logger.trace("Message [out]: {}", msg);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Message [out]: {}", checkKey ? GSON.toJson(maskKeyInJson(json)) : msg);
+                }
                 s.getRemote().sendString(msg);
             } else {
-                logger.warn("No Connection to TV, skipping [out]: {}", msg);
+                logger.warn("No Connection to TV, skipping [out]: {}",
+                        checkKey ? GSON.toJson(maskKeyInJson(json)) : msg);
             }
         } catch (IOException e) {
             logger.warn("Unable to send message.", e);
         }
     }
 
+    private JsonObject maskKeyInJson(JsonObject json) {
+        if (json.has("payload") && json.getAsJsonObject("payload").has("client-key")) {
+            JsonObject jsonCopy = json.deepCopy();
+            JsonObject payload = jsonCopy.getAsJsonObject("payload");
+            payload.remove("client-key");
+            payload.addProperty("client-key", "***");
+            return jsonCopy;
+        }
+        return json;
+    }
+
     @OnWebSocketMessage
     public void onMessage(String message) {
-        logger.trace("Message [in]: {}", message);
         Response response = GSON.fromJson(message, Response.class);
+        JsonElement payload = response.getPayload();
+        JsonObject jsonPayload = payload == null ? null : payload.getAsJsonObject();
+        String messageToLog = (jsonPayload != null && jsonPayload.has("client-key")) ? "***" : message;
+        logger.trace("Message [in]: {}", messageToLog);
         ServiceCommand<?> request = null;
 
         if (response.getId() != null) {
@@ -398,33 +419,33 @@ public class LGWebOSTVSocket {
         switch (response.getType()) {
             case "response":
                 if (request == null) {
-                    logger.debug("No matching request found for response message: {}", message);
+                    logger.debug("No matching request found for response message: {}", messageToLog);
                     break;
                 }
-                if (response.getPayload() == null) {
-                    logger.debug("No payload in response message: {}", message);
+                if (payload == null) {
+                    logger.debug("No payload in response message: {}", messageToLog);
                     break;
                 }
                 try {
-                    request.processResponse(response.getPayload().getAsJsonObject());
+                    request.processResponse(jsonPayload);
                 } catch (RuntimeException ex) {
                     // An uncaught runtime exception in @OnWebSocketMessage annotated method will cause the web socket
                     // implementation to call @OnWebSocketError callback in which we would reset the connection.
                     // Users have the ability to create miss-configurations in which IllegalArgumentException could be
                     // thrown
                     logger.warn("Error while processing message: {} - in response to request: {} - Error Message: {}",
-                            message, request, ex.getMessage());
+                            messageToLog, request, ex.getMessage());
                 }
                 break;
             case "error":
-                logger.debug("Error: {}", message);
+                logger.debug("Error: {}", messageToLog);
 
                 if (request == null) {
-                    logger.warn("No matching request found for error message: {}", message);
+                    logger.warn("No matching request found for error message: {}", messageToLog);
                     break;
                 }
-                if (response.getPayload() == null) {
-                    logger.warn("No payload in error message: {}", message);
+                if (payload == null) {
+                    logger.warn("No payload in error message: {}", messageToLog);
                     break;
                 }
                 try {
@@ -435,39 +456,37 @@ public class LGWebOSTVSocket {
                     // Users have the ability to create miss-configurations in which IllegalArgumentException could be
                     // thrown
                     logger.warn("Error while processing error: {} - in response to request: {} - Error Message: {}",
-                            message, request, ex.getMessage());
+                            messageToLog, request, ex.getMessage());
                 }
                 break;
             case "hello":
                 if (state != State.CONNECTING) {
-                    logger.debug("Skipping response {}, not in CONNECTING state, state was {}", message, state);
+                    logger.debug("Skipping response {}, not in CONNECTING state, state was {}", messageToLog, state);
                     break;
                 }
-                if (response.getPayload() == null) {
-                    logger.warn("No payload in error message: {}", message);
+                if (jsonPayload == null) {
+                    logger.warn("No payload in error message: {}", messageToLog);
                     break;
                 }
-                JsonObject deviceDescription = response.getPayload().getAsJsonObject();
                 Map<String, String> map = new HashMap<>();
-                map.put(PROPERTY_DEVICE_OS, deviceDescription.get("deviceOS").getAsString());
-                map.put(PROPERTY_DEVICE_OS_VERSION, deviceDescription.get("deviceOSVersion").getAsString());
-                map.put(PROPERTY_DEVICE_OS_RELEASE_VERSION,
-                        deviceDescription.get("deviceOSReleaseVersion").getAsString());
+                map.put(PROPERTY_DEVICE_OS, jsonPayload.get("deviceOS").getAsString());
+                map.put(PROPERTY_DEVICE_OS_VERSION, jsonPayload.get("deviceOSVersion").getAsString());
+                map.put(PROPERTY_DEVICE_OS_RELEASE_VERSION, jsonPayload.get("deviceOSReleaseVersion").getAsString());
                 map.put(PROPERTY_LAST_CONNECTED, Instant.now().toString());
                 config.storeProperties(map);
                 sendRegister();
                 break;
             case "registered":
                 if (state != State.REGISTERING) {
-                    logger.debug("Skipping response {}, not in REGISTERING state, state was {}", message, state);
+                    logger.debug("Skipping response {}, not in REGISTERING state, state was {}", messageToLog, state);
                     break;
                 }
-                if (response.getPayload() == null) {
-                    logger.warn("No payload in registered message: {}", message);
+                if (jsonPayload == null) {
+                    logger.warn("No payload in registered message: {}", messageToLog);
                     break;
                 }
                 this.requests.remove(response.getId());
-                config.storeKey(response.getPayload().getAsJsonObject().get("client-key").getAsString());
+                config.storeKey(jsonPayload.get("client-key").getAsString());
                 setState(State.REGISTERED);
                 break;
         }

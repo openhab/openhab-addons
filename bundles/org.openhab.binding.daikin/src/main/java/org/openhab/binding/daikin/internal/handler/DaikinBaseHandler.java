@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -85,7 +85,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     protected abstract void registerUuid(@Nullable String key);
 
-    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider, @Nullable HttpClient httpClient) {
+    public DaikinBaseHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Nullable HttpClient httpClient) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = httpClient;
@@ -190,7 +191,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
                 registerUuid(config.key);
                 uuidRegistrationAttempted = true;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR , "Access denied. Check uuid/key.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Access denied. Check uuid/key.");
                 logger.warn("{} access denied by adapter. Check uuid/key.", thing.getUID());
             }
         } catch (IOException e) {
@@ -201,8 +203,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     }
 
     protected void updateTemperatureChannel(String channel, Optional<Double> maybeTemperature) {
-        updateState(channel, maybeTemperature.<State> map(t -> new QuantityType<>(new DecimalType(t), SIUnits.CELSIUS))
-                .orElse(UnDefType.UNDEF));
+        updateState(channel,
+                maybeTemperature.<State> map(t -> new QuantityType<>(t, SIUnits.CELSIUS)).orElse(UnDefType.UNDEF));
     }
 
     /**

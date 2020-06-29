@@ -15,6 +15,11 @@
  */
 package org.openhab.binding.lametrictime.api.local.impl;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -127,9 +132,11 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
         Response response = getClient().target(getApi().getEndpoints().getNotificationsUrl())
                 .request(MediaType.APPLICATION_JSON_TYPE).get();
 
+        Reader entity = new BufferedReader(
+                new InputStreamReader((InputStream) response.getEntity(), StandardCharsets.UTF_8));
+
         // @formatter:off
-        return getGson().fromJson(response.readEntity(String.class),
-                                  new TypeToken<List<Notification>>(){}.getType());
+        return getGson().fromJson(entity,  new TypeToken<List<Notification>>(){}.getType());
         // @formatter:on
     }
 
@@ -252,8 +259,11 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
         Response response = getClient().target(getApi().getEndpoints().getAppsListUrl())
                 .request(MediaType.APPLICATION_JSON_TYPE).get();
 
+        Reader entity = new BufferedReader(
+                new InputStreamReader((InputStream) response.getEntity(), StandardCharsets.UTF_8));
+
         // @formatter:off
-        return getGson().fromJson(response.readEntity(String.class),
+        return getGson().fromJson(entity,
                                   new TypeToken<SortedMap<String, Application>>(){}.getType());
         // @formatter:on
     }
@@ -309,7 +319,7 @@ public class LaMetricTimeLocalImpl extends AbstractClient implements LaMetricTim
 
     @Override
     protected Client createClient() {
-        ClientBuilder builder = ClientBuilder.newBuilder();
+        ClientBuilder builder = clientBuilder;
 
         // setup Gson (de)serialization
         GsonProvider<Object> gsonProvider = new GsonProvider<>();

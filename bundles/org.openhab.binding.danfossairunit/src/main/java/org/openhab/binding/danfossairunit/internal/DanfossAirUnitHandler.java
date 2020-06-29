@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.danfossairunit.internal;
 
-import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.PROPERTY_SERIAL;
-import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.PROPERTY_UNIT_NAME;
+import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class DanfossAirUnitHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitHandler.class);
-    private @Nullable DanfossAirUnitConfiguration config;
+    private @NonNullByDefault({}) DanfossAirUnitConfiguration config;
     private @Nullable ValueCache valueCache;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable DanfossAirUnit hrv;
@@ -62,13 +60,17 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             updateAllChannels();
         } else {
             try {
-                if(hrv == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, "Air unit connection not initialized.");
+                DanfossAirUnit danfossAirUnit = hrv;
+                if (danfossAirUnit != null) {
+                    Channel channel = Channel.getByName(channelUID.getIdWithoutGroup());
+                    DanfossAirUnitWriteAccessor writeAccessor = channel.getWriteAccessor();
+                    if (writeAccessor != null) {
+                        updateState(channelUID, writeAccessor.access(danfossAirUnit, command));
+                    }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
+                            "Air unit connection not initialized.");
                     return;
-                }
-                Channel channel = Channel.getByName(channelUID.getIdWithoutGroup());
-                if (channel.getWriteAccessor() != null) {
-                    updateState(channelUID, channel.getWriteAccessor().access(Objects.requireNonNull(hrv), command));
                 }
             } catch (IllegalArgumentException e) {
                 logger.debug("Ignoring unknown channel id: {}", channelUID.getIdWithoutGroup(), e);
@@ -85,55 +87,54 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
         valueCache = new ValueCache(config.updateUnchangedValuesEveryMillis);
         try {
             hrv = new DanfossAirUnit(InetAddress.getByName(config.host), 30046);
+            DanfossAirUnit danfossAirUnit = hrv;
+            scheduler.execute(() -> {
+                try {
+                    thing.setProperty(PROPERTY_UNIT_NAME, danfossAirUnit.getUnitName());
+                    thing.setProperty(PROPERTY_SERIAL, danfossAirUnit.getUnitSerialNumber());
+                    pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 5, config.refreshInterval,
+                            TimeUnit.SECONDS);
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (IOException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                }
+            });
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Unknown host: " + config.host);
             return;
         }
-
-        scheduler.execute(() -> {
-            try {
-                thing.setProperty(PROPERTY_UNIT_NAME, hrv.getUnitName());
-                thing.setProperty(PROPERTY_SERIAL, hrv.getUnitSerialNumber());
-                pollingJob = scheduler.scheduleWithFixedDelay(this::updateAllChannels, 5, config.refreshInterval,
-                        TimeUnit.SECONDS);
-                updateStatus(ThingStatus.ONLINE);
-
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
     }
 
     private void updateAllChannels() {
-        if (hrv == null) {
-            return;
-        }
         DanfossAirUnit danfossAirUnit = hrv;
-        logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
+        if (danfossAirUnit != null) {
+            logger.debug("Updating DanfossHRV data '{}'", getThing().getUID());
 
-        for (Channel channel : Channel.values()) {
-            if (Thread.interrupted()) {
-                logger.debug("Polling thread interrupted...");
-                return;
+            for (Channel channel : Channel.values()) {
+                if (Thread.interrupted()) {
+                    logger.debug("Polling thread interrupted...");
+                    return;
+                }
+                try {
+                    updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
+                            channel.getReadAccessor().access(danfossAirUnit));
+                } catch (UnexpectedResponseValueException e) {
+                    updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
+                    logger.debug(
+                            "Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
+                            channel.getChannelName(), e.getMessage());
+                } catch (IOException e) {
+                    updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                    logger.debug("Cannot update channel {}: an error occurred retrieving the value: {}",
+                            channel.getChannelName(), e.getMessage());
+                }
             }
-            try {
-                updateState(channel.getGroup().getGroupName(), channel.getChannelName(),
-                        channel.getReadAccessor().access(danfossAirUnit));
-            } catch(UnexpectedResponseValueException e) {
-                updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
-                logger.debug("Cannot update channel {}: an unexpected or invalid response has been received from the air unit: {}",
-                        channel.getChannelName(), e.getMessage());
-            } catch (IOException e) {
-                updateState(channel.getGroup().getGroupName(), channel.getChannelName(), UnDefType.UNDEF);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                logger.debug("Cannot update channel {}: an error occurred retrieving the value: {}",
-                        channel.getChannelName(), e.getMessage());
-            }
-        }
 
-        if (getThing().getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.ONLINE);
+            if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
     }
 

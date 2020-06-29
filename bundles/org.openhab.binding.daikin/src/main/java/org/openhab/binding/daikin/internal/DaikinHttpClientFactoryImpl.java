@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Factory class to create Jetty web clients
  *
- * Some Daikin controllers communicate via https using a custom common name, 
+ * Some Daikin controllers communicate via https using a custom common name,
  * and they are accessed using an ip address.
  *
  * The core HttpClientFactory creates a HttpClient that will fail because of this.

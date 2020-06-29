@@ -19,12 +19,6 @@
 				<description>Device poll interval in seconds.</description>
 			</parameter>
 
-			<parameter name="modemDbRetryTimeoutSeconds" type="integer" min="30" max="600">
-				<label>Modem DB Retry Timeout</label>
-				<description>Modem DB retry timeout in seconds.</description>
-			</parameter>
-
-
 			<parameter name="additionalDevices" type="text">
 				<label>Additional Devices</label>
 				<description>Optional file with additional device types.</description>

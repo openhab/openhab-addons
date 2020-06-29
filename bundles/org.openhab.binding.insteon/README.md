@@ -43,7 +43,6 @@ The Insteon PLM or hub is configured with the following parameters:
 |----------|---------:|--------:|-------------|
 | port   |         |   Yes    | **Examples:**<br>- PLM on  Linux: `/dev/ttyS0` or `/dev/ttyUSB0`<br>- Smartenit ZBPLM on Linux: `/dev/ttyUSB0,baudRate=115200`<br>- PLM on Windows: `COM1`<br>- Current  hub (2245-222) at 192.168.1.100 on port 25105, with a poll interval of 1000 ms (1 second): `/hub2/my_user_name:my_password@192.168.1.100:25105,poll_time=1000`<br>- Legacy hub (2242-222) at 192.168.1.100 on port 9761:`/hub/192.168.1.100:9761`<br>- Networked PLM using ser2net at 192.168.1.100 on port 9761:`/tcp/192.168.1.100:9761` |
 | devicePollIntervalSeconds | 300 |  No  | Poll interval of devices in seconds. Poll too often and you will overload the insteon network, leading to sluggish or no response when trying to send messages to devices. The default poll interval of 300 seconds has been tested and found to be a good compromise in a configuration of about 110 switches/dimmers. |
-|modemDbRetryTimeoutSeconds|120|No|The number of seconds to wait for the modem database to completely download before retrying again. Under normal circumstances this will not need to be modified.|
 | additionalDevices | |       No     | Optional file with additional device types. The syntax of the file is identical to the `device_types.xml` file in the source tree. Please remember to post successfully added device types to the openhab group so the developers can include them into the `device_types.xml` file! |
 | additionalFeatures | |      No     | Optional file with additional feature templates, like in the `device_features.xml` file in the source tree. |
 
@@ -827,9 +826,6 @@ If new devices are linked, the binding must be restarted.
 Use the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) for that.
 If using Insteon Terminal (especially as root), ensure any stale lock files (For example, /var/lock/LCK..ttyUSB0) are removed before starting openHAB runtime.
 Failure to do so may result in "found no ports".
-* Very rarely during binding startup, a message arrives at the modem while the initial read of the modem database happens.
-Somehow the modem then stops sending the remaining link records and the binding no longer is able to address the missing devices.
-The fix is to simply restart the binding.
-* The Insteon PLM device is know to break after about 2-3 years due to poorly sized capacitors of the power supply.
-With a bit of soldering skill you can repair it yourself, see [here](http://pfrommer.us/home-automation) or [the original thread](http://forum.universal-devices.com/topic/13866-repair-of-2413s-plm-when-the-power-supply-fails/).
+* The Insteon PLM or hub is know to break in about 2-3 years due to poorly sized capacitors.
+You can repair it yourself using basic soldering skills, search for "Insteon PLM repair" or "Insteon hub repair".
 * Using the Insteon Hub 2014 in conjunction with other applications (such as the InsteonApp) is not supported. Concretely, openHAB will not learn when a switch is flipped via the Insteon App until the next poll, which could take minutes.

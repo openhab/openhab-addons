@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.onewire.internal.owserver;
 
-import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
-
 /**
  * The {@link OwserverConnectionState} defines the state for connections to owservers
  *
