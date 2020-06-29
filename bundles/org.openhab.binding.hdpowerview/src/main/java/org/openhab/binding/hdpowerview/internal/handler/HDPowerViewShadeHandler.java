@@ -16,6 +16,9 @@ import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstan
 import static org.openhab.binding.hdpowerview.internal.api.PosKind.*;
 import static org.openhab.binding.hdpowerview.internal.api.PosSeq.*;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import javax.ws.rs.ProcessingException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,6 +56,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
 
+    private static final int REFRESH_DELAY = 10;
+    private @Nullable ScheduledFuture<?> refreshFuture = null;
+
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
     }
@@ -73,7 +79,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH.equals(command)) {
-            refreshShade();
+            requestRefreshShade();
             return;
         }
 
@@ -146,7 +152,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
             HDPowerViewWebTargets webTargets = bridge.getWebTargets();
             if (webTargets == null) {
-                throw new ProcessingException("Web targets not configured");
+                throw new ProcessingException("Web targets not initialized");
             }
             String shadeId = getShadeId();
             switch (seq) {
@@ -178,7 +184,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
             HDPowerViewWebTargets webTargets = bridge.getWebTargets();
             if (webTargets == null) {
-                throw new ProcessingException("Web targets not configured");
+                throw new ProcessingException("Web targets not initialized");
             }
             String shadeId = getShadeId();
             webTargets.stopShade(shadeId);
@@ -191,7 +197,13 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    public void refreshShade() {
+    public synchronized void requestRefreshShade() {
+        if (refreshFuture == null) {
+            refreshFuture = scheduler.schedule(this::doRefreshShade, REFRESH_DELAY, TimeUnit.SECONDS);
+        }
+    }
+
+    private void doRefreshShade() {
         try {
             HDPowerViewHubHandler bridge;
             if ((bridge = getBridgeHandler()) == null) {
@@ -199,7 +211,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
             HDPowerViewWebTargets webTargets = bridge.getWebTargets();
             if (webTargets == null) {
-                throw new ProcessingException("Web targets not configured");
+                throw new ProcessingException("Web targets not initialized");
             }
             String shadeId = getShadeId();
             Shade shade = webTargets.refreshShade(shadeId);
@@ -216,5 +228,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
         }
+        refreshFuture = null;
     }
 }

@@ -84,7 +84,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH.equals(command)
                 || (CHANNEL_HUB_REFRESH_CACHE.equals(channelUID.getId()) && OnOffType.ON.equals(command))) {
-            new Thread(refreshAllShades).start();
+            requestRefreshShades();
             return;
         }
 
@@ -151,8 +151,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (pollFuture != null && !pollFuture.isCancelled()) {
             pollFuture.cancel(false);
         }
-        logger.debug("Scheduling poll for 500ms out, then every {} ms", refreshInterval);
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 500, refreshInterval, TimeUnit.MILLISECONDS);
+        logger.debug("Scheduling poll for 5000ms out, then every {}ms", refreshInterval);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 5000, refreshInterval, TimeUnit.MILLISECONDS);
     }
 
     private synchronized void stopPoll() {
@@ -197,23 +197,23 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
         logger.debug("Received data for {} shades", shadesData.size());
 
-        Map<String, ShadeData> idToData = getIdToData(shadesData);
-        Map<Thing, String> thingToId = getThingToId();
-        for (Entry<Thing, String> thingIdItem : thingToId.entrySet()) {
+        Map<String, ShadeData> idShadeDataMap = getIdShadeDataMap(shadesData);
+        Map<Thing, String> thingIdMap = getThingIdMap();
+        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
             @SuppressWarnings("null")
-            Thing itemThing = thingIdItem.getKey();
+            Thing thing = item.getKey();
             @SuppressWarnings("null")
-            String itemId = thingIdItem.getValue();
+            String shadeId = item.getValue();
             @Nullable
-            ShadeData itemShadeData = idToData.get(itemId);
-            updateShadeThing(itemId, itemThing, itemShadeData);
+            ShadeData shadeData = idShadeDataMap.get(shadeId);
+            updateShadeThing(shadeId, thing, shadeData);
         }
     }
 
     private void updateShadeThing(String shadeId, Thing thing, @Nullable ShadeData shadeData) {
         HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
         if (thingHandler == null) {
-            logger.debug("Shade '{}' missing handler", shadeId);
+            logger.debug("Shade '{}' handler not initialized", shadeId);
             return;
         }
         if (shadeData == null) {
@@ -241,12 +241,12 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
         logger.debug("Received data for {} scenes", sceneData.size());
 
-        Map<String, Channel> idToChannel = getIdToChannel();
+        Map<String, Channel> idChannelMap = getIdChannelMap();
         for (Scene scene : sceneData) {
             // remove existing scene channel from the map
             String sceneId = Integer.toString(scene.id);
-            if (idToChannel.containsKey(sceneId)) {
-                idToChannel.remove(sceneId);
+            if (idChannelMap.containsKey(sceneId)) {
+                idChannelMap.remove(sceneId);
                 logger.debug("Keeping channel for existing scene '{}'", sceneId);
             } else {
                 // create a new scene channel
@@ -259,15 +259,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         // remove any previously created channels that no longer exist
-        if (!idToChannel.isEmpty()) {
-            logger.debug("Removing {} orphan scene channels", idToChannel.size());
+        if (!idChannelMap.isEmpty()) {
+            logger.debug("Removing {} orphan scene channels", idChannelMap.size());
             List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
-            allChannels.removeAll(idToChannel.values());
+            allChannels.removeAll(idChannelMap.values());
             updateThing(editThing().withChannels(allChannels).build());
         }
     }
 
-    private Map<Thing, String> getThingToId() {
+    private Map<Thing, String> getThingIdMap() {
         Map<Thing, String> ret = new HashMap<>();
         for (Thing thing : getThing().getThings()) {
             String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
@@ -278,7 +278,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return ret;
     }
 
-    private Map<String, ShadeData> getIdToData(List<ShadeData> shadeData) {
+    private Map<String, ShadeData> getIdShadeDataMap(List<ShadeData> shadeData) {
         Map<String, ShadeData> ret = new HashMap<>();
         for (ShadeData shade : shadeData) {
             String id = shade.id;
@@ -289,7 +289,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return ret;
     }
 
-    private Map<String, Channel> getIdToChannel() {
+    private Map<String, Channel> getIdChannelMap() {
         Map<String, Channel> ret = new HashMap<>();
         for (Channel channel : getThing().getChannels()) {
             if (sceneChannelTypeUID.equals(channel.getChannelTypeUID())) {
@@ -299,19 +299,19 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return ret;
     }
 
-    private final Runnable refreshAllShades = () -> {
-        Map<Thing, String> thingToId = getThingToId();
-        for (Entry<Thing, String> thingIdItem : thingToId.entrySet()) {
+    private void requestRefreshShades() {
+        Map<Thing, String> thingIdMap = getThingIdMap();
+        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
             @SuppressWarnings("null")
-            Thing itemThing = thingIdItem.getKey();
-            @SuppressWarnings("null")
-            String itemId = thingIdItem.getValue();
-            ThingHandler entryHandler = itemThing.getHandler();
-            if (entryHandler instanceof HDPowerViewShadeHandler) {
-                ((HDPowerViewShadeHandler) entryHandler).refreshShade();
+            Thing thing = item.getKey();
+            ThingHandler handler = thing.getHandler();
+            if (handler instanceof HDPowerViewShadeHandler) {
+                ((HDPowerViewShadeHandler) handler).requestRefreshShade();
             } else {
-                logger.debug("Shade '{}' missing handler", itemId);
+                @SuppressWarnings("null")
+                String shadeId = item.getValue();
+                logger.debug("Shade '{}' handler not initialized", shadeId);
             }
         }
-    };
+    }
 }
