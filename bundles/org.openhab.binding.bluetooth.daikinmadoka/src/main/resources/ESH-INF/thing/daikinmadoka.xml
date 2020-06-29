@@ -108,26 +108,26 @@
 		<item-type>String</item-type>
 		<label>HomeKit Target Mode</label>
 		<command>
-            <options>
-                <option value="Off">Off</option>
-                <option value="CoolOn">Cool</option>
-                <option value="HeatOn">Heat</option>
-                <option value="Auto">Auto</option>
-            </options>
-        </command>
+			<options>
+				<option value="Off">Off</option>
+				<option value="CoolOn">Cool</option>
+				<option value="HeatOn">Heat</option>
+				<option value="Auto">Auto</option>
+			</options>
+		</command>
 	</channel-type>
 
-    <channel-type id="brc1h_homebridgeMode">
-        <item-type>Number</item-type>
-        <label>Mode from Homebridge</label>
-        <command>
-            <options>
-                <option value="0">Off</option>
-                <option value="1">Heating</option>
-                <option value="2">Cooling</option>
-                <option value="3">Auto</option>
-            </options>
-        </command>
-    </channel-type>
+	<channel-type id="brc1h_homebridgeMode">
+		<item-type>Number</item-type>
+		<label>Mode from Homebridge</label>
+		<command>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heating</option>
+				<option value="2">Cooling</option>
+				<option value="3">Auto</option>
+			</options>
+		</command>
+	</channel-type>
 
 </thing:thing-descriptions>
