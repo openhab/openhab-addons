@@ -106,19 +106,17 @@ public class HDPowerViewWebTargets {
         invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
     }
 
-    private String invoke(Invocation invocation, WebTarget target, @Nullable String jsonRequest)
+    private synchronized String invoke(Invocation invocation, WebTarget target, @Nullable String jsonCommand)
             throws ProcessingException, HubMaintenanceException {
         if (logger.isTraceEnabled()) {
-            logger.trace("API command {} {}", jsonRequest == null ? GET : PUT, target.getUri());
-            if (jsonRequest != null) {
-                logger.trace("JSON request = {}", jsonRequest);
+            logger.trace("API command {} {}", jsonCommand == null ? GET : PUT, target.getUri());
+            if (jsonCommand != null) {
+                logger.trace("JSON command = {}", jsonCommand);
             }
         }
         Response response;
         try {
-            synchronized (this) {
-                response = invocation.invoke();
-            }
+            response = invocation.invoke();
         } catch (ProcessingException e) {
             if (Instant.now().isBefore(maintenanceScheduledEnd)) {
                 // throw "softer" exception during maintenance window
@@ -170,7 +168,6 @@ public class HDPowerViewWebTargets {
         int shadeId = Integer.parseInt(shadeIdString);
         WebTarget target = shade.resolveTemplate(ID, shadeId);
         String json = gson.toJson(new ShadeStop(shadeId));
-        logger.trace("JSON request = {}", json);
         invoke(target.request().header(CONN_HDR, CONN_VAL)
                 .buildPut(Entity.entity(json, MediaType.APPLICATION_JSON_TYPE)), target, json);
         return;
