@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.hdpowerview.internal.api;
 
-import static org.openhab.binding.hdpowerview.internal.api.PosKind.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -91,14 +89,6 @@ public class ShadePosition {
     public static ShadePosition create(PosKind kind, int primaryPercent, @Nullable PosKind secondaryKind,
             @Nullable Integer secondaryPercent) {
         return new ShadePosition(kind, primaryPercent, secondaryKind, secondaryPercent);
-    }
-
-    public static ShadePosition create(ShadePosition primary, @Nullable PosKind secondaryKind,
-            @Nullable Integer secondaryPercent) {
-        ShadePosition clone = new ShadePosition(REGULAR, 0, secondaryKind, secondaryPercent);
-        clone.position1 = primary.position1;
-        clone.posKind1 = primary.posKind1;
-        return clone;
     }
 
     ShadePosition(PosKind primaryKind, int primaryPercent, @Nullable PosKind secondaryKind,
@@ -179,9 +169,14 @@ public class ShadePosition {
                          * If the shades are not open, the vane position is undefined; if the the shades
                          * are exactly open then the vanes are at zero; otherwise return the actual vane
                          * position itself
+                         * 
+                         * note: sometimes the hub may return a value of position1 > MAX_VANE (seems to
+                         * be a bug in the hub) so we avoid an out of range exception via the Math.min()
+                         * function below..
                          */
                         return posKind1 != 3 ? (position1 != 0 ? UnDefType.UNDEF : PercentType.ZERO)
-                                : new PercentType(Math.min((int) Math.round((double) position1 / MAX_VANE * 100), 100));
+                                : new PercentType(
+                                        (int) Math.round((double) Math.min(position1, MAX_VANE) / MAX_VANE * 100));
 
                     default:
                         break;
