@@ -61,5 +61,4 @@ public class HeatingChannelDTO {
     public Boolean getIsSmartValvePreventingDemand() {
         return isSmartValvePreventingDemand;
     }
-
 }

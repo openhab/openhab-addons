@@ -154,5 +154,4 @@ public class StationDTO {
     public void setChannel(final Integer channel) {
         this.channel = channel;
     }
-
 }

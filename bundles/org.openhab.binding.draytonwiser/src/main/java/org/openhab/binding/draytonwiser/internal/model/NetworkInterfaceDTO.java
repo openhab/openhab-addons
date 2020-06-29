@@ -57,5 +57,4 @@ public class NetworkInterfaceDTO {
     public String getIPv4SecondaryDNS() {
         return iPv4SecondaryDNS;
     }
-
 }

@@ -162,5 +162,4 @@ public class SystemDTO {
     public void setHotWaterButtonOverrideState(final String hotWaterButtonOverrideState) {
         this.hotWaterButtonOverrideState = hotWaterButtonOverrideState;
     }
-
 }

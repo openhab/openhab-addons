@@ -27,5 +27,4 @@ public class ReceptionDTO {
     public Integer getLQI() {
         return lqi;
     }
-
 }

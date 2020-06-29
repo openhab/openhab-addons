@@ -22,14 +22,12 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApi;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
 import org.openhab.binding.draytonwiser.internal.model.RoomDTO;
 import org.openhab.binding.draytonwiser.internal.model.RoomStatDTO;
@@ -166,8 +164,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     }
 
     private State getBoostRemainingState() {
-        if (getData().getOverrideTimeoutUnixTime() != null
-                && !"NONE".equalsIgnoreCase(getData().getOverrideType())) {
+        if (getData().getOverrideTimeoutUnixTime() != null && !"NONE".equalsIgnoreCase(getData().getOverrideType())) {
             return new DecimalType(
                     (getData().getOverrideTimeoutUnixTime() - (System.currentTimeMillis() / 1000L)) / 60);
         }

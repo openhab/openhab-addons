@@ -138,5 +138,4 @@ public class RoomDTO {
     public Boolean getWindowDetectionActive() {
         return windowDetectionActive;
     }
-
 }

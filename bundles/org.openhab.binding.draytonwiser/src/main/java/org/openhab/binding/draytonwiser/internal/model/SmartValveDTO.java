@@ -55,5 +55,4 @@ public class SmartValveDTO {
     public Integer getExternalRoomStatTemperature() {
         return externalRoomStatTemperature;
     }
-
 }

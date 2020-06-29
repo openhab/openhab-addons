@@ -116,5 +116,4 @@ public class DeviceDTO {
     public Boolean getDeviceLockEnabled() {
         return deviceLockEnabled;
     }
-
 }

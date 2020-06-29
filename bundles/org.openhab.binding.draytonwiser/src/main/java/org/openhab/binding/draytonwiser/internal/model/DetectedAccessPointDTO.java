@@ -49,5 +49,4 @@ public class DetectedAccessPointDTO {
     public Integer getRSSI() {
         return rSSI;
     }
-
 }

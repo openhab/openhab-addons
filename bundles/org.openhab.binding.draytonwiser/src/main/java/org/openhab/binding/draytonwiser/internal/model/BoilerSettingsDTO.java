@@ -44,5 +44,4 @@ public class BoilerSettingsDTO {
     public void setCycleRate(final String cycleRate) {
         this.cycleRate = cycleRate;
     }
-
 }

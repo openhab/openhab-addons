@@ -44,5 +44,4 @@ public class RoomStatDTO {
     public Integer getMeasuredHumidity() {
         return measuredHumidity;
     }
-
 }

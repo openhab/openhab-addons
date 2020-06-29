@@ -50,5 +50,4 @@ public class HotWaterDTO {
     public Integer getOverrideTimeoutUnixTime() {
         return overrideTimeoutUnixTime;
     }
-
 }

@@ -36,14 +36,14 @@
 	<!-- Controller Thing Type -->
 	<thing-type id="boiler-controller">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="heathub" />
+			<bridge-type-ref id="heathub"/>
 		</supported-bridge-type-refs>
 
 		<label>Boiler Controller</label>
 		<description>The controller attached to the boiler</description>
 
 		<channels>
-			<channel id="heatingOverride" typeId="heatingOverride-channel" />
+			<channel id="heatingOverride" typeId="heatingOverride-channel"/>
 			<channel id="heatChannel1Demand" typeId="heatChannelDemand-channel">
 				<label>Channel 1 Heat Demand</label>
 			</channel>
@@ -56,66 +56,66 @@
 			<channel id="heatChannel2DemandState" typeId="demandState-channel">
 				<label>Channel 2 Requesting Heat</label>
 			</channel>
-			<channel id="awayModeState" typeId="awayModeState-channel" />
-			<channel id="ecoModeState" typeId="ecoModeState-channel" />
-			<channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
-			<channel id="currentSignalStrength" typeId="system.signal-strength" />
-			<channel id="currentWiserSignalStrength" typeId="wiserSignalStrength-channel" />
+			<channel id="awayModeState" typeId="awayModeState-channel"/>
+			<channel id="ecoModeState" typeId="ecoModeState-channel"/>
+			<channel id="currentSignalRSSI" typeId="signalRSSI-channel"/>
+			<channel id="currentSignalStrength" typeId="system.signal-strength"/>
+			<channel id="currentWiserSignalStrength" typeId="wiserSignalStrength-channel"/>
 		</channels>
 	</thing-type>
 
 	<!-- Hot Water Thing Type -->
 	<thing-type id="hotwater">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="heathub" />
+			<bridge-type-ref id="heathub"/>
 		</supported-bridge-type-refs>
 
 		<label>Hot Water</label>
 		<description>The hot water heating system</description>
 
 		<channels>
-			<channel id="hotWaterOverride" typeId="hotWaterOverride-channel" />
+			<channel id="hotWaterOverride" typeId="hotWaterOverride-channel"/>
 			<channel id="hotWaterDemandState" typeId="demandState-channel">
 				<label>Hot Water Requesting Heat</label>
 				<description>Hot Water is requesting heat</description>
 			</channel>
-			<channel id="manualModeState" typeId="manualModeState-channel" />
-			<channel id="hotWaterSetPoint" typeId="hotWaterSetPoint-channel" />
+			<channel id="manualModeState" typeId="manualModeState-channel"/>
+			<channel id="hotWaterSetPoint" typeId="hotWaterSetPoint-channel"/>
 			<channel id="hotWaterBoostDuration" typeId="boostDuration-channel">
 				<description>Duration to boost hot water for</description>
 			</channel>
 			<channel id="hotWaterBoosted" typeId="boosted-channel">
 				<description>Is the hot water currently being boosted</description>
 			</channel>
-			<channel id="hotWaterBoostRemaining" typeId="boostRemaining-channel" />
+			<channel id="hotWaterBoostRemaining" typeId="boostRemaining-channel"/>
 		</channels>
 	</thing-type>
 
 	<!-- Room Thing Type -->
 	<thing-type id="room">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="heathub" />
+			<bridge-type-ref id="heathub"/>
 		</supported-bridge-type-refs>
 
 		<label>Room</label>
 		<description>A Room that contains a thermostat and/or TRV</description>
 
 		<channels>
-			<channel id="currentTemperature" typeId="currentTemperature-channel" />
-			<channel id="currentHumidity" typeId="atmospheric-humidity-channel" />
-			<channel id="currentSetPoint" typeId="currentSetPoint-channel" />
-			<channel id="currentDemand" typeId="demandPercent-channel" />
-			<channel id="heatRequest" typeId="heatRequest-channel" />
-			<channel id="manualModeState" typeId="manualModeState-channel" />
+			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
+			<channel id="currentHumidity" typeId="atmospheric-humidity-channel"/>
+			<channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
+			<channel id="currentDemand" typeId="demandPercent-channel"/>
+			<channel id="heatRequest" typeId="heatRequest-channel"/>
+			<channel id="manualModeState" typeId="manualModeState-channel"/>
 			<channel id="roomBoostDuration" typeId="boostDuration-channel">
 				<description>Duration to boost the temperature for</description>
 			</channel>
 			<channel id="roomBoosted" typeId="boosted-channel">
 				<description>Is the room temperature currently being boosted</description>
 			</channel>
-			<channel id="roomBoostRemaining" typeId="boostRemaining-channel" />
-			<channel id="windowStateDetection" typeId="windowStateDetection-channel" />
-			<channel id="windowState" typeId="windowState-channel" />
+			<channel id="roomBoostRemaining" typeId="boostRemaining-channel"/>
+			<channel id="windowStateDetection" typeId="windowStateDetection-channel"/>
+			<channel id="windowState" typeId="windowState-channel"/>
 		</channels>
 
 		<config-description>
@@ -129,25 +129,25 @@
 	<!-- Room Thermostat Thing Type -->
 	<thing-type id="roomstat">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="heathub" />
+			<bridge-type-ref id="heathub"/>
 		</supported-bridge-type-refs>
 
 		<label>Thermostat</label>
 		<description>Wireless Thermostat device</description>
 
 		<channels>
-			<channel id="currentTemperature" typeId="currentTemperature-channel" />
-			<channel id="currentHumidity" typeId="atmospheric-humidity-channel" />
-			<channel id="currentSetPoint" typeId="currentSetPoint-channel" />
-			<channel id="currentBatteryVoltage" typeId="batteryVoltage-channel" />
-			<channel id="currentBatteryLevel" typeId="system.battery-level" />
-			<channel id="currentWiserBatteryLevel" typeId="wiserBatteryLevel-channel" />
-			<channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
-			<channel id="currentSignalLQI" typeId="signalLQI-channel" />
-			<channel id="currentSignalStrength" typeId="system.signal-strength" />
-			<channel id="currentWiserSignalStrength" typeId="wiserSignalStrength-channel" />
-			<channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
-			<channel id="deviceLocked" typeId="deviceLocked-channel" />
+			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
+			<channel id="currentHumidity" typeId="atmospheric-humidity-channel"/>
+			<channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
+			<channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>
+			<channel id="currentBatteryLevel" typeId="system.battery-level"/>
+			<channel id="currentWiserBatteryLevel" typeId="wiserBatteryLevel-channel"/>
+			<channel id="currentSignalRSSI" typeId="signalRSSI-channel"/>
+			<channel id="currentSignalLQI" typeId="signalLQI-channel"/>
+			<channel id="currentSignalStrength" typeId="system.signal-strength"/>
+			<channel id="currentWiserSignalStrength" typeId="wiserSignalStrength-channel"/>
+			<channel id="zigbeeConnected" typeId="zigbeeConnected-channel"/>
+			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 		</channels>
 
 		<config-description>
@@ -161,25 +161,25 @@
 	<!-- TRV Thing Type -->
 	<thing-type id="itrv">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="heathub" />
+			<bridge-type-ref id="heathub"/>
 		</supported-bridge-type-refs>
 
 		<label>iTRV</label>
 		<description>Thermostatic Radiator Valve</description>
 
 		<channels>
-			<channel id="currentTemperature" typeId="currentTemperature-channel" />
-			<channel id="currentSetPoint" typeId="currentSetPoint-channel" />
-			<channel id="currentDemand" typeId="demandPercent-channel" />
-			<channel id="currentBatteryVoltage" typeId="batteryVoltage-channel" />
-			<channel id="currentBatteryLevel" typeId="system.battery-level" />
-			<channel id="currentWiserBatteryLevel" typeId="wiserBatteryLevel-channel" />
-			<channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
-			<channel id="currentSignalLQI" typeId="signalLQI-channel" />
-			<channel id="currentSignalStrength" typeId="system.signal-strength" />
-			<channel id="currentWiserSignalStrength" typeId="wiserSignalStrength-channel" />
-			<channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
-			<channel id="deviceLocked" typeId="deviceLocked-channel" />
+			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
+			<channel id="currentSetPoint" typeId="currentSetPoint-channel"/>
+			<channel id="currentDemand" typeId="demandPercent-channel"/>
+			<channel id="currentBatteryVoltage" typeId="batteryVoltage-channel"/>
+			<channel id="currentBatteryLevel" typeId="system.battery-level"/>
+			<channel id="currentWiserBatteryLevel" typeId="wiserBatteryLevel-channel"/>
+			<channel id="currentSignalRSSI" typeId="signalRSSI-channel"/>
+			<channel id="currentSignalLQI" typeId="signalLQI-channel"/>
+			<channel id="currentSignalStrength" typeId="system.signal-strength"/>
+			<channel id="currentWiserSignalStrength" typeId="wiserSignalStrength-channel"/>
+			<channel id="zigbeeConnected" typeId="zigbeeConnected-channel"/>
+			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 		</channels>
 
 		<config-description>
@@ -193,19 +193,19 @@
 	<!-- Smart Plug Thing Type -->
 	<thing-type id="smart-plug">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="heathub" />
+			<bridge-type-ref id="heathub"/>
 		</supported-bridge-type-refs>
 
 		<label>Smart Plug</label>
 		<description>Remote controlled Plug Socket</description>
 		<channels>
-			<channel id="plugOutputState" typeId="plugOutputState-channel" />
-			<channel id="plugAwayAction" typeId="plugAwayAction-channel" />
-			<channel id="currentSignalRSSI" typeId="signalRSSI-channel" />
-			<channel id="currentSignalLQI" typeId="signalLQI-channel" />
-			<channel id="zigbeeConnected" typeId="zigbeeConnected-channel" />
-			<channel id="deviceLocked" typeId="deviceLocked-channel" />
-			<channel id="manualModeState" typeId="manualModeState-channel" />
+			<channel id="plugOutputState" typeId="plugOutputState-channel"/>
+			<channel id="plugAwayAction" typeId="plugAwayAction-channel"/>
+			<channel id="currentSignalRSSI" typeId="signalRSSI-channel"/>
+			<channel id="currentSignalLQI" typeId="signalLQI-channel"/>
+			<channel id="zigbeeConnected" typeId="zigbeeConnected-channel"/>
+			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
+			<channel id="manualModeState" typeId="manualModeState-channel"/>
 		</channels>
 
 		<config-description>
@@ -226,7 +226,7 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="atmospheric-humidity-channel">
@@ -234,7 +234,7 @@
 		<label>Humidity</label>
 		<description>Current relative humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="currentSetPoint-channel">
@@ -242,84 +242,84 @@
 		<label>Set Point</label>
 		<description>Current set point</description>
 		<category>Temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="batteryVoltage-channel" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Current Battery Voltage for the device</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="demandPercent-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Current Heat Demand</label>
 		<description>Current heat demand in %</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="heatRequest-channel">
 		<item-type>Switch</item-type>
 		<label>Currently Requesting Heat</label>
 		<description>Is this room requesting heat</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heatingOverride-channel">
 		<item-type>Switch</item-type>
 		<label>Heating Override</label>
 		<description>The heating override button has been pressed</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="hotWaterOverride-channel">
 		<item-type>Switch</item-type>
 		<label>Hot Water Override</label>
 		<description>The hot water override button has been pressed</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="signalRSSI-channel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Signal RSSI</label>
 		<description>The reported network signal RSSI</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="signalLQI-channel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Signal LQI</label>
 		<description>The reported network signal LQI</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="wiserSignalStrength-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Signal Strength (Wiser)</label>
 		<description>The reported network signal strength</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="wiserBatteryLevel-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Battery Level (Wiser)</label>
 		<description>Current Battery Level for the device</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heatChannelDemand-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Channel 1 Heat Demand</label>
 		<description>Current heat demand in %</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="demandState-channel">
 		<item-type>Switch</item-type>
 		<label>Requesting Heat</label>
 		<description>Current channel is requesting heat</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="awayModeState-channel">
@@ -333,7 +333,7 @@
 		<label>Away Mode Set Point</label>
 		<description>Away Mode Set Point</description>
 		<category>Temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" />
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ecoModeState-channel">
@@ -352,7 +352,7 @@
 		<item-type>Switch</item-type>
 		<label>Device Connected</label>
 		<description>Is the device still connected to the ZigBee network</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="hotWaterSetPoint-channel">
@@ -365,21 +365,21 @@
 		<item-type>Number</item-type>
 		<label>Boost Duration</label>
 		<description>Duration to boost hot water for</description>
-		<state pattern="%.1f h" min="0" max="3" step="0.5" />
+		<state pattern="%.1f h" min="0" max="3" step="0.5"/>
 	</channel-type>
 
 	<channel-type id="boosted-channel">
 		<item-type>Switch</item-type>
 		<label>Is Boosted</label>
 		<description>Is the hot water currently being boosted</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="boostRemaining-channel">
 		<item-type>Number</item-type>
 		<label>Boost Remaining</label>
 		<description>How long until the boost deactivates</description>
-		<state readOnly="true" pattern="%.0f m" />
+		<state readOnly="true" pattern="%.0f m"/>
 	</channel-type>
 
 	<channel-type id="windowStateDetection-channel" advanced="true">

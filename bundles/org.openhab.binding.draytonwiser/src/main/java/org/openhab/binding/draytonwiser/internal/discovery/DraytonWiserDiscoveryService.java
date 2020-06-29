@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
-implements DiscoveryService, ThingHandlerService, DraytonWiserRefreshListener {
+        implements DiscoveryService, ThingHandlerService, DraytonWiserRefreshListener {
 
     private final Logger logger = LoggerFactory.getLogger(DraytonWiserDiscoveryService.class);
 
@@ -112,7 +112,8 @@ implements DiscoveryService, ThingHandlerService, DraytonWiserRefreshListener {
             final String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
             final DiscoveryResult discoveryResult = DiscoveryResultBuilder
                     .create(new ThingUID(THING_TYPE_HOTWATER, bridgeUID, "hotwater")).withBridge(bridgeUID)
-                    .withLabel(assignedRoomName + " - Hot Water").withRepresentationProperty(device.getSerialNumber()).build();
+                    .withLabel(assignedRoomName + " - Hot Water").withRepresentationProperty(device.getSerialNumber())
+                    .build();
 
             thingDiscovered(discoveryResult);
         }

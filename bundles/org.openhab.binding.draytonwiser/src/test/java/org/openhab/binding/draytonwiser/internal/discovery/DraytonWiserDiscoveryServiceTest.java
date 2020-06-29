@@ -77,7 +77,7 @@ public class DraytonWiserDiscoveryServiceTest {
 
     @Parameters(name = "{0}")
     public static List<Object[]> data() {
-        return Arrays.asList(new Object[] {"../test1.json", 10}, new Object[] {"../test2.json", 22});
+        return Arrays.asList(new Object[] { "../test1.json", 10 }, new Object[] { "../test2.json", 22 });
     }
 
     @Before
@@ -96,7 +96,8 @@ public class DraytonWiserDiscoveryServiceTest {
     }
 
     @Test
-    public void testDiscovery() throws IOException, URISyntaxException, InterruptedException, TimeoutException, ExecutionException {
+    public void testDiscovery()
+            throws IOException, URISyntaxException, InterruptedException, TimeoutException, ExecutionException {
         final byte[] content = Files.readAllBytes(Paths.get(getClass().getResource(jsonFile).toURI()));
         final HttpResponse response = new HttpResponse(null, null);
         response.status(Response.SC_OK);

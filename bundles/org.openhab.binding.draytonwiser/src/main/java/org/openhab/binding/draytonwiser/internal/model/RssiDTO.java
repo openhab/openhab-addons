@@ -32,5 +32,4 @@ public class RssiDTO {
     public Integer getMax() {
         return max;
     }
-
 }

@@ -42,5 +42,4 @@ public class LocalDateAndTimeDTO {
     public Integer getTime() {
         return time;
     }
-
 }

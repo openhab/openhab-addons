@@ -57,5 +57,4 @@ public class DhcpStatusDTO {
     public String getIPv4SecondaryDNS() {
         return iPv4SecondaryDNS;
     }
-
 }
