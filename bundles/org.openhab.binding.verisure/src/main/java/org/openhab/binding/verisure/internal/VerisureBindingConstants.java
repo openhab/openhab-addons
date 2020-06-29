@@ -112,6 +112,7 @@ public class VerisureBindingConstants {
     public static final String TRIGGER_EVENT_ARM = "ARM";
     public static final String TRIGGER_EVENT_DISARM = "DISARM";
     public static final String TRIGGER_EVENT_FIRE = "FIRE";
+    public static final String TRIGGER_EVENT_INSTRUSION = "INTRUSION";
     public static final String TRIGGER_EVENT_WATER = "WATER";
     public static final String TRIGGER_EVENT_MICE = "MICE";
     public static final String TRIGGER_EVENT_BATTERY_LOW = "BATTERY_LOW";

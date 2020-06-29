@@ -164,7 +164,8 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
         for (Event newEvent : newEvents) {
             String deviceId = newEvent.getDeviceId();
             String eventType = newEvent.getEventType();
-            logger.debug("Trigger event type {} for thing {}", eventType, deviceId);
+            String eventCategory = newEvent.getEventCategory();
+            logger.debug("Trigger event type {}, event category {} for thing {}", eventType, eventCategory, deviceId);
             if (session != null && eventType != null && deviceId != null) {
                 String deviceIdTransformed = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
                 @Nullable
@@ -178,6 +179,9 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                     }
                     String eventTranslation = "UNKNOWN_EVENT_TYPE";
                     switch (eventType) {
+                        case "BA":
+                            eventTranslation = TRIGGER_EVENT_INSTRUSION;
+                            break;
                         case "FA":
                             eventTranslation = TRIGGER_EVENT_FIRE;
                             break;
@@ -205,14 +209,19 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                             break;
                         case "CO":
                         case "CL":
+                        case "CT":
                             eventTranslation = TRIGGER_EVENT_ARM;
                             break;
                         case "OP":
                         case "OO":
+                        case "OT":
+                        case "OH":
                             eventTranslation = TRIGGER_EVENT_DISARM;
                             break;
                         case "LM":
                         case "LO":
+                        case "LC":
+                        case "LD":
                             eventTranslation = TRIGGER_EVENT_LOCK;
                             break;
                         case "FK":
@@ -221,6 +230,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                         case "UA":
                         case "DC":
                         case "DO":
+                        case "DK":
                             eventTranslation = TRIGGER_EVENT_UNLOCK;
                             break;
                         case "WA":
@@ -242,7 +252,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                             eventTranslation = TRIGGER_EVENT_LOCATION_AWAY;
                             break;
                         default:
-                            logger.debug("Unhandled event type: {}", eventType);
+                            logger.debug("Unhandled event type: {}, event category: {}", eventType, eventCategory);
                     }
                     logger.debug("Schedule vth {} and event {} with delay {}", vth, eventTranslation, delay);
                     scheduler.schedule(new EventTrigger(vth, eventTranslation), delay, TimeUnit.MILLISECONDS);
@@ -335,10 +345,12 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
     protected class Event {
         private @Nullable String deviceId;
         private @Nullable String eventType;
+        private @Nullable String eventCategory;
 
-        public Event(@Nullable String deviceId, @Nullable String eventType) {
+        public Event(@Nullable String deviceId, @Nullable String eventType, @Nullable String eventCategory) {
             this.deviceId = deviceId;
             this.eventType = eventType;
+            this.eventCategory = eventCategory;
         }
 
         public @Nullable String getDeviceId() {
@@ -347,6 +359,10 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
 
         public @Nullable String getEventType() {
             return eventType;
+        }
+
+        public @Nullable String getEventCategory() {
+            return eventCategory;
         }
 
     }

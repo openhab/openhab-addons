@@ -213,7 +213,13 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
             logger.trace("Event time: {} Last Event time: {}", eventTime, lastEventTime);
             if (eventTime > lastEventTime) {
                 logger.debug("Create event {} for event time {}", newEvent.getEventType(), eventTime);
-                Event event = new Event(newEvent.getDevice().getDeviceLabel(), newEvent.getEventType());
+                Event event;
+                Device device = newEvent.getDevice();
+                if (device != null) {
+                    event = new Event(device.getDeviceLabel(), newEvent.getEventType(), newEvent.getEventCategory());
+                } else {
+                    event = new Event("NA", newEvent.getEventType(), newEvent.getEventCategory());
+                }
                 events.add(event);
             }
         }
