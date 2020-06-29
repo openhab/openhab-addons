@@ -15,6 +15,7 @@ package org.openhab.binding.modbus.tests;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
@@ -63,6 +64,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.BitArray;
@@ -118,7 +120,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
 
     private void captureModbusWrites() {
-        Mockito.when(comms.submitOneTimeWrite(any(), any())).then(invocation -> {
+        Mockito.when(comms.submitOneTimeWrite(any(), any(), any())).then(invocation -> {
             ModbusWriteRequestBlueprint task = (ModbusWriteRequestBlueprint) invocation.getArgument(0);
             writeRequests.add(task);
             return Mockito.mock(ScheduledFuture.class);
@@ -432,8 +434,9 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             assertNull(bits);
             assertNull(registers);
             assertNotNull(error);
-            AsyncModbusReadResult result = new AsyncModbusReadResult(request, error);
-            dataHandler.handle(result);
+            AsyncModbusFailure<ModbusReadRequestBlueprint> result = new AsyncModbusFailure<ModbusReadRequestBlueprint>(
+                    request, error);
+            dataHandler.handleReadError(result);
         }
         return dataHandler;
     }
@@ -445,7 +448,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502);
 
         // Minimally mocked request
-        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
+        ModbusWriteRequestBlueprint request = Mockito.mock(ModbusWriteRequestBlueprint.class);
 
         PollTask task = Mockito.mock(PollTask.class);
         doReturn(endpoint).when(task).getEndpoint();
@@ -470,7 +473,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataHandler.handleCommand(new ChannelUID(dataHandler.getThing().getUID(), channel), command);
 
         if (error != null) {
-            dataHandler.handle(new AsyncModbusReadResult(request, error));
+            dataHandler.handleWriteError(new AsyncModbusFailure<ModbusWriteRequestBlueprint>(request, error));
         } else {
             ModbusResponse resp = new ModbusResponse() {
 
@@ -774,7 +777,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 builder -> builder.withConfiguration(dataConfig), bundleContext);
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(comms, never()).submitOneTimePoll(request, null);
+        verify(comms, never()).submitOneTimePoll(request, notNull(), notNull());
         // Reset initial REFRESH commands to data thing channels from the Core
         reset(poller.getHandler());
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);

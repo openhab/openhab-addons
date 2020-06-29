@@ -226,7 +226,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
 
         logger.trace("Submitting write task {} to endpoint {}", request, comms.getEndpoint());
-        comms.submitOneTimeWrite(request, this, this::onError);
+        comms.submitOneTimeWrite(request, this, this::handleWriteError);
     }
 
     /**
@@ -329,7 +329,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         requests.stream().forEach(request -> {
             logger.trace("Submitting write request: {} to endpoint {} (based from transformation {})", request,
                     localComms.getEndpoint(), transformOutput);
-            localComms.submitOneTimeWrite(request, this, this::onError);
+            localComms.submitOneTimeWrite(request, this, this::handleWriteError);
         });
     }
 
@@ -653,10 +653,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         });
     }
 
-    /**
-     * @TODO: it is very likely that this is never used.
-     *        It might indicate a potential bug, or just has been deprecated, and should be removed
-     */
     @Override
     public synchronized void handle(AsyncModbusReadResult result) {
         if (result.getRegisters() != null) {
@@ -677,6 +673,14 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
             assert response != null;
             onWriteResponse(result.getRequest(), response);
         }
+    }
+
+    public synchronized void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+        onError(failure.getRequest(), failure.getCause());
+    }
+
+    public synchronized void handleWriteError(AsyncModbusFailure<ModbusWriteRequestBlueprint> failure) {
+        onError(failure.getRequest(), failure.getCause());
     }
 
     private synchronized void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
@@ -734,9 +738,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
                 thing.getUID(), values, readValueType, readIndex, numericState, boolValue, bits, request);
     }
 
-    /**
-     * @TODO: this is not used at the moment either
-     */
     private synchronized void onError(ModbusReadRequestBlueprint request, Exception error) {
         if (hasConfigurationError()) {
             return;
@@ -773,13 +774,12 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
-    private synchronized void onError(AsyncModbusFailure<ModbusWriteRequestBlueprint> failure) {
+    private synchronized void onError(ModbusWriteRequestBlueprint request, Exception error) {
         if (hasConfigurationError()) {
             return;
         } else if (!isWriteEnabled) {
             return;
         }
-        Exception error = failure.getCause();
         if (error instanceof ModbusConnectionException) {
             logger.error("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
@@ -806,8 +806,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
 
             updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Error (%s) with write. Request: %s. Description: %s. Message: %s",
-                            error.getClass().getSimpleName(), failure.getRequest(), error.toString(),
-                            error.getMessage()));
+                            error.getClass().getSimpleName(), request, error.toString(), error.getMessage()));
         }
     }
 
