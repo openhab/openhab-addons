@@ -310,7 +310,7 @@
 
 	<channel-type id="heatChannelDemand-channel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Channel 1 Heat Demand</label>
+		<label>Heat Demand</label>
 		<description>Current heat demand in %</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
