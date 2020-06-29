@@ -21,10 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @FunctionalInterface
 @NonNullByDefault
-public interface ModbusWriteCallback extends ModbusCallback {
+public interface ModbusWriteCallback extends ModbusResultCallback {
 
     /**
-     * Callback handling response data and errors
+     * Callback handling response data
      *
      * @param asyncModbusWriteResult result of the write operation
      */

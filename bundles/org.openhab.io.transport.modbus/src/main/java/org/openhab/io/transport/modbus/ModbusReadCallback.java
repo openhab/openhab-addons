@@ -21,10 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @FunctionalInterface
 @NonNullByDefault
-public interface ModbusReadCallback extends ModbusCallback {
+public interface ModbusReadCallback extends ModbusResultCallback {
 
     /**
-     * Callback handling response data and errors
+     * Callback handling response data
      *
      * @param result result of the read operation
      */

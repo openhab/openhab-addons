@@ -25,7 +25,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  * @param <C> callback type
  */
 @NonNullByDefault
-public interface TaskWithEndpoint<R, C extends ModbusCallback> {
+public interface TaskWithEndpoint<R, C extends ModbusResultCallback, F extends ModbusFailureCallback<R>> {
     /**
      * Gets endpoint associated with this task
      *
@@ -41,12 +41,20 @@ public interface TaskWithEndpoint<R, C extends ModbusCallback> {
     R getRequest();
 
     /**
-     * Gets callback associated with this task, will be called with response
+     * Gets the result callback associated with this task, will be called with response
      *
      * @return
      */
     @Nullable
-    C getCallback();
+    C getResultCallback();
+
+    /**
+     * Gets the failure callback associated with this task, will be called in case of an error
+     *
+     * @return
+     */
+    @Nullable
+    F getFailureCallback();
 
     int getMaxTries();
 }

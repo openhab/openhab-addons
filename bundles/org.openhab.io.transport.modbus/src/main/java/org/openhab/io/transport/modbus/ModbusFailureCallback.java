@@ -15,10 +15,16 @@ package org.openhab.io.transport.modbus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Base interface for callbacks used in Modbus
+ * Callback used to report failure in Modbus
  *
- * @author Sami Salonen - Initial contribution
+ * @author Nagy Attila Gabor - Initial contribution
  */
 @NonNullByDefault
-public interface ModbusCallback {
+public interface ModbusFailureCallback<R> {
+    /**
+     * Callback handling response with error
+     *
+     * @param asyncModbusFailure details of the failure
+     */
+    void handle(AsyncModbusFailure<R> failure);
 }

@@ -18,6 +18,7 @@ import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
@@ -44,13 +45,17 @@ public class BasicPollTask implements PollTask {
 
     private ModbusSlaveEndpoint endpoint;
     private ModbusReadRequestBlueprint request;
-    private ModbusReadCallback callback;
+    private ModbusReadCallback resultCallback;
+    @Nullable
+    private ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback;
 
     public BasicPollTask(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request,
-            ModbusReadCallback callback) {
+            ModbusReadCallback resultCallback,
+            @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
         this.endpoint = endpoint;
         this.request = request;
-        this.callback = callback;
+        this.resultCallback = resultCallback;
+        this.failureCallback = failureCallback;
     }
 
     @Override
@@ -64,19 +69,26 @@ public class BasicPollTask implements PollTask {
     }
 
     @Override
-    public @Nullable ModbusReadCallback getCallback() {
-        return callback;
+    public @Nullable ModbusReadCallback getResultCallback() {
+        return resultCallback;
+    }
+
+    @Override
+    public @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> getFailureCallback() {
+        return failureCallback;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(69, 5).append(request).append(getEndpoint()).append(getCallback()).toHashCode();
+        return new HashCodeBuilder(69, 5).append(request).append(getEndpoint()).append(getResultCallback())
+                .append(getFailureCallback()).toHashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, toStringStyle).append("request", request).append("endpoint", endpoint)
-                .append("callback", getCallback()).toString();
+                .append("resultCallback", getResultCallback()).append("failureCallback", getFailureCallback())
+                .toString();
     }
 
     @Override
@@ -92,6 +104,7 @@ public class BasicPollTask implements PollTask {
         }
         BasicPollTask rhs = (BasicPollTask) obj;
         return new EqualsBuilder().append(request, rhs.request).append(endpoint, rhs.endpoint)
-                .append(getCallback(), rhs.getCallback()).isEquals();
+                .append(getResultCallback(), rhs.getResultCallback())
+                .append(getFailureCallback(), rhs.getFailureCallback()).isEquals();
     }
 }

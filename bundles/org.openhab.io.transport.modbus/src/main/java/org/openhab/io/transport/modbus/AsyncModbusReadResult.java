@@ -33,9 +33,6 @@ public class AsyncModbusReadResult {
     @Nullable
     private ModbusRegisterArray registers;
 
-    @Nullable
-    private Exception cause;
-
     public AsyncModbusReadResult(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
         Objects.requireNonNull(request, "Request must not be null!");
         Objects.requireNonNull(registers, "Registers must not be null!");
@@ -48,22 +45,6 @@ public class AsyncModbusReadResult {
         Objects.requireNonNull(bits, "Bits must not be null!");
         this.request = request;
         this.bits = bits;
-    }
-
-    public AsyncModbusReadResult(ModbusReadRequestBlueprint request, Exception cause) {
-        Objects.requireNonNull(request, "Request must not be null!");
-        Objects.requireNonNull(cause, "Cause must not be null!");
-        this.request = request;
-        this.cause = cause;
-    }
-
-    /**
-     * Whether this response is in error, that is cause is non-null
-     *
-     * @return whether this response is in error
-     */
-    public boolean hasError() {
-        return cause != null;
     }
 
     /**
@@ -95,16 +76,6 @@ public class AsyncModbusReadResult {
         return registers;
     }
 
-    /**
-     * Get cause of error
-     *
-     * @return exception representing error
-     */
-    @Nullable
-    public Exception getCause() {
-        return cause;
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("AsyncModbusReadResult(");
@@ -116,9 +87,6 @@ public class AsyncModbusReadResult {
         } else if (registers != null) {
             builder.append(", registers = ");
             builder.append(registers);
-        } else {
-            builder.append(", error = ");
-            builder.append(cause);
         }
         builder.append(")");
         return builder.toString();

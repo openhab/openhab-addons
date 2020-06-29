@@ -35,13 +35,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.openhab.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
-import org.openhab.io.transport.modbus.ModbusCallback;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusResultCallback;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
@@ -192,7 +193,7 @@ public class ModbusManagerImpl implements ModbusManager {
                 ModbusUnexpectedResponseFunctionCodeException, ModbusUnexpectedResponseSizeException {
             ModbusSlaveEndpoint endpoint = task.getEndpoint();
             ModbusReadRequestBlueprint request = task.getRequest();
-            ModbusReadCallback callback = task.getCallback();
+            ModbusReadCallback callback = task.getResultCallback();
             String operationId = timer.operationId;
 
             ModbusTransaction transaction = ModbusLibraryWrapper.createTransactionForEndpoint(endpoint, connection);
@@ -230,7 +231,8 @@ public class ModbusManagerImpl implements ModbusManager {
                 ModbusUnexpectedResponseFunctionCodeException {
             ModbusSlaveEndpoint endpoint = task.getEndpoint();
             ModbusWriteRequestBlueprint request = task.getRequest();
-            ModbusWriteCallback callback = task.getCallback();
+            @Nullable
+            ModbusWriteCallback callback = task.getResultCallback();
             String operationId = timer.operationId;
 
             ModbusTransaction transaction = ModbusLibraryWrapper.createTransactionForEndpoint(endpoint, connection);
@@ -449,7 +451,7 @@ public class ModbusManagerImpl implements ModbusManager {
      *         connection cannot be established
      * @throws PollTaskUnregistered
      */
-    private <R, C extends ModbusCallback, T extends TaskWithEndpoint<R, C>> Optional<ModbusSlaveConnection> getConnection(
+    private <R, C extends ModbusResultCallback, F extends ModbusFailureCallback<R>, T extends TaskWithEndpoint<R, C, F>> Optional<ModbusSlaveConnection> getConnection(
             AggregateStopWatch timer, boolean oneOffTask, @NonNull T task) throws PollTaskUnregistered {
         KeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> connectionPool = this.connectionPool;
         if (connectionPool == null) {
@@ -461,7 +463,7 @@ public class ModbusManagerImpl implements ModbusManager {
                 task, oneOffTask, connectionPool.getNumIdle(task.getEndpoint()),
                 connectionPool.getNumActive(task.getEndpoint()), operationId);
         long connectionBorrowStart = System.currentTimeMillis();
-        ModbusCallback callback = task.getCallback();
+        ModbusFailureCallback<R> failureCallback = task.getFailureCallback();
         ModbusSlaveEndpoint endpoint = task.getEndpoint();
 
         R request = task.getRequest();
@@ -476,28 +478,19 @@ public class ModbusManagerImpl implements ModbusManager {
         if (!connection.isPresent()) {
             logger.warn("Could not connect to endpoint {} -- aborting request {} [operation ID {}]", endpoint, request,
                     operationId);
-            if (callback != null) {
-                timer.callback.timeRunnable(
-                        () -> invokeCallbackWithError(request, callback, new ModbusConnectionException(endpoint)));
+            if (failureCallback != null) {
+                timer.callback.timeRunnable(() -> invokeCallbackWithError(request, failureCallback,
+                        new ModbusConnectionException(endpoint)));
             }
         }
         return connection;
     }
 
-    private <R> void invokeCallbackWithError(R request, ModbusCallback callback, Exception error) {
+    private <R> void invokeCallbackWithError(R request, ModbusFailureCallback<R> callback, Exception error) {
         try {
             logger.trace("Calling error response callback {} for request {}. Error was {} {}", callback, request,
                     error.getClass().getName(), error.getMessage());
-            if (request instanceof ModbusReadRequestBlueprint) {
-                ((ModbusReadCallback) callback)
-                        .handle(new AsyncModbusReadResult((ModbusReadRequestBlueprint) request, error));
-            } else if (request instanceof ModbusWriteRequestBlueprint) {
-                ((ModbusWriteCallback) callback)
-                        .handle(new AsyncModbusWriteResult((ModbusWriteRequestBlueprint) request, error));
-            } else {
-                throw new IllegalStateException(String.format("Request %s or callback %s is of wrong type.",
-                        request.getClass().getName(), callback.getClass().getName()));
-            }
+            callback.handle(new AsyncModbusFailure<R>(request, error));
         } finally {
             logger.trace("Called write response callback {} for request {}. Error was {} {}", callback, request,
                     error.getClass().getName(), error.getMessage());
@@ -538,8 +531,8 @@ public class ModbusManagerImpl implements ModbusManager {
      * @param oneOffTask
      * @param operation
      */
-    private <R, C extends ModbusCallback, T extends TaskWithEndpoint<R, C>> void executeOperation(@NonNull T task,
-            boolean oneOffTask, ModbusOperation<T> operation) {
+    private <R, C extends ModbusResultCallback, F extends ModbusFailureCallback<R>, T extends TaskWithEndpoint<R, C, F>> void executeOperation(
+            @NonNull T task, boolean oneOffTask, ModbusOperation<T> operation) {
         AggregateStopWatch timer = new AggregateStopWatch();
         timer.total.resume();
         String operationId = timer.operationId;
@@ -555,7 +548,7 @@ public class ModbusManagerImpl implements ModbusManager {
         R request = task.getRequest();
         ModbusSlaveEndpoint endpoint = task.getEndpoint();
         @Nullable
-        C callback = task.getCallback();
+        F failureCallback = task.getFailureCallback();
         int maxTries = task.getMaxTries();
         AtomicReference<@Nullable Exception> lastError = new AtomicReference<>();
         long retryDelay = Optional.ofNullable(connectionFactory.getEndpointPoolConfiguration(endpoint))
@@ -716,9 +709,9 @@ public class ModbusManagerImpl implements ModbusManager {
             Exception exception = lastError.get();
             if (exception != null) {
                 // All retries failed with some error
-                if (callback != null) {
+                if (failureCallback != null) {
                     timer.callback.timeRunnable(() -> {
-                        invokeCallbackWithError(request, callback, exception);
+                        invokeCallbackWithError(request, failureCallback, exception);
                     });
                 }
             }
@@ -756,14 +749,16 @@ public class ModbusManagerImpl implements ModbusManager {
         }
 
         @Override
-        public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback callback) {
+        public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request,
+                ModbusReadCallback resultCallback,
+                @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
             if (closed) {
                 throw new IllegalStateException("Communication interface is closed already!");
             }
             ScheduledExecutorService executor = scheduledThreadPoolExecutor;
             Objects.requireNonNull(executor, "Not activated!");
             long scheduleTime = System.currentTimeMillis();
-            BasicPollTask task = new BasicPollTask(endpoint, request, callback);
+            BasicPollTask task = new BasicPollTask(endpoint, request, resultCallback, failureCallback);
             logger.debug("Scheduling one-off poll task {}", task);
             ScheduledFuture<?> future = executor.schedule(() -> {
                 long millisInThreadPoolWaiting = System.currentTimeMillis() - scheduleTime;
@@ -776,14 +771,15 @@ public class ModbusManagerImpl implements ModbusManager {
 
         @Override
         public PollTask registerRegularPoll(ModbusReadRequestBlueprint request, long pollPeriodMillis,
-                long initialDelayMillis, ModbusReadCallback callback) {
+                long initialDelayMillis, ModbusReadCallback resultCallback,
+                @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
             synchronized (ModbusManagerImpl.this) {
                 if (closed) {
                     throw new IllegalStateException("Communication interface is closed already!");
                 }
                 ScheduledExecutorService executor = scheduledThreadPoolExecutor;
                 Objects.requireNonNull(executor, "Not activated!");
-                BasicPollTask task = new BasicPollTask(endpoint, request, callback);
+                BasicPollTask task = new BasicPollTask(endpoint, request, resultCallback, failureCallback);
                 logger.trace("Registering poll task {} with period {} using initial delay {}", task, pollPeriodMillis,
                         initialDelayMillis);
                 if (scheduledPollTasks.containsKey(task)) {
@@ -847,13 +843,14 @@ public class ModbusManagerImpl implements ModbusManager {
 
         @Override
         public ScheduledFuture<?> submitOneTimeWrite(ModbusWriteRequestBlueprint request,
-                @Nullable ModbusWriteCallback callback) {
+                @Nullable ModbusWriteCallback resultCallback,
+                @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback) {
             if (closed) {
                 throw new IllegalStateException("Communication interface is closed already!");
             }
             ScheduledExecutorService localScheduledThreadPoolExecutor = scheduledThreadPoolExecutor;
             Objects.requireNonNull(localScheduledThreadPoolExecutor, "Not activated!");
-            WriteTask task = new BasicWriteTask(endpoint, request, callback);
+            WriteTask task = new BasicWriteTask(endpoint, request, resultCallback, failureCallback);
             long scheduleTime = System.currentTimeMillis();
             logger.debug("Scheduling one-off write task {}", task);
             ScheduledFuture<?> future = localScheduledThreadPoolExecutor.schedule(() -> {

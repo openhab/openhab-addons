@@ -16,6 +16,7 @@ import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.WriteTask;
@@ -37,14 +38,17 @@ public class BasicWriteTask implements WriteTask {
 
     private ModbusSlaveEndpoint endpoint;
     private ModbusWriteRequestBlueprint request;
-    private @Nullable ModbusWriteCallback callback;
+    private @Nullable ModbusWriteCallback resultCallback;
+    private @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback;
 
     public BasicWriteTask(ModbusSlaveEndpoint endpoint, ModbusWriteRequestBlueprint request,
-            @Nullable ModbusWriteCallback callback) {
+            @Nullable ModbusWriteCallback resultCallback,
+            @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback) {
         super();
         this.endpoint = endpoint;
         this.request = request;
-        this.callback = callback;
+        this.resultCallback = resultCallback;
+        this.failureCallback = failureCallback;
     }
 
     @Override
@@ -58,13 +62,18 @@ public class BasicWriteTask implements WriteTask {
     }
 
     @Override
-    public @Nullable ModbusWriteCallback getCallback() {
-        return callback;
+    public @Nullable ModbusWriteCallback getResultCallback() {
+        return resultCallback;
+    }
+
+    @Override
+    public @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> getFailureCallback() {
+        return failureCallback;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE).append("request", request).append("endpoint", endpoint)
-                .append("callback", callback).toString();
+                .append("resultCallback", resultCallback).append("failureCallback", failureCallback).toString();
     }
 }

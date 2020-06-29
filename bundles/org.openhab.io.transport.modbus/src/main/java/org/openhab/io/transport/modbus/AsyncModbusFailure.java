@@ -15,26 +15,23 @@ package org.openhab.io.transport.modbus;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Encapsulates result of modbus write operations
+ * Encapsulates result of modbus read operations
  *
- * @author Sami Salonen - Initial contribution
+ * @author Nagy Attila Gabor - Initial contribution
  */
 @NonNullByDefault
-public class AsyncModbusWriteResult {
+public class AsyncModbusFailure<R> {
+    private R request;
 
-    private ModbusWriteRequestBlueprint request;
+    private Exception cause;
 
-    @Nullable
-    private ModbusResponse response;
-
-    public AsyncModbusWriteResult(ModbusWriteRequestBlueprint request, ModbusResponse response) {
+    public AsyncModbusFailure(R request, Exception cause) {
         Objects.requireNonNull(request, "Request must not be null!");
-        Objects.requireNonNull(response, "Response must not be null!");
+        Objects.requireNonNull(cause, "Cause must not be null!");
         this.request = request;
-        this.response = response;
+        this.cause = cause;
     }
 
     /**
@@ -42,29 +39,26 @@ public class AsyncModbusWriteResult {
      *
      * @return request object
      */
-    public ModbusWriteRequestBlueprint getRequest() {
+    public R getRequest() {
         return request;
     }
 
     /**
-     * Get response
+     * Get cause of error
      *
-     * @return response
+     * @return exception representing error
      */
-    @Nullable
-    public ModbusResponse getResponse() {
-        return response;
+    public Exception getCause() {
+        return cause;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("AsyncModbusWriteResult(");
+        StringBuilder builder = new StringBuilder("AsyncModbusReadResult(");
         builder.append("request = ");
         builder.append(request);
-        if (response != null) {
-            builder.append(", response = ");
-            builder.append(response);
-        }
+        builder.append(", error = ");
+        builder.append(cause);
         builder.append(")");
         return builder.toString();
     }

@@ -46,11 +46,13 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      * background.
      *
      * @param request request to send
-     * @param callback callback to call with errors and data
+     * @param callback callback to call with data
+     * @param callback callback to call in case of failure
      * @return future representing the polled task
      * @throws IllegalStateException when this communication has been closed already
      */
-    public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback callback);
+    public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback resultCallback,
+            @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback);
 
     /**
      * Register regularly polled task. The method returns immediately, and the execution of the poll task will happen in
@@ -61,12 +63,14 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      * @param request request to send
      * @param pollPeriodMillis poll interval, in milliseconds
      * @param initialDelayMillis initial delay before starting polling, in milliseconds
-     * @param callback callback to call with errors and data
+     * @param callback callback to call with data
+     * @param callback callback to call in case of failure
      * @return poll task representing the regular poll
      * @throws IllegalStateException when this communication has been closed already
      */
     public PollTask registerRegularPoll(ModbusReadRequestBlueprint request, long pollPeriodMillis,
-            long initialDelayMillis, ModbusReadCallback callback);
+            long initialDelayMillis, ModbusReadCallback resultCallback,
+            @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback);
 
     /**
      * Unregister regularly polled task
@@ -83,10 +87,12 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      * background.
      *
      * @param request request to send
-     * @param callback callback to call with errors and response
+     * @param callback callback to call with response
+     * @param callback callback to call in case of failure
      * @return future representing the task
      * @throws IllegalStateException when this communication has been closed already
      */
     public ScheduledFuture<?> submitOneTimeWrite(ModbusWriteRequestBlueprint request,
-            @Nullable ModbusWriteCallback callback);
+            @Nullable ModbusWriteCallback resultCallback,
+            @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback);
 }
