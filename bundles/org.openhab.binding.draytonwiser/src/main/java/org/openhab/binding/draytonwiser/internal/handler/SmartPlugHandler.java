@@ -51,19 +51,21 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
 
     @Override
     protected void handleCommand(final String channelId, final Command command) {
-        switch (channelId) {
-            case CHANNEL_DEVICE_LOCKED:
-                setDeviceLocked(OnOffType.ON.equals(command));
-                break;
-            case CHANNEL_SMARTPLUG_OUTPUT_STATE:
-                setOutputState(OnOffType.ON.equals(command));
-                break;
-            case CHANNEL_SMARTPLUG_AWAY_ACTION:
-                setAwayAction(OnOffType.ON.equals(command));
-                break;
-            case CHANNEL_MANUAL_MODE_STATE:
-                setManualMode(OnOffType.ON.equals(command));
-                break;
+        if (command instanceof OnOffType) {
+            switch (channelId) {
+                case CHANNEL_DEVICE_LOCKED:
+                    setDeviceLocked(OnOffType.ON.equals(command));
+                    break;
+                case CHANNEL_SMARTPLUG_OUTPUT_STATE:
+                    setOutputState(OnOffType.ON.equals(command));
+                    break;
+                case CHANNEL_SMARTPLUG_AWAY_ACTION:
+                    setAwayAction(OnOffType.ON.equals(command));
+                    break;
+                case CHANNEL_MANUAL_MODE_STATE:
+                    setManualMode(OnOffType.ON.equals(command));
+                    break;
+            }
         }
     }
 
