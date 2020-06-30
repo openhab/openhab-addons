@@ -16,9 +16,6 @@
 			<channel id="iinst1" typeId="iinst1Type"/>
 			<channel id="iinst2" typeId="iinst2Type"/>
 			<channel id="iinst3" typeId="iinst3Type"/>
-			<channel id="currentPower1" typeId="currentPower1Type"/>
-			<channel id="currentPower2" typeId="currentPower2Type"/>
-			<channel id="currentPower3" typeId="currentPower3Type"/>
 			<channel id="imax1" typeId="imax1Type"/>
 			<channel id="imax2" typeId="imax2Type"/>
 			<channel id="imax3" typeId="imax3Type"/>

@@ -14,14 +14,11 @@ package org.openhab.binding.teleinfo.internal.handler.cbemm;
 
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemm;
@@ -56,14 +53,6 @@ public abstract class TeleinfoAbstractCbemmElectricityMeterHandler extends Telei
             updateState(CHANNEL_CBEMM_ADPS, QuantityType.valueOf(frame.getAdps(), SmartHomeUnits.AMPERE));
         }
         updateState(CHANNEL_CBEMM_IINST, QuantityType.valueOf(frame.getIinst(), SmartHomeUnits.AMPERE));
-
-        Channel currentPowerChannel = getThing().getChannel(CHANNEL_CBEMM_CURRENT_POWER);
-        if (currentPowerChannel != null) {
-            BigDecimal powerFactor = (BigDecimal) currentPowerChannel.getConfiguration()
-                    .get(CHANNEL_CBEMM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-            updateState(CHANNEL_CBEMM_CURRENT_POWER,
-                    QuantityType.valueOf(frame.getIinst() * powerFactor.intValue(), SmartHomeUnits.WATT));
-        }
 
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
     }

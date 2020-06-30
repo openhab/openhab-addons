@@ -15,7 +15,6 @@
 			<channel id="imax" typeId="imaxType"/>
 			<channel id="adps" typeId="adpsType"/>
 			<channel id="iinst" typeId="iinstType"/>
-			<channel id="currentPower" typeId="currentPowerType"/>
 			<channel id="hchc" typeId="hchcType"/>
 			<channel id="hchp" typeId="hchpType"/>
 			<channel id="hhphc" typeId="hhphcType"/>

@@ -20,29 +20,6 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="currentPowerType">
-		<item-type>Number:Power</item-type>
-		<label>currentpower</label>
-		<description>Instantaneous power</description>
-		<category>Energy</category>
-		<state pattern="%d %unit%" readOnly="true"/>
-		<config-description>
-			<parameter name="powerFactor" type="integer">
-				<label>Nominal Voltage</label>
-				<limitToOptions>true</limitToOptions>
-				<required>true</required>
-				<unitLabel>Volt</unitLabel>
-				<verify>true</verify>
-				<options>
-					<option value="220">220</option>
-					<option value="230">230</option>
-					<option value="240">240</option>
-				</options>
-				<default>230</default>
-			</parameter>
-		</config-description>
-	</channel-type>
-
 	<channel-type id="adpsType">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>ADPS</label>

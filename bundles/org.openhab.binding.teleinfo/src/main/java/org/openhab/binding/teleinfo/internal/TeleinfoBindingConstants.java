@@ -60,18 +60,12 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_CBEMM_ADPS = "adps";
     public static final String CHANNEL_CBEMM_IINST = "iinst";
     public static final String CHANNEL_CBEMM_MOTDETAT = "motdetat";
-    public static final String CHANNEL_CBEMM_CURRENT_POWER = "currentPower";
-    public static final String CHANNEL_CBEMM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR = "powerFactor";
     // List of CBEMM EVOLUTION ICC Channel ids
     public static final String CHANNEL_CBEMM_EVOLUTION_ICC_PAPP = "papp";
     // List of CBETM Channel ids
     public static final String CHANNEL_CBETM_IINST1 = "iinst1";
     public static final String CHANNEL_CBETM_IINST2 = "iinst2";
     public static final String CHANNEL_CBETM_IINST3 = "iinst3";
-    public static final String CHANNEL_CBETM_CURRENT_POWER1 = "currentPower1";
-    public static final String CHANNEL_CBETM_CURRENT_POWER2 = "currentPower2";
-    public static final String CHANNEL_CBETM_CURRENT_POWER3 = "currentPower3";
-    public static final String CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR = "powerFactor";
     public static final String CHANNEL_CBETM_FRAME_TYPE = "frameType";
     public static final String CHANNEL_CBETM_LONG_ISOUSC = "isousc";
     public static final String CHANNEL_CBETM_LONG_IMAX1 = "imax1";
