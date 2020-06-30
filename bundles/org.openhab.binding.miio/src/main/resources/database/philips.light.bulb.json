@@ -5,7 +5,8 @@
 			"philips.light.downlight",
 			"philips.light.virtual",
 			"philips.light.zysread",
-			"philips.light.zystrip"
+			"philips.light.zystrip",
+			"philips.light.hbulb"
 		],
 		"channels": [
 			{
