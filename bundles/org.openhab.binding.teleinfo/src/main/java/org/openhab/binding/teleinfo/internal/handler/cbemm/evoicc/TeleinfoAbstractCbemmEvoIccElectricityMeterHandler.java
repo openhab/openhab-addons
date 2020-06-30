@@ -15,7 +15,8 @@ package org.openhab.binding.teleinfo.internal.handler.cbemm.evoicc;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.CHANNEL_CBEMM_EVOLUTION_ICC_PAPP;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIcc;
 import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoAbstractCbemmElectricityMeterHandler;
@@ -37,6 +38,6 @@ public abstract class TeleinfoAbstractCbemmEvoIccElectricityMeterHandler
 
     protected void updateStatesForCommonCbemmEvolutionIccChannels(FrameCbemmEvolutionIcc frame) {
         updateStatesForCommonCbemmChannels(frame);
-        updateState(CHANNEL_CBEMM_EVOLUTION_ICC_PAPP, new DecimalType(frame.getPapp()));
+        updateState(CHANNEL_CBEMM_EVOLUTION_ICC_PAPP, QuantityType.valueOf(frame.getPapp(), SmartHomeUnits.WATT));
     }
 }

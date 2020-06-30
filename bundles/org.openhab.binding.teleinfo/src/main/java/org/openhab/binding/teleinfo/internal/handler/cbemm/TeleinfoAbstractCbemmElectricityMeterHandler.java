@@ -18,8 +18,9 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -41,26 +42,27 @@ public abstract class TeleinfoAbstractCbemmElectricityMeterHandler extends Telei
 
     protected void updateStatesForCommonCbemmChannels(FrameCbemm frame) {
         // update common channels
-        updateState(CHANNEL_CBEMM_ISOUSC, new DecimalType(frame.getIsousc()));
+        updateState(CHANNEL_CBEMM_ISOUSC, QuantityType.valueOf(frame.getIsousc(), SmartHomeUnits.AMPERE));
         updateState(CHANNEL_CBEMM_PTEC, new StringType(frame.getPtec().name()));
         if (frame.getImax() == null) {
             updateState(CHANNEL_CBEMM_IMAX, UnDefType.NULL);
         } else {
-            updateState(CHANNEL_CBEMM_IMAX, new DecimalType(frame.getImax()));
+            updateState(CHANNEL_CBEMM_IMAX, QuantityType.valueOf(frame.getImax(), SmartHomeUnits.AMPERE));
         }
 
         if (frame.getAdps() == null) {
             updateState(CHANNEL_CBEMM_ADPS, UnDefType.NULL);
         } else {
-            updateState(CHANNEL_CBEMM_ADPS, new DecimalType(frame.getAdps()));
+            updateState(CHANNEL_CBEMM_ADPS, QuantityType.valueOf(frame.getAdps(), SmartHomeUnits.AMPERE));
         }
-        updateState(CHANNEL_CBEMM_IINST, new DecimalType(frame.getIinst()));
+        updateState(CHANNEL_CBEMM_IINST, QuantityType.valueOf(frame.getIinst(), SmartHomeUnits.AMPERE));
 
         Channel currentPowerChannel = getThing().getChannel(CHANNEL_CBEMM_CURRENT_POWER);
         if (currentPowerChannel != null) {
             BigDecimal powerFactor = (BigDecimal) currentPowerChannel.getConfiguration()
                     .get(CHANNEL_CBEMM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
-            updateState(CHANNEL_CBEMM_CURRENT_POWER, new DecimalType(frame.getIinst() * powerFactor.intValue()));
+            updateState(CHANNEL_CBEMM_CURRENT_POWER,
+                    QuantityType.valueOf(frame.getIinst() * powerFactor.intValue(), SmartHomeUnits.WATT));
         }
 
         updateState(CHANNEL_LAST_UPDATE, new DateTimeType());

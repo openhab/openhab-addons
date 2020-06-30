@@ -18,8 +18,9 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -42,16 +43,16 @@ public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends Telei
     }
 
     protected void updateStatesForCommonCbetmChannels(FrameCbetm frameCbetm) {
-        updateState(CHANNEL_CBETM_IINST1, new DecimalType(frameCbetm.getIinst1()));
-        updateState(CHANNEL_CBETM_IINST2, new DecimalType(frameCbetm.getIinst2()));
-        updateState(CHANNEL_CBETM_IINST3, new DecimalType(frameCbetm.getIinst3()));
+        updateState(CHANNEL_CBETM_IINST1, QuantityType.valueOf(frameCbetm.getIinst1(), SmartHomeUnits.AMPERE));
+        updateState(CHANNEL_CBETM_IINST2, QuantityType.valueOf(frameCbetm.getIinst2(), SmartHomeUnits.AMPERE));
+        updateState(CHANNEL_CBETM_IINST3, QuantityType.valueOf(frameCbetm.getIinst3(), SmartHomeUnits.AMPERE));
 
         Channel powerFactor1Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER1);
         if (powerFactor1Channel != null) {
             BigDecimal powerFactor1 = (BigDecimal) powerFactor1Channel.getConfiguration()
                     .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
             updateState(CHANNEL_CBETM_CURRENT_POWER1,
-                    new DecimalType(frameCbetm.getIinst1() * powerFactor1.intValue()));
+                    QuantityType.valueOf(frameCbetm.getIinst1() * powerFactor1.intValue(), SmartHomeUnits.WATT));
         }
 
         Channel powerFactor2Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER2);
@@ -59,7 +60,7 @@ public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends Telei
             BigDecimal powerFactor2 = (BigDecimal) powerFactor2Channel.getConfiguration()
                     .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
             updateState(CHANNEL_CBETM_CURRENT_POWER2,
-                    new DecimalType(frameCbetm.getIinst2() * powerFactor2.intValue()));
+                    QuantityType.valueOf(frameCbetm.getIinst2() * powerFactor2.intValue(), SmartHomeUnits.WATT));
         }
 
         Channel powerFactor3Channel = getThing().getChannel(CHANNEL_CBETM_CURRENT_POWER3);
@@ -67,7 +68,7 @@ public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends Telei
             BigDecimal powerFactor3 = (BigDecimal) powerFactor3Channel.getConfiguration()
                     .get(CHANNEL_CBETM_CURRENT_POWER_CONFIG_PARAMETER_POWERFACTOR);
             updateState(CHANNEL_CBETM_CURRENT_POWER3,
-                    new DecimalType(frameCbetm.getIinst3() * powerFactor3.intValue()));
+                    QuantityType.valueOf(frameCbetm.getIinst3() * powerFactor3.intValue(), SmartHomeUnits.WATT));
         }
 
         if (frameCbetm instanceof FrameCbetmLong) {
@@ -75,26 +76,30 @@ public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends Telei
 
             updateState(CHANNEL_CBETM_FRAME_TYPE, new StringType("LONG"));
 
-            updateState(CHANNEL_CBETM_LONG_ISOUSC, new DecimalType(frameCbetmLong.getIsousc()));
+            updateState(CHANNEL_CBETM_LONG_ISOUSC,
+                    QuantityType.valueOf(frameCbetmLong.getIsousc(), SmartHomeUnits.AMPERE));
             updateState(CHANNEL_CBETM_LONG_PTEC, new StringType(frameCbetmLong.getPtec().name()));
             if (frameCbetmLong.getImax1() == null) {
                 updateState(CHANNEL_CBETM_LONG_IMAX1, UnDefType.NULL);
             } else {
-                updateState(CHANNEL_CBETM_LONG_IMAX1, new DecimalType(frameCbetmLong.getImax1()));
+                updateState(CHANNEL_CBETM_LONG_IMAX1,
+                        QuantityType.valueOf(frameCbetmLong.getImax1(), SmartHomeUnits.AMPERE));
             }
             if (frameCbetmLong.getImax2() == null) {
                 updateState(CHANNEL_CBETM_LONG_IMAX2, UnDefType.NULL);
             } else {
-                updateState(CHANNEL_CBETM_LONG_IMAX2, new DecimalType(frameCbetmLong.getImax2()));
+                updateState(CHANNEL_CBETM_LONG_IMAX2,
+                        QuantityType.valueOf(frameCbetmLong.getImax2(), SmartHomeUnits.AMPERE));
             }
             if (frameCbetmLong.getImax3() == null) {
                 updateState(CHANNEL_CBETM_LONG_IMAX3, UnDefType.NULL);
             } else {
-                updateState(CHANNEL_CBETM_LONG_IMAX3, new DecimalType(frameCbetmLong.getImax3()));
+                updateState(CHANNEL_CBETM_LONG_IMAX3,
+                        QuantityType.valueOf(frameCbetmLong.getImax3(), SmartHomeUnits.AMPERE));
             }
 
-            updateState(CHANNEL_CBETM_LONG_PMAX, new DecimalType(frameCbetmLong.getPmax()));
-            updateState(CHANNEL_CBETM_LONG_PAPP, new DecimalType(frameCbetmLong.getPapp()));
+            updateState(CHANNEL_CBETM_LONG_PMAX, QuantityType.valueOf(frameCbetmLong.getPmax(), SmartHomeUnits.WATT));
+            updateState(CHANNEL_CBETM_LONG_PAPP, QuantityType.valueOf(frameCbetmLong.getPapp(), SmartHomeUnits.WATT));
             updateState(CHANNEL_CBETM_LONG_PPOT, new StringType(frameCbetmLong.getPpot()));
 
             updateState(CHANNEL_CBETM_SHORT_ADIR1, UnDefType.NULL);
@@ -108,19 +113,22 @@ public abstract class TeleinfoAbstractCbetmElectricityMeterHandler extends Telei
             if (frameCbetmShort.getAdir1() == null) {
                 updateState(CHANNEL_CBETM_SHORT_ADIR1, UnDefType.NULL);
             } else {
-                updateState(CHANNEL_CBETM_SHORT_ADIR1, new DecimalType(frameCbetmShort.getAdir1()));
+                updateState(CHANNEL_CBETM_SHORT_ADIR1,
+                        QuantityType.valueOf(frameCbetmShort.getAdir1(), SmartHomeUnits.AMPERE));
             }
 
             if (frameCbetmShort.getAdir2() == null) {
                 updateState(CHANNEL_CBETM_SHORT_ADIR2, UnDefType.NULL);
             } else {
-                updateState(CHANNEL_CBETM_SHORT_ADIR2, new DecimalType(frameCbetmShort.getAdir2()));
+                updateState(CHANNEL_CBETM_SHORT_ADIR2,
+                        QuantityType.valueOf(frameCbetmShort.getAdir2(), SmartHomeUnits.AMPERE));
             }
 
             if (frameCbetmShort.getAdir3() == null) {
                 updateState(CHANNEL_CBETM_SHORT_ADIR3, UnDefType.NULL);
             } else {
-                updateState(CHANNEL_CBETM_SHORT_ADIR3, new DecimalType(frameCbetmShort.getAdir3()));
+                updateState(CHANNEL_CBETM_SHORT_ADIR3,
+                        QuantityType.valueOf(frameCbetmShort.getAdir3(), SmartHomeUnits.AMPERE));
             }
 
             updateState(CHANNEL_CBETM_LONG_ISOUSC, UnDefType.NULL);
