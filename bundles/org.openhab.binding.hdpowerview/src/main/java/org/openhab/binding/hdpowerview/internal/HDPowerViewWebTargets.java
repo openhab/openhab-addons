@@ -70,7 +70,7 @@ public class HDPowerViewWebTargets {
     private WebTarget sceneActivate;
     private WebTarget scenes;
 
-    public final Gson gson;
+    public final Gson gson = new Gson();
 
     public HDPowerViewWebTargets(Client client, String ipAddress) {
         base = client.target("http://" + ipAddress + "/api");
@@ -78,7 +78,6 @@ public class HDPowerViewWebTargets {
         shade = base.path("shades/{id}");
         sceneActivate = base.path("scenes");
         scenes = base.path("scenes/");
-        gson = new Gson();
     }
 
     public @Nullable Shades getShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
