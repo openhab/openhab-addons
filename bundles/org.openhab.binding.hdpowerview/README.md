@@ -50,9 +50,9 @@ PowerView shades should preferably be configured via the automatic discovery pro
 It is quite difficult to configure manually as the `id` of the shade is not exposed in the PowerView app.
 However, the configuration parameters are described below:
 
-| Configuration Parameter | Description                    |
-|-------------------------|--------------------------------|
-| id                      | The ID of the PowerView shade. |
+| Configuration Parameter | Description                                                   |
+|-------------------------|---------------------------------------------------------------|
+| id                      | The ID of the PowerView shade in the app. Must be an integer. |
 
 ## Channels
 

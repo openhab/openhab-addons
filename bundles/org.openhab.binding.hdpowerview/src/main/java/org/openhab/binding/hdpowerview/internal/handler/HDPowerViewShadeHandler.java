@@ -65,8 +65,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void initialize() {
-        if (getShadeId().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing 'id' in configuration");
+        try {
+            getShadeId();
+        } catch (NumberFormatException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Configuration 'id' not a valid integer");
             return;
         }
         if (getBridgeHandler() == null) {
@@ -154,7 +157,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             if (webTargets == null) {
                 throw new ProcessingException("Web targets not initialized");
             }
-            String shadeId = getShadeId();
+            int shadeId = getShadeId();
             switch (seq) {
                 case PRIMARY:
                     webTargets.moveShade(shadeId, ShadePosition.create(kind, percent));
@@ -162,7 +165,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 case SECONDARY:
                     webTargets.moveShade(shadeId, ShadePosition.create(REGULAR, 100, INVERTED, percent));
             }
-        } catch (ProcessingException e) {
+        } catch (ProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
         } catch (HubMaintenanceException e) {
@@ -171,9 +174,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private String getShadeId() {
-        String id = getConfigAs(HDPowerViewShadeConfiguration.class).id;
-        return id != null ? id : "??";
+    private int getShadeId() throws NumberFormatException {
+        return Integer.parseInt(getConfigAs(HDPowerViewShadeConfiguration.class).id);
     }
 
     private void stopShade() {
@@ -186,9 +188,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             if (webTargets == null) {
                 throw new ProcessingException("Web targets not initialized");
             }
-            String shadeId = getShadeId();
+            int shadeId = getShadeId();
             webTargets.stopShade(shadeId);
-        } catch (ProcessingException e) {
+        } catch (ProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
         } catch (HubMaintenanceException e) {
@@ -213,7 +215,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             if (webTargets == null) {
                 throw new ProcessingException("Web targets not initialized");
             }
-            String shadeId = getShadeId();
+            int shadeId = getShadeId();
             Shade shade = webTargets.refreshShade(shadeId);
             if (shade != null) {
                 ShadeData shadeData = shade.shade;
@@ -223,7 +225,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     }
                 }
             }
-        } catch (ProcessingException e) {
+        } catch (ProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets

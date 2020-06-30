@@ -93,8 +93,8 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                     List<ShadeData> shadesData = shades.shadeData;
                     if (shadesData != null) {
                         for (ShadeData shadeData : shadesData) {
-                            String id = shadeData.id;
-                            if (id != null && !id.isEmpty()) {
+                            if (shadeData.id != 0) {
+                                String id = Integer.toString(shadeData.id);
                                 ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE,
                                         bridgeUID, id);
                                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)

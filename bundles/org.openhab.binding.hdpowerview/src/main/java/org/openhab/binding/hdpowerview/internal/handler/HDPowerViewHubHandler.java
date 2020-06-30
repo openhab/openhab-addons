@@ -281,9 +281,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private Map<String, ShadeData> getIdShadeDataMap(List<ShadeData> shadeData) {
         Map<String, ShadeData> ret = new HashMap<>();
         for (ShadeData shade : shadeData) {
-            String id = shade.id;
-            if (id != null && !id.isEmpty()) {
-                ret.put(id, shade);
+            if (shade.id != 0) {
+                ret.put(Integer.toString(shade.id), shade);
             }
         }
         return ret;

@@ -28,7 +28,7 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 public class Shades {
 
     public @Nullable List<ShadeData> shadeData;
-    public @Nullable List<String> shadeIds;
+    public @Nullable List<Integer> shadeIds;
 
     /*
      * the following SuppressWarnings annotation is because the Eclipse compiler
@@ -39,7 +39,7 @@ public class Shades {
     @SuppressWarnings("null")
     @NonNullByDefault
     public static class ShadeData {
-        public @Nullable String id;
+        public int id;
         public @Nullable String name;
         public int roomId;
         public int groupId;

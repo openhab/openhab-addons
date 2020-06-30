@@ -140,8 +140,7 @@ public class HDPowerViewJUnitTests {
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(100, ((PercentType) pos).intValue());
 
-            @Nullable
-            String shadeId = null;
+            int shadeId = 0;
             @Nullable
             ShadePosition shadePos = null;
             @Nullable
@@ -165,9 +164,8 @@ public class HDPowerViewJUnitTests {
                 @Nullable
                 ShadeData shadeZero = shadesData.get(0);
                 assertNotNull(shadeZero);
-                int shadeIdInt = shadeZero.id;
-                assertNotEquals(0, shadeIdInt);
-                shadeId = Integer.toString(shadeIdInt);
+                shadeId = shadeZero.id;
+                assertNotEquals(0, shadeId);
 
                 for (ShadeData shadexData : shadesData) {
                     String shadeName = shadexData.getName();
@@ -204,7 +202,7 @@ public class HDPowerViewJUnitTests {
             @Nullable
             Shade shade = null;
             try {
-                assertNotNull(shadeId);
+                assertNotEquals(0, shadeId);
                 shade = webTargets.refreshShade(shadeId);
                 assertNotNull(shade);
             } catch (ProcessingException | HubMaintenanceException e) {
@@ -213,7 +211,7 @@ public class HDPowerViewJUnitTests {
 
             // ==== move a specific shade ====
             try {
-                assertNotNull(shadeId);
+                assertNotEquals(0, shadeId);
                 assertNotNull(shade);
                 @Nullable
                 ShadeData shadeData = shade.shade;
