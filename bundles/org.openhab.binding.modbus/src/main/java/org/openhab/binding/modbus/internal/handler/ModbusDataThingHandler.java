@@ -73,8 +73,6 @@ import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusResponse;
-import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
@@ -98,7 +96,7 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback, ModbusWriteCallback {
+public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
 
@@ -226,7 +224,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
 
         logger.trace("Submitting write task {} to endpoint {}", request, comms.getEndpoint());
-        comms.submitOneTimeWrite(request, this, this::handleWriteError);
+        comms.submitOneTimeWrite(request, this::onWriteResponse, this::handleWriteError);
     }
 
     /**
@@ -329,7 +327,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         requests.stream().forEach(request -> {
             logger.trace("Submitting write request: {} to endpoint {} (based from transformation {})", request,
                     localComms.getEndpoint(), transformOutput);
-            localComms.submitOneTimeWrite(request, this, this::handleWriteError);
+            localComms.submitOneTimeWrite(request, this::onWriteResponse, this::handleWriteError);
         });
     }
 
@@ -666,15 +664,6 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
-    @Override
-    public synchronized void handle(AsyncModbusWriteResult result) {
-        if (result.getResponse() != null) {
-            ModbusResponse response = result.getResponse();
-            assert response != null;
-            onWriteResponse(result.getRequest(), response);
-        }
-    }
-
     public synchronized void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
         onError(failure.getRequest(), failure.getCause());
     }
@@ -810,13 +799,13 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         }
     }
 
-    private synchronized void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
+    public synchronized void onWriteResponse(AsyncModbusWriteResult result) {
         if (hasConfigurationError()) {
             return;
         } else if (!isWriteEnabled) {
             return;
         }
-        logger.debug("Successful write, matching request {}", request);
+        logger.debug("Successful write, matching request {}", result.getRequest());
         updateStatusIfChanged(ThingStatus.ONLINE);
         ChannelUID lastWriteSuccessUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_SUCCESS);
         if (isLinked(lastWriteSuccessUID)) {

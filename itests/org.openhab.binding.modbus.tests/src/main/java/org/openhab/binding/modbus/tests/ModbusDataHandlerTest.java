@@ -448,7 +448,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint("thisishost", 502);
 
         // Minimally mocked request
-        ModbusWriteRequestBlueprint request = Mockito.mock(ModbusWriteRequestBlueprint.class);
+        ModbusReadRequestBlueprint request = Mockito.mock(ModbusReadRequestBlueprint.class);
 
         PollTask task = Mockito.mock(PollTask.class);
         doReturn(endpoint).when(task).getEndpoint();
@@ -473,7 +473,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataHandler.handleCommand(new ChannelUID(dataHandler.getThing().getUID(), channel), command);
 
         if (error != null) {
-            dataHandler.handleWriteError(new AsyncModbusFailure<ModbusWriteRequestBlueprint>(request, error));
+            dataHandler.handleReadError(new AsyncModbusFailure<ModbusReadRequestBlueprint>(request, error));
         } else {
             ModbusResponse resp = new ModbusResponse() {
 
@@ -482,7 +482,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                     return successFC.getFunctionCode();
                 }
             };
-            dataHandler.handle(new AsyncModbusWriteResult(Mockito.mock(ModbusWriteRequestBlueprint.class), resp));
+            dataHandler
+                    .onWriteResponse(new AsyncModbusWriteResult(Mockito.mock(ModbusWriteRequestBlueprint.class), resp));
         }
         return dataHandler;
     }
