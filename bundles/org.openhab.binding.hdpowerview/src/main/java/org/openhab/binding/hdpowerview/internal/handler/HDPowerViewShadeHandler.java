@@ -190,6 +190,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
             int shadeId = getShadeId();
             webTargets.stopShade(shadeId);
+            requestRefreshShade();
         } catch (ProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
