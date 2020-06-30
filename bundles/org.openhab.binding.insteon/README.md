@@ -102,6 +102,7 @@ These have been tested and should work out of the box:
 | 2413U | PowerLinc 2413U USB modem | 0x000045 | Bernd Pfrommer |
 | 2843-222 | Wireless Open/Close Sensor | 0x000049 | Josenivaldo Benito |
 | 2842-222 | Motion Sensor | 0x00004A | Bernd Pfrommer |
+| 2844-222 | Motion Sensor II | F00.00.24 | Rob Nielsen |
 | 2486DWH8 | KeypadLinc Dimmer | 0x000051 | Chris Graham |
 | 2472D | OutletLincDimmer | 0x000068 | Chris Graham |
 | X10 switch | generic X10 switch | X00.00.01 | Bernd Pfrommer |
@@ -118,6 +119,7 @@ In order to determine which channels a device supports, you can look at the devi
 | acDelay | Number | AC Delay |
 | backlightDuration | Number | Back Light Duration |
 | batteryLevel | Number | Battery Level |
+| batteryPercent | Number:Dimensionless | Battery Percent |
 | batteryWatermarkLevel | Number | Battery Watermark Level |
 | beep | Switch | Beep |
 | bottomOutlet | Switch | Bottom Outlet |
@@ -179,7 +181,9 @@ In order to determine which channels a device supports, you can look at the devi
 | stage1Duration | Number | Stage 1 Duration |
 | switch | Switch | Switch |
 | systemMode | Number | System Mode |
+| tamperSwitch | Contact | Tamper Switch |
 | temperature | Number:Temperature | Temperature |
+| temperatureLevel | Number | Temperature Level |
 | topOutlet | Switch | Top Outlet |
 | update | Switch | Update |
 | watts | Number:Power | Watts |
@@ -388,12 +392,29 @@ Then create entries in the .items file like this:
 
 ```
     Contact motionSensor             "motion sensor [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact"}
-    Number  motionSensorBatteryLevel "motion sensor battery level [%.1f]"  { channel="insteon:device:home:AABBCC:batteryLevel" }
-    Number  motionSensorLightLevel   "motion sensor light level [%.1f]"    { channel="insteon:device:home:AABBCC:lightLevel" }
+    Number  motionSensorBatteryLevel "motion sensor battery level"         { channel="insteon:device:home:AABBCC:batteryLevel" }
+    Number  motionSensorLightLevel   "motion sensor light level"           { channel="insteon:device:home:AABBCC:lightLevel" }
 ```
 
 This will give you a contact, the battery level, and the light level.
-Note that battery and light level are only updated when either there is motion, or the sensor battery runs low.
+Note that battery and light level are only updated when either there is motion, light level above/below threshold, tamper switch activated, or the sensor battery runs low.
+
+The motion sensor II includes three additional channels:
+
+**Items**
+
+```
+    Number  motionSensorBatteryPercent     "motion sensor battery percent"                     { channel="insteon:device:home:AABBCC:batteryPercent" }
+    Contact motionSensorTamperSwitch       "motion sensor tamper switch [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:tamperSwitch"}
+    Number  motionSensorTemperatureLevel   "motion sensor temperature level"                   { channel="insteon:device:home:AABBCC:temperatureLevel" }
+```
+
+The temperature can be calculated in Fahrenheit using the following formulas:
+
+* If the device is battery powered: `temperature = 0.73 * motionSensorTemperatureLevel - 20.53`
+* If the device is USB powered: `temperature = 0.72 * motionSensorTemperatureLevel - 24.61`
+
+Since the motion sensor II might not be calibrated correctly, the values `20.53` and `24.61` can be adjusted as necessary to produce the correct temperature.
 
 ### Hidden Door Sensors
 
