@@ -42,6 +42,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 /**
@@ -74,7 +75,7 @@ public class HDPowerViewJUnitTests {
     }
 
     @Test
-    public void testCommunicationWithHub() {
+    public void testLiveCommunication() {
         /*
          * NOTE: in order to actually run these tests you must have a hub physically
          * available, and its IP address must be correctly configured in the
@@ -84,7 +85,7 @@ public class HDPowerViewJUnitTests {
 
         /*
          * NOTE: set allowShadeMovementCommands = true if you accept physically moving
-         * the shades
+         * the shades during these tests
          */
         boolean allowShadeMovementCommands = false;
 
@@ -144,53 +145,14 @@ public class HDPowerViewJUnitTests {
             @Nullable
             ShadePosition shadePos = null;
             @Nullable
-            Shades shades = null;
-
-            // test the JSON parsing for a duette top down bottom up shade
-            try {
-                @Nullable
-                ShadeData shadeData = null;
-                String json = loadJson("duette");
-                assertNotNull(json);
-                assertNotEquals("", json);
-
-                shades = webTargets.gson.fromJson(json, Shades.class);
-                assertNotNull(shades);
-                @Nullable
-                List<ShadeData> shadesData = shades.shadeData;
-                assertNotNull(shadesData);
-
-                assertEquals(1, shadesData.size());
-                shadeData = shadesData.get(0);
-                assertNotNull(shadeData);
-
-                assertEquals("Gardin 1", shadeData.getName());
-                assertEquals("63778", shadeData.id);
-
-                shadePos = shadeData.positions;
-                assertNotNull(shadePos);
-                assertEquals(REGULAR, shadePos.getPosKind());
-
-                pos = shadePos.getState(PRIMARY, REGULAR);
-                assertEquals(PercentType.class, pos.getClass());
-                assertEquals(59, ((PercentType) pos).intValue());
-
-                pos = shadePos.getState(SECONDARY, INVERTED);
-                assertEquals(PercentType.class, pos.getClass());
-                assertEquals(65, ((PercentType) pos).intValue());
-
-                pos = shadePos.getState(PRIMARY, VANE);
-                assertEquals(UnDefType.class, pos.getClass());
-            } catch (JsonParseException e) {
-                fail(e.getMessage());
-            }
+            Shades shadesX = null;
 
             // ==== get all shades ====
             try {
-                shades = webTargets.getShades();
-                assertNotNull(shades);
+                shadesX = webTargets.getShades();
+                assertNotNull(shadesX);
                 @Nullable
-                List<ShadeData> shadesData = shades.shadeData;
+                List<ShadeData> shadesData = shadesX.shadeData;
                 assertNotNull(shadesData);
                 assertTrue(shadesData.size() > 0);
                 @Nullable
@@ -203,8 +165,9 @@ public class HDPowerViewJUnitTests {
                 @Nullable
                 ShadeData shadeZero = shadesData.get(0);
                 assertNotNull(shadeZero);
-                shadeId = shadeZero.id;
-                assertNotNull(shadeId);
+                int shadeIdInt = shadeZero.id;
+                assertNotEquals(0, shadeIdInt);
+                shadeId = Integer.toString(shadeIdInt);
 
                 for (ShadeData shadexData : shadesData) {
                     String shadeName = shadexData.getName();
@@ -288,6 +251,77 @@ public class HDPowerViewJUnitTests {
                     fail(e.getMessage());
                 }
             }
+        }
+    }
+
+    @Test
+    public void testJsonParsing() {
+        final Gson gson = new Gson();
+
+        @Nullable
+        Shades shades;
+        // test generic JSON shades response
+        try {
+            @Nullable
+            String json = loadJson("shades");
+            assertNotNull(json);
+            assertNotEquals("", json);
+            shades = gson.fromJson(json, Shades.class);
+            assertNotNull(shades);
+        } catch (JsonParseException e) {
+            fail(e.getMessage());
+        }
+
+        // test generic JSON scenes response
+        try {
+            @Nullable
+            String json = loadJson("scenes");
+            assertNotNull(json);
+            assertNotEquals("", json);
+            @Nullable
+            Scenes scenes = gson.fromJson(json, Scenes.class);
+            assertNotNull(scenes);
+        } catch (JsonParseException e) {
+            fail(e.getMessage());
+        }
+
+        // test the JSON parsing for a duette top down bottom up shade
+        try {
+            @Nullable
+            ShadeData shadeData = null;
+            String json = loadJson("duette");
+            assertNotNull(json);
+            assertNotEquals("", json);
+
+            shades = gson.fromJson(json, Shades.class);
+            assertNotNull(shades);
+            @Nullable
+            List<ShadeData> shadesData = shades.shadeData;
+            assertNotNull(shadesData);
+
+            assertEquals(1, shadesData.size());
+            shadeData = shadesData.get(0);
+            assertNotNull(shadeData);
+
+            assertEquals("Gardin 1", shadeData.getName());
+            assertEquals(63778, shadeData.id);
+
+            ShadePosition shadePos = shadeData.positions;
+            assertNotNull(shadePos);
+            assertEquals(REGULAR, shadePos.getPosKind());
+
+            State pos = shadePos.getState(PRIMARY, REGULAR);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(59, ((PercentType) pos).intValue());
+
+            pos = shadePos.getState(SECONDARY, INVERTED);
+            assertEquals(PercentType.class, pos.getClass());
+            assertEquals(65, ((PercentType) pos).intValue());
+
+            pos = shadePos.getState(PRIMARY, VANE);
+            assertEquals(UnDefType.class, pos.getClass());
+        } catch (JsonParseException e) {
+            fail(e.getMessage());
         }
     }
 }
