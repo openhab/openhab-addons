@@ -87,8 +87,8 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        @Nullable
-        final DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE, DecimalType.class);
+        final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
+                DecimalType.class);
         return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
     }
 

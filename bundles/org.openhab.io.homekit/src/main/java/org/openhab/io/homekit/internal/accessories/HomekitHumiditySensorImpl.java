@@ -42,8 +42,7 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl impl
 
     @Override
     public CompletableFuture<Double> getCurrentRelativeHumidity() {
-        @Nullable
-        DecimalType state = getStateAs(HomekitCharacteristicType.RELATIVE_HUMIDITY, DecimalType.class);
+        final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.RELATIVE_HUMIDITY, DecimalType.class);
         if (state != null) {
             BigDecimal multiplicator = getAccessoryConfiguration(CONFIG_MULTIPLICATOR, BigDecimal.valueOf(1.0));
             return CompletableFuture.completedFuture((state.toBigDecimal().multiply(multiplicator)).doubleValue());

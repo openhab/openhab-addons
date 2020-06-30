@@ -93,13 +93,13 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         int revision;
         try {
             revision = Integer.parseInt(storage.get(REVISION_CONFIG));
-        } catch (java.lang.NumberFormatException e) {
+        } catch (NumberFormatException e) {
             revision = 1;
             storage.put(REVISION_CONFIG, "" + revision);
         }
         try {
             lastAccessoryCount = Integer.parseInt(storage.get(ACCESSORY_COUNT));
-        } catch (java.lang.NumberFormatException e) {
+        } catch (NumberFormatException e) {
             lastAccessoryCount = 0;
             storage.put(ACCESSORY_COUNT, "" + accessoryRegistry.getAllAccessories().size());
         }

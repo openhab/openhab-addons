@@ -34,6 +34,10 @@ import io.github.hapjava.server.impl.HomekitServer;
  */
 public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private final Logger logger = LoggerFactory.getLogger(HomekitAuthInfoImpl.class);
+    private static final String STORAGE_MAC = "mac";
+    private static final String STORAGE_SALT = "salt";
+    private static final String STORAGE_PRIVATE_KEY = "privateKey";
+    private static final String STORAGE_USER_PREFIX = "user_";
 
     private final Storage<String> storage;
     private String mac;
@@ -106,36 +110,33 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     private String createUserKey(final String username) {
-        return "user_" + username;
+        return STORAGE_USER_PREFIX + username;
     }
 
     private boolean isUserKey(final String key) {
-        return key.startsWith("user_");
+        return key.startsWith(STORAGE_USER_PREFIX);
     }
 
     private void initializeStorage() throws InvalidAlgorithmParameterException {
-        mac = storage.get("mac");
-        @Nullable
-        Object saltConfig = storage.get("salt");
-        @Nullable
-        Object privateKeyConfig = storage.get("privateKey");
-
+        mac = storage.get(STORAGE_MAC);
+        final @Nullable Object saltConfig = storage.get(STORAGE_SALT);
+        final @Nullable Object privateKeyConfig = storage.get(STORAGE_PRIVATE_KEY);
         if (mac == null) {
             logger.warn(
                     "Could not find existing MAC in {}. Generating new MAC. This will require re-pairing of iOS devices.",
                     storage.getClass().getName());
             mac = HomekitServer.generateMac();
-            storage.put("mac", mac);
+            storage.put(STORAGE_MAC, mac);
         }
         if (saltConfig == null) {
             salt = HomekitServer.generateSalt();
-            storage.put("salt", salt.toString());
+            storage.put(STORAGE_SALT, salt.toString());
         } else {
             salt = new BigInteger(saltConfig.toString());
         }
         if (privateKeyConfig == null) {
             privateKey = HomekitServer.generateKey();
-            storage.put("privateKey", Base64.getEncoder().encodeToString(privateKey));
+            storage.put(STORAGE_PRIVATE_KEY, Base64.getEncoder().encodeToString(privateKey));
         } else {
             privateKey = Base64.getDecoder().decode(privateKeyConfig.toString());
         }

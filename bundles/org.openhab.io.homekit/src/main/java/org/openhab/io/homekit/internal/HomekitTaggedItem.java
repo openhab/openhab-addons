@@ -188,7 +188,6 @@ public class HomekitTaggedItem {
      * @param <T> expected class
      * @return value
      */
-    @SuppressWarnings("unchecked")
     public <T> T getConfiguration(String key, T defaultValue) {
         if (configuration != null) {
             final @Nullable Object value = configuration.get(key);
@@ -213,16 +212,13 @@ public class HomekitTaggedItem {
     /**
      * parse and apply item configuration.
      */
-    @SuppressWarnings("null")
     private void parseConfiguration() {
         if (configuration != null) {
-            @Nullable
-            Object dimmerModeConfig = configuration.get(DIMMER_MODE);
+            final @Nullable Object dimmerModeConfig = configuration.get(DIMMER_MODE);
             if (dimmerModeConfig instanceof String) {
                 HomekitDimmerMode.valueOfTag((String) dimmerModeConfig).ifPresent(proxyItem::setDimmerMode);
             }
-            @Nullable
-            Object delayConfig = configuration.get(DELAY);
+            final @Nullable Object delayConfig = configuration.get(DELAY);
             if (delayConfig instanceof Number) {
                 proxyItem.setDelay(((Number) delayConfig).intValue());
             }

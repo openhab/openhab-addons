@@ -17,11 +17,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
-import org.jetbrains.annotations.NotNull;
 import org.openhab.io.homekit.Homekit;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,8 +44,8 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String LEGACY_SUBCMD_PRINT_ACCESSORY = "printAccessory";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
-    @Nullable
-    private Homekit homekit;
+
+    private @NonNullByDefault({}) Homekit homekit;
 
     public HomekitCommandExtension() {
         super("homekit", "Interact with the HomeKit integration.");
@@ -101,7 +99,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     @Override
-    public @NotNull List<String> getUsages() {
+    public List<String> getUsages() {
         return Arrays.asList(buildCommandUsage(SUBCMD_LIST_ACCESSORIES, "list all HomeKit accessories"),
                 buildCommandUsage(SUBCMD_PRINT_ACCESSORY + " <accessory id | accessory name>",
                         "print additional details of the accessories which partially match provided ID or name."),
@@ -115,19 +113,16 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         this.homekit = homekit;
     }
 
-    @SuppressWarnings("null")
     private void clearHomekitPairings(Console console) {
         homekit.clearHomekitPairings();
         console.println("Cleared HomeKit pairings");
     }
 
-    @SuppressWarnings("null")
     private void allowUnauthenticatedHomekitRequests(boolean allow, Console console) {
         homekit.allowUnauthenticatedRequests(allow);
         console.println((allow ? "Enabled " : "Disabled ") + "unauthenticated HomeKit access");
     }
 
-    @SuppressWarnings("null")
     private void listAccessories(Console console) {
         homekit.getAccessories().forEach(v -> {
             try {
@@ -138,7 +133,6 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         });
     }
 
-    @SuppressWarnings("null")
     private void printAccessory(String id, Console console) {
         homekit.getAccessories().forEach(v -> {
             try {

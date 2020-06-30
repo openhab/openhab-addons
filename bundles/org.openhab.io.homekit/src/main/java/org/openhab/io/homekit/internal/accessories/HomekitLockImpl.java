@@ -64,8 +64,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
 
     @Override
     public CompletableFuture<LockTargetStateEnum> getLockTargetState() {
-        @Nullable
-        OnOffType state = getStateAs(HomekitCharacteristicType.LOCK_TARGET_STATE, OnOffType.class);
+        final @Nullable OnOffType state = getStateAs(HomekitCharacteristicType.LOCK_TARGET_STATE, OnOffType.class);
         if (state != null) {
             return CompletableFuture.completedFuture(
                     state == OnOffType.ON ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);

@@ -54,7 +54,7 @@ public class BooleanItemReader {
         }
     }
 
-    Boolean getValue() {
+    boolean getValue() {
         final State state = item.getState();
         if (state instanceof OnOffType) {
             return state.equals(trueOnOffValue);

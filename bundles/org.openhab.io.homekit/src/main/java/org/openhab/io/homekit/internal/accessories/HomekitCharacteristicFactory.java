@@ -235,8 +235,7 @@ public class HomekitCharacteristicFactory {
 
     private static Supplier<CompletableFuture<Double>> getDoubleSupplier(final HomekitTaggedItem taggedItem) {
         return () -> {
-            @Nullable
-            final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
             return CompletableFuture.completedFuture(value != null ? value.doubleValue() : 0.0);
         };
     }
@@ -448,8 +447,7 @@ public class HomekitCharacteristicFactory {
     private static CurrentFanStateCharacteristic createCurrentFanStateCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new CurrentFanStateCharacteristic(() -> {
-            @Nullable
-            final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
             @Nullable
             CurrentFanStateEnum currentFanStateEnum = value != null ? CurrentFanStateEnum.fromCode(value.intValue())
                     : null;
@@ -464,8 +462,7 @@ public class HomekitCharacteristicFactory {
     private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new TargetFanStateCharacteristic(() -> {
-            @Nullable
-            final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
             @Nullable
             TargetFanStateEnum targetFanStateEnum = value != null ? TargetFanStateEnum.fromCode(value.intValue())
                     : null;

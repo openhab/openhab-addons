@@ -58,6 +58,7 @@ import io.github.hapjava.server.impl.HomekitServer;
 @NonNullByDefault
 public class HomekitImpl implements Homekit {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
+    private static final String STORAGE_KEY = "homekit";
     private final NetworkAddressService networkAddressService;
     private final HomekitChangeListener changeListener;
 
@@ -77,7 +78,7 @@ public class HomekitImpl implements Homekit {
         this.networkAddressService = networkAddressService;
         this.settings = processConfig(config);
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
-        authInfo = new HomekitAuthInfoImpl(storageService.getStorage("homekit"), settings.pin);
+        authInfo = new HomekitAuthInfoImpl(storageService.getStorage(STORAGE_KEY), settings.pin);
         startHomekitServer();
     }
 
@@ -111,8 +112,7 @@ public class HomekitImpl implements Homekit {
     }
 
     private void stopBridge() {
-        @Nullable
-        final HomekitRoot bridge = this.bridge;
+        final @Nullable HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             changeListener.unsetBridge();
             bridge.stop();
@@ -121,8 +121,7 @@ public class HomekitImpl implements Homekit {
     }
 
     private void startBridge() throws IOException {
-        @Nullable
-        final HomekitServer homekitServer = this.homekitServer;
+        final @Nullable HomekitServer homekitServer = this.homekitServer;
         if (homekitServer != null && bridge == null) {
             final HomekitRoot bridge = homekitServer.createBridge(authInfo, settings.name, HomekitSettings.MANUFACTURER,
                     HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
@@ -165,8 +164,7 @@ public class HomekitImpl implements Homekit {
     }
 
     private void stopHomekitServer() {
-        @Nullable
-        final HomekitServer homekit = this.homekitServer;
+        final @Nullable HomekitServer homekit = this.homekitServer;
         if (homekit != null) {
             if (bridge != null) {
                 stopBridge();
@@ -185,8 +183,7 @@ public class HomekitImpl implements Homekit {
 
     @Override
     public void refreshAuthInfo() throws IOException {
-        @Nullable
-        final HomekitRoot bridge = this.bridge;
+        final @Nullable HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.refreshAuthInfo();
         }
@@ -194,8 +191,7 @@ public class HomekitImpl implements Homekit {
 
     @Override
     public void allowUnauthenticatedRequests(boolean allow) {
-        @Nullable
-        final HomekitRoot bridge = this.bridge;
+        final @Nullable HomekitRoot bridge = this.bridge;
         if (bridge != null) {
             bridge.allowUnauthenticatedRequests(allow);
         }

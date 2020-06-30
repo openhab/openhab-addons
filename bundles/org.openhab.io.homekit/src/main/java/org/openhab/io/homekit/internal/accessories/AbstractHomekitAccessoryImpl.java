@@ -183,7 +183,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param <T> expected type
      * @return configuration value
      */
-    protected <T> T getAccessoryConfiguration(@NonNull String key, @NonNull T defaultValue) {
+    protected <T> T getAccessoryConfiguration(final @NonNull String key, final @NonNull T defaultValue) {
         return accessory.getConfiguration(key, defaultValue);
     }
 
@@ -198,8 +198,8 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param <T> expected type
      * @return configuration value
      */
-    protected <T> T getAccessoryConfiguration(@NonNull HomekitCharacteristicType characteristicType,
-            @NonNull String key, @NonNull T defaultValue) {
+    protected <T> T getAccessoryConfiguration(final @NonNull HomekitCharacteristicType characteristicType,
+            final @NonNull String key, final @NonNull T defaultValue) {
         return getCharacteristic(characteristicType)
                 .map(homekitTaggedItem -> homekitTaggedItem.getConfiguration(key, defaultValue)).orElse(defaultValue);
     }
@@ -255,7 +255,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return defaultValue;
     }
 
-    protected void addCharacteristic(@NonNull final HomekitTaggedItem characteristic) {
+    protected void addCharacteristic(final @NonNull HomekitTaggedItem characteristic) {
         characteristics.add(characteristic);
     }
 
@@ -276,8 +276,8 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     protected @NonNull BooleanItemReader createBooleanReader(
-            @NonNull final HomekitCharacteristicType characteristicType, @NonNull final OnOffType trueOnOffValue,
-            @NonNull final OpenClosedType trueOpenClosedValue) throws IncompleteAccessoryException {
+            final @NonNull HomekitCharacteristicType characteristicType, @NonNull final OnOffType trueOnOffValue,
+            final @NonNull OpenClosedType trueOpenClosedValue) throws IncompleteAccessoryException {
         return new BooleanItemReader(
                 getItem(characteristicType, GenericItem.class)
                         .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),
