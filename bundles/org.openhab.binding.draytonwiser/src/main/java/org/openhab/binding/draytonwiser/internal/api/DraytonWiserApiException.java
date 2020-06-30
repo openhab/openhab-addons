@@ -25,4 +25,8 @@ public class DraytonWiserApiException extends RuntimeException {
     public DraytonWiserApiException(final String message) {
         super(message);
     }
+
+    public DraytonWiserApiException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

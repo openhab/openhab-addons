@@ -206,17 +206,17 @@ public class DraytonWiserApi {
             failCount++;
             if (failCount > 2) {
                 logger.debug("Heathub didn't repond in time: {}", e.getMessage(), e);
-                throw new DraytonWiserApiException("Heathub didn't repond in time");
+                throw new DraytonWiserApiException("Heathub didn't repond in time", e);
             }
         } catch (final InterruptedException e) {
             logger.debug("Interrupted: {}", e.getMessage(), e);
             Thread.currentThread().interrupt();
         } catch (final ExecutionException e) {
             logger.debug("Execution interrupted: {}", e.getMessage(), e);
-            throw new DraytonWiserApiException(e.getMessage());
+            throw new DraytonWiserApiException(e.getMessage(), e);
         } catch (final RuntimeException e) {
             logger.debug("Unexpected error: {}", e.getMessage(), e);
-            throw new DraytonWiserApiException(e.getMessage());
+            throw new DraytonWiserApiException(e.getMessage(), e);
         }
         return null;
     }
