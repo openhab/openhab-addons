@@ -14,8 +14,8 @@ package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
 
@@ -778,7 +778,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 builder -> builder.withConfiguration(dataConfig), bundleContext);
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(comms, never()).submitOneTimePoll(request, notNull(), notNull());
+        verify(comms, never()).submitOneTimePoll(eq(request), notNull(), notNull());
         // Reset initial REFRESH commands to data thing channels from the Core
         reset(poller.getHandler());
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);

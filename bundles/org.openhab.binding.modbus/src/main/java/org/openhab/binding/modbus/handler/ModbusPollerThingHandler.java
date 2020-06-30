@@ -66,16 +66,15 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     private class ReadCallbackDelegator
             implements ModbusReadCallback, ModbusFailureCallback<ModbusReadRequestBlueprint> {
 
-        private volatile @Nullable AtomicStampedValue<AsyncModbusReadResult> lastResult;
+        private volatile @Nullable AtomicStampedValue<PollResult> lastResult;
 
-        @Override
-        public synchronized void handle(AsyncModbusReadResult result) {
+        public synchronized void handleResult(PollResult result) {
             // Ignore all incoming data and errors if configuration is not correct
             if (hasConfigurationError() || disposed) {
                 return;
             }
             if (config.getCacheMillis() >= 0) {
-                AtomicStampedValue<AsyncModbusReadResult> localLastResult = this.lastResult;
+                AtomicStampedValue<PollResult> localLastResult = this.lastResult;
                 if (localLastResult == null) {
                     this.lastResult = new AtomicStampedValue<>(System.currentTimeMillis(), result);
                 } else {
@@ -84,16 +83,25 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                 }
             }
             logger.debug("Thing {} received response {}", thing.getUID(), result);
-            childCallbacks.forEach(handler -> handler.onReadResult(result));
-            resetCommunicationError();
+            notifyChildren(result);
+            if (result.failure != null) {
+                Exception error = result.failure.getCause();
+                assert error != null;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
+            } else {
+                resetCommunicationError();
+            }
+        }
+
+        @Override
+        public synchronized void handle(AsyncModbusReadResult result) {
+            handleResult(new PollResult(result));
         }
 
         @Override
         public synchronized void handle(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
-            Exception error = failure.getCause();
-            assert error != null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
+            handleResult(new PollResult(failure));
         }
 
         private void resetCommunicationError() {
@@ -115,9 +123,23 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             return Optional.ofNullable(this.lastResult).map(result -> result.copyIfStampAfter(oldestStamp))
                     .map(result -> {
                         logger.debug("Thing {} reusing cached data: {}", thing.getUID(), result.getValue());
-                        childCallbacks.forEach(handler -> handler.onReadResult(result.getValue()));
+                        notifyChildren(result.getValue());
                         return true;
                     }).orElse(false);
+        }
+
+        private void notifyChildren(PollResult pollResult) {
+            @Nullable
+            AsyncModbusReadResult result = pollResult.result;
+            @Nullable
+            AsyncModbusFailure<ModbusReadRequestBlueprint> failure = pollResult.failure;
+            childCallbacks.forEach(handler -> {
+                if (result != null) {
+                    handler.onReadResult(result);
+                } else if (failure != null) {
+                    handler.handleReadError(failure);
+                }
+            });
         }
 
         /**
@@ -152,6 +174,26 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                 ModbusEndpointThingHandler slaveEndpointThingHandler) throws EndpointNotInitializedException {
             super(slaveEndpointThingHandler.getSlaveId(), getFunctionCode(config.getType()), config.getStart(),
                     config.getLength(), config.getMaxTries());
+        }
+    }
+
+    /**
+     * Immutable data object to cache the results of a poll request
+     */
+    private class PollResult {
+        @Nullable
+        public final AsyncModbusReadResult result;
+        @Nullable
+        public final AsyncModbusFailure<ModbusReadRequestBlueprint> failure;
+
+        PollResult(AsyncModbusReadResult result) {
+            this.result = result;
+            this.failure = null;
+        }
+
+        PollResult(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+            this.result = null;
+            this.failure = failure;
         }
     }
 
