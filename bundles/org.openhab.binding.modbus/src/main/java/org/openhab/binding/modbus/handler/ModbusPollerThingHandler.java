@@ -84,7 +84,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                 }
             }
             logger.debug("Thing {} received response {}", thing.getUID(), result);
-            childCallbacks.forEach(handler -> handler.handle(result));
+            childCallbacks.forEach(handler -> handler.onReadResult(result));
             resetCommunicationError();
         }
 
@@ -115,7 +115,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             return Optional.ofNullable(this.lastResult).map(result -> result.copyIfStampAfter(oldestStamp))
                     .map(result -> {
                         logger.debug("Thing {} reusing cached data: {}", thing.getUID(), result.getValue());
-                        childCallbacks.forEach(handler -> handler.handle(result.getValue()));
+                        childCallbacks.forEach(handler -> handler.onReadResult(result.getValue()));
                         return true;
                     }).orElse(false);
         }
@@ -163,7 +163,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     private volatile @Nullable PollTask pollTask;
     private volatile @Nullable ModbusReadRequestBlueprint request;
     private volatile boolean disposed;
-    private volatile List<ModbusReadCallback> childCallbacks = new CopyOnWriteArrayList<>();
+    private volatile List<ModbusDataThingHandler> childCallbacks = new CopyOnWriteArrayList<>();
     @NonNullByDefault({})
     private ModbusCommunicationInterface comms;
 
@@ -320,15 +320,15 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof ModbusReadCallback) {
-            this.childCallbacks.add((ModbusReadCallback) childHandler);
+        if (childHandler instanceof ModbusDataThingHandler) {
+            this.childCallbacks.add((ModbusDataThingHandler) childHandler);
         }
     }
 
     @SuppressWarnings("unlikely-arg-type")
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof ModbusReadCallback) {
+        if (childHandler instanceof ModbusDataThingHandler) {
             this.childCallbacks.remove(childHandler);
         }
     }

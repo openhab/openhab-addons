@@ -424,12 +424,12 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             assertNull(registers);
             assertNull(error);
             AsyncModbusReadResult result = new AsyncModbusReadResult(request, bits);
-            dataHandler.handle(result);
+            dataHandler.onReadResult(result);
         } else if (registers != null) {
             assertNull(bits);
             assertNull(error);
             AsyncModbusReadResult result = new AsyncModbusReadResult(request, registers);
-            dataHandler.handle(result);
+            dataHandler.onReadResult(result);
         } else {
             assertNull(bits);
             assertNull(registers);

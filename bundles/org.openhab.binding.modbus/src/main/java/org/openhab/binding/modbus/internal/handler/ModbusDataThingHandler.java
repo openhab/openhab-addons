@@ -69,7 +69,6 @@ import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
@@ -96,7 +95,7 @@ import org.slf4j.LoggerFactory;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class ModbusDataThingHandler extends BaseThingHandler implements ModbusReadCallback {
+public class ModbusDataThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
 
@@ -651,8 +650,7 @@ public class ModbusDataThingHandler extends BaseThingHandler implements ModbusRe
         });
     }
 
-    @Override
-    public synchronized void handle(AsyncModbusReadResult result) {
+    public synchronized void onReadResult(AsyncModbusReadResult result) {
         if (result.getRegisters() != null) {
             ModbusRegisterArray registers = result.getRegisters();
             assert registers != null;
