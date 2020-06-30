@@ -108,26 +108,31 @@ Depending on whether the shade is a top-down, bottom-up, left-right, right-left,
 | Dual action (upper rail) | ***`secondary`*** | `UP`                          | ***`CLOSED`***    | 0%      |
 |                          |                   | `DOWN`                        | ***`OPEN`***      | 100%    |
 
-### Inter-dependency between `position` and `vane` Channels
+### Interdependency between Channel positions
 
-There is a bi-directional interdependency between the value of `vane` and the value of `position`.
+On some shades certain combinations of positions of the shade actuators are physically not possible.
 
-Table A: shows how the value of `vane` depends on the value of `position`..
+On single action shades with movable vanes, the vanes cannot be moved unless the shade is down.
+So there is an interdependency between the value of `vane` and the value of `position`, as shown in Table A.
 
-| State of `position` | State of `vane`     |
-|---------------------|---------------------|
-| 0% = `UP`           | `UNDEFINED`         |
-| 50%                 | `UNDEFINED`         |
-| 100% = `DOWN`       | _see table B below_ |
+| Table A - Case             | State of `position` | State of `vane` |
+|----------------------------|---------------------|-----------------|
+| Shade up                   | 0% = `UP`           | `UNDEFINED`     |
+| Shade 50% down             | 50%                 | `UNDEFINED`     |
+| Shade 100% down, Vane 0%   | 100% = `DOWN`       | 0%              |
+| Shade 100% down, Vane 50%  | 100% = `DOWN`       | 50%             |
+| Shade 100% down, Vane 100% | 100% = `DOWN`       | 100%            |
 
-Table B: shows how the value of `position` depends on the value of `vane`..
+Similarly, on dual action shades, the top rail cannot be moved unless the bottom rail is down.
+So there is an interdependency between the value of `secondary` and the value of `position`, as shown in Table B.
 
-| State of `vane`     | State of `position` |
-|---------------------|---------------------|
-| `UNDEFINED`         | _see table A above_ |
-| 0%                  | 100% `DOWN`         |
-| 50%                 | 100% `DOWN`         |
-| 100%                | 100% `DOWN`         |
+| Table B - Case                      | State of `position` | State of `secondary` |
+|-------------------------------------|---------------------|----------------------|
+| Both rails up                       | 0% = `UP`           | 0% = `UP`            |
+| Bottom rail 50% down, Top rail up   | 50%                 | 0% = `UP`            |
+| Bottom rail down, Top rail up       | 100% = `DOWN`       | 0% = `UP`            |
+| Bottom rail down, Top rail 50% down | 100% = `DOWN`       | 50%                  |
+| Both rails down                     | 100% = `DOWN`       | 100% = `DOWN`        |
 
 ## Refreshing the PowerView Hub Cache
 
