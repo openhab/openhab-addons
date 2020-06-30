@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Scenes {
 
     public @Nullable List<Scene> sceneData;
-    public @Nullable List<String> sceneIds;
+    public @Nullable List<Integer> sceneIds;
 
     /*
      * the following SuppressWarnings annotation is because the Eclipse compiler
