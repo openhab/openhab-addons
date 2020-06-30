@@ -164,9 +164,10 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     }
 
     private State getBoostRemainingState() {
-        if (getData().getOverrideTimeoutUnixTime() != null && !"NONE".equalsIgnoreCase(getData().getOverrideType())) {
+        final Integer overrideTimeout = getData().getOverrideTimeoutUnixTime();
+        if (overrideTimeout != null && !"NONE".equalsIgnoreCase(getData().getOverrideType())) {
             return new DecimalType(
-                    (getData().getOverrideTimeoutUnixTime() - (System.currentTimeMillis() / 1000L)) / 60);
+                    (overrideTimeout - (System.currentTimeMillis() / 1000L)) / 60);
         }
         return DecimalType.ZERO;
     }

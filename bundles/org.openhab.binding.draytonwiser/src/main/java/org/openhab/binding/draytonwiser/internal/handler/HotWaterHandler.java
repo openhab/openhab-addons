@@ -77,18 +77,21 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     }
 
     private State getHotWaterDemandState() {
-        return OnOffType.from(getData().hotWater.size() >= 1
-                && "ON".equalsIgnoreCase(getData().hotWater.get(0).getHotWaterRelayState()));
+        final List<HotWaterDTO> hotWater = getData().hotWater;
+        return OnOffType.from(hotWater.size() >= 1
+                && "ON".equalsIgnoreCase(hotWater.get(0).getHotWaterRelayState()));
     }
 
     private State getManualModeState() {
+        final List<HotWaterDTO> hotWater = getData().hotWater;
         return OnOffType
-                .from(getData().hotWater.size() >= 1 && "MANUAL".equalsIgnoreCase(getData().hotWater.get(0).getMode()));
+                .from(hotWater.size() >= 1 && "MANUAL".equalsIgnoreCase(hotWater.get(0).getMode()));
     }
 
     private State getSetPointState() {
-        return OnOffType.from(getData().hotWater.size() >= 1
-                && "ON".equalsIgnoreCase(getData().hotWater.get(0).getWaterHeatingState()));
+        final List<HotWaterDTO> hotWater = getData().hotWater;
+        return OnOffType.from(hotWater.size() >= 1
+                && "ON".equalsIgnoreCase(hotWater.get(0).getWaterHeatingState()));
     }
 
     private void setManualMode(final boolean manualMode) {
