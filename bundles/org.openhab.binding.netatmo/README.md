@@ -503,10 +503,9 @@ All these channels are read only.
 ### Welcome and Presence Camera
 
 Warnings:
-- The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding.
-So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
-- Some features like the video surveillance are accessed via the local network, so it may be helpful to set a static IP address
-for the camera within your local network.
+
+- The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+- Some features like the video surveillance are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
 
 **Supported channels for the Welcome Camera thing:**
 
@@ -523,9 +522,8 @@ for the camera within your local network.
 **Supported channels for the Presence Camera thing:**
 
 Warnings:
-- The floodlight auto-mode (cameraFloodlightAutoMode) isn't updated it is changed by another application. Therefore the
-binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight
-switch off behaviour.
+
+- The floodlight auto-mode (cameraFloodlightAutoMode) isn't updated it is changed by another application. Therefore the binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight switch off behaviour.
 
 | Channel ID                  | Item Type | Read/Write | Description                                                  |
 |-----------------------------|-----------|------------|--------------------------------------------------------------|

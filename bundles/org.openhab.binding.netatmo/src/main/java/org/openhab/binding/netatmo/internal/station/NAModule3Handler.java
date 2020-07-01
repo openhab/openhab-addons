@@ -67,20 +67,17 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NAStationModule stationModule = module;
-        if (stationModule != null) {
-            NADashboardData dashboardData = stationModule.getDashboardData();
-            if (dashboardData != null) {
-                switch (channelId) {
-                    case CHANNEL_RAIN:
-                        return toQuantityType(dashboardData.getRain(), API_RAIN_UNIT);
-                    case CHANNEL_SUM_RAIN1:
-                        return toQuantityType(dashboardData.getSumRain1(), API_RAIN_UNIT);
-                    case CHANNEL_SUM_RAIN24:
-                        return toQuantityType(dashboardData.getSumRain24(), API_RAIN_UNIT);
-                    case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
-                }
+        NADashboardData dashboardData = getModule().map(m -> m.getDashboardData()).orElse(null);
+        if (dashboardData != null) {
+            switch (channelId) {
+                case CHANNEL_RAIN:
+                    return toQuantityType(dashboardData.getRain(), API_RAIN_UNIT);
+                case CHANNEL_SUM_RAIN1:
+                    return toQuantityType(dashboardData.getSumRain1(), API_RAIN_UNIT);
+                case CHANNEL_SUM_RAIN24:
+                    return toQuantityType(dashboardData.getSumRain24(), API_RAIN_UNIT);
+                case CHANNEL_TIMEUTC:
+                    return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
             }
         }
 

@@ -16,8 +16,9 @@ import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -27,7 +28,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.api.WelcomeApi;
@@ -42,25 +42,20 @@ import io.swagger.client.model.NAWelcomePerson;
  * @author Ing. Peter Weiss - Initial contribution
  *
  */
+@NonNullByDefault
 public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson> {
-    private String avatarURL;
-    private NAWelcomeEvent lastEvent;
+    private @Nullable String avatarURL;
+    private @Nullable NAWelcomeEvent lastEvent;
 
-    public NAWelcomePersonHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public NAWelcomePersonHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
-    }
-
-    private @Nullable WelcomeApi getWelcomeApi() {
-        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
-        return bridgeHandler == null ? null : bridgeHandler.getWelcomeApi();
     }
 
     @Override
     public void updateChannels(Object module) {
         if (isRefreshRequired()) {
-            WelcomeApi welcomeApi = getWelcomeApi();
-            if (welcomeApi != null) {
-                NAWelcomeEventResponse eventResponse = welcomeApi.getlasteventof(getParentId(), getId(), 10);
+            getApi().ifPresent(api -> {
+                NAWelcomeEventResponse eventResponse = api.getlasteventof(getParentId(), getId(), 10);
 
                 // Search the last event for this person
                 List<NAWelcomeEvent> rawEventList = eventResponse.getBody().getEventsList();
@@ -70,7 +65,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
                         lastEvent = event;
                     }
                 });
-            }
+            });
 
             setRefreshRequired(false);
         }
@@ -78,24 +73,26 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
-        NAWelcomePerson module = this.module;
+    protected State getNAThingProperty(String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_PERSON_LASTSEEN:
-                return module != null ? toDateTimeType(module.getLastSeen(), timeZoneProvider.getTimeZone())
-                        : UnDefType.UNDEF;
+                return getModule().map(m -> toDateTimeType(m.getLastSeen(), timeZoneProvider.getTimeZone()))
+                        .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_PERSON_ATHOME:
-                return module != null ? module.getOutOfSight() ? OnOffType.OFF : OnOffType.ON : UnDefType.UNDEF;
+                return getModule()
+                        .map(m -> m.getOutOfSight() != null ? toOnOffType(!m.getOutOfSight()) : UnDefType.UNDEF)
+                        .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_PERSON_AVATAR_URL:
                 return toStringType(getAvatarURL());
             case CHANNEL_WELCOME_PERSON_AVATAR:
                 return getAvatarURL() != null ? HttpUtil.downloadImage(getAvatarURL()) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTMESSAGE:
-                return (lastEvent != null && lastEvent.getMessage() != null)
-                        ? toStringType(lastEvent.getMessage().replace("<b>", "").replace("</b>", ""))
+                return (getLastEvent().isPresent() && getLastEvent().get().getMessage() != null)
+                        ? toStringType(getLastEvent().get().getMessage().replace("<b>", "").replace("</b>", ""))
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTTIME:
-                return lastEvent != null ? toDateTimeType(lastEvent.getTime(), timeZoneProvider.getTimeZone())
+                return getLastEvent().isPresent()
+                        ? toDateTimeType(getLastEvent().get().getTime(), timeZoneProvider.getTimeZone())
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTEVENT:
                 return getLastEventURL() != null ? HttpUtil.downloadImage(getLastEventURL()) : UnDefType.UNDEF;
@@ -105,21 +102,20 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
         return super.getNAThingProperty(channelId);
     }
 
-    private String getLastEventURL() {
-        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null && lastEvent != null && lastEvent.getSnapshot() != null) {
-            return bridgeHandler.getPictureUrl(lastEvent.getSnapshot().getId(), lastEvent.getSnapshot().getKey());
+    private @Nullable String getLastEventURL() {
+        if (getBridgeHandler().isPresent() && getLastEvent().isPresent()
+                && getLastEvent().get().getSnapshot() != null) {
+            return getBridgeHandler().get().getPictureUrl(getLastEvent().get().getSnapshot().getId(),
+                    getLastEvent().get().getSnapshot().getKey());
         }
         return null;
     }
 
-    private String getAvatarURL() {
-        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
-        NAWelcomePerson module = this.module;
-        if (bridgeHandler != null && avatarURL == null && module != null) {
-            NAWelcomeFace face = module.getFace();
+    private @Nullable String getAvatarURL() {
+        if (getBridgeHandler().isPresent() && avatarURL == null && getModule().isPresent()) {
+            NAWelcomeFace face = getModule().get().getFace();
             if (face != null) {
-                avatarURL = bridgeHandler.getPictureUrl(face.getId(), face.getKey());
+                avatarURL = getBridgeHandler().get().getPictureUrl(face.getId(), face.getKey());
             }
         }
         return avatarURL;
@@ -128,15 +124,24 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        WelcomeApi welcomeApi = getWelcomeApi();
-        if (welcomeApi != null && (command instanceof OnOffType)
-                && (CHANNEL_WELCOME_PERSON_ATHOME.equalsIgnoreCase(channelUID.getId()))) {
-            if ((OnOffType) command == OnOffType.OFF) {
-                welcomeApi.setpersonsaway(getParentId(), getId());
-            } else {
-                welcomeApi.setpersonshome(getParentId(), "[\"" + getId() + "\"]");
-            }
-            invalidateParentCacheAndRefresh();
+        if ((command instanceof OnOffType) && (CHANNEL_WELCOME_PERSON_ATHOME.equalsIgnoreCase(channelUID.getId()))) {
+            getApi().ifPresent(api -> {
+                if ((OnOffType) command == OnOffType.OFF) {
+                    api.setpersonsaway(getParentId(), getId());
+                } else {
+                    api.setpersonshome(getParentId(), "[\"" + getId() + "\"]");
+                }
+                invalidateParentCacheAndRefresh();
+            });
         }
+    }
+
+    private Optional<WelcomeApi> getApi() {
+        return getBridgeHandler().flatMap(handler -> handler.getWelcomeApi());
+    }
+
+    private Optional<NAWelcomeEvent> getLastEvent() {
+        NAWelcomeEvent evt = lastEvent;
+        return evt != null ? Optional.of(evt) : Optional.empty();
     }
 }
