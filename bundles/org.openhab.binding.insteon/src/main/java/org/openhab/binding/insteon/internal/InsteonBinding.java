@@ -248,6 +248,7 @@ public class InsteonBinding {
         DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
         InsteonDevice dev = InsteonDevice.makeDevice(dt);
         dev.setAddress(addr);
+        dev.setProductKey(productKey);
         dev.setDriver(driver);
         if (!dev.hasValidPollingInterval()) {
             dev.setPollInterval(devicePollIntervalMilliseconds);

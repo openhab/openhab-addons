@@ -423,6 +423,16 @@
 		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler>
 	</feature>
+	<feature name="WirelessMotionSensor2TamperSwitch">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler cmd="0x03" group="16">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x11" group="16">OpenedSleepingContactHandler</message-handler>
+		<message-handler cmd="0x13" group="16">ClosedSleepingContactHandler</message-handler>
+		<message-handler cmd="0x19">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x2e">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature>
 	<feature name="MotionSensorData">
 		<message-dispatcher>SimpleDispatcher</message-dispatcher>
 		<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
