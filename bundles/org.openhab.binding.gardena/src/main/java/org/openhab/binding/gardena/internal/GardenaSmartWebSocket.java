@@ -28,7 +28,6 @@ import org.eclipse.jetty.websocket.common.WebSocketSession;
 import org.eclipse.jetty.websocket.common.frames.PongFrame;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.gardena.internal.config.GardenaConfig;
-import org.openhab.binding.gardena.internal.model.api.Location;
 import org.openhab.binding.gardena.internal.model.api.PostOAuth2Response;
 import org.openhab.binding.gardena.internal.model.api.WebSocketCreatedResponse;
 import org.slf4j.Logger;
@@ -54,18 +53,18 @@ public class GardenaSmartWebSocket {
     private ScheduledFuture connectionTrackerFuture;
     private ByteBuffer pingPayload = ByteBuffer.wrap("ping".getBytes());
     private PostOAuth2Response token;
-    private Location location;
+    private String socketId;
 
     /**
      * Starts the websocket session.
      */
     public GardenaSmartWebSocket(GardenaSmartWebSocketListener socketEventListener,
             WebSocketCreatedResponse webSocketCreatedResponse, GardenaConfig config, ScheduledExecutorService scheduler,
-            WebSocketFactory webSocketFactory, PostOAuth2Response token, Location location) throws Exception {
+            WebSocketFactory webSocketFactory, PostOAuth2Response token, String socketId) throws Exception {
         this.socketEventListener = socketEventListener;
         this.scheduler = scheduler;
         this.token = token;
-        this.location = location;
+        this.socketId = socketId;
 
         webSocketClient = webSocketFactory.createWebSocketClient(String.valueOf(this.getClass().hashCode()));
         webSocketClient.setConnectTimeout(config.getConnectionTimeout() * 1000L);
@@ -73,7 +72,7 @@ public class GardenaSmartWebSocket {
         webSocketClient.setMaxIdleTimeout(150000);
         webSocketClient.start();
 
-        logger.debug("Connecting to Gardena Webservice ({})", location.name);
+        logger.debug("Connecting to Gardena Webservice ({})", socketId);
         session = (WebSocketSession) webSocketClient
                 .connect(this, new URI(webSocketCreatedResponse.data.attributes.url)).get();
         session.setStopTimeout(3000);
@@ -88,7 +87,7 @@ public class GardenaSmartWebSocket {
             connectionTrackerFuture.cancel(true);
         }
         if (isRunning()) {
-            logger.debug("Closing Gardena Webservice client ({})", location.name);
+            logger.debug("Closing Gardena Webservice client ({})", socketId);
             try {
                 session.close();
             } catch (Exception ex) {
@@ -113,7 +112,7 @@ public class GardenaSmartWebSocket {
     @OnWebSocketConnect
     public void onConnect(Session session) {
         closing = false;
-        logger.debug("Connected to Gardena Webservice ({})", location.name);
+        logger.debug("Connected to Gardena Webservice ({})", socketId);
 
         connectionTrackerFuture = scheduler.scheduleAtFixedRate(new ConnectionTrackerThread(), 2, 2, TimeUnit.MINUTES);
     }
@@ -122,15 +121,15 @@ public class GardenaSmartWebSocket {
     public void onFrame(Frame pong) {
         if (pong instanceof PongFrame) {
             lastPong = Instant.now();
-            logger.trace("Pong received ({})", location.name);
+            logger.trace("Pong received ({})", socketId);
         }
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
         if (!closing) {
-            logger.debug("Connection to Gardena Webservice was closed ({}): code: {}, reason: {}", location.name,
-                    statusCode, reason);
+            logger.debug("Connection to Gardena Webservice was closed ({}): code: {}, reason: {}", socketId, statusCode,
+                    reason);
             socketEventListener.onWebSocketClose();
         }
     }
@@ -138,7 +137,7 @@ public class GardenaSmartWebSocket {
     @OnWebSocketError
     public void onError(Throwable cause) {
         if (!closing) {
-            logger.warn("Gardena Webservice error ({}): {}, restarting", location.name, cause.getMessage());
+            logger.warn("Gardena Webservice error ({}): {}, restarting", socketId, cause.getMessage());
             logger.debug("{}", cause.getMessage(), cause);
             socketEventListener.onWebSocketError();
         }
@@ -147,7 +146,7 @@ public class GardenaSmartWebSocket {
     @OnWebSocketMessage
     public void onMessage(String msg) {
         if (!closing) {
-            logger.trace("<<< event ({}): {}", location.name, msg);
+            logger.trace("<<< event ({}): {}", socketId, msg);
             socketEventListener.onWebSocketMessage(msg);
         }
     }
@@ -160,12 +159,12 @@ public class GardenaSmartWebSocket {
         @Override
         public void run() {
             try {
-                logger.trace("Sending ping ({})", location.name);
+                logger.trace("Sending ping ({})", socketId);
                 session.getRemote().sendPing(pingPayload);
 
                 if ((Instant.now().getEpochSecond() - lastPong.getEpochSecond() > WEBSOCKET_IDLE_TIMEOUT)
                         || token.isAccessTokenExpired()) {
-                    session.close(1000, "Timeout manually closing dead connection (" + location.name + ")");
+                    session.close(1000, "Timeout manually closing dead connection (" + socketId + ")");
                 }
             } catch (IOException ex) {
                 logger.error("{}", ex.getMessage(), ex);
