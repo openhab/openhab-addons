@@ -31,6 +31,6 @@ public interface IAmazonThingHandler {
 
     void updateChannelState(String channelId, State state);
 
-    void startAnnouncment(Device[] devices, String speak, String bodyText, @Nullable String title,
+    void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer volume) throws IOException, URISyntaxException;
 }

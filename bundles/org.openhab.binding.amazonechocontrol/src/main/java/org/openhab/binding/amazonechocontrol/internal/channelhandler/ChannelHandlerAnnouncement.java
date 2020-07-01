@@ -96,12 +96,6 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
         return false;
     }
 
-    @Override
-    public boolean tryHandleCommand(Device[] devices, Connection connection, String channelId, Command command)
-            throws IOException, URISyntaxException {
-        return tryHandleCommand(devices[0], connection, channelId, command);
-    }
-
     private void refreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }

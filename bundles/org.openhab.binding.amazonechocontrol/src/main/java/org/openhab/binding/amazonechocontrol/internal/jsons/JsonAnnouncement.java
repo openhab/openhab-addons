@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,10 +25,10 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 @NonNullByDefault
 public class JsonAnnouncement {
 
-    public @Nullable Set<Device> devices;
+    public @Nullable List<Device> devices;
     public String speak = "";
     public String bodyText = "";
     public @Nullable String title;
-    public @Nullable Integer ttsVolume;
-    public int standardVolume = 0;
+    public @Nullable List<Integer> ttsVolumes;
+    public @Nullable List<Integer> standardVolumes;
 }

@@ -45,14 +45,6 @@ public class ChannelHandlerSendAnnouncement extends ChannelHandler {
     @Override
     public boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
             throws IOException, URISyntaxException {
-        Device[] devices = new Device[1];
-        devices[0] = device;
-        return tryHandleCommand(devices, connection, channelId, command);
-    }
-
-    @Override
-    public boolean tryHandleCommand(Device[] devices, Connection connection, String channelId, Command command)
-            throws IOException, URISyntaxException {
         if (channelId.equals(CHANNEL_NAME)) {
             if (command instanceof StringType) {
                 String commandValue = ((StringType) command).toFullString();
@@ -97,7 +89,7 @@ public class ChannelHandlerSendAnnouncement extends ChannelHandler {
                         body = e.getLocalizedMessage();
                     }
                 }
-                thingHandler.startAnnouncment(devices, speak, body, title, volume);
+                thingHandler.startAnnouncment(device, speak, body, title, volume);
             }
             refreshChannel();
         }

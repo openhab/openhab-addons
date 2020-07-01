@@ -1127,17 +1127,16 @@ public class Connection {
         }
         for (String json : announcements.keySet()) {
             JsonAnnouncement jsonAnnouncement = announcements.get(json);
-            Set<Device> devices = jsonAnnouncement.devices;
+            List<Device> devices = jsonAnnouncement.devices;
             logger.debug("devices {}", devices.size());
             String speak = jsonAnnouncement.speak;
             String bodyText = jsonAnnouncement.bodyText;
             String title = jsonAnnouncement.title;
-            Integer ttsVolume = jsonAnnouncement.ttsVolume;
-            Integer standardVolume = jsonAnnouncement.standardVolume;
+            List<Integer> ttsVolumes = jsonAnnouncement.ttsVolumes;
+            List<Integer> standardVolumes = jsonAnnouncement.standardVolumes;
             
             try {
-                announcement(devices.toArray(new Device[devices.size()]), speak, bodyText, title, ttsVolume,
-                        standardVolume);
+                announcement(devices.toArray(new Device[devices.size()]), speak, bodyText, title, ttsVolumes.toArray(new Integer[ttsVolumes.size()]), standardVolumes.toArray(new Integer[standardVolumes.size()]));
             } catch (Exception e) {
                 logger.error("send announcement fails with unexpected error", e);
             }
@@ -1156,21 +1155,23 @@ public class Connection {
         jsonAnnouncement.title = title;
         String json = gson.toJson(jsonAnnouncement);
         if (!announcements.containsKey(json)) {
-            jsonAnnouncement.devices = new LinkedHashSet<>();
-            jsonAnnouncement.ttsVolume = ttsVolume;
-            jsonAnnouncement.standardVolume = standardVolume;
+            jsonAnnouncement.devices = new ArrayList<>();
+            jsonAnnouncement.ttsVolumes = new ArrayList<>();
+            jsonAnnouncement.standardVolumes = new ArrayList<>();
             announcements.put(json, jsonAnnouncement);
         } else {
             jsonAnnouncement = announcements.get(json);
         }
         jsonAnnouncement.devices.add(device);
+        jsonAnnouncement.ttsVolumes.add(ttsVolume);
+        jsonAnnouncement.standardVolumes.add(standardVolume);
         announcementTimer = scheduler.schedule(() -> {
             sendAnnouncement();
         }, 1, TimeUnit.SECONDS);
     }
 
     public void announcement(Device[] devices, String speak, String bodyText, @Nullable String title,
-            @Nullable Integer ttsVolume, @Nullable Integer standardVolume) throws IOException, URISyntaxException {
+            @Nullable Integer[] ttsVolumes, @Nullable Integer[] standardVolumes) throws IOException, URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("expireAfter", "PT5S");
         JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
@@ -1217,7 +1218,7 @@ public class Connection {
         if (customerId != null) {
             parameters.put("customerId", customerId);
         }
-        executeSequenceCommandWithVolume(devices, "AlexaAnnouncement", parameters, new Integer[]{ ttsVolume }, new Integer[]{ standardVolume });
+        executeSequenceCommandWithVolume(devices, "AlexaAnnouncement", parameters, ttsVolumes, standardVolumes);
     }
 
     private void sendTextToSpeech() {
@@ -1282,36 +1283,76 @@ public class Connection {
             textToSpeechSenderUnblockFuture = null;
         }
     }
-
+    
     private void executeSequenceCommandWithVolume(@Nullable Device[] devices, String command,
             @Nullable Map<String, Object> parameters, @Nullable Integer[] ttsVolumes, @Nullable Integer[] standardVolumes)
             throws IOException, URISyntaxException {
-        JsonArray parallelNodesToExecute = new JsonArray();
-        for (int i = 0; i < devices.length; i++) {
+        // tts (serial to parallel)
+        // announcement (parallel to serial)
+        if ("Alexa.Speak".equals(command)) {
+            JsonArray parallelNodesToExecute = new JsonArray();
+            // add ttsVolume for tts
+            for (int i = 0; i < devices.length; i++) {
+                JsonArray serialNodesToExecute = new JsonArray();
+                if (ttsVolumes[i] != null) {
+                    Map<String, Object> volumeParameters = new HashMap<>();
+                    volumeParameters.put("value", ttsVolumes[i]);
+                    serialNodesToExecute.add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
+                }
+                // add command for tts
+                serialNodesToExecute.add(createExecutionNode(devices[i], command, parameters));
+                // add standardVolume for announcement
+                if (ttsVolumes[i] != null) {
+                    Map<String, Object> volumeParameters = new HashMap<>();
+                    volumeParameters.put("value", standardVolumes[i]);
+                    serialNodesToExecute.add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
+                }
+                if (serialNodesToExecute.size() > 0) {
+                    JsonObject serialNode = new JsonObject();
+                    serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.SerialNode");
+                    serialNode.add("nodesToExecute", serialNodesToExecute);
+                    parallelNodesToExecute.add(serialNode);
+                }
+            }
+            executeSequenceNodes(parallelNodesToExecute, true);
+        } else {
             JsonArray serialNodesToExecute = new JsonArray();
-            if (ttsVolumes[i] != null) {
-                Map<String, Object> volumeParameters = new HashMap<>();
-                volumeParameters.put("value", ttsVolumes[i]);
-                serialNodesToExecute.add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
+            // add ttsVolume for announcement
+            JsonArray ttsVolumeNodesToExecute = new JsonArray();
+            for (int i = 0; i < devices.length; i++) {
+                if (ttsVolumes[i] != null) {
+                    Map<String, Object> volumeParameters = new HashMap<>();
+                    volumeParameters.put("value", ttsVolumes[i]);
+                    ttsVolumeNodesToExecute.add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
+                }
             }
-            serialNodesToExecute.add(createExecutionNode(devices[i], command, parameters));
-            if (ttsVolumes[i] != null) {
-                Map<String, Object> volumeParameters = new HashMap<>();
-                volumeParameters.put("value", standardVolumes[i]);
-                serialNodesToExecute.add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
+            if (ttsVolumeNodesToExecute.size() > 0) {
+                JsonObject ttsVolumeParallelNode = new JsonObject();
+                ttsVolumeParallelNode.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
+                ttsVolumeParallelNode.add("nodesToExecute", ttsVolumeNodesToExecute);
+                serialNodesToExecute.add(ttsVolumeParallelNode);
             }
-            JsonObject serialNode = new JsonObject();
-            serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.SerialNode");
-            serialNode.add("nodesToExecute", serialNodesToExecute);
-            parallelNodesToExecute.add(serialNode);
-            if (!"Alexa.Speak".equals(command)) {
-                break;
+            // add command for announcement
+            serialNodesToExecute.add(createExecutionNode(devices[0], command, parameters));
+            // add standardVolume for announcement
+            JsonArray standardVolumeNodesToExecute = new JsonArray();
+            for (int i = 0; i < devices.length; i++) {
+                if (ttsVolumes[i] != null) {
+                    Map<String, Object> volumeParameters = new HashMap<>();
+                    volumeParameters.put("value", standardVolumes[i]);
+                    standardVolumeNodesToExecute.add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
+                }
             }
+            if (standardVolumeNodesToExecute.size() > 0) {
+                JsonObject standardVolumeParallelNode = new JsonObject();
+                standardVolumeParallelNode.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
+                standardVolumeParallelNode.add("nodesToExecute", standardVolumeNodesToExecute);
+                serialNodesToExecute.add(standardVolumeParallelNode);
+            }
+            executeSequenceNodes(serialNodesToExecute, false);
         }
-        
-        executeSequenceNodes(parallelNodesToExecute);
     }
-
+    
     // commands: Alexa.Weather.Play, Alexa.Traffic.Play, Alexa.FlashBriefing.Play, Alexa.GoodMorning.Play,
     // Alexa.SingASong.Play, Alexa.TellStory.Play, Alexa.Speak (textToSpeach)
     public void executeSequenceCommand(@Nullable Device device, String command,
@@ -1335,12 +1376,13 @@ public class Connection {
         makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
     }
 
-    private void executeSequenceNodes(JsonArray nodesToExecute) throws IOException, URISyntaxException {
+    private void executeSequenceNodes(JsonArray nodesToExecute, boolean parallel) throws IOException, URISyntaxException {
         JsonObject serialNode = new JsonObject();
-        // THIS TYPE PRODUCE A ECHO SERIAL (STEP BY STEP) OUTPUT
-        //serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.SerialNode");
-        // THIS TYPE PRODUCE A ECHO PARALLEL OUTPUT
-        serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
+        if (parallel) {
+            serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
+        } else {
+            serialNode.addProperty("@type", "com.amazon.alexa.behaviors.model.SerialNode");
+        }
 
         serialNode.add("nodesToExecute", nodesToExecute);
 

@@ -35,9 +35,6 @@ public abstract class ChannelHandler {
     public abstract boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
             throws IOException, URISyntaxException;
 
-    public abstract boolean tryHandleCommand(Device[] devices, Connection connection, String channelId, Command command)
-            throws IOException, URISyntaxException;
-
     protected final IAmazonThingHandler thingHandler;
     protected final Gson gson;
     private final Logger logger;

@@ -735,22 +735,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         connection.announcement(device, speak, bodyText, title, volume, lastKnownVolume);
     }
 
-    @Override
-    public void startAnnouncment(Device[] devices, String speak, String bodyText, @Nullable String title,
-            @Nullable Integer volume) throws IOException, URISyntaxException {
-        Connection connection = this.findConnection();
-        if (connection == null) {
-            return;
-        }
-        if (volume == null && textToSpeechVolume != 0) {
-            volume = textToSpeechVolume;
-        }
-        if (volume != null && volume < 0) {
-            volume = null; // the meaning of negative values is 'do not use'. The api requires null in this case.
-        }
-        connection.announcement(devices, speak, bodyText, title, volume, lastKnownVolume);
-    }
-
     private void stopCurrentNotification() {
         ScheduledFuture<?> currentNotifcationUpdateTimer = this.currentNotifcationUpdateTimer;
         if (currentNotifcationUpdateTimer != null) {

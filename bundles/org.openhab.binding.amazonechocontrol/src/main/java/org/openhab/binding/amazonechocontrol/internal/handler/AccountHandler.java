@@ -160,9 +160,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 if (channelHandler instanceof ChannelHandlerSendAnnouncement) {
                     Device[] devices = jsonSerialNumberDeviceMapping.values()
                             .toArray(new Device[jsonSerialNumberDeviceMapping.values().size()]);
-                    if (channelHandler.tryHandleCommand(devices, connection, channelId, command)) {
-                        return;
+                    for (Device device : devices) {
+                        channelHandler.tryHandleCommand(device, connection, channelId, command);
                     }
+                    return;
                 } else {
                     if (channelHandler.tryHandleCommand(new Device(), connection, channelId, command)) {
                         return;
@@ -178,10 +179,10 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     @Override
-    public void startAnnouncment(Device[] devices, String speak, String bodyText, @Nullable String title,
+    public void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer volume) throws IOException, URISyntaxException {
-        EchoHandler echoHandler = findEchoHandlerBySerialNumber(devices[0].serialNumber);
-        echoHandler.startAnnouncment(devices, speak, bodyText, title, volume);
+        EchoHandler echoHandler = findEchoHandlerBySerialNumber(device.serialNumber);
+        echoHandler.startAnnouncment(device, speak, bodyText, title, volume);
     }
 
     public List<FlashBriefingProfileHandler> getFlashBriefingProfileHandlers() {
