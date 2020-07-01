@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.api;
 
+import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -25,56 +27,14 @@ import org.eclipse.smarthome.core.types.*;
  */
 @NonNullByDefault
 public class ShadePosition {
-
-    /*-
-     * Specifies the position of the shade. Top-down shades are in the same
-     * coordinate space as bottom-up shades. Shade position values for top-down
-     * shades would be reversed for bottom-up shades. For example, since 65535 is
-     * the open value for a bottom-up shade, it is the closed value for a top-down
-     * shade. The top-down/bottom-up shade is different in that instead of the top
-     * and bottom rail operating in one coordinate space like the top-down and the
-     * bottom-up, it operates in two where the top (middle) rail closed value is 0
-     * and the bottom (primary) rail closed position is also 0 and fully open for
-     * both is 65535
-     * 
-     * The position element can take on multiple states depending on the family of
-     * shade under control.
-     *
-     * The position1 element will only ever show one type of posKind1: either 1 or
-     * 3; this is because the shade cannot physically exist with both shade and vane
-     * open (to any degree).
-     *
-     * Therefore one can make the assumption that if there is a non-zero position1
-     * while posKind1 == 1, then position1 == 0 for the implied posKind1 == 3.
-     * 
-     * The ranges of position integer values are
-     *      shades: 0..65535
-     *      vanes: 0..32767  
-     * 
-     * Shade fully up: (top-down: open, bottom-up: closed)
-     *    posKind1: 1
-     *    position1: 65535
-     *
-     * Shade and vane fully down: (top-down: closed, bottom-up: open) 
-     *    posKind1: 1
-     *    position1: 0
-     *    
-     * ALTERNATE: Shade and vane fully down: (top-down: closed, bottom-up: open)
-     *    posKind1: 3
-     *    position1: 0
-     *
-     * Shade fully down (closed) and vane fully up (open):
-     *    posKind1: 3
-     *    position1: 32767
+    /*
+     * Primary actuator position
      */
-
-    private static final int MAX_SHADE = 65535;
-    private static final int MAX_VANE = 32767;
-
     private int posKind1;
     private int position1;
-
     /*
+     * Secondary actuator position
+     * 
      * here we have to use Integer objects rather than just int primitives because
      * these are secondary optional position elements in the JSON payload, so the
      * GSON de-serializer might leave them as null
@@ -82,128 +42,156 @@ public class ShadePosition {
     private @Nullable Integer posKind2 = null;
     private @Nullable Integer position2 = null;
 
-    public static ShadePosition create(PosKind kind, int percent) {
-        return new ShadePosition(kind, percent, null, null);
+    public static ShadePosition create(CoordinateSystem coordSys, int percent) {
+        return new ShadePosition(coordSys, percent, null, null);
     }
 
-    public static ShadePosition create(PosKind kind, int primaryPercent, @Nullable PosKind secondaryKind,
-            @Nullable Integer secondaryPercent) {
-        return new ShadePosition(kind, primaryPercent, secondaryKind, secondaryPercent);
+    public static ShadePosition create(CoordinateSystem primaryCoordSys, int primaryPercent,
+            @Nullable CoordinateSystem secondaryCoordSys, @Nullable Integer secondaryPercent) {
+        return new ShadePosition(primaryCoordSys, primaryPercent, secondaryCoordSys, secondaryPercent);
     }
 
-    ShadePosition(PosKind primaryKind, int primaryPercent, @Nullable PosKind secondaryKind,
+    ShadePosition(CoordinateSystem primaryCoordSys, int primaryPercent, @Nullable CoordinateSystem secondaryCoordSys,
             @Nullable Integer secondaryPercent) {
-        posKind1 = primaryKind.ordinal() + 1;
-        switch (primaryKind) {
-            case REGULAR:
-                /*
+        setPosition1(primaryCoordSys, primaryPercent);
+        setPosition2(secondaryCoordSys, secondaryPercent);
+    }
+
+    public State getState(ActuatorClass actuatorClass, CoordinateSystem coordSys) {
+        switch (actuatorClass) {
+            case PRIMARY_ACTUATOR:
+                return getPosition1(coordSys);
+            case SECONDARY_ACTUATOR:
+                return getPosition2(coordSys);
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
+    public CoordinateSystem getCoordinateSystem(ActuatorClass actuatorClass) {
+        switch (actuatorClass) {
+            case PRIMARY_ACTUATOR:
+                return fromPosKind(posKind1);
+            case SECONDARY_ACTUATOR:
+                Integer posKind2 = this.posKind2;
+                if (posKind2 != null) {
+                    return fromPosKind(posKind2.intValue());
+                }
+            default:
+                return ERROR_UNKNOWN;
+        }
+    }
+
+    private void setPosition1(CoordinateSystem coordSys, int percent) {
+        posKind1 = coordSys.toPosKind();
+        switch (coordSys) {
+            case ZERO_IS_CLOSED:
+                /*-
                  * Primary rail of a single action bottom-up shade, or
-                 * 
                  * Primary, lower, bottom-up, rail of a dual action shade
                  */
-            case INVERTED:
-                /*
+            case ZERO_IS_OPEN:
+                /*-
                  * Primary rail of a single action top-down shade
                  *
                  * All these types use the same coordinate system; which is inverted in relation
                  * to that of OpenHAB
                  */
-                position1 = MAX_SHADE - (int) Math.round(primaryPercent / 100d * MAX_SHADE);
+                position1 = MAX_SHADE - (int) Math.round(percent / 100d * MAX_SHADE);
                 break;
-            case VANE:
+            case VANE_COORDS:
                 /*
                  * Vane angle of the primary rail of a bottom-up single action shade
                  */
-                position1 = (int) Math.round(primaryPercent / 100d * MAX_VANE);
+                position1 = (int) Math.round(percent / 100d * MAX_VANE);
                 break;
             default:
                 position1 = 0;
         }
+    }
 
-        if (secondaryKind == null || secondaryPercent == null) {
+    private State getPosition1(CoordinateSystem coordSys) {
+        switch (coordSys) {
+            case ZERO_IS_CLOSED:
+                /*-
+                 * Primary rail of a single action bottom-up shade, or
+                 * Primary, lower, bottom-up, rail of a dual action shade
+                 */
+            case ZERO_IS_OPEN:
+                /*
+                 * Primary rail of a single action top-down shade
+                 *
+                 * All these types use the same coordinate system; which is inverted in relation
+                 * to that of OpenHAB
+                 * 
+                 * If the slats have a defined position then the shade position must by
+                 * definition be 100%
+                 */
+                return posKind1 == 3 ? PercentType.HUNDRED
+                        : new PercentType(100 - (int) Math.round((double) position1 / MAX_SHADE * 100));
+
+            case VANE_COORDS:
+                /*
+                 * Vane angle of the primary rail of a bottom-up single action shade
+                 * 
+                 * If the shades are not open, the vane position is undefined; if the the shades
+                 * are exactly open then the vanes are at zero; otherwise return the actual vane
+                 * position itself
+                 * 
+                 * note: sometimes the hub may return a value of position1 > MAX_VANE (seems to
+                 * be a bug in the hub) so we avoid an out of range exception via the Math.min()
+                 * function below..
+                 */
+                return posKind1 != 3 ? (position1 != 0 ? UnDefType.UNDEF : PercentType.ZERO)
+                        : new PercentType((int) Math.round((double) Math.min(position1, MAX_VANE) / MAX_VANE * 100));
+
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
+    private void setPosition2(@Nullable CoordinateSystem coordSys, @Nullable Integer percent) {
+        if (coordSys == null || percent == null) {
             return;
         }
-
-        posKind2 = Integer.valueOf(secondaryKind.ordinal() + 1);
-        switch (secondaryKind) {
-            case INVERTED:
+        posKind2 = Integer.valueOf(coordSys.toPosKind());
+        switch (coordSys) {
+            case ZERO_IS_CLOSED:
+            case ZERO_IS_OPEN:
                 /*
                  * Secondary, upper, top-down rail of a dual action shade
                  * 
-                 * Uses a coordinate system that is NOT inverted in relation to that of OpenHAB
+                 * Uses a coordinate system that is NOT inverted in relation to OpenHAB
                  */
-                position2 = Integer.valueOf((int) Math.round(secondaryPercent.doubleValue() / 100 * MAX_SHADE));
+                position2 = Integer.valueOf((int) Math.round(percent.doubleValue() / 100 * MAX_SHADE));
                 break;
             default:
                 position2 = Integer.valueOf(0);
         }
     }
 
-    public State getState(PosSeq seq, PosKind kind) {
-        switch (seq) {
-            case PRIMARY:
-                switch (kind) {
-                    case REGULAR:
-                        /*
-                         * Primary rail of a single action bottom-up shade, or
-                         * 
-                         * Primary, lower, bottom-up, rail of a dual action shade
-                         */
-                    case INVERTED:
-                        /*
-                         * Primary rail of a single action top-down shade
-                         *
-                         * All these types use the same coordinate system; which is inverted in relation
-                         * to that of OpenHAB
-                         * 
-                         * If the slats have a defined position then the shade position must by
-                         * definition be 100%
-                         */
-                        return posKind1 == 3 ? PercentType.HUNDRED
-                                : new PercentType(100 - (int) Math.round((double) position1 / MAX_SHADE * 100));
-
-                    case VANE:
-                        /*
-                         * Vane angle of the primary rail of a bottom-up single action shade
-                         * 
-                         * If the shades are not open, the vane position is undefined; if the the shades
-                         * are exactly open then the vanes are at zero; otherwise return the actual vane
-                         * position itself
-                         * 
-                         * note: sometimes the hub may return a value of position1 > MAX_VANE (seems to
-                         * be a bug in the hub) so we avoid an out of range exception via the Math.min()
-                         * function below..
-                         */
-                        return posKind1 != 3 ? (position1 != 0 ? UnDefType.UNDEF : PercentType.ZERO)
-                                : new PercentType(
-                                        (int) Math.round((double) Math.min(position1, MAX_VANE) / MAX_VANE * 100));
-
-                    default:
-                        break;
-                }
-
-            case SECONDARY:
-                Integer posKind2 = this.posKind2;
-                Integer position2 = this.position2;
-                if (position2 != null && posKind2 != null) {
-                    switch (kind) {
-                        case REGULAR:
-                        case INVERTED:
-                            /*
-                             * Secondary, upper, top-down rail of a dual action shade
-                             * 
-                             * Uses a coordinate system that is NOT inverted in relation to that of OpenHAB
-                             */
-                            return new PercentType(100 - (int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
-                        default:
-                            break;
-                    }
-                }
+    private State getPosition2(CoordinateSystem coordSys) {
+        Integer posKind2 = this.posKind2;
+        Integer position2 = this.position2;
+        if (position2 == null || posKind2 == null) {
+            return UnDefType.UNDEF;
         }
-        return UnDefType.UNDEF;
-    }
-
-    public PosKind getPosKind() {
-        return PosKind.get(posKind1);
+        switch (coordSys) {
+            case ZERO_IS_CLOSED:
+                /*
+                 * This case should never occur; but return a value anyway just in case
+                 */
+            case ZERO_IS_OPEN:
+                /*
+                 * Secondary, upper, top-down rail of a dual action shade
+                 * 
+                 * Uses a coordinate system that is NOT inverted in relation to OpenHAB
+                 */
+                if (posKind2.intValue() != 3) {
+                    return new PercentType(100 - (int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
+                }
+            default:
+                return UnDefType.UNDEF;
+        }
     }
 }

@@ -81,7 +81,7 @@ public class HDPowerViewJUnitTests {
          * available, and its IP address must be correctly configured in the
          * "hubIPAddress" string constant e.g. "192.168.1.123"
          */
-        String hubIPAddress = "192.168.1.xxx";
+        String hubIPAddress = "192.168.1.129";
 
         /*
          * NOTE: set allowShadeMovementCommands = true if you accept physically moving
@@ -218,7 +218,7 @@ public class HDPowerViewJUnitTests {
                 assertNotNull(shadeData);
                 ShadePosition positions = shadeData.positions;
                 assertNotNull(positions);
-                CoordinateSystem coordSys = positions.getCoordinateType(PRIMARY_ACTUATOR);
+                CoordinateSystem coordSys = positions.getCoordinateSystem(PRIMARY_ACTUATOR);
                 assertNotNull(coordSys);
 
                 pos = positions.getState(PRIMARY_ACTUATOR, coordSys);
@@ -306,7 +306,7 @@ public class HDPowerViewJUnitTests {
 
             ShadePosition shadePos = shadeData.positions;
             assertNotNull(shadePos);
-            assertEquals(ZERO_IS_CLOSED, shadePos.getCoordinateType(PRIMARY_ACTUATOR));
+            assertEquals(ZERO_IS_CLOSED, shadePos.getCoordinateSystem(PRIMARY_ACTUATOR));
 
             State pos = shadePos.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
             assertEquals(PercentType.class, pos.getClass());
