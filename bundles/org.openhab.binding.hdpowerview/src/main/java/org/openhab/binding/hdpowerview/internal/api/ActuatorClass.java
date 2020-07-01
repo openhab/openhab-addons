@@ -15,12 +15,13 @@ package org.openhab.binding.hdpowerview.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Shade position sequence, as returned by the HD Power View Hub.
+ * Actuator class; all shades have a PRIMARY class actuator, plus double action
+ * shades also have a SECONDARY class actuator
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum PosSeq {
-    PRIMARY,
-    SECONDARY;
+public enum ActuatorClass {
+    PRIMARY_ACTUATOR,
+    SECONDARY_ACTUATOR;
 }

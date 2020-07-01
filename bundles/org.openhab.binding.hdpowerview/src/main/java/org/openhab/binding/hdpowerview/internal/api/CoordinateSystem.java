@@ -15,33 +15,38 @@ package org.openhab.binding.hdpowerview.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Shade position kind, as returned by the HD Power View Hub.
+ * Shade coordinate system, as returned by the HD Power View Hub
+ * 
+ * {@code ZERO_IS_CLOSED } coordinate value 0 means shade is closed
+ * {@code ZERO_IS_OPEN } coordinate value 0 means shade is open
+ * {@code VANE_COORDS } coordinate system for vanes
+ * {@code ERROR_UNKNOWN } unsupported coordinate system
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
  */
 @NonNullByDefault
-public enum PosKind {
-    REGULAR(1),
-    INVERTED(2),
-    VANE(3),
-    ERROR(4);
+public enum CoordinateSystem {
+    ZERO_IS_CLOSED(1),
+    ZERO_IS_OPEN(2),
+    VANE_COORDS(3),
+    ERROR_UNKNOWN(4);
 
     public final int key;
 
-    PosKind(int key) {
+    CoordinateSystem(int key) {
         this.key = key;
     }
 
-    public static PosKind get(int key) {
+    public static CoordinateSystem get(int key) {
         switch (key) {
             case 1:
-                return REGULAR;
+                return ZERO_IS_CLOSED;
             case 2:
-                return INVERTED;
+                return ZERO_IS_OPEN;
             case 3:
-                return VANE;
+                return VANE_COORDS;
         }
-        return ERROR;
+        return ERROR_UNKNOWN;
     }
 }
