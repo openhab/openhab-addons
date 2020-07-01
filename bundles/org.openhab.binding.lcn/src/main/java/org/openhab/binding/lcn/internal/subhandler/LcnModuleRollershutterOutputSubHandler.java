@@ -44,10 +44,11 @@ public class LcnModuleRollershutterOutputSubHandler extends AbstractLcnModuleSub
     }
 
     @Override
-    public void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number) throws LcnException {
+    public void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number, boolean invertUpDown)
+            throws LcnException {
         // When configured as shutter in LCN-PRO, an output gets switched off, when the other is
         // switched on and vice versa.
-        if (command == UpDownType.UP) {
+        if (command == UpDownType.UP ^ invertUpDown) {
             // first output: 100%
             handler.sendPck(PckGenerator.dimOutput(0, 100, LcnDefs.ROLLER_SHUTTER_RAMP_MS));
         } else {
