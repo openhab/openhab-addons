@@ -22,7 +22,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -76,7 +75,7 @@ public enum ComfoAirCommandType {
      */
     ACTIVATE(ComfoAirBindingConstants.CG_CONTROL_PREFIX + ComfoAirBindingConstants.CHANNEL_ACTIVATE,
             DataTypeBoolean.getInstance(), new int[] { 0x03 }, Constants.REQUEST_SET_RS232, 1, 0,
-            Constants.EMPTY_STRING_ARRAY, Constants.REPLY_SET_RS232, Constants.REPLY_SET_RS232, new int[] { 0 }, 0x03),
+            Constants.EMPTY_TYPE_ARRAY, Constants.REPLY_SET_RS232, Constants.REPLY_SET_RS232, new int[] { 0 }, 0x03),
     MENU20_MODE(ComfoAirBindingConstants.CG_MENUP1_PREFIX + ComfoAirBindingConstants.CHANNEL_MENU20_MODE,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 6 },
             0x01),
@@ -108,28 +107,28 @@ public enum ComfoAirCommandType {
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 7 },
             0x02),
     BATHROOM_START_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_BR_START_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 0, new String[] { MENU21_MODE.getKey() },
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 0, new ComfoAirCommandType[] { MENU21_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 0 }),
     BATHROOM_END_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_BR_END_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 1, new String[] { MENU22_MODE.getKey() },
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 1, new ComfoAirCommandType[] { MENU22_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 1 }),
     L1_END_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_L1_END_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 2, new String[] { MENU27_MODE.getKey() },
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 2, new ComfoAirCommandType[] { MENU27_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 2 }),
     PULSE_VENTILATION(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_PULSE_VENTILATION,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 3, new String[] { MENU23_MODE.getKey() },
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 3, new ComfoAirCommandType[] { MENU23_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 3 }),
     FILTER_WEEKS(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_FILTER_WEEKS,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 4, new String[] { MENU24_MODE.getKey() },
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 4, new ComfoAirCommandType[] { MENU24_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 4 }),
     RF_SHORT_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_SHORT_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 5, new String[] { MENU25_MODE.getKey() },
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 5, new ComfoAirCommandType[] { MENU25_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 5 }),
     RF_LONG_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_LONG_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 6, new String[] { MENU26_MODE.getKey() },
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 6, new ComfoAirCommandType[] { MENU26_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 6 }),
     COOKERHOOD_DELAY(ComfoAirBindingConstants.CG_MENUP2_PREFIX + ComfoAirBindingConstants.CHANNEL_COOKERHOOD_DELAY,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 7, new String[] { MENU20_MODE.getKey() },
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_DELAYS, 8, 7, new ComfoAirCommandType[] { MENU20_MODE },
             Constants.REQUEST_GET_DELAYS, Constants.REPLY_GET_DELAYS, new int[] { 7 }),
     CHIMNEY_STATE(ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_CHIMNEY_STATE,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 8 },
@@ -165,40 +164,39 @@ public enum ComfoAirCommandType {
             DataTypeRPM.getInstance(), Constants.REQUEST_GET_FAN, Constants.REPLY_GET_FAN, new int[] { 4, 5 }),
     FAN_OUT_0(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_OUT_0,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_FAN_LEVEL, 9, 0,
-            new String[] { FAN_OUT_PERCENT.getKey(), FAN_OUT_RPM.getKey() }, Constants.REQUEST_GET_FAN_LEVEL,
+            new ComfoAirCommandType[] { FAN_OUT_PERCENT, FAN_OUT_RPM }, Constants.REQUEST_GET_FAN_LEVEL,
             Constants.REPLY_GET_FAN_LEVEL, new int[] { 0 }),
     FAN_OUT_1(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_OUT_1,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_FAN_LEVEL, 9, 1,
-            new String[] { FAN_OUT_PERCENT.getKey(), FAN_OUT_RPM.getKey() }, Constants.REQUEST_GET_FAN_LEVEL,
+            new ComfoAirCommandType[] { FAN_OUT_PERCENT, FAN_OUT_RPM }, Constants.REQUEST_GET_FAN_LEVEL,
             Constants.REPLY_GET_FAN_LEVEL, new int[] { 1 }),
     FAN_OUT_2(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_OUT_2,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_FAN_LEVEL, 9, 2,
-            new String[] { FAN_OUT_PERCENT.getKey(), FAN_OUT_RPM.getKey() }, Constants.REQUEST_GET_FAN_LEVEL,
+            new ComfoAirCommandType[] { FAN_OUT_PERCENT, FAN_OUT_RPM }, Constants.REQUEST_GET_FAN_LEVEL,
             Constants.REPLY_GET_FAN_LEVEL, new int[] { 2 }),
     FAN_OUT_3(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_OUT_3,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_FAN_LEVEL, 9, 6,
-            new String[] { FAN_OUT_PERCENT.getKey(), FAN_OUT_RPM.getKey() }, Constants.REQUEST_GET_FAN_LEVEL,
+            new ComfoAirCommandType[] { FAN_OUT_PERCENT, FAN_OUT_RPM }, Constants.REQUEST_GET_FAN_LEVEL,
             Constants.REPLY_GET_FAN_LEVEL, new int[] { 10 }),
     FAN_IN_0(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_IN_0,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_FAN_LEVEL, 9, 3,
-            new String[] { FAN_IN_PERCENT.getKey(), FAN_IN_RPM.getKey() }, Constants.REQUEST_GET_FAN_LEVEL,
+            new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_IN_RPM }, Constants.REQUEST_GET_FAN_LEVEL,
             Constants.REPLY_GET_FAN_LEVEL, new int[] { 3 }),
     FAN_IN_1(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_IN_1,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_FAN_LEVEL, 9, 4,
-            new String[] { FAN_IN_PERCENT.getKey(), FAN_IN_RPM.getKey() }, Constants.REQUEST_GET_FAN_LEVEL,
+            new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_IN_RPM }, Constants.REQUEST_GET_FAN_LEVEL,
             Constants.REPLY_GET_FAN_LEVEL, new int[] { 4 }),
     FAN_IN_2(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_IN_2,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_FAN_LEVEL, 9, 5,
-            new String[] { FAN_IN_PERCENT.getKey(), FAN_IN_RPM.getKey() }, Constants.REQUEST_GET_FAN_LEVEL,
+            new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_IN_RPM }, Constants.REQUEST_GET_FAN_LEVEL,
             Constants.REPLY_GET_FAN_LEVEL, new int[] { 5 }),
     FAN_IN_3(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_IN_3,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_FAN_LEVEL, 9, 7,
-            new String[] { FAN_IN_PERCENT.getKey(), FAN_IN_RPM.getKey() }, Constants.REQUEST_GET_FAN_LEVEL,
+            new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_IN_RPM }, Constants.REQUEST_GET_FAN_LEVEL,
             Constants.REPLY_GET_FAN_LEVEL, new int[] { 11 }),
     FAN_LEVEL(ComfoAirBindingConstants.CG_VENTILATION_PREFIX + ComfoAirBindingConstants.CHANNEL_FAN_LEVEL,
             DataTypeNumber.getInstance(), new int[] { 0x01, 0x02, 0x03, 0x04 }, Constants.REQUEST_SET_LEVEL, 1, 0,
-            new String[] { FAN_IN_PERCENT.getKey(), FAN_IN_RPM.getKey(), FAN_OUT_PERCENT.getKey(),
-                    FAN_OUT_RPM.getKey() },
+            new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_IN_RPM, FAN_OUT_PERCENT, FAN_OUT_RPM },
             Constants.REQUEST_GET_FAN_LEVEL, Constants.REPLY_GET_FAN_LEVEL, new int[] { 8 }),
     LEVEL0_TIME(ComfoAirBindingConstants.CG_TIMES_PREFIX + ComfoAirBindingConstants.CHANNEL_TIME_LEVEL0,
             DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS, Constants.REPLY_GET_HOURS, new int[] { 0, 1, 2 }),
@@ -251,8 +249,8 @@ public enum ComfoAirCommandType {
             new int[] { 5 }),
     TARGET_TEMPERATURE(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_TARGET,
             DataTypeTemperature.getInstance(), Constants.REQUEST_SET_TEMPS, 1, 0,
-            new String[] { BYPASS_FACTOR.getKey(), BYPASS_LEVEL.getKey(), BYPASS_SUMMER.getKey() },
-            Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 0 }),
+            new ComfoAirCommandType[] { BYPASS_FACTOR, BYPASS_LEVEL, BYPASS_SUMMER }, Constants.REQUEST_GET_TEMPS,
+            Constants.REPLY_GET_TEMPS, new int[] { 0 }),
     OUTDOOR_TEMPERATURE_IN(ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_OUTDOOR_IN,
             DataTypeTemperature.getInstance(), Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 1 }),
     OUTDOOR_TEMPERATURE_OUT(
@@ -292,23 +290,18 @@ public enum ComfoAirCommandType {
             DataTypeTemperature.getInstance(), Constants.REQUEST_GET_TEMPS, Constants.REPLY_GET_TEMPS, new int[] { 8 }),
     EWT_SPEED(ComfoAirBindingConstants.CG_EWT_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_SPEED,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_EWT, 5, 2,
-            new String[] { ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_STATE,
-                    ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_EWT },
-            Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 2 }),
+            new ComfoAirCommandType[] { EWT_STATE, EWT_TEMPERATURE }, Constants.REQUEST_GET_EWT,
+            Constants.REPLY_GET_EWT, new int[] { 2 }),
     EWT_TEMPERATURE_LOW(ComfoAirBindingConstants.CG_EWT_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_TEMP_LOW,
-            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_EWT, 5, 0,
-            new String[] { ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_STATE },
+            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_EWT, 5, 0, new ComfoAirCommandType[] { EWT_STATE },
             Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 0 }),
     EWT_TEMPERATURE_HIGH(ComfoAirBindingConstants.CG_EWT_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_TEMP_HIGH,
-            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_EWT, 5, 1,
-            new String[] { ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_STATE },
+            DataTypeTemperature.getInstance(), Constants.REQUEST_SET_EWT, 5, 1, new ComfoAirCommandType[] { EWT_STATE },
             Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 1 }),
     COOKERHOOD_SPEED(ComfoAirBindingConstants.CG_COOKERHOOD_PREFIX + ComfoAirBindingConstants.CHANNEL_COOKERHOOD_SPEED,
             DataTypeNumber.getInstance(), Constants.REQUEST_SET_EWT, 5, 3,
-            new String[] {
-                    ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_COOKERHOOD_STATE,
-                    ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_COOKERHOOD },
-            Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 3 }),
+            new ComfoAirCommandType[] { COOKERHOOD_STATE, COOKERHOOD_TEMPERATURE }, Constants.REQUEST_GET_EWT,
+            Constants.REPLY_GET_EWT, new int[] { 3 }),
     HEATER_POWER(ComfoAirBindingConstants.CG_HEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_POWER,
             DataTypeNumber.getInstance(), Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 4 }),
     HEATER_POWER_I(ComfoAirBindingConstants.CG_HEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_POWER_I,
@@ -316,55 +309,49 @@ public enum ComfoAirCommandType {
     HEATER_TARGET_TEMPERATURE(
             ComfoAirBindingConstants.CG_HEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_TEMP_TARGET,
             DataTypeTemperature.getInstance(), Constants.REQUEST_SET_EWT, 5, 4,
-            new String[] { ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_STATE,
-                    ComfoAirBindingConstants.CG_HEATER_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_POWER,
-                    ComfoAirBindingConstants.CG_TEMPS_PREFIX + ComfoAirBindingConstants.CHANNEL_TEMP_HEATER },
-            Constants.REQUEST_GET_EWT, Constants.REPLY_GET_EWT, new int[] { 6 }),
+            new ComfoAirCommandType[] { HEATER_STATE, HEATER_POWER, HEATER_TEMPERATURE }, Constants.REQUEST_GET_EWT,
+            Constants.REPLY_GET_EWT, new int[] { 6 }),
     IS_PREHEATER(ComfoAirBindingConstants.PROPERTY_OPTION_PREHEATER, DataTypeBoolean.getInstance(),
             Constants.REQUEST_SET_STATES, 8, 0,
-            new String[] { OUTDOOR_TEMPERATURE_IN.getKey(), INDOOR_TEMPERATURE_IN.getKey(),
-                    PREHEATER_FROST_PROTECT.getKey(), PREHEATER_FROST_TIME.getKey(), PREHEATER_HEATING.getKey(),
-                    FROST_STATE.getKey(), PREHEATER_OPTION.getKey(), PREHEATER_TIME.getKey(),
-                    PREHEATER_VALVE.getKey() },
+            new ComfoAirCommandType[] { OUTDOOR_TEMPERATURE_IN, INDOOR_TEMPERATURE_IN, PREHEATER_FROST_PROTECT,
+                    PREHEATER_FROST_TIME, PREHEATER_HEATING, FROST_STATE, PREHEATER_OPTION, PREHEATER_TIME,
+                    PREHEATER_VALVE },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 0 }),
     IS_BYPASS(ComfoAirBindingConstants.PROPERTY_OPTION_BYPASS, DataTypeBoolean.getInstance(),
             Constants.REQUEST_SET_STATES, 8, 1,
-            new String[] { INDOOR_TEMPERATURE_IN.getKey(), OUTDOOR_TEMPERATURE_OUT.getKey() },
-            Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 1 }),
+            new ComfoAirCommandType[] { INDOOR_TEMPERATURE_IN, OUTDOOR_TEMPERATURE_OUT }, Constants.REQUEST_GET_STATES,
+            Constants.REPLY_GET_STATES, new int[] { 1 }),
     RECU_TYPE(ComfoAirBindingConstants.PROPERTY_OPTION_RECU_TYPE, DataTypeNumber.getInstance(),
             new int[] { 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 2,
-            new String[] { FAN_IN_PERCENT.getKey(), FAN_OUT_PERCENT.getKey(), INDOOR_TEMPERATURE_IN.getKey(),
-                    INDOOR_TEMPERATURE_OUT.getKey(), OUTDOOR_TEMPERATURE_IN.getKey(),
-                    OUTDOOR_TEMPERATURE_OUT.getKey() },
+            new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_OUT_PERCENT, INDOOR_TEMPERATURE_IN, INDOOR_TEMPERATURE_OUT,
+                    OUTDOOR_TEMPERATURE_IN, OUTDOOR_TEMPERATURE_OUT },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 2 }),
     RECU_SIZE(ComfoAirBindingConstants.PROPERTY_OPTION_RECU_SIZE, DataTypeNumber.getInstance(),
             new int[] { 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 3,
-            new String[] { FAN_IN_PERCENT.getKey(), FAN_OUT_PERCENT.getKey(), FAN_IN_0.getKey(), FAN_IN_1.getKey(),
-                    FAN_IN_2.getKey(), FAN_IN_3.getKey(), FAN_OUT_0.getKey(), FAN_OUT_1.getKey(), FAN_OUT_2.getKey(),
-                    FAN_OUT_3.getKey() },
+            new ComfoAirCommandType[] { FAN_IN_PERCENT, FAN_OUT_PERCENT, FAN_IN_0, FAN_IN_1, FAN_IN_2, FAN_IN_3,
+                    FAN_OUT_0, FAN_OUT_1, FAN_OUT_2, FAN_OUT_3 },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 3 }),
     IS_CHIMNEY(ComfoAirBindingConstants.PROPERTY_OPTION_CHIMNEY, DataTypeBoolean.getInstance(), new int[] { 0x01 },
-            Constants.REQUEST_SET_STATES, 8, 4, Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_STATES,
+            Constants.REQUEST_SET_STATES, 8, 4, Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_STATES,
             Constants.REPLY_GET_STATES, new int[] { 4 }, 0x01),
     IS_COOKERHOOD(ComfoAirBindingConstants.PROPERTY_OPTION_COOKERHOOD, DataTypeBoolean.getInstance(),
             new int[] { 0x02 }, Constants.REQUEST_SET_STATES, 8, 4,
-            new String[] { COOKERHOOD_DELAY.getKey(), COOKERHOOD_STATE.getKey(), COOKERHOOD_SPEED.getKey(),
-                    COOKERHOOD_TEMPERATURE.getKey() },
+            new ComfoAirCommandType[] { COOKERHOOD_DELAY, COOKERHOOD_STATE, COOKERHOOD_SPEED, COOKERHOOD_TEMPERATURE },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 4 }, 0x02),
     IS_HEATER(ComfoAirBindingConstants.PROPERTY_OPTION_HEATER, DataTypeBoolean.getInstance(), new int[] { 0x04 },
             Constants.REQUEST_SET_STATES, 8, 4,
-            new String[] { HEATER_TARGET_TEMPERATURE.getKey(), HEATER_POWER.getKey(), HEATER_STATE.getKey(),
-                    HEATER_POWER_I.getKey(), HEATER_TEMPERATURE.getKey() },
+            new ComfoAirCommandType[] { HEATER_TARGET_TEMPERATURE, HEATER_POWER, HEATER_STATE, HEATER_POWER_I,
+                    HEATER_TEMPERATURE },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 4 }, 0x04),
     IS_ENTHALPY(ComfoAirBindingConstants.PROPERTY_OPTION_ENTHALPY, DataTypeNumber.getInstance(),
             new int[] { 0x00, 0x01, 0x02 }, Constants.REQUEST_SET_STATES, 8, 6,
-            new String[] { ENTHALPY_TEMPERATURE.getKey(), ENTHALPY_HUMIDITY.getKey(), ENTHALPY_LEVEL.getKey(),
-                    ENTHALPY_STATE.getKey(), ENTHALPY_TIME.getKey() },
+            new ComfoAirCommandType[] { ENTHALPY_TEMPERATURE, ENTHALPY_HUMIDITY, ENTHALPY_LEVEL, ENTHALPY_STATE,
+                    ENTHALPY_TIME },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 9 }),
     IS_EWT(ComfoAirBindingConstants.PROPERTY_OPTION_EWT, DataTypeNumber.getInstance(), new int[] { 0x00, 0x01, 0x02 },
             Constants.REQUEST_SET_STATES, 8, 7,
-            new String[] { EWT_SPEED.getKey(), EWT_TEMPERATURE_LOW.getKey(), EWT_TEMPERATURE_HIGH.getKey(),
-                    EWT_STATE.getKey(), EWT_TEMPERATURE.getKey() },
+            new ComfoAirCommandType[] { EWT_SPEED, EWT_TEMPERATURE_LOW, EWT_TEMPERATURE_HIGH, EWT_STATE,
+                    EWT_TEMPERATURE },
             Constants.REQUEST_GET_STATES, Constants.REPLY_GET_STATES, new int[] { 10 }),
     SOFTWARE_MAIN_VERSION(ComfoAirBindingConstants.PROPERTY_SOFTWARE_MAIN_VERSION, DataTypeNumber.getInstance(),
             Constants.REQUEST_GET_FIRMWARE, Constants.REPLY_GET_FIRMWARE, new int[] { 0 }),
@@ -411,85 +398,83 @@ public enum ComfoAirCommandType {
             DataTypeNumber.getInstance(), Constants.REQUEST_GET_ERRORS, Constants.REPLY_GET_ERRORS, new int[] { 12 }),
     ERROR_RESET(ComfoAirBindingConstants.CG_RESETS_PREFIX + ComfoAirBindingConstants.CHANNEL_ERROR_RESET,
             DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_RESETS, 4, 0,
-            new String[] {
-                    ComfoAirBindingConstants.CG_ERRORS_PREFIX + ComfoAirBindingConstants.CHANNEL_ERROR_MESSAGE }),
+            new ComfoAirCommandType[] { ERROR_MESSAGE }),
+    FILTER_ERROR(ComfoAirBindingConstants.CG_ERRORS_PREFIX + ComfoAirBindingConstants.CHANNEL_FILTER_ERROR,
+            DataTypeBoolean.getInstance(), Constants.REQUEST_GET_ERRORS, Constants.REPLY_GET_ERRORS, new int[] { 8 },
+            0x01),
     FILTER_HOURS(ComfoAirBindingConstants.CG_TIMES_PREFIX + ComfoAirBindingConstants.CHANNEL_TIME_FILTER,
             DataTypeTime.getInstance(), Constants.REQUEST_GET_HOURS, Constants.REPLY_GET_HOURS, new int[] { 15, 16 }),
     FILTER_RESET(ComfoAirBindingConstants.CG_RESETS_PREFIX + ComfoAirBindingConstants.CHANNEL_FILTER_RESET,
             DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_RESETS, 4, 3,
-            new String[] { ComfoAirBindingConstants.CG_TIMES_PREFIX + ComfoAirBindingConstants.CHANNEL_TIME_FILTER,
-                    ComfoAirBindingConstants.CG_ERRORS_PREFIX + ComfoAirBindingConstants.CHANNEL_FILTER_ERROR }),
-    FILTER_ERROR(ComfoAirBindingConstants.CG_ERRORS_PREFIX + ComfoAirBindingConstants.CHANNEL_FILTER_ERROR,
-            DataTypeBoolean.getInstance(), Constants.REQUEST_GET_ERRORS, Constants.REPLY_GET_ERRORS, new int[] { 8 },
-            0x01),
+            new ComfoAirCommandType[] { FILTER_HOURS, FILTER_ERROR }),
     ANALOG1_NEGATIVE(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_NEGATIVE,
             DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_ANALOGS, 19, 2,
-            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
+            Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
             0x01),
     ANALOG2_NEGATIVE(ComfoAirBindingConstants.CG_ANALOG2_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_NEGATIVE,
             DataTypeBoolean.getInstance(), new int[] { 0x02 }, Constants.REQUEST_SET_ANALOGS, 19, 2,
-            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
+            Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
             0x02),
     ANALOG3_NEGATIVE(ComfoAirBindingConstants.CG_ANALOG3_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_NEGATIVE,
             DataTypeBoolean.getInstance(), new int[] { 0x04 }, Constants.REQUEST_SET_ANALOGS, 19, 2,
-            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
+            Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
             0x04),
     ANALOG4_NEGATIVE(ComfoAirBindingConstants.CG_ANALOG4_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_NEGATIVE,
             DataTypeBoolean.getInstance(), new int[] { 0x08 }, Constants.REQUEST_SET_ANALOGS, 19, 2,
-            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
+            Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
             0x08),
     RF_NEGATIVE(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_NEGATIVE,
             DataTypeBoolean.getInstance(), new int[] { 0x10 }, Constants.REQUEST_SET_ANALOGS, 19, 2,
-            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
+            Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 2 },
             0x10),
     ANALOG1_MIN(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MIN,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 3, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 3, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 3 }),
     ANALOG1_MAX(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MAX,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 4, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 4, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 4 }),
     ANALOG1_VALUE(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_VALUE,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 5, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 5, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 5 }),
     ANALOG2_MIN(ComfoAirBindingConstants.CG_ANALOG2_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MIN,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 6, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 6, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 6 }),
     ANALOG2_MAX(ComfoAirBindingConstants.CG_ANALOG2_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MAX,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 7, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 7, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 7 }),
     ANALOG2_VALUE(ComfoAirBindingConstants.CG_ANALOG2_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_VALUE,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 8, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 8, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 8 }),
     ANALOG3_MIN(ComfoAirBindingConstants.CG_ANALOG3_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MIN,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 9, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 9, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 9 }),
     ANALOG3_MAX(ComfoAirBindingConstants.CG_ANALOG3_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MAX,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 10, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 10, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 10 }),
     ANALOG3_VALUE(ComfoAirBindingConstants.CG_ANALOG3_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_VALUE,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 11, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 11, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 11 }),
     ANALOG4_MIN(ComfoAirBindingConstants.CG_ANALOG4_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MIN,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 12, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 12, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 12 }),
     ANALOG4_MAX(ComfoAirBindingConstants.CG_ANALOG4_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MAX,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 13, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 13, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 13 }),
     ANALOG4_VALUE(ComfoAirBindingConstants.CG_ANALOG4_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_VALUE,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 14, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 14, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 14 }),
     RF_MIN(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_MIN,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 15, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 15, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 15 }),
     RF_MAX(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_MAX,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 16, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 16, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 16 }),
     RF_VALUE(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_VALUE,
-            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 17, Constants.EMPTY_STRING_ARRAY,
+            DataTypeNumber.getInstance(), Constants.REQUEST_SET_ANALOGS, 19, 17, Constants.EMPTY_TYPE_ARRAY,
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 17 }),
     ANALOG_MODE(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_PRIORITY,
             DataTypeNumber.getInstance(), new int[] { 0x00, 0x01 }, Constants.REQUEST_SET_ANALOGS, 19, 18,
-            Constants.EMPTY_STRING_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 18 }),
+            Constants.EMPTY_TYPE_ARRAY, Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 18 }),
     ANALOG1_VOLT(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_VOLT,
             DataTypeVolt.getInstance(), Constants.REQUEST_GET_ANALOG_VOLTS, Constants.REPLY_GET_ANALOG_VOLTS,
             new int[] { 0 }),
@@ -504,28 +489,24 @@ public enum ComfoAirCommandType {
             new int[] { 3 }),
     ANALOG1_MODE(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MODE,
             DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_ANALOGS, 19, 1,
-            new String[] { ANALOG1_NEGATIVE.getKey(), ANALOG1_MIN.getKey(), ANALOG1_MAX.getKey(),
-                    ANALOG1_VALUE.getKey(), ANALOG1_VOLT.getKey() },
+            new ComfoAirCommandType[] { ANALOG1_NEGATIVE, ANALOG1_MIN, ANALOG1_MAX, ANALOG1_VALUE, ANALOG1_VOLT },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 1 }, 0x01),
     ANALOG2_MODE(ComfoAirBindingConstants.CG_ANALOG2_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MODE,
             DataTypeBoolean.getInstance(), new int[] { 0x02 }, Constants.REQUEST_SET_ANALOGS, 19, 1,
-            new String[] { ANALOG2_NEGATIVE.getKey(), ANALOG2_MIN.getKey(), ANALOG2_MAX.getKey(),
-                    ANALOG2_VALUE.getKey(), ANALOG2_VOLT.getKey() },
+            new ComfoAirCommandType[] { ANALOG2_NEGATIVE, ANALOG2_MIN, ANALOG2_MAX, ANALOG2_VALUE, ANALOG2_VOLT },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 1 }, 0x02),
     ANALOG3_MODE(ComfoAirBindingConstants.CG_ANALOG3_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MODE,
             DataTypeBoolean.getInstance(), new int[] { 0x04 }, Constants.REQUEST_SET_ANALOGS, 19, 1,
-            new String[] { ANALOG3_NEGATIVE.getKey(), ANALOG3_MIN.getKey(), ANALOG3_MAX.getKey(),
-                    ANALOG3_VALUE.getKey(), ANALOG3_VOLT.getKey() },
+            new ComfoAirCommandType[] { ANALOG3_NEGATIVE, ANALOG3_MIN, ANALOG3_MAX, ANALOG3_VALUE, ANALOG3_VOLT },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 1 }, 0x04),
     ANALOG4_MODE(ComfoAirBindingConstants.CG_ANALOG4_PREFIX + ComfoAirBindingConstants.CHANNEL_ANALOG_MODE,
             DataTypeBoolean.getInstance(), new int[] { 0x08 }, Constants.REQUEST_SET_ANALOGS, 19, 1,
-            new String[] { ANALOG4_NEGATIVE.getKey(), ANALOG4_MIN.getKey(), ANALOG4_MAX.getKey(),
-                    ANALOG4_VALUE.getKey(), ANALOG4_VOLT.getKey() },
+            new ComfoAirCommandType[] { ANALOG4_NEGATIVE, ANALOG4_MIN, ANALOG4_MAX, ANALOG4_VALUE, ANALOG4_VOLT },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 1 }, 0x08),
     RF_MODE(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_RF_MODE,
             DataTypeBoolean.getInstance(), new int[] { 0x10 }, Constants.REQUEST_SET_ANALOGS, 19, 1,
-            new String[] { RF_NEGATIVE.getKey(), RF_MIN.getKey(), RF_MAX.getKey(), RF_VALUE.getKey() },
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 1 }, 0x10),
+            new ComfoAirCommandType[] { RF_NEGATIVE, RF_MIN, RF_MAX, RF_VALUE }, Constants.REQUEST_GET_ANALOGS,
+            Constants.REPLY_GET_ANALOGS, new int[] { 1 }, 0x10),
     IS_L1_SWITCH(ComfoAirBindingConstants.CG_INPUTS_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_L1_SWITCH,
             DataTypeBoolean.getInstance(), Constants.REQUEST_GET_INPUTS, Constants.REPLY_GET_INPUTS, new int[] { 0 },
             0x01),
@@ -551,29 +532,28 @@ public enum ComfoAirCommandType {
             0x10),
     IS_ANALOG1(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_ANALOG,
             DataTypeBoolean.getInstance(), new int[] { 0x01 }, Constants.REQUEST_SET_ANALOGS, 19, 0,
-            new String[] { ANALOG1_MODE.getKey(), ANALOG1_NEGATIVE.getKey(), ANALOG1_MIN.getKey(), ANALOG1_MAX.getKey(),
-                    ANALOG1_VALUE.getKey(), ANALOG1_VOLT.getKey() },
+            new ComfoAirCommandType[] { ANALOG1_MODE, ANALOG1_NEGATIVE, ANALOG1_MIN, ANALOG1_MAX, ANALOG1_VALUE,
+                    ANALOG1_VOLT },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 0 }, 0x01),
     IS_ANALOG2(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_ANALOG,
             DataTypeBoolean.getInstance(), new int[] { 0x02 }, Constants.REQUEST_SET_ANALOGS, 19, 0,
-            new String[] { ANALOG2_MODE.getKey(), ANALOG2_NEGATIVE.getKey(), ANALOG2_MIN.getKey(), ANALOG2_MAX.getKey(),
-                    ANALOG2_VALUE.getKey(), ANALOG2_VOLT.getKey() },
+            new ComfoAirCommandType[] { ANALOG2_MODE, ANALOG2_NEGATIVE, ANALOG2_MIN, ANALOG2_MAX, ANALOG2_VALUE,
+                    ANALOG2_VOLT },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 0 }, 0x02),
     IS_ANALOG3(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_ANALOG,
             DataTypeBoolean.getInstance(), new int[] { 0x04 }, Constants.REQUEST_SET_ANALOGS, 19, 0,
-            new String[] { ANALOG3_MODE.getKey(), ANALOG3_NEGATIVE.getKey(), ANALOG3_MIN.getKey(), ANALOG3_MAX.getKey(),
-                    ANALOG3_VALUE.getKey(), ANALOG3_VOLT.getKey() },
+            new ComfoAirCommandType[] { ANALOG3_MODE, ANALOG3_NEGATIVE, ANALOG3_MIN, ANALOG3_MAX, ANALOG3_VALUE,
+                    ANALOG3_VOLT },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 0 }, 0x04),
     IS_ANALOG4(ComfoAirBindingConstants.CG_ANALOG1_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_ANALOG,
             DataTypeBoolean.getInstance(), new int[] { 0x08 }, Constants.REQUEST_SET_ANALOGS, 19, 0,
-            new String[] { ANALOG4_MODE.getKey(), ANALOG4_NEGATIVE.getKey(), ANALOG4_MIN.getKey(), ANALOG4_MAX.getKey(),
-                    ANALOG4_VALUE.getKey(), ANALOG4_VOLT.getKey() },
+            new ComfoAirCommandType[] { ANALOG4_MODE, ANALOG4_NEGATIVE, ANALOG4_MIN, ANALOG4_MAX, ANALOG4_VALUE,
+                    ANALOG4_VOLT },
             Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 0 }, 0x08),
     IS_RF(ComfoAirBindingConstants.CG_ANALOGRF_PREFIX + ComfoAirBindingConstants.CHANNEL_IS_RF,
             DataTypeBoolean.getInstance(), new int[] { 0x10 }, Constants.REQUEST_SET_ANALOGS, 19, 0,
-            new String[] { RF_MODE.getKey(), RF_NEGATIVE.getKey(), RF_MIN.getKey(), RF_MAX.getKey(),
-                    RF_VALUE.getKey() },
-            Constants.REQUEST_GET_ANALOGS, Constants.REPLY_GET_ANALOGS, new int[] { 0 }, 0x10);
+            new ComfoAirCommandType[] { RF_MODE, RF_NEGATIVE, RF_MIN, RF_MAX, RF_VALUE }, Constants.REQUEST_GET_ANALOGS,
+            Constants.REPLY_GET_ANALOGS, new int[] { 0 }, 0x10);
 
     private final String key;
     private final ComfoAirDataType data_type;
@@ -602,7 +582,7 @@ public enum ComfoAirCommandType {
      * Affected commands which should be refreshed after a successful change
      * command call.
      */
-    private final String @Nullable [] change_affected;
+    private final ComfoAirCommandType @Nullable [] change_affected;
 
     /*
      * Command for reading properties.
@@ -627,9 +607,10 @@ public enum ComfoAirCommandType {
     /*
      * Constructor for full read/write command
      */
-    private ComfoAirCommandType(String key, ComfoAirDataType data_type, int[] possible_values, int change_command,
-            int change_data_size, int change_data_pos, String[] change_affected, int read_command,
-            int read_reply_command, int[] read_reply_data_pos, int read_reply_data_bits) {
+    private ComfoAirCommandType(String key, ComfoAirDataType data_type, int @Nullable [] possible_values,
+            int change_command, int change_data_size, int change_data_pos,
+            ComfoAirCommandType @Nullable [] change_affected, int read_command, int read_reply_command,
+            int @Nullable [] read_reply_data_pos, int read_reply_data_bits) {
         this.key = key;
         this.data_type = data_type;
         this.possible_values = possible_values;
@@ -647,56 +628,29 @@ public enum ComfoAirCommandType {
      * Constructor for read/write command w/o predefined read_reply_data_bits
      */
     private ComfoAirCommandType(String key, ComfoAirDataType data_type, int[] possible_values, int change_command,
-            int change_data_size, int change_data_pos, String[] change_affected, int read_command,
+            int change_data_size, int change_data_pos, ComfoAirCommandType[] change_affected, int read_command,
             int read_reply_command, int[] read_reply_data_pos) {
-        this.key = key;
-        this.data_type = data_type;
-        this.possible_values = possible_values;
-        this.change_command = change_command;
-        this.change_data_size = change_data_size;
-        this.change_data_pos = change_data_pos;
-        this.change_affected = change_affected;
-        this.read_command = read_command;
-        this.read_reply_command = read_reply_command;
-        this.read_reply_data_pos = read_reply_data_pos;
-        this.read_reply_data_bits = 0;
+        this(key, data_type, possible_values, change_command, change_data_size, change_data_pos, change_affected,
+                read_command, read_reply_command, read_reply_data_pos, 0);
     }
 
     /*
      * Constructor for read/write command w/o predefined read_reply_data_bits & possible_values
      */
     private ComfoAirCommandType(String key, ComfoAirDataType data_type, int change_command, int change_data_size,
-            int change_data_pos, String[] change_affected, int read_command, int read_reply_command,
+            int change_data_pos, ComfoAirCommandType[] change_affected, int read_command, int read_reply_command,
             int[] read_reply_data_pos) {
-        this.key = key;
-        this.data_type = data_type;
-        this.possible_values = null;
-        this.change_command = change_command;
-        this.change_data_size = change_data_size;
-        this.change_data_pos = change_data_pos;
-        this.change_affected = change_affected;
-        this.read_command = read_command;
-        this.read_reply_command = read_reply_command;
-        this.read_reply_data_pos = read_reply_data_pos;
-        this.read_reply_data_bits = 0;
+        this(key, data_type, null, change_command, change_data_size, change_data_pos, change_affected, read_command,
+                read_reply_command, read_reply_data_pos, 0);
     }
 
     /*
      * Constructor for write-only command (reset)
      */
     private ComfoAirCommandType(String key, ComfoAirDataType data_type, int[] possible_values, int change_command,
-            int change_data_size, int change_data_pos, String[] change_affected) {
-        this.key = key;
-        this.data_type = data_type;
-        this.possible_values = possible_values;
-        this.change_command = change_command;
-        this.change_data_size = change_data_size;
-        this.change_data_pos = change_data_pos;
-        this.change_affected = change_affected;
-        this.read_command = 0;
-        this.read_reply_command = 0;
-        this.read_reply_data_pos = null;
-        this.read_reply_data_bits = 0;
+            int change_data_size, int change_data_pos, ComfoAirCommandType[] change_affected) {
+        this(key, data_type, possible_values, change_command, change_data_size, change_data_pos, change_affected, 0, 0,
+                null, 0);
     }
 
     /*
@@ -704,17 +658,7 @@ public enum ComfoAirCommandType {
      */
     private ComfoAirCommandType(String key, ComfoAirDataType data_type, int read_command, int read_reply_command,
             int[] read_reply_data_pos, int read_reply_data_bits) {
-        this.key = key;
-        this.data_type = data_type;
-        this.possible_values = null;
-        this.change_command = 0;
-        this.change_data_size = 0;
-        this.change_data_pos = 0;
-        this.change_affected = null;
-        this.read_command = read_command;
-        this.read_reply_command = read_reply_command;
-        this.read_reply_data_pos = read_reply_data_pos;
-        this.read_reply_data_bits = read_reply_data_bits;
+        this(key, data_type, null, 0, 0, 0, null, read_command, read_reply_command, read_reply_data_pos, 0);
     }
 
     /*
@@ -722,17 +666,7 @@ public enum ComfoAirCommandType {
      */
     private ComfoAirCommandType(String key, ComfoAirDataType data_type, int read_command, int read_reply_command,
             int[] read_reply_data_pos) {
-        this.key = key;
-        this.data_type = data_type;
-        this.possible_values = null;
-        this.change_command = 0;
-        this.change_data_size = 0;
-        this.change_data_pos = 0;
-        this.change_affected = null;
-        this.read_command = read_command;
-        this.read_reply_command = read_reply_command;
-        this.read_reply_data_pos = read_reply_data_pos;
-        this.read_reply_data_bits = 0;
+        this(key, data_type, null, 0, 0, 0, null, read_command, read_reply_command, read_reply_data_pos, 0);
     }
 
     public static class Constants {
@@ -781,6 +715,7 @@ public enum ComfoAirCommandType {
 
         public static final String[] EMPTY_STRING_ARRAY = new String[0];
         public static final int[] EMPTY_INT_ARRAY = new int[0];
+        public static final ComfoAirCommandType[] EMPTY_TYPE_ARRAY = new ComfoAirCommandType[0];
     }
 
     /**
@@ -858,7 +793,7 @@ public enum ComfoAirCommandType {
      * @return ComfoAirCommand identified by key
      */
     public static @Nullable ComfoAirCommand getReadCommand(String key) {
-        ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
+        ComfoAirCommandType commandType = getCommandTypeByKey(key);
 
         if (commandType != null) {
             return new ComfoAirCommand(key);
@@ -876,19 +811,14 @@ public enum ComfoAirCommandType {
      * @return initialized ComfoAirCommand
      */
     public static @Nullable ComfoAirCommand getChangeCommand(String key, Command command) {
-        ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
+        ComfoAirCommandType commandType = getCommandTypeByKey(key);
         State value = UnDefType.NULL;
 
         if (commandType != null) {
             ComfoAirDataType dataType = commandType.getDataType();
-            if (dataType instanceof DataTypeBoolean) {
-                value = (OnOffType) command;
-            } else if (dataType instanceof DataTypeNumber || dataType instanceof DataTypeRPM) {
-                value = (DecimalType) command;
-            } else {
-                if (command instanceof QuantityType<?>) {
-                    value = (QuantityType<?>) command;
-                }
+            if (dataType == DataTypeBoolean.getInstance() || dataType == DataTypeNumber.getInstance()
+                    || dataType == DataTypeRPM.getInstance() || command instanceof QuantityType<?>) {
+                value = (State) command;
             }
             if (value instanceof UnDefType) {
                 return null;
@@ -922,29 +852,15 @@ public enum ComfoAirCommandType {
 
         Map<Integer, ComfoAirCommand> commands = new HashMap<>();
 
-        ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
+        ComfoAirCommandType commandType = getCommandTypeByKey(key);
         if (commandType != null) {
-            if (commandType.read_reply_command != 0) {
-                int replyCmd = commandType.read_reply_command;
-
-                ComfoAirCommand command = new ComfoAirCommand(key);
-                commands.put(replyCmd, command);
-            }
+            uniteCommandsMap(commands, commandType);
 
             if (commandType.change_affected != null) {
-                for (String affectedKey : commandType.change_affected) {
+                for (ComfoAirCommandType affectedCommandType : commandType.change_affected) {
                     // refresh affected event keys only when they are used
-                    if (!usedKeys.contains(affectedKey)) {
-                        continue;
-                    }
-
-                    ComfoAirCommandType affectedCommandType = ComfoAirCommandType.getCommandTypeByKey(affectedKey);
-
-                    if (affectedCommandType != null) {
-                        if (affectedCommandType.read_reply_command == 0) {
-                            continue;
-                        }
-                        commands = modifiedCommandCollection(commands, affectedCommandType);
+                    if (usedKeys.contains(affectedCommandType.getKey())) {
+                        uniteCommandsMap(commands, affectedCommandType);
                     }
                 }
             }
@@ -961,13 +877,9 @@ public enum ComfoAirCommandType {
 
         Map<Integer, ComfoAirCommand> commands = new HashMap<>();
         for (ComfoAirCommandType entry : values()) {
-            if (!keys.contains(entry.key)) {
-                continue;
+            if (keys.contains(entry.key)) {
+                uniteCommandsMap(commands, entry);
             }
-            if (entry.read_reply_command == 0) {
-                continue;
-            }
-            commands = modifiedCommandCollection(commands, entry);
         }
         return commands.values();
     }
@@ -982,10 +894,9 @@ public enum ComfoAirCommandType {
     public static List<ComfoAirCommandType> getCommandTypesByReplyCmd(int replyCmd) {
         List<ComfoAirCommandType> commands = new ArrayList<>();
         for (ComfoAirCommandType entry : values()) {
-            if (entry.read_reply_command != replyCmd) {
-                continue;
+            if (entry.read_reply_command == replyCmd) {
+                commands.add(entry);
             }
-            commands.add(entry);
         }
         return commands;
     }
@@ -1007,18 +918,18 @@ public enum ComfoAirCommandType {
     }
 
     @SuppressWarnings("null")
-    private static Map<Integer, ComfoAirCommand> modifiedCommandCollection(Map<Integer, ComfoAirCommand> commands,
-            ComfoAirCommandType commandType) {
-        int replyCmd = commandType.read_reply_command;
+    private static void uniteCommandsMap(Map<Integer, ComfoAirCommand> commands, ComfoAirCommandType commandType) {
+        if (commandType.read_reply_command != 0) {
+            int replyCmd = commandType.read_reply_command;
 
-        ComfoAirCommand command = commands.get(replyCmd);
+            ComfoAirCommand command = commands.get(replyCmd);
 
-        if (command == null) {
-            command = new ComfoAirCommand(commandType.key);
-            commands.put(replyCmd, command);
-        } else {
-            command.addKey(commandType.key);
+            if (command == null) {
+                command = new ComfoAirCommand(commandType.key);
+                commands.put(replyCmd, command);
+            } else {
+                command.addKey(commandType.key);
+            }
         }
-        return commands;
     }
 }
