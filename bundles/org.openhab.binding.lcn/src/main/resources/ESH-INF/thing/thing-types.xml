@@ -151,6 +151,14 @@
 		<item-type>Rollershutter</item-type>
 		<label>Roller Shutter</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="invertUpDown" type="boolean">
+				<label>Invert Up/Down</label>
+				<description>According LCN spec., the Up wire is connected to the "normally open" contact/Output 1. Use this
+					parameter to invert that logic.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-group-type id="rollershutterrelays">
