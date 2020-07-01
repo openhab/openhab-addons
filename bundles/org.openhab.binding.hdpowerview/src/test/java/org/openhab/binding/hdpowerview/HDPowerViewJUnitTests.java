@@ -13,8 +13,8 @@
 package org.openhab.binding.hdpowerview;
 
 import static org.junit.Assert.*;
-import static org.openhab.binding.hdpowerview.internal.api.PosKind.*;
-import static org.openhab.binding.hdpowerview.internal.api.PosSeq.*;
+import static org.openhab.binding.hdpowerview.internal.api.ActuatorClass.*;
+import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -34,7 +34,7 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.junit.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
-import org.openhab.binding.hdpowerview.internal.api.PosKind;
+import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
@@ -102,41 +102,41 @@ public class HDPowerViewJUnitTests {
             State pos;
 
             // shade fully up
-            test = ShadePosition.create(REGULAR, 0);
+            test = ShadePosition.create(ZERO_IS_CLOSED, 0);
             assertNotNull(test);
-            pos = test.getState(PRIMARY, REGULAR);
+            pos = test.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(0, ((PercentType) pos).intValue());
-            pos = test.getState(PRIMARY, VANE);
+            pos = test.getState(PRIMARY_ACTUATOR, VANE_COORDS);
             assertTrue(UnDefType.UNDEF.equals(pos));
 
             // shade fully down (method 1)
-            test = ShadePosition.create(REGULAR, 100);
+            test = ShadePosition.create(ZERO_IS_CLOSED, 100);
             assertNotNull(test);
-            pos = test.getState(PRIMARY, REGULAR);
+            pos = test.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(100, ((PercentType) pos).intValue());
-            pos = test.getState(PRIMARY, VANE);
+            pos = test.getState(PRIMARY_ACTUATOR, VANE_COORDS);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(0, ((PercentType) pos).intValue());
 
             // shade fully down (method 2)
-            test = ShadePosition.create(VANE, 0);
+            test = ShadePosition.create(VANE_COORDS, 0);
             assertNotNull(test);
-            pos = test.getState(PRIMARY, REGULAR);
+            pos = test.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(100, ((PercentType) pos).intValue());
-            pos = test.getState(PRIMARY, VANE);
+            pos = test.getState(PRIMARY_ACTUATOR, VANE_COORDS);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(0, ((PercentType) pos).intValue());
 
             // shade fully down (method 2) and vane fully open
-            test = ShadePosition.create(VANE, 100);
+            test = ShadePosition.create(VANE_COORDS, 100);
             assertNotNull(test);
-            pos = test.getState(PRIMARY, REGULAR);
+            pos = test.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(100, ((PercentType) pos).intValue());
-            pos = test.getState(PRIMARY, VANE);
+            pos = test.getState(PRIMARY_ACTUATOR, VANE_COORDS);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(100, ((PercentType) pos).intValue());
 
@@ -218,19 +218,19 @@ public class HDPowerViewJUnitTests {
                 assertNotNull(shadeData);
                 ShadePosition positions = shadeData.positions;
                 assertNotNull(positions);
-                PosKind kind = positions.getPosKind();
-                assertNotNull(kind);
+                CoordinateSystem coordSys = positions.getCoordinateType(PRIMARY_ACTUATOR);
+                assertNotNull(coordSys);
 
-                pos = positions.getState(PRIMARY, kind);
+                pos = positions.getState(PRIMARY_ACTUATOR, coordSys);
                 assertEquals(PercentType.class, pos.getClass());
 
-                pos = positions.getState(PRIMARY, REGULAR);
+                pos = positions.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
                 assertEquals(PercentType.class, pos.getClass());
 
                 int position = ((PercentType) pos).intValue();
                 position = position + ((position <= 10) ? 5 : -5);
 
-                ShadePosition newPos = ShadePosition.create(REGULAR, position);
+                ShadePosition newPos = ShadePosition.create(ZERO_IS_CLOSED, position);
                 assertNotNull(newPos);
 
                 if (allowShadeMovementCommands) {
@@ -306,17 +306,17 @@ public class HDPowerViewJUnitTests {
 
             ShadePosition shadePos = shadeData.positions;
             assertNotNull(shadePos);
-            assertEquals(REGULAR, shadePos.getPosKind());
+            assertEquals(ZERO_IS_CLOSED, shadePos.getCoordinateType(PRIMARY_ACTUATOR));
 
-            State pos = shadePos.getState(PRIMARY, REGULAR);
+            State pos = shadePos.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(59, ((PercentType) pos).intValue());
 
-            pos = shadePos.getState(SECONDARY, INVERTED);
+            pos = shadePos.getState(SECONDARY_ACTUATOR, ZERO_IS_OPEN);
             assertEquals(PercentType.class, pos.getClass());
             assertEquals(65, ((PercentType) pos).intValue());
 
-            pos = shadePos.getState(PRIMARY, VANE);
+            pos = shadePos.getState(PRIMARY_ACTUATOR, VANE_COORDS);
             assertEquals(UnDefType.class, pos.getClass());
         } catch (JsonParseException e) {
             fail(e.getMessage());
