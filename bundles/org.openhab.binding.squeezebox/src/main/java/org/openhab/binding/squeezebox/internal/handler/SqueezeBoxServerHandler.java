@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -332,7 +333,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             return;
         }
         // Create basic auth string for jsonrpc interface
-        basicAuthorization = new String(Base64.getEncoder().encode((userId + ":" + password).getBytes()));
+        basicAuthorization = new String(
+                Base64.getEncoder().encode((userId + ":" + password).getBytes(StandardCharsets.UTF_8)));
         logger.debug("Logging into Squeeze Server using userId={}", userId);
         sendCommand("login " + userId + " " + password);
     }
@@ -449,13 +451,14 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         public void run() {
             BufferedReader reader = null;
             boolean endOfStream = false;
+            ScheduledFuture<?> requestFavoritesJob = null;
 
             try {
                 reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 login();
                 updateStatus(ThingStatus.ONLINE);
                 requestPlayers();
-                scheduleRequestFavorites();
+                requestFavoritesJob = scheduleRequestFavorites();
                 sendCommand("listen 1");
 
                 String message = null;
@@ -502,6 +505,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "end of stream on socket read");
                 scheduleReconnect();
+            }
+            if (requestFavoritesJob != null && !requestFavoritesJob.isDone()) {
+                requestFavoritesJob.cancel(true);
+                logger.debug("Canceled request favorites job");
             }
             logger.debug("Squeeze Server listener exiting.");
         }
@@ -1020,9 +1027,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
         }
 
-        private void scheduleRequestFavorites() {
+        private ScheduledFuture<?> scheduleRequestFavorites() {
             // Delay the execution to give the player thing handlers a chance to initialize
-            scheduler.schedule(SqueezeBoxServerHandler.this::requestFavorites, 3L, TimeUnit.SECONDS);
+            return scheduler.schedule(SqueezeBoxServerHandler.this::requestFavorites, 3L, TimeUnit.SECONDS);
         }
 
         private void updateCustomButtons(final String mac) {
