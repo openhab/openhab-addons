@@ -154,6 +154,12 @@ public class HDPowerViewWebTargets {
         return jsonResponse;
     }
 
+    public @Nullable Shade getShade(int shadeId) throws ProcessingException, HubMaintenanceException {
+        WebTarget target = shade.resolveTemplate(ID, shadeId);
+        String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
+        return gson.fromJson(json, Shade.class);
+    }
+
     public @Nullable Shade refreshShade(int shadeId) throws ProcessingException, HubMaintenanceException {
         WebTarget target = shade.resolveTemplate(ID, shadeId).queryParam(REFRESH, true);
         String json = invoke(target.request().header(CONN_HDR, CONN_VAL).buildGet(), target, null);
