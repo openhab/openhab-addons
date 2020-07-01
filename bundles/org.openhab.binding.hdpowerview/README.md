@@ -110,12 +110,10 @@ Depending on whether the shade is a top-down, bottom-up, left-right, right-left,
 
 ### Interdependency between Channel positions
 
-On some shades certain combinations of positions of the shade actuators are physically not possible.
+On some types of shades with movable vanes, the vanes cannot be moved unless the shade is down.
+So there is an interdependency between the value of `vane` and the value of `position` as follows..
 
-On single action shades with movable vanes, the vanes cannot be moved unless the shade is down.
-So there is an interdependency between the value of `vane` and the value of `position`, as shown in Table A.
-
-| Table A - Case             | State of `position` | State of `vane` |
+| Case                       | State of `position` | State of `vane` |
 |----------------------------|---------------------|-----------------|
 | Shade up                   | 0% = `UP`           | `UNDEFINED`     |
 | Shade 50% down             | 50%                 | `UNDEFINED`     |
@@ -123,16 +121,8 @@ So there is an interdependency between the value of `vane` and the value of `pos
 | Shade 100% down, Vane 50%  | 100% = `DOWN`       | 50%             |
 | Shade 100% down, Vane 100% | 100% = `DOWN`       | 100%            |
 
-Similarly, on dual action shades, the top rail cannot be moved unless the bottom rail is down.
-So there is an interdependency between the value of `secondary` and the value of `position`, as shown in Table B.
-
-| Table B - Case                      | State of `position` | State of `secondary` |
-|-------------------------------------|---------------------|----------------------|
-| Both rails up                       | 0% = `UP`           | 0% = `UP`            |
-| Bottom rail 50% down, Top rail up   | 50%                 | 0% = `UP`            |
-| Bottom rail down, Top rail up       | 100% = `DOWN`       | 0% = `UP`            |
-| Bottom rail down, Top rail 50% down | 100% = `DOWN`       | 50%                  |
-| Both rails down                     | 100% = `DOWN`       | 100% = `DOWN`        |
+On dual action shades, the top rail cannot move below the position of the bottom rail.
+So the value of `secondary` cannot become larger than the value of `position`.
 
 ## Refreshing the PowerView Hub Cache
 
