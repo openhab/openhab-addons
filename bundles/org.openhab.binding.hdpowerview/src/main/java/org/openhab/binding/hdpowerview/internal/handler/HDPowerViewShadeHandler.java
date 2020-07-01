@@ -13,8 +13,8 @@
 package org.openhab.binding.hdpowerview.internal.handler;
 
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
-import static org.openhab.binding.hdpowerview.internal.api.PosKind.*;
-import static org.openhab.binding.hdpowerview.internal.api.PosSeq.*;
+import static org.openhab.binding.hdpowerview.internal.api.ActuatorClass.*;
+import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -33,11 +33,12 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
-import org.openhab.binding.hdpowerview.internal.api.PosKind;
-import org.openhab.binding.hdpowerview.internal.api.PosSeq;
+import org.openhab.binding.hdpowerview.internal.api.ActuatorClass;
+import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
@@ -89,9 +90,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
-                    moveShade(PRIMARY, REGULAR, ((PercentType) command).intValue());
+                    moveShade(PRIMARY_ACTUATOR, ZERO_IS_CLOSED, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    moveShade(PRIMARY, REGULAR, UpDownType.UP.equals(command) ? 0 : 100);
+                    moveShade(PRIMARY_ACTUATOR, ZERO_IS_CLOSED, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     if (StopMoveType.STOP.equals(command)) {
                         stopShade();
@@ -103,17 +104,17 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_VANE:
                 if (command instanceof PercentType) {
-                    moveShade(PRIMARY, VANE, ((PercentType) command).intValue());
+                    moveShade(PRIMARY_ACTUATOR, VANE_COORDS, ((PercentType) command).intValue());
                 } else if (command instanceof OnOffType) {
-                    moveShade(PRIMARY, VANE, OnOffType.ON.equals(command) ? 100 : 0);
+                    moveShade(PRIMARY_ACTUATOR, VANE_COORDS, OnOffType.ON.equals(command) ? 100 : 0);
                 }
                 break;
 
             case CHANNEL_SHADE_SECONDARY_POSITION:
                 if (command instanceof PercentType) {
-                    moveShade(SECONDARY, INVERTED, ((PercentType) command).intValue());
+                    moveShade(SECONDARY_ACTUATOR, ZERO_IS_OPEN, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    moveShade(SECONDARY, INVERTED, UpDownType.UP.equals(command) ? 0 : 100);
+                    moveShade(SECONDARY_ACTUATOR, ZERO_IS_OPEN, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     if (StopMoveType.STOP.equals(command)) {
                         stopShade();
@@ -137,9 +138,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private void updateBindingStates(@Nullable ShadePosition shadePos) {
         if (shadePos != null) {
-            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(PRIMARY, REGULAR));
-            updateState(CHANNEL_SHADE_VANE, shadePos.getState(PRIMARY, VANE));
-            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(SECONDARY, INVERTED));
+            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED));
+            updateState(CHANNEL_SHADE_VANE, shadePos.getState(PRIMARY_ACTUATOR, VANE_COORDS));
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(SECONDARY_ACTUATOR, ZERO_IS_OPEN));
         } else {
             updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
@@ -147,7 +148,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private void moveShade(PosSeq seq, PosKind kind, int percent) {
+    private void moveShade(ActuatorClass actuatorClass, CoordinateSystem coordSys, int newPercent) {
         try {
             HDPowerViewHubHandler bridge;
             if ((bridge = getBridgeHandler()) == null) {
@@ -158,12 +159,31 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 throw new ProcessingException("Web targets not initialized");
             }
             int shadeId = getShadeId();
-            switch (seq) {
-                case PRIMARY:
-                    webTargets.moveShade(shadeId, ShadePosition.create(kind, percent));
+
+            switch (actuatorClass) {
+                case PRIMARY_ACTUATOR:
+                    // write the new primary position
+                    webTargets.moveShade(shadeId, ShadePosition.create(coordSys, newPercent));
                     break;
-                case SECONDARY:
-                    webTargets.moveShade(shadeId, ShadePosition.create(REGULAR, 100, INVERTED, percent));
+                case SECONDARY_ACTUATOR:
+                    // read the current primary position; default value 100%
+                    int primaryPercent = 100;
+                    Shade shade = webTargets.getShade(shadeId);
+                    if (shade != null) {
+                        ShadeData shadeData = shade.shade;
+                        if (shadeData != null) {
+                            ShadePosition shadePos = shadeData.positions;
+                            if (shadePos != null) {
+                                State primaryState = shadePos.getState(PRIMARY_ACTUATOR, ZERO_IS_CLOSED);
+                                if (primaryState instanceof PercentType) {
+                                    primaryPercent = ((PercentType) primaryState).intValue();
+                                }
+                            }
+                        }
+                    }
+                    // write the current primary position, plus the new secondary position
+                    webTargets.moveShade(shadeId,
+                            ShadePosition.create(ZERO_IS_CLOSED, primaryPercent, ZERO_IS_OPEN, newPercent));
             }
         } catch (ProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
