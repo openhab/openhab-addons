@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
-import java.util.Set;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public class JsonTextToSpeech {
 
-    public @Nullable Set<JsonDevices.Device> devices;
+    public @Nullable List<JsonDevices.Device> devices;
     public String text = "";
-    public @Nullable Integer ttsVolume;
-    public int standardVolume = 0;
+    public @Nullable List<Integer> ttsVolumes;
+    public @Nullable List<Integer> standardVolumes;
 }

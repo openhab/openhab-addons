@@ -105,7 +105,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private Set<String> capabilities = new HashSet<>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
-    private @Nullable ScheduledFuture<?> ignoreVolumeChange;
     private @Nullable ScheduledFuture<?> updateProgressJob;
     private Object progressLock = new Object();
     private @Nullable String wakeWord;
@@ -715,7 +714,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             throws IOException, URISyntaxException {
         Integer volume = null;
         if (textToSpeechVolume != 0) {
-            startIgnoreVolumeChange();
             volume = textToSpeechVolume;
         }
         connection.textToSpeech(device, text, volume, lastKnownVolume);
@@ -734,9 +732,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (volume != null && volume < 0) {
             volume = null; // the meaning of negative values is 'do not use'. The api requires null in this case.
         }
-        if (volume != null) {
-            startIgnoreVolumeChange();
-        }
         connection.announcement(device, speak, bodyText, title, volume, lastKnownVolume);
     }
 
@@ -752,9 +747,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         }
         if (volume != null && volume < 0) {
             volume = null; // the meaning of negative values is 'do not use'. The api requires null in this case.
-        }
-        if (volume != null) {
-            startIgnoreVolumeChange();
         }
         connection.announcement(devices, speak, bodyText, title, volume, lastKnownVolume);
     }
@@ -1076,22 +1068,20 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             // handle volume
             Integer volume = null;
-            if (this.ignoreVolumeChange == null) {
-                if (mediaState != null) {
-                    volume = mediaState.volume;
+            if (mediaState != null) {
+                volume = mediaState.volume;
+            }
+            if (playerInfo != null && volume == null) {
+                Volume volumnInfo = playerInfo.volume;
+                if (volumnInfo != null) {
+                    volume = volumnInfo.volume;
                 }
-                if (playerInfo != null && volume == null) {
-                    Volume volumnInfo = playerInfo.volume;
-                    if (volumnInfo != null) {
-                        volume = volumnInfo.volume;
-                    }
-                }
-                if (volume != null && volume > 0) {
-                    lastKnownVolume = volume;
-                }
-                if (volume == null) {
-                    volume = lastKnownVolume;
-                }
+            }
+            if (volume != null && volume > 0) {
+                lastKnownVolume = volume;
+            }
+            if (volume == null) {
+                volume = lastKnownVolume;
             }
             // Update states
             if (updateRemind && currentNotifcationUpdateTimer == null) {
@@ -1255,19 +1245,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         }
     }
 
-    private void startIgnoreVolumeChange() {
-        @Nullable
-        ScheduledFuture<?> oldIgnoreVolumeChange = this.ignoreVolumeChange;
-        if (oldIgnoreVolumeChange != null) {
-            oldIgnoreVolumeChange.cancel(false);
-        }
-        this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 4000, TimeUnit.MILLISECONDS);
-    }
-
-    private void stopIgnoreVolumeChange() {
-        this.ignoreVolumeChange = null;
-    }
-
     public void handlePushCommand(String command, String payload) {
         this.logger.debug("Handle push command {}", command);
         switch (command) {
@@ -1281,9 +1258,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
                 } else if (volumeSetting != null) {
-                    if (ignoreVolumeChange != null) {
-                        return;
-                    }
                     lastKnownVolume = volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                 }
