@@ -12,6 +12,12 @@
 			<channel id="refresh" typeId="refresh"/>
 		</channels>
 
+		<properties>
+			<property name="vendor">Hunter Douglas (Luxaflex)</property>
+			<property name="modelId">PowerView Hub</property>
+		</properties>
+		<representation-property>host</representation-property>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
@@ -42,6 +48,12 @@
 			<channel id="vane" typeId="shade-vane"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="vendor">Hunter Douglas (Luxaflex)</property>
+			<property name="modelId">PowerView Motorized Shade</property>
+		</properties>
+		<representation-property>id</representation-property>
 
 		<config-description>
 			<parameter name="id" type="text" required="true">
