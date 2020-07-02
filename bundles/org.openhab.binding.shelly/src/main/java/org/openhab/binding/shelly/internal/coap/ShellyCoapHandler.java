@@ -607,6 +607,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         final ShellyDeviceProfile profile = thingHandler.getProfile();
         int idx = getSensorNumber("Input", sen.id);
         if (idx <= 0) {
+            logger.debug("{}: Unable to find input index for sensor ID {}", thingName, sen.id);
             return;
         }
 

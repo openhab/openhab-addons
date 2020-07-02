@@ -554,7 +554,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             } else {
                 String group = "";
                 boolean isButton = false;
-                if (type.equals(EVENT_TYPE_RELAY)) {
+                if (profile.hasRelays) {
                     group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + rindex;
                     int i = Integer.parseInt(deviceIndex);
                     if ((profile.settings.relays != null) && (i >= 0) && (i < profile.settings.relays.size())) {
