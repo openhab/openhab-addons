@@ -82,8 +82,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TeleinfoInputStream extends InputStream {
 
-    public static long defaultTimeoutNextHeaderFrame = 33400;
-    public static long defaultTimeoutReadingFrame = 33400;
+    public static final long DEFAULT_TIMEOUT_NEXT_HEADER_FRAME = 33400;
+    public static final long DEFAULT_TIMEOUT_READING_FRAME = 33400;
 
     private final Logger logger = LoggerFactory.getLogger(TeleinfoInputStream.class);
     private static final Map<Class<?>, Converter> LABEL_VALUE_CONVERTERS;
@@ -106,11 +106,11 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     public TeleinfoInputStream(final InputStream teleinfoInputStream) {
-        this(teleinfoInputStream, defaultTimeoutNextHeaderFrame, defaultTimeoutReadingFrame, false);
+        this(teleinfoInputStream, DEFAULT_TIMEOUT_NEXT_HEADER_FRAME, DEFAULT_TIMEOUT_READING_FRAME, false);
     }
 
     public TeleinfoInputStream(final InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine) {
-        this(teleinfoInputStream, defaultTimeoutNextHeaderFrame, defaultTimeoutReadingFrame,
+        this(teleinfoInputStream, DEFAULT_TIMEOUT_NEXT_HEADER_FRAME, DEFAULT_TIMEOUT_READING_FRAME,
                 autoRepairInvalidADPSgroupLine);
     }
 
