@@ -122,7 +122,7 @@ So there is an interdependency between the value of `vane` and the value of `pos
 | Shade 100% down, Vane 100% | 100% = `DOWN`       | 100%            |
 
 On dual action shades, the top rail cannot move below the position of the bottom rail.
-So the value of `secondary` may be constrained the value of `position`.
+So the value of `secondary` may be constrained by the value of `position`.
 
 ## Refreshing the PowerView Hub Cache
 
