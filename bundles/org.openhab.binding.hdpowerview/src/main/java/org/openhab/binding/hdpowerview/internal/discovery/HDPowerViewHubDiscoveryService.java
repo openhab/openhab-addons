@@ -85,7 +85,8 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
                         String host = address.getInetAddress().getHostAddress();
                         ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
                         DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                                .withProperty(HDPowerViewHubConfiguration.HOST, host).withRepresentationProperty(host)
+                                .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                                .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
                                 .withLabel("PowerView Hub (" + host + ")").build();
                         logger.debug("NetBios discovered hub on host '{}'", host);
                         thingDiscovered(hub);

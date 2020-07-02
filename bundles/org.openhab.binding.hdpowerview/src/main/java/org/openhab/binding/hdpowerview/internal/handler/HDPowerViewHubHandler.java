@@ -110,17 +110,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing hub");
         HDPowerViewHubConfiguration config = getConfigAs(HDPowerViewHubConfiguration.class);
-        if (config.host == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
-        }
-
         String host = config.host;
-        if (host != null && !host.isEmpty()) {
-            webTargets = new HDPowerViewWebTargets(client, host);
+
+        if (host == null || host.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host address must be set");
+            return;
         }
 
+        webTargets = new HDPowerViewWebTargets(client, host);
         refreshInterval = config.refresh;
-
         schedulePoll();
     }
 

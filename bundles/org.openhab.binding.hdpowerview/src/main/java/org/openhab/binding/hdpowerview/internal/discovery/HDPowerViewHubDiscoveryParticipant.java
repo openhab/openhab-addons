@@ -62,7 +62,8 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
             if (VALID_IP_V4_ADDRESS.matcher(host).matches()) {
                 ThingUID thingUID = new ThingUID(THING_TYPE_HUB, host.replace('.', '_'));
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                        .withProperty(HDPowerViewHubConfiguration.HOST, host).withRepresentationProperty(host)
+                        .withProperty(HDPowerViewHubConfiguration.HOST, host)
+                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
                         .withLabel("PowerView Hub (" + host + ")").build();
                 logger.debug("mDNS discovered hub on host '{}'", host);
                 return hub;

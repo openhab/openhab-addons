@@ -99,6 +99,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                                         bridgeUID, id);
                                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                                         .withProperty(HDPowerViewShadeConfiguration.ID, id)
+                                        .withRepresentationProperty(HDPowerViewShadeConfiguration.ID)
                                         .withLabel(shadeData.getName()).withBridge(bridgeUID).build();
                                 logger.debug("Hub discovered shade '{}'", id);
                                 thingDiscovered(result);
