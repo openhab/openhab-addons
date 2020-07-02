@@ -6,7 +6,7 @@
 
 	<bridge-type id="hub">
 		<label>PowerView Hub</label>
-		<description>Hunter Douglas PowerView Hub</description>
+		<description>Hunter Douglas (Luxaflex) PowerView Hub</description>
 
 		<channels>
 			<channel id="refresh" typeId="refresh"/>
@@ -21,12 +21,12 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
-				<description>The Host address of the PowerView Hub.</description>
+				<description>The Host address of the PowerView Hub</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>
-				<description>The number of milliseconds between fetches of the PowerView Hub shade state.</description>
+				<description>The number of milliseconds between fetches of the PowerView Hub shade state</description>
 				<default>60000</default>
 			</parameter>
 		</config-description>
@@ -37,7 +37,7 @@
 			<bridge-type-ref id="hub"/>
 		</supported-bridge-type-refs>
 		<label>PowerView Shade</label>
-		<description>Hunter Douglas PowerView Shade</description>
+		<description>Hunter Douglas (Luxaflex) PowerView Shade</description>
 
 		<channels>
 			<channel id="position" typeId="shade-position"/>
@@ -58,7 +58,7 @@
 		<config-description>
 			<parameter name="id" type="text" required="true">
 				<label>ID</label>
-				<description>The ID of the PowerView Shade.</description>
+				<description>The numeric ID of the PowerView Shade in the Hub</description>
 			</parameter>
 		</config-description>
 	</thing-type>
