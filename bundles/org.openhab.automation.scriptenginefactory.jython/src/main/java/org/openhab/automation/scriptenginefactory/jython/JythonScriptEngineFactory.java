@@ -108,6 +108,8 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
             String newPythonPath = String.join(File.pathSeparator, newPythonPathList);
             System.setProperty("python.path", newPythonPath);
         }
+        System.clearProperty("python.home");
+        System.clearProperty("python.cachedir");
         logger.trace("python.home [{}], python.path [{}], python.cachdir [{}]", System.getProperty("python.home"),
                 System.getProperty("python.path"), System.getProperty("python.cachedir"));
     }
