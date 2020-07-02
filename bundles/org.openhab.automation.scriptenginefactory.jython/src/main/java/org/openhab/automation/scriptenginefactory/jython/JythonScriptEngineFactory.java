@@ -41,10 +41,9 @@ import org.osgi.service.component.annotations.Deactivate;
 public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private static final String SCRIPT_TYPE = "py";
-    private static javax.script.ScriptEngineManager ENGINE_MANAGER = new javax.script.ScriptEngineManager();
-
     private static final String DEFAULT_PYTHON_PATH = Paths
             .get(ConfigConstants.getConfigFolder(), "automation", "lib", "python").toString();
+    private static javax.script.ScriptEngineManager ENGINE_MANAGER = new javax.script.ScriptEngineManager();
 
     @Activate
     public JythonScriptEngineFactory() {
@@ -64,8 +63,8 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
             System.setProperty("python.path", newPythonPath);
         }
 
-        System.setProperty("python.cachedir",
-                Paths.get(ConfigConstants.getUserDataFolder(), "tmp", "cachedir").toString());
+        System.setProperty("python.cachedir", Paths.get(ConfigConstants.getUserDataFolder(), "cache",
+                "org.openhab.automation.scriptenginefactory.jython", "cachedir").toString());
 
         logger.trace("python.home [{}], python.path [{}], python.cachdir [{}]", System.getProperty("python.home"),
                 System.getProperty("python.path"), System.getProperty("python.cachedir"));
