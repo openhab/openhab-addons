@@ -40,14 +40,14 @@ Before the binding can be used, a serial controller must be added. This needs to
 
 ## Thing Configuration
 
-| Thing type       | Parameter  | Meaning                               | Possible values  |
-|------------------|------------|---------------------------------------|------------------|
-| SerialController | serialPort | Path to the serial controller         | /dev/ttyXXXX     |
-| electricitymeter | adco       | Electricity meter identifier          | 12 digits number |
+| Thing type           | Parameter    | Meaning                               | Possible values  |
+|----------------------|--------------|---------------------------------------|------------------|
+| `serialcontroller`   | `serialport` | Path to the serial controller         | /dev/ttyXXXX     |
+| `*_electricitymeter` | `adco`       | Electricity meter identifier          | 12 digits number |
 
 ## Channels
 
-Channel availabity depends on the electricity connection (single or three phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
+Channel availability depends on the electricity connection (single or three phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
 
 | Channel  | Type                      | Description                                              | Phase  | Mode  |
 |----------|---------------------------|----------------------------------------------------------|--------|-------|
