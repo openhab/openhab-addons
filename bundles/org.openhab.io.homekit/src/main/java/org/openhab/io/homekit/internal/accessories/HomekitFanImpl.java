@@ -48,13 +48,13 @@ class HomekitFanImpl extends AbstractHomekitAccessoryImpl implements FanAccessor
     }
 
     @Override
-    public CompletableFuture<Void> setActive(final boolean state) {
+    public CompletableFuture<Void> setActive(boolean state) {
         activeReader.setValue(state);
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void subscribeActive(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeActive(HomekitCharacteristicChangeCallback callback) {
         subscribe(ACTIVE_STATUS, callback);
     }
 

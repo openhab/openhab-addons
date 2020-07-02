@@ -130,7 +130,7 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
     }
 
     @Override
-    public CompletableFuture<Void> setTargetDoorState(final TargetDoorStateEnum targetDoorStateEnum) {
+    public CompletableFuture<Void> setTargetDoorState(TargetDoorStateEnum targetDoorStateEnum) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(TARGET_DOOR_STATE);
         Item item;
         if (characteristic.isPresent()) {
@@ -155,17 +155,17 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
     }
 
     @Override
-    public void subscribeCurrentDoorState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeCurrentDoorState(HomekitCharacteristicChangeCallback callback) {
         subscribe(CURRENT_DOOR_STATE, callback);
     }
 
     @Override
-    public void subscribeTargetDoorState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeTargetDoorState(HomekitCharacteristicChangeCallback callback) {
         subscribe(TARGET_DOOR_STATE, callback);
     }
 
     @Override
-    public void subscribeObstructionDetected(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeObstructionDetected(HomekitCharacteristicChangeCallback callback) {
         subscribe(OBSTRUCTION_STATUS, callback);
     }
 

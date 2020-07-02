@@ -75,7 +75,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
     }
 
     @Override
-    public CompletableFuture<Void> setLockTargetState(final LockTargetStateEnum state) {
+    public CompletableFuture<Void> setLockTargetState(LockTargetStateEnum state) {
         getItem(HomekitCharacteristicType.LOCK_TARGET_STATE, SwitchItem.class).ifPresent(item -> {
             switch (state) {
                 case SECURED:
@@ -98,7 +98,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
     }
 
     @Override
-    public void subscribeLockCurrentState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeLockCurrentState(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.LOCK_CURRENT_STATE, callback);
     }
 
@@ -108,7 +108,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
     }
 
     @Override
-    public void subscribeLockTargetState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeLockTargetState(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.LOCK_TARGET_STATE, callback);
     }
 

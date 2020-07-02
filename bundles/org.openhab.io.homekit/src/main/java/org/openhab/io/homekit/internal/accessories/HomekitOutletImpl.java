@@ -53,18 +53,18 @@ public class HomekitOutletImpl extends AbstractHomekitAccessoryImpl implements O
     }
 
     @Override
-    public CompletableFuture<Void> setPowerState(final boolean state) {
+    public CompletableFuture<Void> setPowerState(boolean state) {
         onReader.setValue(state);
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void subscribePowerState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribePowerState(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.ON_STATE, callback);
     }
 
     @Override
-    public void subscribeOutletInUse(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeOutletInUse(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.INUSE_STATUS, callback);
     }
 

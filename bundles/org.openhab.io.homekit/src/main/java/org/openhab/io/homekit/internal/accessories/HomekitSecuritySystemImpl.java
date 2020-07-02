@@ -78,7 +78,7 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
     }
 
     @Override
-    public void setTargetSecuritySystemState(final TargetSecuritySystemStateEnum state) {
+    public void setTargetSecuritySystemState(TargetSecuritySystemStateEnum state) {
         getItem(HomekitCharacteristicType.SECURITY_SYSTEM_TARGET_STATE, StringItem.class)
                 .ifPresent(item -> item.send(new StringType(targetStateMapping.get(state))));
     }
@@ -90,7 +90,7 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
     }
 
     @Override
-    public void subscribeCurrentSecuritySystemState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeCurrentSecuritySystemState(HomekitCharacteristicChangeCallback callback) {
         subscribe(SECURITY_SYSTEM_CURRENT_STATE, callback);
     }
 
@@ -100,7 +100,7 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
     }
 
     @Override
-    public void subscribeTargetSecuritySystemState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeTargetSecuritySystemState(HomekitCharacteristicChangeCallback callback) {
         subscribe(SECURITY_SYSTEM_TARGET_STATE, callback);
     }
 

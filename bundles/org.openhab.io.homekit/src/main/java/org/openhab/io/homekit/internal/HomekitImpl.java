@@ -58,7 +58,6 @@ import io.github.hapjava.server.impl.HomekitServer;
 @NonNullByDefault
 public class HomekitImpl implements Homekit {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);
-    private static final String STORAGE_KEY = "homekit";
     private final NetworkAddressService networkAddressService;
     private final HomekitChangeListener changeListener;
 
@@ -78,7 +77,7 @@ public class HomekitImpl implements Homekit {
         this.networkAddressService = networkAddressService;
         this.settings = processConfig(config);
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
-        authInfo = new HomekitAuthInfoImpl(storageService.getStorage(STORAGE_KEY), settings.pin);
+        authInfo = new HomekitAuthInfoImpl(storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY), settings.pin);
         startHomekitServer();
     }
 

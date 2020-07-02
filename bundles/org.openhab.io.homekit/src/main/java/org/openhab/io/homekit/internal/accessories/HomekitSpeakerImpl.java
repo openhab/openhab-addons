@@ -47,13 +47,13 @@ public class HomekitSpeakerImpl extends AbstractHomekitAccessoryImpl implements 
     }
 
     @Override
-    public CompletableFuture<Void> setMute(final boolean state) {
+    public CompletableFuture<Void> setMute(boolean state) {
         muteReader.setValue(state);
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void subscribeMuteState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeMuteState(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.MUTE, callback);
     }
 

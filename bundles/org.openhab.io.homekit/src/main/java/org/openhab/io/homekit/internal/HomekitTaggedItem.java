@@ -188,6 +188,7 @@ public class HomekitTaggedItem {
      * @param <T> expected class
      * @return value
      */
+    @SuppressWarnings({ "null", "unchecked" })
     public <T> T getConfiguration(String key, T defaultValue) {
         if (configuration != null) {
             final @Nullable Object value = configuration.get(key);
@@ -248,7 +249,7 @@ public class HomekitTaggedItem {
     }
 
     public String toString() {
-        return "Item:" + proxyItem + "  HomeKit type:" + homekitAccessoryType + " HomeKit characteristic:"
+        return "Item:" + proxyItem.getItem() + "  HomeKit type:" + homekitAccessoryType + " HomeKit characteristic:"
                 + homekitCharacteristicType;
     }
 }

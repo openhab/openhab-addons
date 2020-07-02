@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -69,6 +69,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         this.settings = settings;
     }
 
+    @NonNullByDefault
     protected Optional<HomekitTaggedItem> getCharacteristic(HomekitCharacteristicType type) {
         return characteristics.stream().filter(c -> c.getCharacteristicType() == type).findAny();
     }
@@ -124,6 +125,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return settings;
     }
 
+    @NonNullByDefault
     protected void subscribe(HomekitCharacteristicType characteristicType,
             HomekitCharacteristicChangeCallback callback) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
@@ -134,6 +136,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         }
     }
 
+    @NonNullByDefault
     protected void unsubscribe(HomekitCharacteristicType characteristicType) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
         if (characteristic.isPresent()) {
@@ -156,11 +159,13 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return null;
     }
 
+    @NonNullByDefault
     protected <T extends Item> Optional<T> getItem(HomekitCharacteristicType characteristic, Class<T> type) {
         final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(characteristic);
         if (taggedItem.isPresent()) {
-            if (type.isInstance(taggedItem.get().getItem())) {
-                return Optional.of((T) taggedItem.get().getItem());
+            final Item item = taggedItem.get().getItem();
+            if (type.isInstance(item)) {
+                return Optional.of((T) item);
             } else {
                 logger.warn("Unsupported item type for characteristic {} at accessory {}. Expected {}, got {}",
                         characteristic, accessory.getItem().getName(), type, taggedItem.get().getItem().getClass());
@@ -183,7 +188,8 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param <T> expected type
      * @return configuration value
      */
-    protected <T> T getAccessoryConfiguration(final @NonNull String key, final @NonNull T defaultValue) {
+    @NonNullByDefault
+    protected <T> T getAccessoryConfiguration(String key, T defaultValue) {
         return accessory.getConfiguration(key, defaultValue);
     }
 
@@ -198,8 +204,9 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param <T> expected type
      * @return configuration value
      */
-    protected <T> T getAccessoryConfiguration(final @NonNull HomekitCharacteristicType characteristicType,
-            final @NonNull String key, final @NonNull T defaultValue) {
+    @NonNullByDefault
+    protected <T> T getAccessoryConfiguration(HomekitCharacteristicType characteristicType, String key,
+            T defaultValue) {
         return getCharacteristic(characteristicType)
                 .map(homekitTaggedItem -> homekitTaggedItem.getConfiguration(key, defaultValue)).orElse(defaultValue);
     }
@@ -212,6 +219,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param characteristicType characteristicType to identify item
      * @param map mapping to update
      */
+    @NonNullByDefault
     protected void updateMapping(HomekitCharacteristicType characteristicType, Map<?, String> map) {
         getCharacteristic(characteristicType).ifPresent(c -> {
             final Map<String, Object> configuration = c.getConfiguration();
@@ -234,8 +242,9 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param <T> type of the result derived from
      * @return key for the value
      */
-    protected <T> T getKeyFromMapping(final HomekitCharacteristicType characteristicType, Map<T, String> mapping,
-            final T defaultValue) {
+    @NonNullByDefault
+    protected <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+            T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
             final State state = c.get().getItem().getState();
@@ -255,29 +264,33 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return defaultValue;
     }
 
-    protected void addCharacteristic(final @NonNull HomekitTaggedItem characteristic) {
+    @NonNullByDefault
+    protected void addCharacteristic(HomekitTaggedItem characteristic) {
         characteristics.add(characteristic);
     }
 
+    @NonNullByDefault
     private <T extends Quantity<T>> double convertAndRound(double value, Unit<T> from, Unit<T> to) {
         double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
         return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
+    @NonNullByDefault
     protected double convertToCelsius(double degrees) {
         return convertAndRound(degrees,
                 getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
     }
 
+    @NonNullByDefault
     protected double convertFromCelsius(double degrees) {
         return convertAndRound(degrees,
                 getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT,
                 ImperialUnits.FAHRENHEIT);
     }
 
-    protected @NonNull BooleanItemReader createBooleanReader(
-            final @NonNull HomekitCharacteristicType characteristicType, @NonNull final OnOffType trueOnOffValue,
-            final @NonNull OpenClosedType trueOpenClosedValue) throws IncompleteAccessoryException {
+    @NonNullByDefault
+    protected BooleanItemReader createBooleanReader(HomekitCharacteristicType characteristicType,
+            OnOffType trueOnOffValue, OpenClosedType trueOpenClosedValue) throws IncompleteAccessoryException {
         return new BooleanItemReader(
                 getItem(characteristicType, GenericItem.class)
                         .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),

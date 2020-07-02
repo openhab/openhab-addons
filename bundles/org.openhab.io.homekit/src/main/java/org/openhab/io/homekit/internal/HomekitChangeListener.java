@@ -75,11 +75,11 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Debouncer applyUpdatesDebouncer;
 
     HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings, MetadataRegistry metadataRegistry,
-            final StorageService storageService) {
+            StorageService storageService) {
         this.itemRegistry = itemRegistry;
         this.settings = settings;
         this.metadataRegistry = metadataRegistry;
-        storage = storageService.getStorage("homekit");
+        storage = storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY);
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices", scheduler, Duration.ofMillis(1000),
                 Clock.systemUTC(), this::applyUpdates);
 
@@ -132,7 +132,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         for (Item accessoryGroup : HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry)) {
             pendingUpdates.add(accessoryGroup.getName());
         }
-
         applyUpdatesDebouncer.call();
     }
 
@@ -221,14 +220,12 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      * @param item openhab item
      */
     private void createRootAccessories(Item item) {
-        logger.trace("create root accessory {}", item.getName());
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
                 .getAccessoryTypes(item, metadataRegistry);
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
         if (!accessoryTypes.isEmpty() && groups.stream().noneMatch(g -> g.getBaseItem() != null)) {
             // it has homekit accessory type and is not part of bigger homekit group item without baseItem, i.e. not
             // Group:Switch
-            logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
             final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
             accessoryTypes.forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
                     rootAccessory.getKey(), HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
@@ -237,7 +234,6 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     private void createRootAccessory(HomekitTaggedItem taggedItem) {
         try {
-            logger.trace("Adding HomeKit device {}", taggedItem.getItem().getUID());
             accessoryRegistry.addRootAccessory(taggedItem.getName(),
                     HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater, settings));
         } catch (HomekitException e) {

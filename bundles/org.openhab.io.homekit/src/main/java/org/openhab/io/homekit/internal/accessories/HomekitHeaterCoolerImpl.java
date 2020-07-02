@@ -98,7 +98,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     }
 
     @Override
-    public CompletableFuture<Void> setActive(final boolean state) {
+    public CompletableFuture<Void> setActive(boolean state) {
         activeReader.setValue(state);
         return CompletableFuture.completedFuture(null);
     }
@@ -116,7 +116,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     }
 
     @Override
-    public CompletableFuture<Void> setTargetHeaterCoolerState(final TargetHeaterCoolerStateEnum state) {
+    public CompletableFuture<Void> setTargetHeaterCoolerState(TargetHeaterCoolerStateEnum state) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
                 HomekitCharacteristicType.TARGET_HEATER_COOLER_STATE);
         if (characteristic.isPresent()) {
@@ -134,13 +134,13 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
                         : TemperatureDisplayUnitEnum.CELSIUS);
     }
 
-    public void setTemperatureDisplayUnit(final TemperatureDisplayUnitEnum value) {
+    public void setTemperatureDisplayUnit(TemperatureDisplayUnitEnum value) {
         // temperature unit set globally via binding setting and cannot be changed at item level.
         // this method is intentionally empty.
     }
 
     @Override
-    public void subscribeCurrentHeaterCoolerState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeCurrentHeaterCoolerState(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.CURRENT_HEATER_COOLER_STATE, callback);
     }
 
@@ -150,7 +150,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     }
 
     @Override
-    public void subscribeTargetHeaterCoolerState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeTargetHeaterCoolerState(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.TARGET_HEATER_COOLER_STATE, callback);
     }
 
@@ -160,7 +160,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     }
 
     @Override
-    public void subscribeActive(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeActive(HomekitCharacteristicChangeCallback callback) {
         subscribe(ACTIVE_STATUS, callback);
     }
 
@@ -170,7 +170,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     }
 
     @Override
-    public void subscribeCurrentTemperature(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeCurrentTemperature(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE, callback);
     }
 
@@ -179,7 +179,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
         unsubscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE);
     }
 
-    public void subscribeTemperatureDisplayUnit(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeTemperatureDisplayUnit(HomekitCharacteristicChangeCallback callback) {
         // temperature unit set globally via binding setting and cannot be changed at item level.
         // this method is intentionally empty
     }

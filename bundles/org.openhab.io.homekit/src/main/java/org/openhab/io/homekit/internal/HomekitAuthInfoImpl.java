@@ -34,6 +34,7 @@ import io.github.hapjava.server.impl.HomekitServer;
  */
 public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private final Logger logger = LoggerFactory.getLogger(HomekitAuthInfoImpl.class);
+    public static final String STORAGE_KEY = "homekit";
     private static final String STORAGE_MAC = "mac";
     private static final String STORAGE_SALT = "salt";
     private static final String STORAGE_PRIVATE_KEY = "privateKey";
@@ -45,8 +46,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private byte[] privateKey;
     private final String pin;
 
-    public HomekitAuthInfoImpl(final Storage<String> storage, final String pin)
-            throws InvalidAlgorithmParameterException {
+    public HomekitAuthInfoImpl(Storage<String> storage, String pin) throws InvalidAlgorithmParameterException {
         this.storage = storage;
         this.pin = pin;
         initializeStorage();
@@ -109,11 +109,11 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         }
     }
 
-    private String createUserKey(final String username) {
+    private String createUserKey(String username) {
         return STORAGE_USER_PREFIX + username;
     }
 
-    private boolean isUserKey(final String key) {
+    private boolean isUserKey(String key) {
         return key.startsWith(STORAGE_USER_PREFIX);
     }
 
