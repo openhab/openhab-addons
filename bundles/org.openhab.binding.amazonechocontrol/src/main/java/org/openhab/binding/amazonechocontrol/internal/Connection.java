@@ -155,6 +155,9 @@ public class Connection {
     private final Gson gson;
     private final Gson gsonWithNullSerialization;
 
+    private LinkedBlockingQueue<JsonAnnouncement> announcementQueue = new LinkedBlockingQueue<>();
+    private AtomicBoolean announcementQueueRunning = new AtomicBoolean();
+    private @Nullable ScheduledFuture<?> announcementSenderUnblockFuture;
     private LinkedBlockingQueue<JsonTextToSpeech> textToSpeechQueue = new LinkedBlockingQueue<>();
     private AtomicBoolean textToSpeechQueueRunning = new AtomicBoolean();
     private @Nullable ScheduledFuture<?> textToSpeechSenderUnblockFuture;
@@ -897,6 +900,11 @@ public class Connection {
             textToSpeeches.clear();
             textToSpeechTimer.cancel(true);
         }
+        if (announcementSenderUnblockFuture != null) {
+            announcementQueue.clear();
+            announcementQueueRunning.set(false);
+            announcementSenderUnblockFuture.cancel(true);
+        }
         if (textToSpeechSenderUnblockFuture != null) {
             textToSpeechQueue.clear();
             textToSpeechQueueRunning.set(false);
@@ -1127,18 +1135,9 @@ public class Connection {
         }
         for (String json : announcements.keySet()) {
             JsonAnnouncement jsonAnnouncement = announcements.get(json);
-            List<Device> devices = jsonAnnouncement.devices;
-            logger.debug("devices {}", devices.size());
-            String speak = jsonAnnouncement.speak;
-            String bodyText = jsonAnnouncement.bodyText;
-            String title = jsonAnnouncement.title;
-            List<Integer> ttsVolumes = jsonAnnouncement.ttsVolumes;
-            List<Integer> standardVolumes = jsonAnnouncement.standardVolumes;
-            
-            try {
-                announcement(devices.toArray(new Device[devices.size()]), speak, bodyText, title, ttsVolumes.toArray(new Integer[ttsVolumes.size()]), standardVolumes.toArray(new Integer[standardVolumes.size()]));
-            } catch (Exception e) {
-                logger.error("send announcement fails with unexpected error", e);
+            announcementQueue.add(jsonAnnouncement);
+            if (announcementQueueRunning.compareAndSet(false, true)) {
+                queuedAnnouncement();
             }
         }
         announcements.clear();
@@ -1170,55 +1169,75 @@ public class Connection {
         }, 1, TimeUnit.SECONDS);
     }
 
-    public void announcement(Device[] devices, String speak, String bodyText, @Nullable String title,
-            @Nullable Integer[] ttsVolumes, @Nullable Integer[] standardVolumes) throws IOException, URISyntaxException {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("expireAfter", "PT5S");
-        JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
-        JsonAnnouncementContent content = new JsonAnnouncementContent();
-        if (StringUtils.isEmpty(title)) {
-            content.display.title = "OpenHAB";
-        } else {
-            content.display.title = title;
-        }
-        content.display.body = bodyText;
-        if (bodyText.startsWith("<speak>") && bodyText.endsWith("</speak>")) {
-            Pattern pattern = Pattern.compile(">([^<].+[^>])<");
-            Matcher matcher = pattern.matcher(bodyText);
-            while (matcher.find()) {
-                content.display.body = matcher.group(matcher.groupCount());
+    public void queuedAnnouncement() {
+        JsonAnnouncement jsonAnnouncement = announcementQueue.poll();
+        if (jsonAnnouncement != null) {
+            String speak = jsonAnnouncement.speak;
+            try {
+                List<Device> devices = jsonAnnouncement.devices;
+                String bodyText = jsonAnnouncement.bodyText;
+                String title = jsonAnnouncement.title;
+                List<Integer> ttsVolumes = jsonAnnouncement.ttsVolumes;
+                List<Integer> standardVolumes = jsonAnnouncement.standardVolumes;
+                
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("expireAfter", "PT5S");
+                JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
+                JsonAnnouncementContent content = new JsonAnnouncementContent();
+                if (StringUtils.isEmpty(title)) {
+                    content.display.title = "OpenHAB";
+                } else {
+                    content.display.title = title;
+                }
+                content.display.body = bodyText;
+                if (bodyText.startsWith("<speak>") && bodyText.endsWith("</speak>")) {
+                    Pattern pattern = Pattern.compile(">([^<].+[^>])<");
+                    Matcher matcher = pattern.matcher(bodyText);
+                    while (matcher.find()) {
+                        content.display.body = matcher.group(matcher.groupCount());
+                    }
+                }
+                if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
+                    content.speak.type = "ssml";
+                }
+                content.speak.value = speak;
+
+                contentArray[0] = content;
+
+                parameters.put("content", contentArray);
+
+                JsonAnnouncementTarget target = new JsonAnnouncementTarget();
+                target.customerId = devices.get(0).deviceOwnerCustomerId;
+                TargetDevice[] targetDevices = new TargetDevice[devices.size()];
+                for (int i = 0; i < devices.size(); i++) {
+                    Device device = devices.get(i);
+                    TargetDevice deviceTarget = new TargetDevice();
+                    deviceTarget.deviceSerialNumber = device.serialNumber;
+                    deviceTarget.deviceTypeId = device.deviceType;
+                    targetDevices[i] = deviceTarget;
+                }
+                target.devices = targetDevices;
+                parameters.put("target", target);
+
+                String accountCustomerId = this.accountCustomerId;
+                String customerId = StringUtils.isEmpty(accountCustomerId) ? devices.toArray(new Device[devices.size()])[0].deviceOwnerCustomerId
+                        : accountCustomerId;
+
+                if (customerId != null) {
+                    parameters.put("customerId", customerId);
+                }
+                executeSequenceCommandWithVolume(devices.toArray(new Device[devices.size()]), "AlexaAnnouncement", parameters,
+                        ttsVolumes.toArray(new Integer[ttsVolumes.size()]), standardVolumes.toArray(new Integer[standardVolumes.size()]));
+            } catch (IOException | URISyntaxException e) {
+                logger.error("send textToSpeech fails with unexpected error", e);
+            } finally {
+                announcementSenderUnblockFuture = scheduler.schedule(this::queuedAnnouncement, speak.length() * 150,
+                        TimeUnit.MILLISECONDS);
             }
+        } else {
+            announcementQueueRunning.set(false);
+            announcementSenderUnblockFuture = null;
         }
-        if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
-            content.speak.type = "ssml";
-        }
-        content.speak.value = speak;
-
-        contentArray[0] = content;
-
-        parameters.put("content", contentArray);
-
-        JsonAnnouncementTarget target = new JsonAnnouncementTarget();
-        target.customerId = devices[0].deviceOwnerCustomerId;
-        TargetDevice[] targetDevices = new TargetDevice[devices.length];
-        for (int i = 0; i < devices.length; i++) {
-            Device device = devices[i];
-            TargetDevice deviceTarget = new TargetDevice();
-            deviceTarget.deviceSerialNumber = device.serialNumber;
-            deviceTarget.deviceTypeId = device.deviceType;
-            targetDevices[i] = deviceTarget;
-        }
-        target.devices = targetDevices;
-        parameters.put("target", target);
-
-        String accountCustomerId = this.accountCustomerId;
-        String customerId = StringUtils.isEmpty(accountCustomerId) ? devices[0].deviceOwnerCustomerId
-                : accountCustomerId;
-
-        if (customerId != null) {
-            parameters.put("customerId", customerId);
-        }
-        executeSequenceCommandWithVolume(devices, "AlexaAnnouncement", parameters, ttsVolumes, standardVolumes);
     }
 
     private void sendTextToSpeech() {
@@ -1264,7 +1283,6 @@ public class Connection {
             String text = jsonTextToSpeech.text;
             try {
                 List<Device> devices = jsonTextToSpeech.devices;
-                logger.debug("devices {}", devices.size());
                 List<Integer> ttsVolumes = jsonTextToSpeech.ttsVolumes;
                 List<Integer> standardVolumes = jsonTextToSpeech.standardVolumes;
 
