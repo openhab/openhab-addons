@@ -88,25 +88,25 @@ All of these channels appear in the binding, but only those which have a physica
 ### Roller Shutter Up/Down Position vs. Open/Close State
 
 The `position` and `secondary` channels are Rollershutter types.
-For vertical shades, the binding maps the vertical position of the "rail" to the Rollershutter `UP` / `DOWN` position, and its respective percent value.
-And for horizontal shades, it maps the horizontal position of the "truck" to the Rollershutter `UP` / `DOWN` position, and its respective percent value.
+For vertical shades, the binding maps the vertical position of the "rail" to the Rollershutter ▲ / ▼ commands, and its respective percent value.
+And for horizontal shades, it maps the horizontal position of the "truck" to the Rollershutter ▲ / ▼ commands, and its respective percent value.
 
-Depending on whether the shade is a top-down, bottom-up, left-right, right-left, or dual action shade, the `OPEN` and `CLOSED` position of the shades will differ as follows..
+Depending on whether the shade is a top-down, bottom-up, left-right, right-left, or dual action shade, the `OPEN` and `CLOSED` position of the shades may differ from the ▲ / ▼ commands follows..
 
-| Type of Shade            | Channel           | Rail & Rollershutter Position | Open/Closed State | Percent |
-|--------------------------|-------------------|-------------------------------|-------------------|---------|
-| Single action bottom-up  | `position`        | `UP`                          | `OPEN`            | 0%      |
-|                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
-| Single action top-down   | `position`        | `UP`                          | ***`CLOSED`***    | 0%      |
-|                          |                   | `DOWN`                        | ***`OPEN`***      | 100%    |
-| Single action left-right | `position`        | `UP`                          | `OPEN`            | 0%      |
-|                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
-| Single action right-left | `position`        | `UP`                          | `OPEN`            | 0%      |
-|                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
-| Dual action (lower rail) | `position`        | `UP`                          | `OPEN`            | 0%      |
-|                          |                   | `DOWN`                        | `CLOSED`          | 100%    |
-| Dual action (upper rail) | ***`secondary`*** | `UP`                          | ***`CLOSED`***    | 0%      |
-|                          |                   | `DOWN`                        | ***`OPEN`***      | 100%    |
+| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent |
+|--------------------------|-------------------|-----------------------|------------------|----------------|---------|
+| Single action bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%      |
+|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    |
+| Single action top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%      |
+|                          |                   | ▼                     | Down             | ***`OPEN`***   | 100%    |
+| Single action right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%      |
+|                          |                   | ▼                     | ***Right***      | `CLOSED`       | 100%    |
+| Single action left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      |
+|                          |                   | ▼                     | ***Left***       | `CLOSED`       | 100%    |
+| Dual action (lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%      |
+|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    |
+| Dual action (upper rail) | ***`secondary`*** | ▲                     | ***Down***       | `OPEN`         | 0%      |
+|                          |                   | ▼                     | ***Up***         | `CLOSED`       | 100%    |
 
 ### Interdependency between Channel positions
 
@@ -122,7 +122,7 @@ So there is an interdependency between the value of `vane` and the value of `pos
 | Shade 100% down, Vane 100% | 100% = `DOWN`       | 100%            |
 
 On dual action shades, the top rail cannot move below the position of the bottom rail.
-So the value of `secondary` cannot become larger than the value of `position`.
+So the value of `secondary` may be constrained the value of `position`.
 
 ## Refreshing the PowerView Hub Cache
 
