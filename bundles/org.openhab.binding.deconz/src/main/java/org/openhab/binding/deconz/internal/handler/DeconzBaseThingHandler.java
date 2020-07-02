@@ -112,7 +112,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         this.http = bridgeHandler.getHttp();
         this.bridgeConfig = bridgeHandler.getBridgeConfig();
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
 
         // Real-time data
         registerListener();
