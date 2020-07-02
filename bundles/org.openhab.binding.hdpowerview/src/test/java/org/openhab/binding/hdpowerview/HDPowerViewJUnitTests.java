@@ -81,7 +81,7 @@ public class HDPowerViewJUnitTests {
          * available, and its IP address must be correctly configured in the
          * "hubIPAddress" string constant e.g. "192.168.1.123"
          */
-        String hubIPAddress = "192.168.1.129";
+        String hubIPAddress = "192.168.1.xxx";
 
         /*
          * NOTE: set allowShadeMovementCommands = true if you accept physically moving
