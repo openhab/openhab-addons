@@ -134,7 +134,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     private void openSerialPortAndStartReceiving() {
-
         TeleinfoSerialControllerConfiguration config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
 
         if (config.serialport.trim().isEmpty()) {
@@ -179,7 +178,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     private void stopReceivingAndCloseSerialPort() {
-
         TeleinfoReceiveThread receiveThreadRef = receiveThread;
         if (receiveThreadRef != null) {
             receiveThreadRef.interrupt();

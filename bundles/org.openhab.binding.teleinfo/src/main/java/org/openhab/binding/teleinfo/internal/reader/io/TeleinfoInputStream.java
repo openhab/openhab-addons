@@ -149,7 +149,6 @@ public class TeleinfoInputStream extends InputStream {
      * @throws IOException
      */
     public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, TimeoutException, IOException {
-
         // seek the next header frame
         Future<@Nullable Void> seekNextHeaderFrameTask = executorService.submit(() -> {
             while (!isHeaderFrame(groupLine)) {
