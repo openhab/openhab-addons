@@ -13,6 +13,7 @@
 		<channels>
 			<channel typeId="presence" id="presence"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -35,6 +36,14 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
+	<channel-type id="last_seen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>The date and time when the sensor was last seen.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
 	<thing-type id="powersensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>
@@ -44,6 +53,7 @@
 		<channels>
 			<channel typeId="power" id="power"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -84,6 +94,7 @@
 		<channels>
 			<channel typeId="consumption" id="consumption"></channel>
 			<channel typeId="last_updated" id="last_updated"></channel>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -108,6 +119,7 @@
 			<channel typeId="buttonevent" id="buttonevent"/>
 			<channel typeId="button" id="button"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -168,6 +180,7 @@
 			<channel typeId="dark" id="dark"/>
 			<channel typeId="daylight" id="daylight"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -212,6 +225,7 @@
 		<channels>
 			<channel typeId="temperature" id="temperature"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -235,6 +249,7 @@
 		<channels>
 			<channel typeId="humidity" id="humidity"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -258,6 +273,7 @@
 		<channels>
 			<channel typeId="pressure" id="pressure"></channel>
 			<channel typeId="last_updated" id="last_updated"></channel>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -317,6 +333,7 @@
 		<channels>
 			<channel typeId="open" id="open"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -340,6 +357,7 @@
 		<channels>
 			<channel typeId="waterleakage" id="waterleakage"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -363,6 +381,7 @@
 		<channels>
 			<channel typeId="fire" id="fire"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -386,6 +405,7 @@
 		<channels>
 			<channel typeId="alarm" id="alarm"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -416,6 +436,7 @@
 		<channels>
 			<channel typeId="vibration" id="vibration"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -439,6 +460,7 @@
 		<channels>
 			<channel typeId="battery" id="battery_level"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -461,6 +483,7 @@
 		<channels>
 			<channel typeId="carbonmonoxide" id="carbonmonoxide"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 
 		<representation-property>uid</representation-property>
@@ -488,6 +511,7 @@
 			<channel typeId="offset" id="offset"/>
 			<channel typeId="valve" id="valve"/>
 			<channel typeId="last_updated" id="last_updated"/>
+			<channel typeId="last_seen" id="last_seen"/>
 		</channels>
 		<representation-property>uid</representation-property>
 		<config-description-ref uri="thing-type:deconz:sensor"/>
