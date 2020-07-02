@@ -59,7 +59,6 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
 
     @Override
     public synchronized void update(VerisureMiceDetectionDTO thing) {
-        logger.debug("update on thing: {}", thing);
         updateMiceDetectionState(thing);
         updateStatus(ThingStatus.ONLINE);
     }

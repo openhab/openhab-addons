@@ -17,14 +17,15 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -61,7 +62,6 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
 
     @Override
     public synchronized void update(VerisureClimatesDTO thing) {
-        logger.debug("update on thing: {}", thing);
         updateClimateDeviceState(thing);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -88,7 +88,7 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
             case CHANNEL_HUMIDITY:
                 if (climateJSON.getData().getInstallation().getClimates().get(0).isHumidityEnabled()) {
                     double humidity = climateJSON.getData().getInstallation().getClimates().get(0).getHumidityValue();
-                    return new DecimalType(humidity);
+                    return new QuantityType<Dimensionless>(humidity, SmartHomeUnits.PERCENT);
                 }
             case CHANNEL_HUMIDITY_ENABLED:
                 boolean humidityEnabled = climateJSON.getData().getInstallation().getClimates().get(0)

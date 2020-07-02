@@ -19,17 +19,24 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Installation;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The installations of the Verisure System.
+ * The installation(s) of the Verisure System.
  *
  * @author Jan Gustafsson - Initial contribution
  *
  */
 @NonNullByDefault
-public class VerisureInstallationsDTO extends VerisureBaseThingDTO {
+public class VerisureInstallationsDTO {
+
+    private Data data = new Data();
+
+    public Data getData() {
+        return data;
+    }
 
     @Override
     public boolean equals(@Nullable Object other) {
@@ -41,6 +48,40 @@ public class VerisureInstallationsDTO extends VerisureBaseThingDTO {
         }
         VerisureInstallationsDTO rhs = ((VerisureInstallationsDTO) other);
         return new EqualsBuilder().append(data, rhs.data).isEquals();
+    }
+
+    public static class Data {
+        private Installation installation = new Installation();
+        private Account account = new Account();
+
+        public Account getAccount() {
+            return account;
+        }
+
+        public Installation getInstallation() {
+            return installation;
+        }
+
+        public void setInstallation(Installation installation) {
+            this.installation = installation;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("installation", installation).append("account", account).toString();
+        }
+
+        @Override
+        public boolean equals(@Nullable Object other) {
+            if (other == this) {
+                return true;
+            }
+            if (!(other instanceof Data)) {
+                return false;
+            }
+            Data rhs = ((Data) other);
+            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
+        }
     }
 
     public static class Account {

@@ -51,7 +51,6 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler<Veris
 
     @Override
     public synchronized void update(VerisureUserPresencesDTO thing) {
-        logger.debug("update on thing: {}", thing);
         updateUserPresenceState(thing);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -98,7 +97,6 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler<Veris
 
     @Override
     public void updateTriggerChannel(String event) {
-        // TODO Auto-generated method stub
 
     }
 }

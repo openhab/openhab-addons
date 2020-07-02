@@ -9,7 +9,7 @@
 		<description>This bridge represents the http://mypages.verisure.com web page connector.</description>
 
 		<channels>
-			<channel id="status" typeId="status" />
+			<channel id="status" typeId="status"/>
 		</channels>
 
 		<properties>
@@ -26,7 +26,7 @@
 				<context>password</context>
 				<description>The password used to login to http://mypage.verisure.com.</description>
 			</parameter>
-			<parameter name="refresh" type="integer">
+			<parameter name="refresh" type="integer" min="10" unit="s">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>600</default>
@@ -42,7 +42,7 @@
 
 	<thing-type id="alarm">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Alarm</label>
@@ -75,7 +75,7 @@
 
 	<thing-type id="smartLock">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Yale Doorman SmartLock</label>
@@ -113,7 +113,7 @@
 
 	<thing-type id="smartPlug">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure SmartPlug</label>
@@ -145,7 +145,7 @@
 
 	<thing-type id="smokeDetector">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Smoke Detector</label>
@@ -179,7 +179,7 @@
 
 	<thing-type id="waterDetector">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Water Detector</label>
@@ -211,7 +211,7 @@
 
 	<thing-type id="siren">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Siren</label>
@@ -243,7 +243,7 @@
 
 	<thing-type id="nightControl">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Night Control</label>
@@ -275,7 +275,7 @@
 
 	<thing-type id="doorWindowSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Door or Window Sensor</label>
@@ -307,20 +307,20 @@
 
 	<thing-type id="userPresence">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure User Presence</label>
 		<description>Verisure Presence information about your configured and active Verisure users.</description>
 
 		<channels>
-			<channel id="userName" typeId="userName" />
-			<channel id="webAccount" typeId="webAccount" />
-			<channel id="userLocationStatus" typeId="userLocationStatus" />
-			<channel id="userDeviceName" typeId="userDeviceName" />
-			<channel id="timestamp" typeId="timestamp" />
-			<channel id="installationName" typeId="installationName" />
-			<channel id="installationId" typeId="installationId" />
+			<channel id="userName" typeId="userName"/>
+			<channel id="webAccount" typeId="webAccount"/>
+			<channel id="userLocationStatus" typeId="userLocationStatus"/>
+			<channel id="userDeviceName" typeId="userDeviceName"/>
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="installationName" typeId="installationName"/>
+			<channel id="installationId" typeId="installationId"/>
 		</channels>
 
 		<properties>
@@ -340,17 +340,17 @@
 
 	<thing-type id="broadbandConnection">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Broadband Connection</label>
 		<description>Status of the Verisure broadband connection.</description>
 
 		<channels>
-			<channel id="timestamp" typeId="timestamp" />
-			<channel id="connected" typeId="connected" />
-			<channel id="installationName" typeId="installationName" />
-			<channel id="installationId" typeId="installationId" />
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="connected" typeId="connected"/>
+			<channel id="installationName" typeId="installationName"/>
+			<channel id="installationId" typeId="installationId"/>
 		</channels>
 
 		<properties>
@@ -369,7 +369,7 @@
 
 	<thing-type id="miceDetection">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Mice Detection</label>
@@ -405,7 +405,7 @@
 
 	<thing-type id="eventLog">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Event Log</label>
@@ -451,7 +451,7 @@
 
 	<thing-type id="gateway">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Verisure Gateway</label>
@@ -517,70 +517,70 @@
 		<item-type>String</item-type>
 		<label>Current Status</label>
 		<description>Information on current status.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="userName">
 		<item-type>String</item-type>
 		<label>User Name</label>
 		<description>Name of the user.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="webAccount">
 		<item-type>String</item-type>
 		<label>User Email</label>
 		<description>The User's Email address.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="userLocationStatus">
 		<item-type>String</item-type>
 		<label>User Location Status</label>
 		<description>Information on user location status (HOME/AWAY).</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="userDeviceName">
 		<item-type>String</item-type>
 		<label>User Device Name</label>
 		<description>Information on user device name.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="numericStatus">
 		<item-type>Number</item-type>
 		<label>Current Numeric Status</label>
 		<description>Information about current numeric status.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>TimeStamp</label>
 		<description>Date and time of last event change.</description>
-		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM" />
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 
 	<channel-type id="changedByUser">
 		<item-type>String</item-type>
 		<label>Operated By</label>
 		<description>User who did the last change.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="changedVia">
 		<item-type>String</item-type>
 		<label>Changed via</label>
 		<description>Method used to change status.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="motorJam">
 		<item-type>Switch</item-type>
 		<label>SmartLock Motor Jam</label>
 		<description>Tells if the SmartLock motor has jammed.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="alarmStatus">
@@ -649,7 +649,7 @@
 		<item-type>Contact</item-type>
 		<label>Door/Window State</label>
 		<description>Is door/window opened or closed. (OPEN/CLOSED)</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="temperature">
@@ -657,99 +657,99 @@
 		<label>Temperature</label>
 		<description>Current temperature.</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f °C" />
+		<state readOnly="true" pattern="%.1f °C"/>
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity in %.</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="humidityEnabled">
 		<item-type>Switch</item-type>
 		<label>Humidity Enabled</label>
 		<description>Is Climate device capable of reporting humidity.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="label">
 		<item-type>String</item-type>
 		<label>Label</label>
 		<description>The name of the door/window.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="location">
 		<item-type>String</item-type>
 		<label>Location</label>
 		<description>The location of the device.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="hazardous">
 		<item-type>Switch</item-type>
 		<label>Hazardous</label>
 		<description>Is Verisure smart plug configured as hazardous.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="installationName">
 		<item-type>String</item-type>
 		<label>Installation Site Name</label>
 		<description>Name of the installation site.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="installationId">
 		<item-type>Number</item-type>
 		<label>Installation Site Id</label>
 		<description>ID of the installation site.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="countLatestDetection">
 		<item-type>Number</item-type>
 		<label>Mouse Count Latest Detection</label>
 		<description>Mouse count latest detection during last 24 hours.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="countLast24Hours">
 		<item-type>Number</item-type>
 		<label>Mouse Count Last 24 Hours</label>
 		<description>Mouse count last 24 hours.</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="durationLatestDetection">
 		<item-type>Number:Time</item-type>
 		<label>Duration Last Detection</label>
 		<description>Duration last detection.</description>
-		<state readOnly="true" pattern="%d s" />
+		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 
 	<channel-type id="durationLast24Hours">
 		<item-type>Number:Time</item-type>
 		<label>Duration Last 24 Hours</label>
 		<description>Duration last 24 hours.</description>
-		<state readOnly="true" pattern="%d s" />
+		<state readOnly="true" pattern="%d s"/>
 	</channel-type>
 
 	<channel-type id="lastEventType">
 		<item-type>String</item-type>
 		<label>Last Event Type</label>
 		<description>The last event's type in the event log.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="lastEventCategory">
 		<item-type>String</item-type>
 		<label>Last Event Category</label>
 		<description>The last event's category in the event log.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="lastEventId">
@@ -763,42 +763,42 @@
 		<item-type>String</item-type>
 		<label>Last Event Device Id</label>
 		<description>The last event's device id in the event log.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="lastEventDeviceType">
 		<item-type>String</item-type>
 		<label>Last Event Device Type</label>
 		<description>The last event's device type in the event log.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="lastEventUserName">
 		<item-type>String</item-type>
 		<label>Last Event User Name</label>
 		<description>The last event's user name in the event log.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="eventLog">
 		<item-type>String</item-type>
 		<label>Verisure Event Log</label>
 		<description>Verisure event log as a JSON array.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="communicationTestResult">
 		<item-type>String</item-type>
 		<label>Verisure GW Communication Test Result</label>
 		<description>Verisure Gateway communication test result.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="model">
 		<item-type>String</item-type>
 		<label>Verisure GW Model</label>
 		<description>Verisure Gateway model.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 </thing:thing-descriptions>

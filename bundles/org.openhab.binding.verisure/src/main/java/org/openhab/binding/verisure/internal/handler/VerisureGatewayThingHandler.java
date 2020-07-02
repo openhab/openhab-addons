@@ -51,7 +51,6 @@ public class VerisureGatewayThingHandler extends VerisureThingHandler<VerisureGa
 
     @Override
     public synchronized void update(VerisureGatewayDTO thing) {
-        logger.debug("update on thing: {}", thing);
         updateGatewayState(thing);
         updateStatus(ThingStatus.ONLINE);
     }

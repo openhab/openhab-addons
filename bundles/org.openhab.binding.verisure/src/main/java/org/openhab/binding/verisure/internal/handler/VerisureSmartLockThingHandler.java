@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -152,22 +154,26 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
             VerisureSmartLocksDTO smartLock = session.getVerisureThing(deviceId, getVerisureThingClass());
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
-                String csrf = session.getCsrfToken(installationId);
-                StringBuilder sb = new StringBuilder(deviceId);
-                sb.insert(4, "+");
-                String data;
-                String url = SMARTLOCK_AUTORELOCK_COMMAND;
-                if (command == OnOffType.ON) {
-                    data = "enabledDoorLocks=" + sb.toString()
-                            + "&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf="
-                            + csrf;
-                    handeAutoRelockResult(url, data, installationId, command);
-                } else if (command == OnOffType.OFF) {
-                    data = "enabledDoorLocks=&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf="
-                            + csrf;
-                    handeAutoRelockResult(url, data, installationId, command);
-                } else {
-                    logger.debug("Unknown command! {}", command);
+                try {
+                    String csrf = session.getCsrfToken(installationId);
+                    StringBuilder sb = new StringBuilder(deviceId);
+                    sb.insert(4, "+");
+                    String data;
+                    String url = SMARTLOCK_AUTORELOCK_COMMAND;
+                    if (command == OnOffType.ON) {
+                        data = "enabledDoorLocks=" + sb.toString()
+                                + "&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf="
+                                + csrf;
+                        handeAutoRelockResult(url, data, installationId, command);
+                    } else if (command == OnOffType.OFF) {
+                        data = "enabledDoorLocks=&doorLockDevices%5B0%5D.autoRelockEnabled=true&_doorLockDevices%5B0%5D.autoRelockEnabled=on&_csrf="
+                                + csrf;
+                        handeAutoRelockResult(url, data, installationId, command);
+                    } else {
+                        logger.warn("Unknown command! {}", command);
+                    }
+                } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                    logger.debug("Failed to handle auto-relock {}", e.getMessage());
                 }
             }
         }
@@ -194,7 +200,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
                             volume = command.toString();
                             voiceLevel = volumeSettings.getVoiceLevel();
                         } else {
-                            logger.debug("Failed to change volume, setting not allowed {}", command.toString());
+                            logger.warn("Failed to change volume, setting not allowed {}", command.toString());
                             return;
                         }
                     } else {
@@ -203,12 +209,12 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
                             volume = volumeSettings.getVolume();
                             voiceLevel = command.toString();
                         } else {
-                            logger.debug("Failed to change voice level, setting not allowed {}", command.toString());
+                            logger.warn("Failed to change voice level, setting not allowed {}", command.toString());
                             return;
                         }
                         BigDecimal installationId = smartLocks.getSiteId();
-                        String csrf = session.getCsrfToken(installationId);
-                        if (csrf != null) {
+                        try {
+                            String csrf = session.getCsrfToken(installationId);
                             String url = SMARTLOCK_VOLUME_COMMAND;
                             String data = "keypad.volume=MEDIUM&keypad.beepOnKeypress=true&_keypad.beepOnKeypress=on&siren.volume=MEDIUM&voiceDevice.volume=MEDIUM&doorLock.volume="
                                     + volume + "&doorLock.voiceLevel=" + voiceLevel
@@ -221,8 +227,8 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
                             } else {
                                 logger.warn("Failed to send command, HTTP result code {}", httpResultCode);
                             }
-                        } else {
-                            logger.debug("Unknown command! {}", command);
+                        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                            logger.warn("Failed to get CSRF token {}", e.getMessage());
                         }
                     }
                 }
@@ -237,7 +243,6 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
 
     @Override
     public synchronized void update(VerisureSmartLocksDTO thing) {
-        logger.debug("update on thing: {}", thing);
         updateSmartLockState(thing);
         updateStatus(ThingStatus.ONLINE);
     }

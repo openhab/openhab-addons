@@ -1,6 +1,6 @@
 # Verisure Binding
 
-This is an openHAB binding for Verisure Alarm system, by Securitas Direct.
+This is an openHAB binding for Verisure Alarm System, by Securitas Direct.
 
 This binding uses the rest API behind the Verisure My Pages: 
 
@@ -89,7 +89,7 @@ The following channels are supported:
 
 #### Channels
 
-([alarm]) supports the following channels:
+The following channels are supported:
 
 | Channel Type ID     | Item Type | Description                                                                               |
 |---------------------|-----------|-------------------------------------------------------------------------------------------|
@@ -98,9 +98,8 @@ The following channels are supported:
 | timestamp           | DateTime  | This channel reports the last time the alarm status was changed.                  |
 | installationName    | String    | This channel reports the installation name.                                                |
 | installationId      | Number    | This channel reports the installation ID.                                             |
-| alarmStatus         | String    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY".|               |
-| alarmTriggerChannel | trigger   | This is a trigger channel that receives events.
-|
+| alarmStatus         | String    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY".|
+| alarmTriggerChannel | trigger   | This is a trigger channel that receives events.|
 
 ### Verisure Yaleman SmartLock
 
@@ -111,7 +110,7 @@ The following channels are supported:
 
 #### Channels
 
-([smartLock]) supports the following channels:
+The following channels are supported:
 
 | Channel Type ID         | Item Type | Description                                                                                              |
 |-------------------------|-----------|----------------------------------------------------------------------------------------------------------|
@@ -137,7 +136,7 @@ The following channels are supported:
 
 #### Channels
 
-([smartPlug]) supports the following channels:
+The following channels are supported:
 
 | Channel Type ID         | Item Type | Description                                                       | 
 |-------------------------|-----------|-------------------------------------------------------------------|                                                                                                                                          
@@ -157,7 +156,7 @@ The following channels are supported:
 
 #### Channels
 
-([smokeDetector]) supports the following channels:
+The following channels are supported:
  
 | Channel Type ID             | Item Type             | Description                                                                 | 
 |-----------------------------|-----------------------|-----------------------------------------------------------------------------|
@@ -168,8 +167,7 @@ The following channels are supported:
 | location                    | String                | This channel reports the location of the device.                            |
 | installationName            | String                | This channel reports the installation name.                                 |
 | installationId              | Number                | This channel reports the installation ID.                                   |
-| smokeDetectorTriggerChannel | trigger               | This is a trigger channel that receives events.
-|
+| smokeDetectorTriggerChannel | trigger               | This is a trigger channel that receives events.|
  
 ### Verisure Water Detector
 
@@ -180,16 +178,18 @@ The following channels are supported:
 
 #### Channels
 
-([waterDetector]) supports the following channels:
+The following channels are supported:
+
 
 | Channel Type ID             | Item Type             | Description                                                  | 
 |-----------------------------|-----------------------|--------------------------------------------------------------|                                                                                                                                          
-| temperature                 | Number:Temperature    | This channel reports the current current temperature.        |
+| temperature                 | Number:Temperature    | This channel reports the current temperature.        |
 | timestamp                   | DateTime              | This channel reports the last time this sensor was updated.  |
 | location                    | String                | This channel reports the location of the device. |
 | installationName            | String                | This channel reports the installation name.      |
 | installationId              | Number                | This channel reports the installation ID.        |
 | waterDetectorTriggerChannel | trigger               | This is a trigger channel that receives events.  |
+
  
 ### Verisure Siren
 
@@ -200,11 +200,11 @@ The following channels are supported:
 
 #### Channels
 
-([siren]) supports the following channels:
+The following channels are supported:
  
 | Channel Type ID     | Item Type             | Description                                                | 
 |---------------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| temperature         | Number:Temperature    | This channel reports the current current temperature.  |
+| temperature         | Number:Temperature    | This channel reports the current temperature.          |
 | timestamp           | DateTime              | This channel reports the last time this sensor was updated.|
 | location            | String                | This channel reports the location.                     |
 | installationName    | String                | This channel reports the installation name.            |
@@ -220,11 +220,11 @@ The following channels are supported:
 
 #### Channels
 
-([nightControl]) supports the following channels:
+The following channels are supported:
  
 | Channel Type ID            | Item Type             | Description                                                | 
 |----------------------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| temperature                | Number:Temperature    | This channel reports the current current temperature.      |
+| temperature                | Number:Temperature    | This channel reports the current temperature.   |
 | timestamp                  | DateTime              | This channel reports the last time this sensor was updated.|
 | location                   | String                | This channel reports the location.              |
 | installationName           | String                | This channel reports the installation name.     |
@@ -240,7 +240,7 @@ The following channels are supported:
 
 #### Channels
 
-([doorWindowSensor]) supports the following channels:
+The following channels are supported:
  
 | Channel Type ID          | Item Type | Description                                                                 | 
 |--------------------------|-----------|-----------------------------------------------------------------------------|                                                                                                                                          
@@ -250,7 +250,7 @@ The following channels are supported:
 | installationName         | String    | This channel reports the installation name.                                 |
 | installationId           | Number    | This channel reports the installation ID.                                   |
 | doorWindowTriggerChannel | trigger   | This is a trigger channel that receives events. |
-|
+
 
 ### Verisure User Presence
 
@@ -261,7 +261,7 @@ The following channels are supported:
 
 #### Channels
 
-([userPresence]) supports the following channels:
+The following channels are supported:
  
 | Channel Type ID    | Item Type | Description                                                             | 
 |--------------------|-----------|-------------------------------------------------------------------------|                                                                                                                                          
@@ -282,7 +282,7 @@ The following channels are supported:
 
 #### Channels
 
-([broadbandConnection]) supports the following channels:
+The following channels are supported:
  
 | Channel Type ID | Item Type | Description                                                                    | 
 |-----------------|-----------|--------------------------------------------------------------------------------|                                                                                                                                          
@@ -300,7 +300,7 @@ The following channels are supported:
 
 #### Channels
 
-([miceDetection]) supports the following channels:
+The following channels are supported:
  
 | Channel Type ID             | Item Type          | Description                                                                         | 
 |-----------------------------|--------------------|-------------------------------------------------------------------------------------|                                                                                                                                          
@@ -314,8 +314,7 @@ The following channels are supported:
 | location                    | String             | This channel reports the location of the device.                                    |
 | installationName            | String             | This channel reports the installation name.                                         |
 | installationId              | Number             | This channel reports the installation ID.                                           |
-| miceDetectionTriggerChannel | trigger            | This is a trigger channel that receives events. 
-|  
+| miceDetectionTriggerChannel | trigger            | This is a trigger channel that receives events. |  
 
 ### Verisure Event Log
 
@@ -327,7 +326,7 @@ The following channels are supported:
 
 #### Channels
 
-([eventLog]) supports the following channels:
+The following channels are supported:
 
 | Channel Type ID     | Item Type | Description                                                             | 
 |---------------------|-----------|-------------------------------------------------------------------------|                                                                                                                                          
@@ -349,7 +348,7 @@ The following channels are supported:
 
 #### Channels
 
-([gateway]) supports the following channels:
+The following channels are supported:
 
 | Channel Type ID     | Item Type | Description                                                          | 
 |---------------------|-----------|----------------------------------------------------------------------|                                                                                                                                          

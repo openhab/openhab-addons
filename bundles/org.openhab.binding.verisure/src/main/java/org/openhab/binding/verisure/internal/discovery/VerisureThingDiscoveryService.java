@@ -13,8 +13,7 @@
 package org.openhab.binding.verisure.internal.discovery;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -99,7 +98,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
         if (verisureBridgeHandler != null) {
             String deviceId = thing.getDeviceId();
             // Make sure device id is normalized, i.e. replace all non character/digits with empty string
-            deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+            deviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
             thingUID = new ThingUID(thing.getThingTypeUID(), bridgeUID, deviceId);
         }
         return thingUID;
@@ -107,9 +106,7 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void activate() {
-        Map<String, @Nullable Object> properties = new HashMap<>();
-        properties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, Boolean.TRUE);
-        super.activate(properties);
+        super.activate(Collections.singletonMap(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, true));
     }
 
     @Override
@@ -129,5 +126,4 @@ public class VerisureThingDiscoveryService extends AbstractDiscoveryService
     public @Nullable ThingHandler getThingHandler() {
         return verisureBridgeHandler;
     }
-
 }

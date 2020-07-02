@@ -48,7 +48,7 @@ import com.google.gson.Gson;
  * Base class and handler for some of the different thing types that Verisure provides.
  *
  * @author Jarle Hjortland - Initial contribution
- * @author Jan Gustafsson - Further development and updates after code review
+ * @author Jan Gustafsson - Further development
  *
  */
 @NonNullByDefault
@@ -80,7 +80,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                         if (thing != null) {
                             update(thing);
                         } else {
-                            logger.debug("Thing is null!");
+                            logger.trace("Thing is null!");
                         }
                     } else {
                         logger.debug("Session is null!");
@@ -98,7 +98,6 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
 
     @Override
     public void initialize() {
-        logger.debug("initialize on thing: {}", thing);
         // Do not go online
         config = getConfigAs(VerisureThingConfiguration.class);
         // Set status to UNKNOWN and let background task set correct status
@@ -121,7 +120,6 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged bridgeStatusInfo: {}", bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             VerisureSession session = getSession();
             if (session != null) {
@@ -131,7 +129,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                 if (thing != null) {
                     update(thing);
                 } else {
-                    logger.warn("Thing is null!");
+                    logger.warn("Please check that you have configured correct deviceId for thing!");
                 }
                 session.registerDeviceStatusListener(this);
                 session.setVerisureThingHandler(this, config.getDeviceId());
@@ -142,15 +140,16 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
 
     @Override
     public void onDeviceStateChanged(T thing) {
-        logger.trace("onDeviceStateChanged on thing: {}", thing);
         String deviceId = thing.getDeviceId();
-        // Make sure device id is normalized, i.e. replace all non character/digits with empty string
-        if (config.getDeviceId().equalsIgnoreCase((deviceId.replaceAll("[^a-zA-Z0-9]+", "")))) {
+        // Make sure device id is normalized
+        if (config.getDeviceId().equalsIgnoreCase((VerisureThingConfiguration.normalizeDeviceId(deviceId)))) {
             update(thing);
         }
     }
 
     public abstract void update(T thing);
+
+    public abstract void updateTriggerChannel(String event);
 
     protected void updateInstallationChannels(T thing) {
         BigDecimal siteId = thing.getSiteId();
@@ -258,13 +257,11 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
                     scheduler.schedule(new EventTrigger(vth, eventTranslation), delay, TimeUnit.MILLISECONDS);
                     delay = delay + config.getEventTriggerDelay();
                 } else {
-                    logger.warn("Thing is null!");
+                    logger.debug("Thing is null!");
                 }
             }
         }
     }
-
-    public abstract void updateTriggerChannel(String event);
 
     protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp) {
         updateTimeStamp(lastUpdatedTimeStamp, CHANNEL_TIMESTAMP);
@@ -273,7 +270,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
     protected void updateTimeStamp(@Nullable String lastUpdatedTimeStamp, ChannelUID cuid) {
         if (lastUpdatedTimeStamp != null) {
             try {
-                logger.debug("Parsing date {} for channel {}", lastUpdatedTimeStamp, cuid);
+                logger.trace("Parsing date {} for channel {}", lastUpdatedTimeStamp, cuid);
                 ZonedDateTime zdt = ZonedDateTime.parse(lastUpdatedTimeStamp);
                 ZonedDateTime zdtLocal = zdt.withZoneSameInstant(ZoneId.systemDefault());
                 logger.trace("Parsing datetime successful. Using date. {}", new DateTimeType(zdtLocal));
@@ -300,16 +297,6 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
             }
         }
         return null;
-    }
-
-    @Override
-    public void onDeviceRemoved(T thing) {
-        logger.trace("onDeviceRemoved on thing: {}", thing);
-    }
-
-    @Override
-    public void onDeviceAdded(T thing) {
-        logger.trace("onDeviceAdded on thing: {}", thing);
     }
 
     protected void scheduleImmediateRefresh(int refreshDelay) {

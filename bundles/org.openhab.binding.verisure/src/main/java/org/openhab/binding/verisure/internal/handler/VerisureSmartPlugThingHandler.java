@@ -121,7 +121,6 @@ public class VerisureSmartPlugThingHandler extends VerisureThingHandler<Verisure
 
     @Override
     public synchronized void update(VerisureSmartPlugsDTO thing) {
-        logger.debug("update on thing: {}", thing);
         updateSmartPlugState(thing);
         updateStatus(ThingStatus.ONLINE);
     }

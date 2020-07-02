@@ -35,24 +35,7 @@ public interface DeviceStatusListener<T extends VerisureThingDTO> {
     void onDeviceStateChanged(T thing);
 
     /**
-     * This method us called whenever a device is removed.
-     *
-     * @param thing
-     *            The thing that is removed
-     */
-    void onDeviceRemoved(T thing);
-
-    /**
-     * This method us called whenever a device is added.
-     *
-     * @param thing
-     *            The thing which is added.
-     */
-    void onDeviceAdded(T thing);
-
-    /**
      * This method returns the thing's class
      */
     public Class<T> getVerisureThingClass();
-
 }

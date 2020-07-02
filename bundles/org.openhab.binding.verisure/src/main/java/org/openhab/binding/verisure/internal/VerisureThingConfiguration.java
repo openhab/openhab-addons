@@ -24,13 +24,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class VerisureThingConfiguration {
     public static final String DEVICE_ID_LABEL = "deviceId";
 
-    private @NonNullByDefault({}) String deviceId;
+    private String deviceId = "";
     private int numberOfEvents;
     private int eventTriggerDelay;
 
     public String getDeviceId() {
         // Make sure device id is normalized, i.e. replace all non character/digits with empty string
-        return deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+        return normalizeDeviceId(deviceId);
+    }
+
+    public static String normalizeDeviceId(String unnormalizedDeviceId) {
+        return unnormalizedDeviceId.replaceAll("[^a-zA-Z0-9]+", "");
     }
 
     public int getNumberOfEvents() {

@@ -134,7 +134,6 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
 
     @Override
     public synchronized void update(VerisureAlarmsDTO thing) {
-        logger.debug("update on thing: {}", thing);
         updateAlarmState(thing);
         updateStatus(ThingStatus.ONLINE);
     }

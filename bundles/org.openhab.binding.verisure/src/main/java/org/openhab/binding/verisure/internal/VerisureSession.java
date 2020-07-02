@@ -17,7 +17,6 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 import java.math.BigDecimal;
 import java.net.CookieStore;
 import java.net.HttpCookie;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +29,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -63,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * This class performs the communication with Verisure My Pages.
@@ -83,9 +82,10 @@ public class VerisureSession {
     private final Map<BigDecimal, VerisureInstallation> verisureInstallations = new ConcurrentHashMap<>();
     private static final List<String> APISERVERLIST = Arrays.asList("https://m-api01.verisure.com",
             "https://m-api02.verisure.com");
-    private static final String PASSWORD = "vid";
     private int apiServerInUseIndex = 0;
     private int numberOfEvents = 15;
+    private static final String USER_NAME = "username";
+    private static final String PASSWORD_NAME = "vid";
     private String apiServerInUse = APISERVERLIST.get(apiServerInUseIndex);
     private String authstring = "";
     private @Nullable String csrf;
@@ -99,7 +99,6 @@ public class VerisureSession {
     }
 
     public boolean initialize(@Nullable String authstring, @Nullable String pinCode, @Nullable String userName) {
-        logger.debug("VerisureSession:initialize");
         if (authstring != null) {
             this.authstring = authstring.substring(0);
             this.pinCode = pinCode;
@@ -108,7 +107,6 @@ public class VerisureSession {
             if (logIn()) {
                 return getInstallations();
             } else {
-                logger.warn("Failed to login to Verisure!");
                 return false;
             }
         }
@@ -116,7 +114,6 @@ public class VerisureSession {
     }
 
     public boolean refresh() {
-        logger.debug("VerisureSession:refresh");
         try {
             if (logIn()) {
                 updateStatus();
@@ -125,38 +122,41 @@ public class VerisureSession {
                 return false;
             }
         } catch (HttpResponseException e) {
-            logger.warn("Caught an HttpResponseException {}", e.getMessage(), e);
+            logger.warn("Failed to do a refresh {}", e.getMessage());
             return false;
         }
     }
 
     public int sendCommand(String url, String data, BigDecimal installationId) {
         logger.debug("Sending command with URL {} and data {}", url, data);
-        configureInstallationInstance(installationId);
-        int httpResultCode = setSessionCookieAuthLogin();
-        if (httpResultCode == HttpStatus.OK_200) {
-            return postVerisureAPI(url, data);
-        } else {
-            return httpResultCode;
+        try {
+            configureInstallationInstance(installationId);
+            int httpResultCode = setSessionCookieAuthLogin();
+            if (httpResultCode == HttpStatus.OK_200) {
+                return postVerisureAPI(url, data);
+            } else {
+                return httpResultCode;
+            }
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            logger.debug("Failed to send command {}", e.getMessage());
         }
+        return HttpStatus.BAD_REQUEST_400;
     }
 
     public boolean unregisterDeviceStatusListener(
             DeviceStatusListener<? extends VerisureThingDTO> deviceStatusListener) {
-        logger.debug("unregisterDeviceStatusListener for listener {}", deviceStatusListener);
         return deviceStatusListeners.remove(deviceStatusListener);
     }
 
     @SuppressWarnings("unchecked")
     public boolean registerDeviceStatusListener(DeviceStatusListener<? extends VerisureThingDTO> deviceStatusListener) {
-        logger.debug("registerDeviceStatusListener for listener {}", deviceStatusListener);
         return deviceStatusListeners.add((DeviceStatusListener<VerisureThingDTO>) deviceStatusListener);
     }
 
     @SuppressWarnings({ "unchecked" })
     public <T extends VerisureThingDTO> @Nullable T getVerisureThing(String deviceId, Class<T> thingType) {
         VerisureThingDTO thing = verisureThings.get(deviceId);
-        if (thing != null && thingType.isInstance(thing)) {
+        if (thingType.isInstance(thing)) {
             return (T) thing;
         }
         return null;
@@ -217,33 +217,23 @@ public class VerisureSession {
         this.numberOfEvents = numberOfEvents;
     }
 
-    public void configureInstallationInstance(BigDecimal installationId) {
-        logger.debug("Attempting to fetch CSRF and configure installation instance");
-        try {
-            csrf = getCsrfToken(installationId);
-            logger.debug("Got CSRF: {}", csrf);
-            // Set installation
-            String url = SET_INSTALLATION + installationId.toString();
-            logger.debug("Set installation URL: {}", url);
-            httpClient.GET(url);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            logger.warn("Caught an Exception {}", e.getMessage(), e);
-        }
+    public void configureInstallationInstance(BigDecimal installationId)
+            throws ExecutionException, InterruptedException, TimeoutException {
+        csrf = getCsrfToken(installationId);
+        logger.debug("Got CSRF: {}", csrf);
+        // Set installation
+        String url = SET_INSTALLATION + installationId;
+        httpClient.GET(url);
     }
 
-    public @Nullable String getCsrfToken(BigDecimal installationId) {
+    public @Nullable String getCsrfToken(BigDecimal installationId)
+            throws ExecutionException, InterruptedException, TimeoutException {
         String html = null;
-        String url = SETTINGS + installationId.toString();
-        logger.debug("Settings URL: {}", url);
+        String url = SETTINGS + installationId;
 
-        try {
-            ContentResponse resp = httpClient.GET(url);
-            html = resp.getContentAsString();
-            logger.trace("{} html: {}", url, html);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            logger.warn("Caught an Exception {}", e.getMessage(), e);
-            return null;
-        }
+        ContentResponse resp = httpClient.GET(url);
+        html = resp.getContentAsString();
+        logger.trace("url: {} html: {}", url, html);
 
         Document htmlDocument = Jsoup.parse(html);
         Element nameInput = htmlDocument.select("input[name=_csrf]").first();
@@ -256,10 +246,10 @@ public class VerisureSession {
 
     private void setPasswordFromCookie() {
         CookieStore c = httpClient.getCookieStore();
-        List<HttpCookie> cookies = c.get(URI.create("http://verisure.com"));
+        List<HttpCookie> cookies = c.getCookies();
         cookies.forEach(cookie -> {
-            logger.debug("Response Cookie: {}", cookie);
-            if (cookie.getName().equals(PASSWORD)) {
+            logger.trace("Response Cookie: {}", cookie);
+            if (cookie.getName().equals(PASSWORD_NAME)) {
                 password = cookie.getValue();
                 logger.debug("Fetching vid {} from cookie", password);
             }
@@ -274,116 +264,94 @@ public class VerisureSession {
         }
     }
 
-    private boolean areWeLoggedIn() {
-        logger.debug("areWeLoggedIn() - Checking if we are logged in");
+    private boolean areWeLoggedIn() throws ExecutionException, InterruptedException, TimeoutException {
+        logger.debug("Checking if we are logged in");
         String url = STATUS;
-        try {
-            logger.debug("Check for login status, url: {}", url);
-            ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).send();
-            String content = response.getContentAsString();
-            String error = "";
-            logTraceWithPattern(response.getStatus(), content);
 
-            switch (response.getStatus()) {
-                case HttpStatus.OK_200:
-                    if (content.contains("<title>MyPages</title>")) {
-                        logger.debug("Status code 200 and on MyPages!");
-                        setPasswordFromCookie();
-                        return true;
-                    } else {
-                        logger.debug("Not on MyPages, we need to login again!");
-                        return false;
-                    }
-                case HttpStatus.MOVED_TEMPORARILY_302:
-                    // Redirection
-                    logger.debug("Status code 302. Redirected. Probably not logged in");
+        ContentResponse response = httpClient.newRequest(url).method(HttpMethod.GET).send();
+        String content = response.getContentAsString();
+        logTraceWithPattern(response.getStatus(), content);
+
+        switch (response.getStatus()) {
+            case HttpStatus.OK_200:
+                if (content.contains("<title>MyPages</title>")) {
+                    setPasswordFromCookie();
+                    return true;
+                } else {
+                    logger.debug("Not on mypages,verisure.com, we need to login again!");
                     return false;
-                case HttpStatus.INTERNAL_SERVER_ERROR_500:
-                    // Verisure service temporarily down
-                    error = "Status code 500. Verisure service temporarily down";
-                    logger.debug(error);
-                    throw new HttpResponseException(error, response);
-                case HttpStatus.SERVICE_UNAVAILABLE_503:
-                    // Verisure service temporarily down
-                    error = "Status code 503. Verisure service temporarily down";
-                    logger.debug(error);
-                    throw new HttpResponseException(error, response);
-                default:
-                    logger.info("Status code {} body {}", response.getStatus(), content);
-                    break;
-            }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            logger.warn("Caught an Exception {}", e.getMessage(), e);
+                }
+            case HttpStatus.MOVED_TEMPORARILY_302:
+                // Redirection
+                logger.debug("Status code 302. Redirected. Probably not logged in");
+                return false;
+            case HttpStatus.INTERNAL_SERVER_ERROR_500:
+            case HttpStatus.SERVICE_UNAVAILABLE_503:
+                throw new HttpResponseException(
+                        "Status code " + response.getStatus() + ". Verisure service temporarily down", response);
+            default:
+                logger.debug("Status code {} body {}", response.getStatus(), content);
+                break;
         }
         return false;
     }
 
-    private <T> @Nullable T getJSONVerisureAPI(String url, Class<T> jsonClass) {
+    private <T> @Nullable T getJSONVerisureAPI(String url, Class<T> jsonClass)
+            throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException {
         logger.debug("HTTP GET: {}", BASEURL + url);
-        try {
-            ContentResponse response = httpClient.GET(BASEURL + url + "?_=" + System.currentTimeMillis());
-            String content = response.getContentAsString();
-            logTraceWithPattern(response.getStatus(), content);
 
-            if (response.getStatus() == HttpStatus.OK_200) {
-                return gson.fromJson(content, jsonClass);
-            }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            logger.warn("Caught an Exception {}", e.getMessage(), e);
-        }
-        return null;
+        ContentResponse response = httpClient.GET(BASEURL + url + "?_=" + System.currentTimeMillis());
+        String content = response.getContentAsString();
+        logTraceWithPattern(response.getStatus(), content);
+
+        return gson.fromJson(content, jsonClass);
     }
 
-    private @Nullable ContentResponse postVerisureAPI(String url, String data, Boolean isJSON) {
-        try {
-            logger.debug("postVerisureAPI URL: {} Data:{}", url, data);
-            Request request = httpClient.newRequest(url).method(HttpMethod.POST);
-            if (isJSON) {
-                request.header("content-type", "application/json");
-            } else {
-                if (csrf != null) {
-                    request.header("X-CSRF-TOKEN", csrf);
-                }
+    private ContentResponse postVerisureAPI(String url, String data, boolean isJSON)
+            throws ExecutionException, InterruptedException, TimeoutException {
+        logger.debug("postVerisureAPI URL: {} Data:{}", url, data);
+        Request request = httpClient.newRequest(url).method(HttpMethod.POST);
+        if (isJSON) {
+            request.header("content-type", "application/json");
+        } else {
+            if (csrf != null) {
+                request.header("X-CSRF-TOKEN", csrf);
             }
-            request.header("Accept", "application/json");
-            if (!data.equals("empty")) {
-                request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)),
-                        "application/x-www-form-urlencoded; charset=UTF-8");
-            } else {
-                logger.debug("Setting cookie with username {} and vid {}", userName, password);
-                request.cookie(new HttpCookie("username", userName));
-                request.cookie(new HttpCookie("vid", password));
-            }
-            logger.debug("HTTP POST Request {}.", request.toString());
-            return request.send();
-        } catch (ExecutionException | InterruptedException | TimeoutException | RuntimeException e) {
-            logger.warn("Caught an Exception {}", e.getMessage(), e);
         }
-        return null;
+        request.header("Accept", "application/json");
+        if (!data.equals("empty")) {
+            request.content(new BytesContentProvider(data.getBytes(StandardCharsets.UTF_8)),
+                    "application/x-www-form-urlencoded; charset=UTF-8");
+        } else {
+            logger.debug("Setting cookie with username {} and vid {}", userName, password);
+            request.cookie(new HttpCookie(USER_NAME, userName));
+            request.cookie(new HttpCookie(PASSWORD_NAME, password));
+        }
+        logger.debug("HTTP POST Request {}.", request.toString());
+        return request.send();
     }
 
-    private <T> @Nullable T postJSONVerisureAPI(String url, String data, Class<T> jsonClass) {
+    private <T> T postJSONVerisureAPI(String url, String data, Class<T> jsonClass)
+            throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException, PostToAPIException {
         for (int cnt = 0; cnt < APISERVERLIST.size(); cnt++) {
             ContentResponse response = postVerisureAPI(apiServerInUse + url, data, Boolean.TRUE);
-            if (response != null) {
-                logger.debug("HTTP Response ({})", response.getStatus());
-                if (response.getStatus() == HttpStatus.OK_200) {
-                    String content = response.getContentAsString();
-                    if (content.contains("\"message\":\"Request Failed") && content.contains("503")) {
-                        // Maybe Verisure has switched API server in use
-                        logger.debug("Changed API server! Response: {}", content);
-                        setApiServerInUse(getNextApiServer());
-                    } else {
-                        String contentChomped = StringUtils.chomp(content);
-                        logger.trace("Response body: {}", content);
-                        return gson.fromJson(contentChomped, jsonClass);
-                    }
+            logger.debug("HTTP Response ({})", response.getStatus());
+            if (response.getStatus() == HttpStatus.OK_200) {
+                String content = response.getContentAsString();
+                if (content.contains("\"message\":\"Request Failed") && content.contains("503")) {
+                    // Maybe Verisure has switched API server in use?
+                    logger.debug("Changed API server! Response: {}", content);
+                    setApiServerInUse(getNextApiServer());
                 } else {
-                    logger.debug("Failed to send POST, Http status code: {}", response.getStatus());
+                    String contentChomped = content.trim();
+                    logger.trace("Response body: {}", content);
+                    return gson.fromJson(contentChomped, jsonClass);
                 }
+            } else {
+                logger.debug("Failed to send POST, Http status code: {}", response.getStatus());
             }
         }
-        return null;
+        throw new PostToAPIException("Failed to POST to API");
     }
 
     private int postVerisureAPI(String urlString, String data) {
@@ -395,8 +363,8 @@ public class VerisureSession {
         }
 
         for (int cnt = 0; cnt < APISERVERLIST.size(); cnt++) {
-            ContentResponse response = postVerisureAPI(url, data, Boolean.FALSE);
-            if (response != null) {
+            try {
+                ContentResponse response = postVerisureAPI(url, data, Boolean.FALSE);
                 logger.debug("HTTP Response ({})", response.getStatus());
                 int httpStatus = response.getStatus();
                 if (httpStatus == HttpStatus.OK_200) {
@@ -417,51 +385,45 @@ public class VerisureSession {
                 } else {
                     logger.debug("Failed to send POST, Http status code: {}", response.getStatus());
                 }
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                logger.warn("Failed to send a POST to the API {}", e.getMessage());
             }
         }
         return HttpStatus.SERVICE_UNAVAILABLE_503;
     }
 
-    private int setSessionCookieAuthLogin() {
+    private int setSessionCookieAuthLogin() throws ExecutionException, InterruptedException, TimeoutException {
         // URL to set status which will give us 2 cookies with username and password used for the session
         String url = STATUS;
-
-        try {
-            ContentResponse response = httpClient.GET(url);
-            if (logger.isTraceEnabled()) {
-                String pattern = "(?m)^\\s*\\r?\\n|\\r?\\n\\s*(?!.*\\r?\\n)";
-                String replacement = "";
-                logger.trace("HTTP Response ({}) Body:{}", response.getStatus(),
-                        response.getContentAsString().replaceAll(pattern, replacement));
-            }
-            setPasswordFromCookie();
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            logger.warn("Caught an Exception {}", e.getMessage(), e);
-        }
+        ContentResponse response = httpClient.GET(url);
+        logTraceWithPattern(response.getStatus(), response.getContentAsString());
 
         url = AUTH_LOGIN;
         return postVerisureAPI(url, "empty");
     }
 
     private boolean getInstallations() {
-        logger.debug("Attempting to get all installations");
+        int httpResultCode = 0;
 
-        int httpResultCode = setSessionCookieAuthLogin();
+        try {
+            httpResultCode = setSessionCookieAuthLogin();
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            logger.warn("Failed to set session cookie {}", e.getMessage());
+            return false;
+        }
+
         if (httpResultCode == HttpStatus.OK_200) {
             String url = START_GRAPHQL;
 
             String queryQLAccountInstallations = "[{\"operationName\":\"AccountInstallations\",\"variables\":{\"email\":\""
                     + userName
                     + "\"},\"query\":\"query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}]";
-            Class<VerisureInstallationsDTO> jsonClass = VerisureInstallationsDTO.class;
-            VerisureInstallationsDTO installations = postJSONVerisureAPI(url, queryQLAccountInstallations, jsonClass);
-
-            if (installations == null) {
-                logger.debug("Failed to get installations");
-            } else {
+            try {
+                VerisureInstallationsDTO installations = postJSONVerisureAPI(url, queryQLAccountInstallations,
+                        VerisureInstallationsDTO.class);
                 logger.debug("Installation: {}", installations.toString());
                 List<Owainstallation> owaInstList = installations.getData().getAccount().getOwainstallations();
-                Boolean pinCodesMatchInstallations = true;
+                boolean pinCodesMatchInstallations = true;
                 List<String> pinCodes = null;
                 String pinCode = this.pinCode;
                 if (pinCode != null) {
@@ -485,7 +447,8 @@ public class VerisureSession {
                         if (pinCode != null && pinCodes != null) {
                             int pinCodeIndex = pinCodesMatchInstallations ? i : 0;
                             vInst.setPinCode(pinCodes.get(pinCodeIndex));
-                            logger.debug("Setting pincode {} to installation ID {}", pinCodeIndex, installationId);
+                            logger.debug("Setting configured pincode index[{}] to installation ID {}", pinCodeIndex,
+                                    installationId);
                         }
                         verisureInstallations.put(new BigDecimal(installationId), vInst);
                     } else {
@@ -493,6 +456,9 @@ public class VerisureSession {
                         return false;
                     }
                 }
+            } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                    | PostToAPIException e) {
+                logger.warn("Failed to send a POST to the API {}", e.getMessage());
             }
         } else {
             logger.warn("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
@@ -502,23 +468,28 @@ public class VerisureSession {
     }
 
     private synchronized boolean logIn() {
-        if (!areWeLoggedIn()) {
-            logger.debug("Attempting to log in to mypages.verisure.com");
-            String url = LOGON_SUF;
-            logger.debug("Login URL: {}", url);
-            int httpStatusCode = postVerisureAPI(url, authstring);
-            if (httpStatusCode != HttpStatus.OK_200) {
-                logger.debug("Failed to login, HTTP status code: {}", httpStatusCode);
-                return false;
+        try {
+            if (!areWeLoggedIn()) {
+                logger.debug("Attempting to log in to mypages.verisure.com");
+                String url = LOGON_SUF;
+                logger.debug("Login URL: {}", url);
+                int httpStatusCode = postVerisureAPI(url, authstring);
+                if (httpStatusCode != HttpStatus.OK_200) {
+                    logger.debug("Failed to login, HTTP status code: {}", httpStatusCode);
+                    return false;
+                }
+                return true;
+            } else {
+                return true;
             }
-            return true;
-        } else {
-            return true;
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            logger.warn("Failed to login {}", e.getMessage());
         }
+        return false;
     }
 
     private <T extends VerisureThingDTO> void notifyListeners(T thing) {
-        deviceStatusListeners.stream().forEach(listener -> {
+        deviceStatusListeners.forEach(listener -> {
             if (listener.getVerisureThingClass().equals(thing.getClass())) {
                 listener.onDeviceStateChanged(thing);
             }
@@ -526,38 +497,41 @@ public class VerisureSession {
     }
 
     private void notifyListenersIfChanged(VerisureThingDTO thing, VerisureInstallation installation, String deviceId) {
-        String normalizedDeviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+        String normalizedDeviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
         thing.setDeviceId(normalizedDeviceId);
         VerisureThingDTO oldObj = verisureThings.get(normalizedDeviceId);
-        logger.trace("Old thing: {}", oldObj);
-        logger.trace("Updated thing: {}", thing);
         if (!thing.equals(oldObj)) {
             thing.setSiteId(installation.getInstallationId());
             thing.setSiteName(installation.getInstallationName());
             verisureThings.put(thing.getDeviceId(), thing);
-            logger.trace("Notify listener of thing {}", thing);
             notifyListeners(thing);
+        } else {
+            logger.trace("No need to notify listeners for thing: {}", thing);
         }
     }
 
     private void updateStatus() {
-        logger.debug("VerisureSession:updateStatus");
+        logger.debug("Update status");
         verisureInstallations.forEach((installationId, installation) -> {
-            configureInstallationInstance(installation.getInstallationId());
-            int httpResultCode = setSessionCookieAuthLogin();
-            if (httpResultCode == HttpStatus.OK_200) {
-                updateAlarmStatus(installation);
-                updateSmartLockStatus(installation);
-                updateMiceDetectionStatus(installation);
-                updateClimateStatus(installation);
-                updateDoorWindowStatus(installation);
-                updateUserPresenceStatus(installation);
-                updateSmartPlugStatus(installation);
-                updateBroadbandConnectionStatus(installation);
-                updateEventLogStatus(installation);
-                updateGatewayStatus(installation);
-            } else {
-                logger.warn("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
+            try {
+                configureInstallationInstance(installation.getInstallationId());
+                int httpResultCode = setSessionCookieAuthLogin();
+                if (httpResultCode == HttpStatus.OK_200) {
+                    updateAlarmStatus(installation);
+                    updateSmartLockStatus(installation);
+                    updateMiceDetectionStatus(installation);
+                    updateClimateStatus(installation);
+                    updateDoorWindowStatus(installation);
+                    updateUserPresenceStatus(installation);
+                    updateSmartPlugStatus(installation);
+                    updateBroadbandConnectionStatus(installation);
+                    updateEventLogStatus(installation);
+                    updateGatewayStatus(installation);
+                } else {
+                    logger.debug("Failed to set session cookie and auth login, HTTP result code: {}", httpResultCode);
+                }
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                logger.debug("Failed to update status {}", e.getMessage());
             }
         });
     }
@@ -581,17 +555,16 @@ public class VerisureSession {
 
         String queryQLAlarmStatus = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for alarm status!");
-
-        VerisureThingDTO thing = postJSONVerisureAPI(url, queryQLAlarmStatus, VerisureAlarmsDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureThingDTO thing = postJSONVerisureAPI(url, queryQLAlarmStatus, VerisureAlarmsDTO.class);
+            logger.debug("REST Response ({})", thing);
             // Set unique deviceID
-            String deviceId = "alarm" + installationId.toString();
+            String deviceId = "alarm" + installationId;
             thing.setDeviceId(deviceId);
             notifyListenersIfChanged(thing, installation, deviceId);
-        } else {
-            logger.debug("Failed to update alarm status, thing is null!");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -606,10 +579,9 @@ public class VerisureSession {
         String queryQLSmartLock = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for smart lock status");
 
-        VerisureSmartLocksDTO thing = postJSONVerisureAPI(url, queryQLSmartLock, VerisureSmartLocksDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureSmartLocksDTO thing = postJSONVerisureAPI(url, queryQLSmartLock, VerisureSmartLocksDTO.class);
+            logger.debug("REST Response ({})", thing);
             List<VerisureSmartLocksDTO.Doorlock> doorLockList = thing.getData().getInstallation().getDoorlocks();
             doorLockList.forEach(doorLock -> {
                 VerisureSmartLocksDTO slThing = new VerisureSmartLocksDTO();
@@ -625,15 +597,21 @@ public class VerisureSession {
                     slThing.setLocation(doorLock.getDevice().getArea());
                     slThing.setDeviceId(deviceId);
                     // Fetch more info from old endpoint
-                    VerisureSmartLockDTO smartLockThing = getJSONVerisureAPI(SMARTLOCK_PATH + slThing.getDeviceId(),
-                            VerisureSmartLockDTO.class);
-                    logger.debug("REST Response ({})", smartLockThing);
-                    slThing.setSmartLockJSON(smartLockThing);
-                    notifyListenersIfChanged(slThing, installation, deviceId);
+                    try {
+                        VerisureSmartLockDTO smartLockThing = getJSONVerisureAPI(SMARTLOCK_PATH + slThing.getDeviceId(),
+                                VerisureSmartLockDTO.class);
+                        logger.debug("REST Response ({})", smartLockThing);
+                        slThing.setSmartLockJSON(smartLockThing);
+                        notifyListenersIfChanged(slThing, installation, deviceId);
+                    } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException e) {
+                        logger.warn("Failed to query for smartlock status: {}", e.getMessage());
+                    }
                 }
             });
-        } else {
-            logger.debug("Failed to update SmartLockStatus, thing is null!");
+
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -648,10 +626,9 @@ public class VerisureSession {
         String queryQLSmartPlug = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for smart plug status");
 
-        VerisureSmartPlugsDTO thing = postJSONVerisureAPI(url, queryQLSmartPlug, VerisureSmartPlugsDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureSmartPlugsDTO thing = postJSONVerisureAPI(url, queryQLSmartPlug, VerisureSmartPlugsDTO.class);
+            logger.debug("REST Response ({})", thing);
             List<VerisureSmartPlugsDTO.Smartplug> smartPlugList = thing.getData().getInstallation().getSmartplugs();
             smartPlugList.forEach(smartPlug -> {
                 VerisureSmartPlugsDTO spThing = new VerisureSmartPlugsDTO();
@@ -668,8 +645,9 @@ public class VerisureSession {
                     notifyListenersIfChanged(spThing, installation, deviceId);
                 }
             });
-        } else {
-            logger.debug("Failed to update SmartPlug, thing is null");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -685,10 +663,9 @@ public class VerisureSession {
         String queryQLClimates = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for climate status");
 
-        VerisureClimatesDTO thing = postJSONVerisureAPI(url, queryQLClimates, VerisureClimatesDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureClimatesDTO thing = postJSONVerisureAPI(url, queryQLClimates, VerisureClimatesDTO.class);
+            logger.debug("REST Response ({})", thing);
             List<VerisureClimatesDTO.Climate> climateList = thing.getData().getInstallation().getClimates();
             climateList.forEach(climate -> {
                 // If thing is Mouse detection device, then skip it, but fetch temperature from it
@@ -697,7 +674,7 @@ public class VerisureSession {
                     logger.debug("Mouse detection device!");
                     String deviceId = climate.getDevice().getDeviceLabel();
                     if (deviceId != null) {
-                        deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+                        deviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
                         VerisureThingDTO mouseThing = verisureThings.get(deviceId);
                         if (mouseThing != null && mouseThing instanceof VerisureMiceDetectionDTO) {
                             VerisureMiceDetectionDTO miceDetectorThing = (VerisureMiceDetectionDTO) mouseThing;
@@ -723,8 +700,9 @@ public class VerisureSession {
                     notifyListenersIfChanged(cThing, installation, deviceId);
                 }
             });
-        } else {
-            logger.debug("Failed to update ClimateStatus, thing is null");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -740,10 +718,9 @@ public class VerisureSession {
         String queryQLDoorWindow = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for door&window status");
 
-        VerisureDoorWindowsDTO thing = postJSONVerisureAPI(url, queryQLDoorWindow, VerisureDoorWindowsDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureDoorWindowsDTO thing = postJSONVerisureAPI(url, queryQLDoorWindow, VerisureDoorWindowsDTO.class);
+            logger.debug("REST Response ({})", thing);
             List<VerisureDoorWindowsDTO.DoorWindow> doorWindowList = thing.getData().getInstallation().getDoorWindows();
             doorWindowList.forEach(doorWindow -> {
                 VerisureDoorWindowsDTO dThing = new VerisureDoorWindowsDTO();
@@ -760,8 +737,9 @@ public class VerisureSession {
                     notifyListenersIfChanged(dThing, installation, deviceId);
                 }
             });
-        } else {
-            logger.debug("Failed to update DoorWindowStatus thing, is null!");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -777,16 +755,16 @@ public class VerisureSession {
         String queryQLBroadbandConnection = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for broadband connection status");
 
-        VerisureThingDTO thing = postJSONVerisureAPI(url, queryQLBroadbandConnection,
-                VerisureBroadbandConnectionsDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureThingDTO thing = postJSONVerisureAPI(url, queryQLBroadbandConnection,
+                    VerisureBroadbandConnectionsDTO.class);
+            logger.debug("REST Response ({})", thing);
             // Set unique deviceID
-            String deviceId = "bc" + installationId.toString();
+            String deviceId = "bc" + installationId;
             notifyListenersIfChanged(thing, inst, deviceId);
-        } else {
-            logger.debug("Failed to update BroadbandConnection, thing is null!");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -802,10 +780,10 @@ public class VerisureSession {
         String queryQLUserPresence = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for user presence status");
 
-        VerisureUserPresencesDTO thing = postJSONVerisureAPI(url, queryQLUserPresence, VerisureUserPresencesDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureUserPresencesDTO thing = postJSONVerisureAPI(url, queryQLUserPresence,
+                    VerisureUserPresencesDTO.class);
+            logger.debug("REST Response ({})", thing);
             List<VerisureUserPresencesDTO.UserTracking> userTrackingList = thing.getData().getInstallation()
                     .getUserTrackings();
             userTrackingList.forEach(userTracking -> {
@@ -818,12 +796,13 @@ public class VerisureSession {
                     data.setInstallation(inst);
                     upThing.setData(data);
                     // Set unique deviceID
-                    String deviceId = "up" + userTracking.getWebAccount() + installationId.toString();
+                    String deviceId = "up" + userTracking.getWebAccount() + installationId;
                     notifyListenersIfChanged(upThing, installation, deviceId);
                 }
             });
-        } else {
-            logger.debug("Failed to update UserPresenceStatus, thing is null!");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -839,10 +818,10 @@ public class VerisureSession {
         String queryQLMiceDetection = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for mice detection status");
 
-        VerisureMiceDetectionDTO thing = postJSONVerisureAPI(url, queryQLMiceDetection, VerisureMiceDetectionDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureMiceDetectionDTO thing = postJSONVerisureAPI(url, queryQLMiceDetection,
+                    VerisureMiceDetectionDTO.class);
+            logger.debug("REST Response ({})", thing);
             List<VerisureMiceDetectionDTO.Mouse> miceList = thing.getData().getInstallation().getMice();
             miceList.forEach(mouse -> {
                 VerisureMiceDetectionDTO miceThing = new VerisureMiceDetectionDTO();
@@ -860,8 +839,9 @@ public class VerisureSession {
                     notifyListenersIfChanged(miceThing, installation, deviceId);
                 }
             });
-        } else {
-            logger.debug("Failed to update Mice Detection Status, thing is null!");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -886,15 +866,15 @@ public class VerisureSession {
         String queryQLEventLog = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for event log status");
 
-        VerisureEventLogDTO thing = postJSONVerisureAPI(url, queryQLEventLog, VerisureEventLogDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureEventLogDTO thing = postJSONVerisureAPI(url, queryQLEventLog, VerisureEventLogDTO.class);
+            logger.debug("REST Response ({})", thing);
             // Set unique deviceID
-            String deviceId = "el" + installationId.toString();
+            String deviceId = "el" + installationId;
             notifyListenersIfChanged(thing, installation, deviceId);
-        } else {
-            logger.debug("Failed to update EventLogStatus, thing is null!");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -911,10 +891,9 @@ public class VerisureSession {
         String queryQLEventLog = createOperationJSON(operation, variables, query);
         logger.debug("Quering API for gateway status");
 
-        VerisureGatewayDTO thing = postJSONVerisureAPI(url, queryQLEventLog, VerisureGatewayDTO.class);
-        logger.debug("REST Response ({})", thing);
-
-        if (thing != null) {
+        try {
+            VerisureGatewayDTO thing = postJSONVerisureAPI(url, queryQLEventLog, VerisureGatewayDTO.class);
+            logger.debug("REST Response ({})", thing);
             // Set unique deviceID
             List<CommunicationState> communicationStateList = thing.getData().getInstallation().getCommunicationState();
             if (!communicationStateList.isEmpty()) {
@@ -923,8 +902,9 @@ public class VerisureSession {
                     notifyListenersIfChanged(thing, installation, deviceId);
                 }
             }
-        } else {
-            logger.debug("Failed to update EventLogStatus, thing is null!");
+        } catch (ExecutionException | InterruptedException | TimeoutException | JsonSyntaxException
+                | PostToAPIException e) {
+            logger.warn("Failed to send a POST to the API {}", e.getMessage());
         }
     }
 
@@ -986,11 +966,11 @@ public class VerisureSession {
     public static class VariablesDTO {
 
         @SuppressWarnings("unused")
-        private @Nullable Boolean hideNotifications = null;
+        private boolean hideNotifications;
         @SuppressWarnings("unused")
-        private @Nullable Integer offset = null;
+        private int offset;
         @SuppressWarnings("unused")
-        private @Nullable Integer pagesize = null;
+        private int pagesize;
         @SuppressWarnings("unused")
         private @Nullable List<String> eventCategories = null;
         @SuppressWarnings("unused")
@@ -1000,11 +980,11 @@ public class VerisureSession {
             this.hideNotifications = hideNotifications;
         }
 
-        public void setOffset(Integer offset) {
+        public void setOffset(int offset) {
             this.offset = offset;
         }
 
-        public void setPagesize(Integer pagesize) {
+        public void setPagesize(int pagesize) {
             this.pagesize = pagesize;
         }
 
@@ -1015,5 +995,15 @@ public class VerisureSession {
         public void setGiid(String giid) {
             this.giid = giid;
         }
+    }
+
+    private class PostToAPIException extends Exception {
+
+        private static final long serialVersionUID = 1L;
+
+        public PostToAPIException(String message) {
+            super(message);
+        }
+
     }
 }

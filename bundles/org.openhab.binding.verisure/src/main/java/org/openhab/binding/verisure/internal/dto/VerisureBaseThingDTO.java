@@ -21,6 +21,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
 import org.openhab.binding.verisure.internal.dto.VerisureAlarmsDTO.ArmState;
 import org.openhab.binding.verisure.internal.dto.VerisureBroadbandConnectionsDTO.Broadband;
 import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Climate;
@@ -36,13 +37,13 @@ import org.openhab.binding.verisure.internal.dto.VerisureUserPresencesDTO.UserTr
 import com.google.gson.annotations.SerializedName;
 
 /**
- * A base JSON thing for other Verisure things to inherit.
+ * A base JSON thing for other Verisure things to inherit from.
  *
  * @author Jarle Hjortland - Initial contribution
  *
  */
 @NonNullByDefault
-public class VerisureBaseThingDTO implements VerisureThingDTO {
+public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
 
     protected String deviceId = "";
     protected @Nullable String name;
@@ -52,66 +53,38 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
     protected BigDecimal siteId = BigDecimal.ZERO;
     protected Data data = new Data();
 
-    /**
-     *
-     * @return
-     *         The status
-     */
     public @Nullable String getStatus() {
         return status;
     }
 
-    /**
-     *
-     * @param status
-     *            The status
-     */
     public void setStatus(String status) {
         this.status = status;
     }
 
-    /**
-     * @return the name
-     */
     public @Nullable String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the deviceId
-     */
     @Override
     public String getDeviceId() {
         return deviceId;
     }
 
-    /**
-     * @param deviceId the deviceId to set
-     */
     @Override
     public void setDeviceId(String deviceId) {
-        // Make sure device id is normalized, i.e. replace all non character/digits with empty string
-        this.deviceId = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+        // Make sure device id is normalized
+        this.deviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
     }
 
-    /**
-     * @return the location
-     */
     @Override
     public @Nullable String getLocation() {
         return location;
     }
 
-    /**
-     * @param location the location to set
-     */
     public void setLocation(@Nullable String location) {
         this.location = location;
     }
@@ -137,9 +110,7 @@ public class VerisureBaseThingDTO implements VerisureThingDTO {
     }
 
     @Override
-    public ThingTypeUID getThingTypeUID() {
-        return getThingTypeUID();
-    }
+    public abstract ThingTypeUID getThingTypeUID();
 
     public Data getData() {
         return data;

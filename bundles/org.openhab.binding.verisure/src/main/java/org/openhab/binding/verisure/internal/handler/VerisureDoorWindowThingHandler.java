@@ -52,7 +52,6 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
 
     @Override
     public synchronized void update(VerisureDoorWindowsDTO thing) {
-        logger.debug("update on thing: {}", thing);
         updateDoorWindowState(thing);
         updateStatus(ThingStatus.ONLINE);
     }
