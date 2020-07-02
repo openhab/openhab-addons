@@ -55,7 +55,8 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     protected ThingConfig config = new ThingConfig();
     protected DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
     protected final Gson gson;
-    private @Nullable ScheduledFuture<?> scheduledFuture;
+    @Nullable
+    protected ScheduledFuture<?> scheduledFuture;
     protected @Nullable WebSocketConnection connection;
     protected @Nullable AsyncHttpClient http;
 
