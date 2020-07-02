@@ -96,8 +96,8 @@ Switch Station04 (stations) { channel="opensprinkler:station:http:04:stationStat
 Switch Station05 (stations) { channel="opensprinkler:station:http:05:stationState" }
 Switch Station06 (stations) { channel="opensprinkler:station:http:06:stationState" }
 
-Switch RainSensor { channel="opensprinkler:station:http:device:rainsensor" }
-Number:ElectricCurrent CurrentDraw {channel="opensprinkler:station:http:device:currentDraw"}
+Switch RainSensor { channel="opensprinkler:device:http:device:rainsensor" }
+Number:ElectricCurrent CurrentDraw {channel="opensprinkler:device:http:device:currentDraw"}
 ```
 
 demo.sitemap:
