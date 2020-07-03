@@ -21,8 +21,8 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitDataAlarmSensor;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitDataAlarmSensor;
 
 /**
  * The {@link TouchWandAlarmSensorHandler} is responsible for handling Alarm Sensor triggers

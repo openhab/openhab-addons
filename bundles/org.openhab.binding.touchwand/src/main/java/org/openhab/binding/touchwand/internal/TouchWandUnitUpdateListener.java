@@ -14,7 +14,7 @@
 package org.openhab.binding.touchwand.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 
 /**
  * Listener for Unit updates.

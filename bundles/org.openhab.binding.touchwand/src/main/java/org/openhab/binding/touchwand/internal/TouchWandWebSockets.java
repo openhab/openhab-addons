@@ -34,8 +34,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitFromJson;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitFromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

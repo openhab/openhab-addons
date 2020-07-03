@@ -19,8 +19,8 @@ import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitDataWallController;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitDataWallController;
 
 /**
  * The {@link TouchWandWallControllerHandler} is responsible for handling commands and triggers

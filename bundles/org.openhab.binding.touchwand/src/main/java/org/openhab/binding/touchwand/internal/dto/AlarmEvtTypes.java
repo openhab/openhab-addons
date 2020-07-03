@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.touchwand.internal.data;
+package org.openhab.binding.touchwand.internal.dto;
 
 /**
  * The {@link AlarmEvtTypes} implements CurrStatus data class.

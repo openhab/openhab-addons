@@ -30,7 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -18,8 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.touchwand.internal.data.TouchWandShutterSwitchUnitData;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandShutterSwitchUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 
 /**
  * The {@link TouchWandShutterHandler} is responsible for handling commands for Shutter units

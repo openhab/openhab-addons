@@ -13,7 +13,7 @@
 
 package org.openhab.binding.touchwand.internal;
 
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 
 /**
  * Interface for a listener on the {@link TouchWandWebSocket}.

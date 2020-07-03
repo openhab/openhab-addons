@@ -32,8 +32,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.touchwand.internal.TouchWandBridgeHandler;
 import org.openhab.binding.touchwand.internal.TouchWandUnitStatusUpdateListener;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitData;
-import org.openhab.binding.touchwand.internal.data.TouchWandUnitFromJson;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
+import org.openhab.binding.touchwand.internal.dto.TouchWandUnitFromJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
