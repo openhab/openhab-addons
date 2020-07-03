@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -111,7 +110,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import java.util.LinkedHashSet;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -1128,23 +1126,12 @@ public class Connection {
         parameters.put("customerId", customerId);
         executeSequenceCommand(null, "Alexa.Notifications.SendMobilePush", parameters);
     }
-
-    private void sendAnnouncement() {
-        if (announcementTimer != null) {
-            announcementTimer.cancel(true);
-        }
-        for (String json : announcements.keySet()) {
-            JsonAnnouncement jsonAnnouncement = announcements.get(json);
-            announcementQueue.add(jsonAnnouncement);
-            if (announcementQueueRunning.compareAndSet(false, true)) {
-                queuedAnnouncement();
-            }
-        }
-        announcements.clear();
-    }
-
+    
     public synchronized void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
+        if (speak == null || speak.replaceAll("<.+?>", "").trim().isEmpty()) {
+            return;
+        }
         if (announcementTimer != null) {
             announcementTimer.cancel(true);
         }
@@ -1169,6 +1156,20 @@ public class Connection {
         }, 1, TimeUnit.SECONDS);
     }
 
+    private void sendAnnouncement() {
+        if (announcementTimer != null) {
+            announcementTimer.cancel(true);
+        }
+        for (String json : announcements.keySet()) {
+            JsonAnnouncement jsonAnnouncement = announcements.get(json);
+            announcementQueue.add(jsonAnnouncement);
+            if (announcementQueueRunning.compareAndSet(false, true)) {
+                queuedAnnouncement();
+            }
+        }
+        announcements.clear();
+    }
+    
     public void queuedAnnouncement() {
         JsonAnnouncement jsonAnnouncement = announcementQueue.poll();
         if (jsonAnnouncement != null) {
@@ -1190,13 +1191,7 @@ public class Connection {
                     content.display.title = title;
                 }
                 content.display.body = bodyText;
-                if (bodyText.startsWith("<speak>") && bodyText.endsWith("</speak>")) {
-                    Pattern pattern = Pattern.compile(">([^<].+[^>])<");
-                    Matcher matcher = pattern.matcher(bodyText);
-                    while (matcher.find()) {
-                        content.display.body = matcher.group(matcher.groupCount());
-                    }
-                }
+                content.display.body = speak.replaceAll("<.+?>", "");
                 if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
                     content.speak.type = "ssml";
                 }
@@ -1239,22 +1234,11 @@ public class Connection {
             announcementSenderUnblockFuture = null;
         }
     }
-
-    private void sendTextToSpeech() {
-        if (textToSpeechTimer != null) {
-            textToSpeechTimer.cancel(true);
-        }
-        for (String json : textToSpeeches.keySet()) {
-            JsonTextToSpeech jsonTextToSpeech = textToSpeeches.get(json);
-            textToSpeechQueue.add(jsonTextToSpeech);
-            if (textToSpeechQueueRunning.compareAndSet(false, true)) {
-                queuedTextToSpeech();
-            }
-        }
-        textToSpeeches.clear();
-    }
-
+    
     public synchronized void textToSpeech(Device device, String text, @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
+        if (text == null || text.replaceAll("<.+?>", "").trim().isEmpty()) {
+            return;
+        }
         if (textToSpeechTimer != null) {
             textToSpeechTimer.cancel(true);
         }
@@ -1275,6 +1259,20 @@ public class Connection {
         textToSpeechTimer = scheduler.schedule(() -> {
             sendTextToSpeech();
         }, 1, TimeUnit.SECONDS);
+    }
+    
+    private void sendTextToSpeech() {
+        if (textToSpeechTimer != null) {
+            textToSpeechTimer.cancel(true);
+        }
+        for (String json : textToSpeeches.keySet()) {
+            JsonTextToSpeech jsonTextToSpeech = textToSpeeches.get(json);
+            textToSpeechQueue.add(jsonTextToSpeech);
+            if (textToSpeechQueueRunning.compareAndSet(false, true)) {
+                queuedTextToSpeech();
+            }
+        }
+        textToSpeeches.clear();
     }
 
     public void queuedTextToSpeech() {

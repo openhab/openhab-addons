@@ -388,6 +388,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     }
                     lastKnownVolume = volume;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
+                    logger.info("4");
                     waitForUpdate = -1;
                 }
             }
@@ -1105,6 +1106,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             updateState(CHANNEL_TITLE, new StringType(title));
             if (volume != null) {
                 updateState(CHANNEL_VOLUME, new PercentType(volume));
+                logger.info("1");
             }
             updateState(CHANNEL_SUBTITLE1, new StringType(subTitle1));
             updateState(CHANNEL_SUBTITLE2, new StringType(subTitle2));
@@ -1241,9 +1243,11 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 Boolean muted = volumeChange.isMuted;
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
+                    logger.info("2");
                 } else if (volumeSetting != null) {
                     lastKnownVolume = volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
+                    logger.info("3");
                 }
                 break;
             case "PUSH_EQUALIZER_STATE_CHANGE":
