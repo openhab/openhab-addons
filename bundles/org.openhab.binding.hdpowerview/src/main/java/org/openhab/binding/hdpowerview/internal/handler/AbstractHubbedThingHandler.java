@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract class for Things that are managed through an HD Power View Hub
+ * Abstract class for Things that are managed through an HD PowerView hub
  *
  * @author Andy Lintner - Initial contribution
  */

@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handles commands for an HD Power View shade
+ * Handles commands for an HD PowerView Shade
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
@@ -126,7 +126,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    void onReceiveUpdate(@Nullable ShadeData shadeData) {
+    /**
+     * Update the state of the channels based on the ShadeData provided
+     * 
+     * @param shadeData the ShadeData to be used; may be null
+     */
+    protected void onReceiveUpdate(@Nullable ShadeData shadeData) {
         if (shadeData != null) {
             updateStatus(ThingStatus.ONLINE);
             updateBindingStates(shadeData.positions);
@@ -219,8 +224,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             return;
         }
     }
-
-    public synchronized void requestRefreshShade() {
+    
+    /**
+     * Request that the shade shall undergo a 'hard' refresh
+     */
+    protected synchronized void requestRefreshShade() {
         if (refreshFuture == null) {
             refreshFuture = scheduler.schedule(this::doRefreshShade, REFRESH_DELAY, TimeUnit.SECONDS);
         }

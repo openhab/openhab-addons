@@ -53,7 +53,7 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 public class HDPowerViewJUnitTests {
 
-    public static final Pattern VALID_IP_V4_ADDRESS = Pattern
+    private static final Pattern VALID_IP_V4_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     /*
@@ -74,8 +74,17 @@ public class HDPowerViewJUnitTests {
         return "";
     }
 
+    /**
+     * Run a series of ONLINE tests on the communication with a hub
+     * 
+     * @param hubIPAddress               must be a valid hub IP address to run the
+     *                                   tests on; or an INVALID IP address to
+     *                                   suppress the tests
+     * @param allowShadeMovementCommands set to true if you accept that the tests
+     *                                   shall physically move the shades
+     */
     @Test
-    public void testLiveCommunication() {
+    public void testOnlineCommunication() {
         /*
          * NOTE: in order to actually run these tests you must have a hub physically
          * available, and its IP address must be correctly configured in the
@@ -251,9 +260,12 @@ public class HDPowerViewJUnitTests {
             }
         }
     }
-
+    
+    /**
+     * Run a series of OFFLINE tests on the JSON parsing machinery
+     */
     @Test
-    public void testJsonParsing() {
+    public void testOfflineJsonParsing() {
         final Gson gson = new Gson();
 
         @Nullable

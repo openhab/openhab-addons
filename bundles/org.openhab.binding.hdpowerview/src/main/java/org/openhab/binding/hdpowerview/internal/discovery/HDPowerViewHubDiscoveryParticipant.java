@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers HD Power View hubs by means of mDNS
+ * Discovers HD PowerView hubs by means of mDNS
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -43,7 +43,7 @@ public class HDPowerViewHubDiscoveryParticipant implements MDNSDiscoveryParticip
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipant.class);
 
-    public static final Pattern VALID_IP_V4_ADDRESS = Pattern
+    private static final Pattern VALID_IP_V4_ADDRESS = Pattern
             .compile("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|$)){4}\\b");
 
     @Override

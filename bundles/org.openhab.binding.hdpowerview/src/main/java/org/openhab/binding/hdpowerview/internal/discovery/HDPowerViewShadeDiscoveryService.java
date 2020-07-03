@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonParseException;
 
 /**
- * Discovers an HD Power View Shade from an existing hub
+ * Discovers an HD PowerView Shade from an existing hub
  *
  * @author Andy Lintner - Initial contribution
  */

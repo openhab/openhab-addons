@@ -15,7 +15,7 @@ package org.openhab.binding.hdpowerview.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Shade coordinate system, as returned by the HD Power View Hub
+ * Shade coordinate system, as returned by the HD PowerView hub
  * 
  * @param ZERO_IS_CLOSED coordinate value 0 means shade is closed
  * @param ZERO_IS_OPEN coordinate value 0 means shade is open
@@ -82,6 +82,12 @@ public enum CoordinateSystem {
     public static final int MAX_SHADE = 65535;
     public static final int MAX_VANE = 32767;
 
+    /**
+     * Converts an HD PowerView posKind integer value to a CoordinateSystem enum value
+     * 
+     * @param posKind input integer value
+     * @return corresponding CoordinateSystem enum
+     */
     public static CoordinateSystem fromPosKind(int posKind) {
         switch (posKind) {
             case 1:
@@ -94,6 +100,11 @@ public enum CoordinateSystem {
         return ERROR_UNKNOWN;
     }
 
+    /**
+     * Converts a CoordinateSystem enum to an HD PowerView posKind integer value
+     * 
+     * @return the posKind integer value
+     */
     public int toPosKind() {
         return ordinal() + 1;
     }

@@ -20,19 +20,20 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.*;
 
 /**
- * The position of a shade, as returned by the HD Power View HUB
+ * The position of a single shade, as returned by the HD PowerView hub
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
  */
 @NonNullByDefault
 public class ShadePosition {
-    /*
+    /**
      * Primary actuator position
      */
     private int posKind1;
     private int position1;
-    /*
+
+    /**
      * Secondary actuator position
      * 
      * here we have to use Integer objects rather than just int primitives because
@@ -42,21 +43,60 @@ public class ShadePosition {
     private @Nullable Integer posKind2 = null;
     private @Nullable Integer position2 = null;
 
+    /**
+     * Create a ShadePosition position instance with just a primary actuator
+     * position
+     * 
+     * @param coordSys the Coordinate System to be used
+     * @param percent  the percentage position within that Coordinate System
+     * @return the ShadePosition instance
+     */
     public static ShadePosition create(CoordinateSystem coordSys, int percent) {
         return new ShadePosition(coordSys, percent, null, null);
     }
 
+    /**
+     * Create a ShadePosition position instance with both a primary and a secondary
+     * actuator position
+     * 
+     * @param primaryCoordSys   the Coordinate System to be used for the primary
+     *                          position
+     * @param primaryPercent    the percentage position for primary position
+     * @param secondaryCoordSys the Coordinate System to be used for the secondary
+     *                          position
+     * @param secondaryPercent  the percentage position for secondary position
+     * @return the ShadePosition instance
+     */
     public static ShadePosition create(CoordinateSystem primaryCoordSys, int primaryPercent,
             @Nullable CoordinateSystem secondaryCoordSys, @Nullable Integer secondaryPercent) {
         return new ShadePosition(primaryCoordSys, primaryPercent, secondaryCoordSys, secondaryPercent);
     }
 
+    /**
+     * Constructor for ShadePosition position with both a primary and a secondary
+     * actuator position
+     * 
+     * @param primaryCoordSys   the Coordinate System to be used for the primary
+     *                          position
+     * @param primaryPercent    the percentage position for primary position
+     * @param secondaryCoordSys the Coordinate System to be used for the secondary
+     *                          position
+     * @param secondaryPercent  the percentage position for secondary position
+     */
     ShadePosition(CoordinateSystem primaryCoordSys, int primaryPercent, @Nullable CoordinateSystem secondaryCoordSys,
             @Nullable Integer secondaryPercent) {
         setPosition1(primaryCoordSys, primaryPercent);
         setPosition2(secondaryCoordSys, secondaryPercent);
     }
 
+    /**
+     * For a given Actuator Class and Coordinate System, map the ShadePosition's
+     * state to an OpenHAB State
+     * 
+     * @param actuatorClass the requested Actuator Class
+     * @param coordSys      the requested Coordinate System
+     * @return the corresponding OpenHAB State
+     */
     public State getState(ActuatorClass actuatorClass, CoordinateSystem coordSys) {
         switch (actuatorClass) {
             case PRIMARY_ACTUATOR:
@@ -67,7 +107,14 @@ public class ShadePosition {
                 return UnDefType.UNDEF;
         }
     }
-
+    
+    /**
+     * Determine the Coordinate System used for the given Actuator Class (if any)
+     * 
+     * @param actuatorClass the requested Actuator Class
+     * @return the Coordinate System used for that Actuator Class, or ERROR_UNKNOWN
+     *         if the Actuator Class is not implemented
+     */
     public CoordinateSystem getCoordinateSystem(ActuatorClass actuatorClass) {
         switch (actuatorClass) {
             case PRIMARY_ACTUATOR:

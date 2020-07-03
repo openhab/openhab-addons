@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * A request to set the position of a shade
+ * A request to stop the movement of a shade
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

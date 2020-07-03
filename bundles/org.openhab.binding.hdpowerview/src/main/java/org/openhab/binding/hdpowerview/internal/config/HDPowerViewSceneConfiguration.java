@@ -15,7 +15,7 @@ package org.openhab.binding.hdpowerview.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Basic configuration for an HD Power View Scene
+ * Basic configuration for an HD PowerView Scene
  *
  * @author Andy Lintner - Initial contribution
  */

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import jcifs.netbios.NbtAddress;
 
 /**
- * Discovers HD Power View hubs by means of NetBios
+ * Discovers HD PowerView hubs by means of NetBios
  *
  * @author Andy Lintner - Initial contribution
  */

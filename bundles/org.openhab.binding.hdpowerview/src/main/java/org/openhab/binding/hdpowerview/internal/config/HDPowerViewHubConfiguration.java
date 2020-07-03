@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Basic configuration for the HD Power View HUB
+ * Basic configuration for the HD PowerView hub
  *
  * @author Andy Lintner - Initial contribution
  */

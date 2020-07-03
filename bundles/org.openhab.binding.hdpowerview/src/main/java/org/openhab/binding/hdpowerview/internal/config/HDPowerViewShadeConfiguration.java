@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Basic configuration for an HD Power View Shade
+ * Basic configuration for an HD PowerView Shade
  *
  * @author Andy Lintner - Initial contribution
  */

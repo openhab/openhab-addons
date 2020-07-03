@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 
 /**
- * A single Shade, as returned by the HD Power View Hub
+ * State of a single Shade, as returned by an HD PowerView hub
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

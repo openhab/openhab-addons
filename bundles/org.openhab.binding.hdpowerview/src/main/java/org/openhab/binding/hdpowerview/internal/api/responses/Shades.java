@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 
 /**
- * A list of Shades, as returned by the HD Power View Hub
+ * State of all Shades, as returned by an HD PowerView hub
  *
  * @author Andy Lintner - Initial contribution
  */

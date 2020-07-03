@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The motion "stop" directive of a shade
+ * The motion "stop" directive for a shade
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
