@@ -814,7 +814,7 @@ public final class PckGenerator {
             double mod = Math.floor(c);
             double faktor = 32 * (Math.pow(2, mod) - 1);
             double offset = (a - faktor) / Math.pow(2, mod);
-            lcntimer = (new Double(offset + (mod * 32))).intValue();
+            lcntimer = (int) (offset + mod * 32);
         } else {
             LOGGER.error("Timer not in [0,240960] ms");
         }
