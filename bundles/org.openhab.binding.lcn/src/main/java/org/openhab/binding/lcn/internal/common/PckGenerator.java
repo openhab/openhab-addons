@@ -740,7 +740,7 @@ public final class PckGenerator {
      * @throws LcnException if out of range
      */
     public static String startRelayTimer(int relayNumber, double duration) throws LcnException {
-        if (relayNumber < 1 || relayNumber > 8 || duration < 30 || duration > 240000) {
+        if (relayNumber < 1 || relayNumber > 8 || duration < 30 || duration > 240960) {
             throw new LcnException();
         }
         StringBuilder command = new StringBuilder("R8T");
@@ -816,7 +816,7 @@ public final class PckGenerator {
             double offset = (a - faktor) / Math.pow(2, mod);
             lcntimer = (int) (offset + mod * 32);
         } else {
-            LOGGER.error("Timer not in [0,240960] ms");
+            LOGGER.warn("Timer not in [0,240960] ms");
         }
         return lcntimer;
     }
