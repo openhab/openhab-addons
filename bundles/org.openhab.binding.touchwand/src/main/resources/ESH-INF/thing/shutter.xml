@@ -13,7 +13,7 @@
 			<channel id="shutter" typeId="shutter">
 				<description>Shutter control</description>
 			</channel>
-		</channels>		
+		</channels>
 	</thing-type>
 	<channel-type id="shutter">
 		<item-type>Rollershutter</item-type>

@@ -13,11 +13,11 @@
 			<channel id="wallaction" typeId="wallaction">
 				<description>WallController action</description>
 			</channel>
-		</channels>		
+		</channels>
 	</thing-type>
 	<channel-type id="wallaction">
-	<item-type>wallcontroller</item-type>
-	<label>WallController action</label>
+		<item-type>wallcontroller</item-type>
+		<label>WallController action</label>
 		<event>
 			<options>
 				<option value="LONG">long</option>

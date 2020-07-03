@@ -13,7 +13,7 @@
 			<channel id="brightness" typeId="brightness">
 				<description>light brightness control</description>
 			</channel>
-		</channels>		
+		</channels>
 	</thing-type>
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>

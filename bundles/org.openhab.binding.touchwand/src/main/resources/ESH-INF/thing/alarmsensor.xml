@@ -10,16 +10,16 @@
 		</supported-bridge-type-refs>
 		<label>TouchWand Alarm Sensor Unit</label>
 		<channels>
-			<channel id="alarm" typeId="sensor_alarm" />				
+			<channel id="alarm" typeId="sensor_alarm" />
 			<channel id="battery_level" typeId="system.battery-level" />
 			<channel id="battery_low" typeId="system.low-battery" />
-		</channels>		
+		</channels>
 	</thing-type>
-	
+
 	<channel-type id="sensor_alarm">
-	<item-type>Switch</item-type>
-	<label>Alarm sensor trigger</label>
-	<state readOnly="true"></state>
+		<item-type>Switch</item-type>
+		<label>Alarm sensor trigger</label>
+		<state readOnly="true"></state>
 	</channel-type>
-	
+
 </thing:thing-descriptions>
