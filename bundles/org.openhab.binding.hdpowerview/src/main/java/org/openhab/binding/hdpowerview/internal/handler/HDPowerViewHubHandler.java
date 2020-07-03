@@ -138,12 +138,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         stopPoll();
     }
 
-    void pollNow() {
-        if (isInitialized()) {
-            schedulePoll();
-        }
-    }
-
     private void schedulePoll() {
         ScheduledFuture<?> pollFuture = this.pollFuture;
         if (pollFuture != null && !pollFuture.isCancelled()) {
