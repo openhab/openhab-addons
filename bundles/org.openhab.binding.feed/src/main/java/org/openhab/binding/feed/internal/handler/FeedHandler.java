@@ -27,18 +27,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -59,10 +58,15 @@ import com.rometools.rome.io.SyndFeedInput;
  */
 public class FeedHandler extends BaseThingHandler {
 
+    private final ChannelGroupUID titleChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "Titles");
+    private final ChannelGroupUID descriptionChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "Descriptions");
+    private final ChannelGroupUID dateChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "Dates");
+
     private Logger logger = LoggerFactory.getLogger(FeedHandler.class);
 
     private String urlString;
     private BigDecimal refreshTime;
+    private BigDecimal numberOfEntries;
     private ScheduledFuture<?> refreshTask;
     private SyndFeed currentFeedState;
     private long lastRefreshTime;
@@ -100,6 +104,17 @@ public class FeedHandler extends BaseThingHandler {
                     DEFAULT_REFRESH_TIME, e.getMessage());
             refreshTime = DEFAULT_REFRESH_TIME;
         }
+
+        try {
+            numberOfEntries = (BigDecimal) configuration.get(NUMBER_OF_ENTRIES);
+            if (numberOfEntries.intValue() <= 0) {
+                throw new IllegalArgumentException("Refresh time must be positive number!");
+            }
+        } catch (Exception e) {
+            logger.warn("Number of entries [{}] is not valid. Falling back to default value: {}. {}", numberOfEntries,
+                    NUMBER_OF_ENTRIES, e.getMessage());
+            numberOfEntries = DEFAULT_NUMBER_OF_ENTRIES;
+        }
     }
 
     private void startAutomaticRefresh() {
@@ -113,11 +128,89 @@ public class FeedHandler extends BaseThingHandler {
         boolean feedUpdated = updateFeedIfChanged(feed);
 
         if (feedUpdated) {
+            publishDynamicChannelsIfLinked();
+
             List<Channel> channels = getThing().getChannels();
             for (Channel channel : channels) {
                 publishChannelIfLinked(channel.getUID());
             }
         }
+    }
+
+    private void publishDynamicChannelsIfLinked() {
+        List<SyndEntry> entries = currentFeedState.getEntries()
+                .stream()
+                .limit(numberOfEntries.intValue())
+                .collect(Collectors.toList());
+
+        createDynamicChannels(numberOfEntries.intValue());
+        setUnusedDynamicChannelsToUndef(entries.size());
+
+        for (int i = 0; i < entries.size(); i++) {
+            SyndEntry entry = entries.get(i);
+
+            ChannelUID titleChannelUID = new ChannelUID(titleChannelGroupUID, String.valueOf(i));
+            if (isLinked(titleChannelUID)) {
+                setChannelToState(titleChannelUID, getTitleState(entry));
+            }
+
+            ChannelUID descriptionChannelUID = new ChannelUID(descriptionChannelGroupUID, String.valueOf(i));
+            if (isLinked(descriptionChannelUID)) {
+                setChannelToState(descriptionChannelUID, getDescriptionState(entry));
+            }
+
+            ChannelUID dateChannelUID = new ChannelUID(dateChannelGroupUID, String.valueOf(i));
+            if (isLinked(dateChannelUID)) {
+                setChannelToState(dateChannelUID, getDateState(entry));
+            }
+        }
+    }
+
+    private void setUnusedDynamicChannelsToUndef(int amountOfUsedChannels) {
+        getThing().getChannelsOfGroup(titleChannelGroupUID.getId())
+                .stream()
+                .skip(amountOfUsedChannels)
+                .forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
+
+        getThing().getChannelsOfGroup(descriptionChannelGroupUID.getId())
+                .stream()
+                .skip(amountOfUsedChannels)
+                .forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
+
+        getThing().getChannelsOfGroup(dateChannelGroupUID.getId())
+                .stream()
+                .skip(amountOfUsedChannels)
+                .forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
+    }
+
+    private void createDynamicChannels(int numberOfChannels) {
+        // All groups have the same number of channels, so it doesn't matter which one we pick
+        int existingChannels = getThing().getChannelsOfGroup(titleChannelGroupUID.getId()).size();
+
+        ThingBuilder thingBuilder = editThing();
+
+        for (int i = existingChannels; i < numberOfChannels; i++) {
+            Channel titleChannel = ChannelBuilder
+                    .create(new ChannelUID(titleChannelGroupUID, String.valueOf(i)), "String")
+                    .withLabel("Title " + (i + 1))
+                    .build();
+
+            Channel descriptionChannel = ChannelBuilder
+                    .create(new ChannelUID(descriptionChannelGroupUID, String.valueOf(i)), "String")
+                    .withLabel("Description " + (i + 1))
+                    .build();
+
+            Channel dateChannel = ChannelBuilder
+                    .create(new ChannelUID(dateChannelGroupUID, String.valueOf(i)), "DateTime")
+                    .withLabel("Date " + (i + 1))
+                    .build();
+
+            thingBuilder.withChannel(titleChannel);
+            thingBuilder.withChannel(descriptionChannel);
+            thingBuilder.withChannel(dateChannel);
+        }
+
+        updateThing(thingBuilder.build());
     }
 
     private void publishChannelIfLinked(ChannelUID channelUID) {
@@ -139,31 +232,14 @@ public class FeedHandler extends BaseThingHandler {
 
         switch (channelID) {
             case CHANNEL_LATEST_TITLE:
-                if (latestEntry == null || latestEntry.getTitle() == null) {
-                    state = UnDefType.UNDEF;
-                } else {
-                    String title = latestEntry.getTitle();
-                    state = new StringType(getValueSafely(title));
-                }
+                state = getTitleState(latestEntry);
                 break;
             case CHANNEL_LATEST_DESCRIPTION:
-                if (latestEntry == null || latestEntry.getDescription() == null) {
-                    state = UnDefType.UNDEF;
-                } else {
-                    String description = latestEntry.getDescription().getValue();
-                    state = new StringType(getValueSafely(description));
-                }
+                state = getDescriptionState(latestEntry);
                 break;
             case CHANNEL_LATEST_PUBLISHED_DATE:
             case CHANNEL_LAST_UPDATE:
-                if (latestEntry == null || latestEntry.getPublishedDate() == null) {
-                    logger.debug("Cannot update date channel. No date found in feed.");
-                    return;
-                } else {
-                    Date date = latestEntry.getPublishedDate();
-                    ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-                    state = new DateTimeType(zdt);
-                }
+                state = getDateState(latestEntry);
                 break;
             case CHANNEL_AUTHOR:
                 String author = currentFeedState.getAuthor();
@@ -184,11 +260,44 @@ public class FeedHandler extends BaseThingHandler {
             default:
                 logger.debug("Unrecognized channel: {}", channelID);
         }
-
+        
+        setChannelToState(channelUID, state);
+    }
+    
+    private void setChannelToState(ChannelUID channel, State state) {
         if (state != null) {
-            updateState(channelID, state);
+            updateState(channel.getId(), state);
         } else {
-            logger.debug("Cannot update channel with ID {}; state not defined!", channelID);
+            logger.debug("Cannot update channel with ID {}; state not defined!", channel.getId());
+        }
+    }
+
+    private State getTitleState(SyndEntry entry) {
+        if (entry == null || entry.getTitle() == null) {
+            return UnDefType.UNDEF;
+        } else {
+            String title = entry.getTitle();
+            return new StringType(getValueSafely(title));
+        }
+    }
+
+    private State getDescriptionState(SyndEntry entry) {
+        if (entry == null || entry.getDescription() == null) {
+            return UnDefType.UNDEF;
+        } else {
+            String description = entry.getDescription().getValue();
+            return new StringType(getValueSafely(description));
+        }
+    }
+
+    private State getDateState(SyndEntry entry) {
+        if (entry == null || entry.getPublishedDate() == null) {
+            logger.debug("Cannot update date channel. No date found in feed.");
+            return null;
+        } else {
+            Date date = entry.getPublishedDate();
+            ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            return new DateTimeType(zdt);
         }
     }
 
@@ -293,6 +402,7 @@ public class FeedHandler extends BaseThingHandler {
                 updateFeedIfChanged(feed);
             }
             publishChannelIfLinked(channelUID);
+            publishDynamicChannelsIfLinked();
         } else {
             logger.debug("Command {} is not supported for channel: {}. Supported command: REFRESH", command,
                     channelUID.getId());

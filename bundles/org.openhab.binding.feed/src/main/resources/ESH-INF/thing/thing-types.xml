@@ -41,6 +41,11 @@
 				<default>20</default>
 			</parameter>
 
+			<parameter name="number-of-entries" type="integer">
+				<label>Number of entries</label>
+				<description>The amount of entries to display.</description>
+				<default>1</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 

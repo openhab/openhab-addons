@@ -89,6 +89,16 @@ public class FeedBindingConstants {
     public static final BigDecimal DEFAULT_REFRESH_TIME = new BigDecimal(20);
 
     /**
+     * The amount of entries to display.
+     */
+    public static final String NUMBER_OF_ENTRIES = "number-of-entries";
+
+    /**
+     * The default amount of entries to display.
+     */
+    public static final BigDecimal DEFAULT_NUMBER_OF_ENTRIES = new BigDecimal(1);
+
+    /**
      * The minimum refresh time in milliseconds. Any REFRESH command send to a Thing, before this time has expired, will
      * not trigger an attempt to dowload new data form the server.
      **/
