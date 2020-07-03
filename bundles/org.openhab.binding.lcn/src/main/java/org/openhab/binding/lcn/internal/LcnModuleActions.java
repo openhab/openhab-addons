@@ -163,7 +163,7 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
      * @param duration duration of the relay timer in milliseconds
      */
     @Override
-    @RuleAction(label = "LCN startRelayTimer", description = "Start an lcn relay timer")
+    @RuleAction(label = "LCN Relay Timer", description = "Start an LCN relay timer")
     public void startRelayTimer(
             @ActionInput(name = "relaynumber", required = true, type = "java.lang.Integer", label = "Relay number", description = "The relay number (1-8)") int relayNumber,
             @ActionInput(name = "duration", required = true, type = "java.lang.Double", label = "Duration [ms]", description = "The timer duration in milliseconds") double duration) {
