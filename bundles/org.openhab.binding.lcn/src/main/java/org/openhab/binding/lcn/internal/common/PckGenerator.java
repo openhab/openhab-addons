@@ -805,7 +805,7 @@ public final class PckGenerator {
      * @param ms time in milliseconds
      * @return lcn timer value
      */
-    private static Integer convertMsecToLCNTimer(double ms) {
+    private static int convertMsecToLCNTimer(double ms) {
         Integer lcntimer = -1;
         if (ms >= 0 && ms <= 240960) {
             double a = ms / 1000 / 0.03;
