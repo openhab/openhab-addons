@@ -14,7 +14,6 @@
 		<description>Provides current weather and forecast data from the OpenWeatherMap API.</description>
 
 		<channel-groups>
-			<channel-group id="station" typeId="station"/>
 			<channel-group id="current" typeId="weather"/>
 			<channel-group id="forecastHours03" typeId="hourlyForecast">
 				<label>3 Hours Forecast</label>

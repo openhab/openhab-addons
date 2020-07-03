@@ -69,13 +69,6 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 
 ## Channels
 
-### Station
-
-| Channel Group ID | Channel ID | Item Type | Description                                  |
-|------------------|------------|-----------|----------------------------------------------|
-| station          | id         | String    | Id of the weather station or the city.       |
-| station          | name       | String    | Name of the weather station or the city.     |
-| station          | location   | Location  | Location of the weather station or the city. |
 
 ### Current Weather
 
@@ -92,7 +85,6 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | current          | humidity             | Number:Dimensionless | Current atmospheric humidity.                                           |
 | current          | wind-speed           | Number:Speed         | Current wind speed.                                                     |
 | current          | wind-direction       | Number:Angle         | Current wind direction.                                                 |
-| current          | gust-speed           | Number:Speed         | Current gust speed. **Advanced**                                        |
 | current          | cloudiness           | Number:Dimensionless | Current cloudiness.                                                     |
 | current          | rain                 | Number:Length        | Rain volume of the last hour.                                           |
 | current          | snow                 | Number:Length        | Snow volume of the last hour.                                           |
@@ -121,7 +113,6 @@ The "3h" value will be divided by three to always have an estimated value for on
 | forecastHours03, forecastHours06, ... forecastHours120 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                                           |
 | forecastHours03, forecastHours06, ... forecastHours120 | wind-speed           | Number:Speed         | Forecasted wind speed.                                                     |
 | forecastHours03, forecastHours06, ... forecastHours120 | wind-direction       | Number:Angle         | Forecasted wind direction.                                                 |
-| forecastHours03, forecastHours06, ... forecastHours120 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                                        |
 | forecastHours03, forecastHours06, ... forecastHours120 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                                                     |
 | forecastHours03, forecastHours06, ... forecastHours120 | rain                 | Number:Length        | Expected rain volume.                                                      |
 | forecastHours03, forecastHours06, ... forecastHours120 | snow                 | Number:Length        | Expected snow volume.                                                      |
@@ -142,7 +133,6 @@ The "3h" value will be divided by three to always have an estimated value for on
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                                           |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-speed           | Number:Speed         | Forecasted wind speed.                                                     |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-direction       | Number:Angle         | Forecasted wind direction.                                                 |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | gust-speed           | Number:Speed         | Forecasted gust speed. **Advanced**                                        |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                                                     |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | rain                 | Number:Length        | Expected rain volume of a day.                                             |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | snow                 | Number:Length        | Expected snow volume of a day.                                             |
@@ -173,9 +163,6 @@ Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="AAA", re
 demo.items
 
 ```java
-String localStationId "ID [%s]" { channel="openweathermap:weather-and-forecast:api:local:station#id" }
-String localStationName "Name [%s]" { channel="openweathermap:weather-and-forecast:api:local:station#name" }
-Location localStationLocation "Location [%2$s°N %3$s°E]" <location> { channel="openweathermap:weather-and-forecast:api:local:station#location" }
 
 DateTime localLastMeasurement "Timestamp of last measurement [%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS]" <time> { channel="openweathermap:weather-and-forecast:api:local:current#time-stamp" }
 String localCurrentCondition "Current condition [%s]" <sun_clouds> { channel="openweathermap:weather-and-forecast:api:local:current#condition" }

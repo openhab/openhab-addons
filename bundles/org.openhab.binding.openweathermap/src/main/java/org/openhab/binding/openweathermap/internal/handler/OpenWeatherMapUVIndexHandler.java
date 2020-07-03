@@ -131,20 +131,23 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
-        switch (channelUID.getGroupId()) {
-            case CHANNEL_GROUP_CURRENT_UVINDEX:
-                updateUVIndexChannel(channelUID);
-                break;
-            case CHANNEL_GROUP_FORECAST_TOMORROW:
-                updateUVIndexForecastChannel(channelUID, 1);
-                break;
-            default:
-                Matcher m = CHANNEL_GROUP_FORECAST_PREFIX_PATTERN.matcher(channelUID.getGroupId());
-                int i;
-                if (m.find() && (i = Integer.parseInt(m.group(1))) > 1 && i <= 8) {
-                    updateUVIndexForecastChannel(channelUID, i);
-                }
-                break;
+        String groupID = channelUID.getGroupId();
+        if (groupID != null) {
+            switch (groupID) {
+                case CHANNEL_GROUP_CURRENT_UVINDEX:
+                    updateUVIndexChannel(channelUID);
+                    break;
+                case CHANNEL_GROUP_FORECAST_TOMORROW:
+                    updateUVIndexForecastChannel(channelUID, 1);
+                    break;
+                default:
+                    Matcher m = CHANNEL_GROUP_FORECAST_PREFIX_PATTERN.matcher(channelUID.getGroupId());
+                    int i;
+                    if (m.find() && (i = Integer.parseInt(m.group(1))) > 1 && i <= 8) {
+                        updateUVIndexForecastChannel(channelUID, i);
+                    }
+                    break;
+            }
         }
     }
 

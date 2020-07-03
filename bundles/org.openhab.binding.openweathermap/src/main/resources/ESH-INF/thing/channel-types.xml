@@ -5,19 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Channel groups for OpenWeatherMap Binding -->
-	<channel-group-type id="station">
-		<label>Weather Station</label>
-		<description>This is a weather station.</description>
-		<channels>
-			<channel id="id" typeId="station-id"/>
-			<channel id="name" typeId="station-name"/>
-			<channel id="location" typeId="system.location">
-				<description>Location of the weather station or the city.</description>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="weather">
+    <channel-group-type id="weather">
 		<label>Current Weather</label>
 		<description>This is the current weather.</description>
 		<channels>
@@ -32,7 +20,6 @@
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
 			<channel id="wind-speed" typeId="system.wind-speed"/>
 			<channel id="wind-direction" typeId="system.wind-direction"/>
-			<channel id="gust-speed" typeId="gust-speed"/>
 			<channel id="cloudiness" typeId="cloudiness"/>
 			<channel id="rain" typeId="rain"/>
 			<channel id="snow" typeId="snow"/>
@@ -57,7 +44,6 @@
 			<channel id="humidity" typeId="forecasted-atmospheric-humidity"/>
 			<channel id="wind-speed" typeId="forecasted-wind-speed"/>
 			<channel id="wind-direction" typeId="forecasted-wind-direction"/>
-			<channel id="gust-speed" typeId="forecasted-gust-speed"/>
 			<channel id="cloudiness" typeId="forecasted-cloudiness"/>
 			<channel id="rain" typeId="forecasted-rain"/>
 			<channel id="snow" typeId="forecasted-snow"/>
@@ -80,7 +66,6 @@
 			<channel id="humidity" typeId="forecasted-atmospheric-humidity"/>
 			<channel id="wind-speed" typeId="forecasted-wind-speed"/>
 			<channel id="wind-direction" typeId="forecasted-wind-direction"/>
-			<channel id="gust-speed" typeId="forecasted-gust-speed"/>
 			<channel id="cloudiness" typeId="forecasted-cloudiness"/>
 			<channel id="rain" typeId="forecasted-rain"/>
 			<channel id="snow" typeId="forecasted-snow"/>
@@ -106,20 +91,7 @@
 	</channel-group-type>
 
 	<!-- Channels for OpenWeatherMap Binding -->
-	<channel-type id="station-id">
-		<item-type>String</item-type>
-		<label>Station Id</label>
-		<description>Id of the weather station or the city.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="station-name">
-		<item-type>String</item-type>
-		<label>Station Name</label>
-		<description>Name of the weather station or the city.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
+		
 	<channel-type id="time-stamp">
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>

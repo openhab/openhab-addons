@@ -37,10 +37,8 @@ import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapAPIConfiguration;
-import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyForecastData;
-import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonOneCallAPIData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
-import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
 import org.openhab.binding.openweathermap.internal.utils.ByteArrayFileCache;
 import org.slf4j.Logger;
@@ -73,17 +71,13 @@ public class OpenWeatherMapConnection {
     private static final String PARAM_LANG = "lang";
     private static final String PARAM_FORECAST_CNT = "cnt";
 
-    // Current weather data (see https://openweathermap.org/current)
-    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather";
-    // 5 day / 3 hour forecast (see https://openweathermap.org/forecast5)
-    private static final String THREE_HOUR_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast";
-    // 16 day / daily forecast (see https://openweathermap.org/forecast16)
-    private static final String DAILY_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast/daily";
     // UV Index (see https://openweathermap.org/api/uvi)
     private static final String UVINDEX_URL = "https://api.openweathermap.org/data/2.5/uvi";
     private static final String UVINDEX_FORECAST_URL = "https://api.openweathermap.org/data/2.5/uvi/forecast";
     // Weather icons (see https://openweathermap.org/weather-conditions)
     private static final String ICON_URL = "https://openweathermap.org/img/w/%s.png";
+    // One call API (see https://openweathermap.org/api/one-call-api)
+    private static final String ONECALL_URL = "https://api.openweathermap.org/data/2.5/onecall";
 
     private final OpenWeatherMapAPIHandler handler;
     private final HttpClient httpClient;
@@ -103,68 +97,20 @@ public class OpenWeatherMapConnection {
     }
 
     /**
-     * Requests the current weather data for the given location (see https://openweathermap.org/current).
+     * Calls the onecall API for OpenWeatherMap
      *
      * @param location location represented as {@link PointType}
-     * @return the current weather data
+     * @return JSON Representation of the results
      * @throws JsonSyntaxException
      * @throws OpenWeatherMapCommunicationException
      * @throws OpenWeatherMapConfigurationException
      */
-    public synchronized @Nullable OpenWeatherMapJsonWeatherData getWeatherData(@Nullable PointType location)
+    public synchronized @Nullable OpenWeatherMapJsonOneCallAPIData getOneCallData(@Nullable PointType location)
             throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
         return gson.fromJson(
                 getResponseFromCache(
-                        buildURL(WEATHER_URL, getRequestParams(handler.getOpenWeatherMapAPIConfig(), location))),
-                OpenWeatherMapJsonWeatherData.class);
-    }
-
-    /**
-     * Requests the hourly forecast data for the given location (see https://openweathermap.org/forecast5).
-     *
-     * @param location location represented as {@link PointType}
-     * @param count number of hours
-     * @return the hourly forecast data
-     * @throws JsonSyntaxException
-     * @throws OpenWeatherMapCommunicationException
-     * @throws OpenWeatherMapConfigurationException
-     */
-    public synchronized @Nullable OpenWeatherMapJsonHourlyForecastData getHourlyForecastData(
-            @Nullable PointType location, int count)
-            throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
-        if (count <= 0) {
-            throw new OpenWeatherMapConfigurationException("@text/offline.conf-error-not-supported-number-of-hours");
-        }
-
-        Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
-        params.put(PARAM_FORECAST_CNT, Integer.toString(count));
-
-        return gson.fromJson(getResponseFromCache(buildURL(THREE_HOUR_FORECAST_URL, params)),
-                OpenWeatherMapJsonHourlyForecastData.class);
-    }
-
-    /**
-     * Requests the daily forecast data for the given location (see https://openweathermap.org/forecast16).
-     *
-     * @param location location represented as {@link PointType}
-     * @param count number of days
-     * @return the daily forecast data
-     * @throws JsonSyntaxException
-     * @throws OpenWeatherMapCommunicationException
-     * @throws OpenWeatherMapConfigurationException
-     */
-    public synchronized @Nullable OpenWeatherMapJsonDailyForecastData getDailyForecastData(@Nullable PointType location,
-            int count)
-            throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
-        if (count <= 0) {
-            throw new OpenWeatherMapConfigurationException("@text/offline.conf-error-not-supported-number-of-days");
-        }
-
-        Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
-        params.put(PARAM_FORECAST_CNT, Integer.toString(count));
-
-        return gson.fromJson(getResponseFromCache(buildURL(DAILY_FORECAST_URL, params)),
-                OpenWeatherMapJsonDailyForecastData.class);
+                        buildURL(ONECALL_URL, getRequestParams(handler.getOpenWeatherMapAPIConfig(), location))),
+                OpenWeatherMapJsonOneCallAPIData.class);
     }
 
     /**
