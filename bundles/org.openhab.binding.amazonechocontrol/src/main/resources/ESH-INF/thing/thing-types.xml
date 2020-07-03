@@ -7,7 +7,6 @@
 		<description>Amazon Account where the amazon echo devices are registered.</description>
 		<channels>
 			<channel id="sendMessage" typeId="sendMessage"/>
-			<channel id="sendAnnouncement" typeId="sendAnnouncement"/>
 		</channels>
 	</bridge-type>
 	<thing-type id="echo">
@@ -375,13 +374,6 @@
 		<item-type>String</item-type>
 		<label>Send Message</label>
 		<description>Sends a message to the Echo devices (Write only).</description>
-	</channel-type>
-	<channel-type id="sendAnnouncement" advanced="false">
-		<item-type>String</item-type>
-		<label>SendAnnouncement</label>
-		<description>Display the announcement message on the display (Write only) of all Echo devices. See in the tutorial
-			section of the binding
-			description to learn how it's possible to set the title and turn off the sound.</description>
 	</channel-type>
 	<channel-type id="announcement" advanced="true">
 		<item-type>String</item-type>

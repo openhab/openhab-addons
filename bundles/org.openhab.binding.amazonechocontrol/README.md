@@ -26,7 +26,6 @@ It provides features to control and view the current state of echo devices:
 - change the equalizer settings
 - get information about the next alarm, reminder and timer
 - send a message to the echo devices
-- send an announcement to the echo devices
 
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
@@ -143,7 +142,6 @@ It will be configured at runtime by using the save channel to store the current 
 | notificationVolume    | Dimmer      | R           | echo, echoshow, echospot      | Notification volume
 | ascendingAlarm        | Switch      | R/W         | echo, echoshow, echospot      | Ascending alarm up to the configured volume
 | sendMessage           | String      | W           | account                       | Write Only! Sends a message to the Echo devices.
-| sendAnnouncement      | String      | W           | account                       | Write Only! Display the announcement message on the display of all Echo devices. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
 | save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
 | active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
 | playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
@@ -184,7 +182,6 @@ Take a look in the channel description above to know, which channels are support
 ```
 // Account
 String Echo_Living_Room_SendMessage            "SendMessage"                           {channel="amazonechocontrol:account:account1:sendMessage"}
-String Echo_Living_Room_SendAnnouncement       "SendAnnouncement"                      {channel="amazonechocontrol:account:account1:sendAnnouncement"}
 
 Group Alexa_Living_Room <player>
 

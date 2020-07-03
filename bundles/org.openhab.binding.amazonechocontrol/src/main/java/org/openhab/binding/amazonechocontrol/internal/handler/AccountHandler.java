@@ -50,7 +50,6 @@ import org.openhab.binding.amazonechocontrol.internal.HttpException;
 import org.openhab.binding.amazonechocontrol.internal.IWebSocketCommandHandler;
 import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
-import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerSendAnnouncement;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerSendMessage;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
@@ -116,7 +115,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         this.httpService = httpService;
         this.stateStorage = stateStorage;
         channelHandlers.add(new ChannelHandlerSendMessage(this, this.gson));
-        channelHandlers.add(new ChannelHandlerSendAnnouncement(this, this.gson));
     }
 
     @Override
@@ -157,17 +155,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
             String channelId = channelUID.getId();
             for (ChannelHandler channelHandler : channelHandlers) {
-                if (channelHandler instanceof ChannelHandlerSendAnnouncement) {
-                    Device[] devices = jsonSerialNumberDeviceMapping.values()
-                            .toArray(new Device[jsonSerialNumberDeviceMapping.values().size()]);
-                    for (Device device : devices) {
-                        channelHandler.tryHandleCommand(device, connection, channelId, command);
-                    }
+                if (channelHandler.tryHandleCommand(new Device(), connection, channelId, command)) {
                     return;
-                } else {
-                    if (channelHandler.tryHandleCommand(new Device(), connection, channelId, command)) {
-                        return;
-                    }
                 }
             }
             if (command instanceof RefreshType) {
