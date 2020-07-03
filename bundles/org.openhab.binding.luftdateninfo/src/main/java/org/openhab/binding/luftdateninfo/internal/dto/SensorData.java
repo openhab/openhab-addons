@@ -20,7 +20,7 @@ import java.util.List;
  * @author Bernd Weymann - Initial contribution
  */
 public class SensorData {
-    private Integer id;
+    private Long id;
     private String timestamp;
     private Integer sampling_rate;
     private List<SensorDataValue> sensordatavalues;
@@ -32,11 +32,11 @@ public class SensorData {
         return id + timestamp;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

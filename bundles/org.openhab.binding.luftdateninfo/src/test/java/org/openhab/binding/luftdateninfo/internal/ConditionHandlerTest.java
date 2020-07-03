@@ -68,10 +68,10 @@ public class ConditionHandlerTest {
         if (pmJson != null) {
             int result = condHandler.updateChannels(pmJson);
             assertEquals("Valid update", 0, result);
-            assertEquals("Temperature", new DecimalType("16.7"), condHandler.getTemperature());
-            assertEquals("Humidity", new DecimalType("74.8"), condHandler.getHumidity());
-            assertEquals("Pressure", new DecimalType("996.5"), condHandler.getPressure());
-            assertEquals("Pressure Sea", new DecimalType("1014.4"), condHandler.getPressureSea());
+            assertEquals("Temperature", new DecimalType("21.5"), condHandler.getTemperature());
+            assertEquals("Humidity", new DecimalType("58.5"), condHandler.getHumidity());
+            assertEquals("Pressure", new DecimalType("1002.0"), condHandler.getPressure());
+            assertEquals("Pressure Sea", new DecimalType("1019.7"), condHandler.getPressureSea());
         } else {
             assertTrue(false);
         }

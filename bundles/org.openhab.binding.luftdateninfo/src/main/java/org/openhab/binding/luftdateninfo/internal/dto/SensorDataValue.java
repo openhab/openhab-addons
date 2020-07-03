@@ -18,7 +18,7 @@ package org.openhab.binding.luftdateninfo.internal.dto;
  * @author Bernd Weymann - Initial contribution
  */
 public class SensorDataValue {
-    private Integer id;
+    private Long id;
     private String value_type;
 
     @Override
@@ -26,11 +26,11 @@ public class SensorDataValue {
         return value_type + ":" + value;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
