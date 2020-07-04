@@ -187,7 +187,6 @@ public class LGWebOSTVSocket {
 
     public void disconnect() {
         Optional.ofNullable(this.session).ifPresent(s -> s.close());
-        this.session = null;
         Future<?> future = sessionFuture;
         if (future != null && !future.isDone()) {
             future.cancel(true);
