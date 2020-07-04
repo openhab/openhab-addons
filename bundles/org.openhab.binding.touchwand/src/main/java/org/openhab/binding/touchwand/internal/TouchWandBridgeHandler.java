@@ -130,7 +130,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     @SuppressWarnings("null")
     @Override
     public void dispose() {
-        logger.trace("Handler disposed");
         ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(this.getThing().getUID());
         if (serviceReg != null) {
             // remove discovery service
@@ -151,7 +150,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
 
     public synchronized boolean registerUpdateListener(TouchWandUnitUpdateListener listener) {
         boolean result = false;
-        logger.trace("Adding Status update listener for device {}", listener.getId());
+        logger.debug("Adding Status update listener for device {}", listener.getId());
         if (!unitUpdateListeners.containsKey(listener.getId())) {
             unitUpdateListeners.put(listener.getId(), listener);
             result = true;
@@ -161,7 +160,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     }
 
     public synchronized boolean unregisterUpdateListener(TouchWandUnitUpdateListener listener) {
-        logger.trace("Remove Status update listener for device {}", listener.getId());
+        logger.debug("Remove Status update listener for device {}", listener.getId());
         unitUpdateListeners.remove(listener.getId());
         return true;
     }

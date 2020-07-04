@@ -84,7 +84,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
             return;
         }
 
-        logger.trace("Starting TouchWand discovery on bridge {}", touchWandBridgeHandler.getThing().getUID());
+        logger.debug("Starting TouchWand discovery on bridge {}", touchWandBridgeHandler.getThing().getUID());
         String response = touchWandBridgeHandler.touchWandClient.cmdListUnits();
         if (response == null) {
             return;
@@ -164,19 +164,16 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
     public void activate() {
         super.activate(null);
         removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
-        logger.trace("Activate TouchWand units discovery service");
     }
 
     @Override
     public void deactivate() {
         removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
         super.deactivate();
-        logger.trace("deactivate TouchWand units discovery services");
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.trace("Start TouchWand units background discovery");
         if (scanningJob == null || scanningJob.isCancelled()) {
             scanningJob = scheduler.scheduleWithFixedDelay(scanningRunnable, LINK_DISCOVERY_SERVICE_INITIAL_DELAY,
                     SCAN_INTERVAL, TimeUnit.SECONDS);
@@ -185,7 +182,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.trace("Stop TouchWand device units discovery");
         if (scanningJob != null && !scanningJob.isCancelled()) {
             scanningJob.cancel(true);
             scanningJob = null;

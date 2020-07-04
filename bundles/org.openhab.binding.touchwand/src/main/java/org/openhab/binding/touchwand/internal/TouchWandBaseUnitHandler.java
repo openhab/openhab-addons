@@ -74,7 +74,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @Override
     public void dispose() {
-        logger.trace("Handler disposed.");
+        logger.debug("Handler disposed.");
         if (pollingJob != null) {
             pollingJob.cancel(true);
         }
@@ -87,7 +87,6 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     @Override
     public void initialize() {
         ThingStatus bridgeStatus;
-        logger.trace("Initializing TocuhWand Unit handler");
         updateStatus(ThingStatus.UNKNOWN);
         Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof TouchWandBridgeHandler)) {
@@ -100,7 +99,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
         bridgeStatus = bridge.getStatus();
 
-        logger.trace("initializeThing Thing {} Bridge status {}", getThing().getUID(), bridgeStatus);
+        logger.debug("initializeThing Thing {} Bridge status {}", getThing().getUID(), bridgeStatus);
 
         Thing thing = getThing();
         unitId = thing.getUID().toString().split(":")[3]; // touchwand id
@@ -122,8 +121,6 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         });
-
-        logger.trace("Finished initializing!");
     }
 
     private int getUnitState(String unitId) {

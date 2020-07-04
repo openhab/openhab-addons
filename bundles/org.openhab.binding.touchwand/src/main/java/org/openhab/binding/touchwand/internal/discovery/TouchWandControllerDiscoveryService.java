@@ -60,13 +60,11 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
         } catch (SocketException e) {
             logger.warn("SocketException {}", e.getMessage());
         }
-        logger.trace("Starting TouchWand Controller discovery");
         runReceiveThread(listenSocket);
     }
 
     @Override
     protected synchronized void stopScan() {
-        logger.trace("Stopping TouchWand Controller discovery");
         super.stopScan();
         deactivate();
     }
@@ -81,7 +79,6 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
         if (listenSocket != null) {
             listenSocket.close();
         }
-        logger.trace("Deactivate discovery services");
     }
 
     private void addDeviceDiscoveryResult(String label, String ip) {
@@ -120,7 +117,6 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
 
         @Override
         public void run() {
-            logger.trace("Staring reveicer thread for socket");
             receiveData(dgram);
         }
 
@@ -138,10 +134,9 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
                 if (!isInterrupted()) {
                     logger.warn("Error while receiving {}", e.getMessage());
                 } else {
-                    logger.trace("Receiver thread was interrupted");
+                    logger.warn("Receiver thread was interrupted {}",e.getMessage());
                 }
             }
-            logger.trace("Receiver thread ended");
         }
     }
 
