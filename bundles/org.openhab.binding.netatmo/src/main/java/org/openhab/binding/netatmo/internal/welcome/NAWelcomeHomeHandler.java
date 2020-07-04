@@ -148,7 +148,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 }
                 return UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_VIDEOSTATUS:
-                return getLastEvent().map(e -> toStringType(e.getVideoStatus())).orElse(UnDefType.UNDEF);
+                return getLastEvent()
+                        .map(e -> e.getVideoId() != null ? toStringType(e.getVideoStatus()) : UnDefType.UNDEF)
+                        .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_ISARRIVAL:
                 return getLastEvent().map(e -> toOnOffType(e.getIsArrival())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_MESSAGE:
