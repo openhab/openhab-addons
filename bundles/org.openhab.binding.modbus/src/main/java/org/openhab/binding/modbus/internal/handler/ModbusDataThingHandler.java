@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.items.ContactItem;
@@ -745,7 +744,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                     getThing().getUID(), getThing().getLabel(), error.getClass().getName(), error.toString(),
                     error.getMessage(), error);
         }
-        Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
+        Map<ChannelUID, State> states = new HashMap<>();
         ChannelUID lastReadErrorUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_READ_ERROR);
         if (isLinked(lastReadErrorUID)) {
             states.put(lastReadErrorUID, new DateTimeType());
@@ -781,7 +780,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                     getThing().getUID(), getThing().getLabel(), error.getClass().getName(), error.toString(),
                     error.getMessage(), error);
         }
-        Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
+        Map<ChannelUID, State> states = new HashMap<>();
         ChannelUID lastWriteErrorUID = getChannelUID(ModbusBindingConstantsInternal.CHANNEL_LAST_WRITE_ERROR);
         if (isLinked(lastWriteErrorUID)) {
             states.put(lastWriteErrorUID, new DateTimeType());
@@ -827,7 +826,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             logger.trace("No transformation available, aborting processUpdatedValue");
             return new HashMap<ChannelUID, State>();
         }
-        Map<@NonNull ChannelUID, @NonNull State> states = new HashMap<>();
+        Map<ChannelUID, State> states = new HashMap<>();
         CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().forEach(channelId -> {
             ChannelUID channelUID = getChannelUID(channelId);
             if (!isLinked(channelUID)) {
