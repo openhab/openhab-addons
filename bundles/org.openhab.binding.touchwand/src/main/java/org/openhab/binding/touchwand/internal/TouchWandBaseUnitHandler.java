@@ -87,7 +87,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     @Override
     public void initialize() {
         ThingStatus bridgeStatus;
-        updateStatus(ThingStatus.UNKNOWN);
+
         Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof TouchWandBridgeHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -110,7 +110,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             logger.debug("UpdateStatus OFFLINE BRIDGE_OFFLINE {}", getThing().getLabel());
             return;
         }
-
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             boolean thingReachable = false;
             String response = bridgeHandler.touchWandClient.cmdGetUnitById(unitId);
