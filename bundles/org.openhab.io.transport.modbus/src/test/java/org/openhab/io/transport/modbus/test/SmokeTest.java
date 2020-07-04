@@ -604,7 +604,6 @@ public class SmokeTest extends IntegrationTestSupport {
             long end = System.currentTimeMillis();
             assertPollDetails(unexpectedCount, dataReceived, start, end, 145, 500);
         }
-
     }
 
     /**
