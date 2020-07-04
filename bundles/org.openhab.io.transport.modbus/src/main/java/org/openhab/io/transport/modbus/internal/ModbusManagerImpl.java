@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -833,8 +834,7 @@ public class ModbusManagerImpl implements ModbusManager {
         }
 
         @Override
-        public ScheduledFuture<?> submitOneTimeWrite(ModbusWriteRequestBlueprint request,
-                ModbusWriteCallback resultCallback,
+        public Future<?> submitOneTimeWrite(ModbusWriteRequestBlueprint request, ModbusWriteCallback resultCallback,
                 ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback) {
             if (closed) {
                 throw new IllegalStateException("Communication interface is closed already!");
@@ -844,12 +844,12 @@ public class ModbusManagerImpl implements ModbusManager {
             WriteTask task = new BasicWriteTask(endpoint, request, resultCallback, failureCallback);
             long scheduleTime = System.currentTimeMillis();
             logger.debug("Scheduling one-off write task {}", task);
-            ScheduledFuture<?> future = localScheduledThreadPoolExecutor.schedule(() -> {
+            Future<?> future = localScheduledThreadPoolExecutor.submit(() -> {
                 long millisInThreadPoolWaiting = System.currentTimeMillis() - scheduleTime;
                 logger.debug("Will now execute one-off write task {}, waited in thread pool for {}", task,
                         millisInThreadPoolWaiting);
                 executeOperation(task, true, writeOperation);
-            }, 0L, TimeUnit.MILLISECONDS);
+            });
             return future;
         }
 
