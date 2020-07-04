@@ -17,8 +17,6 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THI
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -58,22 +56,50 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", data).append("temperatureValue", temperatureValue)
-                .append("temperatureTimestamp", temperatureTimestamp).toString();
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        String localTemperatureTimestamp = temperatureTimestamp;
+        result = prime * result + ((localTemperatureTimestamp == null) ? 0 : localTemperatureTimestamp.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(temperatureValue);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof VerisureMiceDetectionDTO)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        VerisureMiceDetectionDTO rhs = ((VerisureMiceDetectionDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).append(temperatureValue, rhs.temperatureValue)
-                .append(temperatureTimestamp, rhs.temperatureTimestamp).isEquals();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        VerisureMiceDetectionDTO other = (VerisureMiceDetectionDTO) obj;
+        String localTemperatureTimestamp = temperatureTimestamp;
+        if (localTemperatureTimestamp == null) {
+            if (other.temperatureTimestamp != null) {
+                return false;
+            }
+        } else if (!localTemperatureTimestamp.equals(other.temperatureTimestamp)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(temperatureValue) != Double.doubleToLongBits(other.temperatureValue)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "VerisureMiceDetectionDTO [temperatureValue=" + temperatureValue + ", temperatureTimestamp="
+                + temperatureTimestamp + "]";
     }
 
     public static class Mouse {
@@ -100,23 +126,61 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("device", device).append("type", type)
-                    .append("detections", detections).append("typename", typename).toString();
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + detections.hashCode();
+            result = prime * result + device.hashCode();
+            Object localType = type;
+            result = prime * result + ((localType == null) ? 0 : localType.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Mouse)) {
+            if (obj == null) {
                 return false;
             }
-            Mouse rhs = ((Mouse) other);
-            return new EqualsBuilder().append(type, rhs.type).append(device, rhs.device).append(typename, rhs.typename)
-                    .append(detections, rhs.detections).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Mouse other = (Mouse) obj;
+            if (!detections.equals(other.detections)) {
+                return false;
+            }
+            if (!device.equals(other.device)) {
+                return false;
+            }
+            Object localType = type;
+            if (localType == null) {
+                if (other.type != null) {
+                    return false;
+                }
+            } else if (!localType.equals(other.type)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Mouse [device=" + device + ", type=" + type + ", detections=" + detections + ", typename="
+                    + typename + "]";
+        }
+
     }
 
     public static class Detection {
@@ -148,24 +212,70 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return gatewayTime != null ? new ToStringBuilder(this).append("count", count)
-                    .append("gatewayTime", gatewayTime).append("nodeTime", nodeTime).append("duration", duration)
-                    .append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + count;
+            result = prime * result + duration;
+            String localGatewayTime = gatewayTime;
+            result = prime * result + ((localGatewayTime == null) ? 0 : localGatewayTime.hashCode());
+            String localNodeTime = nodeTime;
+            result = prime * result + ((localNodeTime == null) ? 0 : localNodeTime.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Detection)) {
+            if (obj == null) {
                 return false;
             }
-            Detection rhs = ((Detection) other);
-            return new EqualsBuilder().append(count, rhs.count).append(duration, rhs.duration)
-                    .append(gatewayTime, rhs.gatewayTime).append(typename, rhs.typename).append(nodeTime, rhs.nodeTime)
-                    .isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Detection other = (Detection) obj;
+            if (count != other.count) {
+                return false;
+            }
+            if (duration != other.duration) {
+                return false;
+            }
+            String localGatewayTime = gatewayTime;
+            if (localGatewayTime == null) {
+                if (other.gatewayTime != null) {
+                    return false;
+                }
+            } else if (!localGatewayTime.equals(other.gatewayTime)) {
+                return false;
+            }
+            String localNodeTime = nodeTime;
+            if (localNodeTime == null) {
+                if (other.nodeTime != null) {
+                    return false;
+                }
+            } else if (!localNodeTime.equals(other.nodeTime)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Detection [count=" + count + ", gatewayTime=" + gatewayTime + ", nodeTime=" + nodeTime
+                    + ", duration=" + duration + ", typename=" + typename + "]";
+        }
+
     }
 }

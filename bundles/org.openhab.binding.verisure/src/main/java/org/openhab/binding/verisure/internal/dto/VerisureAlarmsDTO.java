@@ -17,8 +17,6 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THI
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -38,15 +36,25 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof VerisureAlarmsDTO)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        VerisureAlarmsDTO rhs = ((VerisureAlarmsDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return true;
     }
 
     public static class ArmState {
@@ -102,26 +110,104 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return type != null ? new ToStringBuilder(this).append("type", type).append("statusType", statusType)
-                    .append("date", date).append("name", name).append("changedVia", changedVia)
-                    .append("allowedForFirstLine", allowedForFirstLine).append("allowed", allowed)
-                    .append("errorCodes", errorCodes).append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + (allowed ? 1231 : 1237);
+            result = prime * result + (allowedForFirstLine ? 1231 : 1237);
+            String localChangedVia = changedVia;
+            result = prime * result + ((localChangedVia == null) ? 0 : localChangedVia.hashCode());
+            String localDate = date;
+            result = prime * result + ((localDate == null) ? 0 : localDate.hashCode());
+            result = prime * result + errorCodes.hashCode();
+            String localName = name;
+            result = prime * result + ((localName == null) ? 0 : localName.hashCode());
+            String localStatusType = statusType;
+            result = prime * result + ((localStatusType == null) ? 0 : localStatusType.hashCode());
+            String localType = type;
+            result = prime * result + ((localType == null) ? 0 : localType.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof ArmState)) {
+            if (obj == null) {
                 return false;
             }
-            ArmState rhs = ((ArmState) other);
-            return new EqualsBuilder().append(allowed, rhs.allowed).append(statusType, rhs.statusType)
-                    .append(typename, rhs.typename).append(name, rhs.name)
-                    .append(allowedForFirstLine, rhs.allowedForFirstLine).append(errorCodes, rhs.errorCodes)
-                    .append(date, rhs.date).append(type, rhs.type).append(changedVia, rhs.changedVia).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            ArmState other = (ArmState) obj;
+            if (allowed != other.allowed) {
+                return false;
+            }
+            if (allowedForFirstLine != other.allowedForFirstLine) {
+                return false;
+            }
+            String localChangedVia = changedVia;
+            if (localChangedVia == null) {
+                if (other.changedVia != null) {
+                    return false;
+                }
+            } else if (!localChangedVia.equals(other.changedVia)) {
+                return false;
+            }
+            String localdate = date;
+            if (localdate == null) {
+                if (other.date != null) {
+                    return false;
+                }
+            } else if (!localdate.equals(other.date)) {
+                return false;
+            }
+            if (!errorCodes.equals(other.errorCodes)) {
+                return false;
+            }
+            String localName = name;
+            if (localName == null) {
+                if (other.name != null) {
+                    return false;
+                }
+            } else if (!localName.equals(other.name)) {
+                return false;
+            }
+            String localStatusType = statusType;
+            if (localStatusType == null) {
+                if (other.statusType != null) {
+                    return false;
+                }
+            } else if (!localStatusType.equals(other.statusType)) {
+                return false;
+            }
+            String localType = type;
+            if (localType == null) {
+                if (other.type != null) {
+                    return false;
+                }
+            } else if (!localType.equals(other.type)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "ArmState [type=" + type + ", statusType=" + statusType + ", date=" + date + ", name=" + name
+                    + ", changedVia=" + changedVia + ", allowedForFirstLine=" + allowedForFirstLine + ", allowed="
+                    + allowed + ", errorCodes=" + errorCodes + ", typename=" + typename + "]";
         }
     }
 }

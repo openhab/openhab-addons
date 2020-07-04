@@ -14,8 +14,6 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -48,15 +46,25 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof VerisureClimatesDTO)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        VerisureClimatesDTO rhs = ((VerisureClimatesDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return true;
     }
 
     public static class Climate {
@@ -99,27 +107,82 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return temperatureTimestamp != null ? new ToStringBuilder(this).append("device", device)
-                    .append("humidityEnabled", humidityEnabled).append("humidityTimestamp", humidityTimestamp)
-                    .append("humidityValue", humidityValue).append("temperatureTimestamp", temperatureTimestamp)
-                    .append("temperatureValue", temperatureValue).append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + device.hashCode();
+            result = prime * result + (humidityEnabled ? 1231 : 1237);
+            String localHumidityTimestamp = humidityTimestamp;
+            result = prime * result + ((localHumidityTimestamp == null) ? 0 : localHumidityTimestamp.hashCode());
+            long temp;
+            temp = Double.doubleToLongBits(humidityValue);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            String localTemperatureTimestamp = temperatureTimestamp;
+            result = prime * result + ((localTemperatureTimestamp == null) ? 0 : localTemperatureTimestamp.hashCode());
+            temp = Double.doubleToLongBits(temperatureValue);
+            result = prime * result + (int) (temp ^ (temp >>> 32));
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Climate)) {
+            if (obj == null) {
                 return false;
             }
-            Climate rhs = ((Climate) other);
-            return new EqualsBuilder().append(temperatureValue, rhs.temperatureValue)
-                    .append(humidityTimestamp, rhs.humidityTimestamp)
-                    .append(temperatureTimestamp, rhs.temperatureTimestamp).append(typename, rhs.typename)
-                    .append(humidityValue, rhs.humidityValue).append(device, rhs.device)
-                    .append(humidityEnabled, rhs.humidityEnabled).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Climate other = (Climate) obj;
+            if (!device.equals(other.device)) {
+                return false;
+            }
+            if (humidityEnabled != other.humidityEnabled) {
+                return false;
+            }
+            String localHumidityTimestamp = humidityTimestamp;
+            if (localHumidityTimestamp == null) {
+                if (other.humidityTimestamp != null) {
+                    return false;
+                }
+            } else if (!localHumidityTimestamp.equals(other.humidityTimestamp)) {
+                return false;
+            }
+            if (Double.doubleToLongBits(humidityValue) != Double.doubleToLongBits(other.humidityValue)) {
+                return false;
+            }
+            String localTemperatureTimestamp = temperatureTimestamp;
+            if (localTemperatureTimestamp == null) {
+                if (other.temperatureTimestamp != null) {
+                    return false;
+                }
+            } else if (!localTemperatureTimestamp.equals(other.temperatureTimestamp)) {
+                return false;
+            }
+            if (Double.doubleToLongBits(temperatureValue) != Double.doubleToLongBits(other.temperatureValue)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Climate [device=" + device + ", humidityEnabled=" + humidityEnabled + ", humidityTimestamp="
+                    + humidityTimestamp + ", humidityValue=" + humidityValue + ", temperatureTimestamp="
+                    + temperatureTimestamp + ", temperatureValue=" + temperatureValue + ", typename=" + typename + "]";
+        }
+
     }
 }

@@ -16,8 +16,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -28,7 +26,6 @@ import org.openhab.binding.verisure.internal.dto.VerisureClimatesDTO.Climate;
 import org.openhab.binding.verisure.internal.dto.VerisureDoorWindowsDTO.DoorWindow;
 import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO.EventLog;
 import org.openhab.binding.verisure.internal.dto.VerisureGatewayDTO.CommunicationState;
-import org.openhab.binding.verisure.internal.dto.VerisureInstallationsDTO.Account;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO.Mouse;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartLocksDTO.Doorlock;
 import org.openhab.binding.verisure.internal.dto.VerisureSmartPlugsDTO.Smartplug;
@@ -121,28 +118,41 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + data.hashCode();
+        result = prime * result + deviceId.hashCode();
+        String localLocation = location;
+        result = prime * result + ((localLocation == null) ? 0 : localLocation.hashCode());
+        String localName = name;
+        result = prime * result + ((localName == null) ? 0 : localName.hashCode());
+        result = prime * result + siteId.hashCode();
+        String localSiteName = siteName;
+        result = prime * result + ((localSiteName == null) ? 0 : localSiteName.hashCode());
+        String localStatus = status;
+        result = prime * result + ((localStatus == null) ? 0 : localStatus.hashCode());
+        return result;
+    }
+
+    @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof VerisureBaseThingDTO)) {
+        if (obj == null) {
             return false;
         }
-
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
         VerisureBaseThingDTO other = (VerisureBaseThingDTO) obj;
+        if (!data.equals(other.data)) {
+            return false;
+        }
         if (!deviceId.equals(other.deviceId)) {
             return false;
         }
-
-        String localName = name;
-        if (localName == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!localName.equals(other.name)) {
-            return false;
-        }
-
         String localLocation = location;
         if (localLocation == null) {
             if (other.location != null) {
@@ -151,16 +161,17 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
         } else if (!localLocation.equals(other.location)) {
             return false;
         }
-
-        String localStatus = status;
-        if (localStatus == null) {
-            if (other.status != null) {
+        String localName = name;
+        if (localName == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if (!localStatus.equals(other.status)) {
+        } else if (!localName.equals(other.name)) {
             return false;
         }
-
+        if (!siteId.equals(other.siteId)) {
+            return false;
+        }
         String localSiteName = siteName;
         if (localSiteName == null) {
             if (other.siteName != null) {
@@ -169,30 +180,25 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
         } else if (!localSiteName.equals(other.siteName)) {
             return false;
         }
-
-        if (siteId != other.siteId) {
+        String localStatus = status;
+        if (localStatus == null) {
+            if (other.status != null) {
+                return false;
+            }
+        } else if (!localStatus.equals(other.status)) {
             return false;
         }
-
-        if (!data.equals(other.data)) {
-            return false;
-        }
-
         return true;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("data", data).toString();
+        return "VerisureBaseThingDTO [deviceId=" + deviceId + ", name=" + name + ", location=" + location + ", status="
+                + status + ", siteName=" + siteName + ", siteId=" + siteId + ", data=" + data + "]";
     }
 
     public static class Data {
         private Installation installation = new Installation();
-        private Account account = new Account();
-
-        public Account getAccount() {
-            return account;
-        }
 
         public Installation getInstallation() {
             return installation;
@@ -203,21 +209,36 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
         }
 
         @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).append("account", account).toString();
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + installation.hashCode();
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Data)) {
+            if (obj == null) {
                 return false;
             }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Data other = (Data) obj;
+            if (!installation.equals(other.installation)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Data [installation=" + installation + "]";
+        }
+
     }
 
     public static class Installation {
@@ -305,29 +326,85 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
         }
 
         @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("typename", typename).append("armState", armState)
-                    .append("broadband", broadband).append("eventLog", eventLog).append("climates", climates)
-                    .append("doorWindows", doorWindows).append("communicationState", communicationState)
-                    .append("mice", mice).append("doorLocks", doorlocks).append("smartplugs", smartplugs)
-                    .append("userTrackings", userTrackings).toString();
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + armState.hashCode();
+            result = prime * result + broadband.hashCode();
+            result = prime * result + climates.hashCode();
+            result = prime * result + communicationState.hashCode();
+            result = prime * result + doorWindows.hashCode();
+            result = prime * result + doorlocks.hashCode();
+            result = prime * result + eventLog.hashCode();
+            result = prime * result + mice.hashCode();
+            result = prime * result + smartplugs.hashCode();
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            result = prime * result + userTrackings.hashCode();
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Installation)) {
+            if (obj == null) {
                 return false;
             }
-            Installation rhs = ((Installation) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(armState, rhs.armState)
-                    .append(broadband, rhs.broadband).append(climates, rhs.climates)
-                    .append(doorWindows, rhs.doorWindows).append(communicationState, rhs.communicationState)
-                    .append(eventLog, rhs.eventLog).append(mice, rhs.mice).append(doorlocks, rhs.doorlocks)
-                    .append(smartplugs, rhs.smartplugs).append(userTrackings, rhs.userTrackings).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Installation other = (Installation) obj;
+            if (!armState.equals(other.armState)) {
+                return false;
+            }
+            if (!broadband.equals(other.broadband)) {
+                return false;
+            }
+            if (!climates.equals(other.climates)) {
+                return false;
+            }
+            if (!communicationState.equals(other.communicationState)) {
+                return false;
+            }
+            if (!doorWindows.equals(other.doorWindows)) {
+                return false;
+            }
+            if (!doorlocks.equals(other.doorlocks)) {
+                return false;
+            }
+            if (!eventLog.equals(other.eventLog)) {
+                return false;
+            }
+            if (!mice.equals(other.mice)) {
+                return false;
+            }
+            if (!smartplugs.equals(other.smartplugs)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            if (!userTrackings.equals(other.userTrackings)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Installation [armState=" + armState + ", broadband=" + broadband + ", eventLog=" + eventLog
+                    + ", climates=" + climates + ", doorWindows=" + doorWindows + ", communicationState="
+                    + communicationState + ", mice=" + mice + ", doorlocks=" + doorlocks + ", smartplugs=" + smartplugs
+                    + ", userTrackings=" + userTrackings + ", typename=" + typename + "]";
+        }
+
     }
 
     public static class Device {
@@ -355,22 +432,65 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
         }
 
         @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("deviceLabel", deviceLabel).append("area", area).append("gui", gui)
-                    .append("typename", typename).toString();
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            String localArea = area;
+            result = prime * result + ((localArea == null) ? 0 : localArea.hashCode());
+            String localDeviceLabel = deviceLabel;
+            result = prime * result + ((localDeviceLabel == null) ? 0 : localDeviceLabel.hashCode());
+            result = prime * result + gui.hashCode();
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Device)) {
+            if (obj == null) {
                 return false;
             }
-            Device rhs = ((Device) other);
-            return new EqualsBuilder().append(gui, rhs.gui).append(area, rhs.area).append(typename, rhs.typename)
-                    .append(deviceLabel, rhs.deviceLabel).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Device other = (Device) obj;
+            String localArea = area;
+            if (localArea == null) {
+                if (other.area != null) {
+                    return false;
+                }
+            } else if (!localArea.equals(other.area)) {
+                return false;
+            }
+            String localDeviceLabel = deviceLabel;
+            if (localDeviceLabel == null) {
+                if (other.deviceLabel != null) {
+                    return false;
+                }
+            } else if (!localDeviceLabel.equals(other.deviceLabel)) {
+                return false;
+            }
+            if (!gui.equals(other.gui)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "Device [deviceLabel=" + deviceLabel + ", area=" + area + ", gui=" + gui + ", typename=" + typename
+                    + "]";
         }
     }
 
@@ -394,22 +514,60 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
         }
 
         @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("label", label).append("support", support)
-                    .append("typename", typename).toString();
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            String localLabel = label;
+            result = prime * result + ((localLabel == null) ? 0 : localLabel.hashCode());
+            String localSupport = support;
+            result = prime * result + ((localSupport == null) ? 0 : localSupport.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Gui)) {
+            if (obj == null) {
                 return false;
             }
-            Gui rhs = ((Gui) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(support, rhs.support)
-                    .append(label, rhs.label).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Gui other = (Gui) obj;
+            String localLabel = label;
+            if (localLabel == null) {
+                if (other.label != null) {
+                    return false;
+                }
+            } else if (!localLabel.equals(other.label)) {
+                return false;
+            }
+            String localSupport = support;
+            if (localSupport == null) {
+                if (other.support != null) {
+                    return false;
+                }
+            } else if (!localSupport.equals(other.support)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "Gui [label=" + label + ", support=" + support + ", typename=" + typename + "]";
         }
     }
 }

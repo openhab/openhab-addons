@@ -14,8 +14,6 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_DOORWINDOW;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -37,15 +35,25 @@ public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof VerisureDoorWindowsDTO)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        VerisureDoorWindowsDTO rhs = ((VerisureDoorWindowsDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return true;
     }
 
     public static class DoorWindow {
@@ -83,24 +91,80 @@ public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return type != null ? new ToStringBuilder(this).append("device", device).append("type", type)
-                    .append("state", state).append("wired", wired).append("reportTime", reportTime)
-                    .append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + device.hashCode();
+            String localReportTime = reportTime;
+            result = prime * result + ((localReportTime == null) ? 0 : localReportTime.hashCode());
+            String localState = state;
+            result = prime * result + ((localState == null) ? 0 : localState.hashCode());
+            String localType = type;
+            result = prime * result + ((localType == null) ? 0 : localType.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            result = prime * result + (wired ? 1231 : 1237);
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof DoorWindow)) {
+            if (obj == null) {
                 return false;
             }
-            DoorWindow rhs = ((DoorWindow) other);
-            return new EqualsBuilder().append(reportTime, rhs.reportTime).append(typename, rhs.typename)
-                    .append(state, rhs.state).append(device, rhs.device).append(wired, rhs.wired).append(type, rhs.type)
-                    .isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            DoorWindow other = (DoorWindow) obj;
+            if (!device.equals(other.device)) {
+                return false;
+            }
+            String localReportTime = reportTime;
+            if (localReportTime == null) {
+                if (other.reportTime != null) {
+                    return false;
+                }
+            } else if (!localReportTime.equals(other.reportTime)) {
+                return false;
+            }
+            String localState = state;
+            if (localState == null) {
+                if (other.state != null) {
+                    return false;
+                }
+            } else if (!localState.equals(other.state)) {
+                return false;
+            }
+            String localType = type;
+            if (localType == null) {
+                if (other.type != null) {
+                    return false;
+                }
+            } else if (!localType.equals(other.type)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            if (wired != other.wired) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "DoorWindow [device=" + device + ", type=" + type + ", state=" + state + ", wired=" + wired
+                    + ", reportTime=" + reportTime + ", typename=" + typename + "]";
+        }
+
     }
 }

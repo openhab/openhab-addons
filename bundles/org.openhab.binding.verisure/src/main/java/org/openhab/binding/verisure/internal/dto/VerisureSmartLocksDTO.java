@@ -14,8 +14,6 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_SMARTLOCK;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -47,15 +45,43 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        VerisureSmartLockDTO localSmartLockJSON = smartLockJSON;
+        result = prime * result + ((localSmartLockJSON == null) ? 0 : localSmartLockJSON.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof VerisureSmartLocksDTO)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        VerisureSmartLocksDTO rhs = ((VerisureSmartLocksDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        VerisureSmartLocksDTO other = (VerisureSmartLocksDTO) obj;
+        VerisureSmartLockDTO localSmartLockJSON = smartLockJSON;
+        if (localSmartLockJSON == null) {
+            if (other.smartLockJSON != null) {
+                return false;
+            }
+        } else if (!localSmartLockJSON.equals(other.smartLockJSON)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "VerisureSmartLocksDTO [smartLockJSON=" + smartLockJSON + "]";
     }
 
     public static class Doorlock {
@@ -103,28 +129,95 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return currentLockState != null
-                    ? new ToStringBuilder(this).append("typename", typename)
-                            .append("currentLockState", currentLockState).append("device", device)
-                            .append("eventTime", eventTime).append("method", method).append("motorJam", motorJam)
-                            .append("secureModeActive", secureModeActive).append("userString", userString).toString()
-                    : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            String localCurrentLockState = currentLockState;
+            result = prime * result + ((localCurrentLockState == null) ? 0 : localCurrentLockState.hashCode());
+            result = prime * result + device.hashCode();
+            String localEventTime = eventTime;
+            result = prime * result + ((localEventTime == null) ? 0 : localEventTime.hashCode());
+            String localMethod = method;
+            result = prime * result + ((localMethod == null) ? 0 : localMethod.hashCode());
+            result = prime * result + (motorJam ? 1231 : 1237);
+            result = prime * result + (secureModeActive ? 1231 : 1237);
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            String localUserString = userString;
+            result = prime * result + ((localUserString == null) ? 0 : localUserString.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Doorlock)) {
+            if (obj == null) {
                 return false;
             }
-            Doorlock rhs = ((Doorlock) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(device, rhs.device)
-                    .append(secureModeActive, rhs.secureModeActive).append(motorJam, rhs.motorJam)
-                    .append(method, rhs.method).append(eventTime, rhs.eventTime)
-                    .append(currentLockState, rhs.currentLockState).append(userString, rhs.userString).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Doorlock other = (Doorlock) obj;
+            String localCurrentLockState = currentLockState;
+            if (localCurrentLockState == null) {
+                if (other.currentLockState != null) {
+                    return false;
+                }
+            } else if (!localCurrentLockState.equals(other.currentLockState)) {
+                return false;
+            }
+            if (!device.equals(other.device)) {
+                return false;
+            }
+            String localEventTime = eventTime;
+            if (localEventTime == null) {
+                if (other.eventTime != null) {
+                    return false;
+                }
+            } else if (!localEventTime.equals(other.eventTime)) {
+                return false;
+            }
+            String localMethod = method;
+            if (localMethod == null) {
+                if (other.method != null) {
+                    return false;
+                }
+            } else if (!localMethod.equals(other.method)) {
+                return false;
+            }
+            if (motorJam != other.motorJam) {
+                return false;
+            }
+            if (secureModeActive != other.secureModeActive) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            String localUserString = userString;
+            if (localUserString == null) {
+                if (other.userString != null) {
+                    return false;
+                }
+            } else if (!localUserString.equals(other.userString)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Doorlock [typename=" + typename + ", currentLockState=" + currentLockState + ", eventTime="
+                    + eventTime + ", method=" + method + ", userString=" + userString + ", device=" + device
+                    + ", motorJam=" + motorJam + ", secureModeActive=" + secureModeActive + "]";
+        }
+
     }
 }

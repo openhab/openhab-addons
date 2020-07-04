@@ -17,8 +17,6 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THI
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -35,18 +33,6 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
     @Override
     public ThingTypeUID getThingTypeUID() {
         return THING_TYPE_EVENT_LOG;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
-            return true;
-        }
-        if (!(other instanceof VerisureEventLogDTO)) {
-            return false;
-        }
-        VerisureEventLogDTO rhs = ((VerisureEventLogDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
     }
 
     public static class EventLog {
@@ -68,23 +54,51 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return pagedList.size() > 0 ? new ToStringBuilder(this).append("moreDataAvailable", moreDataAvailable)
-                    .append("pagedList", pagedList).append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + (moreDataAvailable ? 1231 : 1237);
+            result = prime * result + pagedList.hashCode();
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof EventLog)) {
+            if (obj == null) {
                 return false;
             }
-            EventLog rhs = ((EventLog) other);
-            return new EqualsBuilder().append(pagedList, rhs.pagedList).append(moreDataAvailable, rhs.moreDataAvailable)
-                    .append(typename, rhs.typename).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            EventLog other = (EventLog) obj;
+            if (moreDataAvailable != other.moreDataAvailable) {
+                return false;
+            }
+            if (!pagedList.equals(other.pagedList)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "EventLog [moreDataAvailable=" + moreDataAvailable + ", pagedList=" + pagedList + ", typename="
+                    + typename + "]";
+        }
+
     }
 
     public static class PagedList {
@@ -161,32 +175,169 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return eventType != null ? new ToStringBuilder(this).append("device", device)
-                    .append("gatewayArea", gatewayArea).append("eventType", eventType)
-                    .append("eventCategory", eventCategory).append("eventSource", eventSource)
-                    .append("eventId", eventId).append("eventTime", eventTime).append("userName", userName)
-                    .append("armState", armState).append("userType", userType).append("climateValue", climateValue)
-                    .append("sensorType", sensorType).append("eventCount", eventCount).append("typename", typename)
-                    .toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            String localArmState = armState;
+            result = prime * result + ((localArmState == null) ? 0 : localArmState.hashCode());
+            String localClimateValue = climateValue;
+            result = prime * result + ((localClimateValue == null) ? 0 : localClimateValue.hashCode());
+            result = prime * result + device.hashCode();
+            String localEventCategory = eventCategory;
+            result = prime * result + ((localEventCategory == null) ? 0 : localEventCategory.hashCode());
+            String localEventCount = eventCount;
+            result = prime * result + ((localEventCount == null) ? 0 : localEventCount.hashCode());
+            String localEventId = eventId;
+            result = prime * result + ((localEventId == null) ? 0 : localEventId.hashCode());
+            String localEventSource = eventSource;
+            result = prime * result + ((localEventSource == null) ? 0 : localEventSource.hashCode());
+            String localEventTime = eventTime;
+            result = prime * result + ((localEventTime == null) ? 0 : localEventTime.hashCode());
+            String localEventType = eventType;
+            result = prime * result + ((localEventType == null) ? 0 : localEventType.hashCode());
+            String localGatewayArea = gatewayArea;
+            result = prime * result + ((localGatewayArea == null) ? 0 : localGatewayArea.hashCode());
+            String localSensorType = sensorType;
+            result = prime * result + ((localSensorType == null) ? 0 : localSensorType.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            String localUserName = userName;
+            result = prime * result + ((localUserName == null) ? 0 : localUserName.hashCode());
+            String localUserType = userType;
+            result = prime * result + ((localUserType == null) ? 0 : localUserType.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof PagedList)) {
+            if (obj == null) {
                 return false;
             }
-            PagedList rhs = ((PagedList) other);
-            return new EqualsBuilder().append(eventId, rhs.eventId).append(eventCategory, rhs.eventCategory)
-                    .append(eventSource, rhs.eventSource).append(eventCount, rhs.eventCount)
-                    .append(eventType, rhs.eventType).append(userName, rhs.userName)
-                    .append(climateValue, rhs.climateValue).append(gatewayArea, rhs.gatewayArea)
-                    .append(armState, rhs.armState).append(sensorType, rhs.sensorType).append(eventTime, rhs.eventTime)
-                    .append(userType, rhs.userType).append(device, rhs.device).append(typename, rhs.typename)
-                    .isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            PagedList other = (PagedList) obj;
+            String localArmState = armState;
+            if (localArmState == null) {
+                if (other.armState != null) {
+                    return false;
+                }
+            } else if (!localArmState.equals(other.armState)) {
+                return false;
+            }
+            String localClimateValue = climateValue;
+            if (localClimateValue == null) {
+                if (other.climateValue != null) {
+                    return false;
+                }
+            } else if (!localClimateValue.equals(other.climateValue)) {
+                return false;
+            }
+            if (!device.equals(other.device)) {
+                return false;
+            }
+            String localEventCategory = eventCategory;
+            if (localEventCategory == null) {
+                if (other.eventCategory != null) {
+                    return false;
+                }
+            } else if (!localEventCategory.equals(other.eventCategory)) {
+                return false;
+            }
+            String localEventCount = eventCount;
+            if (localEventCount == null) {
+                if (other.eventCount != null) {
+                    return false;
+                }
+            } else if (!localEventCount.equals(other.eventCount)) {
+                return false;
+            }
+            String localEventId = eventId;
+            if (localEventId == null) {
+                if (other.eventId != null) {
+                    return false;
+                }
+            } else if (!localEventId.equals(other.eventId)) {
+                return false;
+            }
+            String localEventSource = eventSource;
+            if (localEventSource == null) {
+                if (other.eventSource != null) {
+                    return false;
+                }
+            } else if (!localEventSource.equals(other.eventSource)) {
+                return false;
+            }
+            String localEventTime = eventTime;
+            if (localEventTime == null) {
+                if (other.eventTime != null) {
+                    return false;
+                }
+            } else if (!localEventTime.equals(other.eventTime)) {
+                return false;
+            }
+            String localEventType = eventType;
+            if (localEventType == null) {
+                if (other.eventType != null) {
+                    return false;
+                }
+            } else if (!localEventType.equals(other.eventType)) {
+                return false;
+            }
+            String localGatewayArea = gatewayArea;
+            if (localGatewayArea == null) {
+                if (other.gatewayArea != null) {
+                    return false;
+                }
+            } else if (!localGatewayArea.equals(other.gatewayArea)) {
+                return false;
+            }
+            String localSensorType = sensorType;
+            if (localSensorType == null) {
+                if (other.sensorType != null) {
+                    return false;
+                }
+            } else if (!localSensorType.equals(other.sensorType)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            String localUserName = userName;
+            if (localUserName == null) {
+                if (other.userName != null) {
+                    return false;
+                }
+            } else if (!localUserName.equals(other.userName)) {
+                return false;
+            }
+            String localUserType = userType;
+            if (localUserType == null) {
+                if (other.userType != null) {
+                    return false;
+                }
+            } else if (!localUserType.equals(other.userType)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "PagedList [device=" + device + ", gatewayArea=" + gatewayArea + ", eventType=" + eventType
+                    + ", eventCategory=" + eventCategory + ", eventSource=" + eventSource + ", eventId=" + eventId
+                    + ", eventTime=" + eventTime + ", userName=" + userName + ", armState=" + armState + ", userType="
+                    + userType + ", climateValue=" + climateValue + ", sensorType=" + sensorType + ", eventCount="
+                    + eventCount + ", typename=" + typename + "]";
+        }
+
     }
 }

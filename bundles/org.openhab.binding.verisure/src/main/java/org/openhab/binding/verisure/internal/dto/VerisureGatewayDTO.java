@@ -14,8 +14,6 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_GATEWAY;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -35,15 +33,25 @@ public class VerisureGatewayDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof VerisureGatewayDTO)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        VerisureGatewayDTO rhs = ((VerisureGatewayDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return true;
     }
 
     public static class CommunicationState {
@@ -80,24 +88,87 @@ public class VerisureGatewayDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return result != null ? new ToStringBuilder(this).append("hardwareCarrierType", hardwareCarrierType)
-                    .append("result", result).append("mediaType", mediaType).append("device", device)
-                    .append("testDate", testDate).append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + device.hashCode();
+            String locaHardwareCarrierType = hardwareCarrierType;
+            result = prime * result + ((locaHardwareCarrierType == null) ? 0 : locaHardwareCarrierType.hashCode());
+            String localMediaType = mediaType;
+            result = prime * result + ((localMediaType == null) ? 0 : localMediaType.hashCode());
+            String localResult = this.result;
+            result = prime * result + ((localResult == null) ? 0 : localResult.hashCode());
+            String localTestDate = testDate;
+            result = prime * result + ((localTestDate == null) ? 0 : localTestDate.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof CommunicationState)) {
+            if (obj == null) {
                 return false;
             }
-            CommunicationState rhs = ((CommunicationState) other);
-            return new EqualsBuilder().append(result, rhs.result).append(hardwareCarrierType, rhs.hardwareCarrierType)
-                    .append(mediaType, rhs.mediaType).append(device, rhs.device).append(testDate, rhs.testDate)
-                    .append(typename, rhs.typename).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            CommunicationState other = (CommunicationState) obj;
+            if (!device.equals(other.device)) {
+                return false;
+            }
+            String locaHardwareCarrierType = hardwareCarrierType;
+            if (locaHardwareCarrierType == null) {
+                if (other.hardwareCarrierType != null) {
+                    return false;
+                }
+            } else if (!locaHardwareCarrierType.equals(other.hardwareCarrierType)) {
+                return false;
+            }
+            String localMediaType = mediaType;
+            if (localMediaType == null) {
+                if (other.mediaType != null) {
+                    return false;
+                }
+            } else if (!localMediaType.equals(other.mediaType)) {
+                return false;
+            }
+            String localResult = result;
+            if (localResult == null) {
+                if (other.result != null) {
+                    return false;
+                }
+            } else if (!localResult.equals(other.result)) {
+                return false;
+            }
+            String localTestDate = testDate;
+            if (localTestDate == null) {
+                if (other.testDate != null) {
+                    return false;
+                }
+            } else if (!localTestDate.equals(other.testDate)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "CommunicationState [hardwareCarrierType=" + hardwareCarrierType + ", result=" + result
+                    + ", mediaType=" + mediaType + ", device=" + device + ", testDate=" + testDate + ", typename="
+                    + typename + "]";
+        }
+
     }
 }

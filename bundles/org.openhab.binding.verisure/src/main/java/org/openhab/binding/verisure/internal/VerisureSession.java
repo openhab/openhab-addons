@@ -237,7 +237,11 @@ public class VerisureSession {
 
         Document htmlDocument = Jsoup.parse(html);
         Element nameInput = htmlDocument.select("input[name=_csrf]").first();
-        return nameInput.attr("value");
+        if (nameInput != null) {
+            return nameInput.attr("value");
+        } else {
+            return null;
+        }
     }
 
     public @Nullable String getPinCode(BigDecimal installationId) {
@@ -499,10 +503,10 @@ public class VerisureSession {
     private void notifyListenersIfChanged(VerisureThingDTO thing, VerisureInstallation installation, String deviceId) {
         String normalizedDeviceId = VerisureThingConfiguration.normalizeDeviceId(deviceId);
         thing.setDeviceId(normalizedDeviceId);
+        thing.setSiteId(installation.getInstallationId());
+        thing.setSiteName(installation.getInstallationName());
         VerisureThingDTO oldObj = verisureThings.get(normalizedDeviceId);
         if (!thing.equals(oldObj)) {
-            thing.setSiteId(installation.getInstallationId());
-            thing.setSiteName(installation.getInstallationName());
             verisureThings.put(thing.getDeviceId(), thing);
             notifyListeners(thing);
         } else {

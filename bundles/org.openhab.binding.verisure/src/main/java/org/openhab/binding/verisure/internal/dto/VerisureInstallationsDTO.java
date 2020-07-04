@@ -15,8 +15,6 @@ package org.openhab.binding.verisure.internal.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Installation;
@@ -39,15 +37,34 @@ public class VerisureInstallationsDTO {
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + data.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof Data)) {
+        if (obj == null) {
             return false;
         }
-        VerisureInstallationsDTO rhs = ((VerisureInstallationsDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        VerisureInstallationsDTO other = (VerisureInstallationsDTO) obj;
+        if (!data.equals(other.data)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "VerisureInstallationsDTO [data=" + data + "]";
     }
 
     public static class Data {
@@ -67,21 +84,40 @@ public class VerisureInstallationsDTO {
         }
 
         @Override
-        public String toString() {
-            return new ToStringBuilder(this).append("installation", installation).append("account", account).toString();
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + account.hashCode();
+            result = prime * result + installation.hashCode();
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Data)) {
+            if (obj == null) {
                 return false;
             }
-            Data rhs = ((Data) other);
-            return new EqualsBuilder().append(installation, rhs.installation).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Data other = (Data) obj;
+            if (!account.equals(other.account)) {
+                return false;
+            }
+            if (!installation.equals(other.installation)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Data [installation=" + installation + ", account=" + account + "]";
+        }
+
     }
 
     public static class Account {
@@ -99,23 +135,46 @@ public class VerisureInstallationsDTO {
         }
 
         @Override
-        public String toString() {
-            return owainstallations.size() > 0 ? new ToStringBuilder(this).append("owainstallations", owainstallations)
-                    .append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + owainstallations.hashCode();
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Account)) {
+            if (obj == null) {
                 return false;
             }
-            Account rhs = ((Account) other);
-            return new EqualsBuilder().append(typename, rhs.typename).append(owainstallations, rhs.owainstallations)
-                    .isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Account other = (Account) obj;
+            if (!owainstallations.equals(other.owainstallations)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Account [typename=" + typename + ", owainstallations=" + owainstallations + "]";
+        }
+
     }
 
     public static class Owainstallation {
@@ -125,7 +184,7 @@ public class VerisureInstallationsDTO {
         private @Nullable String alias;
         private @Nullable String dealerId;
         private @Nullable String giid;
-        private @Nullable Object subsidiary;
+        private @Nullable String subsidiary;
         private @Nullable String type;
 
         public @Nullable String getTypename() {
@@ -144,7 +203,7 @@ public class VerisureInstallationsDTO {
             return giid;
         }
 
-        public @Nullable Object getSubsidiary() {
+        public @Nullable String getSubsidiary() {
             return subsidiary;
         }
 
@@ -153,24 +212,92 @@ public class VerisureInstallationsDTO {
         }
 
         @Override
-        public String toString() {
-            return typename != null ? new ToStringBuilder(this).append("giid", giid).append("alias", alias)
-                    .append("type", type).append("subsidiary", subsidiary).append("dealerId", dealerId)
-                    .append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            String localAlias = alias;
+            result = prime * result + ((localAlias == null) ? 0 : localAlias.hashCode());
+            String localDealerId = dealerId;
+            result = prime * result + ((localDealerId == null) ? 0 : localDealerId.hashCode());
+            String localGiid = giid;
+            result = prime * result + ((localGiid == null) ? 0 : localGiid.hashCode());
+            String localSubsidiary = subsidiary;
+            result = prime * result + ((localSubsidiary == null) ? 0 : localSubsidiary.hashCode());
+            String localType = type;
+            result = prime * result + ((localType == null) ? 0 : localType.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Owainstallation)) {
+            if (obj == null) {
                 return false;
             }
-            Owainstallation rhs = ((Owainstallation) other);
-            return new EqualsBuilder().append(dealerId, rhs.dealerId).append(alias, rhs.alias)
-                    .append(typename, rhs.typename).append(giid, rhs.giid).append(subsidiary, rhs.subsidiary)
-                    .append(type, rhs.type).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Owainstallation other = (Owainstallation) obj;
+            String localAlias = alias;
+            if (localAlias == null) {
+                if (other.alias != null) {
+                    return false;
+                }
+            } else if (!localAlias.equals(other.alias)) {
+                return false;
+            }
+            String localDealerId = dealerId;
+            if (localDealerId == null) {
+                if (other.dealerId != null) {
+                    return false;
+                }
+            } else if (!localDealerId.equals(other.dealerId)) {
+                return false;
+            }
+            String localGiid = giid;
+            if (localGiid == null) {
+                if (other.giid != null) {
+                    return false;
+                }
+            } else if (!localGiid.equals(other.giid)) {
+                return false;
+            }
+            String localSubsidiary = subsidiary;
+            if (localSubsidiary == null) {
+                if (other.subsidiary != null) {
+                    return false;
+                }
+            } else if (!localSubsidiary.equals(other.subsidiary)) {
+                return false;
+            }
+            String localType = type;
+            if (localType == null) {
+                if (other.type != null) {
+                    return false;
+                }
+            } else if (!localType.equals(other.type)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Owainstallation [typename=" + typename + ", alias=" + alias + ", dealerId=" + dealerId + ", giid="
+                    + giid + ", subsidiary=" + subsidiary + ", type=" + type + "]";
+        }
+
     }
 }

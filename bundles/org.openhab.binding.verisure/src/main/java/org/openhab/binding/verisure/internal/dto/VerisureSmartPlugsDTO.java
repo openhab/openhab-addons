@@ -14,8 +14,6 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_SMARTPLUG;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -37,15 +35,25 @@ public class VerisureSmartPlugsDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(other instanceof VerisureSmartPlugsDTO)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        VerisureSmartPlugsDTO rhs = ((VerisureSmartPlugsDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return true;
     }
 
     public static class Smartplug {
@@ -78,24 +86,70 @@ public class VerisureSmartPlugsDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return currentState != null ? new ToStringBuilder(this).append("device", device)
-                    .append("currentState", currentState).append("icon", icon).append("isHazardous", isHazardous)
-                    .append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            String localCurrentState = currentState;
+            result = prime * result + ((localCurrentState == null) ? 0 : localCurrentState.hashCode());
+            result = prime * result + device.hashCode();
+            String localIcon = icon;
+            result = prime * result + ((localIcon == null) ? 0 : localIcon.hashCode());
+            result = prime * result + (isHazardous ? 1231 : 1237);
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof Smartplug)) {
+            if (obj == null) {
                 return false;
             }
-            Smartplug rhs = ((Smartplug) other);
-            return new EqualsBuilder().append(icon, rhs.icon).append(typename, rhs.typename)
-                    .append(currentState, rhs.currentState).append(device, rhs.device)
-                    .append(isHazardous, rhs.isHazardous).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Smartplug other = (Smartplug) obj;
+            String localCurrentState = currentState;
+            if (localCurrentState == null) {
+                if (other.currentState != null) {
+                    return false;
+                }
+            } else if (!localCurrentState.equals(other.currentState)) {
+                return false;
+            }
+            if (!device.equals(other.device)) {
+                return false;
+            }
+            String localIcon = icon;
+            if (localIcon == null) {
+                if (other.icon != null) {
+                    return false;
+                }
+            } else if (!localIcon.equals(other.icon)) {
+                return false;
+            }
+            if (isHazardous != other.isHazardous) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "Smartplug [device=" + device + ", currentState=" + currentState + ", icon=" + icon
+                    + ", isHazardous=" + isHazardous + ", typename=" + typename + "]";
+        }
+
     }
 }

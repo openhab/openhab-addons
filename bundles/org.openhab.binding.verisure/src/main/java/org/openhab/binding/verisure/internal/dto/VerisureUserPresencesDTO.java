@@ -14,8 +14,6 @@ package org.openhab.binding.verisure.internal.dto;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.THING_TYPE_USERPRESENCE;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -37,16 +35,25 @@ public class VerisureUserPresencesDTO extends VerisureBaseThingDTO {
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (other == this) {
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
             return true;
         }
-
-        if (!(other instanceof VerisureUserPresencesDTO)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        VerisureUserPresencesDTO rhs = ((VerisureUserPresencesDTO) other);
-        return new EqualsBuilder().append(data, rhs.data).isEquals();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return true;
     }
 
     public static class UserTracking {
@@ -55,7 +62,7 @@ public class VerisureUserPresencesDTO extends VerisureBaseThingDTO {
         private @Nullable String status;
         private @Nullable String xbnContactId;
         private @Nullable String currentLocationName;
-        private @Nullable String deviceId;
+        private String deviceId = "";
         private @Nullable String name;
         private @Nullable String currentLocationTimestamp;
         private @Nullable String deviceName;
@@ -108,31 +115,134 @@ public class VerisureUserPresencesDTO extends VerisureBaseThingDTO {
         }
 
         @Override
-        public String toString() {
-            return status != null ? new ToStringBuilder(this).append("isCallingUser", isCallingUser)
-                    .append("webAccount", webAccount).append("status", status).append("xbnContactId", xbnContactId)
-                    .append("currentLocationName", currentLocationName).append("deviceId", deviceId)
-                    .append("name", name).append("currentLocationTimestamp", currentLocationTimestamp)
-                    .append("deviceName", deviceName).append("currentLocationId", currentLocationId)
-                    .append("typename", typename).toString() : "";
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            String localCurrentLocationId = currentLocationId;
+            result = prime * result + ((localCurrentLocationId == null) ? 0 : localCurrentLocationId.hashCode());
+            String localCurrentLocationName = currentLocationName;
+            result = prime * result + ((localCurrentLocationName == null) ? 0 : localCurrentLocationName.hashCode());
+            String localCurrentLocationTimestamp = currentLocationTimestamp;
+            result = prime * result
+                    + ((localCurrentLocationTimestamp == null) ? 0 : localCurrentLocationTimestamp.hashCode());
+            result = prime * result + deviceId.hashCode();
+            String localDeviceName = deviceName;
+            result = prime * result + ((localDeviceName == null) ? 0 : localDeviceName.hashCode());
+            result = prime * result + (isCallingUser ? 1231 : 1237);
+            String localName = name;
+            result = prime * result + ((localName == null) ? 0 : localName.hashCode());
+            String localStatus = status;
+            result = prime * result + ((localStatus == null) ? 0 : localStatus.hashCode());
+            String localTypeName = typename;
+            result = prime * result + ((localTypeName == null) ? 0 : localTypeName.hashCode());
+            String localWebAccount = webAccount;
+            result = prime * result + ((localWebAccount == null) ? 0 : localWebAccount.hashCode());
+            String localXbnContactId = xbnContactId;
+            result = prime * result + ((localXbnContactId == null) ? 0 : localXbnContactId.hashCode());
+            return result;
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (other == this) {
+        public boolean equals(@Nullable Object obj) {
+            if (this == obj) {
                 return true;
             }
-            if (!(other instanceof UserTracking)) {
+            if (obj == null) {
                 return false;
             }
-            UserTracking rhs = ((UserTracking) other);
-            return new EqualsBuilder().append(currentLocationId, rhs.currentLocationId)
-                    .append(deviceName, rhs.deviceName).append(status, rhs.status)
-                    .append(currentLocationTimestamp, rhs.currentLocationTimestamp)
-                    .append(currentLocationName, rhs.currentLocationName).append(typename, rhs.typename)
-                    .append(name, rhs.name).append(isCallingUser, rhs.isCallingUser)
-                    .append(xbnContactId, rhs.xbnContactId).append(webAccount, rhs.webAccount)
-                    .append(deviceId, rhs.deviceId).isEquals();
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            UserTracking other = (UserTracking) obj;
+            String localCurrentLocationId = currentLocationId;
+            if (localCurrentLocationId == null) {
+                if (other.currentLocationId != null) {
+                    return false;
+                }
+            } else if (!localCurrentLocationId.equals(other.currentLocationId)) {
+                return false;
+            }
+            String localCurrentLocationName = currentLocationName;
+            if (localCurrentLocationName == null) {
+                if (other.currentLocationName != null) {
+                    return false;
+                }
+            } else if (!localCurrentLocationName.equals(other.currentLocationName)) {
+                return false;
+            }
+            String localCurrentLocationTimestamp = currentLocationTimestamp;
+            if (localCurrentLocationTimestamp == null) {
+                if (other.currentLocationTimestamp != null) {
+                    return false;
+                }
+            } else if (!localCurrentLocationTimestamp.equals(other.currentLocationTimestamp)) {
+                return false;
+            }
+            if (!deviceId.equals(other.deviceId)) {
+                return false;
+            }
+            String localDeviceName = deviceName;
+            if (localDeviceName == null) {
+                if (other.deviceName != null) {
+                    return false;
+                }
+            } else if (!localDeviceName.equals(other.deviceName)) {
+                return false;
+            }
+            if (isCallingUser != other.isCallingUser) {
+                return false;
+            }
+            String localName = name;
+            if (localName == null) {
+                if (other.name != null) {
+                    return false;
+                }
+            } else if (!localName.equals(other.name)) {
+                return false;
+            }
+            String localStatus = status;
+            if (localStatus == null) {
+                if (other.status != null) {
+                    return false;
+                }
+            } else if (!localStatus.equals(other.status)) {
+                return false;
+            }
+            String localTypeName = typename;
+            if (localTypeName == null) {
+                if (other.typename != null) {
+                    return false;
+                }
+            } else if (!localTypeName.equals(other.typename)) {
+                return false;
+            }
+            String localWebAccount = webAccount;
+            if (localWebAccount == null) {
+                if (other.webAccount != null) {
+                    return false;
+                }
+            } else if (!localWebAccount.equals(other.webAccount)) {
+                return false;
+            }
+            String localXbnContactId = xbnContactId;
+            if (localXbnContactId == null) {
+                if (other.xbnContactId != null) {
+                    return false;
+                }
+            } else if (!localXbnContactId.equals(other.xbnContactId)) {
+                return false;
+            }
+            return true;
         }
+
+        @Override
+        public String toString() {
+            return "UserTracking [isCallingUser=" + isCallingUser + ", webAccount=" + webAccount + ", status=" + status
+                    + ", xbnContactId=" + xbnContactId + ", currentLocationName=" + currentLocationName + ", deviceId="
+                    + deviceId + ", name=" + name + ", currentLocationTimestamp=" + currentLocationTimestamp
+                    + ", deviceName=" + deviceName + ", currentLocationId=" + currentLocationId + ", typename="
+                    + typename + "]";
+        }
+
     }
 }
