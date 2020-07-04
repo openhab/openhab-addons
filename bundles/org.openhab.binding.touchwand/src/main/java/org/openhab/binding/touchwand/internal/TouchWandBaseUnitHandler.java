@@ -83,7 +83,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         }
     }
 
-    @SuppressWarnings("null")
+    // @SuppressWarnings("null")
     @Override
     public void initialize() {
         ThingStatus bridgeStatus;
@@ -95,19 +95,15 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             return;
         }
 
-        bridgeHandler = (TouchWandBridgeHandler) getBridge().getHandler();
+        bridgeHandler = (TouchWandBridgeHandler) bridge.getHandler();
 
         bridgeStatus = bridge.getStatus();
 
-        logger.debug("initializeThing Thing {} Bridge status {}", getThing().getUID(), bridgeStatus);
-
-        Thing thing = getThing();
-        unitId = thing.getUID().toString().split(":")[3]; // touchwand id
+        unitId = getThing().getUID().toString().split(":")[3]; // touchwand id
         bridgeHandler.registerUpdateListener(this);
 
         if (!bridgeStatus.equals(ThingStatus.ONLINE)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            logger.debug("UpdateStatus OFFLINE BRIDGE_OFFLINE {}", getThing().getLabel());
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -161,7 +157,6 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             updateStatus(ThingStatus.ONLINE);
         } else {
             // updateStatus(ThingStatus.OFFLINE); // comment - OFFLINE status is not accurate at the moment
-            logger.debug("UpdateStatus OFFLINE {}", getThing().getLabel());
         }
         updateTouchWandUnitState(unitData);
     }
