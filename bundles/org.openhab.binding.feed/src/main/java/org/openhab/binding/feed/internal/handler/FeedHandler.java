@@ -138,9 +138,7 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     private void publishDynamicChannelsIfLinked() {
-        List<SyndEntry> entries = currentFeedState.getEntries()
-                .stream()
-                .limit(numberOfEntries.intValue())
+        List<SyndEntry> entries = currentFeedState.getEntries().stream().limit(numberOfEntries.intValue())
                 .collect(Collectors.toList());
 
         createDynamicChannels(numberOfEntries.intValue());
@@ -167,19 +165,13 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     private void setUnusedDynamicChannelsToUndef(int amountOfUsedChannels) {
-        getThing().getChannelsOfGroup(titleChannelGroupUID.getId())
-                .stream()
-                .skip(amountOfUsedChannels)
+        getThing().getChannelsOfGroup(titleChannelGroupUID.getId()).stream().skip(amountOfUsedChannels)
                 .forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
 
-        getThing().getChannelsOfGroup(descriptionChannelGroupUID.getId())
-                .stream()
-                .skip(amountOfUsedChannels)
+        getThing().getChannelsOfGroup(descriptionChannelGroupUID.getId()).stream().skip(amountOfUsedChannels)
                 .forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
 
-        getThing().getChannelsOfGroup(dateChannelGroupUID.getId())
-                .stream()
-                .skip(amountOfUsedChannels)
+        getThing().getChannelsOfGroup(dateChannelGroupUID.getId()).stream().skip(amountOfUsedChannels)
                 .forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
     }
 
@@ -192,18 +184,15 @@ public class FeedHandler extends BaseThingHandler {
         for (int i = existingChannels; i < numberOfChannels; i++) {
             Channel titleChannel = ChannelBuilder
                     .create(new ChannelUID(titleChannelGroupUID, String.valueOf(i)), "String")
-                    .withLabel("Title " + (i + 1))
-                    .build();
+                    .withLabel("Title " + (i + 1)).build();
 
             Channel descriptionChannel = ChannelBuilder
                     .create(new ChannelUID(descriptionChannelGroupUID, String.valueOf(i)), "String")
-                    .withLabel("Description " + (i + 1))
-                    .build();
+                    .withLabel("Description " + (i + 1)).build();
 
             Channel dateChannel = ChannelBuilder
                     .create(new ChannelUID(dateChannelGroupUID, String.valueOf(i)), "DateTime")
-                    .withLabel("Date " + (i + 1))
-                    .build();
+                    .withLabel("Date " + (i + 1)).build();
 
             thingBuilder.withChannel(titleChannel);
             thingBuilder.withChannel(descriptionChannel);
@@ -260,10 +249,10 @@ public class FeedHandler extends BaseThingHandler {
             default:
                 logger.debug("Unrecognized channel: {}", channelID);
         }
-        
+
         setChannelToState(channelUID, state);
     }
-    
+
     private void setChannelToState(ChannelUID channel, State state) {
         if (state != null) {
             updateState(channel.getId(), state);
