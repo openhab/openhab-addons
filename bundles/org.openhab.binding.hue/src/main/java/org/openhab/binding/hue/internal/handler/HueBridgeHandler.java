@@ -176,13 +176,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
             for (final FullSensor sensor : hueBridge.getSensors()) {
                 String sensorId = sensor.getId();
-                lastSensorStateCopy.remove(sensorId);
 
                 final SensorStatusListener sensorStatusListener = sensorStatusListeners.get(sensorId);
                 if (sensorStatusListener == null) {
                     logger.debug("Hue sensor '{}' added.", sensorId);
 
-                    if (discovery != null) {
+                    if (discovery != null && !lastSensorStateCopy.containsKey(sensorId)) {
                         discovery.addSensorDiscovery(sensor);
                     }
 
@@ -192,6 +191,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                         lastSensorStates.put(sensorId, sensor);
                     }
                 }
+                lastSensorStateCopy.remove(sensorId);
             }
 
             // Check for removed sensors
@@ -227,13 +227,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
             for (final FullLight fullLight : lights) {
                 final String lightId = fullLight.getId();
-                lastLightStateCopy.remove(lightId);
 
                 final LightStatusListener lightStatusListener = lightStatusListeners.get(lightId);
                 if (lightStatusListener == null) {
                     logger.debug("Hue light '{}' added.", lightId);
 
-                    if (discovery != null) {
+                    if (discovery != null && !lastLightStateCopy.containsKey(lightId)) {
                         discovery.addLightDiscovery(fullLight);
                     }
 
@@ -243,6 +242,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                         lastLightStates.put(lightId, fullLight);
                     }
                 }
+                lastLightStateCopy.remove(lightId);
             }
 
             // Check for removed lights
@@ -310,14 +310,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                         groupState.getXY());
 
                 String groupId = fullGroup.getId();
-                lastGroupStateCopy.remove(groupId);
 
                 final GroupStatusListener groupStatusListener = groupStatusListeners.get(groupId);
                 if (groupStatusListener == null) {
                     logger.debug("Hue group '{}' ({}) added (nb lights {}).", groupId, fullGroup.getName(),
                             fullGroup.getLights().size());
 
-                    if (discovery != null) {
+                    if (discovery != null && !lastGroupStateCopy.containsKey(groupId)) {
                         discovery.addGroupDiscovery(fullGroup);
                     }
 
@@ -327,6 +326,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                         lastGroupStates.put(groupId, fullGroup);
                     }
                 }
+                lastGroupStateCopy.remove(groupId);
             }
 
             // Check for removed groups
