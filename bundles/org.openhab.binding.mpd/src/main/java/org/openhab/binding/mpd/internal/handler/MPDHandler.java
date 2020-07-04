@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,6 +64,9 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
     private final MPDConnection connection;
     private int volume = 0;
 
+    private @Nullable ScheduledFuture<?> futureUpdateStatus;
+    private @Nullable ScheduledFuture<?> futureUpdateCurrentSong;
+
     public MPDHandler(Thing thing) {
         super(thing);
         connection = new MPDConnection(this);
@@ -86,6 +91,16 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> future = this.futureUpdateStatus;
+        if (future != null && !future.isCancelled()) {
+            future.cancel(true);
+        }
+
+        future = this.futureUpdateCurrentSong;
+        if (future != null && !future.isCancelled()) {
+            future.cancel(true);
+        }
+
         connection.dispose();
         super.dispose();
     }
@@ -115,7 +130,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
             case CHANNEL_CONTROL:
             case CHANNEL_STOP:
             case CHANNEL_VOLUME:
-                connection.updateStatus();
+                scheduleUpdateStatus();
                 break;
             case CHANNEL_CURRENT_ALBUM:
             case CHANNEL_CURRENT_ARTIST:
@@ -124,9 +139,33 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
             case CHANNEL_CURRENT_SONG_ID:
             case CHANNEL_CURRENT_TITLE:
             case CHANNEL_CURRENT_TRACK:
-                connection.updateCurrentSong();
+                scheduleUpdateCurrentSong();
                 break;
         }
+    }
+
+    private synchronized void scheduleUpdateStatus() {
+        logger.debug("scheduleUpdateStatus");
+        ScheduledFuture<?> future = this.futureUpdateStatus;
+        if (future == null || future.isCancelled() || future.isDone()) {
+            this.futureUpdateStatus = scheduler.schedule(() -> doUpdateStatus(), 100, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void doUpdateStatus() {
+        connection.updateStatus();
+    }
+
+    private synchronized void scheduleUpdateCurrentSong() {
+        logger.debug("scheduleUpdateCurrentSong");
+        ScheduledFuture<?> future = this.futureUpdateCurrentSong;
+        if (future == null || future.isCancelled() || future.isDone()) {
+            this.futureUpdateCurrentSong = scheduler.schedule(() -> doUpdateCurrentSong(), 100, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void doUpdateCurrentSong() {
+        connection.updateCurrentSong();
     }
 
     private void handlePlayerCommand(String channelId, Command command) {

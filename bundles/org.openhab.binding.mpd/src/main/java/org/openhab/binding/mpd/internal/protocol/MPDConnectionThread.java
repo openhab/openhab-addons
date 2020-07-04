@@ -119,7 +119,7 @@ public class MPDConnectionThread extends Thread {
     }
 
     private void insertCommand(MPDCommand command, int position) {
-        logger.trace("insert command '{}' at position {}", command.getCommand(), position);
+        logger.debug("insert command '{}' at position {}", command.getCommand(), position);
         int index = position;
         synchronized (pendingCommands) {
             if (index < 0) {
