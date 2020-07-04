@@ -195,6 +195,12 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             this.result = null;
             this.failure = failure;
         }
+
+        @Override
+        public String toString() {
+            return result == null ? String.format("PollResult(result=%s)", result)
+                    : String.format("PollResult(failure=%s)", failure);
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandler.class);
