@@ -15,7 +15,6 @@ package org.openhab.io.transport.modbus;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
@@ -52,7 +51,7 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      * @throws IllegalStateException when this communication has been closed already
      */
     public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback resultCallback,
-            @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback);
+            ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback);
 
     /**
      * Register regularly polled task. The method returns immediately, and the execution of the poll task will happen in
@@ -70,7 +69,7 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      */
     public PollTask registerRegularPoll(ModbusReadRequestBlueprint request, long pollPeriodMillis,
             long initialDelayMillis, ModbusReadCallback resultCallback,
-            @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback);
+            ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback);
 
     /**
      * Unregister regularly polled task
@@ -93,6 +92,5 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      * @throws IllegalStateException when this communication has been closed already
      */
     public ScheduledFuture<?> submitOneTimeWrite(ModbusWriteRequestBlueprint request,
-            @Nullable ModbusWriteCallback resultCallback,
-            @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback);
+            ModbusWriteCallback resultCallback, ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback);
 }
