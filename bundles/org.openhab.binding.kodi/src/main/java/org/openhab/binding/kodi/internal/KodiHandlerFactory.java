@@ -52,17 +52,17 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.kodi")
 public class KodiHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(KodiHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(KodiHandlerFactory.class);
 
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
     private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
-    private WebSocketClient webSocketClient;
+    private final WebSocketClient webSocketClient;
+
+    private final Map<String, @Nullable ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     // url (scheme+server+port) to use for playing notification sounds
     private @Nullable String callbackUrl;
-
-    private Map<String, @Nullable ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     @Activate
     public KodiHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
