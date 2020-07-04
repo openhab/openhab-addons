@@ -61,6 +61,7 @@ public class ModbusTcpThingHandler
         poolConfiguration.setReconnectAfterMillis(config.getReconnectAfterMillis());
     }
 
+    @SuppressWarnings("null") // since Optional.map is always called with NonNull argument
     @Override
     protected String formatConflictingParameterError() {
         return String.format(
@@ -72,10 +73,11 @@ public class ModbusTcpThingHandler
 
     @Override
     public int getSlaveId() {
-        if (config == null) {
+        ModbusTcpConfiguration localConfig = config;
+        if (localConfig == null) {
             throw new IllegalStateException("Poller not configured, but slave id is queried!");
         }
-        return config.getId();
+        return localConfig.getId();
     }
 
     @Override

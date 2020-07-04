@@ -84,6 +84,7 @@ public class ModbusSerialThingHandler
         }
     }
 
+    @SuppressWarnings("null") // Since endpoint in Optional.map cannot be null
     @Override
     protected String formatConflictingParameterError() {
         return String.format(
