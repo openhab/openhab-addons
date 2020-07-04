@@ -69,8 +69,6 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
             return new TouchWandWallControllerHandler(thing);
         } else if (THING_TYPE_DIMMER.equals(thingTypeUID)) {
             return new TouchWandDimmerHandler(thing);
-        } else if (THING_TYPE_ALARMSENSOR.equals(thingTypeUID)) {
-            return new TouchWandAlarmSensorHandler(thing);
         }
 
         return null;
