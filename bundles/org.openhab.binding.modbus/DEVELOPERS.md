@@ -22,7 +22,7 @@ When configuring dependencies in `openhab-distro/launch/app/pom.xml`, add all de
 <dependency>
     <groupId>org.openhab.osgiify</groupId>
     <artifactId>net.wimpi.jamod</artifactId>
-    <version>1.2.3.OH</version>
+    <version>1.2.4.OH</version>
     <scope>runtime</scope>
 </dependency>
 ```
