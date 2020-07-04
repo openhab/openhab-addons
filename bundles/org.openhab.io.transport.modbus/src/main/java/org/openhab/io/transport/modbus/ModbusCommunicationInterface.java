@@ -13,7 +13,6 @@
 package org.openhab.io.transport.modbus;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
@@ -51,7 +50,7 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      * @return future representing the polled task
      * @throws IllegalStateException when this communication has been closed already
      */
-    public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback resultCallback,
+    public Future<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback resultCallback,
             ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback);
 
     /**

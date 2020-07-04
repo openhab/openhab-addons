@@ -742,8 +742,8 @@ public class ModbusManagerImpl implements ModbusManager {
         }
 
         @Override
-        public ScheduledFuture<?> submitOneTimePoll(ModbusReadRequestBlueprint request,
-                ModbusReadCallback resultCallback, ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
+        public Future<?> submitOneTimePoll(ModbusReadRequestBlueprint request, ModbusReadCallback resultCallback,
+                ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
             if (closed) {
                 throw new IllegalStateException("Communication interface is closed already!");
             }
@@ -752,12 +752,12 @@ public class ModbusManagerImpl implements ModbusManager {
             long scheduleTime = System.currentTimeMillis();
             BasicPollTask task = new BasicPollTask(endpoint, request, resultCallback, failureCallback);
             logger.debug("Scheduling one-off poll task {}", task);
-            ScheduledFuture<?> future = executor.schedule(() -> {
+            Future<?> future = executor.submit(() -> {
                 long millisInThreadPoolWaiting = System.currentTimeMillis() - scheduleTime;
                 logger.debug("Will now execute one-off poll task {}, waited in thread pool for {}", task,
                         millisInThreadPoolWaiting);
                 executeOperation(task, true, pollOperation);
-            }, 0L, TimeUnit.MILLISECONDS);
+            });
             return future;
         }
 
