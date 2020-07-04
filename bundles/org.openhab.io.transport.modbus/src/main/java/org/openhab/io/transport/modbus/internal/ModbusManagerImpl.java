@@ -826,9 +826,9 @@ public class ModbusManagerImpl implements ModbusManager {
                     logger.warn("Caller tried to unregister nonexisting poll task {}", task);
                     return false;
                 }
-                logger.info("Unregistering regular poll task {} (interrupting if necessary)", task);
+                logger.debug("Unregistering regular poll task {} (interrupting if necessary)", task);
                 future.cancel(true);
-                logger.info("Poll task {} canceled", task);
+                logger.debug("Poll task {} canceled", task);
                 return true;
             }
         }
