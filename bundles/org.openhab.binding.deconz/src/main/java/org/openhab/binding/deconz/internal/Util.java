@@ -56,6 +56,6 @@ public class Util {
             return Integer.parseInt(text);
         } catch (NumberFormatException e) {
             return defaultValue;
-        }        
+        }
     }
 }

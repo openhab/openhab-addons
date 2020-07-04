@@ -174,8 +174,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof DecimalType) {
-                    int miredValue  = kelvinToMired(((DecimalType) command).intValue());
-                    newLightState.ct = constrainToRange(miredValue,ct_min, ct_max);
+                    int miredValue = kelvinToMired(((DecimalType) command).intValue());
+                    newLightState.ct = constrainToRange(miredValue, ct_min, ct_max);
 
                     if (currentOn != null && !currentOn) {
                         // sending new color temperature is only allowed when light is on

@@ -143,16 +143,16 @@
 	<!-- Virtual Zone Thing Type -->
 	<thing-type id="vzone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Virtual Zone</label>
 		<description>Alarm Decoder virtual zone</description>
 
 		<channels>
-			<channel id="command" typeId="contact-command-channel" />
-			<channel id="state" typeId="switch-channel" />
+			<channel id="command" typeId="contact-command-channel"/>
+			<channel id="state" typeId="switch-channel"/>
 		</channels>
 
 		<config-description>
@@ -325,7 +325,7 @@
 		<item-type>Switch</item-type>
 		<label>Switch State</label>
 		<category>Switch</category>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 
 	<!-- Number Channel Type -->

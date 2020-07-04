@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.camera;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.Objects;
 
 /**
  * {@link CameraAddress} handles the data to address a camera (VPN and local address).
@@ -43,6 +43,7 @@ public class CameraAddress {
 
     /**
      * Checks if the VPN URL was changed / isn't equal to the given VPN-URL.
+     * 
      * @param vpnURL old / known VPN URL
      * @return true, when the VPN URL isn't equal given VPN URL, otherwise false
      */
@@ -52,8 +53,10 @@ public class CameraAddress {
 
     @Override
     public boolean equals(@Nullable Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (this == object)
+            return true;
+        if (object == null || getClass() != object.getClass())
+            return false;
         CameraAddress that = (CameraAddress) object;
         return vpnURL.equals(that.vpnURL) && localURL.equals(that.localURL);
     }

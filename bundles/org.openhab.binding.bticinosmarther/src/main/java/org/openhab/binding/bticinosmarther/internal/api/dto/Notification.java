@@ -108,5 +108,4 @@ public class Notification {
         return String.format("id=%s, eventType=%s, subject=%s, eventTime=%s, data=[%s]", id, eventType, subject,
                 eventTime, data);
     }
-
 }

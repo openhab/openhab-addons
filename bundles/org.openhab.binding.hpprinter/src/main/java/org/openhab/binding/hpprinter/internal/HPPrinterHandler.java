@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hpprinter.internal;
 
+import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 
-import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
 /**
  * The {@link HPPrinterHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -83,12 +84,12 @@ public class HPPrinterHandler extends BaseThingHandler {
             binder = null;
         }
     }
-    
+
     protected Boolean areStatusChannelsLinked(final String[] channels) {
         for (int i = 0; i < channels.length; i++) {
-           if (isLinked(new ChannelUID(thing.getUID(), CGROUP_STATUS, channels[i]))) {
-               return true;
-           }
+            if (isLinked(new ChannelUID(thing.getUID(), CGROUP_STATUS, channels[i]))) {
+                return true;
+            }
         }
         return false;
     }
@@ -108,7 +109,7 @@ public class HPPrinterHandler extends BaseThingHandler {
     }
 
     protected void updateStatus(final ThingStatus status, final ThingStatusDetail thingStatusDetail,
-    @Nullable final String message) {
+            @Nullable final String message) {
         super.updateStatus(status, thingStatusDetail, message);
     }
 

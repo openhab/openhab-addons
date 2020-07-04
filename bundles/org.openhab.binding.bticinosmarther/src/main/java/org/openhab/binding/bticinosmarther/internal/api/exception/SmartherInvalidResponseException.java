@@ -33,5 +33,4 @@ public class SmartherInvalidResponseException extends SmartherGatewayException {
     public SmartherInvalidResponseException(String message) {
         super(message);
     }
-
 }

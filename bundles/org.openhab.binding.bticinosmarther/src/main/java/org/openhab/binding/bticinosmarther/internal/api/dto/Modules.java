@@ -52,5 +52,4 @@ public class Modules {
         }
         return modules.stream().map(a -> String.valueOf(a.getName())).collect(Collectors.joining(NAME_SEPARATOR));
     }
-
 }

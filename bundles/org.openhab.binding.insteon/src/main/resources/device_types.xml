@@ -585,14 +585,14 @@
 		<feature name="lastheardfrom">GenericLastTime</feature>
 	</device>
 
-    <device productKey="F00.00.24">
-        <model>2844-222</model>
-        <description>Motion Sensor II</description>
-        <feature name="contact">WirelessMotionSensorContact</feature>
-        <feature name="lightlevelabovethreshold">WirelessMotionSensorLightLevelAboveThreshold</feature>
-        <feature name="lowbattery">WirelessMotionSensorLowBattery</feature>
-        <feature name="data">MotionSensorData</feature>
-        <feature name="tamperswitch">WirelessMotionSensor2TamperSwitch</feature>
-        <feature name="lastheardfrom">GenericLastTime</feature>
-    </device>
+	<device productKey="F00.00.24">
+		<model>2844-222</model>
+		<description>Motion Sensor II</description>
+		<feature name="contact">WirelessMotionSensorContact</feature>
+		<feature name="lightlevelabovethreshold">WirelessMotionSensorLightLevelAboveThreshold</feature>
+		<feature name="lowbattery">WirelessMotionSensorLowBattery</feature>
+		<feature name="data">MotionSensorData</feature>
+		<feature name="tamperswitch">WirelessMotionSensor2TamperSwitch</feature>
+		<feature name="lastheardfrom">GenericLastTime</feature>
+	</device>
 </xml>

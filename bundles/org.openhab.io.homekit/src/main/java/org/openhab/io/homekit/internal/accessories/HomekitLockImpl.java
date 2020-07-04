@@ -53,11 +53,11 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
 
         final State state = getItem(HomekitCharacteristicType.LOCK_CURRENT_STATE, GenericItem.class).getState();
         if (state instanceof DecimalType) {
-            return CompletableFuture.completedFuture(LockCurrentStateEnum.fromCode(
-                state.as(DecimalType.class).intValue()));
+            return CompletableFuture
+                    .completedFuture(LockCurrentStateEnum.fromCode(state.as(DecimalType.class).intValue()));
         } else if (state instanceof OnOffType) {
             return CompletableFuture.completedFuture(
-                state == OnOffType.ON ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED);
+                    state == OnOffType.ON ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED);
         }
         return CompletableFuture.completedFuture(LockCurrentStateEnum.UNKNOWN);
     }

@@ -7,17 +7,17 @@
 	<!-- BTicino Smarther Module Thing -->
 	<thing-type id="module">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>BTicino Smarther Chronothermostat</label>
 		<description>This thing represents a BTicino Smarther chronothermostat module.</description>
 
 		<channel-groups>
-			<channel-group id="measures" typeId="module-measures" />
-			<channel-group id="status" typeId="module-status" />
-			<channel-group id="settings" typeId="module-settings" />
-			<channel-group id="config" typeId="module-config" />
+			<channel-group id="measures" typeId="module-measures"/>
+			<channel-group id="status" typeId="module-status"/>
+			<channel-group id="settings" typeId="module-settings"/>
+			<channel-group id="config" typeId="module-config"/>
 		</channel-groups>
 
 		<properties>
@@ -27,7 +27,7 @@
 
 		<representation-property>moduleId</representation-property>
 
-		<config-description-ref uri="thing-type:smarther:module" />
+		<config-description-ref uri="thing-type:smarther:module"/>
 	</thing-type>
 
 	<!-- Channel groups -->
@@ -35,8 +35,8 @@
 		<label>Measures</label>
 		<description>Measures taken from the module on-board sensors</description>
 		<channels>
-			<channel id="temperature" typeId="measures-temperature" />
-			<channel id="humidity" typeId="measures-humidity" />
+			<channel id="temperature" typeId="measures-temperature"/>
+			<channel id="humidity" typeId="measures-humidity"/>
 		</channels>
 	</channel-group-type>
 
@@ -44,13 +44,13 @@
 		<label>Status</label>
 		<description>Current operational status of the module</description>
 		<channels>
-			<channel id="state" typeId="status-state" />
-			<channel id="function" typeId="status-function" />
-			<channel id="mode" typeId="status-mode" />
-			<channel id="temperature" typeId="status-temperature" />
-			<channel id="program" typeId="status-program" />
-			<channel id="endTime" typeId="status-endtime" />
-			<channel id="temperatureFormat" typeId="status-temperatureformat" />
+			<channel id="state" typeId="status-state"/>
+			<channel id="function" typeId="status-function"/>
+			<channel id="mode" typeId="status-mode"/>
+			<channel id="temperature" typeId="status-temperature"/>
+			<channel id="program" typeId="status-program"/>
+			<channel id="endTime" typeId="status-endtime"/>
+			<channel id="temperatureFormat" typeId="status-temperatureformat"/>
 		</channels>
 	</channel-group-type>
 
@@ -58,14 +58,14 @@
 		<label>Settings</label>
 		<description>New operational settings to be applied to the module</description>
 		<channels>
-			<channel id="mode" typeId="settings-mode" />
-			<channel id="temperature" typeId="settings-temperature" />
-			<channel id="program" typeId="settings-program" />
-			<channel id="boostTime" typeId="settings-boosttime" />
-			<channel id="endDate" typeId="settings-enddate" />
-			<channel id="endHour" typeId="settings-endhour" />
-			<channel id="endMinute" typeId="settings-endminute" />
-			<channel id="power" typeId="settings-power" />
+			<channel id="mode" typeId="settings-mode"/>
+			<channel id="temperature" typeId="settings-temperature"/>
+			<channel id="program" typeId="settings-program"/>
+			<channel id="boostTime" typeId="settings-boosttime"/>
+			<channel id="endDate" typeId="settings-enddate"/>
+			<channel id="endHour" typeId="settings-endhour"/>
+			<channel id="endMinute" typeId="settings-endminute"/>
+			<channel id="power" typeId="settings-power"/>
 		</channels>
 	</channel-group-type>
 
@@ -73,7 +73,7 @@
 		<label>Configuration</label>
 		<description>Convenience configuration channels for the module</description>
 		<channels>
-			<channel id="fetchPrograms" typeId="config-fetchprograms" />
+			<channel id="fetchPrograms" typeId="config-fetchprograms"/>
 		</channels>
 	</channel-group-type>
 
@@ -83,7 +83,7 @@
 		<label>Temperature</label>
 		<description>Indoor temperature as measured by the sensor</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.1" />
+		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
 
 	<channel-type id="measures-humidity">
@@ -91,28 +91,28 @@
 		<label>Humidity</label>
 		<description>Indoor humidity as measured by the sensor</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%.1f %unit%" step="0.1" />
+		<state readOnly="true" min="0" max="100" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
 
 	<channel-type id="status-state">
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>Current operational state of the module</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="status-function" advanced="true">
 		<item-type>String</item-type>
 		<label>Function</label>
 		<description>Current operational function set on the module</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="status-mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Current operational mode set on the module</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="status-temperature">
@@ -120,28 +120,28 @@
 		<label>Temperature</label>
 		<description>Current operational target temperature set on the module</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.1" />
+		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
 	</channel-type>
 
 	<channel-type id="status-program">
 		<item-type>String</item-type>
 		<label>Program</label>
 		<description>Current operational program set on the module</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="status-endtime">
 		<item-type>String</item-type>
 		<label>End Time</label>
 		<description>Current operational end time set on the module</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="status-temperatureformat" advanced="true">
 		<item-type>String</item-type>
 		<label>Temperature Format</label>
 		<description>Current operational temperature format of the module</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="settings-mode">
@@ -164,7 +164,7 @@
 		<label>Temperature</label>
 		<description>New operational set-point temperature to be set on the module (valid only for Mode = "Manual")</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" min="7.1" max="104" step="0.1" />
+		<state pattern="%.1f %unit%" min="7.1" max="104" step="0.1"/>
 	</channel-type>
 
 	<channel-type id="settings-program">
@@ -196,14 +196,14 @@
 		<item-type>Number</item-type>
 		<label>End Hour</label>
 		<description>New operational end hour to be set on the module (valid only for Mode = "Manual")</description>
-		<state pattern="%02d" min="0" max="23" step="1" />
+		<state pattern="%02d" min="0" max="23" step="1"/>
 	</channel-type>
 
 	<channel-type id="settings-endminute">
 		<item-type>Number</item-type>
 		<label>End Minute</label>
 		<description>New operational end minute to be set on the module (valid only for Mode = "Manual")</description>
-		<state pattern="%02d" min="0" max="59" step="15" />
+		<state pattern="%02d" min="0" max="59" step="15"/>
 	</channel-type>
 
 	<channel-type id="settings-power">
@@ -215,7 +215,8 @@
 	<channel-type id="config-fetchprograms" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Fetch Programs List</label>
-		<description>This is a convenience switch to trigger a call to the Smarther API gateway, to manually fetch the updated module programs list.</description>
+		<description>This is a convenience switch to trigger a call to the Smarther API gateway, to manually fetch the updated
+			module programs list.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -12,19 +12,19 @@
  */
 package org.openhab.binding.enigma2.internal;
 
+import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.openhab.binding.enigma2.internal.Enigma2BindingConstants.THING_TYPE_DEVICE;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.junit.Test;
-
-import static org.eclipse.jdt.annotation.Checks.requireNonNull;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.openhab.binding.enigma2.internal.Enigma2BindingConstants.THING_TYPE_DEVICE;
 
 /**
  * The {@link Enigma2HandlerFactoryTest} class is responsible for testing {@link Enigma2HandlerFactory}.

@@ -13,8 +13,11 @@
 package org.openhab.binding.netatmo.internal.presence;
 
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE;
 
-import io.swagger.client.model.NAWelcomeCamera;
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
@@ -26,10 +29,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.netatmo.internal.camera.CameraHandler;
 
-import java.util.Optional;
-
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT;
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE;
+import io.swagger.client.model.NAWelcomeCamera;
 
 /**
  * {@link NAPresenceCameraHandler} is the class used to handle Presence camera data
@@ -75,8 +75,9 @@ public class NAPresenceCameraHandler extends CameraHandler {
             case CHANNEL_CAMERA_FLOODLIGHT:
                 return getFloodlightState();
             case CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE:
-                //The auto-mode state shouldn't be updated, because this isn't a dedicated information. When the
-                // floodlight is switched on the state within the Netatmo API is "on" and the information if the previous
+                // The auto-mode state shouldn't be updated, because this isn't a dedicated information. When the
+                // floodlight is switched on the state within the Netatmo API is "on" and the information if the
+                // previous
                 // state was "auto" instead of "off" is lost... Therefore the binding handles its own auto-mode state.
                 if (floodlightAutoModeState == UnDefType.UNDEF) {
                     floodlightAutoModeState = getFloodlightAutoModeState();
@@ -87,14 +88,12 @@ public class NAPresenceCameraHandler extends CameraHandler {
     }
 
     private State getFloodlightState() {
-        return getModule()
-                .map(m -> toOnOffType(m.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.ON))
+        return getModule().map(m -> toOnOffType(m.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.ON))
                 .orElse(UnDefType.UNDEF);
     }
 
     private State getFloodlightAutoModeState() {
-        return getModule()
-                .map(m -> toOnOffType(m.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.AUTO))
+        return getModule().map(m -> toOnOffType(m.getLightModeStatus() == NAWelcomeCamera.LightModeStatusEnum.AUTO))
                 .orElse(UnDefType.UNDEF);
     }
 
@@ -118,10 +117,7 @@ public class NAPresenceCameraHandler extends CameraHandler {
     private void changeFloodlightMode(NAWelcomeCamera.LightModeStatusEnum mode) {
         Optional<String> localCameraURL = getLocalCameraURL();
         if (localCameraURL.isPresent()) {
-            String url = localCameraURL.get()
-                    + FLOODLIGHT_SET_URL_PATH
-                    + "?config=%7B%22mode%22:%22"
-                    + mode.toString()
+            String url = localCameraURL.get() + FLOODLIGHT_SET_URL_PATH + "?config=%7B%22mode%22:%22" + mode.toString()
                     + "%22%7D";
             executeGETRequest(url);
 

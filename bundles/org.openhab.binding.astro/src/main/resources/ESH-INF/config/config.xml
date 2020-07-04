@@ -17,7 +17,7 @@
 			<default>300</default>
 		</parameter>
 	</config-description>
-	
+
 	<config-description uri="thing-type:astro:sunconfig">
 		<parameter name="geolocation" type="text" required="true">
 			<context>location</context>

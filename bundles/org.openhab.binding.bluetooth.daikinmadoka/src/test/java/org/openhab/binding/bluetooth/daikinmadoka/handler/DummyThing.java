@@ -142,5 +142,4 @@ public class DummyThing implements Thing {
     public boolean isEnabled() {
         return false;
     }
-
 }

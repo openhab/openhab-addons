@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import io.swagger.client.model.NAWelcomeEvent;
-import io.swagger.client.model.NAWelcomeHome;
-import io.swagger.client.model.NAWelcomeHomeData;
-import io.swagger.client.model.NAWelcomeSubEvent;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -32,11 +34,10 @@ import org.openhab.binding.netatmo.internal.NetatmoBindingConstants;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 
-import java.util.Arrays;
-import java.util.Collections;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import io.swagger.client.model.NAWelcomeEvent;
+import io.swagger.client.model.NAWelcomeHome;
+import io.swagger.client.model.NAWelcomeHomeData;
+import io.swagger.client.model.NAWelcomeSubEvent;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -75,12 +76,14 @@ public class NAWelcomeHomeHandlerTest {
 
         handler.updateReadings();
 
-        //the second (last) event is expected
-        assertEquals(new StringType("movement"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        // the second (last) event is expected
+        assertEquals(new StringType("movement"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
 
         home.setEvents(Arrays.asList(event_2, event_1));
-        //the second (last) event is still expected (independent from the order of these are added)
-        assertEquals(new StringType("movement"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        // the second (last) event is still expected (independent from the order of these are added)
+        assertEquals(new StringType("movement"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
     }
 
     @Test
@@ -98,7 +101,8 @@ public class NAWelcomeHomeHandlerTest {
 
         handler.updateReadings();
 
-        assertEquals(new StringType("person"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals(new StringType("person"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
     }
 
     @Test
@@ -150,7 +154,7 @@ public class NAWelcomeHomeHandlerTest {
         handler.updateReadings();
         handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
 
-        //No triggered event is expected, because the binding is just started (with existing events).
+        // No triggered event is expected, because the binding is just started (with existing events).
         assertEquals(0, handler.getTriggerChannelCount());
 
         home.setEvents(Arrays.asList(event_1, event_2));
@@ -158,27 +162,31 @@ public class NAWelcomeHomeHandlerTest {
         handler.updateReadings();
         handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
 
-        //1 triggered event is expected, because there is 1 new event since binding start (outdoor / detected human).
+        // 1 triggered event is expected, because there is 1 new event since binding start (outdoor / detected human).
         assertEquals(1, handler.getTriggerChannelCount());
-        assertEquals(new StringType("outdoor"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals(new StringType("outdoor"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
 
         home.setEvents(Arrays.asList(event_1, event_2));
 
         handler.updateReadings();
         handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
 
-        //No new triggered event is expected, because there are still the same events as before the refresh.
+        // No new triggered event is expected, because there are still the same events as before the refresh.
         assertEquals(1, handler.getTriggerChannelCount());
-        assertEquals(new StringType("outdoor"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals(new StringType("outdoor"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
 
         home.setEvents(Arrays.asList(event_1, event_2, event_3));
 
         handler.updateReadings();
         handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
 
-        //1 new triggered event is expected (2 in sum), because there is 1 new event since the last triggered event (movement after outdoor / detected human).
+        // 1 new triggered event is expected (2 in sum), because there is 1 new event since the last triggered event
+        // (movement after outdoor / detected human).
         assertEquals(2, handler.getTriggerChannelCount());
-        assertEquals(new StringType("movement"), handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals(new StringType("movement"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
     }
 
     private static NAWelcomeEvent createPresenceEvent(int eventTime, NAWelcomeSubEvent.TypeEnum detectedObjectType) {

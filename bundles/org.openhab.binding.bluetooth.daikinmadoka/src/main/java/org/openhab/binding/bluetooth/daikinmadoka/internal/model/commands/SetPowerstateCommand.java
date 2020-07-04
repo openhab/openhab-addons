@@ -66,5 +66,4 @@ public class SetPowerstateCommand extends BRC1HCommand {
     public OnOffType getPowerState() {
         return powerState;
     }
-
 }

@@ -124,5 +124,4 @@ public class BridgeStatus {
         return String.format("apiCallsHandled=%s, notifsReceived=%s, notifsRejected=%s", apiCallsHandled,
                 notificationsReceived, notificationsRejected);
     }
-
 }

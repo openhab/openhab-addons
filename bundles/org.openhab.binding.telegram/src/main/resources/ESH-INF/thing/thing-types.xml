@@ -25,7 +25,8 @@
 			</parameter>
 			<parameter name="chatIds" type="text" required="true" multiple="true">
 				<label>Chat Id(s)</label>
-				<description>One or more chat id(s). Access modifiers ("&lt;" for inbound only, "&gt;" for outbound only) can be used as prefix (optional).</description>
+				<description>One or more chat id(s). Access modifiers ("&lt;" for inbound only, "&gt;" for outbound only) can be
+					used as prefix (optional).</description>
 			</parameter>
 			<parameter name="parseMode" type="text" required="false">
 				<label>Parse Mode</label>
