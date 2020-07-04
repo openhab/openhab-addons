@@ -162,9 +162,7 @@ public class WebSocketConnection {
             sessionFuture.cancel(true);
         }
         try {
-            if (webSocketClient.isStarted()) {
-                webSocketClient.stop();
-            }
+            webSocketClient.stop();
         } catch (InterruptedException e) {
             // Just ignore
         } catch (Exception e) {
