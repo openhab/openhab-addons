@@ -56,8 +56,8 @@ Thing switch 418 "Kitchen light"
 Thing shutter 345 "Living Room North shutter"
 Thing shutter 346 "Living Room South shutter"
 }
-
 ```
+
 ### touchwand.items
 
 ```
@@ -65,6 +65,7 @@ Thing shutter 346 "Living Room South shutter"
 Rollershutter   Rollershutter_345      "Living Room North shutter"    {channel="touchwand:shutter:1921681116:345:shutter"}
 Rollershutter   Rollershutter_346      "Living Room South shutter"    {channel="touchwand:shutter:1921681116:346:shutter"}
 ```
+
 ```
 /* Switches and Dimmers */
 Switch  Switch_408      "Strairs light"                 {channel="touchwand:switch:1921681116:408:switch"}
