@@ -652,7 +652,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
     public synchronized void onReadResult(AsyncModbusReadResult result) {
         result.getRegisters().ifPresent(registers -> onRegisters(result.getRequest(), registers));
-        result.getBits().ifPresent(registers -> onBits(result.getRequest(), registers));
+        result.getBits().ifPresent(bits -> onBits(result.getRequest(), bits));
     }
 
     public synchronized void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
