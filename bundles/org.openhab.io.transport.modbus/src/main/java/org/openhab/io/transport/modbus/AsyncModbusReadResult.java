@@ -13,9 +13,9 @@
 package org.openhab.io.transport.modbus;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Encapsulates result of modbus read operations
@@ -27,24 +27,24 @@ public class AsyncModbusReadResult {
 
     private ModbusReadRequestBlueprint request;
 
-    @Nullable
-    private BitArray bits;
+    private final Optional<BitArray> bits;
 
-    @Nullable
-    private ModbusRegisterArray registers;
+    private final Optional<ModbusRegisterArray> registers;
 
     public AsyncModbusReadResult(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
         Objects.requireNonNull(request, "Request must not be null!");
         Objects.requireNonNull(registers, "Registers must not be null!");
         this.request = request;
-        this.registers = registers;
+        this.registers = Optional.of(registers);
+        this.bits = Optional.empty();
     }
 
     public AsyncModbusReadResult(ModbusReadRequestBlueprint request, BitArray bits) {
         Objects.requireNonNull(request, "Request must not be null!");
         Objects.requireNonNull(bits, "Bits must not be null!");
         this.request = request;
-        this.bits = bits;
+        this.registers = Optional.empty();
+        this.bits = Optional.of(bits);
     }
 
     /**
@@ -61,8 +61,7 @@ public class AsyncModbusReadResult {
      *
      * @return bit data
      */
-    @Nullable
-    public BitArray getBits() {
+    public Optional<BitArray> getBits() {
         return bits;
     }
 
@@ -71,8 +70,7 @@ public class AsyncModbusReadResult {
      *
      * @return register data
      */
-    @Nullable
-    public ModbusRegisterArray getRegisters() {
+    public Optional<ModbusRegisterArray> getRegisters() {
         return registers;
     }
 
@@ -81,13 +79,14 @@ public class AsyncModbusReadResult {
         StringBuilder builder = new StringBuilder("AsyncModbusReadResult(");
         builder.append("request = ");
         builder.append(request);
-        if (bits != null) {
+        bits.ifPresent(bits -> {
             builder.append(", bits = ");
             builder.append(bits);
-        } else if (registers != null) {
+        });
+        registers.ifPresent(registers -> {
             builder.append(", registers = ");
             builder.append(registers);
-        }
+        });
         builder.append(")");
         return builder.toString();
     }

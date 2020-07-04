@@ -651,15 +651,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     }
 
     public synchronized void onReadResult(AsyncModbusReadResult result) {
-        if (result.getRegisters() != null) {
-            ModbusRegisterArray registers = result.getRegisters();
-            assert registers != null;
-            onRegisters(result.getRequest(), registers);
-        } else {
-            BitArray bits = result.getBits();
-            assert bits != null;
-            onBits(result.getRequest(), bits);
-        }
+        result.getRegisters().ifPresent(registers -> onRegisters(result.getRequest(), registers));
+        result.getBits().ifPresent(registers -> onBits(result.getRequest(), registers));
     }
 
     public synchronized void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {

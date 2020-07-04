@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -160,10 +159,8 @@ public class SunspecDiscoveryProcess {
                 SUNSPEC_ID_SIZE, // number or words to return
                 maxTries);
 
-        comms.submitOneTimePoll(request, result -> {
-            ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
-            headerReceived(registers);
-        }, this::handleError);
+        comms.submitOneTimePoll(request, result -> result.getRegisters().ifPresent(this::headerReceived),
+                this::handleError);
     }
 
     /**
@@ -197,10 +194,8 @@ public class SunspecDiscoveryProcess {
                 MODEL_HEADER_SIZE, // number or words to return
                 maxTries);
 
-        comms.submitOneTimePoll(request, result -> {
-            ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
-            modelBlockReceived(registers);
-        }, this::handleError);
+        comms.submitOneTimePoll(request, result -> result.getRegisters().ifPresent(this::modelBlockReceived),
+                this::handleError);
     }
 
     /**
@@ -252,10 +247,8 @@ public class SunspecDiscoveryProcess {
                 block.length, // number or words to return
                 maxTries);
 
-        comms.submitOneTimePoll(request, result -> {
-            ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
-            parseCommonBlock(registers);
-        }, this::handleError);
+        comms.submitOneTimePoll(request, result -> result.getRegisters().ifPresent(this::parseCommonBlock),
+                this::handleError);
     }
 
     /**

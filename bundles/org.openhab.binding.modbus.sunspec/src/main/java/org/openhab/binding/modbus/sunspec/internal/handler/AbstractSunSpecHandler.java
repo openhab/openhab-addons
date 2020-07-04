@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import javax.measure.Unit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -335,8 +334,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         long refreshMillis = myconfig.getRefreshMillis();
         pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
-            ModbusRegisterArray registers = (@NonNull ModbusRegisterArray) result.getRegisters();
-            handlePolledData(registers);
+            result.getRegisters().ifPresent(this::handlePolledData);
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
