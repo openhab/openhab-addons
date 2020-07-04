@@ -883,6 +883,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         }
     }
 
+    // since lastState can be null, and "lastState == null" in conditional is not useless
+    @SuppressWarnings("null")
     private void updateExpiredChannel(long now, ChannelUID uid, State state) {
         @Nullable
         State lastState = channelLastState.get(uid);

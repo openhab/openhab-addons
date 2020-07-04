@@ -15,7 +15,6 @@ package org.openhab.io.transport.modbus.internal;
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
@@ -38,12 +37,11 @@ public class BasicWriteTask implements WriteTask {
 
     private ModbusSlaveEndpoint endpoint;
     private ModbusWriteRequestBlueprint request;
-    private @Nullable ModbusWriteCallback resultCallback;
-    private @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback;
+    private ModbusWriteCallback resultCallback;
+    private ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback;
 
     public BasicWriteTask(ModbusSlaveEndpoint endpoint, ModbusWriteRequestBlueprint request,
-            @Nullable ModbusWriteCallback resultCallback,
-            @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback) {
+            ModbusWriteCallback resultCallback, ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback) {
         super();
         this.endpoint = endpoint;
         this.request = request;
@@ -62,12 +60,12 @@ public class BasicWriteTask implements WriteTask {
     }
 
     @Override
-    public @Nullable ModbusWriteCallback getResultCallback() {
+    public ModbusWriteCallback getResultCallback() {
         return resultCallback;
     }
 
     @Override
-    public @Nullable ModbusFailureCallback<ModbusWriteRequestBlueprint> getFailureCallback() {
+    public ModbusFailureCallback<ModbusWriteRequestBlueprint> getFailureCallback() {
         return failureCallback;
     }
 

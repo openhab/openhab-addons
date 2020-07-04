@@ -211,10 +211,8 @@ public class ModbusManagerImpl implements ModbusManager {
             checkTransactionId(response, libRequest, operationId);
             checkFunctionCode(response, libRequest, operationId);
             checkResponseSize(response, request, operationId);
-            if (callback != null) {
-                timer.callback.timeRunnable(
-                        () -> ModbusLibraryWrapper.invokeCallbackWithResponse(request, callback, response));
-            }
+            timer.callback
+                    .timeRunnable(() -> ModbusLibraryWrapper.invokeCallbackWithResponse(request, callback, response));
         }
     }
 
@@ -250,10 +248,8 @@ public class ModbusManagerImpl implements ModbusManager {
                     response.getFunctionCode(), response.getTransactionID(), response.getHexMessage(), operationId);
             checkTransactionId(response, libRequest, operationId);
             checkFunctionCode(response, libRequest, operationId);
-            if (callback != null) {
-                timer.callback.timeRunnable(
-                        () -> invokeCallbackWithResponse(request, callback, new ModbusResponseImpl(response)));
-            }
+            timer.callback.timeRunnable(
+                    () -> invokeCallbackWithResponse(request, callback, new ModbusResponseImpl(response)));
         }
     }
 
@@ -478,10 +474,8 @@ public class ModbusManagerImpl implements ModbusManager {
         if (!connection.isPresent()) {
             logger.warn("Could not connect to endpoint {} -- aborting request {} [operation ID {}]", endpoint, request,
                     operationId);
-            if (failureCallback != null) {
-                timer.callback.timeRunnable(() -> invokeCallbackWithError(request, failureCallback,
-                        new ModbusConnectionException(endpoint)));
-            }
+            timer.callback.timeRunnable(
+                    () -> invokeCallbackWithError(request, failureCallback, new ModbusConnectionException(endpoint)));
         }
         return connection;
     }
@@ -532,7 +526,7 @@ public class ModbusManagerImpl implements ModbusManager {
      * @param operation
      */
     private <R, C extends ModbusResultCallback, F extends ModbusFailureCallback<R>, T extends TaskWithEndpoint<R, C, F>> void executeOperation(
-            @NonNull T task, boolean oneOffTask, ModbusOperation<T> operation) {
+            T task, boolean oneOffTask, ModbusOperation<T> operation) {
         AggregateStopWatch timer = new AggregateStopWatch();
         timer.total.resume();
         String operationId = timer.operationId;
@@ -547,10 +541,10 @@ public class ModbusManagerImpl implements ModbusManager {
         logTaskQueueInfo();
         R request = task.getRequest();
         ModbusSlaveEndpoint endpoint = task.getEndpoint();
-        @Nullable
         F failureCallback = task.getFailureCallback();
         int maxTries = task.getMaxTries();
         AtomicReference<@Nullable Exception> lastError = new AtomicReference<>();
+        @SuppressWarnings("null") // since cfg in lambda cannot be really null
         long retryDelay = Optional.ofNullable(connectionFactory.getEndpointPoolConfiguration(endpoint))
                 .map(cfg -> cfg.getInterTransactionDelayMillis()).orElse(0L);
 
@@ -709,11 +703,9 @@ public class ModbusManagerImpl implements ModbusManager {
             Exception exception = lastError.get();
             if (exception != null) {
                 // All retries failed with some error
-                if (failureCallback != null) {
-                    timer.callback.timeRunnable(() -> {
-                        invokeCallbackWithError(request, failureCallback, exception);
-                    });
-                }
+                timer.callback.timeRunnable(() -> {
+                    invokeCallbackWithError(request, failureCallback, exception);
+                });
             }
         } catch (PollTaskUnregistered e) {
             logger.warn("Poll task was unregistered -- not executing/proceeding with the poll: {} [operation ID {}]",

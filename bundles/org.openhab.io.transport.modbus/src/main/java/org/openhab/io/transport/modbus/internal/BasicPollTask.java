@@ -46,12 +46,10 @@ public class BasicPollTask implements PollTask {
     private ModbusSlaveEndpoint endpoint;
     private ModbusReadRequestBlueprint request;
     private ModbusReadCallback resultCallback;
-    @Nullable
     private ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback;
 
     public BasicPollTask(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request,
-            ModbusReadCallback resultCallback,
-            @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
+            ModbusReadCallback resultCallback, ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
         this.endpoint = endpoint;
         this.request = request;
         this.resultCallback = resultCallback;
@@ -69,12 +67,12 @@ public class BasicPollTask implements PollTask {
     }
 
     @Override
-    public @Nullable ModbusReadCallback getResultCallback() {
+    public ModbusReadCallback getResultCallback() {
         return resultCallback;
     }
 
     @Override
-    public @Nullable ModbusFailureCallback<ModbusReadRequestBlueprint> getFailureCallback() {
+    public ModbusFailureCallback<ModbusReadRequestBlueprint> getFailureCallback() {
         return failureCallback;
     }
 
