@@ -29,6 +29,7 @@ Required configuration:
 Optional configuration:
 
 - **refresh** - a refresh interval defines after how many minutes the binding will check, if new content is available. Default value is 20 minutes
+- **number-of-entries** - the number of entries to create channels for
 
 ## Channels
 
@@ -36,6 +37,9 @@ The binding supports following channels
 
 | Channel Type ID    | Item Type | Description                                         |
 |--------------------|-----------|-----------------------------------------------------|
+| Title#index        | String    | Contains the title of the feed entry at the given index.          |
+| Description#index  | String    | Contains the description of the feed entry at the given index.    |
+| Date#index         | DateTime  | Contains the published date of the feed entry at the given index. |
 | latest-title       | String    | Contains the title of the last feed entry.          |
 | latest-description | String    | Contains the description of last feed entry.        |
 | latest-date        | DateTime  | Contains the published date of the last feed entry. |
