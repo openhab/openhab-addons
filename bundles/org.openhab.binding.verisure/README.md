@@ -520,3 +520,42 @@ String MouseDetectionLocation           "Mouse Detection Location"      (gVerisu
     }
     
 ````
+
+### Rules
+
+````
+import org.eclipse.smarthome.core.types.RefreshType
+
+rule "Handle Refesh of Verisure"
+when
+    Item RefreshVerisure received command
+then
+    var String command = RefreshVerisure.state.toString.toLowerCase
+    logDebug("RULES","RefreshVerisure Rule command: " + command)
+    sendCommand(VerisureBridgeStatus, RefreshType.REFRESH)
+end
+
+rule "Verisure SmartLock Event Triggers"
+when
+    Channel "verisure:smartLock:f1191aab:2B558MTS:smartLockTriggerChannel" triggered
+then
+    logInfo("RULES", "A SmartLock trigger event was detected:" + receivedEvent.toString())
+end
+
+rule "Verisure Gateway Event Triggers"
+when
+    Channel "verisure:gateway:f1191aab:26FE9RS9:gatewayTriggerChannel" triggered
+then
+    logInfo("RULES", "A Gateway trigger event was detected:" + receivedEvent.toString())
+end
+
+rule "Verisure DoorWindow Event Triggers"
+when
+    Channel "verisure:doorWindowSensor:f1191aab:2BEG5FJF:doorWindowTriggerChannel" triggered
+then
+    logInfo("RULES", "A DoorWindow trigger event was detected:" + receivedEvent.toString())
+end
+
+
+````
+
