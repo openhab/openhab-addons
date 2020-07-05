@@ -40,6 +40,7 @@ public class SeneyeService {
     private int retry;
     private SeneyeConfigurationParameters config;
     private String seneyeId;
+    public int seneyeType;
     private boolean isInitialized;
     private final Gson gson;
     private HttpClient httpClient = new HttpClient(new SslContextFactory());
@@ -96,7 +97,6 @@ public class SeneyeService {
 
                 SeneyeDeviceReading readings = gson.fromJson(responseReadings, SeneyeDeviceReading.class);
                 readings.status = gson.fromJson(responseState, SeneyeStatus.class);
-
                 logger.debug("seneye '{}' read", this.seneyeId);
 
                 return readings;
@@ -118,6 +118,7 @@ public class SeneyeService {
         for (Seneye seneye : seneyeDevices) {
             if (seneye.description.equals(config.aquarium_name)) {
                 seneyeId = Integer.toString(seneye.id);
+                seneyeType = (seneye.type);
                 isInitialized = true;
                 return;
             }

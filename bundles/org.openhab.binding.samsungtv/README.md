@@ -21,8 +21,10 @@ Tested TV models:
 | LE40D579    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
 | LE40C650    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
 | UE55LS003   | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
+| UE50MU6179  | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode`, `channel`, `sourceApp`, `url` |
 | UE43MU6199  | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                |
 | UE46F6510SS  | PARTIAL | Supported channels: `volume`, `mute`, `channel` (at least)                                                                |
+| UE58RU7179UXZG | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode` (at least) |
 
 ## Discovery
 
@@ -86,3 +88,19 @@ String  TV_KeyCode       "Key Code"                            (gLivingRoomTV)  
 Switch  TV_Power         "Power"                               (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:power" }
 Switch  TV_ArtMode       "Art Mode"                            (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artMode" }
 ```
+
+### Apps
+
+List of known apps and the respective name that can be passed on to the `sourceApp` channel.
+Values are confirmed to work on UE50MU6179.
+
+| App           | Value in sourceApp | Description                       |
+|---------------|--------------------|-----------------------------------|
+| ARD Mediathek | `ARD Mediathek`    | German public TV broadcasting app |
+| Browser       | `Internet`         | Built-in WWW browser              |
+| Netflix       | `Netflix`          | Netflix App                       |
+| Prime Video   | `Prime Video`      | Prime Video App                   |
+| YouTube       | `YouTube`          | Prime Video App                   |
+| ZDF Mediathek | `ZDF mediathek`    | German public TV broadcasting app |
+
+As part of discovery, log file `/var/log/openhab2/openhab.log` will contain a debug line with installed apps.

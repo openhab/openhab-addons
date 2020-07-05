@@ -16,6 +16,7 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.*;
 import static org.openhab.binding.astro.internal.model.SunPhaseName.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Sun;
@@ -27,6 +28,7 @@ import org.openhab.binding.astro.internal.model.SunEclipse;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Implementation to be compliant with ESH Scheduler
  */
+@NonNullByDefault
 public final class DailyJobSun extends AbstractJob {
 
     private final AstroThingHandler handler;
@@ -41,7 +43,6 @@ public final class DailyJobSun extends AbstractJob {
      */
     public DailyJobSun(String thingUID, AstroThingHandler handler) {
         super(thingUID);
-        checkArgument(handler != null, "The handler must not be null");
         this.handler = handler;
     }
 

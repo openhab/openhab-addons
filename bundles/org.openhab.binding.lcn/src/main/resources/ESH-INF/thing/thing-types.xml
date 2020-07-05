@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lcn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="pckGateway">
+		<label>LCN-PCHK Gateway</label>
+		<description>An LCN gateway speaking the PCK language. E.g. LCN-PCHK software or the DIN rail device LCN-PKE.</description>
+
+		<config-description-ref uri="thing-type:lcn:pckGateway"/>
+	</bridge-type>
+
+	<thing-type id="module">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pckGateway"/>
+		</supported-bridge-type-refs>
+
+		<label>LCN Module</label>
+		<description>An LCN bus module, e.g. LCN-UPP, LCN-SH, LCN-HU</description>
+
+		<channel-groups>
+			<channel-group typeId="outputs" id="output"/>
+			<channel-group typeId="rollershutteroutputs" id="rollershutteroutput"/>
+			<channel-group typeId="leds" id="led"/>
+			<channel-group typeId="relays" id="relay"/>
+			<channel-group typeId="rollershutterrelays" id="rollershutterrelay"/>
+			<channel-group typeId="logics" id="logic"/>
+			<channel-group typeId="binarysensors" id="binarysensor"/>
+			<channel-group typeId="variables" id="variable"/>
+			<channel-group typeId="rvarsetpoints" id="rvarsetpoint"/>
+			<channel-group typeId="rvarlocks" id="rvarlock"/>
+			<channel-group typeId="thresholdregisters1" id="thresholdregister1"/>
+			<channel-group typeId="thresholdregisters2" id="thresholdregister2"/>
+			<channel-group typeId="thresholdregisters3" id="thresholdregister3"/>
+			<channel-group typeId="thresholdregisters4" id="thresholdregister4"/>
+			<channel-group typeId="s0inputs" id="s0input"/>
+			<channel-group typeId="keyslocktablea" id="keylocktablea"/>
+			<channel-group typeId="keyslocktableb" id="keylocktableb"/>
+			<channel-group typeId="keyslocktablec" id="keylocktablec"/>
+			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
+			<channel-group typeId="codes" id="code"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:lcn:module"/>
+	</thing-type>
+
+	<thing-type id="group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="pckGateway"/>
+		</supported-bridge-type-refs>
+
+		<label>LCN Group</label>
+		<description>An LCN group with multiple modules, configured in LCN-PRO</description>
+
+		<channel-groups>
+			<channel-group typeId="outputs" id="output"/>
+			<channel-group typeId="rollershutteroutputs" id="rollershutteroutput"/>
+			<channel-group typeId="leds" id="led"/>
+			<channel-group typeId="relays" id="relay"/>
+			<channel-group typeId="rollershutterrelays" id="rollershutterrelay"/>
+			<channel-group typeId="logics" id="logic"/>
+			<channel-group typeId="binarysensors" id="binarysensor"/>
+			<channel-group typeId="variables" id="variable"/>
+			<channel-group typeId="rvarsetpoints" id="rvarsetpoint"/>
+			<channel-group typeId="rvarlocks" id="rvarlock"/>
+			<channel-group typeId="thresholdregisters1" id="thresholdregister1"/>
+			<channel-group typeId="thresholdregisters2" id="thresholdregister2"/>
+			<channel-group typeId="thresholdregisters3" id="thresholdregister3"/>
+			<channel-group typeId="thresholdregisters4" id="thresholdregister4"/>
+			<channel-group typeId="s0inputs" id="s0input"/>
+			<channel-group typeId="keyslocktablea" id="keylocktablea"/>
+			<channel-group typeId="keyslocktableb" id="keylocktableb"/>
+			<channel-group typeId="keyslocktablec" id="keylocktablec"/>
+			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
+			<channel-group typeId="codes" id="code"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:lcn:group"/>
+	</thing-type>
+
+	<channel-type id="output" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Output</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="color" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-group-type id="outputs">
+		<label>Dimmer Outputs</label>
+		<channels>
+			<channel typeId="output" id="1">
+				<label>Output 1</label>
+			</channel>
+			<channel typeId="output" id="2">
+				<label>Output 2</label>
+			</channel>
+			<channel typeId="output" id="3">
+				<label>Output 3</label>
+			</channel>
+			<channel typeId="output" id="4">
+				<label>Output 4</label>
+			</channel>
+			<channel typeId="color" id="color">
+				<label>RGB Color Control (Outputs 1-3)</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="relay" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Relay</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-group-type id="relays">
+		<label>Relays</label>
+		<channels>
+			<channel typeId="relay" id="1">
+				<label>Relay 1</label>
+			</channel>
+			<channel typeId="relay" id="2">
+				<label>Relay 2</label>
+			</channel>
+			<channel typeId="relay" id="3">
+				<label>Relay 3</label>
+			</channel>
+			<channel typeId="relay" id="4">
+				<label>Relay 4</label>
+			</channel>
+			<channel typeId="relay" id="5">
+				<label>Relay 5</label>
+			</channel>
+			<channel typeId="relay" id="6">
+				<label>Relay 6</label>
+			</channel>
+			<channel typeId="relay" id="7">
+				<label>Relay 7</label>
+			</channel>
+			<channel typeId="relay" id="8">
+				<label>Relay 8</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="rollershutter" advanced="true">
+		<item-type>Rollershutter</item-type>
+		<label>Roller Shutter</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="invertUpDown" type="boolean">
+				<label>Invert Up/Down</label>
+				<description>According LCN spec., the Up wire is connected to the "normally open" contact/Output 1. Use this
+					parameter to invert that logic.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-group-type id="rollershutterrelays">
+		<label>Roller Shutter on Relays</label>
+		<channels>
+			<channel typeId="rollershutter" id="1">
+				<label>Shutter 1-2</label>
+			</channel>
+			<channel typeId="rollershutter" id="2">
+				<label>Shutter 3-4</label>
+			</channel>
+			<channel typeId="rollershutter" id="3">
+				<label>Shutter 5-6</label>
+			</channel>
+			<channel typeId="rollershutter" id="4">
+				<label>Shutter 7-8</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rollershutteroutputs">
+		<label>Roller Shutter on Dimmer Outputs</label>
+		<channels>
+			<channel typeId="rollershutter" id="1">
+				<label>Shutter 1-2</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="led" advanced="true">
+		<item-type>String</item-type>
+		<label>LED</label>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
+				<option value="BLINK">Blink</option>
+				<option value="FLICKER">Flicker</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-group-type id="leds">
+		<label>LEDs</label>
+		<channels>
+			<channel typeId="led" id="1">
+				<label>LED 1</label>
+			</channel>
+			<channel typeId="led" id="2">
+				<label>LED 2</label>
+			</channel>
+			<channel typeId="led" id="3">
+				<label>LED 3</label>
+			</channel>
+			<channel typeId="led" id="4">
+				<label>LED 4</label>
+			</channel>
+			<channel typeId="led" id="5">
+				<label>LED 5</label>
+			</channel>
+			<channel typeId="led" id="6">
+				<label>LED 6</label>
+			</channel>
+			<channel typeId="led" id="7">
+				<label>LED 7</label>
+			</channel>
+			<channel typeId="led" id="8">
+				<label>LED 8</label>
+			</channel>
+			<channel typeId="led" id="9">
+				<label>LED 9</label>
+			</channel>
+			<channel typeId="led" id="10">
+				<label>LED 10</label>
+			</channel>
+			<channel typeId="led" id="11">
+				<label>LED 11</label>
+			</channel>
+			<channel typeId="led" id="12">
+				<label>LED 12</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="logic" advanced="true">
+		<item-type>String</item-type>
+		<label>Logic Operation</label>
+		<state readOnly="true">
+			<options>
+				<option value="NOT">Not (not fulfilled)</option>
+				<option value="OR">Or (partly fulfilled)</option>
+				<option value="AND">And (fulfilled)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-group-type id="logics">
+		<label>Logic Operations</label>
+		<channels>
+			<channel typeId="logic" id="1">
+				<label>Logic Operation 1</label>
+			</channel>
+			<channel typeId="logic" id="2">
+				<label>Logic Operation 2</label>
+			</channel>
+			<channel typeId="logic" id="3">
+				<label>Logic Operation 3</label>
+			</channel>
+			<channel typeId="logic" id="4">
+				<label>Logic Operation 4</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="binarysensor" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Binary Sensor</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-group-type id="binarysensors">
+		<label>Binary Sensors</label>
+		<channels>
+			<channel typeId="binarysensor" id="1">
+				<label>Binary Sensor 1</label>
+			</channel>
+			<channel typeId="binarysensor" id="2">
+				<label>Binary Sensor 2</label>
+			</channel>
+			<channel typeId="binarysensor" id="3">
+				<label>Binary Sensor 3</label>
+			</channel>
+			<channel typeId="binarysensor" id="4">
+				<label>Binary Sensor 4</label>
+			</channel>
+			<channel typeId="binarysensor" id="5">
+				<label>Binary Sensor 5</label>
+			</channel>
+			<channel typeId="binarysensor" id="6">
+				<label>Binary Sensor 6</label>
+			</channel>
+			<channel typeId="binarysensor" id="7">
+				<label>Binary Sensor 7</label>
+			</channel>
+			<channel typeId="binarysensor" id="8">
+				<label>Binary Sensor 8</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="variable" advanced="true">
+		<item-type>Number</item-type>
+		<label>Variable</label>
+		<config-description-ref uri="channel-type:lcn:variable"/>
+	</channel-type>
+
+	<channel-group-type id="variables">
+		<label>Variables</label>
+		<channels>
+			<channel typeId="variable" id="1">
+				<label>Variable 1 or TVar</label>
+			</channel>
+			<channel typeId="variable" id="2">
+				<label>Variable 2</label>
+			</channel>
+			<channel typeId="variable" id="3">
+				<label>Variable 3</label>
+			</channel>
+			<channel typeId="variable" id="4">
+				<label>Variable 4</label>
+			</channel>
+			<channel typeId="variable" id="5">
+				<label>Variable 5</label>
+			</channel>
+			<channel typeId="variable" id="6">
+				<label>Variable 6</label>
+			</channel>
+			<channel typeId="variable" id="7">
+				<label>Variable 7</label>
+			</channel>
+			<channel typeId="variable" id="8">
+				<label>Variable 8</label>
+			</channel>
+			<channel typeId="variable" id="9">
+				<label>Variable 9</label>
+			</channel>
+			<channel typeId="variable" id="10">
+				<label>Variable 10</label>
+			</channel>
+			<channel typeId="variable" id="11">
+				<label>Variable 11</label>
+			</channel>
+			<channel typeId="variable" id="12">
+				<label>Variable 12</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rvarsetpoints">
+		<label>RVar Setpoints</label>
+		<channels>
+			<channel typeId="variable" id="1">
+				<label>R1Var Setpoint</label>
+			</channel>
+			<channel typeId="variable" id="2">
+				<label>R2Var Setpoint</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="rvarlock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RVar Lock State</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-group-type id="rvarlocks">
+		<label>RVar Lock State</label>
+		<channels>
+			<channel typeId="rvarlock" id="1">
+				<label>R1Var Lock</label>
+			</channel>
+			<channel typeId="rvarlock" id="2">
+				<label>R2Var Lock</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="thresholdregisters1">
+		<label>Threshold Register 1</label>
+		<channels>
+			<channel typeId="variable" id="1">
+				<label>Threshold 1</label>
+			</channel>
+			<channel typeId="variable" id="2">
+				<label>Threshold 2</label>
+			</channel>
+			<channel typeId="variable" id="3">
+				<label>Threshold 3</label>
+			</channel>
+			<channel typeId="variable" id="4">
+				<label>Threshold 4</label>
+			</channel>
+			<channel typeId="variable" id="5">
+				<label>Threshold 5</label>
+				<description>Only before Feb. 2013</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="thresholdregisters2">
+		<label>Threshold Register 2</label>
+		<channels>
+			<channel typeId="variable" id="1">
+				<label>Threshold 1</label>
+			</channel>
+			<channel typeId="variable" id="2">
+				<label>Threshold 2</label>
+			</channel>
+			<channel typeId="variable" id="3">
+				<label>Threshold 3</label>
+			</channel>
+			<channel typeId="variable" id="4">
+				<label>Threshold 4</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="thresholdregisters3">
+		<label>Threshold Register 3</label>
+		<channels>
+			<channel typeId="variable" id="1">
+				<label>Threshold 1</label>
+			</channel>
+			<channel typeId="variable" id="2">
+				<label>Threshold 2</label>
+			</channel>
+			<channel typeId="variable" id="3">
+				<label>Threshold 3</label>
+			</channel>
+			<channel typeId="variable" id="4">
+				<label>Threshold 4</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="thresholdregisters4">
+		<label>Threshold Register 4</label>
+		<channels>
+			<channel typeId="variable" id="1">
+				<label>Threshold 1</label>
+			</channel>
+			<channel typeId="variable" id="2">
+				<label>Threshold 2</label>
+			</channel>
+			<channel typeId="variable" id="3">
+				<label>Threshold 3</label>
+			</channel>
+			<channel typeId="variable" id="4">
+				<label>Threshold 4</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="s0inputs">
+		<label>S0 Counters</label>
+		<channels>
+			<channel typeId="variable" id="1">
+				<label>S0 Counter 1</label>
+			</channel>
+			<channel typeId="variable" id="2">
+				<label>S0 Counter 2</label>
+			</channel>
+			<channel typeId="variable" id="3">
+				<label>S0 Counter 3</label>
+			</channel>
+			<channel typeId="variable" id="4">
+				<label>S0 Counter 4</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="keylock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Keys Lock State</label>
+	</channel-type>
+
+	<channel-group-type id="keyslocktablea">
+		<label>Keys Lock State of Table A</label>
+		<channels>
+			<channel typeId="keylock" id="1">
+				<label>Key 1</label>
+			</channel>
+			<channel typeId="keylock" id="2">
+				<label>Key 2</label>
+			</channel>
+			<channel typeId="keylock" id="3">
+				<label>Key 3</label>
+			</channel>
+			<channel typeId="keylock" id="4">
+				<label>Key 4</label>
+			</channel>
+			<channel typeId="keylock" id="5">
+				<label>Key 5</label>
+			</channel>
+			<channel typeId="keylock" id="6">
+				<label>Key 6</label>
+			</channel>
+			<channel typeId="keylock" id="7">
+				<label>Key 7</label>
+			</channel>
+			<channel typeId="keylock" id="8">
+				<label>Key 8</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="keyslocktableb">
+		<label>Keys Lock State of Table B</label>
+		<channels>
+			<channel typeId="keylock" id="1">
+				<label>Key 1</label>
+			</channel>
+			<channel typeId="keylock" id="2">
+				<label>Key 2</label>
+			</channel>
+			<channel typeId="keylock" id="3">
+				<label>Key 3</label>
+			</channel>
+			<channel typeId="keylock" id="4">
+				<label>Key 4</label>
+			</channel>
+			<channel typeId="keylock" id="5">
+				<label>Key 5</label>
+			</channel>
+			<channel typeId="keylock" id="6">
+				<label>Key 6</label>
+			</channel>
+			<channel typeId="keylock" id="7">
+				<label>Key 7</label>
+			</channel>
+			<channel typeId="keylock" id="8">
+				<label>Key 8</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="keyslocktablec">
+		<label>Keys Lock State of Table C</label>
+		<channels>
+			<channel typeId="keylock" id="1">
+				<label>Key 1</label>
+			</channel>
+			<channel typeId="keylock" id="2">
+				<label>Key 2</label>
+			</channel>
+			<channel typeId="keylock" id="3">
+				<label>Key 3</label>
+			</channel>
+			<channel typeId="keylock" id="4">
+				<label>Key 4</label>
+			</channel>
+			<channel typeId="keylock" id="5">
+				<label>Key 5</label>
+			</channel>
+			<channel typeId="keylock" id="6">
+				<label>Key 6</label>
+			</channel>
+			<channel typeId="keylock" id="7">
+				<label>Key 7</label>
+			</channel>
+			<channel typeId="keylock" id="8">
+				<label>Key 8</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="keyslocktabled">
+		<label>Keys Lock State of Table D</label>
+		<channels>
+			<channel typeId="keylock" id="1">
+				<label>Key 1</label>
+			</channel>
+			<channel typeId="keylock" id="2">
+				<label>Key 2</label>
+			</channel>
+			<channel typeId="keylock" id="3">
+				<label>Key 3</label>
+			</channel>
+			<channel typeId="keylock" id="4">
+				<label>Key 4</label>
+			</channel>
+			<channel typeId="keylock" id="5">
+				<label>Key 5</label>
+			</channel>
+			<channel typeId="keylock" id="6">
+				<label>Key 6</label>
+			</channel>
+			<channel typeId="keylock" id="7">
+				<label>Key 7</label>
+			</channel>
+			<channel typeId="keylock" id="8">
+				<label>Key 8</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="codes">
+		<label>Transponder &amp; Remote Control</label>
+		<channels>
+			<channel typeId="transponders" id="transponder"/>
+			<channel typeId="remotecontrolkeys" id="remotecontrolkey"/>
+			<channel typeId="remotecontrolcodes" id="remotecontrolcode"/>
+			<channel typeId="remotecontrolsbatterylow" id="remotecontrolbatterylow"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="transponders" advanced="true">
+		<kind>trigger</kind>
+		<label>Transponder Codes</label>
+		<event/>
+	</channel-type>
+
+	<channel-type id="remotecontrolkeys" advanced="true">
+		<kind>trigger</kind>
+		<label>Remote Control Keys</label>
+		<event/>
+	</channel-type>
+
+	<channel-type id="remotecontrolcodes" advanced="true">
+		<kind>trigger</kind>
+		<label>Remote Control with Access Control Code</label>
+		<event/>
+	</channel-type>
+
+	<channel-type id="remotecontrolsbatterylow" advanced="true">
+		<kind>trigger</kind>
+		<label>Remote Control Low Battery</label>
+		<event/>
+	</channel-type>
+</thing:thing-descriptions>

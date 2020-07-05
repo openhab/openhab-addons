@@ -12,6 +12,7 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,6 +25,7 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.TemperatureSensorAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.thermostat.TargetTemperatureCharacteristic;
 import io.github.hapjava.services.impl.TemperatureSensorService;
 
 /**
@@ -52,23 +54,25 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
     }
 
     @Override
+    public double getMinCurrentTemperature() {
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+    }
+
+    @Override
+    public double getMaxCurrentTemperature() {
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+    }
+
+    @Override
+    public double getMinStepCurrentTemperature() {
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.STEP,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
+    }
+
+    @Override
     public void unsubscribeCurrentTemperature() {
         unsubscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE);
-    }
-
-    protected double convertToCelsius(double degrees) {
-        if (getSettings().useFahrenheitTemperature) {
-            return Math.round((5d / 9d) * (degrees - 32d) * 1000d) / 1000d;
-        } else {
-            return degrees;
-        }
-    }
-
-    protected double convertFromCelsius(double degrees) {
-        if (getSettings().useFahrenheitTemperature) {
-            return Math.round((((9d / 5d) * degrees) + 32d) * 10d) / 10d;
-        } else {
-            return degrees;
-        }
     }
 }

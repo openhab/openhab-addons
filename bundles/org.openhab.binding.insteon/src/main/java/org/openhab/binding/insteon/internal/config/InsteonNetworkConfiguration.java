@@ -28,8 +28,6 @@ public class InsteonNetworkConfiguration {
 
     private @Nullable Integer devicePollIntervalSeconds;
 
-    private @Nullable Integer modemDbRetryTimeoutSeconds;
-
     private @Nullable String additionalDevices;
 
     private @Nullable String additionalFeatures;
@@ -40,10 +38,6 @@ public class InsteonNetworkConfiguration {
 
     public @Nullable Integer getDevicePollIntervalSeconds() {
         return devicePollIntervalSeconds;
-    }
-
-    public @Nullable Integer getModemDbRetryTimeoutSeconds() {
-        return modemDbRetryTimeoutSeconds;
     }
 
     public @Nullable String getAdditionalDevices() {

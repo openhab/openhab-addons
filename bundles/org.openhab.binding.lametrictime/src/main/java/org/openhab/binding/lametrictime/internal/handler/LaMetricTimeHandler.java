@@ -73,21 +73,20 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private static final long CONNECTION_CHECK_INTERVAL = 60;
 
-    // TODO: Those constants are Jersey specific - once we move away from Jersey,
-    // this must be changed to https://stackoverflow.com/a/49736022 (assuming we have a JAX-RS 2.1 implementation).
-    public static final String READ_TIMEOUT = "jersey.config.client.readTimeout";
-    public static final String CONNECT_TIMEOUT = "jersey.config.client.connectTimeout";
-
     private final Logger logger = LoggerFactory.getLogger(LaMetricTimeHandler.class);
 
     private final StateDescriptionOptionsProvider stateDescriptionProvider;
+
+    private final ClientBuilder clientBuilder;
 
     private LaMetricTime clock;
 
     private ScheduledFuture<?> connectionJob;
 
-    public LaMetricTimeHandler(Bridge bridge, StateDescriptionOptionsProvider stateDescriptionProvider) {
+    public LaMetricTimeHandler(Bridge bridge, StateDescriptionOptionsProvider stateDescriptionProvider,
+            ClientBuilder clientBuilder) {
         super(bridge);
+        this.clientBuilder = clientBuilder;
         this.stateDescriptionProvider = stateDescriptionProvider;
 
         if (stateDescriptionProvider == null) {
@@ -103,8 +102,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         logger.debug("Creating LaMetric Time client");
         Configuration clockConfig = new Configuration().withDeviceHost(bindingConfig.host)
                 .withDeviceApiKey(bindingConfig.apiKey).withLogging(logger.isDebugEnabled());
-        ClientBuilder clientBuilder = ClientBuilder.newBuilder().property(CONNECT_TIMEOUT, 10000).property(READ_TIMEOUT,
-                10000);
         clock = LaMetricTime.create(clockConfig, clientBuilder);
 
         connectionJob = scheduler.scheduleWithFixedDelay(() -> {

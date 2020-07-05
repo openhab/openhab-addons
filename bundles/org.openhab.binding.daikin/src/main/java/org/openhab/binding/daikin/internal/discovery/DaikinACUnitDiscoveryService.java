@@ -26,9 +26,9 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -39,11 +39,7 @@ import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationForbiddenException;
 import org.openhab.binding.daikin.internal.DaikinHttpClientFactory;
 import org.openhab.binding.daikin.internal.DaikinWebTargets;
-import org.openhab.binding.daikin.internal.api.BasicInfo;
-import org.openhab.binding.daikin.internal.api.ControlInfo;
 import org.openhab.binding.daikin.internal.api.InfoParser;
-import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
-import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
 import org.openhab.binding.daikin.internal.config.DaikinConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -143,7 +139,8 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             Boolean secure = "1".equals(parsedData.get("en_secure"));
             String thingId = Optional.ofNullable(parsedData.get("ssid")).orElse(host.replace(".", "_"));
             String mac = Optional.ofNullable(parsedData.get("mac")).orElse("");
-            String uuid = mac.isEmpty() ? UUID.randomUUID().toString() : UUID.nameUUIDFromBytes(mac.getBytes()).toString();
+            String uuid = mac.isEmpty() ? UUID.randomUUID().toString()
+                    : UUID.nameUUIDFromBytes(mac.getBytes()).toString();
 
             DaikinWebTargets webTargets = new DaikinWebTargets(httpClient, host, secure, null);
             boolean found = false;
@@ -177,8 +174,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                 ThingUID thingUID = new ThingUID(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT, thingId);
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin Airbase AC Unit (" + host + ")")
-                        .withRepresentationProperty(DaikinConfiguration.HOST)
-                        .build();
+                        .withRepresentationProperty(DaikinConfiguration.HOST).build();
 
                 logger.debug("Successfully discovered host {}", host);
                 thingDiscovered(result);
@@ -188,7 +184,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
         } catch (Exception e) {
             return false;
         }
-        // Shouldn't get here unless we don't detect a controller. 
+        // Shouldn't get here unless we don't detect a controller.
         // Return true to continue with the next packet, which comes from another adapter
         return true;
     }

@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fmiweather"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Things -->
+	<thing-type id="observation">
+		<label>FMI Current Weather (Observation)</label>
+		<description>Finnish Meteorological Institute (FMI) weather observation</description>
+
+		<channel-groups>
+			<channel-group id="current" typeId="current-group"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="fmisid" type="integer" min="100000" required="true">
+				<label>FMISID of the Weather Station</label>
+				<description><![CDATA[Station ID (FMISID) of the weather observation station
+				<br />
+				<br />See https://en.ilmatieteenlaitos.fi/observation-stations for a list of observation stations. Select 'Weather' station for widest set of observations.]]></description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+	<thing-type id="forecast">
+		<label>FMI Weather Forecast</label>
+		<description>Finnish Meteorological Institute (FMI) weather forecast</description>
+
+		<channel-groups>
+			<channel-group id="forecastNow" typeId="group-forecast">
+				<label>Forecast for the Current Time</label>
+				<description>This is the weather forecast for the current time</description>
+			</channel-group>
+			<channel-group id="forecastHours01" typeId="group-forecast">
+				<label>1 Hours Forecast</label>
+				<description>This is the weather forecast in 1 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours02" typeId="group-forecast">
+				<label>2 Hours Forecast</label>
+				<description>This is the weather forecast in 2 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours03" typeId="group-forecast">
+				<label>3 Hours Forecast</label>
+				<description>This is the weather forecast in 3 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours04" typeId="group-forecast">
+				<label>4 Hours Forecast</label>
+				<description>This is the weather forecast in 4 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours05" typeId="group-forecast">
+				<label>5 Hours Forecast</label>
+				<description>This is the weather forecast in 5 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours06" typeId="group-forecast">
+				<label>6 Hours Forecast</label>
+				<description>This is the weather forecast in 6 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours07" typeId="group-forecast">
+				<label>7 Hours Forecast</label>
+				<description>This is the weather forecast in 7 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours08" typeId="group-forecast">
+				<label>8 Hours Forecast</label>
+				<description>This is the weather forecast in 8 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours09" typeId="group-forecast">
+				<label>9 Hours Forecast</label>
+				<description>This is the weather forecast in 9 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours10" typeId="group-forecast">
+				<label>10 Hours Forecast</label>
+				<description>This is the weather forecast in 10 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours11" typeId="group-forecast">
+				<label>11 Hours Forecast</label>
+				<description>This is the weather forecast in 11 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours12" typeId="group-forecast">
+				<label>12 Hours Forecast</label>
+				<description>This is the weather forecast in 12 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours13" typeId="group-forecast">
+				<label>13 Hours Forecast</label>
+				<description>This is the weather forecast in 13 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours14" typeId="group-forecast">
+				<label>14 Hours Forecast</label>
+				<description>This is the weather forecast in 14 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours15" typeId="group-forecast">
+				<label>15 Hours Forecast</label>
+				<description>This is the weather forecast in 15 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours16" typeId="group-forecast">
+				<label>16 Hours Forecast</label>
+				<description>This is the weather forecast in 16 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours17" typeId="group-forecast">
+				<label>17 Hours Forecast</label>
+				<description>This is the weather forecast in 17 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours18" typeId="group-forecast">
+				<label>18 Hours Forecast</label>
+				<description>This is the weather forecast in 18 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours19" typeId="group-forecast">
+				<label>19 Hours Forecast</label>
+				<description>This is the weather forecast in 19 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours20" typeId="group-forecast">
+				<label>20 Hours Forecast</label>
+				<description>This is the weather forecast in 20 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours21" typeId="group-forecast">
+				<label>21 Hours Forecast</label>
+				<description>This is the weather forecast in 21 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours22" typeId="group-forecast">
+				<label>22 Hours Forecast</label>
+				<description>This is the weather forecast in 22 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours23" typeId="group-forecast">
+				<label>23 Hours Forecast</label>
+				<description>This is the weather forecast in 23 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours24" typeId="group-forecast">
+				<label>24 Hours Forecast</label>
+				<description>This is the weather forecast in 24 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours25" typeId="group-forecast">
+				<label>25 Hours Forecast</label>
+				<description>This is the weather forecast in 25 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours26" typeId="group-forecast">
+				<label>26 Hours Forecast</label>
+				<description>This is the weather forecast in 26 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours27" typeId="group-forecast">
+				<label>27 Hours Forecast</label>
+				<description>This is the weather forecast in 27 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours28" typeId="group-forecast">
+				<label>28 Hours Forecast</label>
+				<description>This is the weather forecast in 28 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours29" typeId="group-forecast">
+				<label>29 Hours Forecast</label>
+				<description>This is the weather forecast in 29 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours30" typeId="group-forecast">
+				<label>30 Hours Forecast</label>
+				<description>This is the weather forecast in 30 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours31" typeId="group-forecast">
+				<label>31 Hours Forecast</label>
+				<description>This is the weather forecast in 31 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours32" typeId="group-forecast">
+				<label>32 Hours Forecast</label>
+				<description>This is the weather forecast in 32 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours33" typeId="group-forecast">
+				<label>33 Hours Forecast</label>
+				<description>This is the weather forecast in 33 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours34" typeId="group-forecast">
+				<label>34 Hours Forecast</label>
+				<description>This is the weather forecast in 34 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours35" typeId="group-forecast">
+				<label>35 Hours Forecast</label>
+				<description>This is the weather forecast in 35 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours36" typeId="group-forecast">
+				<label>36 Hours Forecast</label>
+				<description>This is the weather forecast in 36 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours37" typeId="group-forecast">
+				<label>37 Hours Forecast</label>
+				<description>This is the weather forecast in 37 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours38" typeId="group-forecast">
+				<label>38 Hours Forecast</label>
+				<description>This is the weather forecast in 38 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours39" typeId="group-forecast">
+				<label>39 Hours Forecast</label>
+				<description>This is the weather forecast in 39 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours40" typeId="group-forecast">
+				<label>40 Hours Forecast</label>
+				<description>This is the weather forecast in 40 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours41" typeId="group-forecast">
+				<label>41 Hours Forecast</label>
+				<description>This is the weather forecast in 41 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours42" typeId="group-forecast">
+				<label>42 Hours Forecast</label>
+				<description>This is the weather forecast in 42 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours43" typeId="group-forecast">
+				<label>43 Hours Forecast</label>
+				<description>This is the weather forecast in 43 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours44" typeId="group-forecast">
+				<label>44 Hours Forecast</label>
+				<description>This is the weather forecast in 44 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours45" typeId="group-forecast-advanced">
+				<label>45 Hours Forecast</label>
+				<description>This is the weather forecast in 45 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours46" typeId="group-forecast-advanced">
+				<label>46 Hours Forecast</label>
+				<description>This is the weather forecast in 46 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours47" typeId="group-forecast-advanced">
+				<label>47 Hours Forecast</label>
+				<description>This is the weather forecast in 47 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours48" typeId="group-forecast-advanced">
+				<label>48 Hours Forecast</label>
+				<description>This is the weather forecast in 48 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours49" typeId="group-forecast-advanced">
+				<label>49 Hours Forecast</label>
+				<description>This is the weather forecast in 49 hours.</description>
+			</channel-group>
+			<channel-group id="forecastHours50" typeId="group-forecast-advanced">
+				<label>50 Hours Forecast</label>
+				<description>This is the weather forecast in 50 hours.</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<label>Location</label>
+				<description>Location of weather in geographical coordinates (latitude,longitude).</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+
+	<!-- Groups -->
+	<channel-group-type id="current-group">
+		<label>Current Weather</label>
+		<description>This is the current weather.</description>
+		<channels>
+			<channel id="time" typeId="time-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+			<channel id="humidity" typeId="humidity-channel"/>
+			<channel id="wind-direction" typeId="wind-direction-channel"/>
+			<channel id="wind-speed" typeId="wind-speed-channel"/>
+			<channel id="wind-gust" typeId="wind-gust-channel"/>
+			<channel id="pressure" typeId="pressure-channel"/>
+			<channel id="precipitation" typeId="precipitation-channel"/>
+			<channel id="snow-depth" typeId="snow-depth-channel"/>
+			<channel id="visibility" typeId="visibility-channel"/>
+			<channel id="clouds" typeId="clouds-channel"/>
+			<channel id="present-weather" typeId="present-weather-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="group-forecast">
+		<label>Forecast</label>
+		<description>This is hourly weather forecast.</description>
+		<channels>
+			<channel id="time" typeId="forecast-time-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+			<channel id="humidity" typeId="humidity-channel"/>
+			<channel id="wind-direction" typeId="wind-direction-channel"/>
+			<channel id="wind-speed" typeId="wind-speed-channel"/>
+			<channel id="wind-gust" typeId="wind-gust-channel"/>
+			<channel id="pressure" typeId="pressure-channel"/>
+			<channel id="precipitation-intensity" typeId="precipitation-intensity-channel"/>
+			<channel id="total-cloud-cover" typeId="total-cloud-cover-channel"/>
+			<channel id="weather-id" typeId="weather-id-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="group-forecast-advanced" advanced="true">
+		<label>Forecast</label>
+		<description>This is hourly weather forecast.</description>
+		<channels>
+			<channel id="time" typeId="forecast-time-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+			<channel id="humidity" typeId="humidity-channel"/>
+			<channel id="wind-direction" typeId="wind-direction-channel"/>
+			<channel id="wind-speed" typeId="wind-speed-channel"/>
+			<channel id="wind-gust" typeId="wind-gust-channel"/>
+			<channel id="pressure" typeId="pressure-channel"/>
+			<channel id="precipitation-intensity" typeId="precipitation-intensity-channel"/>
+			<channel id="total-cloud-cover" typeId="total-cloud-cover-channel"/>
+			<channel id="weather-id" typeId="weather-id-channel"/>
+		</channels>
+	</channel-group-type>
+
+
+	<!-- Channel types -->
+	<!-- Some descriptions from https://en.ilmatieteenlaitos.fi/guidance-to-observations -->
+	<channel-type id="time-channel">
+		<item-type>DateTime</item-type>
+		<label>Observation Time</label>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="forecast-time-channel">
+		<item-type>DateTime</item-type>
+		<label>Forecast Time</label>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="humidity-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="wind-direction-channel">
+		<item-type>Number:Angle</item-type>
+		<label>Wind Direction</label>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="wind-speed-channel">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="wind-gust-channel">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Gust</label>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="pressure-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="precipitation-channel">
+		<item-type>Number:Length</item-type>
+		<label>Precipitation</label>
+		<description>Precipitation in one hour</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="snow-depth-channel">
+		<item-type>Number:Length</item-type>
+		<label>Snow depth</label>
+		<category>Snow</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="visibility-channel">
+		<item-type>Number:Length</item-type>
+		<label>Visibility</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="clouds-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Cloudiness</label>
+		<description>Given as percentage, 0% being clear skies, and 100% being overcast. UNDEF when cloud coverage could not
+			be determined.
+			Takes into account all cloud layers.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="present-weather-channel">
+		<item-type>Number</item-type>
+		<label>Prevailing Weather</label>
+		<description>Prevailing weather code (WaWa field) according to WMO code 4680. For Finnish explanation, consult
+			https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
+		<state readOnly="true" min="0" max="99" pattern="%s">
+			<options>
+				<!-- This corresponds to WaWa field in observations -->
+				<!-- WaWa refers to WMO code 4680 (google it) -->
+				<!-- See e.g. https://helda.helsinki.fi/bitstream/handle/10138/37284/PRO_GRADU_BOOK_HERMAN.pdf?sequence=2 -->
+				<option value="00">No significant weather observed</option>
+				<option value="01">Clouds generally dissolving or becoming less developed during the past hour</option>
+				<option value="02">State of sky on the whole unchanged during the past hour</option>
+				<option value="03">Clouds generally forming or developing during the past hour</option>
+				<option value="04">Haze or smoke, or dust in suspension in the air, visibility equal to, or greater than, 1 km</option>
+				<option value="05">Haze or smoke, or dust in suspension in the air, visibility less than 1 km</option>
+				<!-- 6-9: Reserved -->
+				<option value="10">Mist</option>
+				<option value="11">Diamond dust</option>
+				<option value="12">Distant lightning</option>
+				<!-- 13-17: Reserved -->
+				<option value="18">Squalls</option>
+				<option value="19">Reserved</option>
+				<!-- Code figures 20–26 are used to report precipitation, fog (or ice fog) or thunderstorm at the station during the
+					preceding hour but not at the time of observation -->
+				<option value="20">Fog</option>
+				<option value="21">Precipitation</option>
+				<option value="22">Drizzle (not freezing) or snow grains</option>
+				<option value="23">Rain (not freezing)</option>
+				<option value="24">Snow</option>
+				<option value="25">Freezing drizzle or freezing rain</option>
+				<option value="26">Thunderstorm (with or without precipitation)</option>
+				<option value="27">Blowing or drifting snow or sand</option>
+				<option value="28">Blowing or drifting snow or sand, visibility equal to, or greater than, 1 km</option>
+				<option value="29">Blowing or drifting snow or sand, visibility less than 1 km</option>
+				<option value="30">Fog</option>
+				<option value="31">Fog or ice fog in patches</option>
+				<option value="32">Fog or ice fog, has become thinner during the past hour</option>
+				<option value="33">Fog or ice fog, no appreciable change during the past hour</option>
+				<option value="34">Fog or ice fog, has begun or become thicker during the past hour</option>
+				<option value="35">Fog, depositing rime</option>
+				<!-- 36-39: Reserved -->
+				<option value="40">Precipitation</option>
+				<option value="41">Precipitation, slight or moderate</option>
+				<option value="42">Precipitation, heavy</option>
+				<option value="43">Liquid precipitation, slight or moderate</option>
+				<option value="44">Liquid precipitation, heavy</option>
+				<option value="45">Solid precipitation, slight or moderate</option>
+				<option value="46">Solid precipitation, heavy</option>
+				<option value="47">Freezing precipitation, slight or moderate</option>
+				<option value="48">Freezing precipitation, heavy</option>
+				<option value="49">Reserved</option>
+				<option value="50">Drizzle</option>
+				<option value="51">Drizzle, not freezing, slight</option>
+				<option value="52">Drizzle, not freezing, moderate</option>
+				<option value="53">Drizzle, not freezing, heavy</option>
+				<option value="54">Drizzle, freezing, slight</option>
+				<option value="55">Drizzle, freezing, moderate</option>
+				<option value="56">Drizzle, freezing, heavy</option>
+				<option value="57">Drizzle and rain, slight</option>
+				<option value="58">Drizzle and rain, moderate or heavy</option>
+				<option value="59">Reserved</option>
+				<option value="60">Rain</option>
+				<option value="61">Rain, not freezing, slight</option>
+				<option value="62">Rain, not freezing, moderate</option>
+				<option value="63">Rain, not freezing, heavy</option>
+				<option value="64">Rain, freezing, slight</option>
+				<option value="65">Rain, freezing, moderate</option>
+				<option value="66">Rain, freezing, heavy</option>
+				<option value="67">Rain (or drizzle) and snow, slight</option>
+				<option value="68">Rain (or drizzle) and snow, moderate or heavy</option>
+				<option value="69">Reserved</option>
+				<option value="70">Snow</option>
+				<option value="71">Snow, slight</option>
+				<option value="72">Snow, moderate</option>
+				<option value="73">Snow, heavy</option>
+				<option value="74">Ice pellets, slight</option>
+				<option value="75">Ice pellets, moderate</option>
+				<option value="76">Ice pellets, heavy</option>
+				<option value="77">Snow grains</option>
+				<option value="78">Ice crystals</option>
+				<option value="79">Reserved</option>
+				<option value="80">Shower(s) or intermittent precipitation</option>
+				<option value="81">Rain shower(s) or intermittent rain, slight</option>
+				<option value="82">Rain shower(s) or intermittent rain, moderate</option>
+				<option value="83">Rain shower(s) or intermittent rain, heavy</option>
+				<option value="84">Rain shower(s) or intermittent rain, violent</option>
+				<option value="85">Snow shower(s) or intermittent snow, slight</option>
+				<option value="86">Snow shower(s) or intermittent snow, moderate</option>
+				<option value="87">Snow shower(s) or intermittent snow, heavy</option>
+				<option value="88">Reserved</option>
+				<option value="89">Hail</option>
+				<option value="90">Thunderstorm</option>
+				<option value="91">Thunderstorm, slight or moderate, with no precipitation</option>
+				<option value="92">Thunderstorm, slight or moderate, with rain showers and/or snow showers</option>
+				<option value="93">Thunderstorm, slight or moderate, with hail</option>
+				<option value="94">Thunderstorm, heavy, with no precipitation</option>
+				<option value="95">Thunderstorm, heavy, with rain showers and/or snow showers</option>
+				<option value="96">Thunderstorm, heavy, with hail</option>
+				<!-- 97-98: Reserved -->
+				<option value="99">Tornado</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="total-cloud-cover-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Total Cloud Cover</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="precipitation-intensity-channel">
+		<item-type>Number:Speed</item-type>
+		<label>Precipitation Intensity</label>
+		<description>Equivalent to the precipitation amount if the same intensity prevails for an hour. </description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="weather-id-channel">
+		<item-type>Number</item-type>
+		<label>Prevailing Weather Id</label>
+		<description>Prevailing weather code (WeatherSymbol3 field). For Finnish explanation, consult
+			https://www.ilmatieteenlaitos.fi/latauspalvelun-pikaohje</description>
+		<state readOnly="true" min="1" max="177" pattern="%s">
+			<options>
+				<!-- This corresponds to WeatherSymbol3 -->
+				<!-- Finnish descriptions: https://ilmatieteenlaitos.fi/latauspalvelun-pikaohje -->
+				<option value="1">clear</option>
+				<option value="2">partly cloudy</option>
+				<option value="21">light showers</option>
+				<option value="22">moderate showers</option>
+				<option value="23">heavy showers</option>
+				<option value="3">cloudy</option>
+				<option value="31">light rain</option>
+				<option value="32">moderate rain</option>
+				<option value="33">heavy rain</option>
+				<option value="41">light snow showers</option>
+				<option value="42">moderate snow showers</option>
+				<option value="43">heavy snow showers</option>
+				<option value="51">light snowfall</option>
+				<option value="52">moderate snowfall</option>
+				<option value="53">heavy snowfall</option>
+				<option value="61">thundershowers</option>
+				<option value="62">heavy thundershowers</option>
+				<option value="63">thunder</option>
+				<option value="64">heavy thunder</option>
+				<option value="71">light sleet showers</option>
+				<option value="72">moderate sleet showers</option>
+				<option value="73">heavy sleet showers</option>
+				<option value="81">light sleet</option>
+				<option value="82">moderate sleet</option>
+				<option value="83">heavy sleet</option>
+				<option value="91">haze</option>
+				<option value="92">fog</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

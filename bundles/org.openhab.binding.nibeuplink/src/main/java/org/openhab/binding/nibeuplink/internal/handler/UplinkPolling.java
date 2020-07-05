@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.nibeuplink.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nibeuplink.internal.command.GenericStatusUpdate;
 import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class UplinkPolling implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

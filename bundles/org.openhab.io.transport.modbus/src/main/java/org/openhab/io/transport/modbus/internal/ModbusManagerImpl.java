@@ -768,7 +768,7 @@ public class ModbusManagerImpl implements ModbusManager {
                         started);
                 try {
                     executeOperation(task, false, pollOperation);
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
                     // We want to catch all unexpected exceptions since all unhandled exceptions make
                     // ScheduledExecutorService halt the polling. It is better to print out the exception, and try again
                     // (on next poll cycle)

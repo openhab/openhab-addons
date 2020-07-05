@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link HeaderCommand}
  * From Jean's(Jean_Henning from community) excel sheet:
@@ -26,6 +28,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public enum HeaderCommand {
     SERIAL((byte) 0x00),
     CONNECT_TO_IP_MODULE((byte) 0xF0),

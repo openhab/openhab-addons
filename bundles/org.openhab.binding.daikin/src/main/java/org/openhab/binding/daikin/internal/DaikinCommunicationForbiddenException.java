@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.daikin.internal;
 
-import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,6 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DaikinCommunicationForbiddenException extends DaikinCommunicationException {
+
+    private static final long serialVersionUID = 1L;
+
     public DaikinCommunicationForbiddenException(String message) {
         super(message);
     }

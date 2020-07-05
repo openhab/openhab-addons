@@ -118,7 +118,7 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
             serialPort.removeEventListener();
         }
 
-        super.cleanup();
+        super.cleanup(true);
 
         if (serialPort != null) {
             serialPort.close();

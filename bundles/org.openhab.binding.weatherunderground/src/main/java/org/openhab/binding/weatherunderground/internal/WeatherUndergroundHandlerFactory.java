@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -58,18 +59,21 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
             .of(BRIDGE_THING_TYPES_UIDS, WeatherUndergroundBindingConstants.SUPPORTED_THING_TYPES_UIDS)
             .flatMap(x -> x.stream()).collect(Collectors.toSet());
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private final LocaleProvider localeProvider;
     private final LocationProvider locationProvider;
     private final UnitProvider unitProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public WeatherUndergroundHandlerFactory(final @Reference LocaleProvider localeProvider,
-            final @Reference LocationProvider locationProvider, final @Reference UnitProvider unitProvider) {
+            final @Reference LocationProvider locationProvider, final @Reference UnitProvider unitProvider,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.localeProvider = localeProvider;
         this.locationProvider = locationProvider;
         this.unitProvider = unitProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class WeatherUndergroundHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_WEATHER)) {
-            return new WeatherUndergroundHandler(thing, localeProvider, unitProvider);
+            return new WeatherUndergroundHandler(thing, localeProvider, unitProvider, timeZoneProvider);
         }
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {

@@ -14,10 +14,11 @@ package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
-import javax.measure.Unit;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
 
 /**
  * The {@link NeoContactHandler} is the OpenHAB Handler for NeoContact devices
@@ -27,6 +28,7 @@ import org.eclipse.smarthome.core.thing.Thing;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
+@NonNullByDefault
 public class NeoContactHandler extends NeoBaseHandler {
 
     public NeoContactHandler(Thing thing) {
@@ -36,9 +38,12 @@ public class NeoContactHandler extends NeoBaseHandler {
     // =========== methods of NeoBaseHandler that are overridden ================
 
     @Override
-    protected void toOpenHabSendChannelValues(NeoHubInfoResponse.DeviceInfo deviceInfo, Unit<?> temperatureUnit) {
-        toOpenHabSendValueDebounced(CHAN_CONTACT_STATE, OnOffType.from(deviceInfo.isCoolInputOn()));
+    protected void toOpenHabSendChannelValues(AbstractRecord deviceRecord) {
+        boolean offline = deviceRecord.offline();
 
-        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, OnOffType.from(deviceInfo.isBatteryLow()));
+        toOpenHabSendValueDebounced(CHAN_CONTACT_STATE,
+                deviceRecord.isWindowOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED, offline);
+
+        toOpenHabSendValueDebounced(CHAN_BATTERY_LOW_ALARM, OnOffType.from(deviceRecord.isBatteryLow()), offline);
     }
 }

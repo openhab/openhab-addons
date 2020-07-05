@@ -9,13 +9,13 @@
 		<description>Energenie programmable power strip with LAN interface</description>
 
 		<channels>
-			<channel id="socket1" typeId="socket1" />
-			<channel id="socket2" typeId="socket2" />
-			<channel id="socket3" typeId="socket3" />
-			<channel id="socket4" typeId="socket4" />
+			<channel id="socket1" typeId="socket1"/>
+			<channel id="socket2" typeId="socket2"/>
+			<channel id="socket3" typeId="socket3"/>
+			<channel id="socket4" typeId="socket4"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:energenie:config" />
+		<config-description-ref uri="thing-type:energenie:config"/>
 
 	</thing-type>
 
@@ -24,13 +24,13 @@
 		<description>Energenie programmable power strip with LAN interface</description>
 
 		<channels>
-			<channel id="socket1" typeId="socket1" />
-			<channel id="socket2" typeId="socket2" />
-			<channel id="socket3" typeId="socket3" />
-			<channel id="socket4" typeId="socket4" />
+			<channel id="socket1" typeId="socket1"/>
+			<channel id="socket2" typeId="socket2"/>
+			<channel id="socket3" typeId="socket3"/>
+			<channel id="socket4" typeId="socket4"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:energenie:config" />
+		<config-description-ref uri="thing-type:energenie:config"/>
 
 	</thing-type>
 
@@ -39,13 +39,13 @@
 		<description>Energenie programmable power strip with LAN interface</description>
 
 		<channels>
-			<channel id="socket1" typeId="socket1" />
-			<channel id="socket2" typeId="socket2" />
-			<channel id="socket3" typeId="socket3" />
-			<channel id="socket4" typeId="socket4" />
+			<channel id="socket1" typeId="socket1"/>
+			<channel id="socket2" typeId="socket2"/>
+			<channel id="socket3" typeId="socket3"/>
+			<channel id="socket4" typeId="socket4"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:energenie:config" />
+		<config-description-ref uri="thing-type:energenie:config"/>
 
 	</thing-type>
 
@@ -54,13 +54,13 @@
 		<description>Energenie programmable power strip with WLAN interface</description>
 
 		<channels>
-			<channel id="socket1" typeId="socket1" />
-			<channel id="socket2" typeId="socket2" />
-			<channel id="socket3" typeId="socket3" />
-			<channel id="socket4" typeId="socket4" />
+			<channel id="socket1" typeId="socket1"/>
+			<channel id="socket2" typeId="socket2"/>
+			<channel id="socket3" typeId="socket3"/>
+			<channel id="socket4" typeId="socket4"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:energenie:config" />
+		<config-description-ref uri="thing-type:energenie:config"/>
 
 	</thing-type>
 
@@ -69,13 +69,13 @@
 		<description>Energenie energy meter with LAN interface</description>
 
 		<channels>
-			<channel id="voltage" typeId="voltage" />
-			<channel id="current" typeId="current" />
-			<channel id="power" typeId="power" />
-			<channel id="energy" typeId="energy" />
+			<channel id="voltage" typeId="voltage"/>
+			<channel id="current" typeId="current"/>
+			<channel id="power" typeId="power"/>
+			<channel id="energy" typeId="energy"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:energenie:config" />
+		<config-description-ref uri="thing-type:energenie:config"/>
 
 	</thing-type>
 
@@ -107,28 +107,28 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Channel representing the voltage</description>
-		<state pattern="%.0f %unit%" readOnly="true" />
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Channel representing the current</description>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Channel representing the power consumption</description>
-		<state pattern="%.0f %unit%" readOnly="true" />
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<description>Channel representing the energy consumption</description>
-		<state pattern="%.0f %unit%" readOnly="true" />
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

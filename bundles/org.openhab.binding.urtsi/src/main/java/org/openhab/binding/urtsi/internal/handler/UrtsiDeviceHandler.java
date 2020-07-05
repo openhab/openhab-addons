@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.TooManyListenersException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -205,11 +204,28 @@ public class UrtsiDeviceHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        IOUtils.closeQuietly(outputStream);
-        IOUtils.closeQuietly(inputStream);
         if (serialPort != null) {
             serialPort.removeEventListener();
+        }
+        if (outputStream != null) {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the output stream: {}", e.getMessage());
+            }
+        }
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
+        }
+        if (serialPort != null) {
             serialPort.close();
         }
+        outputStream = null;
+        inputStream = null;
+        serialPort = null;
     }
 }

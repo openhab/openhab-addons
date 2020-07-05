@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bticinosmarther"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- BTicino/Legrand Smarther API Bridge -->
+	<bridge-type id="bridge">
+		<label>BTicino Smarther Bridge</label>
+		<description>
+			<![CDATA[
+			This bridge represents the gateway to Smarther API in the context of one specific BTicino/Legrand developer account.<br/>
+			If you want to control your devices in the context of different accounts you have to register a bridge for each account.<br/>
+			<br/>
+			<b>How-To configure the bridge:</b><br/>
+			<ul>
+				<li>Sign up for a new developer account on <a href="https://developer.legrand.com/login" target="_blank">Works with Legrand website</a></li>
+				<li>Subscribe to "Starter Kit for Legrand APIs" from <a href="https://portal.developer.legrand.com/products/starter-kit" target="_blank">API &gt; Subscriptions</a> menu
+					<ul>
+						<li>This will generate your primary and secondary "Subscription Key"</li>
+					</ul>
+				</li>
+				<li>Register a new application from <a href="https://partners-mysettings.developer.legrand.com/Application/Index" target="_blank">User &gt; My Applications</a> menu
+					<ul>
+						<li>In "First Reply Url" field insert the public callback URL "https://&lt;your openHAB host&gt;:&lt;your openHAB port&gt;/smarther/connectsmarther"</li>
+						<li>Tick the checkbox near "comfort.read" and "comfort.write" scopes</li>
+					</ul>
+					You should receive an email from Legrand, usually within 1-2 days max, containing your application's "Client ID" and "Client Secret".
+				</li>
+			</ul>
+			<b>How-To authorize the bridge:</b><br/>
+			<ul>
+				<li>Create and configure a bridge Thing first, using above Subscription Key + Client ID + Client Secret, then</li>
+				<li>Open in your browser the public URL "https://&lt;your openHAB host&gt;:&lt;your openHAB port&gt;/smarther/connectsmarther", and</li>
+				<li>Follow the steps reported therein to authorize the bridge</li>
+			</ul>
+			]]>
+		</description>
+
+		<channel-groups>
+			<channel-group id="status" typeId="bridge-status" />
+			<channel-group id="config" typeId="bridge-config" />
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">BTicino</property>
+		</properties>
+
+		<representation-property>subscriptionKey</representation-property>
+
+		<config-description-ref uri="bridge-type:smarther:bridge" />
+	</bridge-type>
+
+	<!-- Channel groups -->
+	<channel-group-type id="bridge-status">
+		<label>Status</label>
+		<description>Current operational status of the bridge</description>
+		<channels>
+			<channel id="apiCallsHandled" typeId="status-apicallshandled" />
+			<channel id="notifsReceived" typeId="status-notifsreceived" />
+			<channel id="notifsRejected" typeId="status-notifsrejected" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="bridge-config">
+		<label>Configuration</label>
+		<description>Convenience configuration channels for the bridge</description>
+		<channels>
+			<channel id="fetchLocations" typeId="config-fetchlocations" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel types -->
+	<channel-type id="status-apicallshandled">
+		<item-type>Number</item-type>
+		<label>API Calls Handled</label>
+		<description>Total number of API calls handled by the bridge</description>
+		<state readOnly="true" min="0" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="status-notifsreceived">
+		<item-type>Number</item-type>
+		<label>Notifications Received</label>
+		<description>Total number of C2C notifications received by the bridge</description>
+		<state readOnly="true" min="0" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="status-notifsrejected">
+		<item-type>Number</item-type>
+		<label>Notifications Rejected</label>
+		<description>Total number of C2C notifications rejected by the bridge</description>
+		<state readOnly="true" min="0" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="config-fetchlocations" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Fetch Locations List</label>
+		<description>This is a convenience switch to trigger a call to the Smarther API gateway, to manually fetch the updated client locations list.</description>
+	</channel-type>
+
+</thing:thing-descriptions>

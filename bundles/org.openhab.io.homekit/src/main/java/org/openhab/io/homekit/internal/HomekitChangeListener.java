@@ -12,8 +12,6 @@
  */
 package org.openhab.io.homekit.internal;
 
-import static org.openhab.io.homekit.internal.HomekitCharacteristicType.EMPTY;
-
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Collection;
@@ -51,12 +49,14 @@ import io.github.hapjava.server.impl.HomekitRoot;
 public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
     private final static String REVISION_CONFIG = "revision";
+    private final static String ACCESSORY_COUNT = "accessory_count";
     private final ItemRegistry itemRegistry;
     private final HomekitAccessoryRegistry accessoryRegistry = new HomekitAccessoryRegistry();
     private final MetadataRegistry metadataRegistry;
     private final Storage<String> storage;
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private HomekitSettings settings;
+    private int lastAccessoryCount;
 
     private Set<String> pendingUpdates = new HashSet<>();
 
@@ -79,13 +79,12 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         this.settings = settings;
         this.metadataRegistry = metadataRegistry;
         storage = storageService.getStorage("homekit");
-        initialiseRevision();
-
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices", scheduler, Duration.ofMillis(1000),
                 Clock.systemUTC(), this::applyUpdates);
 
         itemRegistry.addRegistryChangeListener(this);
         itemRegistry.getItems().stream().forEach(this::createRootAccessories);
+        initialiseRevision();
         logger.info("Created {} HomeKit items.", accessoryRegistry.getAllAccessories().size());
     }
 
@@ -96,6 +95,12 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         } catch (java.lang.NumberFormatException e) {
             revision = 1;
             storage.put(REVISION_CONFIG, "" + revision);
+        }
+        try {
+            lastAccessoryCount = Integer.valueOf(storage.get(ACCESSORY_COUNT));
+        } catch (java.lang.NumberFormatException e) {
+            lastAccessoryCount = 0;
+            storage.put(ACCESSORY_COUNT, "" + accessoryRegistry.getAllAccessories().size());
         }
         accessoryRegistry.setConfigurationRevision(revision);
     }
@@ -143,6 +148,15 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         }
     }
 
+    public void makeNewConfigurationRevision() {
+        final int newRevision = accessoryRegistry.makeNewConfigurationRevision();
+        lastAccessoryCount = accessoryRegistry.getAllAccessories().size();
+        logger.trace("make new configuration revision. new revision number {}, number of accessories {}", newRevision,
+                lastAccessoryCount);
+        storage.put(REVISION_CONFIG, "" + newRevision);
+        storage.put(ACCESSORY_COUNT, "" + lastAccessoryCount);
+    }
+
     private synchronized void applyUpdates() {
         logger.trace("apply updates");
         Iterator<String> iter = pendingUpdates.iterator();
@@ -154,7 +168,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             getItemOptional(name).ifPresent(this::createRootAccessories);
         }
         if (!pendingUpdates.isEmpty()) {
-            storage.put(REVISION_CONFIG, "" + accessoryRegistry.makeNewConfigurationRevision());
+            makeNewConfigurationRevision();
             pendingUpdates.clear();
         }
     }
@@ -163,6 +177,10 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     public void updated(Item oldElement, Item element) {
         markDirty(oldElement);
         markDirty(element);
+    }
+
+    public int getLastAccessoryCount() {
+        return lastAccessoryCount;
     }
 
     public synchronized void clearAccessories() {
@@ -174,6 +192,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     public synchronized void unsetBridge() {
+        applyUpdatesDebouncer.stop();
         accessoryRegistry.unsetBridge();
     }
 
@@ -208,14 +227,13 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
                 .getAccessoryTypes(item, metadataRegistry);
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
-        logger.trace("Item {} has groups {}", item.getName(), groups);
-        if (!accessoryTypes.isEmpty() && groups.isEmpty()) { // it has homekit accessory type and is not part of bigger
-                                                             // homekit group item
+        if (!accessoryTypes.isEmpty() && groups.stream().noneMatch(g -> g.getBaseItem() != null)) {
+            // it has homekit accessory type and is not part of bigger homekit group item without baseItem, i.e. not
+            // Group:Switch
             logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
-            accessoryTypes.stream().filter(accessory -> accessory.getValue() == EMPTY) // no characteristic => root
-                                                                                       // accessory or group
-                    .forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(item, rootAccessory.getKey(),
-                            HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
+            final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
+            accessoryTypes.stream().forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
+                    rootAccessory.getKey(), HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
         }
     }
 

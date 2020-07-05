@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.dscalarm.internal.config.TCPServerBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,19 +63,18 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
 
         TCPServerBridgeConfiguration configuration = getConfigAs(TCPServerBridgeConfiguration.class);
 
-        ipAddress = configuration.ipAddress;
-
-        if (configuration.ipAddress != null) {
+        if (configuration.ipAddress == null || configuration.ipAddress.trim().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Set an IP address in the thing configuration.");
+        } else if (configuration.port == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Set a TCP port in the thing configuration.");
+        } else {
+            ipAddress = configuration.ipAddress.trim();
             tcpPort = configuration.port.intValue();
             connectionTimeout = configuration.connectionTimeout.intValue();
             pollPeriod = configuration.pollPeriod.intValue();
             protocol = configuration.protocol.intValue();
-
-            if (this.pollPeriod > 15) {
-                this.pollPeriod = 15;
-            } else if (this.pollPeriod < 1) {
-                this.pollPeriod = 1;
-            }
 
             if (this.protocol == 2) {
                 setProtocol(DSCAlarmProtocol.ENVISALINK_TPI);
@@ -82,23 +82,14 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
                 setProtocol(DSCAlarmProtocol.IT100_API);
             }
 
+            super.initialize();
+
             logger.debug("TCP Server Bridge Handler Initialized");
             logger.debug("   IP Address:         {},", ipAddress);
             logger.debug("   Port:               {},", tcpPort);
-            logger.debug("   Password:           {},", getPassword());
             logger.debug("   PollPeriod:         {},", pollPeriod);
             logger.debug("   Connection Timeout: {}.", connectionTimeout);
-
-            updateStatus(ThingStatus.OFFLINE);
-            startPolling();
         }
-    }
-
-    @Override
-    public void dispose() {
-        stopPolling();
-        closeConnection();
-        super.dispose();
     }
 
     @Override
@@ -134,11 +125,11 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
     }
 
     @Override
-    public void write(String writeString) {
+    public void write(String writeString, boolean doNotLog) {
         try {
             tcpOutput.write(writeString);
             tcpOutput.flush();
-            logger.debug("write(): Message Sent: {}", writeString);
+            logger.debug("write(): Message Sent: {}", doNotLog ? "***" : writeString);
         } catch (IOException ioException) {
             logger.error("write(): {}", ioException.getMessage());
             setConnected(false);
@@ -172,16 +163,9 @@ public class TCPServerBridgeHandler extends DSCAlarmBaseBridgeHandler {
             if (tcpSocket != null) {
                 tcpSocket.close();
                 tcpSocket = null;
-            }
-            if (tcpInput != null) {
-                tcpInput.close();
                 tcpInput = null;
-            }
-            if (tcpOutput != null) {
-                tcpOutput.close();
                 tcpOutput = null;
             }
-
             setConnected(false);
             logger.debug("closeConnection(): Closed TCP Connection!");
         } catch (IOException ioException) {

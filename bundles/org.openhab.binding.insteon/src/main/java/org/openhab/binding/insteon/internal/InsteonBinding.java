@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -122,13 +123,13 @@ public class InsteonBinding {
     private InsteonNetworkHandler handler;
 
     public InsteonBinding(InsteonNetworkHandler handler, @Nullable InsteonNetworkConfiguration config,
-            @Nullable SerialPortManager serialPortManager) {
+            @Nullable SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
         this.handler = handler;
 
         String port = config.getPort();
         logger.debug("port = '{}'", Utils.redactPassword(port));
 
-        driver = new Driver(port, portListener, serialPortManager);
+        driver = new Driver(port, portListener, serialPortManager, scheduler);
         driver.addMsgListener(portListener);
 
         Integer devicePollIntervalSeconds = config.getDevicePollIntervalSeconds();
@@ -136,12 +137,6 @@ public class InsteonBinding {
             devicePollIntervalMilliseconds = devicePollIntervalSeconds * 1000;
         }
         logger.debug("device poll interval set to {} seconds", devicePollIntervalMilliseconds / 1000);
-
-        Integer modemDbRetryTimeoutSeconds = config.getModemDbRetryTimeoutSeconds();
-        if (modemDbRetryTimeoutSeconds != null) {
-            logger.debug("setting modem db retry timeout to {} seconds", modemDbRetryTimeoutSeconds);
-            driver.setModemDBRetryTimeout(modemDbRetryTimeoutSeconds * 1000);
-        }
 
         String additionalDevices = config.getAdditionalDevices();
         if (additionalDevices != null) {
@@ -253,6 +248,7 @@ public class InsteonBinding {
         DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
         InsteonDevice dev = InsteonDevice.makeDevice(dt);
         dev.setAddress(addr);
+        dev.setProductKey(productKey);
         dev.setDriver(driver);
         if (!dev.hasValidPollingInterval()) {
             dev.setPollInterval(devicePollIntervalMilliseconds);
@@ -322,6 +318,11 @@ public class InsteonBinding {
         } finally {
             driver.unlockModemDBEntries();
         }
+    }
+
+    public boolean reconnect() {
+        driver.stop();
+        return startPolling();
     }
 
     /**
@@ -488,6 +489,11 @@ public class InsteonBinding {
             if (!missing.isEmpty()) {
                 handler.addMissingDevices(missing);
             }
+        }
+
+        @Override
+        public void disconnected() {
+            handler.bindingDisconnected();
         }
 
         private void handleInsteonMessage(Msg msg) {

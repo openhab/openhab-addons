@@ -12,26 +12,26 @@
  */
 package org.openhab.binding.astro.internal.config;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Thing configuration from Eclipse SmartHome.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class AstroThingConfig {
-    private String geolocation;
-    private Double altitude;
-    private Double latitude;
-    private Double longitude;
-    private Integer interval;
-    private String thingUid;
+    public @Nullable String geolocation;
+    public @Nullable Double altitude;
+    public @Nullable Double latitude;
+    public @Nullable Double longitude;
+    public boolean useMeteorologicalSeason;
+    public int interval = 300;
+    private @Nullable String thingUid;
 
     /**
      * Splits the geolocation into latitude and longitude.
@@ -48,54 +48,12 @@ public class AstroThingConfig {
         }
     }
 
-    private Double toDouble(String value) {
+    private @Nullable Double toDouble(String value) {
         try {
             return Double.parseDouble(StringUtils.trimToNull(value));
         } catch (NumberFormatException ex) {
             return null;
         }
-    }
-
-    /**
-     * Returns the geolocation.
-     */
-    public String getGeolocation() {
-        return geolocation;
-    }
-
-    /**
-     * Returns the latitude.
-     */
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * Returns the longitude.
-     */
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    /**
-     * Returns the longitude.
-     */
-    public Double getAltitude() {
-        return altitude;
-    }
-
-    /**
-     * Returns the interval.
-     */
-    public Integer getInterval() {
-        return interval;
-    }
-
-    /**
-     * Returns the thing uid as string.
-     */
-    public String getThingUid() {
-        return thingUid;
     }
 
     /**
@@ -107,15 +65,8 @@ public class AstroThingConfig {
 
     @Override
     public String toString() {
-        TimeZone tz = TimeZone.getDefault();
-        StringBuilder tzInfo = new StringBuilder();
-        tzInfo.append(tz.getID());
-        tzInfo.append(" (").append(tz.getDisplayName(false, TimeZone.SHORT)).append(" ")
-                .append(new SimpleDateFormat("Z").format(Calendar.getInstance().getTime()));
-        tzInfo.append(")");
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("thing", thingUid)
                 .append("geolocation", geolocation).append("altitude", altitude).append("interval", interval)
-                .append("systemTimezone", tzInfo.toString())
-                .append("daylightSavings", Calendar.getInstance().get(Calendar.DST_OFFSET) != 0).toString();
+                .append("useMeteorologicalSeason", useMeteorologicalSeason).toString();
     }
 }

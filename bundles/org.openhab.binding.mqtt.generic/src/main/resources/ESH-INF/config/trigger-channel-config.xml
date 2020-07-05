@@ -21,7 +21,7 @@
 			Applies transformations to an incoming MQTT topic value.
 			This can be used to map the events sent by the device to common values for all devices using,
 			e.g. the MAP transformation.
-			
+
 			You can chain transformations by separating them with the intersection character ∩.
 			]]></description>
 			<advanced>true</advanced>

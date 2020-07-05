@@ -171,5 +171,4 @@ public class WakeOnLanUtility {
         }
         return false;
     }
-
 }

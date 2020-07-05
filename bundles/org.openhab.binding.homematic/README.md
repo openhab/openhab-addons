@@ -299,7 +299,7 @@ Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:cc
 
 **Note:** don't forget to add the `HG-` type prefix for Homegear devices
 
-## Virtual device GATEWAY-EXTRAX
+## Virtual device GATEWAY-EXTRAS
 
 The GATEWAY-EXTRAS is a virtual device which contains a switch to reload all values from all devices and also a switch to put the gateway in the install mode to add new devices.
 If the gateway supports variables and scripts, you can handle them with this device too.

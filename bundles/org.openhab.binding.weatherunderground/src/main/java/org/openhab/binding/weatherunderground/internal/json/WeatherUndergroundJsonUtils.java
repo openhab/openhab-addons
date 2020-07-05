@@ -17,10 +17,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -42,11 +41,11 @@ public class WeatherUndergroundJsonUtils {
      * @return the ZonedDateTime object representing the date and time of the Epoch
      *         or null in case of conversion error
      */
-    public static ZonedDateTime convertToZonedDateTime(String value) {
+    public static ZonedDateTime convertToZonedDateTime(String value, ZoneId zoneId) {
         if (isValid(value)) {
             try {
                 Instant epochSeconds = Instant.ofEpochSecond(Long.valueOf(value));
-                return ZonedDateTime.ofInstant(epochSeconds, TimeZone.getDefault().toZoneId());
+                return ZonedDateTime.ofInstant(epochSeconds, zoneId);
             } catch (DateTimeException e) {
                 LoggerFactory.getLogger(WeatherUndergroundJsonUtils.class).debug("Cannot convert {} to ZonedDateTime",
                         value);
@@ -104,9 +103,9 @@ public class WeatherUndergroundJsonUtils {
      */
     public static URL getValidUrl(String url) {
         URL validUrl = null;
-        if (StringUtils.isNotBlank(url)) {
+        if (url != null && !url.trim().isEmpty()) {
             try {
-                validUrl = new URL(url);
+                validUrl = new URL(url.trim());
             } catch (MalformedURLException e) {
             }
         }

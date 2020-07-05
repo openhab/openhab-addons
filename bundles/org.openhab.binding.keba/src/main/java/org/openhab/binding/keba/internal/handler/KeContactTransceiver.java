@@ -398,7 +398,7 @@ class KeContactTransceiver {
                 } else {
                     return;
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | ClosedSelectorException e) {
                 Thread.currentThread().interrupt();
                 return;
             }

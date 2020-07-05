@@ -59,7 +59,8 @@ public class AirbaseControlInfo {
         info.mode = Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))
                 .map(value -> AirbaseMode.fromValue(value)).orElse(AirbaseMode.AUTO);
         info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
-        int f_rate = Optional.ofNullable(responseMap.get("f_rate")).flatMap(value -> InfoParser.parseInt(value)).orElse(1);
+        int f_rate = Optional.ofNullable(responseMap.get("f_rate")).flatMap(value -> InfoParser.parseInt(value))
+                .orElse(1);
         boolean f_auto = "1".equals(responseMap.getOrDefault("f_auto", "0"));
         boolean f_airside = "1".equals(responseMap.getOrDefault("f_airside", "0"));
         info.fanSpeed = AirbaseFanSpeed.fromValue(f_rate, f_auto, f_airside);

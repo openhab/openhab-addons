@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="deconz"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="windowcovering">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Window Covering</label>
+		<description>A device to cover windows.</description>
+		<channels>
+			<channel typeId="position" id="position"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
+	<thing-type id="onofflight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>On/Off Light</label>
+		<description>A light that can be turned on or off.</description>
+		<channels>
+			<channel typeId="onoff" id="switch"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
+	<thing-type id="dimmablelight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Dimmable Light</label>
+		<description>A dimmable light.</description>
+		<channels>
+			<channel typeId="brightness" id="brightness"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:light"/>
+	</thing-type>
+
+	<thing-type id="colortemperaturelight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Color-Temperature Light</label>
+		<description>A dimmable light with adjustable color temperature.</description>
+		<channels>
+			<channel typeId="brightness" id="brightness"/>
+			<channel typeId="ct" id="color_temperature"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:light"/>
+	</thing-type>
+
+	<thing-type id="colorlight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Color Light</label>
+		<description>A dimmable light with adjustable color.</description>
+		<channels>
+			<channel typeId="color" id="color"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:light"/>
+	</thing-type>
+
+	<thing-type id="extendedcolorlight">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Color Light</label>
+		<description>A dimmable light with adjustable color.</description>
+		<channels>
+			<channel typeId="color" id="color"/>
+			<channel typeId="ct" id="color_temperature"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:light"/>
+	</thing-type>
+
+	<channel-type id="position">
+		<item-type>Rollershutter</item-type>
+		<label>Position</label>
+		<state pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="onoff">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+	</channel-type>
+
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<state pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+	</channel-type>
+
+	<channel-type id="ct">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<state pattern="%d" min="15" max="100000" step="100"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>
