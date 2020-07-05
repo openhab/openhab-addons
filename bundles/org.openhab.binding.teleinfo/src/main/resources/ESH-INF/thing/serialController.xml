@@ -32,7 +32,7 @@
 
 	<channel-type id="invalidFrameCounterType">
 		<item-type>Number</item-type>
-		<label>Frames corrupted</label>
+		<label>Frames Corrupted</label>
 		<description>Counter tracking the number of frames invalid/corrupted (checksum)</description>
 		<category></category>
 		<state pattern="%d" readOnly="true"></state>
