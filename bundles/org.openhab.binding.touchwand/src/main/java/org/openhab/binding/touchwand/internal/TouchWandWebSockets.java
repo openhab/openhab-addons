@@ -59,7 +59,7 @@ public class TouchWandWebSockets {
     private final Logger logger = LoggerFactory.getLogger(TouchWandWebSockets.class);
     private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
     @Nullable
-    private ScheduledFuture<?> SocketReconnt;
+    private ScheduledFuture<?> socketReconnt;
 
     private static final String WS_ENDPOINT_TOUCHWAND = "/async";
     private @Nullable URI uri;
