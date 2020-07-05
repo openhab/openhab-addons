@@ -59,7 +59,7 @@ public class TouchWandWebSockets {
     private final Logger logger = LoggerFactory.getLogger(TouchWandWebSockets.class);
     private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
     @Nullable
-    private ScheduledFuture<?> socketReconnt;
+    private ScheduledFuture<?> socketReconnect;
 
     private static final String WS_ENDPOINT_TOUCHWAND = "/async";
     private @Nullable URI uri;
@@ -73,7 +73,7 @@ public class TouchWandWebSockets {
         touchWandSocket = new TouchWandSocket();
         this.controllerAddress = ipAddress;
         this.scheduler = scheduler;
-        SocketReconnt = null;
+        socketReconnect = null;
     }
 
     public void connect() {
@@ -133,7 +133,7 @@ public class TouchWandWebSockets {
             logger.debug("Connection closed: {} - {}", statusCode, reason);
             if (!isShutDown) {
                 logger.debug("weSocket Closed - reconnecting");
-                AsyncWebSocketReconnect();
+                AsyncWeb();
             } else {
                 this.session = null;
             }
@@ -186,22 +186,22 @@ public class TouchWandWebSockets {
             logger.warn("WebSocket Error: {}", cause.getMessage());
             if (!isShutDown) {
                 logger.debug("WebSocket onError - reconnecting");
-                AsyncWebSocketReconnect();
+                AsyncWeb();
             } else {
                 this.session = null;
             }
         }
 
         @SuppressWarnings("null")
-        private void AsyncWebSocketReconnect() {
-            if (SocketReconnt == null || SocketReconnt.isDone()) {
-                WebSocketReconnect reconnect = new WebSocketReconnect();
-                SocketReconnt = scheduler.schedule(reconnect, WEBSOCKET_RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
+        private void AsyncWeb() {
+            if (socketReconnect == null || socketReconnect.isDone()) {
+                Web reconnect = new Web();
+                socketReconnect = scheduler.schedule(reconnect, WEBSOCKET_RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
             }
         }
 
         @NonNullByDefault
-        private class WebSocketReconnect implements Runnable {
+        private class Web implements Runnable {
             @Override
             public void run() {
                 connect();
