@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -62,8 +63,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
-    private @Nullable ScheduledFuture<?> updateDataJob;
-    private long lastRefreshTime = 0;
+    private @Nullable ScheduledFuture<?> updateChannelsJob;
+    private @Nullable ExpiringCache<@Nullable JsonElement> cache;
 
     public PublicTransportSwitzerlandStationboardHandler(Thing thing) {
         super(thing);
@@ -72,8 +73,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            stopDataUpdate();
-            startDataUpdate();
+            updateChannels();
         }
     }
 
@@ -81,39 +81,32 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     public void initialize() {
         PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
 
+        cache = new ExpiringCache<>(60_000, this::updateData);
+
         if (config.station == null || config.station.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
-            startDataUpdate();
+            startChannelUpdate();
         }
     }
 
     @Override
     public void dispose() {
-        stopDataUpdate();
+        stopChannelUpdate();
     }
 
-    private void startDataUpdate() {
-        updateDataJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, 60, TimeUnit.SECONDS);
+    private void startChannelUpdate() {
+        updateChannelsJob = scheduler.scheduleWithFixedDelay(this::updateChannels, 0, 60, TimeUnit.SECONDS);
     }
 
-    private void stopDataUpdate() {
-        if (updateDataJob != null && !updateDataJob.isCancelled()) {
-            updateDataJob.cancel(true);
+    private void stopChannelUpdate() {
+        if (updateChannelsJob != null && !updateChannelsJob.isCancelled()) {
+            updateChannelsJob.cancel(true);
         }
     }
 
-    public void updateData() {
-        long currentTime = System.currentTimeMillis();
-
-        // Avoid hitting API limits
-        if (currentTime - lastRefreshTime < 30_000) {
-            return;
-        }
-
-        lastRefreshTime = currentTime;
-
+    public @Nullable JsonElement updateData() {
         PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
 
         try {
@@ -123,20 +116,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             String response = HttpUtil.executeUrl("GET", requestUrl, 10_000);
             logger.debug("Got response from API: {}", response);
 
-            JsonElement jsonObject = new JsonParser().parse(response);
-
-            updateChannels(jsonObject);
-            updateStatus(ThingStatus.ONLINE);
+            return new JsonParser().parse(response);
         } catch (Exception e) {
             logger.warn("Unable to fetch stationboard data", e);
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-
-            updateState(CHANNEL_TSV, UnDefType.UNDEF);
-
-            for (Channel channel : getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId())) {
-                updateState(channel.getUID(), UnDefType.UNDEF);
-            }
+            return null;
         }
     }
 
@@ -144,7 +127,23 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         return Arrays.stream(fields).map((field) -> "&fields[]=" + field).collect(Collectors.joining());
     }
 
-    private void updateChannels(JsonElement jsonObject) throws Exception {
+    private void updateChannels() {
+        @Nullable JsonElement jsonObject = cache.getValue();
+
+        if (jsonObject == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+
+            updateState(CHANNEL_TSV, UnDefType.UNDEF);
+
+            for (Channel channel : getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId())) {
+                updateState(channel.getUID(), UnDefType.UNDEF);
+            }
+
+            return;
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+
         JsonArray stationboard = jsonObject.getAsJsonObject().get("stationboard").getAsJsonArray();
 
         createDynamicChannels(stationboard.size());
