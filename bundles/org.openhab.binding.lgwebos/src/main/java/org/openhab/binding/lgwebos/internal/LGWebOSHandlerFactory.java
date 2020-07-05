@@ -97,6 +97,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
         super.deactivate(componentContext);
         try {
             this.webSocketClient.stop();
+            this.webSocketClient.destroy();
         } catch (Exception e) {
             logger.warn("Unable to to stop websocket client.", e);
         }
