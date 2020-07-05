@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="caddx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="panel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Caddx Alarm Panel</label>
@@ -16,18 +17,48 @@
 				<label>Firmware Version</label>
 				<description>Firmware version</description>
 			</channel>
-			
-			<channel id="panel_log_message_n_0" typeId="panel_text"><label>Log Message 10</label><description>Log message 10</description></channel> 
-			<channel id="panel_log_message_n_1" typeId="panel_text"><label>Log Message 9</label><description>Log message 9</description></channel> 
-			<channel id="panel_log_message_n_2" typeId="panel_text"><label>Log Message 8</label><description>Log message 8</description></channel> 
-			<channel id="panel_log_message_n_3" typeId="panel_text"><label>Log Message 7</label><description>Log message 7</description></channel> 
-			<channel id="panel_log_message_n_4" typeId="panel_text"><label>Log Message 6</label><description>Log message 6</description></channel> 
-			<channel id="panel_log_message_n_5" typeId="panel_text"><label>Log Message 5</label><description>Log message 5</description></channel> 
-			<channel id="panel_log_message_n_6" typeId="panel_text"><label>Log Message 4</label><description>Log message 4</description></channel> 
-			<channel id="panel_log_message_n_7" typeId="panel_text"><label>Log Message 3</label><description>Log message 3</description></channel> 
-			<channel id="panel_log_message_n_8" typeId="panel_text"><label>Log Message 2</label><description>Log message 2</description></channel> 
-			<channel id="panel_log_message_n_9" typeId="panel_text"><label>Log Message 1</label><description>Log message 1</description></channel> 
-			
+
+			<channel id="panel_log_message_n_0" typeId="panel_text">
+				<label>Log Message 10</label>
+				<description>Log message 10</description>
+			</channel>
+			<channel id="panel_log_message_n_1" typeId="panel_text">
+				<label>Log Message 9</label>
+				<description>Log message 9</description>
+			</channel>
+			<channel id="panel_log_message_n_2" typeId="panel_text">
+				<label>Log Message 8</label>
+				<description>Log message 8</description>
+			</channel>
+			<channel id="panel_log_message_n_3" typeId="panel_text">
+				<label>Log Message 7</label>
+				<description>Log message 7</description>
+			</channel>
+			<channel id="panel_log_message_n_4" typeId="panel_text">
+				<label>Log Message 6</label>
+				<description>Log message 6</description>
+			</channel>
+			<channel id="panel_log_message_n_5" typeId="panel_text">
+				<label>Log Message 5</label>
+				<description>Log message 5</description>
+			</channel>
+			<channel id="panel_log_message_n_6" typeId="panel_text">
+				<label>Log Message 4</label>
+				<description>Log message 4</description>
+			</channel>
+			<channel id="panel_log_message_n_7" typeId="panel_text">
+				<label>Log Message 3</label>
+				<description>Log message 3</description>
+			</channel>
+			<channel id="panel_log_message_n_8" typeId="panel_text">
+				<label>Log Message 2</label>
+				<description>Log message 2</description>
+			</channel>
+			<channel id="panel_log_message_n_9" typeId="panel_text">
+				<label>Log Message 1</label>
+				<description>Log message 1</description>
+			</channel>
+
 			<channel id="panel_interface_configuration_message" typeId="panel_flag">
 				<label>Interface Configuration Message</label>
 				<description>Interface Configuration Message</description>

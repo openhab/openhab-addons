@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="caddx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -23,14 +24,14 @@
 		<description>Panel text</description>
 		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
-	
+
 	<channel-type id="panel_flag">
 		<item-type>Switch</item-type>
 		<label>Panel Flag</label>
 		<description>Panel flag</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	
+
 	<!-- partition -->
 	<channel-type id="partition_condition">
 		<item-type>Switch</item-type>

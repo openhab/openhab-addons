@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="caddx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" 
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
@@ -23,7 +24,8 @@
 				<context>serial-port</context>
 				<label>Caddx Bridge Serial Port</label>
 				<description>The serial port name for the communication. Valid values
-					are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
+					are e.g. COM1 for Windows and /dev/ttyS0 or
+					/dev/ttyUSB0 for Linux.</description>
 			</parameter>
 
 			<parameter name="baudrate" type="integer" required="true">
@@ -39,7 +41,7 @@
 					<option value="115200">115200</option>
 				</options>
 			</parameter>
-			
+
 			<parameter name="protocol" type="text" required="true">
 				<context>protocol</context>
 				<label>Caddx Bridge Protocol</label>

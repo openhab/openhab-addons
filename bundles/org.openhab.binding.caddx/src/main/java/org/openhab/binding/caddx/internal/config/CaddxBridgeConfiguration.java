@@ -56,5 +56,4 @@ public class CaddxBridgeConfiguration {
     public void setBaudrate(Integer baudrate) {
         this.baudrate = baudrate;
     }
-
 }
