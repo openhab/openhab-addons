@@ -40,7 +40,7 @@ public class TouchWandUnitFromJson {
         Gson gson = new Gson();
         TouchWandUnitData touchWandUnit;
         String type = JsonUnit.get("type").getAsString();
-        if (!Arrays.asList(SUPPORTED_TOCUHWAND_TYPES).contains(type)) {
+        if (!Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(type)) {
             logger.debug("Unit parse skipping unsupported unit type : {} ", type);
             return null;
         }

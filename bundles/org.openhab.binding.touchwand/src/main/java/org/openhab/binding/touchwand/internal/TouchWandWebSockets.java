@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.touchwand.internal;
 
-import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.SUPPORTED_TOCUHWAND_TYPES;
+import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.SUPPORTED_TOUCHWAND_TYPES;
 
 import java.io.IOException;
 import java.net.URI;
@@ -163,7 +163,7 @@ public class TouchWandWebSockets {
                 if (!touchWandUnit.getStatus().equals("ALIVE")) {
                     return;
                 }
-                boolean supportedUnitType = Arrays.asList(SUPPORTED_TOCUHWAND_TYPES).contains(touchWandUnit.getType());
+                boolean supportedUnitType = Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(touchWandUnit.getType());
                 if (!supportedUnitType) {
                     logger.debug("UNIT_CHANGED for unsupported unit type {}", touchWandUnit.getType());
                     return;
