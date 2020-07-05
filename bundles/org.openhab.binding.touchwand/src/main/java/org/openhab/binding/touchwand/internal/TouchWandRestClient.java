@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentProvider;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -42,15 +43,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Roie Geron - Initial contribution
  */
-
+@NonNullByDefault
 public class TouchWandRestClient {
 
     private final Logger logger = LoggerFactory.getLogger(TouchWandRestClient.class);
 
     static CookieManager cookieManager = new CookieManager();
 
-    private String touchWandIpAddr;
-    private String touchWandPort;
+    private String touchWandIpAddr = "";
+    private String touchWandPort = "";
     private boolean isConnected = false;
 
     private static final HttpMethod METHOD_GET = HttpMethod.GET;
@@ -75,7 +76,7 @@ public class TouchWandRestClient {
     private static final int REQUEST_TIMEOUT = 10000; // 10 seconds
     private Map<String, String> commandmap = new HashMap<String, String>();
 
-    private HttpClient httpClient = null;
+    private HttpClient httpClient;
 
     public TouchWandRestClient(HttpClient httpClient) {
         commandmap.put(CMD_LOGIN, "/auth/login?");
@@ -97,7 +98,7 @@ public class TouchWandRestClient {
 
     private final boolean cmdLogin(String user, String pass, String ipAddr) {
         String command = buildUrl(CMD_LOGIN) + "user=" + user + "&" + "psw=" + pass;
-        String response = sendCommand(command, METHOD_GET, null);
+        String response = sendCommand(command, METHOD_GET, "");
         if (response != null && !response.equals("Unauthorized")) {
             return true;
         }
@@ -106,13 +107,13 @@ public class TouchWandRestClient {
 
     public String cmdListUnits() {
         String command = buildUrl(CMD_LIST_UNITS);
-        String response = sendCommand(command, METHOD_GET, null);
+        String response = sendCommand(command, METHOD_GET, "");
         return response;
     }
 
     public String cmdGetUnitById(String id) {
         String command = buildUrl(CMD_GET_UNIT_BY_ID) + "id=" + id;
-        String response = sendCommand(command, METHOD_GET, null);
+        String response = sendCommand(command, METHOD_GET, "");
 
         return response;
     }
@@ -174,7 +175,7 @@ public class TouchWandRestClient {
             url = new URL(command);
         } catch (MalformedURLException e) {
             logger.warn("Error building URL {} : {}", command, e.getMessage());
-            return null;
+            return "";
         }
 
         request = httpClient.newRequest(url.toString()).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS).method(method);
@@ -190,6 +191,6 @@ public class TouchWandRestClient {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Error open connecton to {} : {} ", touchWandIpAddr, e.getMessage());
         }
-        return null;
+        return "";
     }
 }

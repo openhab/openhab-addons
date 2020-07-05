@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Roie Geron - Initial contribution
  */
 @Component(service = DiscoveryService.class, immediate = false, configurationPid = "discovery.touchwand")
+@NonNullByDefault({})
 public class TouchWandControllerDiscoveryService extends AbstractDiscoveryService {
 
     private static final int SEARCH_TIME = 2;

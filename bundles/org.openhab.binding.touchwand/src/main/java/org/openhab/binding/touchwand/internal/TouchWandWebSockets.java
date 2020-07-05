@@ -48,7 +48,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Roie Geron - Initial contribution
  */
-@NonNullByDefault
+@NonNullByDefault({})
 public class TouchWandWebSockets {
 
     private WebSocketClient client;
@@ -119,6 +119,7 @@ public class TouchWandWebSockets {
     }
 
     @WebSocket(maxIdleTime = WEBSOCKET_IDLE_TIMEOUT)
+    @NonNullByDefault
     public class TouchWandSocket {
 
         @SuppressWarnings("unused")
@@ -199,6 +200,7 @@ public class TouchWandWebSockets {
             }
         }
 
+        @NonNullByDefault
         private class WebSocketReconnect implements Runnable {
             @Override
             public void run() {

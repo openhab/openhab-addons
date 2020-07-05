@@ -13,6 +13,7 @@
 
 package org.openhab.binding.touchwand.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
  *
  * @author Roie Geron - Initial contribution
  */
+@NonNullByDefault
 public interface TouchWandUnitStatusUpdateListener {
 
     void onDataReceived(TouchWandUnitData unitData);

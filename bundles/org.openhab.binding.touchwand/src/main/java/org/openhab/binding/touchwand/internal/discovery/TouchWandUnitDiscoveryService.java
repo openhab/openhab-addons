@@ -47,6 +47,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Roie Geron - Initial contribution
  */
+@NonNullByDefault({})
 public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     private static final int SEARCH_TIME = 10;
