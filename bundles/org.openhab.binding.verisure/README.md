@@ -1,6 +1,6 @@
 # Verisure Binding
 
-This is an OpenHAB binding for Verisure Alarm system, by Securitas Direct.
+This is an openHAB binding for Verisure Alarm system, by Securitas Direct.
 
 This binding uses the rest API behind the Verisure My Pages: 
 
@@ -67,10 +67,13 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 *   `pin` - The username's pin code to arm/disarm alarm and lock/unlock door. In the case of more than one installation and different pin-codes, use a comma separated string where pin-code matches order of installations. The installation order can be found using DEBUG log settings.
     * Two installations where the first listed installation uses a 6 digit pin-code and second listed installation uses a 4 digit pin-code: 123456,1234
 
+If you define the bridge in a things-file the bridge type id is defined as `bridge`, e.g.:
+
+`Bridge verisure:bridge:myverisureBridge verisure:bridge:myverisure`
 
 #### Channels
 
-([bridge]) supports the following channel:
+The following channels are supported:
 
 | Channel Type ID | Item Type | Description                                                                                     |
 |-----------------|-----------|-------------------------------------------------------------------------------------------------|
@@ -88,14 +91,16 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([alarm]) supports the following channels:
 
-| Channel Type ID | Item Type | Description                                                                               |
-|-----------------|-----------|-------------------------------------------------------------------------------------------|
-| changedByUser   | String    | This channel reports the user that last changed the state of the alarm.           |
-| changedVia      | String    | This channel reports the method used to change the status.                       |
-| timestamp       | DateTime  | This channel reports the last time the alarm status was changed.                  |
-| installationName| String    | This channel reports the installation name.                                                |
-| installationId  | Number    | This channel reports the installation ID.                                             |
-| alarmStatus     | String    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY".|               |
+| Channel Type ID     | Item Type | Description                                                                               |
+|---------------------|-----------|-------------------------------------------------------------------------------------------|
+| changedByUser       | String    | This channel reports the user that last changed the state of the alarm.           |
+| changedVia          | String    | This channel reports the method used to change the status.                       |
+| timestamp           | DateTime  | This channel reports the last time the alarm status was changed.                  |
+| installationName    | String    | This channel reports the installation name.                                                |
+| installationId      | Number    | This channel reports the installation ID.                                             |
+| alarmStatus         | String    | This channel is used to arm/disarm the alarm. Available alarm status are "DISARMED", "ARMED_HOME" and "ARMED_AWAY".|               |
+| alarmTriggerChannel | trigger   | This is a trigger channel that receives events.
+|
 
 ### Verisure Yaleman SmartLock
 
@@ -108,19 +113,20 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([smartLock]) supports the following channels:
 
-| Channel Type ID        | Item Type | Description                                                                                              |
-|------------------------|-----------|----------------------------------------------------------------------------------------------------------|
-| changedByUser          | String    | This channel reports the user that last changed the state of the alarm.                             |
-| timestamp              | DateTime  | This channel reports the last time the alarm status was changed.                                         |
-| changedVia             | String    | This channel reports the method used to change the status.                                                 |
-| motorJam               | Switch    | This channel reports if the SmartLock motor has jammed.                                                 |
-| location               | String    | This channel reports the location of the device.                                                                       |
-| installationName       | String    | This channel reports the installation name.                                                              |
-| installationId         | Number    | This channel reports the installation ID.                                                                |
-| smartLockStatus        | Switch    | This channel is used to lock/unlock.                                                                     |
-| autoRelock             | Switch    | This channel is used to configure auto-lock functionality. Only supported for users with Administrator rights.                                                |                
-| smartLockVolume        | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". Only supported for users with Administrator rights.|  
-| smartLockVoiceLevel    | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL". Only supported for users with Administrator rights.| 
+| Channel Type ID         | Item Type | Description                                                                                              |
+|-------------------------|-----------|----------------------------------------------------------------------------------------------------------|
+| changedByUser           | String    | This channel reports the user that last changed the state of the alarm.                             |
+| timestamp               | DateTime  | This channel reports the last time the alarm status was changed.                                         |
+| changedVia              | String    | This channel reports the method used to change the status.                                                 |
+| motorJam                | Switch    | This channel reports if the SmartLock motor has jammed.                                                 |
+| location                | String    | This channel reports the location of the device.                                                                       |
+| installationName        | String    | This channel reports the installation name.                                                              |
+| installationId          | Number    | This channel reports the installation ID.                                                                |
+| smartLockStatus         | Switch    | This channel is used to lock/unlock.                                                                     |
+| autoRelock              | Switch    | This channel is used to configure auto-lock functionality. Only supported for users with Administrator rights.                                                |                
+| smartLockVolume         | String    | This channel is used to set the volume level. Available volume settings are "SILENCE", "LOW" and "HIGH". Only supported for users with Administrator rights.|  
+| smartLockVoiceLevel     | String    | This channel is used to set the voice level. Available voice level settings are "ESSENTIAL" and "NORMAL". Only supported for users with Administrator rights.| 
+| smartLockTriggerChannel | trigger    | This is a trigger channel that receives events. |
 
 ### Verisure SmartPlug
 
@@ -133,13 +139,14 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([smartPlug]) supports the following channels:
 
-| Channel Type ID    | Item Type | Description                                                       | 
-|--------------------|-----------|-------------------------------------------------------------------|                                                                                                                                          
-| hazardous          | Switch    | This channel reports if the smart plug is configured as hazardous.|
-| location           | String    | This channel reports the location of the device.                  |
-| installationName   | String    | This channel reports the installation name.                       |
-| installationId     | Number    | This channel reports the installation ID.                         |
-| smartPlugStatus    | Switch    | This channel is used to turn smart plug on/off.                   |
+| Channel Type ID         | Item Type | Description                                                       | 
+|-------------------------|-----------|-------------------------------------------------------------------|                                                                                                                                          
+| hazardous               | Switch    | This channel reports if the smart plug is configured as hazardous.|
+| location                | String    | This channel reports the location of the device.                  |
+| installationName        | String    | This channel reports the installation name.                       |
+| installationId          | Number    | This channel reports the installation ID.                         |
+| smartPlugStatus         | Switch    | This channel is used to turn smart plug on/off.                   |
+| smartPlugTriggerChannel | trigger   | This is a trigger channel that receives events.                   |
 
 ### Verisure Smoke Detector
 
@@ -152,15 +159,17 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([smokeDetector]) supports the following channels:
  
-| Channel Type ID | Item Type             | Description                                                                 | 
-|-----------------|-----------------------|-----------------------------------------------------------------------------|
-| temperature     | Number:Temperature    | This channel reports the current temperature.                               |                                                                                                                                          
-| humidity        | Number                | This channel reports the current humidity in percentage.                    |
-| humidityEnabled | Switch                | This channel reports if the Climate is device capable of reporting humidity.|
-| timestamp       | DateTime              | This channel reports the last time this sensor was updated.                 |
-| location        | String                | This channel reports the location of the device.                            |
-| installationName| String                | This channel reports the installation name.                                 |
-| installationId  | Number                | This channel reports the installation ID.                                   |
+| Channel Type ID             | Item Type             | Description                                                                 | 
+|-----------------------------|-----------------------|-----------------------------------------------------------------------------|
+| temperature                 | Number:Temperature    | This channel reports the current temperature.                               |                                                                                                                                          
+| humidity                    | Number                | This channel reports the current humidity in percentage.                   |
+| humidityEnabled             | Switch                | This channel reports if the Climate is device capable of reporting humidity.|
+| timestamp                   | DateTime              | This channel reports the last time this sensor was updated.                      |
+| location                    | String                | This channel reports the location of the device.                            |
+| installationName            | String                | This channel reports the installation name.                                 |
+| installationId              | Number                | This channel reports the installation ID.                                   |
+| smokeDetectorTriggerChannel | trigger               | This is a trigger channel that receives events.
+|
  
 ### Verisure Water Detector
 
@@ -173,13 +182,14 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([waterDetector]) supports the following channels:
 
-| Channel Type ID | Item Type             | Description                                                  | 
-|-----------------|-----------------------|--------------------------------------------------------------|                                                                                                                                          
-| temperature     | Number:Temperature    | This channel reports the current current temperature.        |
-| timestamp       | DateTime              | This channel reports the last time this sensor was updated.  |
-| location        | String                | This channel reports the location of the device.             |
-| installationName| String                | This channel reports the installation name.                  |
-| installationId  | Number                | This channel reports the installation ID.                    |
+| Channel Type ID             | Item Type             | Description                                                  | 
+|-----------------------------|-----------------------|--------------------------------------------------------------|                                                                                                                                          
+| temperature                 | Number:Temperature    | This channel reports the current current temperature.        |
+| timestamp                   | DateTime              | This channel reports the last time this sensor was updated.  |
+| location                    | String                | This channel reports the location of the device. |
+| installationName            | String                | This channel reports the installation name.      |
+| installationId              | Number                | This channel reports the installation ID.        |
+| waterDetectorTriggerChannel | trigger               | This is a trigger channel that receives events.  |
  
 ### Verisure Siren
 
@@ -192,13 +202,14 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([siren]) supports the following channels:
  
-| Channel Type ID | Item Type             | Description                                                | 
-|-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| temperature     | Number:Temperature    | This channel reports the current current temperature.   |
-| timestamp       | DateTime              | This channel reports the last time this sensor was updated.|
-| location        | String                | This channel reports the location.                         |
-| installationName| String                | This channel reports the installation name.                |
-| installationId  | Number                | This channel reports the installation ID.                  |
+| Channel Type ID     | Item Type             | Description                                                | 
+|---------------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
+| temperature         | Number:Temperature    | This channel reports the current current temperature.  |
+| timestamp           | DateTime              | This channel reports the last time this sensor was updated.|
+| location            | String                | This channel reports the location.                     |
+| installationName    | String                | This channel reports the installation name.            |
+| installationId      | Number                | This channel reports the installation ID.              |
+| sirenTriggerChannel | trigger               | This is a trigger channel that receives events.        |
 
 ### Verisure Night Control
 
@@ -211,13 +222,14 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([nightControl]) supports the following channels:
  
-| Channel Type ID | Item Type             | Description                                                | 
-|-----------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
-| temperature     | Number:Temperature    | This channel reports the current current temperature.      |
-| timestamp       | DateTime              | This channel reports the last time this sensor was updated.|
-| location        | String                | This channel reports the location.                         |
-| installationName| String                | This channel reports the installation name.                |
-| installationId  | Number                | This channel reports the installation ID.                  |
+| Channel Type ID            | Item Type             | Description                                                | 
+|----------------------------|-----------------------|------------------------------------------------------------|                                                                                                                                          
+| temperature                | Number:Temperature    | This channel reports the current current temperature.      |
+| timestamp                  | DateTime              | This channel reports the last time this sensor was updated.|
+| location                   | String                | This channel reports the location.              |
+| installationName           | String                | This channel reports the installation name.     |
+| installationId             | Number                | This channel reports the installation ID.       |
+| nightControlTriggerChannel | trigger               | This is a trigger channel that receives events. |
 
 ### Verisure DoorWindow Sensor
 
@@ -230,13 +242,15 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([doorWindowSensor]) supports the following channels:
  
-| Channel Type ID | Item Type | Description                                                                 | 
-|-----------------|-----------|-----------------------------------------------------------------------------|                                                                                                                                          
-| state           | Contact   | This channel reports the if the door/window is open or closed (OPEN/CLOSED).|
-| timestamp       | DateTime  | This channel reports the last time this sensor was updated.                 |
-| location        | String    | This channel reports the location of the device.                            |
-| installationName| String    | This channel reports the installation name.                                 |
-| installationId  | Number    | This channel reports the installation ID.                                   |
+| Channel Type ID          | Item Type | Description                                                                 | 
+|--------------------------|-----------|-----------------------------------------------------------------------------|                                                                                                                                          
+| state                    | Contact   | This channel reports the if the door/window is open or closed (OPEN/CLOSED).|
+| timestamp                | DateTime  | This channel reports the last time this sensor was updated.                 |
+| location                 | String    | This channel reports the location of the device.                            |
+| installationName         | String    | This channel reports the installation name.                                 |
+| installationId           | Number    | This channel reports the installation ID.                                   |
+| doorWindowTriggerChannel | trigger   | This is a trigger channel that receives events. |
+|
 
 ### Verisure User Presence
 
@@ -288,18 +302,20 @@ To enable DEBUG logging for the binding, login to Karaf console and enter:
 
 ([miceDetection]) supports the following channels:
  
-| Channel Type ID | Item Type | Description                                                                         | 
-|-----------------|-----------|-------------------------------------------------------------------------------------|                                                                                                                                          
-| countLatestDetection| Number| This channel reports the number of mice counts the latest detection during last 24. | 
-| countLast24Hours| Number    | This channel reports the total number of mice counts the last 24h.                  |
-| durationLatestDetection| Number:Time | This channel reports the detection duration in min of latest detection.    |
-| durationLast24Hours| Number:Time | This channel reports the total detection duration in min for the last 24 hours.|
-| timestamp       | DateTime  | This channel reports time for the last mouse detection.                             |
-| temperature     | Number:Temperature | This channel reports the current  temperature.                             |
-| temperatureTimestamp | DateTime  | This channel reports the time for the last temperature reading.                |
-| location        | String    | This channel reports the location of the device.                                    |
-| installationName| String    | This channel reports the installation name.                                         |
-| installationId  | Number    | This channel reports the installation ID.                                           |
+| Channel Type ID             | Item Type          | Description                                                                         | 
+|-----------------------------|--------------------|-------------------------------------------------------------------------------------|                                                                                                                                          
+| countLatestDetection        | Number             | This channel reports the number of mice counts the latest detection during last 24. | 
+| countLast24Hours            | Number             | This channel reports the total number of mice counts the last 24h.                 |
+| durationLatestDetection     | Number:Time        | This channel reports the detection duration in min of latest detection.             |
+| durationLast24Hours         | Number:Time        | This channel reports the total detection duration in min for the last 24 hours.    |
+| timestamp                   | DateTime           | This channel reports time for the last mouse detection.                    |
+| temperature                 | Number:Temperature | This channel reports the current  temperature.                             |
+| temperatureTimestamp        | DateTime           | This channel reports the time for the last temperature reading.                      |
+| location                    | String             | This channel reports the location of the device.                                    |
+| installationName            | String             | This channel reports the installation name.                                         |
+| installationId              | Number             | This channel reports the installation ID.                                           |
+| miceDetectionTriggerChannel | trigger            | This is a trigger channel that receives events. 
+|  
 
 ### Verisure Event Log
 
