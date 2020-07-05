@@ -63,6 +63,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
     private @Nullable ScheduledFuture<?> updateDataJob;
+    private long lastRefreshTime = 0;
 
     public PublicTransportSwitzerlandStationboardHandler(Thing thing) {
         super(thing);
@@ -104,6 +105,15 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     public void updateData() {
+        long currentTime = System.currentTimeMillis();
+
+        // Avoid hitting API limits
+        if (currentTime - lastRefreshTime < 30_000) {
+            return;
+        }
+
+        lastRefreshTime = currentTime;
+
         PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
 
         try {
