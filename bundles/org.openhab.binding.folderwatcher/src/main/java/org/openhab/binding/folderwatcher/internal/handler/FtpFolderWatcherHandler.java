@@ -88,10 +88,6 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
                     "Polling interval can't be null or negative");
         }
 
-        if (!config.secureMode.matches("(?i)NONE|IMPLICIT|EXPLICIT")) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unsupported secure mode");
-            return;
-        }
         currentFtpListingFile = new File(ConfigConstants.getUserDataFolder() + File.separator + "FolderWatcher"
                 + File.separator + thing.getUID().getAsString().replace(':', '_') + ".data");
         try {
@@ -159,13 +155,13 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
     private void connectionKeepAlive() {
         if (!ftp.isConnected()) {
             switch (config.secureMode) {
-                case "NONE":
+                case NONE:
                     ftp = new FTPClient();
                     break;
-                case "IMPLICIT":
+                case IMPLICIT:
                     ftp = new FTPSClient(true);
                     break;
-                case "EXPLICIT":
+                case EXPLICIT:
                     ftp = new FTPSClient(false);
                     break;
             }
@@ -175,11 +171,7 @@ public class FtpFolderWatcherHandler extends BaseThingHandler {
             ftp.setConnectTimeout(config.connectionTimeout * 1000);
 
             try {
-                if (config.ftpPort > 0) {
-                    ftp.connect(config.ftpAddress, config.ftpPort);
-                } else {
-                    ftp.connect(config.ftpAddress);
-                }
+                ftp.connect(config.ftpAddress, config.ftpPort);
                 reply = ftp.getReplyCode();
 
                 if (!FTPReply.isPositiveCompletion(reply)) {

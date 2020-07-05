@@ -13,6 +13,7 @@
 package org.openhab.binding.folderwatcher.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.folderwatcher.internal.SecureMode;
 
 /**
  * The {@link FtpFolderWatcherConfiguration} class contains fields mapping thing configuration parameters.
@@ -31,5 +32,5 @@ public class FtpFolderWatcherConfiguration {
     public boolean listHidden;
     public int diffHours;
     public boolean listRecursiveFtp;
-    public String secureMode = "";
+    public SecureMode secureMode = SecureMode.NONE;
 }
