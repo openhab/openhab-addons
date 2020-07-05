@@ -126,9 +126,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
                     .getService(serviceReg.getReference());
             service.unregisterListener(this); // Unregister Unit status polling
             serviceReg.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
+            service.deactivate();
         }
 
         if (touchWandWebSockets != null) {
