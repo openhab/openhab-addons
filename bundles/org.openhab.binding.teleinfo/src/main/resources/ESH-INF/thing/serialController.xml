@@ -20,7 +20,7 @@
 				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="autoRepairInvalidADPSgroupLine" type="boolean" required="false">
-				<label>Auto repair malformed ADPS data</label>
+				<label>Auto Repair Malformed ADPS Data</label>
 				<description>Try to auto repair malformed ADPS data from hardware issues (e.g: "ADPS032" instead of "ADPS 032"
 					expected/well-formed data)</description>
 				<default>true</default>
