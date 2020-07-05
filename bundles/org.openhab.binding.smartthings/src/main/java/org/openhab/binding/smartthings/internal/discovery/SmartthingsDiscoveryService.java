@@ -56,7 +56,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private final Pattern findIllegalChars = Pattern.compile("[^A-Za-z0-9_-]");
 
-    private Logger logger = LoggerFactory.getLogger(SmartthingsDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsDiscoveryService.class);
 
     public Gson gson;
 
@@ -78,8 +78,6 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
     protected void setThingHandlerFactory(ThingHandlerFactory handlerFactory) {
         if (handlerFactory instanceof SmartthingsHandlerFactory) {
             smartthingsHandlerFactory = (SmartthingsHandlerFactory) handlerFactory;
-        } else {
-            logger.debug("Ignoring setThingHandlerFactory for {}", handlerFactory.getClass().getName());
         }
     }
 
@@ -216,7 +214,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         properties.put("deviceId", deviceData.id);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr)).withProperties(properties)
-                .withRepresentationProperty(deviceData.id).withBridge(bridgeUid).withLabel(name).build();
+                .withRepresentationProperty("deviceId").withBridge(bridgeUid).withLabel(name).build();
 
         thingDiscovered(discoveryResult);
     }

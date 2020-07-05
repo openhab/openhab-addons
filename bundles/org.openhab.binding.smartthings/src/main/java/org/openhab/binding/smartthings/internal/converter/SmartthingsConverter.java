@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class SmartthingsConverter {
 
-    private Logger logger = LoggerFactory.getLogger(SmartthingsConverter.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsConverter.class);
 
     protected String smartthingsName;
     protected String thingTypeId;

@@ -15,6 +15,7 @@ package org.openhab.binding.smartthings.internal;
 import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -58,12 +59,13 @@ import com.google.gson.Gson;
         EventHandler.class }, immediate = true, configurationPid = "binding.smarthings", property = "event.topics=org/openhab/binding/smartthings/state")
 public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implements ThingHandlerFactory, EventHandler {
 
-    private Logger logger = LoggerFactory.getLogger(SmartthingsHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsHandlerFactory.class);
 
-    private @NonNullByDefault({}) SmartthingsBridgeHandler bridgeHandler = null;
-    private @NonNullByDefault({}) ThingUID bridgeUID;
+    private @Nullable SmartthingsBridgeHandler bridgeHandler = null;
+    private @Nullable ThingUID bridgeUID;
     private Gson gson;
-    private List<SmartthingsThingHandler> thingHandlers = new ArrayList<SmartthingsThingHandler>();
+    private List<SmartthingsThingHandler> thingHandlers = Collections
+            .synchronizedList(new ArrayList<SmartthingsThingHandler>());
 
     private @NonNullByDefault({}) HttpClient httpClient;
 
@@ -159,10 +161,8 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
     }
 
     private @Nullable SmartthingsThingHandler findHandler(SmartthingsStateData stateData) {
-        for (SmartthingsThingHandler handler : thingHandlers) {
-            // There have been some reports of handler.getSmartthingsName() returning a null.
-            // Need to find out where null is coming from
-            if (handler.getSmartthingsName() != null) {
+        synchronized (thingHandlers) {
+            for (SmartthingsThingHandler handler : thingHandlers) {
                 if (handler.getSmartthingsName().equals(stateData.deviceDisplayName)) {
                     for (Channel ch : handler.getThing().getChannels()) {
                         String chId = ch.getUID().getId();
@@ -171,11 +171,6 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
                         }
                     }
                 }
-            } else {
-                logger.warn(
-                        "A thing handler \"smartthings name\" is unexpectedly null: for thing {} with display name: {} and with attribute: {}",
-                        handler.toString(), stateData.deviceDisplayName, stateData.capabilityAttribute);
-                return null;
             }
         }
 
@@ -194,6 +189,7 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
         this.httpClient = null;
     }
 
+    @Nullable
     public SmartthingsBridgeHandler getBridgeHandler() {
         return bridgeHandler;
     }

@@ -1,6 +1,6 @@
 # Samsung Smartthings Binding
 
-This binding integrates the Samsung Smartthings Hub into OpenHAB. This is implemented as an OpenHAB 2 binding.
+This binding integrates the Samsung Smartthings Hub into openHAB. This is implemented as an openHAB 2 binding.
 
 **This binding only works with the Smartthings Classic App**
 
@@ -10,20 +10,8 @@ This binding supports most of the Smartthings devices that are defined in the [S
 
 ## Discovery
 
-Discovery allows openHAB to examine a binding and automatically find the Things available on that binding. Discovery is supported and has been extensively tested.
-
-Discovery is not run automatically on startup. Therefore to run the discovery process perform the following:
-
-1. Start the PaperUI
-2. Click on **Configuration > Things**
-3. Click on **ADD THINGS** and select the Smartthings Binding.
-4. On the displayed screen select the Smartthings Hub.
-5. In the Configurations Parameters section enter the IP of Smartthings hub and enter the port number, which is probably 39500. Click on the check mark
-6. Click on **Inbox**
-7. At the bottom of the screen click on **SEARCH FOR THINGS**
-8. Select **Smartthings Binding**
-9. You should now see the Smartthings Things in the Inbox
-10. More information on using discovery is available in the [configuration tutorial](https://www.openhab.org/docs/configuration)
+Discovery allows openHAB to examine a binding and automatically find the Things available on that binding. 
+Discovery is supported by the Smartthings binding and is run automatically on startup. 
 
 ## Smartthings Configuration
 
@@ -33,7 +21,7 @@ Prior to running the binding the Smartthings hub must have the required openHAB 
 
 ## openHAB Configuration
 
-This binding is an openHAB 2 binding and uses the Bridge / Thing design with the Smartthings Hub being the Bridge and the controlled modules being the Things. The following definitions are specified in the .things file.
+This binding is an openHAB binding and uses the Bridge / Thing design with the Smartthings Hub being the Bridge and the controlled modules being the Things. The following definitions are specified in the .things file.
 
 ### Bridge Configuration
 
@@ -57,7 +45,7 @@ Each attached thing must specify the type of device and it's Smartthings device 
     
 where:
 
-* **thingTypeId** corresponds to the "Preferences Reference" in the Smartthings Capabilities document but without the capability. prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
+* **[thingTypeId](http://docs.smartthings.com/en/latest/capabilities-reference.html)** corresponds to the "Preferences Reference" in the Smartthings Capabilities document but without the capability. prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
 * **name** is what you want to call this thing and is used in defining the items that use this thing. 
 * **deviceName** is the name you assigned to the device when you discovered and connected to it in the Smartthings App
 
@@ -98,9 +86,6 @@ The parts (separated by :) are defined as:
     Number  MainGarageBattery    "Garage battery [%.0f]"  <battery>           { channel="smartthings:battery:Home:MainGarageBattery:battery" }  
     Switch  OfficeLight          "Office light"    <light>                    { channel="smartthings:switch:Home:OfficeLight:switch" }
     String  SimulatedValve       "Simulated valve"                            { channel="smartthings:valve:Home:SimulatedValve:valve" }
-
-**Special note about Dimmers**
-There is a conceptual difference between how openHAB and Smartthings configures the dimmer and switch parts of a Dimmer. The Smartthings dimmer (capability name: switchLevel) is only able to accept a numeric value between 0 and 100 representing the brightness percentage. The openHAB dimmer is able to accept both the percentage and on/off. The openHAB PaperUI shows a dimmer with both a slider and switch. The Off/On part of the level is not able to track changes made in the Smartthings App. However the openHab Dimmer has been defined with both level and switch channels. Therefore the dimmer and associated switch will work well together if the switchLevel Thing is selected in the discovery inbox. The Switch Thing can be left in the inbox. For an example see the KitchenLights thing and items above.
 
 **Special note about Valves**
 Smarttings includes a **valve** which can be Open or Closed but openHAB does not include a Valve item type. Therefore, the valve is defined as a having an item type of String. And, therefore the item needs to be defined with an item type of string. It can be controlled in the sitemap by specifying the Element type of Switch and providing a mapping of: mappings=[open="Open", closed="Close"]. Such as:

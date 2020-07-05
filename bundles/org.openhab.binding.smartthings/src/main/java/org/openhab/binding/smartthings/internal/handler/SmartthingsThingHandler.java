@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(SmartthingsThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsThingHandler.class);
 
     private SmartthingsThingConfig config;
     private String smartthingsName;
@@ -174,9 +174,8 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         // Create converters for each channel
         for (Channel ch : thing.getChannels()) {
             @Nullable
-            String converterName = ch.getProperties().get(smartthingsConverterName); // Will be null if no
-                                                                                     // explicit
-            // converter was specified
+            String converterName = ch.getProperties().get(smartthingsConverterName);
+            // Will be null if no explicit converter was specified
             if (converterName == null || converterName.isEmpty()) {
                 // A converter was Not specified so use the channel id
                 converterName = ch.getUID().getId();

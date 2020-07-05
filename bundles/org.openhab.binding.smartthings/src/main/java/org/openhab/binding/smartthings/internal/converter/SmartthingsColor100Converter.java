@@ -41,7 +41,7 @@ public class SmartthingsColor100Converter extends SmartthingsConverter {
 
     private Pattern rgbInputPattern = Pattern.compile("^#[0-9a-fA-F]{6}");
 
-    private Logger logger = LoggerFactory.getLogger(SmartthingsColor100Converter.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsColor100Converter.class);
 
     public SmartthingsColor100Converter(Thing thing) {
         super(thing);

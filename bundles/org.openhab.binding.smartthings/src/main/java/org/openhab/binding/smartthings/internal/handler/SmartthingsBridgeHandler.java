@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler {
-    private Logger logger = LoggerFactory.getLogger(SmartthingsBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsBridgeHandler.class);
 
     private SmartthingsBridgeConfig config;
 
@@ -70,7 +70,6 @@ public class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        logger.debug("Smartthings Handler disposed.");
     }
 
     private boolean validateConfig(SmartthingsBridgeConfig config) {

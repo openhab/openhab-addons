@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SmartthingsHue100Converter extends SmartthingsConverter {
 
-    private Logger logger = LoggerFactory.getLogger(SmartthingsHue100Converter.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsHue100Converter.class);
 
     public SmartthingsHue100Converter(Thing thing) {
         super(thing);

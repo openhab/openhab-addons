@@ -53,7 +53,7 @@ import com.google.gson.Gson;
 @Component(immediate = true, service = HttpServlet.class)
 public class SmartthingsServlet extends HttpServlet {
     private static final String PATH = "/smartthings";
-    private Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);
     private @NonNullByDefault({}) HttpService httpService;
     private @Nullable EventAdmin eventAdmin;
     private Gson gson = new Gson();
@@ -61,13 +61,12 @@ public class SmartthingsServlet extends HttpServlet {
     @Activate
     protected void activate(Map<String, Object> config) {
         if (httpService == null) {
-            logger.info("SmartthingsServlet.activate: httpService is unexpectedly null");
+            logger.warn("SmartthingsServlet.activate: httpService is unexpectedly null");
             return;
         }
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
-            logger.info("Started Smartthings servlet at {}", PATH);
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start Smartthings servlet service: {}", e.getMessage());
         }
@@ -105,7 +104,7 @@ public class SmartthingsServlet extends HttpServlet {
     protected void service(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
         if (req == null) {
-            logger.info("SmartthingsServlet.service unexpectedly received a null request. Request not processed");
+            logger.debug("SmartthingsServlet.service unexpectedly received a null request. Request not processed");
             return;
         }
         String path = req.getRequestURI();
@@ -169,7 +168,7 @@ public class SmartthingsServlet extends HttpServlet {
         if (eventAdmin != null) {
             eventAdmin.postEvent(event);
         } else {
-            logger.info("SmartthingsServlet:publishEvent eventAdmin is unexpectedly null");
+            logger.debug("SmartthingsServlet:publishEvent eventAdmin is unexpectedly null");
         }
     }
 }
