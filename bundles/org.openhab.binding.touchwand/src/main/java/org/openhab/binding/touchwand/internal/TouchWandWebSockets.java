@@ -133,7 +133,7 @@ public class TouchWandWebSockets {
             logger.debug("Connection closed: {} - {}", statusCode, reason);
             if (!isShutDown) {
                 logger.debug("weSocket Closed - reconnecting");
-                AsyncWeb();
+                asyncWeb();
             } else {
                 this.session = null;
             }
@@ -160,7 +160,7 @@ public class TouchWandWebSockets {
                 if (!eventUnitChanged) {
                     return;
                 }
-                touchWandUnit = TouchWandUnitFromJson.ParseResponse(unitObj.get("unit").getAsJsonObject());
+                touchWandUnit = TouchWandUnitFromJson.parseResponse(unitObj.get("unit").getAsJsonObject());
                 if (!touchWandUnit.getStatus().equals("ALIVE")) {
                     return;
                 }
@@ -186,14 +186,14 @@ public class TouchWandWebSockets {
             logger.warn("WebSocket Error: {}", cause.getMessage());
             if (!isShutDown) {
                 logger.debug("WebSocket onError - reconnecting");
-                AsyncWeb();
+                asyncWeb();
             } else {
                 this.session = null;
             }
         }
 
         @SuppressWarnings("null")
-        private void AsyncWeb() {
+        private void asyncWeb() {
             if (socketReconnect == null || socketReconnect.isDone()) {
                 Web reconnect = new Web();
                 socketReconnect = scheduler.schedule(reconnect, WEBSOCKET_RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);

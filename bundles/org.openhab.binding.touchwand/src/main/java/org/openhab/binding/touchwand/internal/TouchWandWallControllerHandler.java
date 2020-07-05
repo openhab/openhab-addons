@@ -47,7 +47,6 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-
         int status = ((TouchWandUnitDataWallController) unitData).getCurrStatus();
         long timeDiff = Instant.now().toEpochMilli() - timeSinceLastEvent;
         if ((timeDiff) > ajdustentEventFilterTime) {

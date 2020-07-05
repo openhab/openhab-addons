@@ -17,9 +17,6 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*
 
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -31,22 +28,18 @@ import com.google.gson.JsonParser;
  */
 public class TouchWandUnitFromJson {
 
-    private final static Logger logger = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
-
     public TouchWandUnitFromJson() {
     }
 
-    public static TouchWandUnitData ParseResponse(JsonObject JsonUnit) {
+    public static TouchWandUnitData parseResponse(JsonObject JsonUnit) {
         Gson gson = new Gson();
         TouchWandUnitData touchWandUnit;
         String type = JsonUnit.get("type").getAsString();
         if (!Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(type)) {
-            logger.debug("Unit parse skipping unsupported unit type : {} ", type);
             return null;
         }
 
         if (!JsonUnit.has("currStatus") || (JsonUnit.get("currStatus") == null)) {
-            logger.warn("Unit discovery unit currStatus is null : {}", JsonUnit);
             return null;
         }
 
@@ -74,11 +67,10 @@ public class TouchWandUnitFromJson {
 
     }
 
-    public static TouchWandUnitData ParseResponse(String JsonUnit) {
-
+    public static TouchWandUnitData parseResponse(String JsonUnit) {
         JsonParser jsonParser = new JsonParser();
         JsonObject unitObj = jsonParser.parse(JsonUnit).getAsJsonObject();
-        return ParseResponse(unitObj);
+        return parseResponse(unitObj);
 
     }
 

@@ -98,7 +98,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                 try {
                     for (JsonElement unit : jsonArray) {
                         TouchWandUnitData touchWandUnit;
-                        touchWandUnit = TouchWandUnitFromJson.ParseResponse(unit.getAsJsonObject());
+                        touchWandUnit = TouchWandUnitFromJson.parseResponse(unit.getAsJsonObject());
                         if (touchWandUnit == null) {
                             continue;
                         }
@@ -137,12 +137,10 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                 } catch (JsonSyntaxException e) {
                     logger.warn("Could not parse unit {}", e.getMessage());
                 }
-
             }
         } catch (JsonSyntaxException msg) {
             logger.warn("Could not parse list units response {}", msg.getMessage());
         }
-
     }
 
     private void norifyListeners(TouchWandUnitData touchWandUnit) {
