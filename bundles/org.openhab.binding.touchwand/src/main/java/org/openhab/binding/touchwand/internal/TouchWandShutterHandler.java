@@ -35,7 +35,7 @@ public class TouchWandShutterHandler extends TouchWandBaseUnitHandler {
     }
 
     @Override
-    void touhWandUnitHandleCommand(Command command) {
+    void touchWandUnitHandleCommand(Command command) {
         switch (command.toString()) {
             case "OFF":
             case "DOWN":

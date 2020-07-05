@@ -42,7 +42,7 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
     }
 
     @Override
-    void touhWandUnitHandleCommand(Command command) {
+    void touchWandUnitHandleCommand(Command command) {
     }
 
     @Override

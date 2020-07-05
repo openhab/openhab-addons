@@ -68,7 +68,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         if (command instanceof RefreshType) {
             // updateTouchWandUnitState(getUnitState(unitId));
         } else {
-            touhWandUnitHandleCommand(command);
+            touchWandUnitHandleCommand(command);
         }
     }
 
@@ -147,7 +147,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         return status;
     }
 
-    abstract void touhWandUnitHandleCommand(Command command);
+    abstract void touchWandUnitHandleCommand(Command command);
 
     abstract void updateTouchWandUnitState(TouchWandUnitData unitData);
 

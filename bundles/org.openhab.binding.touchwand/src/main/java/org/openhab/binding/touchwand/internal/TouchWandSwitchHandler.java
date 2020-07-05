@@ -57,7 +57,7 @@ public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
     }
 
     @Override
-    void touhWandUnitHandleCommand(Command command) {
+    void touchWandUnitHandleCommand(Command command) {
         if (command instanceof OnOffType) {
             bridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, (OnOffType) command);
         }
