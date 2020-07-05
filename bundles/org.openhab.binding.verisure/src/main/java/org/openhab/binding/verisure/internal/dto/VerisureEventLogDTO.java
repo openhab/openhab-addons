@@ -103,7 +103,7 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
 
     public static class PagedList {
 
-        private @Nullable Device device;
+        private @Nullable Device device = new Device();
         private @Nullable String gatewayArea;
         private @Nullable String eventType;
         private @Nullable String eventCategory;
@@ -182,7 +182,8 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
             result = prime * result + ((localArmState == null) ? 0 : localArmState.hashCode());
             String localClimateValue = climateValue;
             result = prime * result + ((localClimateValue == null) ? 0 : localClimateValue.hashCode());
-            result = prime * result + device.hashCode();
+            Device localDevice = device;
+            result = prime * result + ((localDevice == null) ? 0 : localDevice.hashCode());
             String localEventCategory = eventCategory;
             result = prime * result + ((localEventCategory == null) ? 0 : localEventCategory.hashCode());
             String localEventCount = eventCount;
@@ -236,7 +237,12 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
             } else if (!localClimateValue.equals(other.climateValue)) {
                 return false;
             }
-            if (!device.equals(other.device)) {
+            Device localDevice = device;
+            if (localDevice == null) {
+                if (other.device != null) {
+                    return false;
+                }
+            } else if (!localDevice.equals(other.device)) {
                 return false;
             }
             String localEventCategory = eventCategory;
