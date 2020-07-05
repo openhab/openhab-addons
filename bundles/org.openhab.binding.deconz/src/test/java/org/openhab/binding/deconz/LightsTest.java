@@ -22,8 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -35,7 +37,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.creation.bytebuddy.MockAccess;
 import org.openhab.binding.deconz.internal.StateDescriptionProvider;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
@@ -105,7 +106,14 @@ public class LightsTest {
         Thing light = ThingBuilder.create(THING_TYPE_COLOR_TEMPERATURE_LIGHT, thingUID).withProperties(properties)
                 .withChannel(ChannelBuilder.create(channelUID_bri, "Dimmer").build())
                 .withChannel(ChannelBuilder.create(channelUID_ct, "Number").build()).build();
-        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider);
+        LightThingHandler lightThingHandler = new LightThingHandler(light, gson, stateDescriptionProvider) {
+            // avoid warning when initializing
+            @Override
+            public @Nullable Bridge getBridge() {
+                return null;
+            }
+        };
+
         lightThingHandler.initialize();
 
         Mockito.verify(stateDescriptionProvider).setDescription(eq(channelUID_ct), any());

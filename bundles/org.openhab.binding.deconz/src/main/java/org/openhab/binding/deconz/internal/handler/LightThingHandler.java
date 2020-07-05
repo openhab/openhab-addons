@@ -16,6 +16,7 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 import static org.openhab.binding.deconz.internal.Util.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -99,23 +100,27 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     @Override
     public void initialize() {
-        try {
-            Map<String, String> properties = thing.getProperties();
-            ctMax = Integer.parseInt(properties.get(PROPERTY_CT_MAX));
-            ctMin = Integer.parseInt(properties.get(PROPERTY_CT_MIN));
+        if (thing.getThingTypeUID().equals(THING_TYPE_COLOR_TEMPERATURE_LIGHT)
+                || thing.getThingTypeUID().equals(THING_TYPE_EXTENDED_COLOR_LIGHT)) {
+            try {
+                Map<String, String> properties = thing.getProperties();
+                ctMax = Integer.parseInt(properties.get(PROPERTY_CT_MAX));
+                ctMin = Integer.parseInt(properties.get(PROPERTY_CT_MIN));
 
-            StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
-                    .withMinimum(new BigDecimal(miredToKelvin(ctMin))).withMaximum(new BigDecimal(miredToKelvin(ctMax))).build().toStateDescription();
-            if (stateDescription != null) {
-                stateDescriptionProvider.setDescription(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE),
-                        stateDescription);
-            } else {
-                logger.warn("Failed to create state description in thing {}", thing.getUID());
+                // minimum and maximum are inverted due to mired/kelvin conversion!
+                StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
+                        .withMinimum(new BigDecimal(miredToKelvin(ctMax)))
+                        .withMaximum(new BigDecimal(miredToKelvin(ctMin))).build().toStateDescription();
+                if (stateDescription != null) {
+                    stateDescriptionProvider.setDescription(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE),
+                            stateDescription);
+                } else {
+                    logger.warn("Failed to create state description in thing {}", thing.getUID());
+                }
+            } catch (NumberFormatException e) {
+                needsPropertyUpdate = true;
             }
-        } catch (NumberFormatException e) {
-            needsPropertyUpdate = true;
         }
-
         super.initialize();
     }
 
@@ -278,12 +283,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 needsPropertyUpdate = false;
 
                 if (lightMessage.ctmin != null && lightMessage.ctmax != null) {
-
-                    Map<String, String> properties = thing.getProperties();
+                    Map<String, String> properties = new HashMap<>(thing.getProperties());
                     properties.put(PROPERTY_CT_MAX,
                             Integer.toString(Util.constrainToRange(lightMessage.ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
                     properties.put(PROPERTY_CT_MIN,
                             Integer.toString(Util.constrainToRange(lightMessage.ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
+
+                    logger.warn("properties new {}", properties);
                     updateProperties(properties);
                 }
             }
