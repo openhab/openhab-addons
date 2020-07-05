@@ -163,7 +163,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             commPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT);
             logger.debug("Starting receive thread");
             TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this,
-                    config.autoRepairInvalidADPSgroupLine);
+                    config.autoRepairInvalidADPSgroupLine, scheduler);
             this.receiveThread = receiveThread;
             receiveThread.start();
 

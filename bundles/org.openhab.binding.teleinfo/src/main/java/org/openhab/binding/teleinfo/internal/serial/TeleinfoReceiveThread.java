@@ -13,6 +13,7 @@
 package org.openhab.binding.teleinfo.internal.serial;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,21 +38,24 @@ public class TeleinfoReceiveThread extends Thread {
     private SerialPort serialPort;
     private @Nullable TeleinfoReceiveThreadListener listener;
     private boolean autoRepairInvalidADPSgroupLine;
+    private ExecutorService executorService;
 
     public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoReceiveThreadListener listener,
-            boolean autoRepairInvalidADPSgroupLine) {
+            boolean autoRepairInvalidADPSgroupLine, ExecutorService scheduler) {
         super("TeleinfoReceiveThread");
 
         this.serialPort = serialPort;
         this.listener = listener;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
+        this.executorService = scheduler;
     }
 
     @Override
     public void run() {
         try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
                 TeleinfoInputStream.DEFAULT_TIMEOUT_NEXT_HEADER_FRAME * 100,
-                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 100, autoRepairInvalidADPSgroupLine)) {
+                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 100, autoRepairInvalidADPSgroupLine,
+                executorService)) {
             while (!interrupted()) {
                 TeleinfoReceiveThreadListener listener = this.listener;
                 if (listener != null) {

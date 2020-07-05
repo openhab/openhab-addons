@@ -90,7 +90,7 @@ public class TeleinfoInputStream extends InputStream {
 
     private BufferedReader bufferedReader;
     private @Nullable String groupLine;
-    private ExecutorService executorService = Executors.newFixedThreadPool(2);
+    private ExecutorService executorService;
     private long waitNextHeaderFrameTimeoutInMs;
     private long readingFrameTimeoutInMs;
     private boolean autoRepairInvalidADPSgroupLine;
@@ -125,8 +125,16 @@ public class TeleinfoInputStream extends InputStream {
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
 
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
+        this.executorService = Executors.newFixedThreadPool(2);
 
         groupLine = null;
+    }
+
+    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInMs,
+            long readingFrameTimeoutInMs, boolean autoRepairInvalidADPSgroupLine, ExecutorService executorService) {
+        this(teleinfoInputStream, waitNextHeaderFrameTimeoutInMs, readingFrameTimeoutInMs,
+                autoRepairInvalidADPSgroupLine);
+        this.executorService = executorService;
     }
 
     @Override
