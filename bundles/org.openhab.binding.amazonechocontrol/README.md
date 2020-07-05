@@ -162,8 +162,6 @@ It will be configured at runtime by using the save channel to store the current 
 | bluetoothDeviceName   | String      | R           | echo, echoshow, echospot      | User friendly name of the connected bluetooth device
 | radioStationId        | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a TuneIn radio station by specifying its id or stops playing if an empty string was provided
 | radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openhab start)
-| amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by specifying its id or stops playing if an empty string was provided
-| amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided. Selection will only work in PaperUI
 | amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by its id or stops playing if an empty string was provided
 | amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided. Selection will only work in PaperUI
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
