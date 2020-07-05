@@ -363,7 +363,30 @@ The following channels are supported:
 | statusETHOverUDP    | String    | This channel reports communication status for ETH over UDP.          |
 | testTimeETHOverUDP  | DateTime  | This channel reports last communication test time for ETH over UDP.  |
 
+## Trigger Events
 
+The following trigger events are defined per thing type:
+
+| Event             | Thing Type    | Description                                                | 
+|-------------------|---------------|------------------------------------------------------------|                                                                                                                                          
+| LOCK              | SmartLock     | SmartLock has been locked.                                 |
+| UNLOCK            | SmartLock     | SmartLock has been locked.                                 |
+| LOCK_FAILURE      | SmartLock     | SmartLock has failed to lock/unlock.                       |
+| ARM               | Alarm         | Alarm has been armed.                                      |
+| DISARM            | Alarm         | Alarm has been disarmed.                                   |
+| DOORWINDOW_OPENED | DoorWindow    | DoorWindow has detected a door/window that opened.         |
+| DOORWINDOW_CLOSED | DoorWindow    | DoorWindow has detected a door/window that closed.         |
+| INTRUSION         | DoorWindow    | DoorWindow has detected an intrusion.                      |
+| FIRE              | SmokeDetector | SmokeDetector has detected fire/smoke.                     |
+| WATER             | WaterDetector | WaterDetector has detected a water leak.                   |
+| MICE              | MiceDetector  | WaterMiceDetector has detected a mouse.                    |
+| COM_FAILURE       | All           | Communication failure detected.                            |
+| COM_RESTORED      | All           | Communication restored.                                    |
+| COM_TEST          | All           | Communication test.                                        |
+| BATTERY_LOW       | All           | Battery low level detected.                                |
+| BATTERY_RESTORED  | All           | Battery level restored.                                    |
+| SABOTAGE_ALARM    | All           | Sabotage alarm detected.                                   |
+| SABOTAGE_RESTORED | All           | Sabotage alarm restored.                                   |
 
 ## Example
 
