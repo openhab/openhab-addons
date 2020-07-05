@@ -14,8 +14,6 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -30,7 +28,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -77,19 +74,10 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
         updateStatus(ThingStatus.UNKNOWN);
         config = getThing().getConfiguration();
 
-        try {
-            @SuppressWarnings("unused")
-            InetAddress addr = InetAddress.getByName(config.get(HOST).toString()); // validate IP address
-            host = config.get(HOST).toString();
-            port = config.get(PORT).toString();
-            statusRefreshRate = Integer.parseInt((config.get(STATUS_REFRESH_TIME).toString()));
-            addSecondaryUnits = Boolean.valueOf(config.get(ADD_SECONDARY_UNITS).toString());
-
-        } catch (UnknownHostException e) {
-            logger.warn("Bridge IP/PORT config is not set or not valid");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-            return;
-        }
+        host = config.get(HOST).toString();
+        port = config.get(PORT).toString();
+        statusRefreshRate = Integer.parseInt((config.get(STATUS_REFRESH_TIME).toString()));
+        addSecondaryUnits = Boolean.valueOf(config.get(ADD_SECONDARY_UNITS).toString());
 
         scheduler.execute(() -> {
             boolean thingReachable = false;
