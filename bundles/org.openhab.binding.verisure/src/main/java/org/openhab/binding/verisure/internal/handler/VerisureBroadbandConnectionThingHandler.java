@@ -65,6 +65,5 @@ public class VerisureBroadbandConnectionThingHandler extends VerisureThingHandle
 
     @Override
     public void updateTriggerChannel(String event) {
-
     }
 }

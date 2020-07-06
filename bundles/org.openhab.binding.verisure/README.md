@@ -365,6 +365,7 @@ The following channels are supported:
 
 ## Trigger Events
 
+To be able to get trigger events you need an active Event Log thing, you can either get it via auto-detection or create your own in a things-file.
 The following trigger events are defined per thing type:
 
 | Event             | Thing Type    | Description                                                | 

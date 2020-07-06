@@ -166,7 +166,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
             String eventCategory = newEvent.getEventCategory();
             logger.debug("Trigger event type {}, event category {} for thing {}", eventType, eventCategory, deviceId);
             if (session != null && eventType != null && deviceId != null) {
-                String deviceIdTransformed = deviceId.replaceAll("[^a-zA-Z0-9]+", "");
+                String deviceIdTransformed = VerisureThingConfiguration.normalizeDeviceId(deviceId);
                 @Nullable
                 T thing = session.getVerisureThing(deviceIdTransformed);
                 if (thing != null) {

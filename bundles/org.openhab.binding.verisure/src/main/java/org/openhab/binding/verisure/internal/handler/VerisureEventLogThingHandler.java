@@ -15,6 +15,7 @@ package org.openhab.binding.verisure.internal.handler;
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,8 +115,7 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
                 if (eventId != null) {
                     if (eventId.contains("-")) {
                         eventId = eventId.replace("-", "");
-                        long hexEventId = Long.parseLong(eventId, 16);
-                        lastEventId = new BigDecimal(hexEventId);
+                        lastEventId = new BigDecimal(new BigInteger(eventId, 16));
                     } else {
                         lastEventId = new BigDecimal(eventId);
                     }
@@ -170,6 +170,5 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
 
     @Override
     public void updateTriggerChannel(String event) {
-
     }
 }

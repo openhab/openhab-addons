@@ -97,6 +97,5 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler<Veris
 
     @Override
     public void updateTriggerChannel(String event) {
-
     }
 }
