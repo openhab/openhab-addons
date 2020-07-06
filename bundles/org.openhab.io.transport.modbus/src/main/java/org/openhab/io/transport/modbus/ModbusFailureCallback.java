@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Nagy Attila Gabor - Initial contribution
  */
+@FunctionalInterface
 @NonNullByDefault
 public interface ModbusFailureCallback<R> {
     /**
