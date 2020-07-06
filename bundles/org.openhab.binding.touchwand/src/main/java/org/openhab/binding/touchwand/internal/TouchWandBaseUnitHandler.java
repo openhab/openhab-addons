@@ -99,7 +99,8 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
         bridgeStatus = bridge.getStatus();
 
-        unitId = getThing().getUID().toString().split(":")[3]; // touchwand id
+        unitId = getThing().getUID().getId(); // touchwand unit id
+
         bridgeHandler.registerUpdateListener(this);
 
         if (!bridgeStatus.equals(ThingStatus.ONLINE)) {
