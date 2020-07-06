@@ -69,8 +69,8 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
         keepAliveThread = scheduler.scheduleWithFixedDelay(() -> {
             if (!isInitialized()) {
-                updateStatus(ThingStatus.UNKNOWN);
                 openSerialPortAndStartReceiving();
+                updateStatus(ThingStatus.UNKNOWN);
             }
             logger.debug("Check Teleinfo receiveThread status...");
             logger.debug("isInitialized() = {}", isInitialized());
