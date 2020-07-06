@@ -150,13 +150,9 @@ public class TeleinfoInputStream extends InputStream {
      * Returns the next frame.
      *
      * @return the next frame or null if end of stream
-     * @throws InvalidFrameException if the read data from
-     * @throws TimeoutException if the delay to read a complete frame is expired (33,4 ms) or if the delay to find
-     *             the
-     *             header of next frame is expired (33,4 ms)
-     * @throws IOException
+     * @throws Exception
      */
-    public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, TimeoutException, IOException {
+    public synchronized @Nullable Frame readNextFrame() throws Exception {
         // seek the next header frame
         Future<@Nullable Void> seekNextHeaderFrameTask = executorService.submit(() -> {
             while (!isHeaderFrame(groupLine)) {
@@ -184,8 +180,7 @@ public class TeleinfoInputStream extends InputStream {
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         } catch (ExecutionException e) {
-            rethrowTaskExecutionException(e);
-            return null; // FIXME best way ?
+            throw rethrowTaskExecutionException(e);
         }
 
         Future<Map<Label, Object>> nextFrameFuture = executorService.submit(new Callable<Map<Label, Object>>() {
@@ -266,8 +261,7 @@ public class TeleinfoInputStream extends InputStream {
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         } catch (ExecutionException e) {
-            rethrowTaskExecutionException(e);
-            return null; // FIXME best way ?
+            throw rethrowTaskExecutionException(e);
         }
     }
 
@@ -664,17 +658,16 @@ public class TeleinfoInputStream extends InputStream {
         return String.format("%8s", Integer.toBinaryString(value)).replace(' ', '0');
     }
 
-    private Exception rethrowTaskExecutionException(ExecutionException e)
-            throws InvalidFrameException, IOException, TimeoutException {
+    private Exception rethrowTaskExecutionException(ExecutionException e) {
         Throwable cause = e.getCause();
         if (cause instanceof InvalidFrameException) {
-            throw (InvalidFrameException) cause;
+            return (InvalidFrameException) cause;
         } else if (cause instanceof IOException) {
-            throw (IOException) cause;
+            return (IOException) cause;
         } else if (cause instanceof TimeoutException) {
-            throw (TimeoutException) cause;
+            return (TimeoutException) cause;
         } else {
-            throw new IllegalStateException(e);
+            return new IllegalStateException(e);
         }
     }
 }
