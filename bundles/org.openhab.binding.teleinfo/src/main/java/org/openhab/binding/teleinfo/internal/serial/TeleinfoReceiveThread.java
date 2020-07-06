@@ -43,7 +43,7 @@ public class TeleinfoReceiveThread extends Thread {
     public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoReceiveThreadListener listener,
             boolean autoRepairInvalidADPSgroupLine, ExecutorService scheduler) {
         super("TeleinfoReceiveThread");
-
+        setDaemon(true);
         this.serialPort = serialPort;
         this.listener = listener;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
