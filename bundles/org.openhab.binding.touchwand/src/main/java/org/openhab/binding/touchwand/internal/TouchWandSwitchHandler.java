@@ -47,7 +47,7 @@ public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
             } else if ((status >= 1) && (status <= 255)) {
                 state = OnOffType.ON;
             } else {
-                logger.warn("updateTouchWandUnitState illigal update value {}", status);
+                logger.warn("updateTouchWandUnitState illegal update value {}", status);
                 return;
             }
             updateState(CHANNEL_SWITCH, state);
