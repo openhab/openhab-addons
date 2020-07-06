@@ -650,8 +650,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.trace("Message: {}", gson.toJson(message));
             logger.trace("Messagetype: {}", message.getType());
         }
-        if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDeviceLinkList() != null) {
-            for (final String link : message.getDeviceLinkList()) {
+        if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDevices() != null) {
+            for (final String link : message.getDevices()) {
                 deviceStructMan.refreshDevice(Link.getId(link));
                 final Device device = deviceStructMan.getDeviceById(Link.getId(link));
                 if (device != null) {

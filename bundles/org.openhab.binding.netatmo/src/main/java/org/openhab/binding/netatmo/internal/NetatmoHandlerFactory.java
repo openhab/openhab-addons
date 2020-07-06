@@ -64,8 +64,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private final Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private final HttpService httpService;
     private final NATherm1StateDescriptionProvider stateDescriptionProvider;
     private final TimeZoneProvider timeZoneProvider;

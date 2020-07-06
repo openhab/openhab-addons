@@ -110,6 +110,7 @@ The sensor devices support some of the following channels:
 |-----------------|--------------------------|:-----------:|-------------------------------------------------------------------------------------------|----------------------------------------------|
 | presence        | Switch                   |      R      | Status of presence: `ON` = presence; `OFF` = no-presence                                  | presencesensor                               |
 | last_updated    | DateTime                 |      R      | Timestamp when the sensor was last updated                                                | all, except daylightsensor                   |
+| last_seen       | DateTime                 |      R      | Timestamp when the sensor was last seen                                                   | all, except daylightsensor                   |
 | power           | Number:Power             |      R      | Current power usage in Watts                                                              | powersensor, sometimes for consumptionsensor |
 | consumption     | Number:Energy            |      R      | Current power usage in Watts/Hour                                                         | consumptionsensor                            |
 | voltage         | Number:ElectricPotential |      R      | Current voltage in V                                                                      | some powersensors                            |

@@ -81,6 +81,7 @@
 					<option value="F00.00.21">2441V Insteon Thermostat Adaptor for Venstar - F00.00.21</option>
 					<option value="F00.00.22">2982-222 Insteon Smoke Bridge - F00.00.22</option>
 					<option value="F00.00.23">2487S KeypadLinc On/Off 8-Button - F00.00.23</option>
+					<option value="F00.00.24">Motion Sensor II - F00.00.24</option>
 					<option value="0x00001A">2450 IO Link - 0x00001A</option>
 					<option value="0x000037">2486D KeypadLinc Dimmer - 0x000037</option>
 					<option value="0x000039">2663-222 On/Off Outlet - 0x000039</option>
@@ -112,6 +113,11 @@
 	<channel-type id="batteryLevel">
 		<item-type>Number</item-type>
 		<label>Battery Level</label>
+	</channel-type>
+
+	<channel-type id="batteryPercent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Percent</label>
 	</channel-type>
 
 	<channel-type id="batteryWatermarkLevel">
@@ -459,9 +465,19 @@
 		<label>System Mode</label>
 	</channel-type>
 
+	<channel-type id="tamperSwitch">
+		<item-type>Contact</item-type>
+		<label>Tamper Switch</label>
+	</channel-type>
+
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
+	</channel-type>
+
+	<channel-type id="temperatureLevel">
+		<item-type>Number</item-type>
+		<label>Temperature Level</label>
 	</channel-type>
 
 	<channel-type id="topOutlet">

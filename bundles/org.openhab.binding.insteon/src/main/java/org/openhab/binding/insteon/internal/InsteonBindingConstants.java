@@ -33,6 +33,7 @@ public class InsteonBindingConstants {
     public static final String AC_DELAY = "acDelay";
     public static final String BACKLIGHT_DURATION = "backlightDuration";
     public static final String BATTERY_LEVEL = "batteryLevel";
+    public static final String BATTERY_PERCENT = "batteryPercent";
     public static final String BATTERY_WATERMARK_LEVEL = "batteryWatermarkLevel";
     public static final String BEEP = "beep";
     public static final String BOTTOM_OUTLET = "bottomOutlet";
@@ -102,7 +103,9 @@ public class InsteonBindingConstants {
     public static final String STAGE1_DURATION = "stage1Duration";
     public static final String SWITCH = "switch";
     public static final String SYSTEM_MODE = "systemMode";
+    public static final String TAMPER_SWITCH = "tamperSwitch";
     public static final String TEMPERATURE = "temperature";
+    public static final String TEMPERATURE_LEVEL = "temperatureLevel";
     public static final String TOP_OUTLET = "topOutlet";
     public static final String UPDATE = "update";
     public static final String WATTS = "watts";

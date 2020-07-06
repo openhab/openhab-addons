@@ -78,7 +78,7 @@ public class ExpiringCacheAsyncTest {
         verify(u, times(0)).requestCacheUpdate();
         // Wait
         try {
-            Thread.sleep(100);
+            Thread.sleep(101);
         } catch (InterruptedException ignored) {
             return;
         }

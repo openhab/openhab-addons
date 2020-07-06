@@ -20,20 +20,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class AbstractTest
-{
-    protected File getTestDataFile(String name)
-    {
+public abstract class AbstractTest {
+    protected File getTestDataFile(String name) {
         return getTestDataPath(name).toFile();
     }
 
-    protected Path getTestDataPath(String name)
-    {
+    protected Path getTestDataPath(String name) {
         return TestUtil.getTestDataPath(this.getClass(), name);
     }
 
-    protected String readJson(String jsonFileName) throws IOException
-    {
-        return new String(Files.readAllBytes(getTestDataPath(jsonFileName)));
+    protected String readJson(String jsonFileName) throws IOException {
+        return String.join("\n", Files.readAllLines(getTestDataPath(jsonFileName)));
     }
 }

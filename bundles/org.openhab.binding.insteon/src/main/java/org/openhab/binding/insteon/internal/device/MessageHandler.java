@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.insteon.internal.device.DeviceFeatureListener.StateChangeType;
 import org.openhab.binding.insteon.internal.device.GroupMessageStateMachine.GroupMessage;
+import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -259,12 +260,12 @@ public abstract class MessageHandler {
                 // from the original broadcaster, with which the device
                 // confirms that it got all cleanup replies successfully.
                 GroupMessage gm = (cmd1 == 0x06) ? GroupMessage.SUCCESS : GroupMessage.BCAST;
-                isDuplicate = !feature.getDevice().getGroupState(group, gm);
+                isDuplicate = !feature.getDevice().getGroupState(group, gm, cmd1);
             } else if (t == MsgType.ALL_LINK_CLEANUP) {
                 // the cleanup messages are direct messages, so the
                 // group # is not in the toAddress, but in cmd2
                 int group = msg.getByte("command2") & 0xff;
-                isDuplicate = !feature.getDevice().getGroupState(group, GroupMessage.CLEAN);
+                isDuplicate = !feature.getDevice().getGroupState(group, GroupMessage.CLEAN, (byte) 0);
             }
         } catch (IllegalArgumentException e) {
             logger.warn("cannot parse msg: {}", msg, e);
@@ -715,15 +716,46 @@ public abstract class MessageHandler {
             }
             try {
                 int cmd2 = msg.getByte("command2") & 0xff;
+                int batteryLevel;
+                int lightLevel;
+                int temperatureLevel;
                 switch (cmd2) {
                     case 0x00: // this is a product data response message
-                        int batteryLevel = msg.getByte("userData12") & 0xff;
-                        int lightLevel = msg.getByte("userData11") & 0xff;
+                        batteryLevel = msg.getByte("userData12") & 0xff;
+                        lightLevel = msg.getByte("userData11") & 0xff;
                         logger.debug("{}: {} got light level: {}, battery level: {}", nm(), dev.getAddress(),
                                 lightLevel, batteryLevel);
-                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, "field", "light_level");
-                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, "field",
-                                "battery_level");
+                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                        break;
+                    case 0x03: // this is the 2844-222 data response message
+                        batteryLevel = msg.getByte("userData6") & 0xff;
+                        lightLevel = msg.getByte("userData7") & 0xff;
+                        temperatureLevel = msg.getByte("userData8") & 0xff;
+                        logger.debug("{}: {} got light level: {}, battery level: {}, temperature level: {}", nm(),
+                                dev.getAddress(), lightLevel, batteryLevel, temperatureLevel);
+                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                        feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_TEMPERATURE_LEVEL);
+
+                        // per 2844-222 dev doc: working battery level range is 0xd2 - 0x70
+                        int batteryPercentage;
+                        if (batteryLevel >= 0xd2) {
+                            batteryPercentage = 100;
+                        } else if (batteryLevel <= 0x70) {
+                            batteryPercentage = 0;
+                        } else {
+                            batteryPercentage = (batteryLevel - 0x70) * 100 / (0xd2 - 0x70);
+                        }
+                        logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
+                        feature.publish(new QuantityType<>(batteryPercentage, SmartHomeUnits.PERCENT),
+                                StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
+                                InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
@@ -756,10 +788,10 @@ public abstract class MessageHandler {
                         int batteryWatermark = msg.getByte("userData7") & 0xff;
                         logger.debug("{}: {} got light level: {}, battery level: {}", nm(), dev.getAddress(),
                                 batteryWatermark, batteryLevel);
-                        feature.publish(new DecimalType(batteryWatermark), StateChangeType.CHANGED, "field",
-                                "battery_watermark_level");
-                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, "field",
-                                "battery_level");
+                        feature.publish(new DecimalType(batteryWatermark), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_WATERMARK_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
@@ -801,9 +833,9 @@ public abstract class MessageHandler {
 
                     logger.debug("{}:{} watts: {} kwh: {} ", nm(), f.getDevice().getAddress(), watts, kwh);
                     feature.publish(new QuantityType<>(kwh, SmartHomeUnits.KILOWATT_HOUR), StateChangeType.CHANGED,
-                            "field", "kwh");
-                    feature.publish(new QuantityType<>(watts, SmartHomeUnits.WATT), StateChangeType.CHANGED, "field",
-                            "watts");
+                            InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_KWH);
+                    feature.publish(new QuantityType<>(watts, SmartHomeUnits.WATT), StateChangeType.CHANGED,
+                            InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_WATTS);
                 } catch (FieldException e) {
                     logger.warn("error parsing {}: ", msg, e);
                 }
@@ -941,7 +973,11 @@ public abstract class MessageHandler {
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
-            sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
+            if (f.getDevice().hasProductKey(InsteonDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
+                sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
+            } else {
+                sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
+            }
         }
     }
 
@@ -954,7 +990,11 @@ public abstract class MessageHandler {
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
-            sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
+            if (f.getDevice().hasProductKey(InsteonDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
+                sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
+            } else {
+                sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
+            }
         }
     }
 
