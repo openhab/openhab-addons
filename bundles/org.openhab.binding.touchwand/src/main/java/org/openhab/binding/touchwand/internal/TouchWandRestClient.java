@@ -99,10 +99,8 @@ public class TouchWandRestClient {
     private final boolean cmdLogin(String user, String pass, String ipAddr) {
         String command = buildUrl(CMD_LOGIN) + "user=" + user + "&" + "psw=" + pass;
         String response = sendCommand(command, METHOD_GET, "");
-        if (response != null && !response.equals("Unauthorized")) {
-            return true;
-        }
-        return false;
+
+        return response != null && !response.equals("Unauthorized");
     }
 
     public String cmdListUnits() {

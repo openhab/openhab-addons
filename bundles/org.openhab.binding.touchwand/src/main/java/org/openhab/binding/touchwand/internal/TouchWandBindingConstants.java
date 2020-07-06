@@ -42,7 +42,7 @@ public class TouchWandBindingConstants {
     public static final String CHANNEL_SHUTTER = "shutter";
     public static final String CHANNEL_DIMMER = "brightness";
     public static final String CHANNEL_ALARM = "alarm";
-    public static final String CHANNEL_WALLCONTROLER_ACTION = "wallaction";
+    public static final String CHANNEL_WALLCONTROLLER_ACTION = "wallaction";
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
 
