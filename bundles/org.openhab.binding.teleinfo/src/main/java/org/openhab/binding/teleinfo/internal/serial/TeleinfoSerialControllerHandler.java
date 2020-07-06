@@ -136,17 +136,16 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
         TeleinfoSerialControllerConfiguration config = getConfigAs(TeleinfoSerialControllerConfiguration.class);
 
         if (config.serialport.trim().isEmpty()) {
-            logger.error("Teleinfo port is not set.");
+            logger.warn("Teleinfo port is not set.");
             return;
         }
 
-        logger.info("Connecting to serial port '{}'...", config.serialport);
+        logger.debug("Connecting to serial port '{}'...", config.serialport);
         String currentOwner = null;
         try {
             final SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.serialport);
             logger.debug("portIdentifier = {}", portIdentifier);
             if (portIdentifier == null) {
-                logger.error("No port identifier for '{}'", config.serialport);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         ERROR_OFFLINE_SERIAL_NOT_FOUND);
                 return;
@@ -166,7 +165,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             this.receiveThread = receiveThread;
             receiveThread.start();
 
-            logger.info("Connected to serial port '{}'", config.serialport);
+            logger.debug("Connected to serial port '{}'", config.serialport);
         } catch (PortInUseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     ERROR_OFFLINE_SERIAL_INUSE);
