@@ -91,8 +91,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     public void dispose() {
         ScheduledFuture<?> keepAliveThreadRef = keepAliveThread;
         if (keepAliveThreadRef != null) {
-            if (!keepAliveThreadRef.isCancelled())
-                keepAliveThreadRef.cancel(true);
+            keepAliveThreadRef.cancel(true);
             keepAliveThread = null;
         }
         stopReceivingAndCloseSerialPort();
