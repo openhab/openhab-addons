@@ -64,20 +64,20 @@ public class TeleinfoReceiveThread extends Thread {
                         if (nextFrame != null)
                             listener.onFrameReceived(this, nextFrame);
                     } catch (InvalidFrameException e) {
-                        logger.error("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
+                        logger.warn("Got invalid frame. Detail: \"{}\"", e.getLocalizedMessage());
                         listener.onInvalidFrameReceived(this, e);
                     } catch (TimeoutException e) {
-                        logger.error("Got timeout during frame reading", e);
+                        logger.warn("Got timeout during frame reading", e);
                         if (!listener.continueOnReadNextFrameTimeoutException(this, e)) {
                             break;
                         }
                         // skipInputStreamBuffer();
                     } catch (IOException e) {
-                        logger.error("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
+                        logger.warn("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
                         listener.onSerialPortInputStreamIOException(this, e);
                         break;
                     } catch (Exception e) {
-                        logger.error("Got exception", e);
+                        logger.warn("Got exception", e);
                     }
                 }
             }
