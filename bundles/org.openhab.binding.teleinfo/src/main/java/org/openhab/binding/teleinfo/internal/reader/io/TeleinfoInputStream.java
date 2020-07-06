@@ -91,7 +91,7 @@ public class TeleinfoInputStream extends InputStream {
     private BufferedReader bufferedReader;
     private @Nullable String groupLine;
     private ExecutorService executorService;
-    private long waitNextHeaderFrameTimeoutInMs;
+    private long waitNextHeaderFrameTimeoutInUs;
     private long readingFrameTimeoutInMs;
     private boolean autoRepairInvalidADPSgroupLine;
 
@@ -120,7 +120,7 @@ public class TeleinfoInputStream extends InputStream {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
 
-        this.waitNextHeaderFrameTimeoutInMs = waitNextHeaderFrameTimeoutInMs;
+        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInMs;
         this.readingFrameTimeoutInMs = readingFrameTimeoutInMs;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
 
@@ -171,8 +171,8 @@ public class TeleinfoInputStream extends InputStream {
         });
         try {
             logger.debug("seeking the next header frame...");
-            logger.trace("waitNextHeaderFrameTimeoutInMs = {}", waitNextHeaderFrameTimeoutInMs);
-            seekNextHeaderFrameTask.get(waitNextHeaderFrameTimeoutInMs, TimeUnit.MICROSECONDS);
+            logger.trace("waitNextHeaderFrameTimeoutInUs = {}", waitNextHeaderFrameTimeoutInUs);
+            seekNextHeaderFrameTask.get(waitNextHeaderFrameTimeoutInUs, TimeUnit.MICROSECONDS);
 
             if (groupLine == null) { // end of stream
                 return null;
@@ -266,11 +266,11 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     public long getWaitNextHeaderFrameTimeoutInMs() {
-        return waitNextHeaderFrameTimeoutInMs;
+        return waitNextHeaderFrameTimeoutInUs;
     }
 
     public void setWaitNextHeaderFrameTimeoutInMs(long waitNextHeaderFrameTimeoutInMs) {
-        this.waitNextHeaderFrameTimeoutInMs = waitNextHeaderFrameTimeoutInMs;
+        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInMs;
     }
 
     public long getReadingFrameTimeoutInMs() {
