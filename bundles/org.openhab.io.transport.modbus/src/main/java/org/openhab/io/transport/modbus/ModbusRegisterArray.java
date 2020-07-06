@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ModbusRegisterArray implements Iterable<ModbusRegister> {
 
-    private ModbusRegister[] registers;
+    private final ModbusRegister[] registers;
 
     /**
      * Construct plain <code>ModbusRegister[]</code> array from register values

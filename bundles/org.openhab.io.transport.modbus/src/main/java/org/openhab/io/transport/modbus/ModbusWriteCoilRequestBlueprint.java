@@ -31,11 +31,11 @@ public class ModbusWriteCoilRequestBlueprint extends ModbusWriteRequestBlueprint
         toStringStyle.setUseShortClassName(true);
     }
 
-    private int slaveId;
-    private int reference;
-    private BitArray bits;
-    private boolean writeMultiple;
-    private int maxTries;
+    private final int slaveId;
+    private final int reference;
+    private final BitArray bits;
+    private final boolean writeMultiple;
+    private final int maxTries;
 
     /**
      * Construct coil write request with single bit of data

@@ -28,8 +28,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class BitArray implements Iterable<Boolean> {
 
-    private BitSet wrapped;
-    private int length;
+    private final BitSet wrapped;
+    private final int length;
 
     public BitArray(int nbits) {
         this(new BitSet(nbits), nbits);

@@ -24,7 +24,7 @@ import net.wimpi.modbus.procimg.SimpleInputRegister;
 @NonNullByDefault
 public class ModbusRegister {
 
-    private SimpleInputRegister wrapped;
+    private final SimpleInputRegister wrapped;
 
     /**
      * Constructs a new instance for bytes

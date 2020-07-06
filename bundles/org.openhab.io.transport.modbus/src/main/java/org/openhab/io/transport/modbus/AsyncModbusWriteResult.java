@@ -15,7 +15,6 @@ package org.openhab.io.transport.modbus;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Encapsulates result of modbus write operations
@@ -25,10 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class AsyncModbusWriteResult {
 
-    private ModbusWriteRequestBlueprint request;
+    private final ModbusWriteRequestBlueprint request;
 
-    @Nullable
-    private ModbusResponse response;
+    private final ModbusResponse response;
 
     public AsyncModbusWriteResult(ModbusWriteRequestBlueprint request, ModbusResponse response) {
         Objects.requireNonNull(request, "Request must not be null!");
@@ -51,7 +49,6 @@ public class AsyncModbusWriteResult {
      *
      * @return response
      */
-    @Nullable
     public ModbusResponse getResponse() {
         return response;
     }
@@ -61,10 +58,8 @@ public class AsyncModbusWriteResult {
         StringBuilder builder = new StringBuilder("AsyncModbusWriteResult(");
         builder.append("request = ");
         builder.append(request);
-        if (response != null) {
-            builder.append(", response = ");
-            builder.append(response);
-        }
+        builder.append(", response = ");
+        builder.append(response);
         builder.append(")");
         return builder.toString();
     }

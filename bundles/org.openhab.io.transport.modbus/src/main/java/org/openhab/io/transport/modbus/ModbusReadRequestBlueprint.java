@@ -38,11 +38,11 @@ public class ModbusReadRequestBlueprint {
         toStringStyle.setUseShortClassName(true);
     }
 
-    private int slaveId;
-    private ModbusReadFunctionCode functionCode;
-    private int start;
-    private int length;
-    private int maxTries;
+    private final int slaveId;
+    private final ModbusReadFunctionCode functionCode;
+    private final int start;
+    private final int length;
+    private final int maxTries;
 
     public ModbusReadRequestBlueprint(int slaveId, ModbusReadFunctionCode functionCode, int start, int length,
             int maxTries) {

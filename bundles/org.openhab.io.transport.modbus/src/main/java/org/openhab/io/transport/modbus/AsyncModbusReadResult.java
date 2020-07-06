@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AsyncModbusReadResult {
 
-    private ModbusReadRequestBlueprint request;
+    private final ModbusReadRequestBlueprint request;
 
     private final Optional<BitArray> bits;
 

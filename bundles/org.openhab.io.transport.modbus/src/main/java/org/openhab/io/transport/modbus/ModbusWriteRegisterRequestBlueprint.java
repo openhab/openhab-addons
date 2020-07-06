@@ -31,11 +31,11 @@ public class ModbusWriteRegisterRequestBlueprint extends ModbusWriteRequestBluep
         toStringStyle.setUseShortClassName(true);
     }
 
-    private int slaveId;
-    private int reference;
-    private ModbusRegisterArray registers;
-    private boolean writeMultiple;
-    private int maxTries;
+    private final int slaveId;
+    private final int reference;
+    private final ModbusRegisterArray registers;
+    private final boolean writeMultiple;
+    private final int maxTries;
 
     /**
      * Construct coil write request with many bits of data

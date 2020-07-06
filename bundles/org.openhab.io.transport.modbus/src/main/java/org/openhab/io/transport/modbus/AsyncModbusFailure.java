@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AsyncModbusFailure<R> {
-    private R request;
+    private final R request;
 
-    private Exception cause;
+    private final Exception cause;
 
     public AsyncModbusFailure(R request, Exception cause) {
         Objects.requireNonNull(request, "Request must not be null!");
