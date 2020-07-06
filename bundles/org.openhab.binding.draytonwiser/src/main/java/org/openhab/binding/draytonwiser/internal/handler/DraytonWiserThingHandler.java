@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.draytonwiser.internal.handler;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -23,7 +24,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.util.ThingHandlerHelper;
 import org.eclipse.smarthome.core.types.Command;
@@ -51,6 +51,7 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
     private @Nullable DraytonWiserApi api;
     private @Nullable T data;
     private @Nullable DraytonWiserDTO draytonWiseDTO;
+    private @Nullable ScheduledFuture<?> handleCommandRefreshFuture;
 
     protected DraytonWiserThingHandler(final Thing thing) {
         super(thing);
@@ -70,24 +71,43 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
 
     @Override
     public final void handleCommand(final ChannelUID channelUID, final Command command) {
+        final HeatHubHandler heatHubHandler = getHeatHubHandler();
+
+        if (heatHubHandler == null) {
+            return; // if null status will be updated to offline
+        }
         if (command instanceof RefreshType) {
-            getHeatHubHandler().refresh();
+            heatHubHandler.refresh();
         } else {
             final DraytonWiserApi api = this.api;
 
             if (api != null && data != null) {
                 handleCommand(channelUID.getId(), command);
+                // cancel previous refresh, but wait for it to finish, so no forced cancel
+                disposehandleCommandRefreshFuture(false);
                 // update the state after the heathub has had time to react
-                scheduler.schedule(() -> getHeatHubHandler().refresh(), 5, TimeUnit.SECONDS);
+                handleCommandRefreshFuture = scheduler.schedule(heatHubHandler::refresh, 5, TimeUnit.SECONDS);
             }
         }
+    }
+
+    private void disposehandleCommandRefreshFuture(final boolean force) {
+        if (handleCommandRefreshFuture != null) {
+            handleCommandRefreshFuture.cancel(force);
+            handleCommandRefreshFuture = null;
+        }
+    }
+
+    @Override
+    public final void dispose() {
+        disposehandleCommandRefreshFuture(true);
     }
 
     /**
      * Performs the actual command. This method is only called when api and device cache are not null.
      *
-     * @param channelId
-     * @param command
+     * @param channelId Channel id part of the Channel UID
+     * @param command the command to perform
      */
     protected abstract void handleCommand(String channelId, Command command);
 

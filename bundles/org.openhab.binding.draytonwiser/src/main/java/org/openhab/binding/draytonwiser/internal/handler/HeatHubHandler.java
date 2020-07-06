@@ -159,8 +159,8 @@ public class HeatHubHandler extends BaseBridgeHandler {
         if (discoveryService != null) {
             discoveryService.onRefresh(domain);
         }
-        getThing().getThings().stream().map(Thing::getHandler).filter(handler -> handler instanceof DraytonWiserRefreshListener)
-                .map(DraytonWiserRefreshListener.class::cast)
-                .forEach(listener -> listener.onRefresh(domain));
+        getThing().getThings().stream().map(Thing::getHandler)
+                .filter(handler -> handler instanceof DraytonWiserRefreshListener)
+                .map(DraytonWiserRefreshListener.class::cast).forEach(listener -> listener.onRefresh(domain));
     }
 }

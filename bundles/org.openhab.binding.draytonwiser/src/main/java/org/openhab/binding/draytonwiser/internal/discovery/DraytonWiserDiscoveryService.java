@@ -104,37 +104,20 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
     }
 
     private void onHotWaterAdded(final DraytonWiserDTO domainDTOProxy, final HotWaterDTO hotWater) {
-        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(hotWater.getId());
+        final Integer hotWaterId = hotWater.getId();
+        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(hotWaterId);
 
         if (device != null) {
-            logger.debug("Hot Water discovered, serialnumber: {}", device.getSerialNumber());
-            final RoomDTO assignedRoom = domainDTOProxy.getRoomForDeviceId(hotWater.getId());
-            final String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
-            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(THING_TYPE_HOTWATER, bridgeUID, "hotwater")).withBridge(bridgeUID)
-                    .withLabel(assignedRoomName + " - Hot Water").withRepresentationProperty(device.getSerialNumber())
-                    .build();
-
-            thingDiscovered(discoveryResult);
+            onThingWithSerialNumber("Hot Water", device, getRoomName(domainDTOProxy, hotWaterId));
         }
     }
 
     private void onRoomStatAdded(final DraytonWiserDTO domainDTOProxy, final RoomStatDTO roomStat) {
-        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(roomStat.getId());
+        final Integer roomStatId = roomStat.getId();
+        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(roomStatId);
 
         if (device != null) {
-            logger.debug("Smart Value discovered, serialnumber: {}", device.getSerialNumber());
-            final Map<String, Object> properties = new HashMap<>();
-
-            DraytonWiserPropertyHelper.setRoomStatProperties(device, properties);
-            final RoomDTO assignedRoom = domainDTOProxy.getRoomForDeviceId(roomStat.getId());
-            final String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
-            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(THING_TYPE_ROOMSTAT, bridgeUID, device.getSerialNumber()))
-                    .withProperties(properties).withBridge(bridgeUID).withLabel(assignedRoomName + " - Thermostat")
-                    .withRepresentationProperty(device.getSerialNumber()).build();
-
-            thingDiscovered(discoveryResult);
+            onThingWithSerialNumber("Thermostat", device, getRoomName(domainDTOProxy, roomStatId));
         }
     }
 
@@ -152,22 +135,11 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
     }
 
     private void onSmartValveAdded(final DraytonWiserDTO domainDTOProxy, final SmartValveDTO smartValve) {
-        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(smartValve.getId());
+        final Integer smartValueId = smartValve.getId();
+        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(smartValueId);
 
         if (device != null) {
-            logger.debug("Smart Value discovered, serialnumber: {}", device.getSerialNumber());
-            final Map<String, Object> properties = new HashMap<>();
-
-            DraytonWiserPropertyHelper.setSmartValveProperties(device, properties);
-            final RoomDTO assignedRoom = domainDTOProxy.getRoomForDeviceId(smartValve.getId());
-            final String assignedRoomName = assignedRoom == null ? "" : assignedRoom.getName();
-
-            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(THING_TYPE_ITRV, bridgeUID, device.getSerialNumber()))
-                    .withProperties(properties).withBridge(bridgeUID).withLabel(assignedRoomName + " - TRV")
-                    .withRepresentationProperty(device.getSerialNumber()).build();
-
-            thingDiscovered(discoveryResult);
+            onThingWithSerialNumber("TRV", device, getRoomName(domainDTOProxy, smartValueId));
         }
     }
 
@@ -175,18 +147,27 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
         final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(smartPlug.getId());
 
         if (device != null) {
-            logger.debug("Smart Value discovered, serialnumber: {}", device.getSerialNumber());
-            final Map<String, Object> properties = new HashMap<>();
-
-            DraytonWiserPropertyHelper.setSmartPlugProperties(device, properties, smartPlug.getName());
-            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(THING_TYPE_SMARTPLUG, bridgeUID,
-                            smartPlug.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
-                    .withProperties(properties).withBridge(bridgeUID).withLabel(smartPlug.getName() + " - Smart Plug")
-                    .withRepresentationProperty(device.getSerialNumber()).build();
-
-            thingDiscovered(discoveryResult);
+            onThingWithSerialNumber("Smart Plug", device, smartPlug.getName());
         }
+    }
+
+    private String getRoomName(final DraytonWiserDTO domainDTOProxy, final Integer roomId) {
+        final RoomDTO assignedRoom = domainDTOProxy.getRoomForDeviceId(roomId);
+        return assignedRoom == null ? "" : assignedRoom.getName();
+    }
+
+    private void onThingWithSerialNumber(final String deviceType, final DeviceDTO device, final String name) {
+        final String serialNumber = device.getSerialNumber();
+        logger.debug("{} discovered, serialnumber: {}", deviceType, serialNumber);
+        final Map<String, Object> properties = new HashMap<>();
+
+        DraytonWiserPropertyHelper.setPropertiesWithSerialNumber(device, properties);
+        final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                .create(new ThingUID(THING_TYPE_SMARTPLUG, bridgeUID, serialNumber)).withProperties(properties)
+                .withBridge(bridgeUID).withLabel((name.isEmpty() ? "" : (name + " - ")) + deviceType)
+                .withRepresentationProperty(serialNumber).build();
+
+        thingDiscovered(discoveryResult);
     }
 
     @Override

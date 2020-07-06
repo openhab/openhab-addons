@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -78,20 +77,17 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
 
     private State getHotWaterDemandState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType.from(hotWater.size() >= 1
-                && "ON".equalsIgnoreCase(hotWater.get(0).getHotWaterRelayState()));
+        return OnOffType.from(hotWater.size() >= 1 && "ON".equalsIgnoreCase(hotWater.get(0).getHotWaterRelayState()));
     }
 
     private State getManualModeState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType
-                .from(hotWater.size() >= 1 && "MANUAL".equalsIgnoreCase(hotWater.get(0).getMode()));
+        return OnOffType.from(hotWater.size() >= 1 && "MANUAL".equalsIgnoreCase(hotWater.get(0).getMode()));
     }
 
     private State getSetPointState() {
         final List<HotWaterDTO> hotWater = getData().hotWater;
-        return OnOffType.from(hotWater.size() >= 1
-                && "ON".equalsIgnoreCase(hotWater.get(0).getWaterHeatingState()));
+        return OnOffType.from(hotWater.size() >= 1 && "ON".equalsIgnoreCase(hotWater.get(0).getWaterHeatingState()));
     }
 
     private void setManualMode(final boolean manualMode) {

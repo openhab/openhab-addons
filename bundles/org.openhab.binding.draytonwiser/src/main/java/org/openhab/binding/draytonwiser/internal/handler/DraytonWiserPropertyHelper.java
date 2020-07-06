@@ -33,25 +33,9 @@ public final class DraytonWiserPropertyHelper {
         setGeneralDeviceProperties(device, properties);
     }
 
-    public static void setRoomStatProperties(final DeviceDTO device, final Map<String, Object> properties) {
-        setSerialNumber(device, properties);
-        setGeneralDeviceProperties(device, properties);
-    }
-
-    public static void setSmartValveProperties(final DeviceDTO device, final Map<String, Object> properties) {
-        setSerialNumber(device, properties);
-        setGeneralDeviceProperties(device, properties);
-    }
-
-    public static void setSmartPlugProperties(final DeviceDTO device, final Map<String, Object> properties,
-            final String name) {
-        setSerialNumber(device, properties);
-        setGeneralDeviceProperties(device, properties);
-        properties.put("plugName", name);
-    }
-
-    private static void setSerialNumber(final DeviceDTO device, final Map<String, Object> properties) {
+    public static void setPropertiesWithSerialNumber(final DeviceDTO device, final Map<String, Object> properties) {
         properties.put("serialNumber", device.getSerialNumber());
+        setGeneralDeviceProperties(device, properties);
     }
 
     public static <T> void setGeneralDeviceProperties(final DeviceDTO device, final Map<String, T> properties) {

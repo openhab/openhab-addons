@@ -212,7 +212,7 @@ public class DraytonWiserApi {
             logger.debug("Interrupted: {}", e.getMessage(), e);
             Thread.currentThread().interrupt();
         } catch (final ExecutionException e) {
-            logger.debug("Execution interrupted: {}", e.getMessage(), e);
+            logger.debug("Execution Exception: {}", e.getMessage(), e);
             throw new DraytonWiserApiException(e.getMessage(), e);
         } catch (final RuntimeException e) {
             logger.debug("Unexpected error: {}", e.getMessage(), e);

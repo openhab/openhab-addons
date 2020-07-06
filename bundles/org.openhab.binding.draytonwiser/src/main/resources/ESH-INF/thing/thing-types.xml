@@ -209,10 +209,6 @@
 		</channels>
 
 		<config-description>
-			<parameter name="plugName" type="text" required="true">
-				<label>Smart Plug Name</label>
-				<description>The plug name as it appears in the Wiser app</description>
-			</parameter>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
 				<description>Device Serial Number</description>
