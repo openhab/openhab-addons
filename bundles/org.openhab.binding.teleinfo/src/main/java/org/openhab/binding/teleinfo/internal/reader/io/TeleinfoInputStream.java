@@ -178,7 +178,8 @@ public class TeleinfoInputStream extends InputStream {
                 return null;
             }
         } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
+            logger.warn("Got interrupted exception", e);
+            Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             throw rethrowTaskExecutionException(e);
         }
@@ -259,6 +260,8 @@ public class TeleinfoInputStream extends InputStream {
 
             return frame;
         } catch (InterruptedException e) {
+            logger.warn("Got interrupted exception", e);
+            Thread.currentThread().interrupt();
             throw new IllegalStateException(e);
         } catch (ExecutionException e) {
             throw rethrowTaskExecutionException(e);
