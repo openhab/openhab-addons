@@ -53,7 +53,9 @@ folderwatcher:localfolder:myLocalFolder [ localDir="/tmp/dumps", pollIntervalLoc
 folderwatcher:ftpfolder:myLocalFolder [ ftpAddress="192.168.0.222", ftpPort=21, secureMode="EXPLICIT", ftpUsername="ftpuser", ftpPassword="ftppass",ftpDir="/suvcams/192.168.0.209",listHidden="true",listRecursiveFtp="true",connectionTimeout=33,pollInterval=66,diffHours=25]
 ```
 
-Using in a rule:
+### Using in a rule:
+
+FTP example
 
 ```java
 rule "New FTP file"
@@ -65,6 +67,8 @@ then
 
 end
 ```
+
+Local folder example
 
 ```java
 rule "New Local file"
