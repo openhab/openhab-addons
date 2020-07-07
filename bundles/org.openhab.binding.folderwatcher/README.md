@@ -55,7 +55,7 @@ folderwatcher:ftpfolder:myLocalFolder [ ftpAddress="192.168.0.222", ftpPort=21, 
 
 ### Using in a rule:
 
-FTP example
+FTP example:
 
 ```java
 rule "New FTP file"
@@ -68,7 +68,7 @@ then
 end
 ```
 
-Local folder example
+Local folder example:
 
 ```java
 rule "New Local file"
