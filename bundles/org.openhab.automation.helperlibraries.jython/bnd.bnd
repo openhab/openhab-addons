@@ -1,6 +1,6 @@
 Bundle-SymbolicName: ${project.artifactId}
 Import-Package: \
-  org.python.compiler;resolution:="optional" \
+  org.python.compiler;resolution:="optional", \
   com.bea.xml.stream;resolution:="optional"
 -includeresource: @openhab-helper-libraries-jython-[0-9]*.[0-9]*.[0-9]*.jar; lib:=true
 -fixupmessages: "Classes found in the wrong directory",\
