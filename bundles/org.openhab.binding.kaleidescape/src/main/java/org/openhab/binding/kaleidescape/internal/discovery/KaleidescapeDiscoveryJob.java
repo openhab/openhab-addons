@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -77,9 +78,8 @@ public class KaleidescapeDiscoveryJob implements Runnable {
                 logger.debug("No Kaleidescape component found at IP address ({})", ip);
                 return false;
             }
-        } catch (Exception exp) {
-            logger.debug("No Kaleidescape component found at IP address ({}) because of error: {}", ip,
-                    exp.getMessage());
+        } catch (UnknownHostException e) {
+            logger.debug("Unknown host: {} {}", ip, e.getMessage());
             return false;
         }
     }
@@ -93,7 +93,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
      */
     private boolean isKaleidescapeDevice(InetAddress host, int port) {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(host, port), DISCOVERY_DEFAULT_IP_TIMEOUT_RATE);
+            socket.connect(new InetSocketAddress(host, port), DISCOVERY_DEFAULT_IP_TIMEOUT_RATE_MS);
 
             OutputStream output = socket.getOutputStream();
             PrintWriter writer = new PrintWriter(output, true);
@@ -116,20 +116,24 @@ public class KaleidescapeDiscoveryJob implements Runnable {
             while ((line = reader.readLine()) != null) {
                 String[] strArr = line.split(":");
 
-                switch (strArr[1]) {
-                    case "NUM_ZONES":
-                        videoZone = strArr[2];
-                        audioZone = strArr[3];
-                        break;
-                    case "DEVICE_TYPE_NAME":
-                        componentType = strArr[2];
-                        break;
-                    case "FRIENDLY_NAME":
-                        friendlyName = strArr[2];
-                        break;
-                    case "DEVICE_INFO":
-                        serialNumber = strArr[3].trim(); // take off leading zeros
-                        break;
+                if (strArr.length >= 4) {
+                    switch (strArr[1]) {
+                        case "NUM_ZONES":
+                            videoZone = strArr[2];
+                            audioZone = strArr[3];
+                            break;
+                        case "DEVICE_TYPE_NAME":
+                            componentType = strArr[2];
+                            break;
+                        case "FRIENDLY_NAME":
+                            friendlyName = strArr[2];
+                            break;
+                        case "DEVICE_INFO":
+                            serialNumber = strArr[3].trim(); // take off leading zeros
+                            break;
+                    }
+                } else {
+                    logger.debug("isKaleidescapeDevice() - Unable to process line: {}", line);
                 }
 
                 lineCount++;
@@ -139,11 +143,6 @@ public class KaleidescapeDiscoveryJob implements Runnable {
                     break;
                 }
             }
-
-            reader.close();
-            input.close();
-            output.close();
-            socket.close();
 
             // see if we have a video zone
             if ("01".equals(videoZone)) {

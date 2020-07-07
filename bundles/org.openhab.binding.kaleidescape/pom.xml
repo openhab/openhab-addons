@@ -14,4 +14,23 @@
 
   <name>openHAB Add-ons :: Bundles :: Kaleidescape Binding</name>
 
+  <properties>
+    <dep.noembedding>commons-net,commons-lang3</dep.noembedding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>3.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.8.1</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
 </project>

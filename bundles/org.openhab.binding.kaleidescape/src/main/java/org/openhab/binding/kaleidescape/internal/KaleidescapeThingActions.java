@@ -36,19 +36,18 @@ public class KaleidescapeThingActions implements ThingActions {
 
     private @Nullable KaleidescapeHandler handler;
 
-    @SuppressWarnings("null")
     @RuleAction(label = "sendKCommand", description = "Action that sends raw command to the kaleidescape zone")
-    public void sendKCommand(@ActionInput(name = "sendKCommand") @Nullable String kCommand) {
-        if (handler != null && kCommand != null) {
-            handler.handleRawCommand(kCommand);
+    public void sendKCommand(@ActionInput(name = "sendKCommand") String kCommand) {
+        KaleidescapeHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.handleRawCommand(kCommand);
             logger.debug("sendKCommand called with command: {}", kCommand);
         } else {
             logger.debug("sendKCommand called with null command, ignoring");
         }
     }
 
-    public static void sendKCommand(@Nullable ThingActions actions, @Nullable String kCommand)
-            throws IllegalArgumentException {
+    public static void sendKCommand(@Nullable ThingActions actions, String kCommand) throws IllegalArgumentException {
         if (actions instanceof KaleidescapeThingActions) {
             ((KaleidescapeThingActions) actions).sendKCommand(kCommand);
         } else {

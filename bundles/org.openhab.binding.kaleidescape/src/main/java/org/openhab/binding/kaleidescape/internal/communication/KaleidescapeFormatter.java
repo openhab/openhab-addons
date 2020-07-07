@@ -43,8 +43,8 @@ public class KaleidescapeFormatter {
             input = input.replace("\\d148", "\"");
 
             // fix the encoding for k mangled extended ascii characters (chars coming in as \dnnn)
-            // I.e. characters with accent, umulat, etc., they need to be restored to the correct character
-            // example: Noel (with umulat 'o') comes in as N\d246el
+            // I.e. characters with accent, umlaut, etc., they need to be restored to the correct character
+            // example: Noel (with umlaut 'o') comes in as N\d246el
             input = input.replaceAll("(?i)\\\\d([0-9]{3})", "\\&#$1;"); // first convert to html escaped codes
             // then convert with unescapeHtml, not sure how to do this without the Apache libraries :(
             return StringEscapeUtils.unescapeHtml(input);

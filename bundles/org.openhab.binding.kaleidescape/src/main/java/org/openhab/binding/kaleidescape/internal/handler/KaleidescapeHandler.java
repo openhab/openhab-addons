@@ -14,7 +14,6 @@ package org.openhab.binding.kaleidescape.internal.handler;
 
 import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -81,7 +80,6 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
-    private @Nullable KaleidescapeThingConfiguration config;
     private long lastEventReceived = 0;
     private int updatePeriod = 0;
     private String componentType = EMPTY;
@@ -112,26 +110,29 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         thing.setProperty(name, value);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
-        this.config = getConfigAs(KaleidescapeThingConfiguration.class);
+        KaleidescapeThingConfiguration config = getConfigAs(KaleidescapeThingConfiguration.class);
         @Nullable
-        String componentType = this.config.componentType;
+        String componentType = config.componentType;
 
         // Check configuration settings
         String configError = null;
-        if ((config.serialPort == null || config.serialPort.isEmpty())
-                && (config.host == null || config.host.isEmpty())) {
+        String serialPort = config.serialPort;
+        String host = config.host;
+        Integer port = config.port;
+        Integer updatePeriod = config.updatePeriod;
+
+        if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
             configError = "undefined serialPort and host configuration settings; please set one of them";
-        } else if (config.host == null || config.host.isEmpty()) {
-            if (config.serialPort.toLowerCase().startsWith("rfc2217")) {
+        } else if (host == null || host.isEmpty()) {
+            if (serialPort != null && serialPort.toLowerCase().startsWith("rfc2217")) {
                 configError = "use host and port configuration settings for a serial over IP connection";
             }
         } else {
-            if (config.port == null) {
+            if (port == null) {
                 configError = "undefined port configuration setting";
-            } else if (config.port <= 0) {
+            } else if (port <= 0) {
                 configError = "invalid port configuration setting";
             }
         }
@@ -144,7 +145,10 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         if (componentType != null) {
             this.componentType = componentType;
         }
-        this.updatePeriod = this.config.updatePeriod;
+
+        if (updatePeriod != null) {
+            this.updatePeriod = updatePeriod;
+        }
 
         List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
@@ -152,7 +156,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         if (config.volumeEnabled) {
             this.volumeEnabled = true;
             this.volume = config.initialVolume;
-            this.updateState(VOLUME, new PercentType(BigDecimal.valueOf(this.volume)));
+            this.updateState(VOLUME, new PercentType(this.volume));
             this.updateState(MUTE, OnOffType.OFF);
         } else {
             channels.removeIf(c -> (c.getUID().getId().equals(VOLUME)));
@@ -182,17 +186,19 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
         updateThing(editThing().withChannels(channels).build());
 
-        if (config.serialPort != null) {
-            String serialPort = config.serialPort;
+        if (serialPort != null) {
             connector = new KaleidescapeSerialConnector(serialPortManager, serialPort);
+        } else if (port != null) {
+            connector = new KaleidescapeIpConnector(host, port);
         } else {
-            connector = new KaleidescapeIpConnector(config.host, config.port);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "configuration error");
+            return;
         }
-
-        updateStatus(ThingStatus.UNKNOWN);
 
         scheduleReconnectJob();
         schedulePollingJob();
+
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -358,8 +364,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
                             // Premiere Players and Cinema One support music
                             if (PLAYER.equals(this.componentType) || CINEMA_ONE.equals(this.componentType)) {
-                                initialCommands.addAll(new ArrayList<String>(Arrays.asList(GET_MUSIC_NOW_PLAYING_STATUS,
-                                        GET_MUSIC_PLAY_STATUS, GET_MUSIC_TITLE)));
+                                initialCommands.addAll(Arrays.asList(GET_MUSIC_NOW_PLAYING_STATUS,
+                                        GET_MUSIC_PLAY_STATUS, GET_MUSIC_TITLE));
                             }
 
                             // everything after Premiere Player supports GET_SYSTEM_READINESS_STATE
@@ -369,8 +375,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
                             // only Strato supports the GET_*_COLOR commands
                             if (STRATO.equals(this.componentType)) {
-                                initialCommands.addAll(
-                                        new ArrayList<String>(Arrays.asList(GET_VIDEO_COLOR, GET_CONTENT_COLOR)));
+                                initialCommands.addAll(Arrays.asList(GET_VIDEO_COLOR, GET_CONTENT_COLOR));
                             }
 
                             initialCommands.forEach(command -> {
@@ -486,10 +491,10 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 connector.sendCommand(GET_DEVICE_POWER_STATE);
                 break;
             case VOLUME:
-                updateState(channel, new PercentType(BigDecimal.valueOf(this.volume)));
+                updateState(channel, new PercentType(this.volume));
                 break;
             case MUTE:
-                updateState(MUTE, this.isMuted ? OnOffType.ON : OnOffType.OFF);
+                updateState(channel, this.isMuted ? OnOffType.ON : OnOffType.OFF);
                 break;
             case TITLE_NAME:
                 connector.sendCommand(GET_PLAYING_TITLE_NAME);

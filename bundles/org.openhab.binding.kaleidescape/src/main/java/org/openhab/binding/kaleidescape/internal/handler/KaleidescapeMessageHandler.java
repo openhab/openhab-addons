@@ -390,7 +390,7 @@ public enum KaleidescapeMessageHandler {
                         if (!value.isEmpty()) {
                             try {
                                 ContentResponse contentResponse = handler.httpClient.newRequest(value).method(GET)
-                                        .timeout(20, TimeUnit.SECONDS).send();
+                                        .timeout(10, TimeUnit.SECONDS).send();
                                 int httpStatus = contentResponse.getStatus();
                                 if (httpStatus == OK_200) {
                                     handler.updateDetailChannel(DETAIL_COVER_ART,
@@ -544,11 +544,8 @@ public enum KaleidescapeMessageHandler {
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
-                handler.updateThingProperty(PROPERTY_SERIAL_NUMBER, matcher.group(2).replaceFirst("^0+(?!$)", EMPTY)); // take
-                                                                                                                       // off
-                                                                                                                       // leading
-                                                                                                                       // zeros
-
+                // replaceFirst takes off leading zeros
+                handler.updateThingProperty(PROPERTY_SERIAL_NUMBER, matcher.group(2).replaceFirst("^0+(?!$)", EMPTY));
                 handler.updateThingProperty(PROPERTY_CONTROL_PROTOCOL_ID, matcher.group(3));
             } else {
                 logger.debug("DEVICE_INFO - no match on message: {}", message);

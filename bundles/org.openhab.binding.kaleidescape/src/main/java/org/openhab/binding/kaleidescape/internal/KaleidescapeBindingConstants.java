@@ -36,8 +36,8 @@ public class KaleidescapeBindingConstants {
     public static final short DISCOVERY_SUBNET_MASK = 24;
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
-    public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
-    public static final int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE = 750;
+    public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE_MS = 500;
+    public static final int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE_MS = 750;
 
     // Component Types
     public static final String PLAYER = "Player";

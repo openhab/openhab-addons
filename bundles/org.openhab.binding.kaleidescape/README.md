@@ -7,6 +7,7 @@ As there are many good control options already available for these components, t
  for display purposes and to use in rules for controlling other Things such lighting, projector lens control, masking, etc.
 Basic playback transport controls are provided and any other command that is supported by the control protocol can be sent to the component through rules based commands.
 See Kaleidescape-System-Control-Protocol-Reference-Manual.pdf for a reference of available commands.
+(https://support.kaleidescape.com/article/Control-Protocol-Reference-Manual)
 To simplify the design of the binding code, a different Thing instance is created for each component
  in a multi-zone system and each Thing maintains its own socket connection to the target component.
 Overall this binding supports the majority of information and commands available in the Kaleidescape control protocol but is by no means exhaustive.
@@ -26,7 +27,7 @@ It has the `player` id.
 
 Manually initiated Auto-discovery is supported if Kaleidescape components are accessible on the same IP subnet of the openHAB server.
 Since discovery involves scanning all IP addresses in the subnet range for an open socket, the discovery must be initiated by the user.
-In the Paper UI Inbox, select Search For Things at the bottom and then choose the Kaleidescape System Binding to initiate discovery.
+In the Inbox, select Search For Things and then choose the Kaleidescape System Binding to initiate discovery.
 
 ## Binding Configuration
 
@@ -37,15 +38,15 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label        | Parameter ID  | Description                                                      | Accepted values                                        |
-|------------------------|---------------|------------------------------------------------------------------|--------------------------------------------------------|
-| Component type         | componentType | The type of Kaleidescape component                               | 'Player', 'Cinema One', 'Alto', or 'Strato'          | |
-| Address                | host          | Host name or IP address of the Kaleidescape component            | A host name or IP address                            | |
-| Port                   | port          | Communication port of the IP connection                          | 10000 (default - should not need to change)          | |
-| Serial Port            | serialPort    | Serial port for connecting directly a component                  | Serial port name (optional)                          | |
-| Update Period          | updatePeriod  | Tells the component how often time status updates should be sent | 0 or 1 are the currently accepted values (default 0) | |
-| Volume Control Enabled | volumeEnabled | Enable the volume and mute controls in the K iPad & phone apps   | Boolean (default false)                              | |
-| Initial Volume Setting | initialVolume | Initial volume level set when the binding starts up              | 0 to 75 (default 25)                                 | |
+| Parameter Label        | Parameter ID  | Description                                                                        | Accepted values                                        |
+|------------------------|---------------|------------------------------------------------------------------------------------|--------------------------------------------------------|
+| Component type         | componentType | The type of Kaleidescape component                                                 | 'Player', 'Cinema One', 'Alto', or 'Strato'          | |
+| Address                | host          | Host name or IP address of the Kaleidescape component                              | A host name or IP address                            | |
+| Port                   | port          | Communication port of the IP connection                                            | 10000 (default - should not need to change)          | |
+| Serial Port            | serialPort    | Serial port for connecting directly a component                                    | Serial port name (optional)                          | |
+| Update Period          | updatePeriod  | Tells the component how often time status updates should be sent (see notes below) | 0 or 1 are the currently accepted values (default 0) | |
+| Volume Control Enabled | volumeEnabled | Enable the volume and mute controls in the K iPad & phone apps                     | Boolean (default false)                              | |
+| Initial Volume Setting | initialVolume | Initial volume level set when the binding starts up                                | 0 to 75 (default 25)                                 | |
 
 Some notes:
 

@@ -57,7 +57,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
 
     @Activate
     public KaleidescapeDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_DEFAULT_TIMEOUT_RATE, DISCOVERY_DEFAULT_AUTO_DISCOVER);
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_DEFAULT_TIMEOUT_RATE_MS, DISCOVERY_DEFAULT_AUTO_DISCOVER);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
         properties.put("port", DEFAULT_API_PORT);
         properties.put("componentType", componentType);
 
-        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withRepresentationProperty("host")
                 .withLabel(componentType + " (" + friendlyName + ")").build());
     }
 
@@ -136,7 +136,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
                 results.addAll(Arrays.asList(utils.getInfo().getAllAddresses())); // not sure how to do this without the
                                                                                   // Apache libraries
             } else if (ipAddress instanceof Inet6Address) {
-                logger.debug("Found interface IPv6 address to scan: {}", cidrSubnet);
+                logger.debug("Found interface IPv6 address to scan: {}, ignoring", cidrSubnet);
             } else {
                 logger.debug("Found interface unknown IP type address to scan: {}", cidrSubnet);
             }
