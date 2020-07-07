@@ -15,6 +15,7 @@ package org.openhab.binding.amazonechocontrol.internal.channelhandler;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
@@ -30,6 +31,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public abstract class ChannelHandler {
     public abstract boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
             throws IOException, URISyntaxException;

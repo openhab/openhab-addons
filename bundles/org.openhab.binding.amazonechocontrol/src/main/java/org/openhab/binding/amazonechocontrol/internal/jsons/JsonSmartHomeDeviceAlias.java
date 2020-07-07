@@ -16,19 +16,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonAnnouncementTarget} encapsulate the GSON data of the sequence command AlexaAnnouncement for
- * announcement target
- *
- * @author Michael Geramb - Initial contribution
+ * @author Lukas Knoeller - Initial contribution
  */
 @NonNullByDefault
-public class JsonAnnouncementTarget {
+public class JsonSmartHomeDeviceAlias {
+    public @Nullable String friendlyName;
+    public @Nullable Boolean enabled;
 
-    public @Nullable String customerId;
-    public @Nullable TargetDevice @Nullable [] devices;
+    public JsonSmartHomeDeviceAlias(String friendlyName, Boolean enabled) {
+        this.friendlyName = friendlyName;
+        this.enabled = enabled;
+    }
 
-    public static class TargetDevice {
-        public @Nullable String deviceSerialNumber;
-        public @Nullable String deviceTypeId;
+    public JsonSmartHomeDeviceAlias() {
     }
 }

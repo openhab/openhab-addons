@@ -15,6 +15,8 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link JsonRenewTokenResponse} encapsulate the GSON response of the renew token request
  *
@@ -22,7 +24,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class JsonRenewTokenResponse {
-    public @Nullable String access_token;
-    public @Nullable String token_type;
-    public @Nullable Long expires_in;
+    @SerializedName("access_token")
+    public @Nullable String accessToken;
+    @SerializedName("token_type")
+    public @Nullable String tokenType;
+    @SerializedName("expires_in")
+    public @Nullable Long expiresIn;
 }
