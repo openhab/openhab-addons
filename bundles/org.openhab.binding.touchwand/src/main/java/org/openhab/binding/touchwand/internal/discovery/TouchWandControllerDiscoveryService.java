@@ -28,6 +28,7 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.touchwand.internal.TouchWandBindingConstants;
 import org.openhab.binding.touchwand.internal.TouchWandBridgeHandler;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -103,6 +104,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     protected void runReceiveThread(DatagramSocket socket) {
         socketReceiveThread = new ReceiverThread(socket);
         socketReceiveThread.start();
+        socketReceiveThread.setName(TouchWandBindingConstants.BINDING_ID);
     }
 
     @NonNullByDefault
