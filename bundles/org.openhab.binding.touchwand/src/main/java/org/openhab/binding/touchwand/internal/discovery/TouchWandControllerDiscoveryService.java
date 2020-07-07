@@ -68,7 +68,6 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        deactivate();
     }
 
     @Override
