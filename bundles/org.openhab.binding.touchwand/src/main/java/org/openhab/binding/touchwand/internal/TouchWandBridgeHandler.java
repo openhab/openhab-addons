@@ -137,14 +137,9 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     }
 
     public synchronized boolean registerUpdateListener(TouchWandUnitUpdateListener listener) {
-        boolean result = false;
         logger.debug("Adding Status update listener for device {}", listener.getId());
-        if (!unitUpdateListeners.containsKey(listener.getId())) {
-            unitUpdateListeners.put(listener.getId(), listener);
-            result = true;
 
-        }
-        return result;
+        return unitUpdateListeners.put(listener.getId(), listener) == null;
     }
 
     public synchronized boolean unregisterUpdateListener(TouchWandUnitUpdateListener listener) {

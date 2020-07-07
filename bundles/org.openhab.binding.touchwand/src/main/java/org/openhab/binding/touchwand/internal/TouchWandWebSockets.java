@@ -195,16 +195,8 @@ public class TouchWandWebSockets {
         @SuppressWarnings("null")
         private void asyncWeb() {
             if (socketReconnect == null || socketReconnect.isDone()) {
-                Web reconnect = new Web();
-                socketReconnect = scheduler.schedule(reconnect, WEBSOCKET_RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
-            }
-        }
-
-        @NonNullByDefault
-        private class Web implements Runnable {
-            @Override
-            public void run() {
-                connect();
+                socketReconnect = scheduler.schedule(TouchWandWebSockets.this::connect, WEBSOCKET_RECONNECT_INTERVAL,
+                        TimeUnit.MILLISECONDS);
             }
         }
     }
