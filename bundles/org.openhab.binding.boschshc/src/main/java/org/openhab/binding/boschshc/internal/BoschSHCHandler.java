@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.boschshc.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+
+import com.google.gson.JsonElement;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -25,12 +32,6 @@ import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import com.google.gson.JsonElement;
 
 class DeviceService<TState extends BoschSHCServiceState> {
     /**
@@ -126,6 +127,39 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             return null;
         }
         return (BoschSHCBridgeHandler) bridge.getHandler();
+    }
+
+    /**
+     * Creates and registers a new service for this device.
+     * 
+     * @param <TService>          Type of service.
+     * @param <TState>            Type of service state.
+     * @param serviceClass        Class of service to instantiate a new instance.
+     * @param stateUpdateListener Function to call when a state update was received
+     *                            from the device.
+     * @param affectedChannels    Channels which are affected by the state of this
+     *                            service.
+     * @return Instance of registered service.
+     */
+    protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> TService createService(
+            Class<TService> serviceClass, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels) {
+        BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+        if (bridgeHandler == null) {
+            throw new Error(String.format("Could not initialize service for {}, no valid bridge set", this.getThing()));
+        }
+
+        String deviceId = this.getBoschID();
+
+        TService service;
+        try {
+            service = serviceClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new Error(String.format("Could not create instance of service {}", serviceClass.getName()));
+        }
+        service.initialize(bridgeHandler, deviceId, stateUpdateListener);
+        this.registerService(service, affectedChannels);
+
+        return service;
     }
 
     /**
