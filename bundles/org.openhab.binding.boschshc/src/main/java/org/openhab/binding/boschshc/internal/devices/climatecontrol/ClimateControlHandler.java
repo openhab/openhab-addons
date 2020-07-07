@@ -5,15 +5,22 @@ import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHA
 
 import java.util.Arrays;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.boschshc.internal.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlService;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlServiceState;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelServiceState;
 
+import tec.uom.se.unit.Units;
+
 public class ClimateControlHandler extends BoschSHCHandler {
+
+    private RoomClimateControlService roomClimateControlService;
+
     public ClimateControlHandler(Thing thing) {
         super(thing);
     }
@@ -23,15 +30,30 @@ public class ClimateControlHandler extends BoschSHCHandler {
         super.initialize();
 
         super.createService(TemperatureLevelService.class, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));
-        super.createService(RoomClimateControlService.class, this::updateChannels,
+        this.roomClimateControlService = super.createService(RoomClimateControlService.class, this::updateChannels,
                 Arrays.asList(CHANNEL_SETPOINT_TEMPERATURE));
     }
 
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+        switch (channelUID.getId()) {
+            case CHANNEL_SETPOINT_TEMPERATURE:
+                if (command instanceof QuantityType<?>) {
+                    // Set specific temperature
+                    QuantityType<?> quantityType = (QuantityType<?>) command;
+                    double setpointTemperature = quantityType.toUnit(Units.CELSIUS).doubleValue();
+                    this.roomClimateControlService.setState(new RoomClimateControlServiceState(setpointTemperature));
+                }
+                break;
+        }
+    }
+
     protected void updateChannels(TemperatureLevelServiceState state) {
-        super.updateState(CHANNEL_TEMPERATURE, new DecimalType(state.temperature));
+        super.updateState(CHANNEL_TEMPERATURE, state.getTemperatureState());
     }
 
     protected void updateChannels(RoomClimateControlServiceState state) {
-        super.updateState(CHANNEL_SETPOINT_TEMPERATURE, new DecimalType(state.setpointTemperature));
+        super.updateState(CHANNEL_SETPOINT_TEMPERATURE, state.getSetpointTemperatureState());
     }
 }
