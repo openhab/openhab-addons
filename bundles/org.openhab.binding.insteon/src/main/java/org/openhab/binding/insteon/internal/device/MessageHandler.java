@@ -768,6 +768,49 @@ public abstract class MessageHandler {
     }
 
     @NonNullByDefault
+    public static class MotionSensor2AlternateHeartbeatHandler extends MessageHandler {
+        MotionSensor2AlternateHeartbeatHandler(DeviceFeature p) {
+            super(p);
+        }
+
+        @Override
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+            InsteonDevice dev = f.getDevice();
+            try {
+                // group 0x0B (11) - alternate heartbeat group
+                InsteonAddress toAddr = msg.getAddr("toAddress");
+                int batteryLevel = toAddr.getHighByte() & 0xff;
+                int lightLevel = toAddr.getMiddleByte() & 0xff;
+                int temperatureLevel = msg.getByte("command2") & 0xff;
+
+                logger.debug("{}: {} got light level: {}, battery level: {}, temperature level: {}", nm(),
+                        dev.getAddress(), lightLevel, batteryLevel, temperatureLevel);
+                feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
+                        InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
+                feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
+                        InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
+                        InsteonDeviceHandler.FIELD_TEMPERATURE_LEVEL);
+
+                // per 2844-222 dev doc: working battery level range is 0xd2 - 0x70
+                int batteryPercentage;
+                if (batteryLevel >= 0xd2) {
+                    batteryPercentage = 100;
+                } else if (batteryLevel <= 0x70) {
+                    batteryPercentage = 0;
+                } else {
+                    batteryPercentage = (batteryLevel - 0x70) * 100 / (0xd2 - 0x70);
+                }
+                logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
+                feature.publish(new QuantityType<>(batteryPercentage, SmartHomeUnits.PERCENT), StateChangeType.CHANGED,
+                        InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
+            } catch (FieldException e) {
+                logger.warn("error parsing {}: ", msg, e);
+            }
+        }
+    }
+
+    @NonNullByDefault
     public static class HiddenDoorSensorDataReplyHandler extends MessageHandler {
         HiddenDoorSensorDataReplyHandler(DeviceFeature p) {
             super(p);
