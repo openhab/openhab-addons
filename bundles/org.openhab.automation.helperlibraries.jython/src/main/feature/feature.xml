@@ -4,7 +4,7 @@
  
     <feature name="openhab-misc-helperlibraries-jython" description="Jython Helper Libraries" version="${project.version}">
         <feature>openhab-runtime-base</feature>
-        <feature>openhab-core-automation</feature>
+        <feature>openhab-core-automation-module-script</feature>
         <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.automation.helperlibraries.jython/${project.version}</bundle>
     </feature>
 </features>
