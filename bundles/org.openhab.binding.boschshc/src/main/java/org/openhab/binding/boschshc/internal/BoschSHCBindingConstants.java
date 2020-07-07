@@ -35,6 +35,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+    public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
@@ -53,4 +54,5 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_LATEST_MOTION = "latest-motion";
     public static final String CHANNEL_LEVEL = "level";
     public static final String CHANNEL_VALVE_TAPPET_POSITION = "valve-tappet-position";
+    public static final String CHANNEL_SETPOINT_TEMPERATURE = "setpoint-temperature";
 }

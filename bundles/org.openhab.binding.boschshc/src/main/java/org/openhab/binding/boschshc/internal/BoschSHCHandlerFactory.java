@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.boschshc.internal.devices.climatecontrol.ClimateControlHandler;
 import org.openhab.binding.boschshc.internal.shuttercontrol.ShutterControlHandler;
 import org.openhab.binding.boschshc.internal.thermostat.ThermostatHandler;
 import org.osgi.service.component.annotations.Component;
@@ -49,7 +50,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     // List of all supported Bosch devices.
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SHC,
             THING_TYPE_INWALL_SWITCH, THING_TYPE_TWINGUARD, THING_TYPE_WINDOW_CONTACT, THING_TYPE_MOTION_DETECTOR,
-            THING_TYPE_SHUTTER_CONTROL, THING_TYPE_THERMOSTAT);
+            THING_TYPE_SHUTTER_CONTROL, THING_TYPE_THERMOSTAT, THING_TYPE_CLIMATE_CONTROL);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -90,6 +91,10 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         else if (THING_TYPE_THERMOSTAT.equals(thingTypeUID)) {
             return new ThermostatHandler(thing);
+        }
+
+        else if (THING_TYPE_CLIMATE_CONTROL.equals(thingTypeUID)) {
+            return new ClimateControlHandler(thing);
         }
 
         else {

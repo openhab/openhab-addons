@@ -11,6 +11,7 @@ Binding for the Bosch Smart Home Controller:
  - Bosch Motion Detector
  - Bosch Shutter Control in-wall
  - Bosch Thermostat
+ - Bosch Climate Control
 
 ## Limitations
 
