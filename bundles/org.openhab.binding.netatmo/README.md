@@ -12,7 +12,13 @@ See http://www.netatmo.com/ for details on their product.
 
 ## Binding Configuration
 
-The binding has no configuration options itself, all configuration is done at 'Things' level but before, you will have to grant openHAB to access Netatmo API.
+The binding has the following configuration options:
+
+| Parameter           | Name                 | Description                       |
+|---------------------|----------------------|-----------------------------------|
+| backgroundDiscovery | Background Discovery | If set to true, the device and its associated modules are updated in the discovery inbox at each API call run to refresh device data. Default is false. |
+
+Before setting up your 'Things', you will have to grant openHAB to access Netatmo API.
 Here is the procedure:
 
 ### 1. Application Creation

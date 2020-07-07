@@ -98,6 +98,9 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
 
     @Override
     public void onDataRefreshed(Object data) {
+        if (!isBackgroundDiscoveryEnabled()) {
+            return;
+        }
         if (data instanceof NAMain) {
             discoverWeatherStation((NAMain) data);
         } else if (data instanceof NAPlug) {
