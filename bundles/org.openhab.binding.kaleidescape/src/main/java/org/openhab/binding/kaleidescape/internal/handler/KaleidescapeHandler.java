@@ -69,8 +69,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class KaleidescapeHandler extends BaseThingHandler implements KaleidescapeMessageEventListener {
-    private static final long RECON_POLLING_INTERVAL = 60;
-    private static final long POLLING_INTERVAL = 20;
+    private static final long RECON_POLLING_INTERVAL_S = 60;
+    private static final long POLLING_INTERVAL_S = 20;
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeHandler.class);
     private final SerialPortManager serialPortManager;
@@ -405,7 +405,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     lastEventReceived = System.currentTimeMillis();
                 }
             }
-        }, 1, RECON_POLLING_INTERVAL, TimeUnit.SECONDS);
+        }, 1, RECON_POLLING_INTERVAL_S, TimeUnit.SECONDS);
     }
 
     /**
@@ -438,7 +438,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
                     // if the last successful polling update was more than 1.25 intervals ago,
                     // the component is not responding even though the connection is still good
-                    if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL * 1.25 * 1000)) {
+                    if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL_S * 1.25 * 1000)) {
                         logger.warn("Component not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Component not responding to status requests");
@@ -447,7 +447,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     }
                 }
             }
-        }, POLLING_INTERVAL, POLLING_INTERVAL, TimeUnit.SECONDS);
+        }, POLLING_INTERVAL_S, POLLING_INTERVAL_S, TimeUnit.SECONDS);
     }
 
     /**

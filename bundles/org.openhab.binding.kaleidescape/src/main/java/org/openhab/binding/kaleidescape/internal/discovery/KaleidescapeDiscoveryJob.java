@@ -79,7 +79,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
                 return false;
             }
         } catch (UnknownHostException e) {
-            logger.debug("Unknown host: {} {}", ip, e.getMessage());
+            logger.debug("Unknown host: {} - {}", ip, e.getMessage());
             return false;
         }
     }
