@@ -16,19 +16,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonAnnouncementTarget} encapsulate the GSON data of the sequence command AlexaAnnouncement for
- * announcement target
+ * The {@link SmartHomeBaseDevice} is the base interface for all smart home device json nodes
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class JsonAnnouncementTarget {
+public interface SmartHomeBaseDevice {
+    @Nullable
+    String findId();
 
-    public @Nullable String customerId;
-    public @Nullable TargetDevice @Nullable [] devices;
-
-    public static class TargetDevice {
-        public @Nullable String deviceSerialNumber;
-        public @Nullable String deviceTypeId;
-    }
+    boolean isGroup();
 }
