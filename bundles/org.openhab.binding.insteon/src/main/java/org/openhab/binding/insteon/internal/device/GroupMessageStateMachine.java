@@ -118,6 +118,7 @@ public class GroupMessageStateMachine {
      */
     public boolean action(GroupMessage a, InsteonAddress address, int group, byte cmd1) {
         publish = false;
+        long currentTime = System.currentTimeMillis();
         switch (state) {
             case EXPECT_BCAST:
                 switch (a) {
@@ -136,7 +137,16 @@ public class GroupMessageStateMachine {
                 switch (a) {
                     case BCAST:
                         if (lastCmd1 == cmd1) {
-                            publish = false;
+                            if (currentTime > lastUpdated + 30000) {
+                                if (logger.isDebugEnabled()) {
+                                    logger.debug(
+                                            "{} group {} cmd1 {} is not a dup BCAST, received last message over 30000 ms ago",
+                                            address, group, Utils.getHexByte(cmd1));
+                                }
+                                publish = true;
+                            } else {
+                                publish = false;
+                            }
                         } else {
                             if (logger.isDebugEnabled()) {
                                 logger.debug("{} group {} cmd1 {} is not a dup BCAST, last cmd1 {}", address, group,
@@ -181,7 +191,7 @@ public class GroupMessageStateMachine {
         }
 
         lastCmd1 = cmd1;
-        lastUpdated = System.currentTimeMillis();
+        lastUpdated = currentTime;
         logger.debug("{} group {} state: {} --{}--> {}, publish: {}", address, group, oldState, a, state, publish);
         return (publish);
     }
