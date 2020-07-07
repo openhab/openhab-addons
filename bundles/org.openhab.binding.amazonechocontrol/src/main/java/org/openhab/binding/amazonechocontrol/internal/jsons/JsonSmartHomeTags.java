@@ -14,21 +14,16 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroupIdentity.SmartHomeGroupIdentity;
 
 /**
- * The {@link JsonAnnouncementTarget} encapsulate the GSON data of the sequence command AlexaAnnouncement for
- * announcement target
- *
- * @author Michael Geramb - Initial contribution
+ * @author Lukas Knoeller - Initial contribution
  */
 @NonNullByDefault
-public class JsonAnnouncementTarget {
-
-    public @Nullable String customerId;
-    public @Nullable TargetDevice @Nullable [] devices;
-
-    public static class TargetDevice {
-        public @Nullable String deviceSerialNumber;
-        public @Nullable String deviceTypeId;
+public class JsonSmartHomeTags {
+    public static class JsonSmartHomeTag {
+        public @Nullable SmartHomeGroupIdentity tagNameToValueSetMap;
     }
+
+    public @Nullable SmartHomeGroupIdentity tagNameToValueSetMap;
 }
