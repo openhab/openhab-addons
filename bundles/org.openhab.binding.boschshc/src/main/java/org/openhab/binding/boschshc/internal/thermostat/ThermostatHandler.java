@@ -1,13 +1,10 @@
 package org.openhab.binding.boschshc.internal.thermostat;
 
-import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
+import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_VALVE_TAPPET_POSITION;
 
 import java.util.Arrays;
 
-import javax.measure.quantity.Temperature;
-
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.BoschSHCHandler;
@@ -15,8 +12,6 @@ import org.openhab.binding.boschshc.internal.services.temperaturelevel.Temperatu
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelServiceState;
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetServiceState;
-
-import tec.uom.se.unit.Units;
 
 public class ThermostatHandler extends BoschSHCHandler {
 
