@@ -89,14 +89,14 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
 
-    private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
-    private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
-    private final Map<String, FullGroup> lastGroupStates = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable FullLight> lastLightStates = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable FullSensor> lastSensorStates = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable FullGroup> lastGroupStates = new ConcurrentHashMap<>();
 
     private @Nullable HueLightDiscoveryService discoveryService;
-    private final Map<String, LightStatusListener> lightStatusListeners = new ConcurrentHashMap<>();
-    private final Map<String, SensorStatusListener> sensorStatusListeners = new ConcurrentHashMap<>();
-    private final Map<String, GroupStatusListener> groupStatusListeners = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable LightStatusListener> lightStatusListeners = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable SensorStatusListener> sensorStatusListeners = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable GroupStatusListener> groupStatusListeners = new ConcurrentHashMap<>();
 
     final ReentrantLock pollingLock = new ReentrantLock();
 
@@ -170,7 +170,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private final Runnable sensorPollingRunnable = new PollingRunnable() {
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
-            Map<String, FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
+            Map<String, @Nullable FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
 
             final HueLightDiscoveryService discovery = discoveryService;
 
@@ -204,7 +204,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     sensorStatusListener.onSensorRemoved();
                 }
 
-                if (discovery != null) {
+                if (discovery != null && sensor != null) {
                     discovery.removeSensorDiscovery(sensor);
                 }
             });
@@ -214,7 +214,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private final Runnable lightPollingRunnable = new PollingRunnable() {
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
-            Map<String, FullLight> lastLightStateCopy = new HashMap<>(lastLightStates);
+            Map<String, @Nullable FullLight> lastLightStateCopy = new HashMap<>(lastLightStates);
 
             List<FullLight> lights;
             if (ApiVersionUtils.supportsFullLights(hueBridge.getVersion())) {
@@ -255,12 +255,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     lightStatusListener.onLightRemoved();
                 }
 
-                if (discovery != null) {
+                if (discovery != null && light != null) {
                     discovery.removeLightDiscovery(light);
                 }
             });
 
-            Map<String, FullGroup> lastGroupStateCopy = new HashMap<>(lastGroupStates);
+            Map<String, @Nullable FullGroup> lastGroupStateCopy = new HashMap<>(lastGroupStates);
 
             for (final FullGroup fullGroup : hueBridge.getGroups()) {
                 State groupState = new State();
@@ -339,7 +339,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     groupStatusListener.onGroupRemoved();
                 }
 
-                if (discovery != null) {
+                if (discovery != null && group != null) {
                     discovery.removeGroupDiscovery(group);
                 }
             });
@@ -917,7 +917,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         });
     }
 
-    private <T> T withReAuthentication(String taskDescription, Callable<T> runnable) {
+    private @Nullable <T> T withReAuthentication(String taskDescription, Callable<T> runnable) {
         if (hueBridge != null) {
             try {
                 try {
@@ -941,7 +941,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         Collection<ConfigStatusMessage> configStatusMessages;
 
         // Check whether an IP address is provided
-        if (hueBridgeConfig.getIpAddress() == null || hueBridgeConfig.getIpAddress().isEmpty()) {
+        String ip = hueBridgeConfig.getIpAddress();
+        if (ip == null || ip.isEmpty()) {
             configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(HOST)
                     .withMessageKeySuffix(HueConfigStatusMessage.IP_ADDRESS_MISSING).withArguments(HOST).build());
         } else {
