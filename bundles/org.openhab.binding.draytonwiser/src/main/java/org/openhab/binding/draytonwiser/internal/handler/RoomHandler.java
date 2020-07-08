@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
 import org.openhab.binding.draytonwiser.internal.model.RoomDTO;
 import org.openhab.binding.draytonwiser.internal.model.RoomStatDTO;
@@ -55,7 +56,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     }
 
     @Override
-    protected void handleCommand(final String channelId, final Command command) {
+    protected void handleCommand(final String channelId, final Command command) throws DraytonWiserApiException {
         switch (channelId) {
             case CHANNEL_CURRENT_SETPOINT:
                 if (command instanceof QuantityType) {
@@ -103,7 +104,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
         return new QuantityType<>(getData().getCurrentSetPoint() / 10.0, SIUnits.CELSIUS);
     }
 
-    private void setSetPoint(final QuantityType<Temperature> command) {
+    private void setSetPoint(final QuantityType<Temperature> command) throws DraytonWiserApiException {
         if (getData().getId() != null) {
             final QuantityType<Temperature> value = command.toUnit(SIUnits.CELSIUS);
 
@@ -147,11 +148,11 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
         return OnOffType.from("MANUAL".equalsIgnoreCase(getData().getMode()));
     }
 
-    private void setManualMode(final boolean manualMode) {
+    private void setManualMode(final boolean manualMode) throws DraytonWiserApiException {
         getApi().setRoomManualMode(getData().getId(), manualMode);
     }
 
-    private void setWindowStateDetection(final boolean stateDetection) {
+    private void setWindowStateDetection(final boolean stateDetection) throws DraytonWiserApiException {
         getApi().setRoomWindowStateDetection(getData().getId(), stateDetection);
     }
 
@@ -171,7 +172,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
         return DecimalType.ZERO;
     }
 
-    private void setBoostDuration(final int durationMinutes) {
+    private void setBoostDuration(final int durationMinutes) throws DraytonWiserApiException {
         if (durationMinutes > 0) {
             getApi().setRoomBoostActive(getData().getId(), getData().getCalculatedTemperature() + 20, durationMinutes);
         } else {

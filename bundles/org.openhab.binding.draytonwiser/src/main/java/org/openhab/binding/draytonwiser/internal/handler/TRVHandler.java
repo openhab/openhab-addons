@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.BatteryLevel;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.SignalStrength;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.handler.TRVHandler.SmartValveData;
 import org.openhab.binding.draytonwiser.internal.model.DeviceDTO;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
@@ -56,7 +57,7 @@ public class TRVHandler extends DraytonWiserThingHandler<SmartValveData> {
     }
 
     @Override
-    protected void handleCommand(final String channelId, final Command command) {
+    protected void handleCommand(final String channelId, final Command command) throws DraytonWiserApiException {
         if (command instanceof OnOffType && CHANNEL_DEVICE_LOCKED.equals(channelId)) {
             setDeviceLocked(OnOffType.ON.equals(command));
         }
@@ -140,7 +141,7 @@ public class TRVHandler extends DraytonWiserThingHandler<SmartValveData> {
         return locked == null ? UnDefType.UNDEF : OnOffType.from(locked);
     }
 
-    private void setDeviceLocked(final Boolean state) {
+    private void setDeviceLocked(final Boolean state) throws DraytonWiserApiException {
         getApi().setDeviceLocked(getData().device.getId(), state);
     }
 

@@ -62,13 +62,13 @@ public class DraytonWiserApi {
         this.configuration = configuration;
     }
 
-    public @Nullable StationDTO getStation() {
+    public @Nullable StationDTO getStation() throws DraytonWiserApiException {
         final ContentResponse response = sendMessageToHeatHub(STATION_ENDPOINT, HttpMethod.GET);
 
         return response == null ? null : GSON.fromJson(response.getContentAsString(), StationDTO.class);
     }
 
-    public @Nullable DomainDTO getDomain() {
+    public @Nullable DomainDTO getDomain() throws DraytonWiserApiException {
         final ContentResponse response = sendMessageToHeatHub(DOMAIN_ENDPOINT, HttpMethod.GET);
 
         if (response == null) {
@@ -83,59 +83,61 @@ public class DraytonWiserApi {
         }
     }
 
-    public void setRoomSetPoint(final int roomId, final int setPoint) {
+    public void setRoomSetPoint(final int roomId, final int setPoint) throws DraytonWiserApiException {
         final String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
 
         sendMessageToHeatHub(ROOMS_ENDPOINT + roomId, "PATCH", payload);
     }
 
-    public void setRoomManualMode(final int roomId, final boolean manualMode) {
+    public void setRoomManualMode(final int roomId, final boolean manualMode) throws DraytonWiserApiException {
         String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
         sendMessageToHeatHub(ROOMS_ENDPOINT + roomId, "PATCH", payload);
         payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(ROOMS_ENDPOINT + roomId, "PATCH", payload);
     }
 
-    public void setRoomWindowStateDetection(final int roomId, final boolean windowStateDetection) {
+    public void setRoomWindowStateDetection(final int roomId, final boolean windowStateDetection)
+            throws DraytonWiserApiException {
         final String payload = windowStateDetection ? "true" : "false";
         sendMessageToHeatHub(ROOMS_ENDPOINT + roomId + "/WindowDetectionActive", "PATCH", payload);
     }
 
-    public void setRoomBoostActive(final int roomId, final int setPoint, final int duration) {
+    public void setRoomBoostActive(final int roomId, final int setPoint, final int duration)
+            throws DraytonWiserApiException {
         final String payload = "{\"RequestOverride\":{\"Type\":\"Manual\",\"Originator\" :\"App\",\"DurationMinutes\":"
                 + duration + ",\"SetPoint\":" + setPoint + "}}";
         sendMessageToHeatHub(ROOMS_ENDPOINT + roomId, "PATCH", payload);
     }
 
-    public void setRoomBoostInactive(final int roomId) {
+    public void setRoomBoostInactive(final int roomId) throws DraytonWiserApiException {
         final String payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(ROOMS_ENDPOINT + roomId, "PATCH", payload);
     }
 
-    public void setHotWaterManualMode(final boolean manualMode) {
+    public void setHotWaterManualMode(final boolean manualMode) throws DraytonWiserApiException {
         String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
         sendMessageToHeatHub(HOTWATER_ENDPOINT + "2", "PATCH", payload);
         payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(HOTWATER_ENDPOINT + "2", "PATCH", payload);
     }
 
-    public void setHotWaterSetPoint(final int setPoint) {
+    public void setHotWaterSetPoint(final int setPoint) throws DraytonWiserApiException {
         final String payload = "{\"RequestOverride\":{\"Type\":\"Manual\", \"SetPoint\":" + setPoint + "}}";
         sendMessageToHeatHub(HOTWATER_ENDPOINT + "2", "PATCH", payload);
     }
 
-    public void setHotWaterBoostActive(final int duration) {
+    public void setHotWaterBoostActive(final int duration) throws DraytonWiserApiException {
         final String payload = "{\"RequestOverride\":{\"Type\":\"Manual\",\"Originator\" :\"App\",\"DurationMinutes\":"
                 + duration + ",\"SetPoint\":1100}}";
         sendMessageToHeatHub(HOTWATER_ENDPOINT + "2", "PATCH", payload);
     }
 
-    public void setHotWaterBoostInactive() {
+    public void setHotWaterBoostInactive() throws DraytonWiserApiException {
         final String payload = "{\"RequestOverride\":{\"Type\":\"None\",\"Originator\" :\"App\",\"DurationMinutes\":0,\"SetPoint\":0}}";
         sendMessageToHeatHub(HOTWATER_ENDPOINT + "2", "PATCH", payload);
     }
 
-    public void setAwayMode(final boolean awayMode) {
+    public void setAwayMode(final boolean awayMode) throws DraytonWiserApiException {
         final int setPoint = configuration.awaySetPoint * 10;
 
         String payload = "{\"Type\":" + (awayMode ? "2" : "0") + ", \"setPoint\":" + (awayMode ? setPoint : "0") + "}";
@@ -144,37 +146,38 @@ public class DraytonWiserApi {
         sendMessageToHeatHub(HOTWATER_ENDPOINT + "2/RequestOverride", "PATCH", payload);
     }
 
-    public void setDeviceLocked(final int deviceId, final boolean locked) {
+    public void setDeviceLocked(final int deviceId, final boolean locked) throws DraytonWiserApiException {
         final String payload = locked ? "true" : "false";
         sendMessageToHeatHub(DEVICE_ENDPOINT + deviceId + "/DeviceLockEnabled", "PATCH", payload);
     }
 
-    public void setEcoMode(final boolean ecoMode) {
+    public void setEcoMode(final boolean ecoMode) throws DraytonWiserApiException {
         final String payload = "{\"EcoModeEnabled\":" + ecoMode + "}";
         sendMessageToHeatHub(SYSTEM_ENDPOINT, "PATCH", payload);
     }
 
-    public void setSmartPlugManualMode(final int id, final boolean manualMode) {
+    public void setSmartPlugManualMode(final int id, final boolean manualMode) throws DraytonWiserApiException {
         final String payload = "{\"Mode\":\"" + (manualMode ? "Manual" : "Auto") + "\"}";
         sendMessageToHeatHub(SMARTPLUG_ENDPOINT + id, "PATCH", payload);
     }
 
-    public void setSmartPlugOutputState(final int id, final boolean outputState) {
+    public void setSmartPlugOutputState(final int id, final boolean outputState) throws DraytonWiserApiException {
         final String payload = "{\"RequestOutput\":\"" + (outputState ? "On" : "Off") + "\"}";
         sendMessageToHeatHub(SMARTPLUG_ENDPOINT + id, "PATCH", payload);
     }
 
-    public void setSmartPlugAwayAction(final int id, final boolean awayAction) {
+    public void setSmartPlugAwayAction(final int id, final boolean awayAction) throws DraytonWiserApiException {
         final String payload = "{\"AwayAction\":\"" + (awayAction ? "Off" : "NoChange") + "\"}";
         sendMessageToHeatHub(SMARTPLUG_ENDPOINT + id, "PATCH", payload);
     }
 
-    private synchronized @Nullable ContentResponse sendMessageToHeatHub(final String path, final HttpMethod method) {
+    private synchronized @Nullable ContentResponse sendMessageToHeatHub(final String path, final HttpMethod method)
+            throws DraytonWiserApiException {
         return sendMessageToHeatHub(path, method.asString(), "");
     }
 
     private synchronized @Nullable ContentResponse sendMessageToHeatHub(final String path, final String method,
-            final String content) {
+            final String content) throws DraytonWiserApiException {
         // we need to keep track of the number of times that the heat hub has "failed" to respond.
         // we only actually report a failure if we hit an error state 3 or more times
         try {

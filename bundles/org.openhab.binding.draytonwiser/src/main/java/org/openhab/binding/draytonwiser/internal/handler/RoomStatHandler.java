@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.BatteryLevel;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.SignalStrength;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.handler.RoomStatHandler.RoomStatData;
 import org.openhab.binding.draytonwiser.internal.model.DeviceDTO;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
@@ -55,7 +56,7 @@ public class RoomStatHandler extends DraytonWiserThingHandler<RoomStatData> {
     }
 
     @Override
-    protected void handleCommand(final String channelId, final Command command) {
+    protected void handleCommand(final String channelId, final Command command) throws DraytonWiserApiException {
         if (command instanceof OnOffType && CHANNEL_DEVICE_LOCKED.equals(channelId)) {
             setDeviceLocked(OnOffType.ON.equals(command));
         }
@@ -139,7 +140,7 @@ public class RoomStatHandler extends DraytonWiserThingHandler<RoomStatData> {
                 : OnOffType.from(getData().device.getDeviceLockEnabled());
     }
 
-    private void setDeviceLocked(final boolean state) {
+    private void setDeviceLocked(final boolean state) throws DraytonWiserApiException {
         getApi().setDeviceLocked(getData().device.getId(), state);
     }
 

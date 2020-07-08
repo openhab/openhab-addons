@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
-import org.eclipse.smarthome.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants;
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DraytonWiserMDNSDiscoveryParticipant} is responsible for discovering Drayton Wiser Heat Hubs. It uses the
- * central {@link MDNSDiscoveryService}.
+ * central MDNS Discovery Service.
  *
  * @author Andrew Schofield - Initial contribution
  *

@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserRefreshListener;
 import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApi;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,19 +83,25 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
             final DraytonWiserApi api = this.api;
 
             if (api != null && data != null) {
-                handleCommand(channelUID.getId(), command);
-                // cancel previous refresh, but wait for it to finish, so no forced cancel
-                disposehandleCommandRefreshFuture(false);
-                // update the state after the heathub has had time to react
-                handleCommandRefreshFuture = scheduler.schedule(heatHubHandler::refresh, 5, TimeUnit.SECONDS);
+                try {
+                    handleCommand(channelUID.getId(), command);
+                    // cancel previous refresh, but wait for it to finish, so no forced cancel
+                    disposehandleCommandRefreshFuture(false);
+                    // update the state after the heathub has had time to react
+                    handleCommandRefreshFuture = scheduler.schedule(heatHubHandler::refresh, 5, TimeUnit.SECONDS);
+                } catch (final DraytonWiserApiException e) {
+                    logger.warn("Failed to handle command {} for channel {}: {}", command, channelUID, e.getMessage());
+                    logger.trace("DraytonWiserApiException", e);
+                }
             }
         }
     }
 
     private void disposehandleCommandRefreshFuture(final boolean force) {
-        if (handleCommandRefreshFuture != null) {
-            handleCommandRefreshFuture.cancel(force);
-            handleCommandRefreshFuture = null;
+        final ScheduledFuture<?> future = handleCommandRefreshFuture;
+
+        if (future != null) {
+            future.cancel(force);
         }
     }
 
@@ -108,8 +115,9 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
      *
      * @param channelId Channel id part of the Channel UID
      * @param command the command to perform
+     * @throws DraytonWiserApiException
      */
-    protected abstract void handleCommand(String channelId, Command command);
+    protected abstract void handleCommand(String channelId, Command command) throws DraytonWiserApiException;
 
     @Override
     public final void onRefresh(final DraytonWiserDTO draytonWiseDTO) {
@@ -127,7 +135,7 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
                     }
                 }
             }
-        } catch (final RuntimeException e) {
+        } catch (final RuntimeException | DraytonWiserApiException e) {
             logger.debug("Exception occurred during refresh: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -156,8 +164,9 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
      *
      * @param draytonWiseDTO data object with domain data as received from the hub
      * @return handler data object if available else null
+     * @throws DraytonWiserApiException
      */
-    protected abstract @Nullable T collectData(DraytonWiserDTO draytonWiseDTO);
+    protected abstract @Nullable T collectData(DraytonWiserDTO draytonWiseDTO) throws DraytonWiserApiException;
 
     protected DraytonWiserApi getApi() {
         final DraytonWiserApi api = this.api;
@@ -169,7 +178,7 @@ abstract class DraytonWiserThingHandler<T> extends BaseThingHandler implements D
     }
 
     protected T getData() {
-        final T data = this.data;
+        final @Nullable T data = this.data;
 
         if (data == null) {
             throw new IllegalStateException("Data not set");

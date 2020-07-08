@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.SignalStrength;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.handler.ControllerHandler.ControllerData;
 import org.openhab.binding.draytonwiser.internal.model.DeviceDTO;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
@@ -51,7 +52,7 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
     }
 
     @Override
-    protected void handleCommand(final String channelId, final Command command) {
+    protected void handleCommand(final String channelId, final Command command) throws DraytonWiserApiException {
         if (command instanceof OnOffType) {
             final boolean onOffState = OnOffType.ON.equals(command);
 
@@ -78,7 +79,8 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
     }
 
     @Override
-    protected @Nullable ControllerData collectData(final DraytonWiserDTO domainDTOProxy) {
+    protected @Nullable ControllerData collectData(final DraytonWiserDTO domainDTOProxy)
+            throws DraytonWiserApiException {
         final StationDTO station = getApi().getStation();
         final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(0);
         final SystemDTO system = domainDTOProxy.getSystem();
@@ -137,11 +139,11 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
         return OnOffType.from(getData().system.getEcoModeEnabled() != null && getData().system.getEcoModeEnabled());
     }
 
-    private void setAwayMode(final Boolean awayMode) {
+    private void setAwayMode(final Boolean awayMode) throws DraytonWiserApiException {
         getApi().setAwayMode(awayMode);
     }
 
-    private void setEcoMode(final Boolean ecoMode) {
+    private void setEcoMode(final Boolean ecoMode) throws DraytonWiserApiException {
         getApi().setEcoMode(ecoMode);
     }
 

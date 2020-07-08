@@ -113,6 +113,10 @@ public class DeviceDTO {
         return receptionOfDevice == null ? null : receptionOfDevice.getLQI();
     }
 
+    public ReceptionDTO getReceptionOfController() {
+        return receptionOfController;
+    }
+
     public Boolean getDeviceLockEnabled() {
         return deviceLockEnabled;
     }

@@ -69,11 +69,11 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
-        if (bridgeHandler == null) {
-            return;
+        final HeatHubHandler handler = bridgeHandler;
+        if (handler != null) {
+            removeOlderResults(getTimestampOfLastScan());
+            handler.setDiscoveryService(this);
         }
-        removeOlderResults(getTimestampOfLastScan());
-        bridgeHandler.setDiscoveryService(this);
     }
 
     @Override
@@ -172,8 +172,10 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public synchronized void stopScan() {
-        if (bridgeHandler != null) {
-            bridgeHandler.unsetDiscoveryService();
+        final HeatHubHandler handler = bridgeHandler;
+
+        if (handler != null) {
+            handler.unsetDiscoveryService();
         }
         super.stopScan();
     }
@@ -182,7 +184,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
     public void setThingHandler(@Nullable final ThingHandler handler) {
         if (handler instanceof HeatHubHandler) {
             bridgeHandler = (HeatHubHandler) handler;
-            bridgeUID = bridgeHandler.getThing().getUID();
+            bridgeUID = handler.getThing().getUID();
         } else {
             bridgeHandler = null;
             bridgeUID = null;

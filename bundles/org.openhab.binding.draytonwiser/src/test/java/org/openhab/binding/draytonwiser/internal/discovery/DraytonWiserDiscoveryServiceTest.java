@@ -44,6 +44,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mock;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApi;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.handler.HeatHubConfiguration;
 import org.openhab.binding.draytonwiser.internal.handler.HeatHubHandler;
 import org.openhab.binding.draytonwiser.internal.model.DomainDTO;
@@ -96,8 +97,8 @@ public class DraytonWiserDiscoveryServiceTest {
     }
 
     @Test
-    public void testDiscovery()
-            throws IOException, URISyntaxException, InterruptedException, TimeoutException, ExecutionException {
+    public void testDiscovery() throws IOException, URISyntaxException, InterruptedException, TimeoutException,
+            ExecutionException, DraytonWiserApiException {
         final byte[] content = Files.readAllBytes(Paths.get(getClass().getResource(jsonFile).toURI()));
         final HttpResponse response = new HttpResponse(null, null);
         response.status(Response.SC_OK);

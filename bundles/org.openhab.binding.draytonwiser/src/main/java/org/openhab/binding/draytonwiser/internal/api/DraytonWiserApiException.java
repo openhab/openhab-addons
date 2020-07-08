@@ -20,7 +20,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class DraytonWiserApiException extends RuntimeException {
+public class DraytonWiserApiException extends Exception {
+
+    private static final long serialVersionUID = 1L;
 
     public DraytonWiserApiException(final String message) {
         super(message);

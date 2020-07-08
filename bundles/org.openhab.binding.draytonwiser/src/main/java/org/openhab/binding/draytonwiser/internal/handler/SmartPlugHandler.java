@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.handler.SmartPlugHandler.SmartPlugData;
 import org.openhab.binding.draytonwiser.internal.model.DeviceDTO;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
@@ -50,7 +51,7 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
     }
 
     @Override
-    protected void handleCommand(final String channelId, final Command command) {
+    protected void handleCommand(final String channelId, final Command command) throws DraytonWiserApiException {
         if (command instanceof OnOffType) {
             switch (channelId) {
                 case CHANNEL_DEVICE_LOCKED:
@@ -115,7 +116,7 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
                 : OnOffType.from(getData().device.getDeviceLockEnabled());
     }
 
-    private void setDeviceLocked(final Boolean state) {
+    private void setDeviceLocked(final Boolean state) throws DraytonWiserApiException {
         getApi().setDeviceLocked(getData().device.getId(), state);
     }
 
@@ -123,15 +124,15 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
         return OnOffType.from("MANUAL".equalsIgnoreCase(getData().smartPlug.getMode()));
     }
 
-    private void setManualMode(final Boolean manualMode) {
+    private void setManualMode(final Boolean manualMode) throws DraytonWiserApiException {
         getApi().setSmartPlugManualMode(getData().smartPlug.getId(), manualMode);
     }
 
-    private void setOutputState(final Boolean outputState) {
+    private void setOutputState(final Boolean outputState) throws DraytonWiserApiException {
         getApi().setSmartPlugOutputState(getData().smartPlug.getId(), outputState);
     }
 
-    private void setAwayAction(final Boolean awayAction) {
+    private void setAwayAction(final Boolean awayAction) throws DraytonWiserApiException {
         getApi().setSmartPlugAwayAction(getData().smartPlug.getId(), awayAction);
     }
 

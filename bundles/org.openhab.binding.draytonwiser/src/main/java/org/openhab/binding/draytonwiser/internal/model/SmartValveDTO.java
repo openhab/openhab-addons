@@ -55,4 +55,8 @@ public class SmartValveDTO {
     public Integer getExternalRoomStatTemperature() {
         return externalRoomStatTemperature;
     }
+
+    public String getMountingOrientation() {
+        return mountingOrientation;
+    }
 }

@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.handler.HotWaterHandler.HotWaterData;
 import org.openhab.binding.draytonwiser.internal.model.DraytonWiserDTO;
 import org.openhab.binding.draytonwiser.internal.model.HotWaterDTO;
@@ -43,7 +44,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     }
 
     @Override
-    protected void handleCommand(final String channelId, final Command command) {
+    protected void handleCommand(final String channelId, final Command command) throws DraytonWiserApiException {
         if (command instanceof OnOffType && CHANNEL_MANUAL_MODE_STATE.equals(channelId)) {
             setManualMode(OnOffType.ON.equals(command));
         } else if (command instanceof OnOffType && CHANNEL_HOT_WATER_SETPOINT.equals(channelId)) {
@@ -90,15 +91,15 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
         return OnOffType.from(hotWater.size() >= 1 && "ON".equalsIgnoreCase(hotWater.get(0).getWaterHeatingState()));
     }
 
-    private void setManualMode(final boolean manualMode) {
+    private void setManualMode(final boolean manualMode) throws DraytonWiserApiException {
         getApi().setHotWaterManualMode(manualMode);
     }
 
-    private void setSetPoint(final boolean setPointMode) {
+    private void setSetPoint(final boolean setPointMode) throws DraytonWiserApiException {
         getApi().setHotWaterSetPoint(setPointMode ? 1100 : -200);
     }
 
-    private void setBoostDuration(final int durationMinutes) {
+    private void setBoostDuration(final int durationMinutes) throws DraytonWiserApiException {
         if (durationMinutes > 0) {
             getApi().setHotWaterBoostActive(durationMinutes);
         } else {

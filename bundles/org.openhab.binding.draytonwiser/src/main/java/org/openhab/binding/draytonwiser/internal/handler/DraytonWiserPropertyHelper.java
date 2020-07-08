@@ -38,10 +38,11 @@ public final class DraytonWiserPropertyHelper {
         setGeneralDeviceProperties(device, properties);
     }
 
-    public static <T> void setGeneralDeviceProperties(final DeviceDTO device, final Map<String, T> properties) {
-        properties.put("Device Type", (T) device.getProductIdentifier());
-        properties.put("Firmware Version", (T) device.getActiveFirmwareVersion());
-        properties.put("Manufacturer", (T) device.getManufacturer());
-        properties.put("Model", (T) device.getModelIdentifier());
+    public static void setGeneralDeviceProperties(final DeviceDTO device,
+            final Map<String, ? super String> properties) {
+        properties.put("Device Type", device.getProductIdentifier());
+        properties.put("Firmware Version", device.getActiveFirmwareVersion());
+        properties.put("Manufacturer", device.getManufacturer());
+        properties.put("Model", device.getModelIdentifier());
     }
 }

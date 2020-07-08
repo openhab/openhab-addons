@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.util.ThingHandlerHelper;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserRefreshListener;
 import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApi;
+import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
 import org.openhab.binding.draytonwiser.internal.discovery.DraytonWiserDiscoveryService;
 import org.openhab.binding.draytonwiser.internal.model.DeviceDTO;
 import org.openhab.binding.draytonwiser.internal.model.DomainDTO;
@@ -121,7 +122,7 @@ public class HeatHubHandler extends BaseBridgeHandler {
                 }
                 logger.debug("Finished refreshing devices");
             }
-        } catch (final RuntimeException e) {
+        } catch (final RuntimeException | DraytonWiserApiException e) {
             logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             return null;
@@ -149,15 +150,18 @@ public class HeatHubHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        final ScheduledFuture<?> future = refreshJob;
+
+        if (future != null) {
+            future.cancel(true);
         }
     }
 
     private void notifyListeners(final DraytonWiserDTO domain) {
-        if (discoveryService != null) {
-            discoveryService.onRefresh(domain);
+        final DraytonWiserRefreshListener discoveryListener = discoveryService;
+
+        if (discoveryListener != null) {
+            discoveryListener.onRefresh(domain);
         }
         getThing().getThings().stream().map(Thing::getHandler)
                 .filter(handler -> handler instanceof DraytonWiserRefreshListener)
