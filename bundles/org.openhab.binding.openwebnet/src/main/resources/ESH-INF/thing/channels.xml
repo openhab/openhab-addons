@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+
 	<!-- Switch Channel -->
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
@@ -36,5 +36,5 @@
 			<tag>Lighting</tag>
 		</tags>
 	</channel-type>
-	
+
 </thing:thing-descriptions>

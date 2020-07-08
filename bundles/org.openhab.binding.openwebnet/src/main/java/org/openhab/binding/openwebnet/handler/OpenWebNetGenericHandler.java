@@ -70,5 +70,4 @@ public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
         // do nothing
         logger.warn("handleMessage(): Nothing to do!");
     }
-
 } // class

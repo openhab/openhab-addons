@@ -161,5 +161,4 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
                 .withLabel(thingLabel).build();
         thingDiscovered(discoveryResult);
     }
-
 }

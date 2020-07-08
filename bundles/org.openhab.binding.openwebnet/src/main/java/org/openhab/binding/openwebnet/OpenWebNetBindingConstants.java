@@ -103,5 +103,4 @@ public class OpenWebNetBindingConstants {
     public static final String PROPERTY_FIRMWARE_VERSION = "firmwareVersion";
     public static final String PROPERTY_MODEL = "model";
     public static final String PROPERTY_SERIAL_NO = "serialNumber";
-
 }

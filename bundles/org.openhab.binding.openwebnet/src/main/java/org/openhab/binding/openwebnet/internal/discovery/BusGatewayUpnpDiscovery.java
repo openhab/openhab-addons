@@ -140,7 +140,6 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
             deviceLog += "\n+==================================================";
             logger.debug(deviceLog);
         }
-
     } /* DeviceInfo */
 
     @Override
@@ -227,5 +226,4 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         }
         return null;
     }
-
 }

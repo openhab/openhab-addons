@@ -3,19 +3,18 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+
 	<!-- Thing for Dimmer (BTicino yyyy/zzzz/...) -->
 	<thing-type id="bus_dimmer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bus_gateway" />
+			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Dimmer</label>
 		<description>A OpenWebNet BUS/SCS dimmer for the dimmer control of 1 light. BTicino models: yyyy/zzzz/etc.</description>
 
 		<channels>
-			<channel id="brightness" typeId="brightness" />
-			<!--  <channel id="dimmerLevel" typeId="dimmerLevel" /> -->
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
 		<properties>
@@ -33,6 +32,6 @@
 				<required>true</required>
 			</parameter>
 		</config-description>
-		
+
 	</thing-type>
 </thing:thing-descriptions>

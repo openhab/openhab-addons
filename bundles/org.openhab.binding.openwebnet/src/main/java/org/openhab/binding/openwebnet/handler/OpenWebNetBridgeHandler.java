@@ -256,29 +256,29 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @param listener to receive device found notifications
      */
     public synchronized void searchDevices() {
-        logger.debug("-------- BridgeHandler.searchDevices()");
+        logger.debug("------$$ BridgeHandler.searchDevices()");
         scanIsActive = true;
-        logger.debug("-------- scanIsActive={}", scanIsActive);
+        logger.debug("------$$ scanIsActive={}", scanIsActive);
         OpenGateway gw = gateway;
         if (gw != null) {
             if (!gw.isDiscovering()) {
                 if (!gw.isConnected()) {
-                    logger.warn("-------- Gateway is NOT connected, cannot search for devices");
+                    logger.warn("------$$ Gateway is NOT connected, cannot search for devices");
                     return;
                 }
-                logger.info("-------- STARTED active search for devices on gateway '{}'", this.getThing().getUID());
+                logger.info("------$$ STARTED active SEARCH for devices on gateway '{}'", this.getThing().getUID());
                 try {
                     gw.discoverDevices();
                 } catch (OWNException e) {
-                    logger.warn("-------- OWNException while discovering devices on gateway {}: {}",
+                    logger.warn("------$$ OWNException while discovering devices on gateway {}: {}",
                             this.getThing().getUID(), e.getMessage());
                 }
             } else {
-                logger.warn("-------- Searching devices on gateway {} already activated", this.getThing().getUID());
+                logger.warn("------$$ Searching devices on gateway {} already activated", this.getThing().getUID());
                 return;
             }
         } else {
-            logger.warn("-------- Cannot search devices: no gateway associated to this handler");
+            logger.warn("------$$ Cannot search devices: no gateway associated to this handler");
         }
     }
 
@@ -299,7 +299,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public void onDiscoveryCompleted() {
-        logger.info("-------- FINISHED active search for devices on gateway '{}'", this.getThing().getUID());
+        logger.info("------$$ FINISHED active SEARCH for devices on gateway '{}'", this.getThing().getUID());
     }
 
     /**
@@ -307,7 +307,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      */
     public void scanStopped() {
         scanIsActive = false;
-        logger.debug("-------- scanIsActive={}", scanIsActive);
+        logger.debug("------$$ scanIsActive={}", scanIsActive);
     }
 
     private void discoverByActivation(BaseOpenMessage baseMsg) {

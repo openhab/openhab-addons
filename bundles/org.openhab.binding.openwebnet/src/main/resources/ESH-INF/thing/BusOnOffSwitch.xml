@@ -3,18 +3,18 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+
 	<!-- Thing for BUS On Off Switch (BTicino xxx/xxx/...) -->
 	<thing-type id="bus_on_off_switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bus_gateway" />
+			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>Switch</label>
 		<description>A OpenWebNet BUS/SCS switch for the control of 1 light/load. BTicino models: xxx/yyyy/etc.</description>
-		
+
 		<channels>
-			<channel id="switch" typeId="switch" />
+			<channel id="switch" typeId="switch"/>
 		</channels>
 
 		<properties>
@@ -23,7 +23,7 @@
 			<property name="ownDeviceType">261</property>
 		</properties>
 
-	<representation-property>ownId</representation-property>
+		<representation-property>ownId</representation-property>
 
 		<config-description>
 			<parameter name="where" type="text">
@@ -32,6 +32,6 @@
 				<required>true</required>
 			</parameter>
 		</config-description>
-		
+
 	</thing-type>
 </thing:thing-descriptions>

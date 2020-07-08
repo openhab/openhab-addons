@@ -373,5 +373,4 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         }
         return null;
     }
-
 }
