@@ -94,6 +94,7 @@ public class TeleinfoInputStream extends InputStream {
     private long waitNextHeaderFrameTimeoutInUs;
     private long readingFrameTimeoutInMs;
     private boolean autoRepairInvalidADPSgroupLine;
+    private boolean useOpenhabScheduler = false;
 
     static {
         LABEL_VALUE_CONVERTERS = new HashMap<>();
@@ -135,13 +136,15 @@ public class TeleinfoInputStream extends InputStream {
         this(teleinfoInputStream, waitNextHeaderFrameTimeoutInMs, readingFrameTimeoutInMs,
                 autoRepairInvalidADPSgroupLine);
         this.executorService = executorService;
+        this.useOpenhabScheduler = true;
     }
 
     @Override
     public void close() throws IOException {
         logger.debug("close() [start]");
         bufferedReader.close();
-        executorService.shutdownNow();
+        if (!useOpenhabScheduler)
+            executorService.shutdownNow();
         super.close();
         logger.debug("close() [end]");
     }
