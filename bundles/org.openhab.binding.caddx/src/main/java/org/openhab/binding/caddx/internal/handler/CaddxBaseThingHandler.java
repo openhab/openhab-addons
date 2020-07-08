@@ -21,8 +21,6 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -47,7 +45,7 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
     private @Nullable CaddxBridgeHandler caddxBridgeHandler = null;
 
     /** Caddx Alarm Thing type. */
-    private CaddxThingType caddxThingType;// = null;
+    private CaddxThingType caddxThingType;
 
     /** Partition Number. */
     private int partitionNumber;
@@ -68,8 +66,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("initialize(): {}; Thing ID: {}.", caddxThingType, this.getThing().getUID());
-
         getConfiguration(caddxThingType);
 
         // set the Thing offline for now
@@ -123,26 +119,6 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
-
-        switch (bridgeStatus) {
-            case ONLINE:
-                updateStatus(bridgeStatus);
-                break;
-            case OFFLINE:
-                updateStatus(bridgeStatus, ThingStatusDetail.BRIDGE_OFFLINE);
-                break;
-            default:
-                updateStatus(bridgeStatus);
-                break;
-        }
-
-        logger.trace("bridgeStatusChanged(): Bridge Status: '{}' - Thing '{}' Status: '{}'!", bridgeStatusInfo,
-                getThing().getUID(), getThing().getStatus());
     }
 
     /**
