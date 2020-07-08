@@ -78,6 +78,7 @@ public class FeedHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(FeedHandlerConfiguration.class);
+        createDynamicChannels(configuration.numberOfEntries);
 
         updateStatus(ThingStatus.UNKNOWN);
         startAutomaticRefresh();
@@ -86,7 +87,9 @@ public class FeedHandler extends BaseThingHandler {
     @Override
     public void handleConfigurationUpdate(@NotNull Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
+
         configuration = getConfigAs(FeedHandlerConfiguration.class);
+        createDynamicChannels(configuration.numberOfEntries);
     }
 
     private void startAutomaticRefresh() {
@@ -117,7 +120,6 @@ public class FeedHandler extends BaseThingHandler {
         List<SyndEntry> entries = currentFeedState.getEntries().stream().limit(numberOfEntries)
                 .collect(Collectors.toList());
 
-        createDynamicChannels(numberOfEntries);
         setUnusedDynamicChannelsToUndef(entries.size());
 
         for (int i = 0; i < entries.size(); i++) {
