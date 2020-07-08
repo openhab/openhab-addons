@@ -192,7 +192,7 @@
 			</channel>
 		</channels>
 
-        <representation-property>zoneNumber</representation-property>
+		<representation-property>zoneNumber</representation-property>
 
 		<config-description>
 			<parameter name="zoneNumber" type="integer" required="true" min="1" max="192">

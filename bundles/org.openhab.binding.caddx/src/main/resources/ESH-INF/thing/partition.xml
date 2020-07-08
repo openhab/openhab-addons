@@ -205,7 +205,7 @@
 			</channel>
 		</channels>
 
-        <representation-property>partitionNumber</representation-property>
+		<representation-property>partitionNumber</representation-property>
 
 		<config-description>
 			<parameter name="partitionNumber" type="integer" required="true" min="1" max="8">
