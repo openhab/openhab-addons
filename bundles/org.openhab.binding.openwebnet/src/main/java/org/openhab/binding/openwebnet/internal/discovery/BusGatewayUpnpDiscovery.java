@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
-import org.eclipse.smarthome.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
@@ -40,8 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BusGatewayUpnpDiscovery} is responsible for discovering supported BTicino BUS
- * gateways devices using UPnP. It uses the central {@link UpnpDiscoveryService} implementing
- * {@link UpnpDiscoveryParticipant}.
+ * gateways devices using UPnP. It implements {@link UpnpDiscoveryParticipant}.
  *
  * @author Massimo Valla - Initial contribution
  */
@@ -83,6 +81,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
     /**
      * DeviceInfo bean to store device useful info (and log them)
      */
+    // @NonNullByDefault is not necessary here
     public class DeviceInfo {
         private String friendlyName = "<unknown>";
         private String modelName = "<unknown>";
@@ -176,8 +175,14 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingId).withProperties(properties)
                         .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_SERIAL_NO).withLabel(label)
                         .build();
-                logger.info("Created a DiscoveryResult for gateway '{}' (UDN={})", devInfo.friendlyName,
-                        devInfo.udn.getIdentifierString());
+                UDN udn = devInfo.udn;
+                String udnStr;
+                if (udn != null) {
+                    udnStr = udn.getIdentifierString();
+                } else {
+                    udnStr = null;
+                }
+                logger.info("Created a DiscoveryResult for gateway '{}' (UDN={})", devInfo.friendlyName, udnStr);
                 return result;
             } else {
                 logger.warn("Could not get host for device (UDN={})", devInfo.udn);
@@ -201,21 +206,26 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
      */
     private @Nullable ThingUID generateThingUID(DeviceInfo devInfo) {
         if (devInfo.isBTicino) {
-            String idString = devInfo.udn.getIdentifierString();
-            BusGatewayId gwId = BusGatewayId.fromValue(idString.split("-")[1]);
-            if (gwId != null) {
-                logger.debug("'{}' is a supported gateway", gwId);
-                String mac = idString.split("-")[3];
-                String normalizedMac = mac.toLowerCase().replaceAll("[^a-f0-9]", "");
-                if (!normalizedMac.equals("")) {
-                    return new ThingUID(OpenWebNetBindingConstants.THING_TYPE_BUS_GATEWAY,
-                            gwId.getThingId() + "_" + normalizedMac);
+            UDN udn = devInfo.udn;
+            String idString = null;
+            if (udn != null) {
+                idString = udn.getIdentifierString();
+                if (idString != null) {
+                    BusGatewayId gwId = BusGatewayId.fromValue(idString.split("-")[1]);
+                    if (gwId != null) {
+                        logger.debug("'{}' is a supported gateway", gwId);
+                        String mac = idString.split("-")[3];
+                        String normalizedMac = mac.toLowerCase().replaceAll("[^a-f0-9]", "");
+                        if (!normalizedMac.equals("")) {
+                            return new ThingUID(OpenWebNetBindingConstants.THING_TYPE_BUS_GATEWAY,
+                                    gwId.getThingId() + "_" + normalizedMac);
+                        }
+                    }
                 }
-            } else {
-                logger.warn("This BTicino device is not a OpenWebNet gateway or is not supported (UDN={})", idString);
             }
+            logger.warn("This BTicino device is not a OpenWebNet gateway or is not supported (UDN={})", idString);
         }
         return null;
     }
 
-} // class
+}

@@ -32,7 +32,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openwebnet4j.OpenGateway;
+import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.OpenMessage;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.WhereZigBee;
@@ -63,68 +67,70 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("initialize() thing={}", thing.getUID());
         Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() != null) {
-            bridgeHandler = (OpenWebNetBridgeHandler) bridge.getHandler();
-            String deviceWhereStr = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
-            if (deviceWhereStr == null) {
-                logger.warn("WHERE parameter in configuration is null or invalid for thing {}", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "WHERE parameter in configuration is null or invalid");
-                return;
-            } else {
-                if (bridgeHandler.isBusGateway()) {
-                    deviceWhere = new WhereLightAutom(deviceWhereStr);
+        if (bridge != null) {
+            OpenWebNetBridgeHandler brH = (OpenWebNetBridgeHandler) bridge.getHandler();
+            if (brH != null) {
+                bridgeHandler = brH;
+                String deviceWhereStr = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
+                if (deviceWhereStr == null) {
+                    logger.warn("WHERE parameter in configuration is null or invalid for thing {}", thing.getUID());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "WHERE parameter in configuration is null or invalid");
+                    return;
                 } else {
-                    deviceWhere = new WhereZigBee(deviceWhereStr);
+                    Where w;
+                    if (brH.isBusGateway()) {
+                        w = new WhereLightAutom(deviceWhereStr);
+                    } else {
+                        w = new WhereZigBee(deviceWhereStr);
+                    }
+                    deviceWhere = w;
+                    final String oid = brH.ownIdFromDeviceWhere(w.value(), this);
+                    ownId = oid;
+                    Map<String, String> properties = editProperties();
+                    properties.put(PROPERTY_OWNID, oid);
+                    updateProperties(properties);
+                    brH.registerDevice(oid, this);
+                    logger.debug("associated thing to bridge with ownId={}", ownId);
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
                 }
-                ownId = bridgeHandler.ownIdFromDeviceWhere(deviceWhere.value(), this);
-                final String oid = ownId;
-                Map<String, String> properties = editProperties();
-                properties.put(PROPERTY_OWNID, oid);
-                updateProperties(properties);
-                bridgeHandler.registerDevice(oid, this);
-                logger.debug("associated thing to bridge with ownId={}", ownId);
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");
-                // TODO handleCommand(REFRESH) : is it called automatically ? otherwise do here a:
-                // bridgeHandler.requestDeviceState(getThing().getUID());
+                return;
             }
-        } else {
-            logger.warn("No bridge associated, please assign a bridge in thing configuration. thing={}",
-                    thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No bridge associated, please assign a bridge in thing configuration.");
         }
+        logger.warn("No bridge associated, please assign a bridge in thing configuration. thing={}", thing.getUID());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "No bridge associated, please assign a bridge in thing configuration.");
     }
 
     @Override
     public void handleCommand(ChannelUID channel, Command command) {
         logger.debug("handleCommand() (command={} - channel={})", command, channel);
-        if (bridgeHandler == null || bridgeHandler.gateway == null) {
-            logger.info("Thing {} is not associated to any gateway, skipping command", getThing().getUID());
-            return;
-        }
-        if (!bridgeHandler.gateway.isConnected()) {
-            logger.warn("Gateway is NOT connected, setting thing={} to OFFLINE", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-        if (command instanceof RefreshType) {
-            logger.debug("Refreshing channel {}", channel);
-            // TODO move to a refreshChannel() method that subclasses can implement to disable setting the thing offline
-            requestChannelState(channel);
-            // set a schedule to put device OFFLINE if no answer is received after THING_STATE_REQ_TIMEOUT
-            scheduler.schedule(() -> {
-                // if state is still unknown after timer ends, set the thing OFFLINE
-                if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
-                    logger.info("Thing state request timer expired, still unknown. Setting thing={} to OFFLINE",
-                            thing.getUID());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Could not get channel state");
-                }
-            }, THING_STATE_REQ_TIMEOUT, TimeUnit.SECONDS);
-            return;
+        OpenWebNetBridgeHandler handler = bridgeHandler;
+        if (handler != null) {
+            OpenGateway gw = handler.gateway;
+            if (gw != null && !gw.isConnected()) {
+                logger.warn("Gateway is NOT connected, setting thing={} to OFFLINE", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
+            if (command instanceof RefreshType) {
+                logger.debug("Refreshing channel {}", channel);
+                requestChannelState(channel);
+                // set a schedule to put device OFFLINE if no answer is received after THING_STATE_REQ_TIMEOUT
+                scheduler.schedule(() -> {
+                    // if state is still unknown after timer ends, set the thing OFFLINE
+                    if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
+                        logger.info("Thing state request timer expired, still unknown. Setting thing={} to OFFLINE",
+                                thing.getUID());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Could not get channel state");
+                    }
+                }, THING_STATE_REQ_TIMEOUT, TimeUnit.SECONDS);
+            } else {
+                handleChannelCommand(channel, command);
+            }
         } else {
-            handleChannelCommand(channel, command);
+            logger.info("Thing {} is not associated to any gateway, skipping command", getThing().getUID());
         }
     }
 
@@ -151,6 +157,20 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Helper method to send OWN messages from ThingsHandlers
+     */
+    protected @Nullable Response send(OpenMessage msg) throws OWNException {
+        OpenWebNetBridgeHandler handler = bridgeHandler;
+        if (handler != null) {
+            OpenGateway gw = handler.gateway;
+            if (gw != null) {
+                return gw.send(msg);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Request to gateway state for thing channel. It must be implemented by each specific device handler.
      *
      * @param channel the channel to request the state for
@@ -160,9 +180,10 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("dispose() for {}", getThing().getUID());
-        if (bridgeHandler != null && ownId != null) {
-            String oid = ownId;
-            bridgeHandler.unregisterDevice(oid);
+        OpenWebNetBridgeHandler handler = bridgeHandler;
+        String oid = ownId;
+        if (handler != null && oid != null) {
+            handler.unregisterDevice(oid);
         }
         super.dispose();
     }
@@ -174,6 +195,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      */
     protected abstract String ownIdPrefix();
 
+    @SuppressWarnings("unchecked")
     protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
         if (command instanceof QuantityType<?>) {
             return ((QuantityType<U>) command);

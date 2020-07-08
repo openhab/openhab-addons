@@ -82,17 +82,13 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
                 DiscoveryService.class.getName(), deviceDiscoveryService, new Hashtable<String, Object>()));
     }
 
+    @SuppressWarnings("null")
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof OpenWebNetBridgeHandler) {
+            // remove discovery service, if bridge handler is removed
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {
-                // remove discovery service, if bridge handler is removed
-                OpenWebNetDeviceDiscoveryService service = (OpenWebNetDeviceDiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-                // if (service != null) {
-                // service.deactivate();
-                // }
                 serviceReg.unregister();
                 discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }

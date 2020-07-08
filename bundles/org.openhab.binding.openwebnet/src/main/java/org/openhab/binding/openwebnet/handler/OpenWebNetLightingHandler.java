@@ -31,6 +31,7 @@ import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.Lighting;
 import org.openwebnet4j.message.What;
+import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
@@ -65,7 +66,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
         try {
-            bridgeHandler.gateway.send(Lighting.requestStatus(toWhere(channel)));
+            send(Lighting.requestStatus(toWhere(channel)));
         } catch (OWNException e) {
             logger.warn("Exception while requesting channel {} state: {}", channel, e.getMessage());
         }
@@ -75,7 +76,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     protected void handleChannelCommand(ChannelUID channel, Command command) {
         switch (channel.getId()) {
             case CHANNEL_BRIGHTNESS:
-            case "dimmerLevel":
                 handleBrightnessCommand(command);
                 break;
             case CHANNEL_SWITCH:
@@ -87,10 +87,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 logger.warn("Unsupported channel UID {}", channel);
             }
         }
-        // TODO if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
     }
 
     /**
@@ -104,9 +100,9 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         if (command instanceof OnOffType) {
             try {
                 if (OnOffType.ON.equals(command)) {
-                    bridgeHandler.gateway.send(Lighting.requestTurnOn(toWhere(channel)));
+                    send(Lighting.requestTurnOn(toWhere(channel)));
                 } else if (OnOffType.OFF.equals(command)) {
-                    bridgeHandler.gateway.send(Lighting.requestTurnOff(toWhere(channel)));
+                    send(Lighting.requestTurnOff(toWhere(channel)));
                 }
             } catch (OWNException e) {
                 logger.warn("Exception while processing command {}: {}", command, e.getMessage());
@@ -138,14 +134,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             } else { // OFF
                 dimLightTo(0, command);
             }
-        }
-        // TODO DEBUG MODE: this is the other channel (level)
-        /*
-         * else if (command instanceof DecimalType) {
-         * dimLightTo(((DecimalType) command).intValue(), command);
-         * }
-         */
-        else {
+        } else {
             logger.warn("Cannot handle command {} for thing {}", command, getThing().getUID());
             return;
         }
@@ -183,15 +172,17 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     latestBrightnessWhatBeforeOff = latestBrightnessWhat;
                 }
                 lastBrightnessChangeSentTS = System.currentTimeMillis();
-                try {
-                    bridgeHandler.gateway.send(Lighting.requestDimTo(deviceWhere.value(), newWhat));
-                } catch (OWNException e) {
-                    logger.warn("Exception while sending dimLightTo for command {}: {}", command, e.getMessage());
+                Where w = deviceWhere;
+                if (w != null) {
+                    try {
+                        send(Lighting.requestDimTo(w.value(), newWhat));
+                    } catch (OWNException e) {
+                        logger.warn("Exception while sending dimLightTo for command {}: {}", command, e.getMessage());
+                    }
                 }
                 if (!(command instanceof PercentType)) {
                     updateState(channel, new PercentType(Lighting.levelToPercent(newWhatInt)));
                 }
-                // updateState("dimmerLevel", new DecimalType(newWhatInt));
                 latestBrightnessWhat = newWhatInt;
             } else {
                 logger.debug("-DIM- do nothing");
@@ -236,7 +227,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      */
     private void updateLightOnOffState(Lighting msg) {
         String channelID;
-        if (bridgeHandler.isBusGateway()) {
+        OpenWebNetBridgeHandler brH = bridgeHandler;
+        if (brH != null && brH.isBusGateway()) {
             channelID = CHANNEL_SWITCH;
         } else {
             if (WhereZigBee.UNIT_02.equals(((WhereZigBee) (msg.getWhere())).getUnit())) {
@@ -262,7 +254,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      */
     private synchronized void updateLightBrightnessState(Lighting msg) {
         final String channel = CHANNEL_BRIGHTNESS;
-        // String where = toWhere(BaseOpenMessage.UNIT_01);
         logger.debug("$BRI updateLightBrightnessState() msg={}", msg);
         logger.debug("$BRI updateLightBr() latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}",
                 latestBrightnessWhat, latestBrightnessWhatBeforeOff, brightnessLevelRequested);
@@ -275,10 +266,13 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 // was sent >BRIGHTNESS_CHANGE_DELAY ago
                 logger.debug("$BRI change sent >={}ms ago, sending requestStatus...", BRIGHTNESS_CHANGE_DELAY);
                 brightnessLevelRequested = true;
-                try {
-                    bridgeHandler.gateway.send(Lighting.requestStatus(deviceWhere.value()));
-                } catch (OWNException e) {
-                    logger.warn("$BRI exception while requesting light state: {}", e.getMessage());
+                Where w = deviceWhere;
+                if (w != null) {
+                    try {
+                        send(Lighting.requestStatus(w.value()));
+                    } catch (OWNException e) {
+                        logger.warn("$BRI exception while requesting light state: {}", e.getMessage());
+                    }
                 }
             } else {
                 logger.debug("$BRI change sent {}<{}ms, NO requestStatus needed", delta, BRIGHTNESS_CHANGE_DELAY);
@@ -298,7 +292,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     } else {
                         logger.debug("$BRI change just sent, NO update needed.");
                     }
-                    // updateState("dimmerLevel", new DecimalType(newLevel));
                     if (msg.isOff()) {
                         latestBrightnessWhatBeforeOff = latestBrightnessWhat;
                     }
@@ -320,7 +313,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     logger.debug("$BRI latest level={} ----> new percent={} ----> new level={}", latestBrightnessWhat,
                             newPercent, newLevel);
                     updateState(channel, new PercentType(newPercent));
-                    // updateState("dimmerLevel", new DecimalType(newLevel));
                     if (newPercent == 0) {
                         latestBrightnessWhatBeforeOff = latestBrightnessWhat;
                     }
@@ -335,7 +327,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         }
         logger.debug("$BRI latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}", latestBrightnessWhat,
                 latestBrightnessWhatBeforeOff, brightnessLevelRequested);
-
     }
 
     /**
@@ -346,10 +337,16 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     @Nullable
     protected String toWhere(String unit) {
         logger.debug("toWhere(unit) ownId={}", ownId);
-        if (bridgeHandler.isBusGateway()) {
-            return deviceWhere.value();
+        Where w = deviceWhere;
+        if (w != null) {
+            OpenWebNetBridgeHandler brH = bridgeHandler;
+            if (brH != null && brH.isBusGateway()) {
+                return w.value();
+            } else {
+                return w + unit;
+            }
         } else {
-            return deviceWhere + unit;
+            return null;
         }
     }
 
@@ -361,13 +358,20 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     @Nullable
     protected String toWhere(ChannelUID channel) {
         logger.debug("toWhere(ChannelUID) ownId={}", ownId);
-        if (bridgeHandler.isBusGateway()) {
-            return deviceWhere.value();
-        } else if (channel.getId().equals(CHANNEL_SWITCH_02)) {
-            return ((WhereZigBee) deviceWhere).valueWithUnit(WhereZigBee.UNIT_02);
-        } else { // CHANNEL_SWITCH_01 or other channels
-            return ((WhereZigBee) deviceWhere).valueWithUnit(WhereZigBee.UNIT_01);
+        Where w = deviceWhere;
+        if (w != null) {
+            OpenWebNetBridgeHandler brH = bridgeHandler;
+            if (brH != null) {
+                if (brH.isBusGateway()) {
+                    return w.value();
+                } else if (channel.getId().equals(CHANNEL_SWITCH_02)) {
+                    return ((WhereZigBee) w).valueWithUnit(WhereZigBee.UNIT_02);
+                } else { // CHANNEL_SWITCH_01 or other channels
+                    return ((WhereZigBee) w).valueWithUnit(WhereZigBee.UNIT_01);
+                }
+            }
         }
+        return null;
     }
 
-} // class
+}

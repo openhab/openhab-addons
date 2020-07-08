@@ -100,70 +100,66 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void initialize() {
         ThingTypeUID thingType = getThing().getThingTypeUID();
         logger.debug("Bridge type: {}", thingType);
-
+        OpenGateway gw;
         if (thingType.equals(THING_TYPE_ZB_GATEWAY)) {
-            initZigBeeGateway();
+            gw = initZigBeeGateway();
         } else {
-            initBusGateway();
+            gw = initBusGateway();
             isBusGateway = true;
         }
-
-        gateway.subscribe(this);
-        if (gateway.isConnected()) { // gateway is already connected, device can go ONLINE
-            isGatewayConnected = true;
-            logger.info("------------------- ALREADY CONNECTED -> setting status to ONLINE");
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.UNKNOWN);
-            logger.debug("Trying to connect gateway...");
-            try {
-                gateway.connect();
-                scheduler.schedule(() -> {
-                    // if status is still UNKNOWN after timer ends, set the device as OFFLINE
-                    if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
-                        logger.info("status still UNKNOWN. Setting device={} to OFFLINE", thing.getUID());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                "Could not connect to gateway before " + GATEWAY_ONLINE_TIMEOUT + "s");
-                    }
-                }, GATEWAY_ONLINE_TIMEOUT, TimeUnit.SECONDS);
-            } catch (OWNException e) {
-                logger.debug("gateway.connect() returned: {}", e.getMessage());
-                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        if (gw != null) {
+            gateway = gw;
+            gw.subscribe(this);
+            if (gw.isConnected()) { // gateway is already connected, device can go ONLINE
+                isGatewayConnected = true;
+                logger.info("------------------- ALREADY CONNECTED -> setting status to ONLINE");
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+                logger.debug("Trying to connect gateway...");
+                try {
+                    gw.connect();
+                    scheduler.schedule(() -> {
+                        // if status is still UNKNOWN after timer ends, set the device as OFFLINE
+                        if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
+                            logger.info("status still UNKNOWN. Setting device={} to OFFLINE", thing.getUID());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                    "Could not connect to gateway before " + GATEWAY_ONLINE_TIMEOUT + "s");
+                        }
+                    }, GATEWAY_ONLINE_TIMEOUT, TimeUnit.SECONDS);
+                } catch (OWNException e) {
+                    logger.debug("gw.connect() returned: {}", e.getMessage());
+                    // status is updated by callback onConnectionError()
+                }
             }
         }
-
-        // TODO When initialisation can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     /**
      * Init a ZigBee gateway based on config properties
      */
-    private void initZigBeeGateway() {
+    private @Nullable OpenGateway initZigBeeGateway() {
         String serialPort = (String) (getConfig().get(CONFIG_PROPERTY_SERIAL_PORT));
         if (serialPort == null) {
             logger.warn("Cannot connect to gateway. No serial port has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-serial-port");
+            return null;
         } else {
-            gateway = new USBGateway(serialPort);
+            return new USBGateway(serialPort);
         }
     }
 
     /**
      * Init a BUS/SCS gateway based on config properties
      */
-    private void initBusGateway() {
+    private @Nullable OpenGateway initBusGateway() {
         if (getConfig().get(CONFIG_PROPERTY_HOST) != null) {
             String host = (String) (getConfig().get(CONFIG_PROPERTY_HOST));
             int port = CONFIG_GATEWAY_DEFAULT_PORT;
             Object portConfig = getConfig().get(CONFIG_PROPERTY_PORT);
             if (portConfig != null) {
                 port = ((BigDecimal) portConfig).intValue();
-                // FIXME handle case parameter is not a number
             }
             String passwd = (String) (getConfig().get(CONFIG_PROPERTY_PASSWD));
             if (passwd == null) {
@@ -187,18 +183,20 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 }
             }
             logger.debug("Creating new BUS gateway with config properties: {}:{}, pwd={}", host, port, passwdMasked);
-            gateway = new BUSGateway(host, port, passwd);
+            return new BUSGateway(host, port, passwd);
         } else {
             logger.warn("Cannot connect to gateway. No host/IP has been provided in Bridge configuration.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ip-address");
+            return null;
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand (command={} - channel={})", command, channelUID);
-        if (!gateway.isConnected()) {
+        OpenGateway gw = gateway;
+        if (gw != null && !gw.isConnected()) {
             logger.warn("BridgeHandler gateway is NOT connected, skipping command");
             return;
         } else {
@@ -216,7 +214,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     @Override
     public void thingUpdated(Thing thing) {
         super.thingUpdated(thing);
-
         logger.info("Bridge configuration updated.");
         // for (Thing t : getThing().getThings()) {
         // final ThingHandler thingHandler = t.getHandler();
@@ -243,10 +240,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     private void disconnectGateway() {
-        if (gateway != null) {
-            gateway.closeConnection();
-            gateway.unsubscribe(this);
-            logger.debug("gateway {} connection closed and unsubscribed", gateway.toString());
+        OpenGateway gw = gateway;
+        if (gw != null) {
+            gw.closeConnection();
+            gw.unsubscribe(this);
+            logger.debug("gateway {} connection closed and unsubscribed", gw.toString());
             gateway = null;
         }
         reconnecting = false;
@@ -261,15 +259,16 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.debug("-------- BridgeHandler.searchDevices()");
         scanIsActive = true;
         logger.debug("-------- scanIsActive={}", scanIsActive);
-        if (gateway != null) {
-            if (!gateway.isDiscovering()) {
-                if (!gateway.isConnected()) {
+        OpenGateway gw = gateway;
+        if (gw != null) {
+            if (!gw.isDiscovering()) {
+                if (!gw.isConnected()) {
                     logger.warn("-------- Gateway is NOT connected, cannot search for devices");
                     return;
                 }
                 logger.info("-------- STARTED active search for devices on gateway '{}'", this.getThing().getUID());
                 try {
-                    gateway.discoverDevices();
+                    gw.discoverDevices();
                 } catch (OWNException e) {
                     logger.warn("-------- OWNException while discovering devices on gateway {}: {}",
                             this.getThing().getUID(), e.getMessage());
@@ -286,8 +285,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     @Override
     public void onNewDevice(@Nullable Where w, @Nullable OpenDeviceType deviceType, @Nullable BaseOpenMessage message) {
         try {
-            if (w != null && deviceType != null) {
-                deviceDiscoveryService.newDiscoveryResult(w, deviceType, message);
+            OpenWebNetDeviceDiscoveryService service = deviceDiscoveryService;
+            if (w != null && deviceType != null && service != null) {
+                service.newDiscoveryResult(w, deviceType, message);
             } else {
                 logger.warn("onNewDevice with null where/deviceType msg={}", message);
             }
@@ -319,8 +319,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             } catch (FrameException e) {
                 logger.warn("Exception while detecting device type: {}", e.getMessage());
             }
-            if (type != null) {
-                deviceDiscoveryService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
+            OpenWebNetDeviceDiscoveryService service = deviceDiscoveryService;
+            if (type != null && service != null) {
+                service.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
             }
         }
     }
@@ -342,26 +343,29 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Un-register a device from this bridge handler
      *
-     * @param ownId the device OpenWebNet id
+     * @param oId the device OpenWebNet id
      */
-    protected void unregisterDevice(String ownId) {
-        if (registeredDevices.remove(ownId) != null) {
-            logger.debug("un-registered device ownId={}", ownId);
+    protected void unregisterDevice(String oId) {
+        if (registeredDevices.remove(oId) != null) {
+            logger.debug("un-registered device ownId={}", oId);
         } else {
-            logger.warn("could not un-register ownId={} (not found)", ownId);
+            logger.warn("could not un-register ownId={} (not found)", oId);
         }
     }
 
     @Override
     public void onEventMessage(@Nullable OpenMessage msg) {
         logger.trace("RECEIVED <<<<< {}", msg);
+        if (msg == null) {
+            logger.debug("received msg is null");
+            return;
+        }
         if (msg.isACK() || msg.isNACK()) {
             return; // we ignore ACKS/NACKS
         }
         // GATEWAY MANAGEMENT
         if (msg instanceof GatewayMgmt) {
-            // GatewayMgmt gwMgmtMsg = (GatewayMgmt) msg;
-            // logger.debug("GatewayMgmt WHAT = {}, ignoring", gwMgmtMsg.getWhat());
+            // noop
             return;
         }
 
@@ -372,8 +376,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.debug("ownId={}", ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);
             if (deviceHandler == null) {
-                if (isBusGateway
-                        && ((!gateway.isDiscovering() && scanIsActive) || (discoveryByActivation && !scanIsActive))) {
+                OpenGateway gw = gateway;
+                if (isBusGateway && ((gw != null && !gw.isDiscovering() && scanIsActive)
+                        || (discoveryByActivation && !scanIsActive))) {
                     // try device discovery by activation
                     discoverByActivation(baseMsg);
                 } else {
@@ -393,29 +398,26 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         isGatewayConnected = true;
         Map<String, String> properties = editProperties();
         boolean propertiesChanged = false;
-        if (gateway instanceof USBGateway) {
+        OpenGateway gw = gateway;
+        if (gw == null) {
+            logger.warn("received onConnected() but gateway is null");
+            return;
+        }
+        if (gw instanceof USBGateway) {
             logger.info("------------------- CONNECTED to USB (ZigBee) gateway - USB port: {}",
-                    ((USBGateway) gateway).getSerialPortName());
+                    ((USBGateway) gw).getSerialPortName());
         } else {
             logger.info("------------------- CONNECTED to BUS gateway '{}' ({}:{})", thing.getUID(),
-                    ((BUSGateway) gateway).getHost(), ((BUSGateway) gateway).getPort());
-            // update gw model //TODO keep this commented until gw model version is decoded from gw answer to *#13**15##
-            /*
-             * if (properties.get(PROPERTY_MODEL) != ((OpenGatewayBus) gateway).getModelName()) {
-             * properties.put(PROPERTY_MODEL, ((OpenGatewayBus) gateway).getModelName());
-             * propertiesChanged = true;
-             * logger.debug("updated property gw model: {}", properties.get(PROPERTY_MODEL));
-             * }
-             */
+                    ((BUSGateway) gw).getHost(), ((BUSGateway) gw).getPort());
             // update serial number property (with MAC address)
-            if (properties.get(PROPERTY_SERIAL_NO) != gateway.getMACAddr().toUpperCase()) {
-                properties.put(PROPERTY_SERIAL_NO, gateway.getMACAddr().toUpperCase());
+            if (properties.get(PROPERTY_SERIAL_NO) != gw.getMACAddr().toUpperCase()) {
+                properties.put(PROPERTY_SERIAL_NO, gw.getMACAddr().toUpperCase());
                 propertiesChanged = true;
                 logger.debug("updated property gw serialNumber: {}", properties.get(PROPERTY_SERIAL_NO));
             }
         }
-        if (properties.get(PROPERTY_FIRMWARE_VERSION) != gateway.getFirmwareVersion()) {
-            properties.put(PROPERTY_FIRMWARE_VERSION, gateway.getFirmwareVersion());
+        if (properties.get(PROPERTY_FIRMWARE_VERSION) != gw.getFirmwareVersion()) {
+            properties.put(PROPERTY_FIRMWARE_VERSION, gw.getFirmwareVersion());
             propertiesChanged = true;
             logger.debug("updated property gw firmware version: {}", properties.get(PROPERTY_FIRMWARE_VERSION));
         }
@@ -428,32 +430,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public void onConnectionError(@Nullable OWNException error) {
-        /*
-         * switch (error) {
-         * case LIB_LINKAGE_ERROR:
-         * cause =
-         * "Please check that the ZigBee USB Gateway is correctly plugged-in, and the driver installed and loaded";
-         * break;
-         * case NO_SERIAL_PORTS_ERROR:
-         * cause = "No serial ports found";
-         * break;
-         * case JVM_ERROR:
-         * cause = "Make sure you have a working Java Runtime Environment installed in 32 bit version";
-         * break;
-         * case IO_EXCEPTION_ERROR:
-         * cause = "Connection error (IOException). Check network and gateway thing Configuration Parameters ("
-         * + errMsg + ")";
-         * break;
-         * case AUTH_ERROR:
-         * cause = "Authentication error. Check gateway password in Thing Configuration Parameters (" + errMsg
-         * + ")";
-         * break;
-         *
-         * }
-         */
-        logger.warn("------------------- ON CONNECTION ERROR: {}", error.getMessage());
+        String errMsg;
+        if (error == null) {
+            errMsg = "unknown error";
+        } else {
+            errMsg = error.getMessage();
+        }
+        logger.warn("------------------- ON CONNECTION ERROR: {}", errMsg);
         isGatewayConnected = false;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, error.getMessage());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errMsg);
         tryRecconectGateway();
     }
 
@@ -461,32 +446,44 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void onConnectionClosed() {
         isGatewayConnected = false;
         logger.debug("onConnectionClosed() - isGatewayConnected={}", isGatewayConnected);
-        // NOTE cannot change to OFFLINE here because we are already in REMOVING state
+        // NOTE: cannot change to OFFLINE here because we are already in REMOVING state
     }
 
     @Override
     public void onDisconnected(@Nullable OWNException e) {
         isGatewayConnected = false;
-        logger.warn("------------------- DISCONNECTED from gateway. OWNException={}", e.getMessage());
+        String errMsg;
+        if (e == null) {
+            errMsg = "unknown error";
+        } else {
+            errMsg = e.getMessage();
+        }
+        logger.warn("------------------- DISCONNECTED from gateway. OWNException={}", errMsg);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                "Disconnected from gateway (onDisconnected - " + e.getMessage() + ")");
+                "Disconnected from gateway (onDisconnected - " + errMsg + ")");
         tryRecconectGateway();
     }
 
     private void tryRecconectGateway() {
-        if (!reconnecting) {
-            reconnecting = true;
-            logger.info("------------------- Starting RECONNECT cycle to gateway");
-            try {
-                gateway.reconnect();
-            } catch (OWNAuthException e) {
-                logger.warn("------------------- AUTH error from gateway. Stopping recconnect");
-                reconnecting = false;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Authentication error. Check gateway password in Thing Configuration Parameters (" + e + ")");
+        OpenGateway gw = gateway;
+        if (gw != null) {
+            if (!reconnecting) {
+                reconnecting = true;
+                logger.info("------------------- Starting RECONNECT cycle to gateway");
+                try {
+                    gw.reconnect();
+                } catch (OWNAuthException e) {
+                    logger.warn("------------------- AUTH error from gateway. Stopping recconnect");
+                    reconnecting = false;
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                            "Authentication error. Check gateway password in Thing Configuration Parameters (" + e
+                                    + ")");
+                }
+            } else {
+                logger.debug("------------------- reconnecting=true, do nothing");
             }
         } else {
-            logger.debug("------------------- reconnecting=true, do nothing");
+            logger.debug("------------------- cannot start RECONNECT, gateway is null");
         }
     }
 
@@ -494,12 +491,14 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void onReconnected() {
         reconnecting = false;
         logger.info("------------------- RE-CONNECTED to gateway!");
-        updateStatus(ThingStatus.ONLINE);
-        if (gateway.getFirmwareVersion() != null) {
-            this.updateProperty(PROPERTY_FIRMWARE_VERSION, gateway.getFirmwareVersion());
-            logger.debug("gw firmware version: {}", gateway.getFirmwareVersion());
+        OpenGateway gw = gateway;
+        if (gw != null) {
+            updateStatus(ThingStatus.ONLINE);
+            if (gw.getFirmwareVersion() != null) {
+                this.updateProperty(PROPERTY_FIRMWARE_VERSION, gw.getFirmwareVersion());
+                logger.debug("gw firmware version: {}", gw.getFirmwareVersion());
+            }
         }
-        // TODO refresh devices' status?
     }
 
     /**
@@ -572,11 +571,4 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return where.value();
         }
     }
-
-    // FIXME
-    // @Override
-    // public Collection<Class<? extends ThingHandlerService>> getServices() {
-    // return Collections.singleton(ZigBeeGatewayDiscoveryService.class);
-    // }
-
 }

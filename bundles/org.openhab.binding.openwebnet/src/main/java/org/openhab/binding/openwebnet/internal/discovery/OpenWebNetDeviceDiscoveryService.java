@@ -90,9 +90,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
      */
     public void newDiscoveryResult(Where where, OpenDeviceType deviceType, @Nullable BaseOpenMessage baseMsg) {
         logger.info("newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
-        ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_DEVICE; // generic device
-        String thingLabel = OpenWebNetBindingConstants.THING_LABEL_DEVICE;
-        Who deviceWho = Who.DEVICE_DIAGNOSTIC; // TODO change to another Who (UNKNOWN?)
+        ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE; // generic device
+        String thingLabel = OpenWebNetBindingConstants.THING_LABEL_GENERIC_DEVICE;
+        Who deviceWho = Who.UNKNOWN;
         switch (deviceType) {
             case ZIGBEE_ON_OFF_SWITCH: {
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH;
@@ -123,6 +123,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
                 if (where instanceof WhereZigBee) {
                     thingLabel = "ZigBee " + thingLabel;
                 }
+                if (baseMsg != null) {
+                    deviceWho = baseMsg.getWho();
+                }
             }
         }
         String tId = bridgeHandler.thingIdFromWhere(where);
@@ -147,9 +150,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new HashMap<>(2);
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, bridgeHandler.normalizeWhere(where));
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID, bridgeHandler.ownIdFromWhoWhere(where, deviceWho));
-        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_DEVICE && baseMsg != null) {
-            // generic thing, let's specify the WHO
-            thingLabel = thingLabel + " (WHO=" + baseMsg.getWho() + ", WHERE=" + whereLabel + ")";
+        if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE) {
+            // generic thing
+            thingLabel = thingLabel + " (WHO=" + deviceWho + ", WHERE=" + whereLabel + ")";
         } else {
             thingLabel = thingLabel + " (WHERE=" + whereLabel + ")";
         }

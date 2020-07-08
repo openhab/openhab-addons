@@ -36,15 +36,14 @@ public class OpenWebNetBindingConstants {
     public static final int THING_STATE_REQ_TIMEOUT = 5; // seconds
 
     // #LIST OF Thing Type UIDs
+    // generic device (used for not identified devices)
+    public static final ThingTypeUID THING_TYPE_GENERIC_DEVICE = new ThingTypeUID(BINDING_ID, "generic_device");
+    public static final String THING_LABEL_GENERIC_DEVICE = "GENERIC Device";
     // bridges
     public static final ThingTypeUID THING_TYPE_ZB_GATEWAY = new ThingTypeUID(BINDING_ID, "zb_gateway");
     public static final String THING_LABEL_ZB_GATEWAY = "ZigBee USB Gateway";
     public static final ThingTypeUID THING_TYPE_BUS_GATEWAY = new ThingTypeUID(BINDING_ID, "bus_gateway");
     public static final String THING_LABEL_BUS_GATEWAY = "BUS Gateway";
-    // generic (unknown) device
-    // FIXME change to THING_TYPE_GENERI_DEVICE and THING_LABEL_GENERIC_DEVICE
-    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
-    public static final String THING_LABEL_DEVICE = "GENERIC Device";
     // other thing types
     // BUS
     public static final ThingTypeUID THING_TYPE_BUS_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "bus_on_off_switch");
@@ -64,7 +63,7 @@ public class OpenWebNetBindingConstants {
     // #SUPPORTED THINGS SETS
     // ## Generic
     public static final Set<ThingTypeUID> GENERIC_SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_DEVICE));
+            Arrays.asList(THING_TYPE_GENERIC_DEVICE));
 
     // ## Lighting
     public static final Set<ThingTypeUID> LIGHTING_SUPPORTED_THING_TYPES = new HashSet<>(
