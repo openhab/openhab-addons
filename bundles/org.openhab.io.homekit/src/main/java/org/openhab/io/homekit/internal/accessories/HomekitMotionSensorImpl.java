@@ -15,7 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
@@ -37,17 +36,14 @@ public class HomekitMotionSensorImpl extends AbstractHomekitAccessoryImpl implem
     public HomekitMotionSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.motionSensedReader = new BooleanItemReader(
-                getItem(HomekitCharacteristicType.MOTION_DETECTED_STATE, GenericItem.class), OnOffType.ON,
+        motionSensedReader = createBooleanReader(HomekitCharacteristicType.MOTION_DETECTED_STATE, OnOffType.ON,
                 OpenClosedType.OPEN);
-
         getServices().add(new MotionSensorService(this));
     }
 
     @Override
     public CompletableFuture<Boolean> getMotionDetected() {
-        return CompletableFuture
-                .completedFuture((this.motionSensedReader.getValue() != null) ? motionSensedReader.getValue() : false);
+        return CompletableFuture.completedFuture(motionSensedReader.getValue());
     }
 
     @Override
