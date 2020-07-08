@@ -194,7 +194,7 @@ public class HomekitAccessoryFactory {
             }
         } catch (NoSuchMethodException | IllegalAccessException | InstantiationException
                 | InvocationTargetException e) {
-            logger.warn("Cannot instantiate accessory implementation for accessory {}", accessoryType.getTag());
+            logger.warn("Cannot instantiate accessory implementation for accessory {}", accessoryType.getTag(), e);
             throw new HomekitException("Cannot instantiate accessory implementation for accessory " + accessoryType);
         }
     }
