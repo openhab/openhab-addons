@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.caddx.internal.handler;
 
-import static org.openhab.binding.caddx.internal.CaddxBindingConstants.*;
+import static org.openhab.binding.caddx.internal.CaddxBindingConstants.SEND_COMMAND;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -104,15 +103,12 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
     @Override
     public void initialize() {
-        logger.trace("Initializing the Bridge handler.");
-
         CaddxBridgeConfiguration configuration = getConfigAs(CaddxBridgeConfiguration.class);
 
         protocol = configuration.getProtocol();
         serialPortName = configuration.getSerialPort();
         baudRate = configuration.getBaudrate();
         updateStatus(ThingStatus.OFFLINE);
-        updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.ON);
 
         // create & start panel interface
         logger.info("starting interface at port {} with baudrate {}", serialPortName, baudRate);
@@ -124,7 +120,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication cannot be initialized");
-            updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.ON);
 
             return;
         }
@@ -191,23 +186,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         logger.trace("handleCommand(), channelUID: {}, command: {}", channelUID, command);
 
         switch (channelUID.getId()) {
-            case BRIDGE_RESET:
-                if (command == OnOffType.ON) {
-                    CaddxCommunicator n = communicator;
-                    if (n != null) {
-                        n.stop();
-                        n = null;
-                        updateStatus(ThingStatus.OFFLINE);
-                        updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET),
-                                OnOffType.ON);
-                    }
-                } else if (command == OnOffType.OFF) {
-                    initialize();
-
-                    updateStatus(ThingStatus.ONLINE);
-                    updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.OFF);
-                }
-                break;
             case SEND_COMMAND:
                 if (!command.toString().isEmpty()) {
                     String[] tokens = command.toString().split("\\|");
@@ -388,7 +366,6 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         }
 
         updateStatus(ThingStatus.ONLINE);
-        updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.OFF);
     }
 
     @Override

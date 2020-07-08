@@ -56,7 +56,6 @@ public class CaddxBindingConstants {
     // Bridge
     // Commands
     // Channels
-    public static final String BRIDGE_RESET = "bridge_reset";
     public static final String SEND_COMMAND = "send_command";
 
     // Panel
