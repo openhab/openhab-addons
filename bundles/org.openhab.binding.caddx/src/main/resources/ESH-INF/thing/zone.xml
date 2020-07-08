@@ -200,7 +200,7 @@
 				<description>The Zone Number.</description>
 			</parameter>
 		</config-description>
-		
+
 	</thing-type>
 
 </thing:thing-descriptions>
