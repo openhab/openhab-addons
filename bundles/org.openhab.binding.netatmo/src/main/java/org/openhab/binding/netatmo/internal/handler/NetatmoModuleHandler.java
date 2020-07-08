@@ -81,9 +81,10 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     @Override
     protected State getNAThingProperty(String channelId) {
         try {
-            if (channelId.equalsIgnoreCase(CHANNEL_LAST_MESSAGE) && getModule().isPresent()) {
-                Method getLastMessage = getModule().get().getClass().getMethod("getLastMessage");
-                Integer lastMessage = (Integer) getLastMessage.invoke(getModule().get());
+            Optional<MODULE> mod = getModule();
+            if (channelId.equalsIgnoreCase(CHANNEL_LAST_MESSAGE) && mod.isPresent()) {
+                Method getLastMessage = mod.get().getClass().getMethod("getLastMessage");
+                Integer lastMessage = (Integer) getLastMessage.invoke(mod.get());
                 return ChannelTypeUtils.toDateTimeType(lastMessage, timeZoneProvider.getTimeZone());
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException

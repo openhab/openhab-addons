@@ -159,19 +159,20 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     @Override
     protected State getNAThingProperty(String channelId) {
         try {
+            Optional<DEVICE> dev = getDevice();
             switch (channelId) {
                 case CHANNEL_LAST_STATUS_STORE:
-                    if (getDevice().isPresent()) {
-                        Method getLastStatusStore = getDevice().get().getClass().getMethod("getLastStatusStore");
-                        Integer lastStatusStore = (Integer) getLastStatusStore.invoke(getDevice().get());
+                    if (dev.isPresent()) {
+                        Method getLastStatusStore = dev.get().getClass().getMethod("getLastStatusStore");
+                        Integer lastStatusStore = (Integer) getLastStatusStore.invoke(dev.get());
                         return ChannelTypeUtils.toDateTimeType(lastStatusStore, timeZoneProvider.getTimeZone());
                     } else {
                         return UnDefType.UNDEF;
                     }
                 case CHANNEL_LOCATION:
-                    if (getDevice().isPresent()) {
-                        Method getPlace = getDevice().get().getClass().getMethod("getPlace");
-                        NAPlace place = (NAPlace) getPlace.invoke(getDevice().get());
+                    if (dev.isPresent()) {
+                        Method getPlace = dev.get().getClass().getMethod("getPlace");
+                        NAPlace place = (NAPlace) getPlace.invoke(dev.get());
                         PointType point = new PointType(new DecimalType(place.getLocation().get(1)),
                                 new DecimalType(place.getLocation().get(0)));
                         if (place.getAltitude() != null) {

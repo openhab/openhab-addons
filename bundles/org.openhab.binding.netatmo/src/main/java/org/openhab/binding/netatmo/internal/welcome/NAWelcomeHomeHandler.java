@@ -100,6 +100,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
     @Override
     protected State getNAThingProperty(String channelId) {
+        Optional<NAWelcomeEvent> lastEvt = getLastEvent();
         switch (channelId) {
             case CHANNEL_WELCOME_HOME_CITY:
                 return getPlaceInfo(NAWelcomePlace::getCity);
@@ -112,21 +113,21 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             case CHANNEL_WELCOME_HOME_UNKNOWNCOUNT:
                 return iUnknowns != -1 ? new DecimalType(iUnknowns) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_TYPE:
-                return getLastEvent().map(e -> toStringType(e.getType())).orElse(UnDefType.UNDEF);
+                return lastEvt.map(e -> toStringType(e.getType())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_TIME:
-                return getLastEvent().map(e -> toDateTimeType(e.getTime(), timeZoneProvider.getTimeZone()))
+                return lastEvt.map(e -> toDateTimeType(e.getTime(), timeZoneProvider.getTimeZone()))
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_CAMERAID:
-                if (getLastEvent().isPresent()) {
-                    return findNAThing(getLastEvent().get().getCameraId())
-                            .map(c -> toStringType(c.getThing().getLabel())).orElse(UnDefType.UNDEF);
+                if (lastEvt.isPresent()) {
+                    return findNAThing(lastEvt.get().getCameraId()).map(c -> toStringType(c.getThing().getLabel()))
+                            .orElse(UnDefType.UNDEF);
                 } else {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_PERSONID:
-                if (getLastEvent().isPresent()) {
-                    return findNAThing(getLastEvent().get().getPersonId())
-                            .map(p -> toStringType(p.getThing().getLabel())).orElse(UnDefType.UNDEF);
+                if (lastEvt.isPresent()) {
+                    return findNAThing(lastEvt.get().getPersonId()).map(p -> toStringType(p.getThing().getLabel()))
+                            .orElse(UnDefType.UNDEF);
                 } else {
                     return UnDefType.UNDEF;
                 }
@@ -135,12 +136,12 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             case CHANNEL_WELCOME_EVENT_SNAPSHOT_URL:
                 return findSnapshotURL().map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_VIDEO_URL:
-                if (getLastEvent().isPresent() && getLastEvent().get().getVideoId() != null) {
-                    String cameraId = getLastEvent().get().getCameraId();
+                if (lastEvt.isPresent() && lastEvt.get().getVideoId() != null) {
+                    String cameraId = lastEvt.get().getCameraId();
                     Optional<AbstractNetatmoThingHandler> thing = findNAThing(cameraId);
                     if (thing.isPresent()) {
                         CameraHandler eventCamera = (CameraHandler) thing.get();
-                        Optional<String> streamUrl = eventCamera.getStreamURL(getLastEvent().get().getVideoId());
+                        Optional<String> streamUrl = eventCamera.getStreamURL(lastEvt.get().getVideoId());
                         if (streamUrl.isPresent()) {
                             return new StringType(streamUrl.get());
                         }
@@ -148,16 +149,15 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 }
                 return UnDefType.UNDEF;
             case CHANNEL_WELCOME_EVENT_VIDEOSTATUS:
-                return getLastEvent()
-                        .map(e -> e.getVideoId() != null ? toStringType(e.getVideoStatus()) : UnDefType.UNDEF)
+                return lastEvt.map(e -> e.getVideoId() != null ? toStringType(e.getVideoStatus()) : UnDefType.UNDEF)
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_ISARRIVAL:
-                return getLastEvent().map(e -> toOnOffType(e.getIsArrival())).orElse(UnDefType.UNDEF);
+                return lastEvt.map(e -> toOnOffType(e.getIsArrival())).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_MESSAGE:
                 return findEventMessage().map(m -> (State) new StringType(m.replace("<b>", "").replace("</b>", "")))
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_SUBTYPE:
-                return getLastEvent().map(e -> toDecimalType(e.getSubType())).orElse(UnDefType.UNDEF);
+                return lastEvt.map(e -> toDecimalType(e.getSubType())).orElse(UnDefType.UNDEF);
         }
         return super.getNAThingProperty(channelId);
     }
@@ -197,14 +197,15 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     private Optional<String> findEventMessage() {
-        if (getLastEvent().isPresent()) {
+        Optional<NAWelcomeEvent> lastEvt = getLastEvent();
+        if (lastEvt.isPresent()) {
             @Nullable
-            String message = getLastEvent().get().getMessage();
+            String message = lastEvt.get().getMessage();
             if (message != null) {
                 return Optional.of(message);
             }
 
-            return getLastEvent().flatMap(this::findFirstSubEvent).map(NAWelcomeSubEvent::getMessage);
+            return lastEvt.flatMap(this::findFirstSubEvent).map(NAWelcomeSubEvent::getMessage);
         }
         return Optional.empty();
     }
@@ -215,12 +216,12 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
      * @return Url of the picture or null
      */
     protected Optional<String> findSnapshotURL() {
-        if (getLastEvent().isPresent()) {
+        Optional<NAWelcomeEvent> lastEvt = getLastEvent();
+        if (lastEvt.isPresent()) {
             @Nullable
-            NAWelcomeSnapshot snapshot = getLastEvent().get().getSnapshot();
+            NAWelcomeSnapshot snapshot = lastEvt.get().getSnapshot();
             if (snapshot == null) {
-                snapshot = getLastEvent().flatMap(this::findFirstSubEvent).map(NAWelcomeSubEvent::getSnapshot)
-                        .orElse(null);
+                snapshot = lastEvt.flatMap(this::findFirstSubEvent).map(NAWelcomeSubEvent::getSnapshot).orElse(null);
             }
 
             if (snapshot != null && snapshot.getId() != null && snapshot.getKey() != null) {

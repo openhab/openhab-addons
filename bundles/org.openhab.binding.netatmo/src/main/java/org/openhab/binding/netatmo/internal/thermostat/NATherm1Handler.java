@@ -104,27 +104,28 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
 
     @Override
     protected State getNAThingProperty(String channelId) {
+        Optional<NAThermostat> thermostat = getModule();
         switch (channelId) {
             case CHANNEL_THERM_ORIENTATION:
-                return getModule().map(m -> toDecimalType(m.getThermOrientation())).orElse(UnDefType.UNDEF);
+                return thermostat.map(m -> toDecimalType(m.getThermOrientation())).orElse(UnDefType.UNDEF);
             case CHANNEL_THERM_RELAY:
-                return getModule().map(m -> m.getThermRelayCmd() == 100 ? (State) OnOffType.ON : (State) OnOffType.OFF)
+                return thermostat.map(m -> m.getThermRelayCmd() == 100 ? (State) OnOffType.ON : (State) OnOffType.OFF)
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_TEMPERATURE:
-                return getModule().map(m -> toQuantityType(m.getMeasured().getTemperature(), API_TEMPERATURE_UNIT))
+                return thermostat.map(m -> toQuantityType(m.getMeasured().getTemperature(), API_TEMPERATURE_UNIT))
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_SETPOINT_TEMP:
                 return getCurrentSetpoint();
             case CHANNEL_TIMEUTC:
-                return getModule().map(m -> toDateTimeType(m.getMeasured().getTime(), timeZoneProvider.getTimeZone()))
+                return thermostat.map(m -> toDateTimeType(m.getMeasured().getTime(), timeZoneProvider.getTimeZone()))
                         .orElse(UnDefType.UNDEF);
             case CHANNEL_SETPOINT_END_TIME: {
-                if (getModule().isPresent()) {
-                    NASetpoint setpoint = getModule().get().getSetpoint();
+                if (thermostat.isPresent()) {
+                    NASetpoint setpoint = thermostat.get().getSetpoint();
                     if (setpoint != null) {
                         Integer endTime = setpoint.getSetpointEndtime();
                         if (endTime == null) {
-                            endTime = getNextProgramTime(getModule().get().getThermProgramList());
+                            endTime = getNextProgramTime(thermostat.get().getThermProgramList());
                         }
                         return toDateTimeType(endTime, timeZoneProvider.getTimeZone());
                     }
@@ -136,8 +137,8 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 return getSetpoint();
             case CHANNEL_PLANNING: {
                 String currentPlanning = "-";
-                if (getModule().isPresent()) {
-                    for (NAThermProgram program : getModule().get().getThermProgramList()) {
+                if (thermostat.isPresent()) {
+                    for (NAThermProgram program : thermostat.get().getThermProgramList()) {
                         if (program.getSelected() == Boolean.TRUE) {
                             currentPlanning = program.getProgramId();
                         }
@@ -157,12 +158,13 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
     }
 
     private State getCurrentSetpoint() {
-        if (getModule().isPresent()) {
-            NASetpoint setPoint = getModule().get().getSetpoint();
+        Optional<NAThermostat> thermostat = getModule();
+        if (thermostat.isPresent()) {
+            NASetpoint setPoint = thermostat.get().getSetpoint();
             if (setPoint != null) {
                 String currentMode = setPoint.getSetpointMode();
 
-                NAThermProgram currentProgram = getModule().get().getThermProgramList().stream()
+                NAThermProgram currentProgram = thermostat.get().getThermProgramList().stream()
                         .filter(p -> p.getSelected() != null && p.getSelected()).findFirst().get();
                 switch (currentMode) {
                     case CHANNEL_SETPOINT_MODE_MANUAL:
@@ -175,7 +177,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                         return toDecimalType(zone1.getTemp());
                     case CHANNEL_SETPOINT_MODE_PROGRAM:
                         NATimeTableItem currentProgramMode = getCurrentProgramMode(
-                                getModule().get().getThermProgramList());
+                                thermostat.get().getThermProgramList());
                         if (currentProgramMode != null) {
                             NAZone zone2 = getZone(currentProgram.getZones(), currentProgramMode.getId());
                             return toDecimalType(zone2.getTemp());

@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.api.WelcomeApi;
@@ -74,6 +75,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
 
     @Override
     protected State getNAThingProperty(String channelId) {
+        Optional<NAWelcomeEvent> lastEvt = getLastEvent();
         switch (channelId) {
             case CHANNEL_WELCOME_PERSON_LASTSEEN:
                 return getModule().map(m -> toDateTimeType(m.getLastSeen(), timeZoneProvider.getTimeZone()))
@@ -87,12 +89,11 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
             case CHANNEL_WELCOME_PERSON_AVATAR:
                 return getAvatarURL() != null ? HttpUtil.downloadImage(getAvatarURL()) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTMESSAGE:
-                return (getLastEvent().isPresent() && getLastEvent().get().getMessage() != null)
-                        ? toStringType(getLastEvent().get().getMessage().replace("<b>", "").replace("</b>", ""))
+                return (lastEvt.isPresent() && lastEvt.get().getMessage() != null)
+                        ? toStringType(lastEvt.get().getMessage().replace("<b>", "").replace("</b>", ""))
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTTIME:
-                return getLastEvent().isPresent()
-                        ? toDateTimeType(getLastEvent().get().getTime(), timeZoneProvider.getTimeZone())
+                return lastEvt.isPresent() ? toDateTimeType(lastEvt.get().getTime(), timeZoneProvider.getTimeZone())
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTEVENT:
                 return getLastEventURL() != null ? HttpUtil.downloadImage(getLastEventURL()) : UnDefType.UNDEF;
@@ -103,19 +104,22 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
     }
 
     private @Nullable String getLastEventURL() {
-        if (getBridgeHandler().isPresent() && getLastEvent().isPresent()
-                && getLastEvent().get().getSnapshot() != null) {
-            return getBridgeHandler().get().getPictureUrl(getLastEvent().get().getSnapshot().getId(),
-                    getLastEvent().get().getSnapshot().getKey());
+        Optional<NetatmoBridgeHandler> handler = getBridgeHandler();
+        Optional<NAWelcomeEvent> lastEvt = getLastEvent();
+        if (handler.isPresent() && lastEvt.isPresent() && lastEvt.get().getSnapshot() != null) {
+            return handler.get().getPictureUrl(lastEvt.get().getSnapshot().getId(),
+                    lastEvt.get().getSnapshot().getKey());
         }
         return null;
     }
 
     private @Nullable String getAvatarURL() {
-        if (getBridgeHandler().isPresent() && avatarURL == null && getModule().isPresent()) {
-            NAWelcomeFace face = getModule().get().getFace();
+        Optional<NetatmoBridgeHandler> handler = getBridgeHandler();
+        Optional<NAWelcomePerson> person = getModule();
+        if (handler.isPresent() && avatarURL == null && person.isPresent()) {
+            NAWelcomeFace face = person.get().getFace();
             if (face != null) {
-                avatarURL = getBridgeHandler().get().getPictureUrl(face.getId(), face.getKey());
+                avatarURL = handler.get().getPictureUrl(face.getId(), face.getKey());
             }
         }
         return avatarURL;
