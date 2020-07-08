@@ -67,6 +67,7 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
     protected void startScan() {
         logger.debug("startScan invoked in SqueezeBoxPlayerDiscoveryParticipant");
         this.squeezeBoxServerHandler.requestPlayers();
+        this.squeezeBoxServerHandler.requestFavorites();
     }
 
     /*
@@ -205,5 +206,9 @@ public class SqueezeBoxPlayerDiscoveryParticipant extends AbstractDiscoveryServi
 
     @Override
     public void sourceChangeEvent(String mac, String source) {
+    }
+
+    @Override
+    public void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand) {
     }
 }
