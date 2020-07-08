@@ -117,6 +117,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -1463,8 +1464,9 @@ public class Connection {
     }
 
     private void executeSequenceCommandWithVolume(@Nullable Device[] devices, String command,
-            @Nullable Map<String, Object> parameters, @Nullable Integer[] ttsVolumes,
-            @Nullable Integer[] standardVolumes) throws IOException, URISyntaxException {
+            @Nullable Map<String, Object> parameters, @NonNull Integer[] ttsVolumes,
+            @NonNull Integer[] standardVolumes) throws IOException, URISyntaxException {
+        
         JsonArray ttsVolumeNodesToExecute = new JsonArray();
         for (int i = 0; i < devices.length; i++) {
             if (ttsVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
