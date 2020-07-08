@@ -172,7 +172,7 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
                         });
             }
         }
-        throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
+        throw new IllegalArgumentException("Actions is not an instance of LcnModuleActions");
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */

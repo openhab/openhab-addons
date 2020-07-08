@@ -216,7 +216,20 @@ public class HomekitCharacteristicFactory {
             if (taggedItem.getItem() instanceof NumberItem) {
                 ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
             } else {
-                logger.warn("Item type {} is not supported for {}. Only Number type is supported.",
+                logger.warn("Item type {} is not supported for {}. Only NumberItem is supported.",
+                        taggedItem.getItem().getType(), taggedItem.getName());
+            }
+        };
+    }
+
+    private static ExceptionalConsumer<Integer> setPercentConsumer(final HomekitTaggedItem taggedItem) {
+        return (value) -> {
+            if (taggedItem.getItem() instanceof NumberItem) {
+                ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
+            } else if (taggedItem.getItem() instanceof DimmerItem) {
+                ((DimmerItem) taggedItem.getItem()).send(new PercentType(value));
+            } else {
+                logger.warn("Item type {} is not supported for {}. Only DimmerItem and NumberItem are supported.",
                         taggedItem.getItem().getType(), taggedItem.getName());
             }
         };
@@ -501,7 +514,7 @@ public class HomekitCharacteristicFactory {
 
     private static RotationSpeedCharacteristic createRotationSpeedCharacteristic(final HomekitTaggedItem item,
             HomekitAccessoryUpdater updater) {
-        return new RotationSpeedCharacteristic(getIntSupplier(item), setIntConsumer(item),
+        return new RotationSpeedCharacteristic(getIntSupplier(item), setPercentConsumer(item),
                 getSubscriber(item, ROTATION_SPEED, updater), getUnsubscriber(item, ROTATION_SPEED, updater));
     }
 

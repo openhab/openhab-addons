@@ -278,6 +278,8 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 
 S0 counter Channels need to be the pulses per kWh configured. If the value is left blank, a default value of 1000 pulses/kWh is set.
 
+The Rollershutter Channels provide the boolean parameter `invertUpDown`, which can be set to 'true' if the Up/Down wires are interchanged.
+
 ### Transponder
 
 LCN transponder readers can be integrated in openHAB e.g. for access control.

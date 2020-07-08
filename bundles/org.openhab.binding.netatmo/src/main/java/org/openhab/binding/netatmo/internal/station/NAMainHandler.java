@@ -21,13 +21,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
 import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
@@ -43,6 +44,7 @@ import io.swagger.client.model.NAStationDataBody;
  * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
+@NonNullByDefault
 public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
@@ -51,9 +53,10 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     }
 
     @Override
-    protected NAMain updateReadings() {
+    protected @Nullable NAMain updateReadings() {
         NAMain result = null;
-        NAStationDataBody stationDataBody = getBridgeHandler().getStationsDataBody(getId());
+        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
+        NAStationDataBody stationDataBody = bridgeHandler == null ? null : bridgeHandler.getStationsDataBody(getId());
         if (stationDataBody != null) {
             result = stationDataBody.getDevices().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                     .findFirst().orElse(null);
@@ -64,12 +67,14 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
 
         updateMeasurements();
 
-        childs.keySet().forEach((childId) -> {
-            Optional<AbstractNetatmoThingHandler> childHandler = getBridgeHandler().findNAThing(childId);
-            childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
-                naChildModule.updateMeasurements();
+        if (bridgeHandler != null) {
+            childs.keySet().forEach((childId) -> {
+                Optional<AbstractNetatmoThingHandler> childHandler = bridgeHandler.findNAThing(childId);
+                childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+                    naChildModule.updateMeasurements();
+                });
             });
-        });
+        }
 
         return result;
     }
@@ -106,7 +111,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_PRESSURE, DATE_MIN_PRESSURE);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_PRESSURE, DATE_MAX_PRESSURE);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getId(), null, ONE_DAY, types, channels, channelMeasurements);
+            getMeasurements(getId(), null, ONE_DAY, types, channels, channelMeasurements);
         }
     }
 
@@ -134,7 +139,7 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_WEEK, DATE_MIN_TEMP);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_WEEK, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getId(), null, ONE_WEEK, types, channels, channelMeasurements);
+            getMeasurements(getId(), null, ONE_WEEK, types, channels, channelMeasurements);
         }
     }
 
@@ -162,14 +167,15 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_MONTH, DATE_MIN_TEMP);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_MONTH, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getId(), null, ONE_MONTH, types, channels, channelMeasurements);
+            getMeasurements(getId(), null, ONE_MONTH, types, channels, channelMeasurements);
         }
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
-        if (device != null) {
-            NADashboardData dashboardData = device.getDashboardData();
+    protected State getNAThingProperty(String channelId) {
+        NAMain mainDevice = device;
+        if (mainDevice != null) {
+            NADashboardData dashboardData = mainDevice.getDashboardData();
             if (dashboardData != null) {
                 switch (channelId) {
                     case CHANNEL_CO2:
@@ -288,8 +294,9 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
 
     @Override
     protected @Nullable Integer getDataTimestamp() {
-        if (device != null) {
-            Integer lastStored = device.getLastStatusStore();
+        NAMain mainDevice = device;
+        if (mainDevice != null) {
+            Integer lastStored = mainDevice.getLastStatusStore();
             if (lastStored != null) {
                 return lastStored;
             }

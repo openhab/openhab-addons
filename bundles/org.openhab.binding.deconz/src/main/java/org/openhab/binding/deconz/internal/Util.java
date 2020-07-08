@@ -35,4 +35,16 @@ public class Util {
 
         return url.toString();
     }
+
+    public static int miredToKelvin(int miredValue) {
+        return (int) (1000000.0 / miredValue);
+    }
+
+    public static int kelvinToMired(int kelvinValue) {
+        return (int) (1000000.0 / kelvinValue);
+    }
+
+    public static int constrainToRange(int intValue, int min, int max) {
+        return Math.max(min, Math.min(intValue, max));
+    }
 }

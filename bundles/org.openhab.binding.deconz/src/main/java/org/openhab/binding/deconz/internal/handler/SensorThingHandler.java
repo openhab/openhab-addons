@@ -102,6 +102,9 @@ public class SensorThingHandler extends SensorBaseThingHandler {
     protected void valueUpdated(String channelID, SensorState newState, boolean initializing) {
         super.valueUpdated(channelID, newState, initializing);
         switch (channelID) {
+            case CHANNEL_BATTERY_LEVEL:
+                updateDecimalTypeChannel(channelID, newState.battery);
+                break;
             case CHANNEL_LIGHT:
                 Boolean dark = newState.dark;
                 if (dark != null) {
@@ -238,7 +241,6 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             createChannel(CHANNEL_GESTURE, ChannelKind.STATE);
             createChannel(CHANNEL_GESTUREEVENT, ChannelKind.TRIGGER);
         }
-
     }
 
     @Override

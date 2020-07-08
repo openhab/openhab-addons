@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>2.5.6-SNAPSHOT</version>
+    <version>2.5.7-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.netatmo</artifactId>
@@ -69,7 +67,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/c95b5f5003d91ac9e73e9c855569263cb9013cc2/spec/swagger.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/8ba3583f8d851e0b0c0bb4c5066338fe4898cb11/spec/swagger.yaml</inputSpec>
               <language>java</language>
               <library>retrofit</library>
               <configOptions>

@@ -62,7 +62,7 @@ public enum MsgType {
 
     static {
         for (MsgType t : MsgType.values()) {
-            Integer i = new Integer(t.getByteValue() & 0xff);
+            int i = t.getByteValue() & 0xff;
             hash.put(i, t);
         }
     }
@@ -72,7 +72,7 @@ public enum MsgType {
     }
 
     public static MsgType fromValue(byte b) throws IllegalArgumentException {
-        Integer i = new Integer((b & 0xe0));
+        int i = b & 0xe0;
         @Nullable
         MsgType mt = hash.get(i);
         if (mt == null) {

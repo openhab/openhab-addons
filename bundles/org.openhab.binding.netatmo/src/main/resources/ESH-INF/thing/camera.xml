@@ -43,6 +43,8 @@
 			<channel id="cameraLivePicture" typeId="live_picture"></channel>
 			<channel id="cameraLivePictureUrl" typeId="live_picture_url"></channel>
 			<channel id="cameraLiveStreamUrl" typeId="live_stream_url"></channel>
+			<channel id="cameraFloodlightAutoMode" typeId="floodlightAutoMode"></channel>
+			<channel id="cameraFloodlight" typeId="floodlight"></channel>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -54,7 +56,6 @@
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>State of the camera</description>
-		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="sd_status">
@@ -98,6 +99,18 @@
 		<label>Live Stream URL</label>
 		<description>Url of the live stream for this camera</description>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="floodlightAutoMode">
+		<item-type>Switch</item-type>
+		<label>Floodlight Auto-Mode</label>
+		<description>State of the floodlight auto-mode</description>
+	</channel-type>
+
+	<channel-type id="floodlight">
+		<item-type>Switch</item-type>
+		<label>Floodlight</label>
+		<description>State of the floodlight</description>
 	</channel-type>
 
 </thing:thing-descriptions>

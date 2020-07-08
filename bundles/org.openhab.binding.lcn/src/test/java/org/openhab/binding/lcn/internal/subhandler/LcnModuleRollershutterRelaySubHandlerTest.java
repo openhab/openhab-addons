@@ -41,25 +41,37 @@ public class LcnModuleRollershutterRelaySubHandlerTest extends AbstractTestLcnMo
 
     @Test
     public void testUp1() throws LcnException {
-        l.handleCommandUpDown(UpDownType.UP, LcnChannelGroup.ROLLERSHUTTERRELAY, 0);
+        l.handleCommandUpDown(UpDownType.UP, LcnChannelGroup.ROLLERSHUTTERRELAY, 0, false);
         verify(handler).sendPck("R810------");
     }
 
     @Test
+    public void testUpInverted() throws LcnException {
+        l.handleCommandUpDown(UpDownType.UP, LcnChannelGroup.ROLLERSHUTTERRELAY, 0, true);
+        verify(handler).sendPck("R811------");
+    }
+
+    @Test
     public void testUp4() throws LcnException {
-        l.handleCommandUpDown(UpDownType.UP, LcnChannelGroup.ROLLERSHUTTERRELAY, 3);
+        l.handleCommandUpDown(UpDownType.UP, LcnChannelGroup.ROLLERSHUTTERRELAY, 3, false);
         verify(handler).sendPck("R8------10");
     }
 
     @Test
     public void testDown1() throws LcnException {
-        l.handleCommandUpDown(UpDownType.DOWN, LcnChannelGroup.ROLLERSHUTTERRELAY, 0);
+        l.handleCommandUpDown(UpDownType.DOWN, LcnChannelGroup.ROLLERSHUTTERRELAY, 0, false);
         verify(handler).sendPck("R811------");
     }
 
     @Test
+    public void testDownInverted() throws LcnException {
+        l.handleCommandUpDown(UpDownType.DOWN, LcnChannelGroup.ROLLERSHUTTERRELAY, 0, true);
+        verify(handler).sendPck("R810------");
+    }
+
+    @Test
     public void testDown4() throws LcnException {
-        l.handleCommandUpDown(UpDownType.DOWN, LcnChannelGroup.ROLLERSHUTTERRELAY, 3);
+        l.handleCommandUpDown(UpDownType.DOWN, LcnChannelGroup.ROLLERSHUTTERRELAY, 3, false);
         verify(handler).sendPck("R8------11");
     }
 

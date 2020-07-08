@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+import org.openhab.binding.netatmo.internal.camera.CameraHandler;
 import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
@@ -95,7 +96,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                 });
 
                 Optional<NAWelcomeEvent> previousLastEvent = lastEvent;
-                lastEvent = result.getEvents().stream().min(Comparator.comparingInt(NAWelcomeEvent::getTime));
+                lastEvent = result.getEvents().stream().max(Comparator.comparingInt(NAWelcomeEvent::getTime));
                 isNewLastEvent = previousLastEvent.isPresent() && !previousLastEvent.equals(lastEvent);
             }
         }
@@ -145,10 +146,10 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     String cameraId = lastEvent.get().getCameraId();
                     Optional<AbstractNetatmoThingHandler> thing = getBridgeHandler().findNAThing(cameraId);
                     if (thing.isPresent()) {
-                        NAWelcomeCameraHandler eventCamera = (NAWelcomeCameraHandler) thing.get();
-                        String streamUrl = eventCamera.getStreamURL(lastEvent.get().getVideoId());
-                        if (streamUrl != null) {
-                            return new StringType(streamUrl);
+                        CameraHandler eventCamera = (CameraHandler) thing.get();
+                        Optional<String> streamUrl = eventCamera.getStreamURL(lastEvent.get().getVideoId());
+                        if (streamUrl.isPresent()) {
+                            return new StringType(streamUrl.get());
                         }
                     }
                 }

@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
+import org.openhab.binding.netatmo.internal.presence.NAPresenceCameraHandler;
 import org.openhab.binding.netatmo.internal.station.NAMainHandler;
 import org.openhab.binding.netatmo.internal.station.NAModule1Handler;
 import org.openhab.binding.netatmo.internal.station.NAModule2Handler;
@@ -63,8 +64,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private final Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private final HttpService httpService;
     private final NATherm1StateDescriptionProvider stateDescriptionProvider;
     private final TimeZoneProvider timeZoneProvider;
@@ -109,8 +110,10 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new NATherm1Handler(thing, stateDescriptionProvider, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
             return new NAWelcomeHomeHandler(thing, timeZoneProvider);
-        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE) || thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
+        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
             return new NAWelcomeCameraHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
+            return new NAPresenceCameraHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
             return new NAWelcomePersonHandler(thing, timeZoneProvider);
         } else {

@@ -13,6 +13,7 @@
 package org.openhab.binding.insteon.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.insteon.internal.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,18 +102,23 @@ public class GroupMessageStateMachine {
         EXPECT_SUCCESS
     };
 
-    State state = State.EXPECT_BCAST;
-    int lastHops = 0;
+    private State state = State.EXPECT_BCAST;
+    private long lastUpdated = 0;
+    private boolean publish = false;
+    private byte lastCmd1 = 0;
 
     /**
      * Advance the state machine and determine if update is genuine (no duplicate)
      *
      * @param a the group message (action) that was received
-     * @param hops number of hops that was given on the message. Currently not used.
+     * @param address the address of the device that this state machine belongs to
+     * @param group the group that this state machine belongs to
+     * @param cmd1 cmd1 from the message received
      * @return true if the group message is not a duplicate
      */
-    public boolean action(GroupMessage a, int hops) {
-        boolean publish = false;
+    public boolean action(GroupMessage a, InsteonAddress address, int group, byte cmd1) {
+        publish = false;
+        long currentTime = System.currentTimeMillis();
         switch (state) {
             case EXPECT_BCAST:
                 switch (a) {
@@ -130,7 +136,24 @@ public class GroupMessageStateMachine {
             case EXPECT_CLEAN:
                 switch (a) {
                     case BCAST:
-                        publish = false;
+                        if (lastCmd1 == cmd1) {
+                            if (currentTime > lastUpdated + 30000) {
+                                if (logger.isDebugEnabled()) {
+                                    logger.debug(
+                                            "{} group {} cmd1 {} is not a dup BCAST, received last message over 30000 ms ago",
+                                            address, group, Utils.getHexByte(cmd1));
+                                }
+                                publish = true;
+                            } else {
+                                publish = false;
+                            }
+                        } else {
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("{} group {} cmd1 {} is not a dup BCAST, last cmd1 {}", address, group,
+                                        Utils.getHexByte(cmd1), Utils.getHexByte(lastCmd1));
+                            }
+                            publish = true;
+                        }
                         break; // missed(CLEAN, SUCCESS) or dup BCAST
                     case CLEAN:
                         publish = false;
@@ -166,7 +189,18 @@ public class GroupMessageStateMachine {
                 state = State.EXPECT_BCAST;
                 break;
         }
-        logger.trace("group state: {} --{}--> {}, publish: {}", oldState, a, state, publish);
+
+        lastCmd1 = cmd1;
+        lastUpdated = currentTime;
+        logger.debug("{} group {} state: {} --{}--> {}, publish: {}", address, group, oldState, a, state, publish);
         return (publish);
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public boolean getPublish() {
+        return publish;
     }
 }

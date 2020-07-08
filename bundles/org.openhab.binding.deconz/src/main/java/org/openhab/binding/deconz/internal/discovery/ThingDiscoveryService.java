@@ -14,6 +14,8 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,10 +28,12 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
@@ -109,9 +113,18 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             return;
         }
 
-        if (light.uniqueid.isEmpty()) {
-            logger.warn("No unique id reported for light {} ({})", light.modelid, light.name);
-            return;
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("id", lightID);
+        properties.put(UNIQUE_ID, light.uniqueid);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
+        properties.put(Thing.PROPERTY_VENDOR, light.manufacturername);
+        properties.put(Thing.PROPERTY_MODEL_ID, light.modelid);
+
+        if (light.ctmax != null && light.ctmin != null) {
+            properties.put(PROPERTY_CT_MAX,
+                    Integer.toString(Util.constrainToRange(light.ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
+            properties.put(PROPERTY_CT_MIN,
+                    Integer.toString(Util.constrainToRange(light.ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
         }
 
         switch (lightType) {
@@ -127,6 +140,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
                 thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
                 break;
             case COLOR_DIMMABLE_LIGHT:
+            case COLOR_LIGHT:
                 thingTypeUID = THING_TYPE_COLOR_LIGHT;
                 break;
             case EXTENDED_COLOR_LIGHT:
@@ -147,8 +161,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, light.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(light.name + " (" + light.manufacturername + ")").withProperty("id", lightID)
-                .withProperty(UNIQUE_ID, light.uniqueid).withRepresentationProperty(UNIQUE_ID).build();
+                .withLabel(light.name + " (" + light.manufacturername + ")").withProperties(properties)
+                .withRepresentationProperty(UNIQUE_ID).build();
         thingDiscovered(discoveryResult);
     }
 

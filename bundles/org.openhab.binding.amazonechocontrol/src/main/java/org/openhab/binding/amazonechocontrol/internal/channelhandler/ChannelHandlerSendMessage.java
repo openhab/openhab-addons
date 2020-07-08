@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
@@ -30,6 +31,7 @@ import com.google.gson.Gson;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class ChannelHandlerSendMessage extends ChannelHandler {
 
     private static final String CHANNEL_NAME = "sendMessage";
@@ -51,7 +53,7 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
                 AccountJson currentAccountJson = this.accountJson;
                 if (currentAccountJson == null) {
                     String accountResult = connection.makeRequestAndReturnString(baseUrl + "/accounts");
-                    AccountJson[] accountsJson = this.gson.fromJson(accountResult, AccountJson[].class);
+                    AccountJson @Nullable [] accountsJson = gson.fromJson(accountResult, AccountJson[].class);
                     if (accountsJson == null) {
                         return false;
                     }
@@ -98,7 +100,6 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
 
     @SuppressWarnings("unused")
     private static class AccountJson {
-
         public @Nullable String commsId;
         public @Nullable String directedId;
         public @Nullable String phoneCountryCode;
@@ -116,7 +117,6 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
 
     @SuppressWarnings("unused")
     private static class SendConversationJson {
-
         public @Nullable String conversationId;
         public @Nullable String clientMessageId;
         public @Nullable Integer messageId;
@@ -127,7 +127,6 @@ public class ChannelHandlerSendMessage extends ChannelHandler {
         public Integer status = 1;
 
         private static class Payload {
-
             public @Nullable String text;
         }
     }

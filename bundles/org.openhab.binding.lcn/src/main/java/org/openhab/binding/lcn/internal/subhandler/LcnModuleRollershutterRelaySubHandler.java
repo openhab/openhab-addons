@@ -30,7 +30,7 @@ import org.openhab.binding.lcn.internal.connection.ModInfo;
 
 /**
  * Handles Commands and State changes of roller shutters connected to relays of an LCN module.
- * 
+ *
  * @author Fabian Wolter - Initial contribution
  */
 @NonNullByDefault
@@ -45,10 +45,11 @@ public class LcnModuleRollershutterRelaySubHandler extends AbstractLcnModuleSubH
     }
 
     @Override
-    public void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number) throws LcnException {
+    public void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number, boolean invertUpDown)
+            throws LcnException {
         RelayStateModifier[] relayStateModifiers = createRelayStateModifierArray();
         // direction relay
-        relayStateModifiers[number * 2 + 1] = command == UpDownType.DOWN ? LcnDefs.RelayStateModifier.ON
+        relayStateModifiers[number * 2 + 1] = command == UpDownType.DOWN ^ invertUpDown ? LcnDefs.RelayStateModifier.ON
                 : LcnDefs.RelayStateModifier.OFF;
         // power relay
         relayStateModifiers[number * 2] = LcnDefs.RelayStateModifier.ON;
