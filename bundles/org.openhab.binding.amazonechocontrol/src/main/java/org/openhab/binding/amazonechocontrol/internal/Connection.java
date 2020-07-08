@@ -1310,9 +1310,7 @@ public class Connection {
         jsonAnnouncement.devices.add(device);
         jsonAnnouncement.ttsVolumes.add(ttsVolume);
         jsonAnnouncement.standardVolumes.add(standardVolume);
-        announcementTimer = scheduler.schedule(() -> {
-            sendAnnouncement();
-        }, 1, TimeUnit.SECONDS);
+        announcementTimer = scheduler.schedule(this::sendAnnouncement, 1, TimeUnit.SECONDS);
     }
 
     private void sendAnnouncement() {
