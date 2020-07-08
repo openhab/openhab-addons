@@ -29,13 +29,13 @@ public class CaddxZoneConfiguration {
      * The Zone Number. Can be in the range of 1-192. Depends on the Panel model. This is a required parameter for a
      * zone.
      */
-    private @NonNullByDefault({}) Integer zoneNumber;
+    private int zoneNumber;
 
-    public Integer getZoneNumber() {
+    public int getZoneNumber() {
         return zoneNumber;
     }
 
-    public void setZoneNumber(Integer zoneNumber) {
+    public void setZoneNumber(int zoneNumber) {
         this.zoneNumber = zoneNumber;
     }
 }

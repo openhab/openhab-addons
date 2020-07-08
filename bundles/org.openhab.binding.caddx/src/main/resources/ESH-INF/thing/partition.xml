@@ -199,15 +199,13 @@
 				<description>Delay Trip in progress (common zone)</description>
 			</channel>
 
-			<channel id="partition_primary_command" typeId="partition_primary">
-				<label>Partition Primary Command</label>
-				<description>Partition Primary Command</description>
-			</channel>
 			<channel id="partition_secondary_command" typeId="partition_secondary">
 				<label>Partition Secondary Command</label>
 				<description>Partition Secondary Command</description>
 			</channel>
 		</channels>
+
+        <representation-property>partitionNumber</representation-property>
 
 		<config-description>
 			<parameter name="partitionNumber" type="integer" required="true" min="1" max="8">

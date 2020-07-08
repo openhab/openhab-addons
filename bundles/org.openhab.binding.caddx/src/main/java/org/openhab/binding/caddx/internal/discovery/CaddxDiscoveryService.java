@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.caddx.internal.discovery;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,9 +46,6 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
 
     private @Nullable CaddxBridgeHandler caddxBridgeHandler = null;
 
-    /**
-     * Constructor.
-     */
     public CaddxDiscoveryService() {
         super(CaddxBindingConstants.SUPPORTED_THING_TYPES_UIDS, 15, false);
     }
@@ -82,23 +79,22 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
                 thingUID = new ThingUID(CaddxBindingConstants.PANEL_THING_TYPE, bridge.getUID(), thingID);
                 break;
             case PARTITION:
-                thingID = "partition" + String.valueOf(partition);
-                thingLabel = "Partition " + String.valueOf(partition);
+                thingID = "partition" + partition;
+                thingLabel = "Partition " + partition;
                 thingUID = new ThingUID(CaddxBindingConstants.PARTITION_THING_TYPE, bridge.getUID(), thingID);
 
-                properties = new HashMap<>(1);
                 if (partition != null) {
-                    properties.put(CaddxPartitionConfiguration.PARTITION_NUMBER, partition);
+                    properties = Collections.singletonMap(CaddxPartitionConfiguration.PARTITION_NUMBER, partition);
                 }
+
                 break;
             case ZONE:
-                thingID = "zone" + String.valueOf(zone);
-                thingLabel = "Zone " + String.valueOf(zone);
+                thingID = "zone" + zone;
+                thingLabel = "Zone " + zone;
                 thingUID = new ThingUID(CaddxBindingConstants.ZONE_THING_TYPE, bridge.getUID(), thingID);
 
-                properties = new HashMap<>(1);
                 if (zone != null) {
-                    properties.put(CaddxZoneConfiguration.ZONE_NUMBER, zone);
+                    properties = Collections.singletonMap(CaddxZoneConfiguration.ZONE_NUMBER, zone);
                 }
                 break;
             case KEYPAD:
@@ -106,9 +102,8 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
                 thingLabel = "Keypad";
                 thingUID = new ThingUID(CaddxBindingConstants.KEYPAD_THING_TYPE, bridge.getUID(), thingID);
 
-                properties = new HashMap<>(1);
                 if (keypad != null) {
-                    properties.put(CaddxKeypadConfiguration.KEYPAD_ADDRESS, keypad);
+                    properties = Collections.singletonMap(CaddxKeypadConfiguration.KEYPAD_ADDRESS, keypad);
                 }
                 break;
         }

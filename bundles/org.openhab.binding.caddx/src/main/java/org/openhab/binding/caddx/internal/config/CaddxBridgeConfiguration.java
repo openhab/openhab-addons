@@ -31,7 +31,7 @@ public class CaddxBridgeConfiguration {
 
     private CaddxProtocol protocol = CaddxProtocol.Binary;
     private @NonNullByDefault({}) String serialPort;
-    private Integer baudrate = 9600;
+    private int baudrate = 9600;
 
     public CaddxProtocol getProtocol() {
         return protocol;
@@ -49,11 +49,11 @@ public class CaddxBridgeConfiguration {
         this.serialPort = serialPort;
     }
 
-    public Integer getBaudrate() {
+    public int getBaudrate() {
         return baudrate;
     }
 
-    public void setBaudrate(Integer baudrate) {
+    public void setBaudrate(int baudrate) {
         this.baudrate = baudrate;
     }
 }

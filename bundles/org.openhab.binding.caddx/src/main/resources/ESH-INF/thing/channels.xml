@@ -40,25 +40,6 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="partition_primary">
-		<item-type>Number</item-type>
-		<label>Partition Primary Command</label>
-		<description>Partition primary command</description>
-		<state>
-			<options>
-				<option value="-1">None</option>
-				<option value="0">Turn off any sounder or alarm</option>
-				<option value="1">Disarm</option>
-				<option value="2">Arm in away mode</option>
-				<option value="3">Arm in stay mode</option>
-				<option value="4">Cancel</option>
-				<option value="5">Initiate auto-arm</option>
-				<option value="6">Start walk-test mode</option>
-				<option value="7">Stop walk-test mode</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="partition_secondary">
 		<item-type>Number</item-type>
 		<label>Partition Secondary Command</label>

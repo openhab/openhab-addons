@@ -142,7 +142,6 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 | partition_cancel_report_is_in_the_stack          | Switch    | Partition Condition | Cancel report is in the stack              |
 | partition_keyswitch_armed                        | Switch    | Partition Condition | Keyswitch armed                            |
 | partition_delay_trip_in_progress                 | Switch    | Partition Condition | Delay Trip in progress (common zone)       |
-| partition_primary_command                        | Number    | Command             | Partition Primary Command                  |
 | partition_secondary_command                      | Number    | Command             | Partition Secondary Command                |
 | zone_partition2                                  | Switch    | Configuration       | Partition 2                                |
 | zone_partition3                                  | Switch    | Configuration       | Partition 3                                |

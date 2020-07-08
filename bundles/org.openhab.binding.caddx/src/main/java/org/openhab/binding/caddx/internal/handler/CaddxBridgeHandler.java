@@ -110,7 +110,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
         protocol = configuration.getProtocol();
         serialPortName = configuration.getSerialPort();
-        baudRate = configuration.getBaudrate().intValue();
+        baudRate = configuration.getBaudrate();
         updateStatus(ThingStatus.OFFLINE);
         updateState(new ChannelUID(getThing().getUID(), CaddxBindingConstants.BRIDGE_RESET), OnOffType.ON);
 
@@ -241,34 +241,31 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
         switch (command) {
             case CaddxBindingConstants.ZONE_BYPASSED:
-                msg = new CaddxMessage(CaddxMessageType.Zone_Bypass_Toggle, data);
+                msg = new CaddxMessage(CaddxMessageType.ZONE_BYPASS_TOGGLE, data);
                 break;
             case CaddxBindingConstants.ZONE_STATUS_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.Zone_Status_Request, data);
+                msg = new CaddxMessage(CaddxMessageType.ZONE_STATUS_REQUEST, data);
                 break;
             case CaddxBindingConstants.ZONE_NAME_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.Zone_Name_Request, data);
+                msg = new CaddxMessage(CaddxMessageType.ZONE_NAME_REQUEST, data);
                 break;
             case CaddxBindingConstants.PARTITION_STATUS_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.Partition_Status_Request, data);
+                msg = new CaddxMessage(CaddxMessageType.PARTITION_STATUS_REQUEST, data);
                 break;
             case CaddxBindingConstants.PARTITION_PRIMARY_COMMAND_WITH_PIN:
-                msg = new CaddxMessage(CaddxMessageType.Primary_Keypad_Function_with_PIN, data);
-                break;
-            case CaddxBindingConstants.PARTITION_PRIMARY_COMMAND:
-                msg = new CaddxMessage(CaddxMessageType.Primary_Keypad_Function_without_PIN, data);
+                msg = new CaddxMessage(CaddxMessageType.PRIMARY_KEYPAD_FUNCTION_WITH_PIN, data);
                 break;
             case CaddxBindingConstants.PARTITION_SECONDARY_COMMAND:
-                msg = new CaddxMessage(CaddxMessageType.Secondary_Keypad_Function, data);
+                msg = new CaddxMessage(CaddxMessageType.SECONDARY_KEYPAD_FUNCTION, data);
                 break;
             case CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.System_Status_Request, data);
+                msg = new CaddxMessage(CaddxMessageType.SYSTEM_STATUS_REQUEST, data);
                 break;
             case CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.Interface_Configuration_Request, data);
+                msg = new CaddxMessage(CaddxMessageType.INTERFACE_CONFIGURATION_REQUEST, data);
                 break;
             case CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.Log_Event_Request, data);
+                msg = new CaddxMessage(CaddxMessageType.LOG_EVENT_REQUEST, data);
                 break;
             default:
                 logger.debug("Unknown command {}", command);
@@ -354,7 +351,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             // Handle specific messages that add multiple discovered things
             if (discoveryService != null) {
                 switch (caddxMessage.getCaddxMessageType()) {
-                    case Partitions_Snapshot_Message:
+                    case PARTITIONS_SNAPSHOT_MESSAGE:
                         for (int i = 1; i <= 8; i++) {
                             if (caddxMessage.getPropertyById("partition_" + Integer.toString(i) + "_valid") == "true") {
                                 thing = findThing(CaddxThingType.PARTITION, i, null, null);
@@ -367,7 +364,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                             }
                         }
                         break;
-                    case Zones_Snapshot_Message:
+                    case ZONES_SNAPSHOT_MESSAGE:
                         int zoneOffset = Integer.parseInt(caddxMessage.getPropertyById("zone_offset"));
                         for (int i = 1; i <= 16; i++) {
                             if (caddxMessage.getPropertyById("zone_" + Integer.toString(i) + "_trouble")

@@ -154,16 +154,16 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
         switch (caddxThingType) {
             case PARTITION:
                 CaddxPartitionConfiguration partitionConfiguration = getConfigAs(CaddxPartitionConfiguration.class);
-                setPartitionNumber(partitionConfiguration.getPartitionNumber().intValue());
-                setUserNumber(partitionConfiguration.getUserNumber().intValue());
+                setPartitionNumber(partitionConfiguration.getPartitionNumber());
+                setUserNumber(partitionConfiguration.getUserNumber());
                 break;
             case ZONE:
                 CaddxZoneConfiguration zoneConfiguration = getConfigAs(CaddxZoneConfiguration.class);
-                setZoneNumber(zoneConfiguration.getZoneNumber().intValue());
+                setZoneNumber(zoneConfiguration.getZoneNumber());
                 break;
             case KEYPAD:
                 CaddxKeypadConfiguration keypadConfiguration = getConfigAs(CaddxKeypadConfiguration.class);
-                setKeypadAddress(keypadConfiguration.getKeypadAddress().intValue());
+                setKeypadAddress(keypadConfiguration.getKeypadAddress());
             default:
                 break;
         }

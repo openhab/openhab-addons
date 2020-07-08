@@ -62,27 +62,17 @@ public class CaddxHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(CaddxBindingConstants.CADDXBRIDGE_THING_TYPE)) {
-            logger.trace("createHandler(): BRIDGE_THING: ThingHandler created for {}", thingTypeUID);
-
             return new CaddxBridgeHandler(portManager, (Bridge) thing);
         } else if (thingTypeUID.equals(CaddxBindingConstants.PANEL_THING_TYPE)) {
-            logger.trace("createHandler(): PANEL_THING: ThingHandler created for {}", thingTypeUID);
-
             return new ThingHandlerPanel(thing);
         } else if (thingTypeUID.equals(CaddxBindingConstants.PARTITION_THING_TYPE)) {
-            logger.trace("createHandler(): PARTITION_THING: ThingHandler created for {}", thingTypeUID);
-
             return new ThingHandlerPartition(thing);
         } else if (thingTypeUID.equals(CaddxBindingConstants.ZONE_THING_TYPE)) {
-            logger.trace("createHandler(): ZONE_THING: ThingHandler created for {}", thingTypeUID);
-
             return new ThingHandlerZone(thing);
         } else if (thingTypeUID.equals(CaddxBindingConstants.KEYPAD_THING_TYPE)) {
-            logger.trace("createHandler(): KEYPAD_THING: ThingHandler created for {}", thingTypeUID);
-
             return new ThingHandlerKeypad(thing);
         } else {
-            logger.trace("createHandler(): ThingHandler not found for {}", thingTypeUID);
+            logger.debug("createHandler(): ThingHandler not found for {}", thingTypeUID);
 
             return null;
         }

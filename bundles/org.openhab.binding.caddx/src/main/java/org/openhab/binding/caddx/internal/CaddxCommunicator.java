@@ -247,10 +247,10 @@ public class CaddxCommunicator implements SerialPortEventListener {
                         if (incomingMessage.hasAcknowledgementFlag()) {
                             if (incomingMessage.isChecksumCorrect()) {
                                 // send ACK
-                                transmitFirst(new CaddxMessage(CaddxMessageType.Positive_Acknowledge, ""));
+                                transmitFirst(new CaddxMessage(CaddxMessageType.POSITIVE_ACKNOWLEDGE, ""));
                             } else {
                                 // Send NAK
-                                transmitFirst(new CaddxMessage(CaddxMessageType.Negative_Acknowledge, ""));
+                                transmitFirst(new CaddxMessage(CaddxMessageType.NEGATIVE_ACKNOWLEDGE, ""));
                             }
                         }
                     }

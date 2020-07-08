@@ -28,26 +28,26 @@ public class CaddxPartitionConfiguration {
     /**
      * The Partition Number. Can be in the range of 1-8. This is a required parameter for a partition.
      */
-    private @NonNullByDefault({}) Integer partitionNumber;
+    private int partitionNumber;
 
     /**
      * The User Number of the user that will execute commands against the partition.
      */
-    private @NonNullByDefault({}) Integer userNumber;
+    private int userNumber;
 
-    public Integer getPartitionNumber() {
+    public int getPartitionNumber() {
         return partitionNumber;
     }
 
-    public void setPartitionNumber(Integer partitionNumber) {
+    public void setPartitionNumber(int partitionNumber) {
         this.partitionNumber = partitionNumber;
     }
 
-    public Integer getUserNumber() {
+    public int getUserNumber() {
         return userNumber;
     }
 
-    public void setUserNumber(Integer userNumber) {
+    public void setUserNumber(int userNumber) {
         this.userNumber = userNumber;
     }
 }

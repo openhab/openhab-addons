@@ -49,8 +49,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
 
     @Override
     public void updateChannel(ChannelUID channelUID, String data) {
-        if (CaddxBindingConstants.PARTITION_PRIMARY_COMMAND.equals(channelUID.getId())
-                || CaddxBindingConstants.PARTITION_SECONDARY_COMMAND.equals(channelUID.getId())) {
+        if (CaddxBindingConstants.PARTITION_SECONDARY_COMMAND.equals(channelUID.getId())) {
             updateState(channelUID, new DecimalType(data));
         } else {
             OnOffType onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
@@ -76,9 +75,6 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
             } else {
                 return;
             }
-        } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_PRIMARY_COMMAND)) {
-            cmd = channelUID.getId();
-            data = String.format("%s,%d,%d", command.toString(), (1 << getPartitionNumber() - 1), getUserNumber());
         } else if (channelUID.getId().equals(CaddxBindingConstants.PARTITION_SECONDARY_COMMAND)) {
             cmd = channelUID.getId();
             data = String.format("%s,%d", command.toString(), (1 << getPartitionNumber() - 1));
@@ -111,8 +107,6 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
 
             // Reset the command
             String value = "-1";
-            channelUID = new ChannelUID(getThing().getUID(), CaddxBindingConstants.PARTITION_PRIMARY_COMMAND);
-            updateChannel(channelUID, value);
             channelUID = new ChannelUID(getThing().getUID(), CaddxBindingConstants.PARTITION_SECONDARY_COMMAND);
             updateChannel(channelUID, value);
 

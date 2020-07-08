@@ -167,20 +167,20 @@ public class CaddxMessage {
         StringBuilder sb = new StringBuilder();
         sb.append(caddxMessageType.name);
         switch (caddxMessageType) {
-            case Zone_Status_Request:
-            case Zone_Status_Message:
+            case ZONE_STATUS_REQUEST:
+            case ZONE_STATUS_MESSAGE:
                 sb.append(" [Zone: ");
                 sb.append(getPropertyById("zone_number"));
                 sb.append("]");
                 break;
-            case Log_Event_Request:
-            case Log_Event_Message:
+            case LOG_EVENT_REQUEST:
+            case LOG_EVENT_MESSAGE:
                 sb.append(" [Event: ");
                 sb.append(getPropertyById("panel_log_event_number"));
                 sb.append("]");
                 break;
-            case Partition_Status_Request:
-            case Partition_Status_Message:
+            case PARTITION_STATUS_REQUEST:
+            case PARTITION_STATUS_MESSAGE:
                 sb.append(" [Partition: ");
                 sb.append(getPropertyById("partition_number"));
                 sb.append("]");

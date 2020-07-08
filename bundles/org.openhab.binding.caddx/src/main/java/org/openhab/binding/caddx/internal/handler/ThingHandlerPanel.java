@@ -103,9 +103,9 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             ChannelUID channelUID = null;
 
             // Log event messages have special handling
-            if (CaddxMessageType.System_Status_Message.equals(mt)) {
+            if (CaddxMessageType.SYSTEM_STATUS_MESSAGE.equals(mt)) {
                 handleSystemStatusMessage(message);
-            } else if (CaddxMessageType.Log_Event_Message.equals(mt)) {
+            } else if (CaddxMessageType.LOG_EVENT_MESSAGE.equals(mt)) {
                 handleLogEventMessage(message);
             } else {
                 for (CaddxProperty p : mt.properties) {

@@ -26,13 +26,13 @@ public class CaddxKeypadConfiguration {
     // Keypad Thing constants
     public static final String KEYPAD_ADDRESS = "keypadAddress";
 
-    private @NonNullByDefault({}) Integer keypadAddress;
+    private int keypadAddress;
 
-    public Integer getKeypadAddress() {
+    public int getKeypadAddress() {
         return keypadAddress;
     }
 
-    public void setKeypadAddress(Integer keypadAddress) {
+    public void setKeypadAddress(int keypadAddress) {
         this.keypadAddress = keypadAddress;
     }
 }

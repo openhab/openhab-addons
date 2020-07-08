@@ -192,12 +192,15 @@
 			</channel>
 		</channels>
 
+        <representation-property>zoneNumber</representation-property>
+
 		<config-description>
 			<parameter name="zoneNumber" type="integer" required="true" min="1" max="192">
 				<label>Zone Number</label>
 				<description>The Zone Number.</description>
 			</parameter>
 		</config-description>
+		
 	</thing-type>
 
 </thing:thing-descriptions>
