@@ -28,7 +28,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/openwebnet-java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/openwebnet4j"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
-

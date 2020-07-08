@@ -35,20 +35,20 @@ import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
-import org.openwebnet.BUSGateway;
-import org.openwebnet.GatewayListener;
-import org.openwebnet.OpenDeviceType;
-import org.openwebnet.OpenGateway;
-import org.openwebnet.USBGateway;
-import org.openwebnet.communication.OWNAuthException;
-import org.openwebnet.communication.OWNException;
-import org.openwebnet.message.BaseOpenMessage;
-import org.openwebnet.message.FrameException;
-import org.openwebnet.message.GatewayMgmt;
-import org.openwebnet.message.Lighting;
-import org.openwebnet.message.OpenMessage;
-import org.openwebnet.message.Where;
-import org.openwebnet.message.Who;
+import org.openwebnet4j.BUSGateway;
+import org.openwebnet4j.GatewayListener;
+import org.openwebnet4j.OpenDeviceType;
+import org.openwebnet4j.OpenGateway;
+import org.openwebnet4j.USBGateway;
+import org.openwebnet4j.communication.OWNAuthException;
+import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.FrameException;
+import org.openwebnet4j.message.GatewayMgmt;
+import org.openwebnet4j.message.Lighting;
+import org.openwebnet4j.message.OpenMessage;
+import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -249,6 +249,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.debug("gateway {} connection closed and unsubscribed", gateway.toString());
             gateway = null;
         }
+        reconnecting = false;
     }
 
     /**
@@ -447,7 +448,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
          * cause = "Authentication error. Check gateway password in Thing Configuration Parameters (" + errMsg
          * + ")";
          * break;
-         * 
+         *
          * }
          */
         logger.warn("------------------- ON CONNECTION ERROR: {}", error.getMessage());
@@ -484,6 +485,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Authentication error. Check gateway password in Thing Configuration Parameters (" + e + ")");
             }
+        } else {
+            logger.debug("------------------- reconnecting=true, do nothing");
         }
     }
 

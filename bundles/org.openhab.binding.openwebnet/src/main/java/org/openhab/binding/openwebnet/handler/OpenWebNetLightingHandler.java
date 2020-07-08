@@ -26,12 +26,13 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
-import org.openwebnet.communication.OWNException;
-import org.openwebnet.message.BaseOpenMessage;
-import org.openwebnet.message.FrameException;
-import org.openwebnet.message.Lighting;
-import org.openwebnet.message.What;
-import org.openwebnet.message.WhereZigBee;
+import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.FrameException;
+import org.openwebnet4j.message.Lighting;
+import org.openwebnet4j.message.What;
+import org.openwebnet4j.message.WhereZigBee;
+import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,12 +59,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     public OpenWebNetLightingHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        logger.debug("initialize() thing={}", thing.getUID());
     }
 
     @Override
@@ -210,7 +205,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     @Override
     protected String ownIdPrefix() {
-        return org.openwebnet.message.Who.LIGHTING.value().toString();
+        return Who.LIGHTING.value().toString();
     }
 
     @Override

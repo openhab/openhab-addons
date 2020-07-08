@@ -32,10 +32,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openwebnet.message.BaseOpenMessage;
-import org.openwebnet.message.Where;
-import org.openwebnet.message.WhereLightAutom;
-import org.openwebnet.message.WhereZigBee;
+import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereLightAutom;
+import org.openwebnet4j.message.WhereZigBee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +82,6 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                 Map<String, String> properties = editProperties();
                 properties.put(PROPERTY_OWNID, oid);
                 updateProperties(properties);
-
                 bridgeHandler.registerDevice(oid, this);
                 logger.debug("associated thing to bridge with ownId={}", ownId);
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "waiting state update...");

@@ -20,7 +20,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
-import org.openwebnet.message.BaseOpenMessage;
+import org.openwebnet4j.message.BaseOpenMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

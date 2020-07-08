@@ -25,11 +25,11 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
-import org.openwebnet.OpenDeviceType;
-import org.openwebnet.message.BaseOpenMessage;
-import org.openwebnet.message.Where;
-import org.openwebnet.message.WhereZigBee;
-import org.openwebnet.message.Who;
+import org.openwebnet4j.OpenDeviceType;
+import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereZigBee;
+import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
