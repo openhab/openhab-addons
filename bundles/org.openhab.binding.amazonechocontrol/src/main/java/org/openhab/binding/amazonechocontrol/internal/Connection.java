@@ -1287,7 +1287,7 @@ public class Connection {
 
     public synchronized void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
-        if (speak == null || speak.replaceAll("<.+?>", "").trim().isEmpty()) {
+        if (speak == null || speak.replaceAll("<.+?>", "").trim().isEmpty() || ttsVolume == null || standardVolume == null) {
             return;
         }
         if (announcementTimer != null) {
@@ -1397,7 +1397,7 @@ public class Connection {
 
     public synchronized void textToSpeech(Device device, String text, @Nullable Integer ttsVolume,
             @Nullable Integer standardVolume) {
-        if (text == null || text.replaceAll("<.+?>", "").trim().isEmpty()) {
+        if (text == null || text.replaceAll("<.+?>", "").trim().isEmpty() || ttsVolume == null || standardVolume == null) {
             return;
         }
         if (textToSpeechTimer != null) {
