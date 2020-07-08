@@ -1342,11 +1342,7 @@ public class Connection {
                 parameters.put("expireAfter", "PT5S");
                 JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
                 JsonAnnouncementContent content = new JsonAnnouncementContent();
-                if (StringUtils.isEmpty(title)) {
-                    content.display.title = "OpenHAB";
-                } else {
-                    content.display.title = title;
-                }
+                content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
                 content.display.body = bodyText;
                 content.display.body = speak.replaceAll("<.+?>", "");
                 if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
