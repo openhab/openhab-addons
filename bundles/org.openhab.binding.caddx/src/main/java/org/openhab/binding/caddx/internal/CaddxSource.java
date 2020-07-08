@@ -21,9 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum CaddxSource {
-    None,
-    Panel,
-    Keypad,
-    Partition,
-    Zone
+    NONE,
+    PANEL,
+    KEYPAD,
+    PARTITION,
+    ZONE
 };

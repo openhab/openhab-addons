@@ -28,7 +28,7 @@ public enum CaddxMessageType {
 
     INTERFACE_CONFIGURATION_MESSAGE(0x01, null, 12, "Interface Configuration Message",
             "This message will contain the firmware version number and other information about features currently enabled. It will be sent each time the unit is reset or programmed.",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "Message number", false),
@@ -113,7 +113,7 @@ public enum CaddxMessageType {
 
     ZONE_NAME_MESSAGE(0x03, null, 18, "Zone Name Message",
             "This message will contain the 16-character name for the zone number that was requested (via Zone Name Request (23h)).",
-            CaddxDirection.IN, CaddxSource.Zone,
+            CaddxDirection.IN, CaddxSource.ZONE,
 
             // Properties
             new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "Message number", false),
@@ -122,7 +122,7 @@ public enum CaddxMessageType {
 
     ZONE_STATUS_MESSAGE(0x04, null, 8, "Zone Status Message",
             "This message will contain all information relevant to a zone in the system.", CaddxDirection.IN,
-            CaddxSource.Zone,
+            CaddxSource.ZONE,
 
             // Properties
             new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "Message number", false),
@@ -188,7 +188,7 @@ public enum CaddxMessageType {
 
     ZONES_SNAPSHOT_MESSAGE(0x05, null, 10, "Zones Snapshot Message",
             "This message will contain an abbreviated set of information for any group of 16 zones possible on the system. (A zone offset number will set the range of zones)",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "Message number", false),
@@ -294,7 +294,7 @@ public enum CaddxMessageType {
 
     PARTITION_STATUS_MESSAGE(0x06, null, 9, "Partition Status Message",
             "This message will contain all information relevant to a single partition in the system.",
-            CaddxDirection.IN, CaddxSource.Partition,
+            CaddxDirection.IN, CaddxSource.PARTITION,
 
             // Properties
             // Byte 1
@@ -385,7 +385,7 @@ public enum CaddxMessageType {
 
     PARTITIONS_SNAPSHOT_MESSAGE(0x07, null, 9, "Partitions Snapshot Message",
             "This message will contain an abbreviated set of information for all 8 partitions on the system.",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -481,7 +481,7 @@ public enum CaddxMessageType {
 
     SYSTEM_STATUS_MESSAGE(0x08, null, 12, "System Status Message",
             "This message will contain all information relevant to the entire system.", CaddxDirection.IN,
-            CaddxSource.Panel,
+            CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -578,7 +578,7 @@ public enum CaddxMessageType {
 
     X10_MESSAGE_RECEIVED(0x09, null, 4, "X-10 Message Received",
             "This message contains information about an X-10 command that was requested by any device on the system bus.",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -595,7 +595,7 @@ public enum CaddxMessageType {
 
     LOG_EVENT_MESSAGE(0x0a, null, 10, "Log Event Message",
             "This message will contain all information relating to an event in the log memory.", CaddxDirection.IN,
-            CaddxSource.Panel,
+            CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -629,7 +629,7 @@ public enum CaddxMessageType {
 
     KEYPAD_MESSAGE_RECEIVED(0x0b, null, 3, "Keypad Message Received",
             "This message contains a keystroke from a keypad that is in a Terminal Mode.", CaddxDirection.IN,
-            CaddxSource.Keypad,
+            CaddxSource.KEYPAD,
 
             // Properties
             // Byte 1
@@ -643,7 +643,7 @@ public enum CaddxMessageType {
 
     PROGRAM_DATA_REPLY(0x10, null, 13, "Program Data Reply",
             "This message will contain a system device’s buss address, logical location, and program data that was previously requested (via Program Data Request (3Ch)).",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -687,7 +687,7 @@ public enum CaddxMessageType {
 
     USER_INFORMATION_REPLY(0x12, null, 7, "User Information Reply",
             "This message will contain all digits, attributes and partitions for the requested user PIN number that was previously requested (via User Information Request with(out) PIN (32h,33h)).",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -739,7 +739,7 @@ public enum CaddxMessageType {
 
     REQUEST_FAILED(0x1c, null, 1, "Command / Request Failed",
             "This message is sent in place of a ‘Positive Acknowledge’ message when a command or request was received properly, but the system was unable to carry out the task correctly. This would normally occur 2.5 seconds after receiving the initial command or request.",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -747,14 +747,14 @@ public enum CaddxMessageType {
 
     POSITIVE_ACKNOWLEDGE(0x1d, null, 1, "Positive Acknowledge",
             "This message will acknowledge receipt of a message that had the ‘Acknowledge Required’ flag set in the command byte.",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
             // Properties
             // Byte 1
             new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "Message number", false)),
 
     NEGATIVE_ACKNOWLEDGE(0x1e, null, 1, "Negative Acknowledge",
             "This message is sent in place of a ‘Positive Acknowledge’ message when the message received was not properly formatted. It will also be sent if an additional message is received before a reply has been returned during the 2.5 second allowable reply period of a previous message. An ‘Implied Negative Acknowledge’ is assumed when no acknowledge is returned with 3 seconds.",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -762,7 +762,7 @@ public enum CaddxMessageType {
 
     MESSAGE_REJECTED(0x1f, null, 1, "Message Rejected",
             "This message is sent in place of a ‘Positive Acknowledge’ message when the message was received properly formatted, but not supported or disabled.",
-            CaddxDirection.IN, CaddxSource.Panel,
+            CaddxDirection.IN, CaddxSource.PANEL,
 
             // Properties
             // Byte 1
@@ -770,7 +770,7 @@ public enum CaddxMessageType {
 
     INTERFACE_CONFIGURATION_REQUEST(0x21, new int[] { 0x01, 0x1c, 0x1f }, 1, "Interface Configuration Request",
             "This request will cause the return of the Interface Configuration Message (01h) containing information about the options selected on the interface.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -778,7 +778,7 @@ public enum CaddxMessageType {
 
     ZONE_NAME_REQUEST(0x23, new int[] { 0x03, 0x1c, 0x1f }, 2, "Zone Name Request",
             "This request will cause the return of the Zone Name Message (03h) for the zone number that was requested.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -789,7 +789,7 @@ public enum CaddxMessageType {
 
     ZONE_STATUS_REQUEST(0x24, new int[] { 0x04, 0x1c, 0x1f }, 2, "Zone Status Request",
             "This request will cause the return of the Zone Status Message (04h) for the zone number that was requested.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -800,7 +800,7 @@ public enum CaddxMessageType {
 
     ZONES_SNAPSHOT_REQUEST(0x25, new int[] { 0x05, 0x1c, 0x1f }, 2, "Zones Snapshot Request",
             "This request will cause the return of the Zones Snapshot Message (05h) with the group of zones starting at the zone 1 plus the offset value.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -811,7 +811,7 @@ public enum CaddxMessageType {
 
     PARTITION_STATUS_REQUEST(0x26, new int[] { 0x06, 0x1c, 0x1f }, 2, "Partition Status Request",
             "This request will cause the return of the Partition Status Message (06h) for the partition number that was requested.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -823,7 +823,7 @@ public enum CaddxMessageType {
 
     PARTITIONS_SNAPSHOT_REQUEST(0x27, new int[] { 0x07, 0x1c, 0x1f }, 1, "Partitions Snapshot Request",
             "This request will cause the return of the Partitions Snapshot Message (07h) containing all partitions.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -831,7 +831,7 @@ public enum CaddxMessageType {
 
     SYSTEM_STATUS_REQUEST(0x28, new int[] { 0x08, 0x1c, 0x1f }, 1, "System Status Request",
             "This request will cause the return of the System Status Message (08h).", CaddxDirection.OUT,
-            CaddxSource.None,
+            CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -839,7 +839,7 @@ public enum CaddxMessageType {
 
     SEND_X_10_MESSAGE(0x29, new int[] { 0x1d, 0x1c, 0x1f }, 4, "Send X-10 Message",
             "This message will contain information about an X-10 command that should be resent on the system bus.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -856,14 +856,14 @@ public enum CaddxMessageType {
                     true)),
 
     LOG_EVENT_REQUEST(0x2a, new int[] { 0x0a, 0x1c, 0x1f }, 2, "Log Event Request",
-            "This request will cause the return of the Log Event Message (0Ah).", CaddxDirection.OUT, CaddxSource.None,
+            "This request will cause the return of the Log Event Message (0Ah).", CaddxDirection.OUT, CaddxSource.NONE,
             new CaddxProperty("", 1, 1, 0, 0, CaddxPropertyType.INT, "Message number", false),
             new CaddxProperty("panel_log_event_number", 2, 1, 0, 0, CaddxPropertyType.INT, "Event number requested",
                     true)),
 
     SEND_KEYPAD_TEXT_MESSAGE(0x2b, new int[] { 0x1d, 0x1c, 0x1f }, 12, "Send Keypad Text Message",
             "This message will contain ASCII text for a specific keypad on the bus that will be displayed during Terminal Mode.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -893,7 +893,7 @@ public enum CaddxMessageType {
 
     KEYPAD_TERMINAL_MODE_REQUEST(0x2c, new int[] { 0x1d, 0x1c, 0x1f }, 3, "Keypad Terminal Mode Request",
             "This message will contain the address of a keypad that should enter a Terminal Mode for the time contained. Only one keypad should be in the Terminal Mode at a time.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -905,7 +905,7 @@ public enum CaddxMessageType {
 
     PROGRAM_DATA_REQUEST(0x30, new int[] { 0x10, 0x1c, 0x1f }, 4, "Program Data Request",
             "This message will contain a system device’s buss address and the logical location of program data that will be returned in a Program Data Reply message (10h).",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1
@@ -926,7 +926,7 @@ public enum CaddxMessageType {
 
     PROGRAM_DATA_COMMAND(0x31, new int[] { 0x1d, 0x1c, 0x1f }, 13, "Program Data Command",
             "This message will contain a system device’s buss address and the logical location where the included data should be stored.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -973,7 +973,7 @@ public enum CaddxMessageType {
 
     USER_INFORMATION_REQUEST_WITH_PIN(0x32, new int[] { 0x12, 0x1c, 0x1f }, 5, "User Information Request with PIN",
             "This message will contain a user number for which information is being requested and a PIN that will be checked for Master capability before proceeding. The information will be returned in a User Information Reply message (12h).",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -999,7 +999,7 @@ public enum CaddxMessageType {
     USER_INFORMATION_REQUEST_WITHOUT_PIN(0x33, new int[] { 0x12, 0x1c, 0x1f }, 2,
             "User Information Request without PIN",
             "This message will contain a user number for which information is being requested, no authentication will be performed. The information will be returned in a User Information Reply message (12h).",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1009,7 +1009,7 @@ public enum CaddxMessageType {
 
     SET_USER_CODE_COMMAND_WITH_PIN(0x34, new int[] { 0x12, 0x1c, 0x1f }, 8, "Set User Code Command with PIN",
             "This message will contain all digits that should be stored as the new code for the designated User number. A PIN will be checked for Master capability before proceeding. A successful programming of the user code will result in the User Information Reply (12h) returned in place of the acknowledge.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1049,7 +1049,7 @@ public enum CaddxMessageType {
 
     SET_USER_CODE_COMMAND_WITHOUT_PIN(0x35, new int[] { 0x12, 0x1c, 0x1f }, 5, "Set User Code Command without PIN",
             "This message will contain all digits that should be stored as the new code for the designated User number. No authentication will be performed. A successful programming of the user code will result in the User Information Reply (12h) returned in place of the acknowledge.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1075,7 +1075,7 @@ public enum CaddxMessageType {
     SET_USER_AUTHORIZATION_COMMAND_WITH_PIN(0x36, new int[] { 0x1d, 0x1c, 0x1f }, 7,
             "Set User Authorization Command with PIN",
             "This message will contain all attributes and partitions that should be stored as the new information for the designated User number. A PIN will be checked for Master capability before proceeding.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1128,7 +1128,7 @@ public enum CaddxMessageType {
     SET_USER_AUTHORIZATION_COMMAND_WITHOUT_PIN(0x37, new int[] { 0x1d, 0x1c, 0x1f }, 4,
             "Set User Authorization Command without PIN",
             "This message will contain all attributes and partitions that should be stored as the new information for the designated User number. No authentication will be performed.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1168,10 +1168,10 @@ public enum CaddxMessageType {
 
     STORE_COMMUNICATION_EVENT_COMMAND(0x3a, new int[] { 0x1d, 0x1c, 0x1f }, 6, "Store Communication Event Command",
             "This message will submit an event to the control’s communication stack for possible transmission over its telephone or alternate communications path.",
-            CaddxDirection.OUT, CaddxSource.None),
+            CaddxDirection.OUT, CaddxSource.NONE),
 
     SET_CLOCK_CALENDAR_COMMAND(0x3b, new int[] { 0x1d, 0x1c, 0x1f }, 7, "Set Clock / Calendar Command",
-            "This message will set the clock / calendar in the system.", CaddxDirection.OUT, CaddxSource.None,
+            "This message will set the clock / calendar in the system.", CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1197,7 +1197,7 @@ public enum CaddxMessageType {
 
     PRIMARY_KEYPAD_FUNCTION_WITH_PIN(0x3c, new int[] { 0x1d, 0x1c, 0x1f }, 6, "Primary Keypad Function with PIN",
             "This message will contain a value that defines with function to perform, the partitions to use and a PIN value for the validation.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1242,7 +1242,7 @@ public enum CaddxMessageType {
 
     PRIMARY_KEYPAD_FUNCTION_WITHOUT_PIN(0x3d, new int[] { 0x1d, 0x1c, 0x1f }, 4, "Primary Keypad Function without PIN",
             "This message will contain a value that defines with function to perform, the partitions and user number to assign to the function.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1278,7 +1278,7 @@ public enum CaddxMessageType {
 
     SECONDARY_KEYPAD_FUNCTION(0x3e, new int[] { 0x1d, 0x1c, 0x1f }, 3, "Secondary Keypad Function",
             "This message will contain a value that defines with function to perform, and the partitions to use.",
-            CaddxDirection.OUT, CaddxSource.None,
+            CaddxDirection.OUT, CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number
@@ -1305,7 +1305,7 @@ public enum CaddxMessageType {
 
     ZONE_BYPASS_TOGGLE(0x3f, new int[] { 0x1d, 0x1c, 0x1f }, 2, "Zone Bypass Toggle",
             "This message will contain a number of a zone that should be (un)bypassed.", CaddxDirection.OUT,
-            CaddxSource.None,
+            CaddxSource.NONE,
 
             // Properties
             // Byte 1 Message number

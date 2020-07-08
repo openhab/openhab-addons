@@ -280,7 +280,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     public void caddxMessage(CaddxCommunicator communicator, CaddxMessage caddxMessage) {
         CaddxSource source = caddxMessage.getSource();
 
-        if (source != CaddxSource.None) {
+        if (source != CaddxSource.NONE) {
             CaddxThingType caddxThingType = null;
             @Nullable
             Integer partition = null;
@@ -290,18 +290,18 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             Integer keypad = null;
 
             switch (source) {
-                case Panel:
+                case PANEL:
                     caddxThingType = CaddxThingType.PANEL;
                     break;
-                case Partition:
+                case PARTITION:
                     caddxThingType = CaddxThingType.PARTITION;
                     partition = Integer.parseInt(caddxMessage.getPropertyById("partition_number")) + 1;
                     break;
-                case Zone:
+                case ZONE:
                     caddxThingType = CaddxThingType.ZONE;
                     zone = Integer.parseInt(caddxMessage.getPropertyById("zone_number")) + 1;
                     break;
-                case Keypad:
+                case KEYPAD:
                     caddxThingType = CaddxThingType.KEYPAD;
                     keypad = Integer.parseInt(caddxMessage.getPropertyById("keypad_address"));
                     break;
