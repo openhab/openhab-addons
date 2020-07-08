@@ -41,16 +41,12 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEndpoint, C> extends BaseBridgeHandler
         implements ModbusEndpointThingHandler {
 
-    @Nullable
-    protected volatile C config;
-    @Nullable
-    protected volatile E endpoint;
+    protected volatile @Nullable C config;
+    protected volatile @Nullable E endpoint;
     protected ModbusManager modbusManager;
-    @Nullable
-    protected volatile EndpointPoolConfiguration poolConfiguration;
+    protected volatile @Nullable EndpointPoolConfiguration poolConfiguration;
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
-    @NonNullByDefault({})
-    private ModbusCommunicationInterface comms;
+    private @NonNullByDefault({}) ModbusCommunicationInterface comms;
 
     public AbstractModbusEndpointThingHandler(Bridge bridge, ModbusManager modbusManager) {
         super(bridge);

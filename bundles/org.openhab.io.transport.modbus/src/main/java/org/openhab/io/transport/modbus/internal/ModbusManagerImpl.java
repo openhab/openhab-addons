@@ -308,19 +308,15 @@ public class ModbusManagerImpl implements ModbusManager {
      * - https://community.openhab.org/t/modbus-connection-problem/6108/
      * - https://community.openhab.org/t/connection-pooling-in-modbus-binding/5246/
      */
-    @Nullable
-    private volatile KeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> connectionPool;
-    @Nullable
-    private volatile ModbusSlaveConnectionFactoryImpl connectionFactory;
+
+    private volatile @Nullable KeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> connectionPool;
+    private volatile @Nullable ModbusSlaveConnectionFactoryImpl connectionFactory;
     private volatile Map<PollTask, ScheduledFuture<?>> scheduledPollTasks = new ConcurrentHashMap<>();
     /**
      * Executor for requests
      */
-    @Nullable
-    private volatile ScheduledExecutorService scheduledThreadPoolExecutor;
-    @Nullable
-    private volatile ScheduledFuture<?> monitorFuture;
-
+    private volatile @Nullable ScheduledExecutorService scheduledThreadPoolExecutor;
+    private volatile @Nullable ScheduledFuture<?> monitorFuture;
     private volatile Set<ModbusCommunicationInterfaceImpl> communicationInterfaces = new ConcurrentHashSet<>();
 
     private void constructConnectionPool() {

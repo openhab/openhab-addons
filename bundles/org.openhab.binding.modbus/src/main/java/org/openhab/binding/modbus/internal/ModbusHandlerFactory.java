@@ -47,8 +47,7 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusHandlerFactory.class);
 
-    @NonNullByDefault({})
-    private ModbusManager manager;
+    private @NonNullByDefault({}) ModbusManager manager;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
     static {

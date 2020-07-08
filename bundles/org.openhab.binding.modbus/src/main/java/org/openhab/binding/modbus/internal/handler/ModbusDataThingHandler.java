@@ -137,8 +137,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private volatile @Nullable ModbusReadFunctionCode functionCode;
     private volatile @Nullable ModbusReadRequestBlueprint readRequest;
     private volatile long updateUnchangedValuesEveryMillis;
-    @NonNullByDefault({})
-    private volatile ModbusCommunicationInterface comms;
+    private volatile @NonNullByDefault({}) ModbusCommunicationInterface comms;
     private volatile boolean isWriteEnabled;
     private volatile boolean isReadEnabled;
     private volatile boolean writeParametersHavingTransformationOnly;

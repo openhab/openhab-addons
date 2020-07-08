@@ -181,10 +181,9 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
      * Immutable data object to cache the results of a poll request
      */
     private class PollResult {
-        @Nullable
-        public final AsyncModbusReadResult result;
-        @Nullable
-        public final AsyncModbusFailure<ModbusReadRequestBlueprint> failure;
+
+        public final @Nullable AsyncModbusReadResult result;
+        public final @Nullable AsyncModbusFailure<ModbusReadRequestBlueprint> failure;
 
         PollResult(AsyncModbusReadResult result) {
             this.result = result;
@@ -205,15 +204,13 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandler.class);
 
-    @NonNullByDefault({})
-    private ModbusPollerConfiguration config;
+    private @NonNullByDefault({}) ModbusPollerConfiguration config;
     private long cacheMillis;
     private volatile @Nullable PollTask pollTask;
     private volatile @Nullable ModbusReadRequestBlueprint request;
     private volatile boolean disposed;
     private volatile List<ModbusDataThingHandler> childCallbacks = new CopyOnWriteArrayList<>();
-    @NonNullByDefault({})
-    private ModbusCommunicationInterface comms;
+    private @NonNullByDefault({}) ModbusCommunicationInterface comms;
 
     private ReadCallbackDelegator callbackDelegator = new ReadCallbackDelegator();
 

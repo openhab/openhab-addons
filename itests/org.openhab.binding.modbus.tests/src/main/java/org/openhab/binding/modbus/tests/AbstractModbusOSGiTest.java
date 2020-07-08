@@ -100,30 +100,21 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusOSGiTest.class);
 
     @Mock
-    @NonNullByDefault({})
-    protected ModbusManager mockedModbusManager;
+    protected @NonNullByDefault({}) ModbusManager mockedModbusManager;
+    protected @NonNullByDefault({}) ManagedThingProvider thingProvider;
+    protected @NonNullByDefault({}) ManagedItemProvider itemProvider;
+    protected @NonNullByDefault({}) ManagedItemChannelLinkProvider itemChannelLinkProvider;
+    protected @NonNullByDefault({}) ItemRegistry itemRegistry;
+    protected @NonNullByDefault({}) CoreItemFactory coreItemFactory;
 
-    @NonNullByDefault({})
-    protected ManagedThingProvider thingProvider;
-    @NonNullByDefault({})
-    protected ManagedItemProvider itemProvider;
-    @NonNullByDefault({})
-    protected ManagedItemChannelLinkProvider itemChannelLinkProvider;
-    @NonNullByDefault({})
-    protected ItemRegistry itemRegistry;
-    @NonNullByDefault({})
-    protected CoreItemFactory coreItemFactory;
-
-    @NonNullByDefault({})
-    private ModbusManager realModbusManager;
+    private @NonNullByDefault({}) ModbusManager realModbusManager;
     private Set<Item> addedItems = new HashSet<>();
     private Set<Thing> addedThings = new HashSet<>();
     private Set<ItemChannelLink> addedLinks = new HashSet<>();
     private StateSubscriber stateSubscriber = new StateSubscriber();
 
     @Mock
-    @NonNullByDefault({})
-    protected ModbusCommunicationInterface comms;
+    protected @NonNullByDefault({}) ModbusCommunicationInterface comms;
 
     public AbstractModbusOSGiTest() {
         super();
