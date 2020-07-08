@@ -171,6 +171,16 @@ public class FeedHandler extends BaseThingHandler {
             thingBuilder.withChannel(dateChannel);
         }
 
+        for (int i = numberOfChannels; i < existingChannels; i++) {
+            Channel titleChannel = getThing().getChannelsOfGroup(titleChannelGroupUID.getId()).get(i);
+            Channel descriptionChannel = getThing().getChannelsOfGroup(descriptionChannelGroupUID.getId()).get(i);
+            Channel dateChannel = getThing().getChannelsOfGroup(dateChannelGroupUID.getId()).get(i);
+
+            thingBuilder.withoutChannel(titleChannel.getUID());
+            thingBuilder.withoutChannel(descriptionChannel.getUID());
+            thingBuilder.withoutChannel(dateChannel.getUID());
+        }
+
         updateThing(thingBuilder.build());
     }
 
