@@ -26,5 +26,5 @@ public enum HomekitCommandType {
     HUE_COMMAND,
     SATURATION_COMMAND,
     BRIGHTNESS_COMMAND,
-    ON_COMMAND;
+    ON_COMMAND
 }

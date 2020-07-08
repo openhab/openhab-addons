@@ -136,10 +136,10 @@ public class HomekitCharacteristicFactory {
      * @param updater update to keep OH item and HomeKit characteristic in sync
      * @return HomeKit characteristic
      */
-    public static Characteristic createCharacteristic(final HomekitTaggedItem item, HomekitAccessoryUpdater updater)
+    public static Characteristic createCharacteristic(HomekitTaggedItem item, HomekitAccessoryUpdater updater)
             throws HomekitException {
         final @Nullable HomekitCharacteristicType type = item.getCharacteristicType();
-        logger.trace("createCharacteristic, type {} item {}", type, item);
+        logger.trace("CreateCharacteristic, type {} item {}", type, item);
         if (optional.containsKey(type)) {
             return optional.get(type).apply(item, updater);
         }
@@ -151,8 +151,7 @@ public class HomekitCharacteristicFactory {
     // METHODS TO CREATE SINGLE CHARACTERISTIC FROM OH ITEM
 
     // supporting methods
-    @SuppressWarnings("null")
-    private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(final HomekitTaggedItem item,
+    private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
             T offEnum, T onEnum, T defaultEnum) {
         final State state = item.getItem().getState();
         if (state instanceof OnOffType) {
@@ -160,7 +159,7 @@ public class HomekitCharacteristicFactory {
         } else if (state instanceof OpenClosedType) {
             return CompletableFuture.completedFuture(state.equals(OpenClosedType.CLOSED) ? offEnum : onEnum);
         } else if (state instanceof DecimalType) {
-            return CompletableFuture.completedFuture(state.as(DecimalType.class).intValue() == 0 ? offEnum : onEnum);
+            return CompletableFuture.completedFuture(((DecimalType) state).intValue() == 0 ? offEnum : onEnum);
         } else if (state instanceof UnDefType) {
             return CompletableFuture.completedFuture(defaultEnum);
         }
@@ -170,7 +169,7 @@ public class HomekitCharacteristicFactory {
         return CompletableFuture.completedFuture(defaultEnum);
     }
 
-    private static void setValueFromEnum(final HomekitTaggedItem taggedItem, CharacteristicEnum value,
+    private static void setValueFromEnum(HomekitTaggedItem taggedItem, CharacteristicEnum value,
             CharacteristicEnum offEnum, CharacteristicEnum onEnum) {
         if (taggedItem.getItem() instanceof SwitchItem) {
             if (value.equals(offEnum)) {
@@ -189,14 +188,13 @@ public class HomekitCharacteristicFactory {
         }
     }
 
-    @SuppressWarnings("null")
-    private static int getIntFromItem(final HomekitTaggedItem taggedItem) {
+    private static int getIntFromItem(HomekitTaggedItem taggedItem) {
         int value = 0;
         final State state = taggedItem.getItem().getState();
         if (state instanceof PercentType) {
-            value = state.as(PercentType.class).intValue();
+            value = ((PercentType) state).intValue();
         } else if (state instanceof DecimalType) {
-            value = state.as(DecimalType.class).intValue();
+            value = ((DecimalType) state).intValue();
         } else if (state instanceof UnDefType) {
             logger.debug("Item state {} is UNDEF {}.", state, taggedItem.getName());
         } else {
@@ -207,11 +205,11 @@ public class HomekitCharacteristicFactory {
         return value;
     }
 
-    private static Supplier<CompletableFuture<Integer>> getIntSupplier(final HomekitTaggedItem taggedItem) {
+    private static Supplier<CompletableFuture<Integer>> getIntSupplier(HomekitTaggedItem taggedItem) {
         return () -> CompletableFuture.completedFuture(getIntFromItem(taggedItem));
     }
 
-    private static ExceptionalConsumer<Integer> setIntConsumer(final HomekitTaggedItem taggedItem) {
+    private static ExceptionalConsumer<Integer> setIntConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
             if (taggedItem.getItem() instanceof NumberItem) {
                 ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
@@ -222,7 +220,7 @@ public class HomekitCharacteristicFactory {
         };
     }
 
-    private static ExceptionalConsumer<Integer> setPercentConsumer(final HomekitTaggedItem taggedItem) {
+    private static ExceptionalConsumer<Integer> setPercentConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
             if (taggedItem.getItem() instanceof NumberItem) {
                 ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
@@ -235,14 +233,14 @@ public class HomekitCharacteristicFactory {
         };
     }
 
-    private static Supplier<CompletableFuture<Double>> getDoubleSupplier(final HomekitTaggedItem taggedItem) {
+    private static Supplier<CompletableFuture<Double>> getDoubleSupplier(HomekitTaggedItem taggedItem) {
         return () -> {
-            final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
             return CompletableFuture.completedFuture(value != null ? value.doubleValue() : 0.0);
         };
     }
 
-    private static ExceptionalConsumer<Double> setDoubleConsumer(final HomekitTaggedItem taggedItem) {
+    private static ExceptionalConsumer<Double> setDoubleConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
             if (taggedItem.getItem() instanceof NumberItem) {
                 ((NumberItem) taggedItem.getItem()).send(new DecimalType(value));
@@ -253,19 +251,19 @@ public class HomekitCharacteristicFactory {
         };
     }
 
-    protected static Consumer<HomekitCharacteristicChangeCallback> getSubscriber(final HomekitTaggedItem taggedItem,
-            final HomekitCharacteristicType key, final HomekitAccessoryUpdater updater) {
+    protected static Consumer<HomekitCharacteristicChangeCallback> getSubscriber(HomekitTaggedItem taggedItem,
+            HomekitCharacteristicType key, HomekitAccessoryUpdater updater) {
         return (callback) -> updater.subscribe((GenericItem) taggedItem.getItem(), key.getTag(), callback);
     }
 
-    protected static Runnable getUnsubscriber(final HomekitTaggedItem taggedItem, final HomekitCharacteristicType key,
-            final HomekitAccessoryUpdater updater) {
+    protected static Runnable getUnsubscriber(HomekitTaggedItem taggedItem, HomekitCharacteristicType key,
+            HomekitAccessoryUpdater updater) {
         return () -> updater.unsubscribe((GenericItem) taggedItem.getItem(), key.getTag());
     }
 
     // create method for characteristic
-    private static StatusLowBatteryCharacteristic createStatusLowBatteryCharacteristic(
-            final HomekitTaggedItem taggedItem, final HomekitAccessoryUpdater updater) {
+    private static StatusLowBatteryCharacteristic createStatusLowBatteryCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
         return new StatusLowBatteryCharacteristic(
                 () -> getEnumFromItem(taggedItem, StatusLowBatteryEnum.NORMAL, StatusLowBatteryEnum.LOW,
                         StatusLowBatteryEnum.NORMAL),
@@ -273,16 +271,16 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, BATTERY_LOW_STATUS, updater));
     }
 
-    private static StatusFaultCharacteristic createStatusFaultCharacteristic(final HomekitTaggedItem taggedItem,
-            final HomekitAccessoryUpdater updater) {
+    private static StatusFaultCharacteristic createStatusFaultCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
         return new StatusFaultCharacteristic(
                 () -> getEnumFromItem(taggedItem, StatusFaultEnum.NO_FAULT, StatusFaultEnum.GENERAL_FAULT,
                         StatusFaultEnum.NO_FAULT),
                 getSubscriber(taggedItem, FAULT_STATUS, updater), getUnsubscriber(taggedItem, FAULT_STATUS, updater));
     }
 
-    private static StatusTamperedCharacteristic createStatusTamperedCharacteristic(final HomekitTaggedItem taggedItem,
-            final HomekitAccessoryUpdater updater) {
+    private static StatusTamperedCharacteristic createStatusTamperedCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
         return new StatusTamperedCharacteristic(
                 () -> getEnumFromItem(taggedItem, StatusTamperedEnum.NOT_TAMPERED, StatusTamperedEnum.TAMPERED,
                         StatusTamperedEnum.NOT_TAMPERED),
@@ -291,7 +289,7 @@ public class HomekitCharacteristicFactory {
     }
 
     private static ObstructionDetectedCharacteristic createObstructionDetectedCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new ObstructionDetectedCharacteristic(
                 () -> CompletableFuture.completedFuture(taggedItem.getItem().getState() == OnOffType.ON
                         || taggedItem.getItem().getState() == OpenClosedType.OPEN),
@@ -299,7 +297,7 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, OBSTRUCTION_STATUS, updater));
     }
 
-    private static StatusActiveCharacteristic createStatusActiveCharacteristic(final HomekitTaggedItem taggedItem,
+    private static StatusActiveCharacteristic createStatusActiveCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new StatusActiveCharacteristic(
                 () -> CompletableFuture.completedFuture(taggedItem.getItem().getState() == OnOffType.ON
@@ -307,7 +305,7 @@ public class HomekitCharacteristicFactory {
                 getSubscriber(taggedItem, ACTIVE_STATUS, updater), getUnsubscriber(taggedItem, ACTIVE_STATUS, updater));
     }
 
-    private static NameCharacteristic createNameCharacteristic(final HomekitTaggedItem taggedItem,
+    private static NameCharacteristic createNameCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new NameCharacteristic(() -> {
             final State state = taggedItem.getItem().getState();
@@ -315,71 +313,71 @@ public class HomekitCharacteristicFactory {
         });
     }
 
-    private static HoldPositionCharacteristic createHoldPositionCharacteristic(final HomekitTaggedItem taggedItem,
+    private static HoldPositionCharacteristic createHoldPositionCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new HoldPositionCharacteristic(OnOffType::from);
+        return new HoldPositionCharacteristic(value -> ((SwitchItem) taggedItem.getItem()).send(OnOffType.from(value)));
     }
 
     private static CarbonMonoxideLevelCharacteristic createCarbonMonoxideLevelCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new CarbonMonoxideLevelCharacteristic(getDoubleSupplier(taggedItem),
                 getSubscriber(taggedItem, CARBON_DIOXIDE_LEVEL, updater),
                 getUnsubscriber(taggedItem, CARBON_DIOXIDE_LEVEL, updater));
     }
 
     private static CarbonMonoxidePeakLevelCharacteristic createCarbonMonoxidePeakLevelCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new CarbonMonoxidePeakLevelCharacteristic(getDoubleSupplier(taggedItem),
                 getSubscriber(taggedItem, CARBON_DIOXIDE_PEAK_LEVEL, updater),
                 getUnsubscriber(taggedItem, CARBON_DIOXIDE_PEAK_LEVEL, updater));
     }
 
-    private static CarbonDioxideLevelCharacteristic createCarbonDioxideLevelCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+    private static CarbonDioxideLevelCharacteristic createCarbonDioxideLevelCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
         return new CarbonDioxideLevelCharacteristic(getDoubleSupplier(taggedItem),
                 getSubscriber(taggedItem, CARBON_MONOXIDE_LEVEL, updater),
                 getUnsubscriber(taggedItem, CARBON_MONOXIDE_LEVEL, updater));
     }
 
     private static CarbonDioxidePeakLevelCharacteristic createCarbonDioxidePeakLevelCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new CarbonDioxidePeakLevelCharacteristic(getDoubleSupplier(taggedItem),
                 getSubscriber(taggedItem, CARBON_MONOXIDE_PEAK_LEVEL, updater),
                 getUnsubscriber(taggedItem, CARBON_MONOXIDE_PEAK_LEVEL, updater));
     }
 
     private static CurrentHorizontalTiltAngleCharacteristic createCurrentHorizontalTiltAngleCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new CurrentHorizontalTiltAngleCharacteristic(getIntSupplier(taggedItem),
                 getSubscriber(taggedItem, CURRENT_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, CURRENT_HORIZONTAL_TILT_ANGLE, updater));
     }
 
     private static CurrentVerticalTiltAngleCharacteristic createCurrentVerticalTiltAngleCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new CurrentVerticalTiltAngleCharacteristic(getIntSupplier(taggedItem),
                 getSubscriber(taggedItem, CURRENT_VERTICAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, CURRENT_VERTICAL_TILT_ANGLE, updater));
     }
 
     private static TargetHorizontalTiltAngleCharacteristic createTargetHorizontalTiltAngleCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new TargetHorizontalTiltAngleCharacteristic(getIntSupplier(taggedItem), setIntConsumer(taggedItem),
                 getSubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater));
     }
 
     private static TargetVerticalTiltAngleCharacteristic createTargetVerticalTiltAngleCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new TargetVerticalTiltAngleCharacteristic(getIntSupplier(taggedItem), setIntConsumer(taggedItem),
                 getSubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater));
     }
 
-    private static HueCharacteristic createHueCharacteristic(final HomekitTaggedItem taggedItem,
+    private static HueCharacteristic createHueCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new HueCharacteristic(() -> {
-            Double value = 0.0;
+            double value = 0.0;
             State state = taggedItem.getItem().getState();
             if (state instanceof HSBType) {
                 value = ((HSBType) state).getHue().doubleValue();
@@ -395,7 +393,7 @@ public class HomekitCharacteristicFactory {
         }, getSubscriber(taggedItem, HUE, updater), getUnsubscriber(taggedItem, HUE, updater));
     }
 
-    private static BrightnessCharacteristic createBrightnessCharacteristic(final HomekitTaggedItem taggedItem,
+    private static BrightnessCharacteristic createBrightnessCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new BrightnessCharacteristic(() -> {
             int value = 0;
@@ -417,10 +415,10 @@ public class HomekitCharacteristicFactory {
         }, getSubscriber(taggedItem, BRIGHTNESS, updater), getUnsubscriber(taggedItem, BRIGHTNESS, updater));
     }
 
-    private static SaturationCharacteristic createSaturationCharacteristic(final HomekitTaggedItem taggedItem,
+    private static SaturationCharacteristic createSaturationCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new SaturationCharacteristic(() -> {
-            Double value = 0.0;
+            double value = 0.0;
             State state = taggedItem.getItem().getState();
             if (state instanceof HSBType) {
                 value = ((HSBType) state).getSaturation().doubleValue();
@@ -439,17 +437,18 @@ public class HomekitCharacteristicFactory {
         }, getSubscriber(taggedItem, SATURATION, updater), getUnsubscriber(taggedItem, SATURATION, updater));
     }
 
-    private static ColorTemperatureCharacteristic createColorTemperatureCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+    private static ColorTemperatureCharacteristic createColorTemperatureCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
         return new ColorTemperatureCharacteristic(getIntSupplier(taggedItem), setIntConsumer(taggedItem),
                 getSubscriber(taggedItem, COLOR_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COLOR_TEMPERATURE, updater));
     }
 
-    private static CurrentFanStateCharacteristic createCurrentFanStateCharacteristic(final HomekitTaggedItem taggedItem,
+    private static CurrentFanStateCharacteristic createCurrentFanStateCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new CurrentFanStateCharacteristic(() -> {
-            final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            @Nullable
             CurrentFanStateEnum currentFanStateEnum = value != null ? CurrentFanStateEnum.fromCode(value.intValue())
                     : null;
             if (currentFanStateEnum == null) {
@@ -460,10 +459,11 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, CURRENT_FAN_STATE, updater));
     }
 
-    private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(final HomekitTaggedItem taggedItem,
+    private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new TargetFanStateCharacteristic(() -> {
-            final DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
+            @Nullable
             TargetFanStateEnum targetFanStateEnum = value != null ? TargetFanStateEnum.fromCode(value.intValue())
                     : null;
             if (targetFanStateEnum == null) {
@@ -481,8 +481,8 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, TARGET_FAN_STATE, updater));
     }
 
-    private static RotationDirectionCharacteristic createRotationDirectionCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+    private static RotationDirectionCharacteristic createRotationDirectionCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
         return new RotationDirectionCharacteristic(
                 () -> getEnumFromItem(taggedItem, RotationDirectionEnum.CLOCKWISE,
                         RotationDirectionEnum.COUNTER_CLOCKWISE, RotationDirectionEnum.CLOCKWISE),
@@ -492,7 +492,7 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, ROTATION_DIRECTION, updater));
     }
 
-    private static SwingModeCharacteristic createSwingModeCharacteristic(final HomekitTaggedItem taggedItem,
+    private static SwingModeCharacteristic createSwingModeCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new SwingModeCharacteristic(
                 () -> getEnumFromItem(taggedItem, SwingModeEnum.SWING_DISABLED, SwingModeEnum.SWING_ENABLED,
@@ -503,7 +503,7 @@ public class HomekitCharacteristicFactory {
     }
 
     private static LockPhysicalControlsCharacteristic createLockPhysicalControlsCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new LockPhysicalControlsCharacteristic(
                 () -> getEnumFromItem(taggedItem, LockPhysicalControlsEnum.CONTROL_LOCK_DISABLED,
                         LockPhysicalControlsEnum.CONTROL_LOCK_ENABLED, LockPhysicalControlsEnum.CONTROL_LOCK_DISABLED),
@@ -512,18 +512,19 @@ public class HomekitCharacteristicFactory {
                 getSubscriber(taggedItem, LOCK_CONTROL, updater), getUnsubscriber(taggedItem, LOCK_CONTROL, updater));
     }
 
-    private static RotationSpeedCharacteristic createRotationSpeedCharacteristic(final HomekitTaggedItem item,
+    private static RotationSpeedCharacteristic createRotationSpeedCharacteristic(HomekitTaggedItem item,
             HomekitAccessoryUpdater updater) {
         return new RotationSpeedCharacteristic(getIntSupplier(item), setPercentConsumer(item),
                 getSubscriber(item, ROTATION_SPEED, updater), getUnsubscriber(item, ROTATION_SPEED, updater));
     }
 
-    private static SetDurationCharacteristic createDurationCharacteristic(final HomekitTaggedItem taggedItem,
+    private static SetDurationCharacteristic createDurationCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new SetDurationCharacteristic(() -> {
             int value = getIntFromItem(taggedItem);
-            if (value == 0) { // check for default duration
-                final Object duration = taggedItem.getConfiguration().get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
+            final @Nullable Map<String, Object> itemConfiguration = taggedItem.getConfiguration();
+            if ((value == 0) && (itemConfiguration != null)) { // check for default duration
+                final Object duration = itemConfiguration.get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
                 if (duration instanceof BigDecimal) {
                     value = ((BigDecimal) duration).intValue();
                     if (taggedItem.getItem() instanceof NumberItem) {
@@ -536,14 +537,14 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, DURATION, updater));
     }
 
-    private static RemainingDurationCharacteristic createRemainingDurationCharacteristic(
-            final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+    private static RemainingDurationCharacteristic createRemainingDurationCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
         return new RemainingDurationCharacteristic(getIntSupplier(taggedItem),
                 getSubscriber(taggedItem, REMAINING_DURATION, updater),
                 getUnsubscriber(taggedItem, REMAINING_DURATION, updater));
     }
 
-    private static VolumeCharacteristic createVolumeCharacteristic(final HomekitTaggedItem taggedItem,
+    private static VolumeCharacteristic createVolumeCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new VolumeCharacteristic(getIntSupplier(taggedItem),
                 (volume) -> ((NumberItem) taggedItem.getItem()).send(new DecimalType(volume)),
@@ -551,7 +552,7 @@ public class HomekitCharacteristicFactory {
     }
 
     private static CoolingThresholdTemperatureCharacteristic createCoolingThresholdCharacteristic(
-            final HomekitTaggedItem taggedItem, final HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new CoolingThresholdTemperatureCharacteristic(
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
                         CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE),
@@ -565,7 +566,7 @@ public class HomekitCharacteristicFactory {
     }
 
     private static HeatingThresholdTemperatureCharacteristic createHeatingThresholdCharacteristic(
-            final HomekitTaggedItem taggedItem, final HomekitAccessoryUpdater updater) {
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new HeatingThresholdTemperatureCharacteristic(
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
                         HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE),

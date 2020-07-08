@@ -36,15 +36,15 @@ import io.github.hapjava.services.impl.TemperatureSensorService;
 class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implements TemperatureSensorAccessory {
 
     public HomekitTemperatureSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         getServices().add(new TemperatureSensorService(this));
     }
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        @Nullable
-        DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE, DecimalType.class);
+        final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
+                DecimalType.class);
         return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
     }
 
