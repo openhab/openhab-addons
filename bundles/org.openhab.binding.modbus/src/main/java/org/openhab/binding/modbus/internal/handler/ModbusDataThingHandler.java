@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -823,7 +824,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         if (localReadTransformation == null) {
             // We should always have transformation available if thing is initalized properly
             logger.trace("No transformation available, aborting processUpdatedValue");
-            return new HashMap<ChannelUID, State>();
+            return Collections.emptyMap();
         }
         Map<ChannelUID, State> states = new HashMap<>();
         CHANNEL_ID_TO_ACCEPTED_TYPES.keySet().stream().forEach(channelId -> {
