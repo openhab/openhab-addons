@@ -34,21 +34,21 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label      | Parameter ID     | Description                                                                                                                    | Accepted values    |
-|----------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| Serial Port          | serialPort       | Serial port to use for connecting to the Monoprice whole house amplifier device                                                | Serial port name | |
-| Address              | host             | Host name or IP address of the machine connected to the Monoprice whole house amplifier device (serial over IP)                | Host name or IP  | |
-| Port                 | port             | Communication port (serial over IP).                                                                                           | TCP port number  | |
-| Number of Zones      | numZones         | (Optional) Number of amplifier zones to utilize in the binding (up to 18 zones with 3 amplifiers connected together)           | 1-18; default 6  | |
-| Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the controller to check for zone updates                                  | 5-60; default 15 | |
-| Ignore Zones         | ignoreZones      | (Optional) A comma seperated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     | |
-| Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 | |
-| Source 1 Input Label | inputLabel1      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name | |
-| Source 2 Input Label | inputLabel2      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name | |
-| Source 3 Input Label | inputLabel3      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 3") | A free text name | |
-| Source 4 Input Label | inputLabel4      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 4") | A free text name | |
-| Source 5 Input Label | inputLabel5      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 5") | A free text name | |
-| Source 6 Input Label | inputLabel6      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 6") | A free text name | |
+| Parameter Label      | Parameter ID     | Description                                                                                                                    | Accepted values  |
+|----------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------|
+| Serial Port          | serialPort       | Serial port to use for connecting to the Monoprice whole house amplifier device                                                | Serial port name |
+| Address              | host             | Host name or IP address of the machine connected to the Monoprice whole house amplifier device (serial over IP)                | Host name or IP  |
+| Port                 | port             | Communication port (serial over IP).                                                                                           | TCP port number  |
+| Number of Zones      | numZones         | (Optional) Number of amplifier zones to utilize in the binding (up to 18 zones with 3 amplifiers connected together)           | 1-18; default 6  |
+| Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the controller to check for zone updates                                  | 5-60; default 15 |
+| Ignore Zones         | ignoreZones      | (Optional) A comma seperated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
+| Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
+| Source 1 Input Label | inputLabel1      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name |
+| Source 2 Input Label | inputLabel2      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name |
+| Source 3 Input Label | inputLabel3      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 3") | A free text name |
+| Source 4 Input Label | inputLabel4      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 4") | A free text name |
+| Source 5 Input Label | inputLabel5      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 5") | A free text name |
+| Source 6 Input Label | inputLabel6      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 6") | A free text name |
 
 Some notes:
 
@@ -56,8 +56,7 @@ Some notes:
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
 * See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/)
-* (take care, the baud rate is specific to the Monoprice amplifier):
+* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/)(take care, the baud rate is specific to the Monoprice amplifier):
 
 ```
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
