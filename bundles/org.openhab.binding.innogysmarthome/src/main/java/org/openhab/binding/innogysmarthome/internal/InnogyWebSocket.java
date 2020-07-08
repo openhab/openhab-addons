@@ -97,6 +97,15 @@ public class InnogyWebSocket {
             session = null;
             logger.trace("Stopping websocket ignored - was not running.");
         }
+        if (client != null) {
+            try {
+                client.stop();
+                client.destroy();
+            } catch (Exception e) {
+                logger.debug("Stopping websocket failed", e);
+            }
+            client = null;
+        }
     }
 
     /**

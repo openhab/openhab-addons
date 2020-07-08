@@ -53,12 +53,12 @@ public class HomekitOHItemProxy {
     private final Map<HomekitCommandType, State> commandCache = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
-    private @Nullable ScheduledFuture<?> future;
+    private @NonNullByDefault({}) ScheduledFuture<?> future;
     private HomekitDimmerMode dimmerMode = DIMMER_MODE_NORMAL;
     // delay, how long wait for further commands. in ms.
     private int delay = DEFAULT_DELAY;
 
-    public HomekitOHItemProxy(final Item item) {
+    public HomekitOHItemProxy(Item item) {
         this.item = item;
     }
 
@@ -128,7 +128,7 @@ public class HomekitOHItemProxy {
         commandCache.clear();
     }
 
-    public synchronized void sendCommandProxy(final HomekitCommandType commandType, final State state) {
+    public synchronized void sendCommandProxy(HomekitCommandType commandType, State state) {
         commandCache.put(commandType, state);
         logger.trace("add command to command cache: item {}, command type {}, command state {}. cache state after: {}",
                 this, commandType, state, commandCache);
