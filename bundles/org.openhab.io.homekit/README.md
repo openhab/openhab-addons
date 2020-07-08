@@ -7,6 +7,28 @@ In order to do so, you will need to make some configuration changes.
 HomeKit organizes your home into "accessories" that are made up of a number of "characteristics".
 Some accessory types require a specific set of characteristics.
 
+HomeKit integration supports following accessory types:
+- Window Covering/Blinds
+- Switchable 
+- Outlet
+- Lighting (simple, dimmable, color)
+- Fan
+- Thermostat
+- Heater / Cooler
+- Lock
+- Security System
+- Garage Door Opener
+- Valve
+- Contact Sensor
+- Leak Sensor
+- Motion Sensor
+- Occupancy Sensor
+- Smoke Sensor
+- Temperature Sensor
+- Humidity Sensor
+- Carbon Dioxide Sensor
+- Carbon Monoxide Sensor
+
 **Attention: Some tags have been renamed. Old style may not be supported in future versions. See below for details.**
 
 ## Global Configuration
@@ -59,11 +81,11 @@ org.openhab.homekit:maximumTemperature=100
 
 ## Item Configuration
 
-After setting this global configuration, you will need to tag your [openHAB items](https://www.openhab.org/docs/configuration/items.html) for HomeKit in order to map them to an ontology.
+After setting the global configuration, you will need to tag your [openHAB items](https://www.openhab.org/docs/configuration/items.html) for HomeKit with accessory type.
 For our purposes, you may consider HomeKit accessories to be of two types: simple and complex.
 
-A simple accessory will be mapped to a single openHAB item (i.e. Lightbulb is mapped to Switch, Dimmer, or Color item).
-A complex accessory will be made up of multiple openHAB items (i.e. Thermostat is composed of mode, and current & target temperature).
+A simple accessory will be mapped to a single openHAB item, e.g. HomeKit lighting can represent an openHAB Switch, Dimmer, or Color item.
+A complex accessory will be made up of multiple openHAB items, e.g. HomeKit Thermostat can be composed of mode, and current & target temperature.
 Complex accessories require a tag on a Group Item indicating the accessory type, as well as tags on the items it composes.
 
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
@@ -93,12 +115,11 @@ Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {hom
 The tag can be:
 
 - full qualified: i.e. with accessory type and characteristic, e.g. "LeakSensor.LeakDetectedState"
-- shorthand version: with only either accessory type or characteristic, .e.g. "LeakSensor", "LeakDetectedState".
+- shorthand version: with only either accessory type or characteristic, e.g. "LeakSensor", "LeakDetectedState".
 
-
-if shorthand version has only accessory type, then HomeKit integration will automatically link *all* mandatory characteristics of this accessory type to the OpenHab item.
-e.g. window covering has 3 mandatory characteristics
-and following are identical definitions of window covering
+if shorthand version has only accessory type, then HomeKit will automatically link *all* mandatory characteristics of this accessory type to the openHAB item.
+e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState. 
+Following are equal configuration:
 
 ```xtend
 Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCovering"}
@@ -106,13 +127,12 @@ Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCoverin
 ```
 
 If the shorthand version has only a characteristic then it must be a part of a group which has a HomeKit accessory type.
-
-Complex accessories are defined using group item. The group item must indicated the HomeKit accessory type, e.g.
-using tags (in shorthand notation)
+You can use openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type, 
+e.g. LeakSensor definition using tags
 
 ```xtend
 Group  gLegacy_leaksensor               "Legacy Leak sensor Group"                                      [ "LeakSensor" ]
-Switch legacy_leaksensor                "Legacy Leak sensor"                    (gLegacy_Leaksensor)    [ "LeakSensor" ]
+Switch legacy_leaksensor                "Legacy Leak sensor"                    (gLegacy_Leaksensor)    [ "LeakDetectedState" ]
 Switch legacy_leaksensor_battery        "Legacy Leak sensor battery status"     (gLegacy_Leaksensor)    [ "homekit:BatteryLowStatus" ]
 ```
 
@@ -124,7 +144,20 @@ Switch leaksensor                       "Leak Sensor"                           
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
 ```
 
-A full list of supported accessory types can be found in the table *below*.
+You can use openHAB group to manage state of multiple items. (see [Group items](https://www.openhab.org/docs/configuration/items.html#derive-group-state-from-member-items))
+In this case, you can assign HomeKit accessory type to the group and to the group items
+Following example defines 3 HomeKit accessories of type Lighting: 
+
+- "Light 1" and "Light 2" as independent lights
+- "Light Group" that controls "Light 1" and "Light 2" as group
+
+```xtend
+Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="Lighting"}
+Switch light1 "Light 1" (gLight) {homekit="Lighting.OnState"}
+Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
+```
+
+## Supported accessory type
 
 | Accessory Tag        | Mandatory Characteristics   | Optional     Characteristics | Supported OH items       | Description                                                                                                                                                                                                                                                                                               |
 |:---------------------|:----------------------------|:-----------------------------|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -412,7 +445,7 @@ HomeKit home app sends following commands/update:
 - On "OFF" event home app sends "OFF" without brightness information. 
 
 However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change. 
-In order to support different devices HomeKit binding can filter some events. Which events should be filtered is defined via dimmerMode configuration. 
+In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration. 
 
 ```xtend
 Dimmer dimmer_light	"Dimmer Light" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
