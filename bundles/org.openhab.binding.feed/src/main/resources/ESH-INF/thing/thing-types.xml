@@ -35,13 +35,13 @@
 			<!--After the refresh time interval expires, the bindings checks for updates in the Feed, and if the information is not
 				up to date, updates the feed content stored in the channel -->
 
-			<parameter name="refresh" type="integer">
+			<parameter name="refresh" type="integer" min="1" required="true">
 				<label>Refresh Time Interval</label>
 				<description>Refresh time interval in minutes.</description>
 				<default>20</default>
 			</parameter>
 
-			<parameter name="number-of-entries" type="integer">
+			<parameter name="numberOfEntries" type="integer" min="0" required="true">
 				<label>Number of entries</label>
 				<description>The amount of entries to display.</description>
 				<default>1</default>

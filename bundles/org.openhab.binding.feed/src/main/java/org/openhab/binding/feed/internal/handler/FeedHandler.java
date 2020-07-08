@@ -17,7 +17,6 @@ import static org.openhab.binding.feed.internal.FeedBindingConstants.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -25,12 +24,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -42,6 +41,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +64,11 @@ public class FeedHandler extends BaseThingHandler {
 
     private Logger logger = LoggerFactory.getLogger(FeedHandler.class);
 
-    private String urlString;
-    private BigDecimal refreshTime;
-    private BigDecimal numberOfEntries;
     private ScheduledFuture<?> refreshTask;
     private SyndFeed currentFeedState;
     private long lastRefreshTime;
+
+    private FeedHandlerConfiguration configuration;
 
     public FeedHandler(Thing thing) {
         super(thing);
@@ -78,53 +77,28 @@ public class FeedHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        checkConfiguration();
+        configuration = getConfigAs(FeedHandlerConfiguration.class);
+
         updateStatus(ThingStatus.UNKNOWN);
         startAutomaticRefresh();
     }
 
-    /**
-     * This method checks if the provided configuration is valid.
-     * When invalid parameter is found, default value is assigned.
-     */
-    private void checkConfiguration() {
-        logger.debug("Start reading Feed Thing configuration.");
-        Configuration configuration = getConfig();
-
-        // It is not necessary to check if the URL is valid, this will be done in fetchFeedData() method
-        urlString = (String) configuration.get(URL);
-
-        try {
-            refreshTime = (BigDecimal) configuration.get(REFRESH_TIME);
-            if (refreshTime.intValue() <= 0) {
-                throw new IllegalArgumentException("Refresh time must be positive number!");
-            }
-        } catch (Exception e) {
-            logger.warn("Refresh time [{}] is not valid. Falling back to default value: {}. {}", refreshTime,
-                    DEFAULT_REFRESH_TIME, e.getMessage());
-            refreshTime = DEFAULT_REFRESH_TIME;
-        }
-
-        try {
-            numberOfEntries = (BigDecimal) configuration.get(NUMBER_OF_ENTRIES);
-            if (numberOfEntries.intValue() <= 0) {
-                throw new IllegalArgumentException("Refresh time must be positive number!");
-            }
-        } catch (Exception e) {
-            logger.warn("Number of entries [{}] is not valid. Falling back to default value: {}. {}", numberOfEntries,
-                    NUMBER_OF_ENTRIES, e.getMessage());
-            numberOfEntries = DEFAULT_NUMBER_OF_ENTRIES;
-        }
+    @Override
+    public void handleConfigurationUpdate(@NotNull Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        configuration = getConfigAs(FeedHandlerConfiguration.class);
     }
 
     private void startAutomaticRefresh() {
-        refreshTask = scheduler.scheduleWithFixedDelay(this::refreshFeedState, 0, refreshTime.intValue(),
+        int refreshTime = configuration.refresh;
+
+        refreshTask = scheduler.scheduleWithFixedDelay(this::refreshFeedState, 0, refreshTime,
                 TimeUnit.MINUTES);
-        logger.debug("Start automatic refresh at {} minutes", refreshTime.intValue());
+        logger.debug("Start automatic refresh at {} minutes", refreshTime);
     }
 
     private void refreshFeedState() {
-        SyndFeed feed = fetchFeedData(urlString);
+        SyndFeed feed = fetchFeedData(configuration.URL);
         boolean feedUpdated = updateFeedIfChanged(feed);
 
         if (feedUpdated) {
@@ -138,10 +112,12 @@ public class FeedHandler extends BaseThingHandler {
     }
 
     private void publishDynamicChannelsIfLinked() {
-        List<SyndEntry> entries = currentFeedState.getEntries().stream().limit(numberOfEntries.intValue())
+        int numberOfEntries = configuration.numberOfEntries;
+
+        List<SyndEntry> entries = currentFeedState.getEntries().stream().limit(numberOfEntries)
                 .collect(Collectors.toList());
 
-        createDynamicChannels(numberOfEntries.intValue());
+        createDynamicChannels(numberOfEntries);
         setUnusedDynamicChannelsToUndef(entries.size());
 
         for (int i = 0; i < entries.size(); i++) {
@@ -387,7 +363,7 @@ public class FeedHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             // safeguard for multiple REFRESH commands for different channels in a row
             if (isMinimumRefreshTimeExceeded()) {
-                SyndFeed feed = fetchFeedData(urlString);
+                SyndFeed feed = fetchFeedData(configuration.URL);
                 updateFeedIfChanged(feed);
             }
             publishChannelIfLinked(channelUID);
