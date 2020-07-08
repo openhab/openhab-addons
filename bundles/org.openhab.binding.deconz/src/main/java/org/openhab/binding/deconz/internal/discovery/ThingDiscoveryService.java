@@ -33,6 +33,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
@@ -120,11 +121,10 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         properties.put(Thing.PROPERTY_MODEL_ID, light.modelid);
 
         if (light.ctmax != null && light.ctmin != null) {
-            int ctmax = (light.ctmax > ZCL_CT_MAX) ? ZCL_CT_MAX : light.ctmax;
-            properties.put(PROPERTY_CT_MAX, Integer.toString(ctmax));
-
-            int ctmin = (light.ctmin < ZCL_CT_MIN) ? ZCL_CT_MIN : light.ctmin;
-            properties.put(PROPERTY_CT_MIN, Integer.toString(ctmin));
+            properties.put(PROPERTY_CT_MAX,
+                    Integer.toString(Util.constrainToRange(light.ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
+            properties.put(PROPERTY_CT_MIN,
+                    Integer.toString(Util.constrainToRange(light.ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
         }
 
         switch (lightType) {
