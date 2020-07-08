@@ -38,7 +38,7 @@ import io.github.hapjava.services.impl.LightbulbService;
 class HomekitLightbulbImpl extends AbstractHomekitAccessoryImpl implements LightbulbAccessory {
 
     public HomekitLightbulbImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         this.getServices().add(new LightbulbService(this));
     }

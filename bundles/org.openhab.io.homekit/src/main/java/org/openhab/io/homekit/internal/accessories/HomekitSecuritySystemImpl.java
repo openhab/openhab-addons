@@ -18,7 +18,6 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.SECURITY
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.smarthome.core.library.items.StringItem;
@@ -27,8 +26,6 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.SecuritySystemAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
@@ -46,7 +43,6 @@ import io.github.hapjava.services.impl.SecuritySystemService;
  * @author Cody Cutrer - Initial contribution
  */
 public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl implements SecuritySystemAccessory {
-    private final Logger logger = LoggerFactory.getLogger(HomekitSecuritySystemImpl.class);
     private final Map<CurrentSecuritySystemStateEnum, String> currentStateMapping = new EnumMap<CurrentSecuritySystemStateEnum, String>(
             CurrentSecuritySystemStateEnum.class) {
         {
@@ -68,7 +64,7 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
     };
 
     public HomekitSecuritySystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         updateMapping(SECURITY_SYSTEM_CURRENT_STATE, currentStateMapping);
         updateMapping(SECURITY_SYSTEM_TARGET_STATE, targetStateMapping);
@@ -82,15 +78,9 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
     }
 
     @Override
-    public void setTargetSecuritySystemState(final TargetSecuritySystemStateEnum state) {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(
-                HomekitCharacteristicType.SECURITY_SYSTEM_TARGET_STATE);
-        if (characteristic.isPresent()) {
-            ((StringItem) characteristic.get().getItem()).send(new StringType(targetStateMapping.get(state)));
-        } else {
-            logger.warn("Missing mandatory characteristic {}",
-                    HomekitCharacteristicType.SECURITY_SYSTEM_TARGET_STATE.getTag());
-        }
+    public void setTargetSecuritySystemState(TargetSecuritySystemStateEnum state) {
+        getItem(HomekitCharacteristicType.SECURITY_SYSTEM_TARGET_STATE, StringItem.class)
+                .ifPresent(item -> item.send(new StringType(targetStateMapping.get(state))));
     }
 
     @Override
@@ -100,7 +90,7 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
     }
 
     @Override
-    public void subscribeCurrentSecuritySystemState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeCurrentSecuritySystemState(HomekitCharacteristicChangeCallback callback) {
         subscribe(SECURITY_SYSTEM_CURRENT_STATE, callback);
     }
 
@@ -110,7 +100,7 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
     }
 
     @Override
-    public void subscribeTargetSecuritySystemState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeTargetSecuritySystemState(HomekitCharacteristicChangeCallback callback) {
         subscribe(SECURITY_SYSTEM_TARGET_STATE, callback);
     }
 

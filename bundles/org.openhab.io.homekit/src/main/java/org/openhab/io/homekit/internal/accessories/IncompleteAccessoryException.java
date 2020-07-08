@@ -12,12 +12,14 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 
 /**
  *
  * @author Tim Harper - Initial contribution
  */
+@NonNullByDefault
 public class IncompleteAccessoryException extends Exception {
     private static final long serialVersionUID = 8595808359805444177L;
 

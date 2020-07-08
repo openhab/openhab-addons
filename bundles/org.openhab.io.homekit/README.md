@@ -439,10 +439,9 @@ The HomeKit valve accessory supports following 2 optional characteristics:
 
 - duration: this describes how long the valve should set "InUse" once it is activated. The duration changes will apply to the next operation. If valve is already active then duration changes have no effect. 
 
-- remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only
-                      be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
+- remaining duration: this describes the remaining duration on the valve. Notifications on this characteristic must only be used if the remaining duration increases/decreases from the accessoryʼs usual countdown of remaining duration.
 
-Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any acion if it remaining duration get 0. 
+Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0. 
 It is up to valve to have an own timer and stop valve once the timer is over. 
 Some valves have such timer, e.g. pretty common for sprinklers. 
 In case the valve has no timer capability, OpenHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over. 
