@@ -97,7 +97,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     private void startChannelUpdate() {
-        updateChannelsJob = scheduler.scheduleWithFixedDelay(this::updateChannels, 0, 60, TimeUnit.SECONDS);
+        updateChannelsJob = scheduler.scheduleWithFixedDelay(this::updateChannels, 0, 10, TimeUnit.SECONDS);
     }
 
     private void stopChannelUpdate() {
