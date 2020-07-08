@@ -178,14 +178,14 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             int eventSize = Integer.parseInt(eventSizeString);
 
             // Retrieve at maximum the 10 last log messages from the panel
-            int messagesToRetrieve = (eventSize < 10) ? eventSize : 10;
+            int messagesToRetrieve = Math.min(eventSize, 10);
             for (int i = 1; i < messagesToRetrieve; i++) {
                 eventNumber--;
                 if (eventNumber < 0) {
                     eventNumber = eventSize;
                 }
 
-                map.put(Integer.toString(eventNumber), "panel_log_message_n_" + Integer.toString(i));
+                map.put(Integer.toString(eventNumber), "panel_log_message_n_" + i);
                 bridgeHandler.sendCommand(CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST, Integer.toString(eventNumber));
             }
 
