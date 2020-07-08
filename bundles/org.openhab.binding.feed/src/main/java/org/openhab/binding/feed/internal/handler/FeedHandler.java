@@ -126,19 +126,13 @@ public class FeedHandler extends BaseThingHandler {
             SyndEntry entry = entries.get(i);
 
             ChannelUID titleChannelUID = new ChannelUID(titleChannelGroupUID, String.valueOf(i));
-            if (isLinked(titleChannelUID)) {
-                setChannelToState(titleChannelUID, getTitleState(entry));
-            }
+            setChannelToState(titleChannelUID, getTitleState(entry));
 
             ChannelUID descriptionChannelUID = new ChannelUID(descriptionChannelGroupUID, String.valueOf(i));
-            if (isLinked(descriptionChannelUID)) {
-                setChannelToState(descriptionChannelUID, getDescriptionState(entry));
-            }
+            setChannelToState(descriptionChannelUID, getDescriptionState(entry));
 
             ChannelUID dateChannelUID = new ChannelUID(dateChannelGroupUID, String.valueOf(i));
-            if (isLinked(dateChannelUID)) {
-                setChannelToState(dateChannelUID, getDateState(entry));
-            }
+            setChannelToState(dateChannelUID, getDateState(entry));
         }
     }
 
