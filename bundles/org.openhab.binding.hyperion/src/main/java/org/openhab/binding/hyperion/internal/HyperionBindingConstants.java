@@ -55,6 +55,7 @@ public class HyperionBindingConstants {
     public static final String COMPONENT_GRABBER = "GRABBER";
     public static final String COMPONENT_V4L = "V4L";
     public static final String COMPONENT_LEDDEVICE = "LEDDEVICE";
+    public static final String COMPONENT_ALL = "ALL";
 
     // List of all properties
     public static final String PROP_HOST = "host";

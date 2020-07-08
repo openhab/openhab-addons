@@ -135,16 +135,9 @@ public class FreeboxApiManager {
             if (token == null || token.isEmpty()) {
                 FreeboxAuthorizeRequest request = new FreeboxAuthorizeRequest(appId, appName, appVersion, deviceName);
                 FreeboxAuthorizeResult response = executePostUrl("login/authorize/", gson.toJson(request),
-                        FreeboxAuthorizeResponse.class, false);
+                        FreeboxAuthorizeResponse.class, false, false, true);
                 token = response.getAppToken();
                 int trackId = response.getTrackId();
-
-                logger.info("####################################################################");
-                logger.info("# Please accept activation request directly on your freebox        #");
-                logger.info("# Once done, record Apptoken in the Freebox thing configuration    #");
-                logger.info("# {} #", token);
-                logger.info("####################################################################");
-
                 FreeboxAuthorizationStatus result;
                 do {
                     Thread.sleep(2000);
@@ -187,6 +180,10 @@ public class FreeboxApiManager {
             }
             sessionToken = null;
         }
+    }
+
+    public String getAppToken() {
+        return appToken;
     }
 
     public synchronized String getSessionToken() {
@@ -479,7 +476,7 @@ public class FreeboxApiManager {
         }
     }
 
-    private static String hmacSha1(String key, String value) throws FreeboxException {
+    public static String hmacSha1(String key, String value) throws FreeboxException {
         try {
             // Get an hmac_sha1 key from the raw key bytes
             byte[] keyBytes = key.getBytes();
@@ -493,7 +490,7 @@ public class FreeboxApiManager {
             byte[] rawHmac = mac.doFinal(value.getBytes());
 
             // Convert raw bytes to a String
-            return HexUtils.bytesToHex(rawHmac);
+            return HexUtils.bytesToHex(rawHmac).toLowerCase();
         } catch (IllegalArgumentException | NoSuchAlgorithmException | InvalidKeyException | IllegalStateException e) {
             throw new FreeboxException("Computing the hmac-sha1 of the challenge and the app token failed", e);
         }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.danfossairunit.internal;
 
+import static org.openhab.binding.danfossairunit.internal.Commands.*;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -30,13 +34,11 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.Command;
-import javax.measure.quantity.Temperature;
-
-import static org.openhab.binding.danfossairunit.internal.Commands.*;
 
 /**
  * The {@link DanfossAirUnit} class represents the air unit device and build the commands to be sent by
  * {@link DanfossAirUnitCommunicationController}
+ * 
  * @author Ralf Duckstein - Initial contribution
  * @author Robert Bach - heavy refactorings
  */
@@ -48,7 +50,7 @@ public class DanfossAirUnit {
     private final DanfossAirUnitCommunicationController communicationController;
 
     public DanfossAirUnit(InetAddress inetAddr, int port) {
-        this.communicationController  = new DanfossAirUnitCommunicationController(inetAddr, port);
+        this.communicationController = new DanfossAirUnitCommunicationController(inetAddr, port);
     }
 
     public void cleanUp() {
@@ -65,7 +67,7 @@ public class DanfossAirUnit {
 
     private short getWord(byte[] operation, byte[] register) throws IOException {
         byte[] resultBytes = communicationController.sendRobustRequest(operation, register);
-        return (short)((resultBytes[0] << 8)  | (resultBytes[1] & 0xFF));
+        return (short) ((resultBytes[0] << 8) | (resultBytes[1] & 0xFF));
     }
 
     private byte getByte(byte[] operation, byte[] register) throws IOException {
@@ -88,7 +90,7 @@ public class DanfossAirUnit {
     }
 
     private byte[] shortToBytes(short s) {
-        return new byte[]{(byte)((s & 0xFF00) >> 8),(byte)(s & 0x00FF)};
+        return new byte[] { (byte) ((s & 0xFF00) >> 8), (byte) (s & 0x00FF) };
     }
 
     private short getShort(byte[] operation, byte[] register) throws IOException {
@@ -96,7 +98,8 @@ public class DanfossAirUnit {
         return (short) ((result[0] << 8) + (result[1] & 0xff));
     }
 
-    private float getTemperature(byte[] operation, byte[] register) throws IOException, UnexpectedResponseValueException {
+    private float getTemperature(byte[] operation, byte[] register)
+            throws IOException, UnexpectedResponseValueException {
         short shortTemp = getShort(operation, register);
         float temp = ((float) shortTemp) / 100;
         if (temp <= -274 || temp > 100) {
@@ -105,7 +108,8 @@ public class DanfossAirUnit {
         return temp;
     }
 
-    private ZonedDateTime getTimestamp(byte[] operation, byte[] register) throws IOException, UnexpectedResponseValueException {
+    private ZonedDateTime getTimestamp(byte[] operation, byte[] register)
+            throws IOException, UnexpectedResponseValueException {
         byte[] result = communicationController.sendRobustRequest(operation, register);
         return asZonedDateTime(result);
     }
@@ -196,7 +200,8 @@ public class DanfossAirUnit {
         return getTemperatureAsDecimalType(REGISTER_1_READ, ROOM_TEMPERATURE);
     }
 
-    public QuantityType<Temperature> getRoomTemperatureCalculated() throws IOException, UnexpectedResponseValueException {
+    public QuantityType<Temperature> getRoomTemperatureCalculated()
+            throws IOException, UnexpectedResponseValueException {
         return getTemperatureAsDecimalType(REGISTER_0_READ, ROOM_TEMPERATURE_CALCULATED);
     }
 
@@ -216,7 +221,8 @@ public class DanfossAirUnit {
         return getTemperatureAsDecimalType(REGISTER_4_READ, EXHAUST_TEMPERATURE);
     }
 
-    private QuantityType<Temperature> getTemperatureAsDecimalType(byte[] operation, byte[] register) throws IOException, UnexpectedResponseValueException {
+    private QuantityType<Temperature> getTemperatureAsDecimalType(byte[] operation, byte[] register)
+            throws IOException, UnexpectedResponseValueException {
         BigDecimal value = BigDecimal.valueOf(getTemperature(operation, register));
         return new QuantityType<>(value.setScale(1, RoundingMode.HALF_UP), SIUnits.CELSIUS);
     }

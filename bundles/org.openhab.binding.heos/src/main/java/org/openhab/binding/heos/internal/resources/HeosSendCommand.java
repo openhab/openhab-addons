@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
-import static org.openhab.binding.heos.internal.resources.HeosConstants.FAIL;
-
 import java.io.IOException;
-import java.util.List;
 
-import org.openhab.binding.heos.internal.api.HeosEventController;
+import org.openhab.binding.heos.internal.json.HeosJsonParser;
+import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,107 +27,89 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Einig - Initial contribution
  */
 public class HeosSendCommand {
-
-    private Telnet client;
-    private HeosResponseDecoder decoder;
-    private HeosEventController eventController;
     private final Logger logger = LoggerFactory.getLogger(HeosSendCommand.class);
-    private String command;
 
-    public HeosSendCommand(Telnet client, HeosResponseDecoder decoder, HeosEventController eventController) {
+    private final Telnet client;
+    private final HeosJsonParser parser = new HeosJsonParser();
+
+    public HeosSendCommand(Telnet client) {
         this.client = client;
-        this.decoder = decoder;
-        this.eventController = eventController;
     }
 
-    public synchronized boolean send(String command) throws ReadException, IOException {
-        if (!isConnected()) {
-            return false;
-        }
-        int sendTryCounter = 0;
-        this.command = command;
+    public <T> HeosResponseObject<T> send(String command, Class<T> clazz) throws IOException, ReadException {
+        HeosResponseObject<T> result;
+        int attempt = 0;
 
-        if (executeSendCommand()) {
-            while (sendTryCounter < 1) {
-                if (decoder.getSendResult().equals(FAIL)) {
-                    executeSendCommand();
-                    ++sendTryCounter;
-                }
-                if (decoder.isCommandUnderProgress()) {
-                    while (decoder.isCommandUnderProgress()) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            logger.debug("Interrupted Exception - Message: {}", e.getMessage());
-                        }
-                        List<String> readResultList = client.readLine(15000);
+        boolean send = client.send(command);
+        if (clazz == null) {
+            return null;
+        } else if (send) {
+            String line = client.readLine();
+            if (line == null) {
+                throw new IOException("No valid input was received");
+            }
+            result = parser.parseResponse(line, clazz);
 
-                        for (int i = 0; i < readResultList.size(); i++) {
-                            decoder.getHeosJsonParser().parseResult(readResultList.get(i));
-                            eventController.handleEvent(0); // Important don't remove it. Costs you some live time... ;)
-                        }
-                    }
-                } else {
-                    return true;
+            while (!result.isFinished() && attempt < 3) {
+                attempt++;
+                logger.trace("Retrying \"{}\" (attempt {})", command, attempt);
+                line = client.readLine(15000);
+
+                if (line != null) {
+                    result = parser.parseResponse(line, clazz);
                 }
             }
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    /**
-     * This method shall only be used if no response from network
-     * is expected. Else the read buffer is not cleared
-     *
-     * @param command
-     * @return true if send was successful
-     */
-    public boolean sendWithoutResponse(String command) {
-        try {
-            return client.send(command);
-        } catch (IOException e) {
-            logger.debug("IO Excecption - Message: {}", e.getMessage());
-            return false;
-        }
-    }
-
-    /*
-     * It seems to be that sometime a command is still
-     * in the reading line without being read out. This
-     * shall be prevented with an Map which reads until no
-     * End of line is detected.
-     */
-    private boolean executeSendCommand() throws ReadException, IOException {
-        boolean sendSuccess = client.send(command);
-        if (sendSuccess) {
-            List<String> readResultList = client.readLine();
-
-            for (int i = 0; i < readResultList.size(); i++) {
-                decoder.getHeosJsonParser().parseResult(readResultList.get(i));
-                eventController.handleEvent(0);
+            if (attempt >= 3 && !result.isFinished()) {
+                throw new IOException("No valid input was received after multiple attempts");
             }
-            return true;
+
+            return result;
         } else {
-            return false;
+            throw new IOException("Not connected");
         }
     }
 
-    public boolean setTelnetClient(Telnet client) {
-        this.client = client;
-        return true;
-    }
-
-    public Telnet getTelnetClient() {
-        return client;
+    public boolean isHostReachable() {
+        return client.isHostReachable();
     }
 
     public boolean isConnected() {
         return client.isConnected();
     }
 
-    public boolean isConnectionAlive() {
-        return client.isConnectionAlive();
+    public void stopInputListener(String registerChangeEventOFF) {
+        logger.debug("Stopping HEOS event line listener");
+        client.stopInputListener();
+
+        if (client.isConnected()) {
+            try {
+                client.send(registerChangeEventOFF);
+            } catch (IOException e) {
+                logger.debug("Failure during closing connection to HEOS with message: {}", e.getMessage());
+            }
+        }
+    }
+
+    public void disconnect() {
+        if (client.isConnected()) {
+            return;
+        }
+
+        try {
+            logger.debug("Disconnecting HEOS command line");
+            client.disconnect();
+        } catch (IOException e) {
+            logger.debug("Failure during closing connection to HEOS with message: {}", e.getMessage());
+        }
+
+        logger.debug("Connection to HEOS system closed");
+    }
+
+    public void startInputListener(String command) throws IOException, ReadException {
+        HeosResponseObject<Void> response = send(command, Void.class);
+        if (response.result) {
+            client.startInputListener();
+        }
     }
 }

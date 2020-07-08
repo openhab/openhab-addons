@@ -17,9 +17,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.daikin.internal.api.InfoParser;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,5 +54,4 @@ public class BasicInfo {
         params.put("ssid", ssid);
         return params;
     }
-
 }

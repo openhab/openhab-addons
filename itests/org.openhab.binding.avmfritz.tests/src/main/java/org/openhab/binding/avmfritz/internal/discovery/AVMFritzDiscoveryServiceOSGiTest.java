@@ -14,7 +14,7 @@ package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.junit.Assert.*;
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.io.StringReader;
 import java.util.Collection;
@@ -86,12 +86,13 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
 
     @Test
     public void correctSupportedTypes() {
-        assertEquals(11, discovery.getSupportedThingTypes().size());
+        assertEquals(12, discovery.getSupportedThingTypes().size());
         assertTrue(discovery.getSupportedThingTypes().contains(DECT100_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT200_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT210_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT300_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT301_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(DECT400_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(PL546E_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(COMETDECT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_CONTACT_THING_TYPE));

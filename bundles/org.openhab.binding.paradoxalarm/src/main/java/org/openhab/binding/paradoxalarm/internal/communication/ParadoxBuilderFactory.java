@@ -32,9 +32,11 @@ public class ParadoxBuilderFactory {
             case EVO48:
             case EVO96:
             case EVO192:
+            case EVOHD:
                 logger.debug("Creating new builder for Paradox {} system", panelType);
                 return new EvoCommunicator.EvoCommunicatorBuilder(panelType);
             default:
+                logger.debug("Unsupported panel type: {}", panelType);
                 throw new ParadoxRuntimeException("Unsupported panel type: " + panelType);
         }
     }

@@ -12,45 +12,64 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import static org.openhab.binding.heos.internal.HeosBindingConstants.CH_ID_PLAYLISTS;
 import static org.openhab.binding.heos.internal.resources.HeosConstants.PLAYLISTS_SID;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
+import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandlerPlaylist} handles the playlist selection channel command
  * from the implementing thing.
  *
  * @author Johannes Einig - Initial contribution
- *
  */
-public class HeosChannelHandlerPlaylist extends HeosChannelHandler {
+@NonNullByDefault
+public class HeosChannelHandlerPlaylist extends BaseHeosChannelHandler {
+    private final HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider;
 
-    public HeosChannelHandlerPlaylist(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+    public HeosChannelHandlerPlaylist(HeosDynamicStateDescriptionProvider heosDynamicStateDescriptionProvider,
+            HeosBridgeHandler bridge) {
+        super(bridge);
+        this.heosDynamicStateDescriptionProvider = heosDynamicStateDescriptionProvider;
     }
 
     @Override
-    protected void handleCommandPlayer() {
-        handleCommand();
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) throws IOException, ReadException {
+        handleCommand(command, id, uid);
     }
 
     @Override
-    protected void handleCommandGroup() {
-        handleCommand();
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) throws IOException, ReadException {
+        if (id == null) {
+            throw new HeosNotFoundException();
+        }
+
+        handleCommand(command, id, uid);
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) {
         // not used on bridge
     }
 
-    private void handleCommand() {
+    private void handleCommand(Command command, String id, ThingUID uid) throws IOException, ReadException {
+        ChannelUID channelUID = new ChannelUID(uid, CH_ID_PLAYLISTS);
         if (command instanceof RefreshType) {
+            heosDynamicStateDescriptionProvider.setPlaylists(channelUID, getApi().getPlaylists());
             return;
         }
-        String cid = bridge.getHeosPlaylists().get(Integer.valueOf(command.toString()));
-        api.addContainerToQueuePlayNow(id, PLAYLISTS_SID, cid);
+
+        String idCommand = heosDynamicStateDescriptionProvider.getValueByLabel(channelUID, command.toString());
+        getApi().addContainerToQueuePlayNow(id, PLAYLISTS_SID, idCommand);
     }
 }

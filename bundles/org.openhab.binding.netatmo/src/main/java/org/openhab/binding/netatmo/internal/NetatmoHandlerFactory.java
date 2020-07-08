@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -33,6 +34,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
+import org.openhab.binding.netatmo.internal.presence.NAPresenceCameraHandler;
 import org.openhab.binding.netatmo.internal.station.NAMainHandler;
 import org.openhab.binding.netatmo.internal.station.NAModule1Handler;
 import org.openhab.binding.netatmo.internal.station.NAModule2Handler;
@@ -62,16 +64,19 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private final Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private final HttpService httpService;
     private final NATherm1StateDescriptionProvider stateDescriptionProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference HttpService httpService,
-            final @Reference NATherm1StateDescriptionProvider stateDescriptionProvider) {
+            final @Reference NATherm1StateDescriptionProvider stateDescriptionProvider,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpService = httpService;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -88,27 +93,29 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(MODULE1_THING_TYPE)) {
-            return new NAModule1Handler(thing);
+            return new NAModule1Handler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(MODULE2_THING_TYPE)) {
-            return new NAModule2Handler(thing);
+            return new NAModule2Handler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(MODULE3_THING_TYPE)) {
-            return new NAModule3Handler(thing);
+            return new NAModule3Handler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(MODULE4_THING_TYPE)) {
-            return new NAModule4Handler(thing);
+            return new NAModule4Handler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(MAIN_THING_TYPE)) {
-            return new NAMainHandler(thing);
+            return new NAMainHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(HOMECOACH_THING_TYPE)) {
-            return new NAHealthyHomeCoachHandler(thing);
+            return new NAHealthyHomeCoachHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {
-            return new NAPlugHandler(thing);
+            return new NAPlugHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {
-            return new NATherm1Handler(thing, stateDescriptionProvider);
+            return new NATherm1Handler(thing, stateDescriptionProvider, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
-            return new NAWelcomeHomeHandler(thing);
+            return new NAWelcomeHomeHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
-            return new NAWelcomeCameraHandler(thing);
+            return new NAWelcomeCameraHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
+            return new NAPresenceCameraHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
-            return new NAWelcomePersonHandler(thing);
+            return new NAWelcomePersonHandler(thing, timeZoneProvider);
         } else {
             logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
             return null;

@@ -13,8 +13,8 @@
 package org.openhab.binding.daikin.internal;
 
 import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exception for when an unexpected response is received from the Daikin controller.

@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
@@ -39,6 +40,7 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String APPLICATIONS = "applications";
     private static final String CHANNELS = "channels";
+    private static final String ACCESS_KEY = "accesskey";
 
     private final ThingRegistry thingRegistry;
 
@@ -51,18 +53,29 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public void execute(String[] args, Console console) {
         if (args.length == 2) {
-            LGWebOSHandler handler = null;
+            Thing thing = null;
             try {
                 ThingUID thingUID = new ThingUID(args[0]);
-                Thing thing = thingRegistry.get(thingUID);
-                if ((thing != null) && (thing.getHandler() != null) && (thing.getHandler() instanceof LGWebOSHandler)) {
-                    handler = (LGWebOSHandler) thing.getHandler();
-                }
+                thing = thingRegistry.get(thingUID);
             } catch (IllegalArgumentException e) {
-                handler = null;
+                thing = null;
             }
-            if (handler == null) {
+            ThingHandler thingHandler = null;
+            LGWebOSHandler handler = null;
+            if (thing != null) {
+                thingHandler = thing.getHandler();
+                if (thingHandler instanceof LGWebOSHandler) {
+                    handler = (LGWebOSHandler) thingHandler;
+                }
+            }
+            if (thing == null) {
                 console.println("Bad thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (thingHandler == null) {
+                console.println("No handler initialized for the thing id '" + args[0] + "'");
+                printUsage(console);
+            } else if (handler == null) {
+                console.println("'" + args[0] + "' is not a LG webOS thing id");
                 printUsage(console);
             } else {
                 switch (args[1]) {
@@ -71,6 +84,9 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
                         break;
                     case CHANNELS:
                         handler.reportChannels().forEach(console::println);
+                        break;
+                    case ACCESS_KEY:
+                        console.println("Your access key is " + handler.getKey());
                         break;
                     default:
                         printUsage(console);
@@ -85,6 +101,7 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(new String[] { buildCommandUsage("<thingUID> " + APPLICATIONS, "list applications"),
-                buildCommandUsage("<thingUID> " + CHANNELS, "list channels") });
+                buildCommandUsage("<thingUID> " + CHANNELS, "list channels"),
+                buildCommandUsage("<thingUID> " + ACCESS_KEY, "show the access key") });
     }
 }

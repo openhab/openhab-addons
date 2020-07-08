@@ -45,5 +45,4 @@ public class DanfossAirUnitBindingConstants {
     // Properties
     public static String PROPERTY_UNIT_NAME = "Unit Name";
     public static String PROPERTY_SERIAL = "Serial Number";
-
 }

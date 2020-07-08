@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
@@ -20,7 +21,8 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public class RamRequestPayload extends MemoryRequestPayload implements IPPacketPayload {
+@NonNullByDefault
+public class RamRequestPayload extends MemoryRequestPayload implements IPayload {
 
     private static final byte CONTROL_BYTE = ParadoxUtil.setBit((byte) 0, 7, 1);
 

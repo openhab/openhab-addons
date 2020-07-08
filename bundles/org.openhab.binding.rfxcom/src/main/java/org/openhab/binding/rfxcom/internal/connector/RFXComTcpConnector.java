@@ -17,7 +17,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.slf4j.Logger;
@@ -67,18 +66,13 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             }
         }
 
-        if (out != null) {
-            logger.debug("Close tcp out stream");
-            IOUtils.closeQuietly(out);
-        }
-        if (in != null) {
-            logger.debug("Close tcp in stream");
-            IOUtils.closeQuietly(in);
-        }
-
         if (socket != null) {
             logger.debug("Close socket");
-            IOUtils.closeQuietly(socket);
+            try {
+                socket.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the socket: {}", e.getMessage());
+            }
         }
 
         readerThread = null;

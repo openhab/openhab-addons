@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.State;
@@ -72,15 +71,6 @@ public class AstroStateTest {
 
     @Test
     public void testParametrized() {
-        PropertyUtils.unsetTimeZone();
-
-        // Anonymous implementation of the service to adapt the time zone to the tested longitude and latitude
-        PropertyUtils.setTimeZone(new TimeZoneProvider() {
-            @Override
-            public ZoneId getTimeZone() {
-                return ZONE_ID;
-            }
-        });
         try {
             assertStateUpdate(thingID, channelId, expectedState);
         } catch (Exception e) {
@@ -90,7 +80,7 @@ public class AstroStateTest {
 
     private void assertStateUpdate(String thingID, String channelId, State expectedState) throws Exception {
         ChannelUID testItemChannelUID = new ChannelUID(getThingUID(thingID), channelId);
-        State state = PropertyUtils.getState(testItemChannelUID, new AstroChannelConfig(), getPlanet(thingID));
+        State state = PropertyUtils.getState(testItemChannelUID, new AstroChannelConfig(), getPlanet(thingID), ZONE_ID);
         assertEquals(expectedState, state);
     }
 
@@ -112,7 +102,7 @@ public class AstroStateTest {
         switch (thingID) {
             case (TEST_SUN_THING_ID):
                 SunCalc sunCalc = new SunCalc();
-                return sunCalc.getSunInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE, null);
+                return sunCalc.getSunInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE, null, false);
             case (TEST_MOON_THING_ID):
                 MoonCalc moonCalc = new MoonCalc();
                 return moonCalc.getMoonInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE);

@@ -128,5 +128,4 @@ public class EnergeniePWMHandler extends BaseThingHandler {
             this.refreshJob = scheduler.scheduleWithFixedDelay(this::getState, 5, refreshInterval, TimeUnit.SECONDS);
         }
     }
-
 }

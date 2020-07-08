@@ -21,13 +21,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -71,15 +71,18 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
 
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
+    private final TimeZoneProvider timeZoneProvider;
 
     // url (scheme+server+port) to use for playing notification sounds
     private @Nullable String callbackUrl;
 
     @Activate
     public FreeboxHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
-            final @Reference NetworkAddressService networkAddressService) {
+            final @Reference NetworkAddressService networkAddressService,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -95,7 +98,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public @Nullable Thing createThing(@NonNull ThingTypeUID thingTypeUID, @NonNull Configuration configuration,
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (thingTypeUID.equals(FreeboxBindingConstants.FREEBOX_BRIDGE_TYPE_SERVER)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
@@ -121,7 +124,7 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
             registerDiscoveryService(handler);
             return handler;
         } else if (FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            FreeboxThingHandler handler = new FreeboxThingHandler(thing);
+            FreeboxThingHandler handler = new FreeboxThingHandler(thing, timeZoneProvider);
             if (FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY.equals(thingTypeUID)) {
                 registerAudioSink(handler);
             }

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<!-- Config for BTicino Smarther Bridge -->
+	<config-description uri="bridge-type:smarther:bridge">
+
+		<!-- Parameter groups -->
+		<parameter-group name="subscription">
+			<label>Product Subscription</label>
+			<description>Details of the Smarther product subscription connected to the BTicino/Legrand development account.</description>
+		</parameter-group>
+
+		<parameter-group name="application">
+			<label>Application Details</label>
+			<description>Details of the Smarther application registered on the BTicino/Legrand development portal.</description>
+		</parameter-group>
+
+		<parameter-group name="advancedset">
+			<label>Advanced Settings</label>
+			<description>Advanced settings of this bridge.</description>
+		</parameter-group>
+
+		<!-- Parameters -->
+		<parameter name="subscriptionKey" groupName="subscription" type="text" pattern="[0-9a-f]{32}">
+			<label>Subscription Key</label>
+			<description>This is the Subscription Key provided by BTicino/Legrand when you subscribe to Smarther - v2.0 product. Go to
+https://developer.legrand.com/tutorials/getting-started/</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="clientId" groupName="application" type="text" pattern="[0-9a-f]{8}[-]([0-9a-f]{4}[-]){3}[0-9a-f]{12}">
+			<label>Client ID</label>
+			<description>This is the Client ID provided by BTicino/Legrand when you add a new Application to your developer account. Go to
+https://developer.legrand.com/tutorials/create-an-application/</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="clientSecret" groupName="application" type="text">
+			<label>Client Secret</label>
+			<description>This is the Client Secret provided by BTicino/Legrand when you add a new Application to your developer account.</description>
+			<required>true</required>
+			<context>password</context>
+		</parameter>
+
+		<parameter name="useNotifications" groupName="advancedset" type="boolean">
+			<label>Use Notifications</label>
+			<description>ON = the bridge subscribes each of its locations to receive C2C notifications upon changes on each of its modules' status or sensors
+data - temperature, humidity (requires a public https endpoint has been set as "First Reply Url" when registering the Application on Legrand's development
+portal); OFF = for each module connected to this bridge, status+sensors data are requested to Smarther API gateway on a periodical basis and whenever new
+settings are applied (period can be changed via module's "Status Refresh Period" parameter).</description>
+			<required>false</required>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
+
+		<parameter name="statusRefreshPeriod" groupName="advancedset" type="integer" min="1" unit="min">
+			<label>Bridge Status Refresh Period (minutes)</label>
+			<description>This is the frequency the Smarther API gateway is called to update bridge status. There are limits to the number of
+requests that can be sent to the Smarther API gateway. The more often you poll, the faster locations are updated - at the risk of running out of your request
+quota.</description>
+			<required>false</required>
+			<advanced>true</advanced>
+			<unitLabel>Minutes</unitLabel>
+			<default>1440</default>
+		</parameter>
+
+	</config-description>
+
+	<!-- Config for BTicino Smarther Module -->
+	<config-description uri="thing-type:smarther:module">
+
+		<!-- Parameter groups -->
+		<parameter-group name="topology">
+			<label>Module Topology</label>
+			<description>Reference to uniquely identify the module towards the BTicino/Legrand API gateway.</description>
+		</parameter-group>
+
+		<parameter-group name="advancedset">
+			<label>Advanced Settings</label>
+			<description>Advanced settings of this module.</description>
+		</parameter-group>
+
+		<!-- Parameters -->
+		<parameter name="plantId" groupName="topology" type="text" pattern="[0-9a-f]{8}[-]([0-9a-f]{4}[-]){3}[0-9a-f]{12}">
+			<label>Location Plant Id</label>
+			<description>This is the Plant Id of the location the Chronothermostat module is installed in, provided by Smarther API.</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="moduleId" groupName="topology" type="text" pattern="[0-9a-f]{8}[-]([0-9a-f]{4}[-]){3}[0-9a-f]{12}">
+			<label>Chronothermostat Module Id</label>
+			<description>This is the Module Id of the Chronothermostat module, provided by Smarther API.</description>
+			<required>true</required>
+		</parameter>
+
+		<parameter name="settingsAutoupdate" groupName="advancedset" type="boolean">
+			<label>Module Settings Auto-Update</label>
+			<description>ON = the module settings are automatically updated according to the module status whenever it changes (e.g. polling, notification,
+etc.). OFF = the module settings are aligned to the module status only upon module initialization.</description>
+			<required>false</required>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
+
+		<parameter name="programsRefreshPeriod" groupName="advancedset" type="integer" min="1" unit="h">
+			<label>Programs Refresh Period (hours)</label>
+			<description>This is the frequency the Smarther API gateway is called to refresh Programs list used in "automatic" mode. There are limits to the
+number of requests that can be sent to the Smarther API gateway. The more often you poll, the faster locations are updated - at the risk of running out of your
+request quota.</description>
+			<required>false</required>
+			<advanced>true</advanced>
+			<unitLabel>Hours</unitLabel>
+			<default>12</default>
+		</parameter>
+
+		<parameter name="numberOfEndDays" groupName="advancedset" type="integer" min="1" max="9">
+			<label>Number Of Days For End Date</label>
+			<description>This is the number of days to be displayed in module settings, as options list for "End Date" field in "manual" mode (e.g. 1 = only
+"Today" is displayed, 5 = "Today" + "Tomorrow" + following 3 days are displayed).</description>
+			<required>false</required>
+			<advanced>true</advanced>
+			<default>5</default>
+		</parameter>
+
+		<parameter name="statusRefreshPeriod" groupName="advancedset" type="integer" min="1" unit="min">
+			<label>Module Status Refresh Period (minutes)</label>
+			<description>This is the frequency the Smarther API gateway is called to update module status and sensors data. There are limits to the number of
+requests that can be sent to the Smarther API gateway. The more often you poll, the faster locations are updated - at the risk of running out of your request
+quota.</description>
+			<required>false</required>
+			<advanced>true</advanced>
+			<unitLabel>Minutes</unitLabel>
+			<default>60</default>
+		</parameter>
+
+	</config-description>
+
+</config-description:config-descriptions>

@@ -53,9 +53,8 @@ import org.slf4j.LoggerFactory;
 public abstract class MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
-    DeviceFeature feature;
-    Map<String, @Nullable String> parameters = new HashMap<>();
-    Map<Integer, @Nullable GroupMessageStateMachine> groupState = new HashMap<>();
+    protected DeviceFeature feature;
+    protected Map<String, @Nullable String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -253,7 +252,6 @@ public abstract class MessageHandler {
         boolean isDuplicate = false;
         try {
             MsgType t = MsgType.fromValue(msg.getByte("messageFlags"));
-            int hops = msg.getHopsLeft();
             if (t == MsgType.ALL_LINK_BROADCAST) {
                 int group = msg.getAddress("toAddress").getLowByte() & 0xff;
                 byte cmd1 = msg.getByte("command1");
@@ -261,12 +259,12 @@ public abstract class MessageHandler {
                 // from the original broadcaster, with which the device
                 // confirms that it got all cleanup replies successfully.
                 GroupMessage gm = (cmd1 == 0x06) ? GroupMessage.SUCCESS : GroupMessage.BCAST;
-                isDuplicate = !updateGroupState(group, hops, gm);
+                isDuplicate = !feature.getDevice().getGroupState(group, gm, cmd1);
             } else if (t == MsgType.ALL_LINK_CLEANUP) {
                 // the cleanup messages are direct messages, so the
                 // group # is not in the toAddress, but in cmd2
                 int group = msg.getByte("command2") & 0xff;
-                isDuplicate = !updateGroupState(group, hops, GroupMessage.CLEAN);
+                isDuplicate = !feature.getDevice().getGroupState(group, GroupMessage.CLEAN, (byte) 0);
             }
         } catch (IllegalArgumentException e) {
             logger.warn("cannot parse msg: {}", msg, e);
@@ -274,24 +272,6 @@ public abstract class MessageHandler {
             logger.warn("cannot parse msg: {}", msg, e);
         }
         return (isDuplicate);
-    }
-
-    /**
-     * Advance the state of the state machine that suppresses duplicates
-     *
-     * @param group the insteon group of the broadcast message
-     * @param hops number of hops left
-     * @param a what type of group message came in (action etc)
-     * @return true if this is message is NOT a duplicate
-     */
-    private boolean updateGroupState(int group, int hops, GroupMessage a) {
-        GroupMessageStateMachine m = groupState.get(new Integer(group));
-        if (m == null) {
-            m = new GroupMessageStateMachine();
-            groupState.put(new Integer(group), m);
-        }
-        logger.trace("updating group state for {} to {}", group, a);
-        return (m.action(a, hops));
     }
 
     /**

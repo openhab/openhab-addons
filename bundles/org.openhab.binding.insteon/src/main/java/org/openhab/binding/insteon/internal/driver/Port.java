@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -83,6 +85,7 @@ public class Port {
     private ModemDBBuilder mdbb;
     private ArrayList<MsgListener> listeners = new ArrayList<>();
     private LinkedBlockingQueue<Msg> writeQueue = new LinkedBlockingQueue<>();
+    private AtomicBoolean disconnected = new AtomicBoolean(false);
 
     /**
      * Constructor
@@ -90,7 +93,8 @@ public class Port {
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public Port(String devName, Driver d, @Nullable SerialPortManager serialPortManager) {
+    public Port(String devName, Driver d, @Nullable SerialPortManager serialPortManager,
+            ScheduledExecutorService scheduler) {
         this.devName = devName;
         this.driver = d;
         this.logName = Utils.redactPassword(devName);
@@ -99,7 +103,7 @@ public class Port {
         this.ioStream = IOStream.create(serialPortManager, devName);
         this.reader = new IOStreamReader();
         this.writer = new IOStreamWriter();
-        this.mdbb = new ModemDBBuilder(this);
+        this.mdbb = new ModemDBBuilder(this, scheduler);
     }
 
     public boolean isModem(InsteonAddress a) {
@@ -124,10 +128,6 @@ public class Port {
 
     public Driver getDriver() {
         return driver;
-    }
-
-    public void setModemDBRetryTimeout(int timeout) {
-        mdbb.setRetryTimeout(timeout);
     }
 
     public void addListener(MsgListener l) {
@@ -163,11 +163,15 @@ public class Port {
         logger.debug("starting port {}", logName);
         if (running) {
             logger.debug("port {} already running, not started again", logName);
+            return;
         }
+
+        writeQueue.clear();
         if (!ioStream.open()) {
             logger.debug("failed to open port {}", logName);
             return;
         }
+        ioStream.start();
         readThread = new Thread(reader);
         readThread.setName("Insteon " + logName + " Reader");
         readThread.setDaemon(true);
@@ -176,9 +180,14 @@ public class Port {
         writeThread.setName("Insteon " + logName + " Writer");
         writeThread.setDaemon(true);
         writeThread.start();
-        modem.initialize();
-        mdbb.start(); // start downloading the device list
+
+        if (!mdbb.isComplete()) {
+            modem.initialize();
+            mdbb.start(); // start downloading the device list
+        }
+
         running = true;
+        disconnected.set(false);
     }
 
     /**
@@ -216,10 +225,10 @@ public class Port {
         } catch (InterruptedException e) {
             logger.debug("got interrupted waiting for write thread to exit.");
         }
+        readThread = null;
+        writeThread = null;
+
         logger.debug("all threads for port {} stopped.", logName);
-        synchronized (listeners) {
-            listeners.clear();
-        }
     }
 
     /**
@@ -253,6 +262,15 @@ public class Port {
             modemDBComplete = true;
         }
         driver.modemDBComplete(this);
+    }
+
+    public void disconnected() {
+        if (isRunning()) {
+            if (!disconnected.getAndSet(true)) {
+                logger.warn("port {} disconnected", logName);
+                driver.disconnected();
+            }
+        }
     }
 
     /**
@@ -294,6 +312,9 @@ public class Port {
                 }
             } catch (InterruptedException e) {
                 logger.debug("reader thread got interrupted!");
+            } catch (IOException e) {
+                logger.debug("got an io exception in the reader thread");
+                disconnected();
             }
             logger.debug("reader thread exiting!");
         }
@@ -353,7 +374,7 @@ public class Port {
             ArrayList<Byte> l = new ArrayList<>();
             for (int i = 0; i < len; i++) {
                 if (rng.nextInt(100) >= dropRate) {
-                    l.add(new Byte(buffer[i]));
+                    l.add(buffer[i]);
                 }
             }
             for (int i = 0; i < l.size(); i++) {
@@ -452,6 +473,10 @@ public class Port {
                     }
                 } catch (InterruptedException e) {
                     logger.debug("got interrupted exception in write thread");
+                    break;
+                } catch (IOException e) {
+                    logger.debug("got an io exception in the write thread");
+                    disconnected();
                     break;
                 }
             }

@@ -22,7 +22,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
@@ -338,7 +337,7 @@ public class SamsungTvHandler extends BaseThingHandler implements DiscoveryListe
                     result);
 
             /* Check if configuration should be updated */
-            if (StringUtils.isEmpty(configuration.macAddress)) {
+            if (configuration.macAddress == null || configuration.macAddress.trim().isEmpty()) {
                 String macAddress = WakeOnLanUtility.getMACAddress(configuration.hostName);
                 if (macAddress != null) {
                     putConfig(SamsungTvConfiguration.MAC_ADDRESS, macAddress);
