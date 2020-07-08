@@ -180,7 +180,6 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
             return "Mouse [device=" + device + ", type=" + type + ", detections=" + detections + ", typename="
                     + typename + "]";
         }
-
     }
 
     public static class Detection {
@@ -276,6 +275,5 @@ public class VerisureMiceDetectionDTO extends VerisureBaseThingDTO {
             return "Detection [count=" + count + ", gatewayTime=" + gatewayTime + ", nodeTime=" + nodeTime
                     + ", duration=" + duration + ", typename=" + typename + "]";
         }
-
     }
 }

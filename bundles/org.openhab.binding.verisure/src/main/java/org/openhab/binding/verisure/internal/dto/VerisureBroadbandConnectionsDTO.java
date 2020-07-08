@@ -126,6 +126,5 @@ public class VerisureBroadbandConnectionsDTO extends VerisureBaseThingDTO {
             return "Broadband [testDate=" + testDate + ", isBroadbandConnected=" + isBroadbandConnected + ", typename="
                     + typename + "]";
         }
-
     }
 }

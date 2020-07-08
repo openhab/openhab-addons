@@ -105,6 +105,5 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
     public void updateTriggerChannel(String event) {
         logger.debug("ClimateThingHandler trigger event {}", event);
         triggerChannel(CHANNEL_SMOKE_DETECTION_TRIGGER_CHANNEL, event);
-
     }
 }

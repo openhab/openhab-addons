@@ -1008,6 +1008,5 @@ public class VerisureSession {
         public PostToAPIException(String message) {
             super(message);
         }
-
     }
 }

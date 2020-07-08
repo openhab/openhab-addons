@@ -135,7 +135,6 @@ public class VerisureSmartLockDTO {
             return "DoorLockVolumeSettings [volume=" + volume + ", voiceLevel=" + voiceLevel + ", active=" + active
                     + ", availableVolumes=" + availableVolumes + ", availableVoiceLevels=" + availableVoiceLevels + "]";
         }
-
     }
 
     @Override

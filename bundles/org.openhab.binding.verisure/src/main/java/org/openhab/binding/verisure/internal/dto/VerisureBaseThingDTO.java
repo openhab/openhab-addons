@@ -238,7 +238,6 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
         public String toString() {
             return "Data [installation=" + installation + "]";
         }
-
     }
 
     public static class Installation {
@@ -404,7 +403,6 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
                     + communicationState + ", mice=" + mice + ", doorlocks=" + doorlocks + ", smartplugs=" + smartplugs
                     + ", userTrackings=" + userTrackings + ", typename=" + typename + "]";
         }
-
     }
 
     public static class Device {

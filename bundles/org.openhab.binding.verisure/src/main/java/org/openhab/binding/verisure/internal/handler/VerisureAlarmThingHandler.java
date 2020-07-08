@@ -209,6 +209,5 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
     public void updateTriggerChannel(String event) {
         logger.debug("ThingHandler trigger event {}", event);
         triggerChannel(CHANNEL_SMARTLOCK_TRIGGER_CHANNEL, event);
-
     }
 }

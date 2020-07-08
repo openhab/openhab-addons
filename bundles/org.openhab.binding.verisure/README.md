@@ -561,21 +561,21 @@ end
 
 rule "Verisure SmartLock Event Triggers"
 when
-    Channel "verisure:smartLock:f1191aab:2B558MTS:smartLockTriggerChannel" triggered
+    Channel "verisure:smartLock:myverisure:JannesSmartLock:smartLockTriggerChannel" triggered
 then
     logInfo("RULES", "A SmartLock trigger event was detected:" + receivedEvent.toString())
 end
 
 rule "Verisure Gateway Event Triggers"
 when
-    Channel "verisure:gateway:f1191aab:26FE9RS9:gatewayTriggerChannel" triggered
+    Channel "verisure:gateway:myverisure:JannesGateway:gatewayTriggerChannel" triggered
 then
     logInfo("RULES", "A Gateway trigger event was detected:" + receivedEvent.toString())
 end
 
 rule "Verisure DoorWindow Event Triggers"
 when
-    Channel "verisure:doorWindowSensor:f1191aab:2BEG5FJF:doorWindowTriggerChannel" triggered
+    Channel "verisure:doorWindowSensor:myverisure:1SG5GHGT:doorWindowTriggerChannel" triggered
 then
     logInfo("RULES", "A DoorWindow trigger event was detected:" + receivedEvent.toString())
 end

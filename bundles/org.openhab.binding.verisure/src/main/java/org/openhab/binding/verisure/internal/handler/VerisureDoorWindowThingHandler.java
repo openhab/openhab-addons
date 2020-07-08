@@ -90,6 +90,5 @@ public class VerisureDoorWindowThingHandler extends VerisureThingHandler<Verisur
     public void updateTriggerChannel(String event) {
         logger.debug("DoorWindowThingHandler trigger event {}", event);
         triggerChannel(CHANNEL_DOOR_WINDOW_TRIGGER_CHANNEL, event);
-
     }
 }

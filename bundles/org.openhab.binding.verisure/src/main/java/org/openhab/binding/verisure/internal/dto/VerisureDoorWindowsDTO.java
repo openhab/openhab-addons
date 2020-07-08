@@ -165,6 +165,5 @@ public class VerisureDoorWindowsDTO extends VerisureBaseThingDTO {
             return "DoorWindow [device=" + device + ", type=" + type + ", state=" + state + ", wired=" + wired
                     + ", reportTime=" + reportTime + ", typename=" + typename + "]";
         }
-
     }
 }

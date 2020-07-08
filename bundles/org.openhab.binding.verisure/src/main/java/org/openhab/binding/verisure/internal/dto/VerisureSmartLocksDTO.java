@@ -218,6 +218,5 @@ public class VerisureSmartLocksDTO extends VerisureBaseThingDTO {
                     + eventTime + ", method=" + method + ", userString=" + userString + ", device=" + device
                     + ", motorJam=" + motorJam + ", secureModeActive=" + secureModeActive + "]";
         }
-
     }
 }

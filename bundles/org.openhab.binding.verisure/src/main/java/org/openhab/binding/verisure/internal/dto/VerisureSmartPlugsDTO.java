@@ -150,6 +150,5 @@ public class VerisureSmartPlugsDTO extends VerisureBaseThingDTO {
             return "Smartplug [device=" + device + ", currentState=" + currentState + ", icon=" + icon
                     + ", isHazardous=" + isHazardous + ", typename=" + typename + "]";
         }
-
     }
 }

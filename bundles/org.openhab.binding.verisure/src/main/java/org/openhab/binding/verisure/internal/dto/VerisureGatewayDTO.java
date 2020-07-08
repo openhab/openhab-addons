@@ -169,6 +169,5 @@ public class VerisureGatewayDTO extends VerisureBaseThingDTO {
                     + ", mediaType=" + mediaType + ", device=" + device + ", testDate=" + testDate + ", typename="
                     + typename + "]";
         }
-
     }
 }

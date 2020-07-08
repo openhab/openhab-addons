@@ -351,7 +351,5 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
         public @Nullable String getEventCategory() {
             return eventCategory;
         }
-
     }
-
 }

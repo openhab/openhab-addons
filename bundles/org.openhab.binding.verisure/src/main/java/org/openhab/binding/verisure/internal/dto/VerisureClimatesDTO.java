@@ -183,6 +183,5 @@ public class VerisureClimatesDTO extends VerisureBaseThingDTO {
                     + humidityTimestamp + ", humidityValue=" + humidityValue + ", temperatureTimestamp="
                     + temperatureTimestamp + ", temperatureValue=" + temperatureValue + ", typename=" + typename + "]";
         }
-
     }
 }

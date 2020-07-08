@@ -243,6 +243,5 @@ public class VerisureUserPresencesDTO extends VerisureBaseThingDTO {
                     + ", deviceName=" + deviceName + ", currentLocationId=" + currentLocationId + ", typename="
                     + typename + "]";
         }
-
     }
 }

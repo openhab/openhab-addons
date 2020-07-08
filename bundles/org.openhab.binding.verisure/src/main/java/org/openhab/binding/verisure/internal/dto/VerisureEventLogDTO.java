@@ -98,7 +98,6 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
             return "EventLog [moreDataAvailable=" + moreDataAvailable + ", pagedList=" + pagedList + ", typename="
                     + typename + "]";
         }
-
     }
 
     public static class PagedList {
@@ -344,6 +343,5 @@ public class VerisureEventLogDTO extends VerisureBaseThingDTO {
                     + userType + ", climateValue=" + climateValue + ", sensorType=" + sensorType + ", eventCount="
                     + eventCount + ", typename=" + typename + "]";
         }
-
     }
 }

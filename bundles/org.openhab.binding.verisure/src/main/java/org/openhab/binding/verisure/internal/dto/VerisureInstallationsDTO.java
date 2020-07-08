@@ -117,7 +117,6 @@ public class VerisureInstallationsDTO {
         public String toString() {
             return "Data [installation=" + installation + ", account=" + account + "]";
         }
-
     }
 
     public static class Account {
@@ -174,7 +173,6 @@ public class VerisureInstallationsDTO {
         public String toString() {
             return "Account [typename=" + typename + ", owainstallations=" + owainstallations + "]";
         }
-
     }
 
     public static class Owainstallation {
@@ -298,6 +296,5 @@ public class VerisureInstallationsDTO {
             return "Owainstallation [typename=" + typename + ", alias=" + alias + ", dealerId=" + dealerId + ", giid="
                     + giid + ", subsidiary=" + subsidiary + ", type=" + type + "]";
         }
-
     }
 }
