@@ -14,7 +14,7 @@ package org.openhab.binding.netatmo.internal.welcome;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -26,15 +26,15 @@ import org.openhab.binding.netatmo.internal.camera.CameraHandler;
  * @author Ing. Peter Weiss - Initial contribution
  *
  */
+@NonNullByDefault
 public class NAWelcomeCameraHandler extends CameraHandler {
 
-    public NAWelcomeCameraHandler(@NonNull Thing thing, final TimeZoneProvider timeZoneProvider) {
+    public NAWelcomeCameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
     }
 
-    @SuppressWarnings("null")
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
+    protected State getNAThingProperty(String channelId) {
         switch (channelId) {
             case CHANNEL_WELCOME_CAMERA_STATUS:
                 return getStatusState();

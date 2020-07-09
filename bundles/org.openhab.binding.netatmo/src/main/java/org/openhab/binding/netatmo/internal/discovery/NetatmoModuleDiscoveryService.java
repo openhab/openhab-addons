@@ -29,13 +29,9 @@ import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDataListener;
 
 import io.swagger.client.model.NAHealthyHomeCoach;
-import io.swagger.client.model.NAHealthyHomeCoachDataBody;
 import io.swagger.client.model.NAMain;
 import io.swagger.client.model.NAPlug;
-import io.swagger.client.model.NAStationDataBody;
-import io.swagger.client.model.NAThermostatDataBody;
 import io.swagger.client.model.NAWelcomeHome;
-import io.swagger.client.model.NAWelcomeHomeData;
 
 /**
  * The {@link NetatmoModuleDiscoveryService} searches for available Netatmo
@@ -70,42 +66,41 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     @Override
     public void startScan() {
         if (netatmoBridgeHandler.configuration.readStation) {
-            NAStationDataBody stationDataBody = netatmoBridgeHandler.getStationsDataBody(null);
-            if (stationDataBody != null) {
-                stationDataBody.getDevices().forEach(station -> {
+            netatmoBridgeHandler.getStationsDataBody(null).ifPresent(dataBody -> {
+                dataBody.getDevices().forEach(station -> {
                     discoverWeatherStation(station);
                 });
-            }
+            });
         }
         if (netatmoBridgeHandler.configuration.readHealthyHomeCoach) {
-            NAHealthyHomeCoachDataBody homecoachDataBody = netatmoBridgeHandler.getHomecoachDataBody(null);
-            if (homecoachDataBody != null) {
-                homecoachDataBody.getDevices().forEach(homecoach -> {
+            netatmoBridgeHandler.getHomecoachDataBody(null).ifPresent(dataBody -> {
+                dataBody.getDevices().forEach(homecoach -> {
                     discoverHomeCoach(homecoach);
                 });
-            }
+            });
         }
         if (netatmoBridgeHandler.configuration.readThermostat) {
-            NAThermostatDataBody thermostatsDataBody = netatmoBridgeHandler.getThermostatsDataBody(null);
-            if (thermostatsDataBody != null) {
-                thermostatsDataBody.getDevices().forEach(plug -> {
+            netatmoBridgeHandler.getThermostatsDataBody(null).ifPresent(dataBody -> {
+                dataBody.getDevices().forEach(plug -> {
                     discoverThermostat(plug);
                 });
-            }
+            });
         }
         if (netatmoBridgeHandler.configuration.readWelcome || netatmoBridgeHandler.configuration.readPresence) {
-            NAWelcomeHomeData welcomeHomeData = netatmoBridgeHandler.getWelcomeDataBody(null);
-            if (welcomeHomeData != null) {
-                welcomeHomeData.getHomes().forEach(home -> {
+            netatmoBridgeHandler.getWelcomeDataBody(null).ifPresent(dataBody -> {
+                dataBody.getHomes().forEach(home -> {
                     discoverWelcomeHome(home);
                 });
-            }
+            });
         }
         stopScan();
     }
 
     @Override
     public void onDataRefreshed(Object data) {
+        if (!isBackgroundDiscoveryEnabled()) {
+            return;
+        }
         if (data instanceof NAMain) {
             discoverWeatherStation((NAMain) data);
         } else if (data instanceof NAPlug) {
