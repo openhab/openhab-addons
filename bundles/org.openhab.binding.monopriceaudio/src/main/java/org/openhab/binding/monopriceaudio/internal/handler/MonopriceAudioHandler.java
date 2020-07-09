@@ -214,10 +214,10 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 .round((double) (initialAllVolume - MIN_VOLUME) / (double) (MAX_VOLUME - MIN_VOLUME) * 100.0);
         updateState(ALL + CHANNEL_DELIMIT + CHANNEL_TYPE_ALLVOLUME, new PercentType(BigDecimal.valueOf(allVolumePct)));
 
-        updateStatus(ThingStatus.UNKNOWN);
-
         scheduleReconnectJob();
         schedulePollingJob();
+
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
