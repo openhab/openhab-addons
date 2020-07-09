@@ -658,7 +658,8 @@ public enum ComfoAirCommandType {
      */
     private ComfoAirCommandType(String key, ComfoAirDataType data_type, int read_command, int read_reply_command,
             int[] read_reply_data_pos, int read_reply_data_bits) {
-        this(key, data_type, null, 0, 0, 0, null, read_command, read_reply_command, read_reply_data_pos, 0);
+        this(key, data_type, null, 0, 0, 0, null, read_command, read_reply_command, read_reply_data_pos,
+                read_reply_data_bits);
     }
 
     /*

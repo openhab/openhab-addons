@@ -80,7 +80,7 @@ public class DataTypeMessage implements ComfoAirDataType {
                     errorCode.append("EA");
                     errorCode.append(convertToCode(errorEA));
                 }
-                return new StringType(errorCode.length() > 0 ? errorCode.toString() : "OK");
+                return new StringType(errorCode.length() > 0 ? errorCode.toString() : "No Errors");
             } else {
                 return UnDefType.UNDEF;
             }
@@ -94,15 +94,15 @@ public class DataTypeMessage implements ComfoAirDataType {
 
     private int convertToCode(int code) {
         switch (code) {
-            case 0x1:
+            case 0x01:
                 return 1;
-            case 0x2:
+            case 0x02:
                 return 2;
-            case 0x4:
+            case 0x04:
                 return 3;
-            case 0x8:
+            case 0x08:
                 return 4;
-            case 0xF:
+            case 0x10:
                 return 5;
             case 0x20:
                 return 6;
