@@ -68,8 +68,8 @@ import com.google.gson.Gson;
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
             .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
-                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING)
-            .collect(Collectors.toSet());
+                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING,
+                    THING_TYPE_WARNING_DEVICE).collect(Collectors.toSet());
 
     private static final double HUE_FACTOR = 65535 / 360.0;
     private static final double BRIGHTNESS_FACTOR = 2.54;
@@ -157,6 +157,12 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         Integer currentBri = lightStateCache.bri;
 
         switch (channelUID.getId()) {
+            case CHANNEL_ALERT:
+                if (command instanceof OnOffType) {
+                    newLightState.alert = command == OnOffType.ON ? "alert" : "none";
+                } else {
+                    return;
+                }
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
                     newLightState.on = (command == OnOffType.ON);
@@ -314,6 +320,9 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         Boolean on = newState.on;
 
         switch (channelId) {
+            case CHANNEL_ALERT:
+                updateState(channelId, "alert".equals(newState.alert) ? OnOffType.ON : OnOffType.OFF);
+                break;
             case CHANNEL_SWITCH:
                 if (on != null) {
                     updateState(channelId, OnOffType.from(on));
