@@ -192,23 +192,10 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_ANALOG_PRIORITY = "analogPriority";
     // Error channels
     public static final String CHANNEL_FILTER_ERROR = "filterError";
-    public static final String CHANNEL_ERROR_MESSAGE = "errorMessage";
-    public static final String CHANNEL_ERROR_A_CURRENT = "errorACurrent";
-    public static final String CHANNEL_ERROR_E_CURRENT = "errorECurrent";
-    public static final String CHANNEL_ERROR_A_LAST = "errorALast";
-    public static final String CHANNEL_ERROR_E_LAST = "errorELast";
-    public static final String CHANNEL_ERROR_A_PRELAST = "errorAPrelast";
-    public static final String CHANNEL_ERROR_E_PRELAST = "errorEPrelast";
-    public static final String CHANNEL_ERROR_A_PREPRELAST = "errorAPrePrelast";
-    public static final String CHANNEL_ERROR_E_PREPRELAST = "errorEPrePrelast";
-    public static final String CHANNEL_ERROR_EA_CURRENT = "errorEACurrent";
-    public static final String CHANNEL_ERROR_EA_LAST = "errorEALast";
-    public static final String CHANNEL_ERROR_EA_PRELAST = "errorEAPrelast";
-    public static final String CHANNEL_ERROR_EA_PREPRELAST = "errorEAPrePrelast";
-    public static final String CHANNEL_ERROR_HIGH_CURRENT = "errorAHighCurrent";
-    public static final String CHANNEL_ERROR_HIGH_LAST = "errorAHighLast";
-    public static final String CHANNEL_ERROR_HIGH_PRELAST = "errorAHighPrelast";
-    public static final String CHANNEL_ERROR_HIGH_PREPRELAST = "errorAHighPrePrelast";
+    public static final String CHANNEL_ERRORS_CURRENT = "errorsCurrent";
+    public static final String CHANNEL_ERRORS_LAST = "errorsLast";
+    public static final String CHANNEL_ERRORS_PRELAST = "errorsPreLast";
+    public static final String CHANNEL_ERRORS_PREPRELAST = "errorsPrePreLast";
     // Reset channels
     public static final String CHANNEL_FILTER_RESET = "filterReset";
     public static final String CHANNEL_ERROR_RESET = "errorReset";

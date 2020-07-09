@@ -259,23 +259,10 @@
 		<label>Error States</label>
 		<channels>
 			<channel id="filterError" typeId="filter_error" />
-			<channel id="errorMessage" typeId="error_message" />
-			<channel id="errorACurrent" typeId="errorA_current" />
-			<channel id="errorECurrent" typeId="errorE_current" />
-			<channel id="errorALast" typeId="errorA_last" />
-			<channel id="errorELast" typeId="errorE_last" />
-			<channel id="errorAPrelast" typeId="errorA_prelast" />
-			<channel id="errorEPrelast" typeId="errorE_prelast" />
-			<channel id="errorAPrePrelast" typeId="errorA_pre_prelast" />
-			<channel id="errorEPrePrelast" typeId="errorE_pre_prelast" />
-			<channel id="errorEACurrent" typeId="errorEA_current" />
-			<channel id="errorEALast" typeId="errorEA_last" />
-			<channel id="errorEAPrelast" typeId="errorEA_prelast" />
-			<channel id="errorEAPrePrelast" typeId="errorEA_pre_prelast" />
-			<channel id="errorAHighCurrent" typeId="errorA_high_current" />
-			<channel id="errorAHighLast" typeId="errorA_high_last" />
-			<channel id="errorAHighPrelast" typeId="errorA_high_prelast" />
-			<channel id="errorAHighPrePrelast" typeId="errorA_high_pre_prelast" />
+			<channel id="errorsCurrent" typeId="errors_current" />
+			<channel id="errorsLast" typeId="errors_last" />
+			<channel id="errorsPrelast" typeId="errors_prelast" />
+			<channel id="errorsPrePrelast" typeId="errors_pre_prelast" />
 		</channels>
 	</channel-group-type>
 
@@ -323,14 +310,6 @@
 		<label>Filter Error</label>
 		<description>Filter full</description>
 		<category>Switch</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="error_message">
-		<item-type>String</item-type>
-		<label>Error Message</label>
-		<description>Current errors</description>
-		<category>Text</category>
 		<state readOnly="true" />
 	</channel-type>
 
@@ -1163,130 +1142,34 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="errorA_current">
+	<channel-type id="errors_current">
 		<item-type>String</item-type>
-		<label>Error A Current</label>
-		<description>Current error A</description>
+		<label>Error Current</label>
+		<description>Current errors</description>
 		<category>Text</category>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorE_current">
+	<channel-type id="errors_last" advanced="true">
 		<item-type>String</item-type>
-		<label>Error E Current</label>
-		<description>Current error E</description>
+		<label>Errors Last</label>
+		<description>Last errors</description>
 		<category>Text</category>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorA_last" advanced="true">
+	<channel-type id="errors_prelast" advanced="true">
 		<item-type>String</item-type>
-		<label>Error A Last</label>
-		<description>Last error A</description>
+		<label>Errors Prelast</label>
+		<description>Prelast errors</description>
 		<category>Text</category>
 		<state readOnly="true" />
 	</channel-type>
 
-	<channel-type id="errorE_last" advanced="true">
+	<channel-type id="errors_pre_prelast" advanced="true">
 		<item-type>String</item-type>
-		<label>Error E Last</label>
-		<description>Last error E</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorA_prelast" advanced="true">
-		<item-type>String</item-type>
-		<label>Error A Prelast</label>
-		<description>Prelast error A</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorE_prelast" advanced="true">
-		<item-type>String</item-type>
-		<label>Error E Prelast</label>
-		<description>Prelast error E</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorA_pre_prelast" advanced="true">
-		<item-type>String</item-type>
-		<label>Error A Pre-Prelast</label>
-		<description>Pre-Prelast error A</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorE_pre_prelast" advanced="true">
-		<item-type>String</item-type>
-		<label>Error E Pre-Prelast</label>
-		<description>Pre-Prelast error E</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorEA_current" advanced="true">
-		<item-type>String</item-type>
-		<label>Error EA Current</label>
-		<description>Current error EA</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorEA_last" advanced="true">
-		<item-type>String</item-type>
-		<label>Error EA Last</label>
-		<description>Last error EA</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorEA_prelast" advanced="true">
-		<item-type>String</item-type>
-		<label>Error EA Prelast</label>
-		<description>Prelast error EA</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorEA_pre_prelast" advanced="true">
-		<item-type>String</item-type>
-		<label>Error EA Pre-Prelast</label>
-		<description>Pre-Prelast error EA</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorA_high_current" advanced="true">
-		<item-type>String</item-type>
-		<label>Error A (high) Current</label>
-		<description>Current error A (high)</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorA_high_last" advanced="true">
-		<item-type>String</item-type>
-		<label>Error A (high) Last</label>
-		<description>Last error A (high)</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorA_high_prelast" advanced="true">
-		<item-type>String</item-type>
-		<label>Error A (high) Prelast</label>
-		<description>Prelast error A (high)</description>
-		<category>Text</category>
-		<state readOnly="true" />
-	</channel-type>
-
-	<channel-type id="errorA_high_pre_prelast" advanced="true">
-		<item-type>String</item-type>
-		<label>Error A (high) Pre-Prelast</label>
-		<description>Pre-Prelast error A (high)</description>
+		<label>Errors Pre-Prelast</label>
+		<description>Pre-Prelast errors</description>
 		<category>Text</category>
 		<state readOnly="true" />
 	</channel-type>
