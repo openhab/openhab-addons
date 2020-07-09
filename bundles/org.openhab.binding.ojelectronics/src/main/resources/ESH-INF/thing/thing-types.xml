@@ -4,16 +4,16 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- Bridge -->
 	<bridge-type id="ojcloud">
-		<label>OJ Electronics Bridge</label>
-		<description>Bridge to access OJ Electronic devices.</description>
+		<label>OJ Electronics Cloud</label>
+		<description>Access to all OJ Electronic devices.</description>
 		<config-description>
 			<parameter name="userName" type="text" required="true">
 				<label>User Name</label>
-				<description>User Name for access to OJ Electronics cloud service.</description>
+				<description>User Name for access cloud service.</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>Password for access to OJ Electronics cloud service.</description>
+				<description>Password for access cloud service.</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="apiKey" type="text" required="true" min="36" max="36">
@@ -51,8 +51,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ojcloud"/>
 		</supported-bridge-type-refs>
-		<label>OJ Electronics OWD5/MWD5 Thermostat</label>
-		<description>OJ Electronics OWD5/MWD5 Thermostat</description>
+		<label>OWD5/MWD5 Thermostat</label>
+		<description>OWD5/MWD5 Thermostat</description>
 		<category>RadiatorControl</category>
 		<channels>
 			<channel id="floorTemperature" typeId="floorTemperature"/>
@@ -69,6 +69,9 @@
 			<channel id="manualSetpoint" typeId="manualSetpoint"/>
 			<channel id="vacationEnabled" typeId="vacationEnabled"/>
 		</channels>
+		<properties>
+			<property name="vendor">OJ Electronics</property>
+		</properties>
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>

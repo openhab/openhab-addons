@@ -33,5 +33,5 @@ public class Schedule {
     public List<Day> days = new ArrayList<Day>();
     @SerializedName("ModifiedDueToVerification")
     @Expose
-    public Boolean modifiedDueToVerification = false;
+    public boolean modifiedDueToVerification = false;
 }

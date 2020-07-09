@@ -50,7 +50,7 @@ public class OJElectronicsBridgeConfiguration {
     /**
      * Software Version
      */
-    public Integer softwareVersion = 1060;
+    public int softwareVersion = 1060;
 
     /**
      * Refresh-Delay

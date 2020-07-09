@@ -126,7 +126,7 @@ public final class RefreshService implements AutoCloseable {
 
     private Request createRequest() {
         Request request = httpClient.newRequest(config.apiUrl + "/Group/GroupContents").param("sessionid", sessionId)
-                .param("APIKEY", config.apiKey).method(HttpMethod.GET);
+                .param("apiKey", config.apiKey).method(HttpMethod.GET);
         return request;
     }
 

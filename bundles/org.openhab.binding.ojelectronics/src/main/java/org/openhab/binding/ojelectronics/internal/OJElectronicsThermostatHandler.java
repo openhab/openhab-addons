@@ -36,12 +36,12 @@ import org.openhab.binding.ojelectronics.internal.models.groups.Thermostat;
  * The {@link OJElectronicsThermostatHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author EvilPingu - Initial contribution
+ * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
 public class OJElectronicsThermostatHandler extends BaseThingHandler {
 
-    private String serialNumber;
+    private final String serialNumber;
 
     /**
      * Creates a new instance of {@link OJElectronicsThermostatHandler}

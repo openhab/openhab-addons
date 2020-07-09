@@ -15,7 +15,7 @@ There are two things:
 
 ## Discovery
 
-Not at the moment
+Not supported at the moment.
 
 ## Thing Configuration
 
@@ -25,7 +25,7 @@ Not at the moment
 |-----------------------|--------------------------------------------------------------------------|
 | userName              | user name from the OJElectronics App (required)                          |
 | password              | password from the OJElectronics App (required)                           |
-| APIKEY                | API key. You get the key from your local distributor.                    |
+| apiKey                | API key. You get the key from your local distributor.                    |
 | apiUrl                | URL of the API endpoint. Optional, the default value should always work. |
 | refreshDelayInSeconds | Refresh interval in seconds. Optional, the default value is 30 seconds.  |
 | customerId            | Customer ID. Optional, the default value should always work.             |

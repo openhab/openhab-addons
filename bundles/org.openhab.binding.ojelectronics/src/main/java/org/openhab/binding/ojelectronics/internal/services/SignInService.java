@@ -88,7 +88,7 @@ public class SignInService {
     }
 
     private PostSignInQueryModel getPostSignInQueryModel() {
-        return new PostSignInQueryModel().withAPIKEY(config.apiKey).withClientSWVersion(config.softwareVersion)
+        return new PostSignInQueryModel().withApiKey(config.apiKey).withClientSWVersion(config.softwareVersion)
                 .withCustomerId(config.customerId).withUserName(config.userName).withPassword(config.password);
     }
 }

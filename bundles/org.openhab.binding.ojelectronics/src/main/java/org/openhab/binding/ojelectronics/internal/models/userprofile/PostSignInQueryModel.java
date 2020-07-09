@@ -27,7 +27,7 @@ public class PostSignInQueryModel {
 
     @SerializedName("APIKEY")
     @Expose
-    public String apikey = "";
+    public String apiKey = "";
 
     @SerializedName("UserName")
     @Expose
@@ -48,11 +48,11 @@ public class PostSignInQueryModel {
     /**
      * Add API-Key
      *
-     * @param aPIKEY API-Key
+     * @param apiKey API-Key
      * @return Model
      */
-    public PostSignInQueryModel withAPIKEY(String apikey) {
-        this.apikey = apikey;
+    public PostSignInQueryModel withApiKey(String apiKey) {
+        this.apiKey = apiKey;
         return this;
     }
 
