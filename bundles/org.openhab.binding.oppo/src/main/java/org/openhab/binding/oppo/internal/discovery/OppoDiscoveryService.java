@@ -129,12 +129,13 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
         try {
             final InetAddress addr = InetAddress.getByName(SDDP_ADDR);
             final List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            final ExecutorService service = Executors.newFixedThreadPool(networkInterfaces.size());
+            executorService = service;
 
-            executorService = Executors.newFixedThreadPool(networkInterfaces.size());
             scanning = true;
             for (final NetworkInterface netint : networkInterfaces) {
 
-                executorService.execute(() -> {
+                service.execute(() -> {
                     try {
                         MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
                         multiSocket.setSoTimeout(TIMEOUT);
@@ -194,20 +195,24 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
         for (String msg : message.split("\n")) {
             String[] line = msg.split(":");
 
-            if (line[0] != null && line[1] != null) {
-                if (line[0].contains("Server IP")) {
-                    host = line[1].trim();
-                }
+            if (line.length == 2) {
+                if (line[0] != null && line[1] != null) {
+                    if (line[0].contains("Server IP")) {
+                        host = line[1].trim();
+                    }
 
-                if (line[0].contains("Server Port")) {
-                    port = line[1].trim();
-                }
+                    if (line[0].contains("Server Port")) {
+                        port = line[1].trim();
+                    }
 
-                if (line[0].contains("Server Name")) {
-                    // example: "OPPO UDP-203"
-                    // note: Server Name only provided on UDP models, not present on BDP models
-                    displayName = line[1].trim();
+                    if (line[0].contains("Server Name")) {
+                        // example: "OPPO UDP-203"
+                        // note: Server Name only provided on UDP models, not present on BDP models
+                        displayName = line[1].trim();
+                    }
                 }
+            } else {
+                logger.debug("messageReceive() - Unable to process line: {}", msg);
             }
         }
 
@@ -257,7 +262,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 properties.put("host", host);
 
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(displayName + " (" + host + ")").build();
+                        .withRepresentationProperty("host").withLabel(displayName + " (" + host + ")").build();
 
                 this.thingDiscovered(result);
             }
@@ -273,17 +278,18 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        if (executorService == null) {
+        ExecutorService service = executorService;
+        if (service == null) {
             return;
         }
 
         scanning = false;
 
         try {
-            executorService.awaitTermination(TIMEOUT * 5, TimeUnit.MILLISECONDS);
+            service.awaitTermination(TIMEOUT * 5, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
         }
-        executorService.shutdown();
+        service.shutdown();
         executorService = null;
     }
 }

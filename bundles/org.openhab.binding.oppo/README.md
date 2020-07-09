@@ -25,7 +25,7 @@ It has the `player` id.
 ## Discovery
 
 Manually initiated Auto-discovery is supported if the player is accessible on the same IP subnet of the openHAB server.
-In the Paper UI Inbox, select Search For Things at the bottom and then choose the Oppo Blu-ray Player Binding to initiate discovery.
+In the Inbox, select Search For Things and then choose the Oppo Blu-ray Player Binding to initiate discovery.
 
 ## Binding Configuration
 
@@ -36,13 +36,13 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label  | Parameter ID | Description                                                                                                                      | Accepted values             |
-|------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
-| Player Model     | model        | Specifies what model of player is to be controlled by the binding (required).                                                    | 83, 103, 105, 203, or 205 | |
-| Address          | host         | Host name or IP address of the Oppo player or serial over IP device.                                                             | host name or ip           | |
-| Port             | port         | Communication port for using serial over IP. Leave blank if using direct IP connection to the player.                            | ip port number            | |
-| Serial Port      | serialPort   | Serial port to use for directly connecting to the Oppo player                                                                    | a comm port name          | |
-| Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 30 seconds. | Boolean; default false    | |
+| Parameter Label  | Parameter ID | Description                                                                                                                      | Accepted values           |
+|------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| Player Model     | model        | Specifies what model of player is to be controlled by the binding (required).                                                    | 83, 103, 105, 203, or 205 |
+| Address          | host         | Host name or IP address of the Oppo player or serial over IP device.                                                             | host name or ip           |
+| Port             | port         | Communication port for using serial over IP. Leave blank if using direct IP connection to the player.                            | ip port number            |
+| Serial Port      | serialPort   | Serial port to use for directly connecting to the Oppo player                                                                    | a comm port name          |
+| Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 30 seconds. | Boolean; default false    |
 
 Some notes:
 
@@ -50,17 +50,13 @@ Some notes:
 * For some reason on these models, the unsolicited time code update messages are not generated over the IP socket.
 * If per-second time updates are required on these models, a direct serial or serial over IP connection to the player is required.
 * The UDP-20x series should be fully functional over direct IP connection but I don't have one to test with.
-*
 * As previously noted, when using verbose mode, the player will send time code messages once per second while playback is ongoing.
 * Be aware that this could cause performance impacts to your openHAB system.
 * In non-verbose (the default), the binding will poll the player every 30 seconds to update play time, track and chapter information instead.
-*
 * In order for the direct IP connection to work while the player is turned off, the Standby Mode setting must be set to "Quick Start" in the Device Setup menu.
 * Likewise if the player is turned off, it may not be discoverable by the Binding's discovery scan.
-*
 * If you experience any issues using the binding, first ensure that the player's firmware is up to date with the latest available version (especially on the older models). 
 * For the older models, some of the features in the control API were added after the players were shipped.
-*
 * On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom.

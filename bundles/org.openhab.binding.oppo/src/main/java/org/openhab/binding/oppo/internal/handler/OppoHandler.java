@@ -65,10 +65,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OppoHandler extends BaseThingHandler implements OppoMessageEventListener {
-    private static final long RECON_POLLING_INTERVAL = 60;
-    private static final long POLLING_INTERVAL = 30;
-    private static final long INITIAL_POLLING_DELAY = 10;
-    private static final long SLEEP_BETWEEN_CMD = 100;
+    private static final long RECON_POLLING_INTERVAL_SEC = 60;
+    private static final long POLLING_INTERVAL_SEC = 30;
+    private static final long INITIAL_POLLING_DELAY_SEC = 10;
+    private static final long SLEEP_BETWEEN_CMD_MS = 100;
 
     private static final Pattern TIME_CODE_PATTERN = Pattern
             .compile("^(\\d{3}) (\\d{3}) ([A-Z]{1}) (\\d{2}:\\d{2}:\\d{2})$");
@@ -113,31 +113,34 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         String model = BLANK;
         boolean override = false;
 
-        if (config.model == null) {
+        Integer mod = config.model;
+        String serialPort = config.serialPort;
+        String host = config.host;
+        Integer port = config.port;
+
+        if (mod == null) {
             configError = "player model must be specified";
             return;
         }
 
-        model = config.model.toString();
-        if ((config.serialPort == null || config.serialPort.isEmpty())
-                && (config.host == null || config.host.isEmpty())) {
+        if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
             configError = "undefined serialPort and host configuration settings; please set one of them";
-        } else if (config.host == null || config.host.isEmpty()) {
-            if (config.serialPort.toLowerCase().startsWith("rfc2217")) {
+        } else if (serialPort != null && (host == null || host.isEmpty())) {
+            if (serialPort.toLowerCase().startsWith("rfc2217")) {
                 configError = "use host and port configuration settings for a serial over IP connection";
             }
         } else {
-            if (config.port == null) {
+            if (port == null) {
                 if ((MODEL83).equals(model)) {
-                    config.port = BDP83_PORT;
+                    port = BDP83_PORT;
                     override = true;
                 } else if ((MODEL103).equals(model) || (MODEL105).equals(model)) {
-                    config.port = BDP10X_PORT;
+                    port = BDP10X_PORT;
                     override = true;
                 } else {
-                    config.port = BDP20X_PORT;
+                    port = BDP20X_PORT;
                 }
-            } else if (config.port <= 0) {
+            } else if (port <= 0) {
                 configError = "invalid port configuration setting";
             }
         }
@@ -147,12 +150,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             return;
         }
 
-        if (config.serialPort != null) {
-            String serialPort = config.serialPort;
+        if (serialPort != null) {
             connector = new OppoSerialConnector(serialPortManager, serialPort);
-        } else {
-            connector = new OppoIpConnector(config.host, config.port);
+        } else if (port != null) {
+            connector = new OppoIpConnector(host, port);
             connector.overrideCmdPreamble(override);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "configuration error");
+            return;
         }
 
         if (config.verboseMode) {
@@ -187,9 +192,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
         updateThing(editThing().withChannels(channels).build());
 
-        updateStatus(ThingStatus.UNKNOWN);
         scheduleReconnectJob();
         schedulePollingJob();
+
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -223,6 +229,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
         synchronized (sequenceLock) {
             try {
+                String commandStr = command.toString();
                 switch (channel) {
                     case CHANNEL_POWER:
                         if (command instanceof OnOffType) {
@@ -232,7 +239,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case CHANNEL_VOLUME:
                         if (command instanceof PercentType) {
-                            connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, command.toString());
+                            connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, commandStr);
                         }
                         break;
                     case CHANNEL_MUTE:
@@ -255,23 +262,22 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case CHANNEL_TIME_MODE:
                         if (command instanceof StringType) {
-                            connector.sendCommand(OppoCommand.SET_TIME_DISPLAY, command.toString());
-                            currentTimeMode = command.toString();
+                            connector.sendCommand(OppoCommand.SET_TIME_DISPLAY, commandStr);
+                            currentTimeMode = commandStr;
                         }
                         break;
                     case CHANNEL_REPEAT_MODE:
                         if (command instanceof StringType) {
                             // this one is lame, the response code when querying repeat mode is two digits,
                             // but setting it is a 2-3 letter code.
-                            connector.sendCommand(OppoCommand.SET_REPEAT,
-                                    OppoStatusCodes.REPEAT_MODE.get(command.toString()));
+                            connector.sendCommand(OppoCommand.SET_REPEAT, OppoStatusCodes.REPEAT_MODE.get(commandStr));
                         }
                         break;
                     case CHANNEL_ZOOM_MODE:
                         if (command instanceof StringType) {
                             // again why could't they make the query code and set code the same?
                             connector.sendCommand(OppoCommand.SET_ZOOM_RATIO,
-                                    OppoStatusCodes.ZOOM_MODE.get(command.toString()));
+                                    OppoStatusCodes.ZOOM_MODE.get(commandStr));
                         }
                         break;
                     case CHANNEL_SUB_SHIFT:
@@ -288,17 +294,17 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case CHANNEL_HDMI_MODE:
                         if (command instanceof StringType) {
-                            connector.sendCommand(OppoCommand.SET_HDMI_MODE, command.toString());
+                            connector.sendCommand(OppoCommand.SET_HDMI_MODE, commandStr);
                         }
                         break;
                     case CHANNEL_HDR_MODE:
                         if (command instanceof StringType) {
-                            connector.sendCommand(OppoCommand.SET_HDR_MODE, command.toString());
+                            connector.sendCommand(OppoCommand.SET_HDR_MODE, commandStr);
                         }
                         break;
                     case CHANNEL_REMOTE_BUTTON:
                         if (command instanceof StringType) {
-                            connector.sendCommand(command.toString());
+                            connector.sendCommand(commandStr);
                         }
                         break;
                     default:
@@ -365,19 +371,17 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case UTC:
                         // Player sent a time code update ie: 000 000 T 00:00:01
                         // g1 = title(movie only; cd always 000), g2 = chapter(movie)/track(cd), g3 = time display code,
-                        // g4
-                        // = time
+                        // g4 = time
                         Matcher matcher = TIME_CODE_PATTERN.matcher(updateData);
                         if (matcher.find()) {
                             // only update these when chapter/track changes to prevent spamming the channels with
                             // unnecessary updates
                             if (!currentChapter.equals(matcher.group(2))) {
                                 currentChapter = matcher.group(2);
-                                connector.sendCommand(OppoCommand.QUERY_TITLE_TRACK); // for CDs this will get track 1/x
-                                                                                      // also
-                                connector.sendCommand(OppoCommand.QUERY_CHAPTER); // for movies shows chapter 1/x;
-                                                                                  // always
-                                                                                  // 0/0 for CDs
+                                // for CDs this will get track 1/x also
+                                connector.sendCommand(OppoCommand.QUERY_TITLE_TRACK);
+                                // for movies shows chapter 1/x; always 0/0 for CDs
+                                connector.sendCommand(OppoCommand.QUERY_CHAPTER);
                             }
 
                             if (!currentTimeMode.equals(matcher.group(3))) {
@@ -431,8 +435,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case UPL:
                         // we got the playback status update, throw it away and call the query because the text output
-                        // is
-                        // better
+                        // is better
                         connector.sendCommand(OppoCommand.QUERY_PLAYBACK_STATUS);
                         break;
                     case QTK:
@@ -553,13 +556,13 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             long prevUpdateTime = lastEventReceived;
 
                             connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
-                            Thread.sleep(SLEEP_BETWEEN_CMD);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
 
                             // if the player is off most of these won't really do much...
                             OppoCommand.INITIAL_COMMANDS.forEach(cmd -> {
                                 try {
                                     connector.sendCommand(cmd);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD);
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                 } catch (OppoException | InterruptedException e) {
                                     logger.debug("Exception sending initial commands: {}", e.getMessage());
                                 }
@@ -585,7 +588,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     }
                 }
             }
-        }, 1, RECON_POLLING_INTERVAL, TimeUnit.SECONDS);
+        }, 1, RECON_POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     /**
@@ -630,11 +633,11 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                     connector.sendCommand(OppoCommand.QUERY_CHAPTER_REMAIN);
                                     break;
                             }
-                            Thread.sleep(SLEEP_BETWEEN_CMD);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
 
                             // make queries to refresh total number of titles/tracks & chapters
                             connector.sendCommand(OppoCommand.QUERY_TITLE_TRACK);
-                            Thread.sleep(SLEEP_BETWEEN_CMD);
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                             connector.sendCommand(OppoCommand.QUERY_CHAPTER);
                         } else {
                             // verbose mode 3 or off
@@ -647,7 +650,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
                     // if the last event received was more than 1.25 intervals ago,
                     // the player is not responding even though the connection is still good
-                    if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL * 1.25 * 1000)) {
+                    if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL_SEC * 1.25 * 1000)) {
                         logger.debug("Player not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Player not responding to status requests");
@@ -656,7 +659,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     }
                 }
             }
-        }, INITIAL_POLLING_DELAY, POLLING_INTERVAL, TimeUnit.SECONDS);
+        }, INITIAL_POLLING_DELAY_SEC, POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     /**

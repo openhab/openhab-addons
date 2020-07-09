@@ -46,7 +46,7 @@ public class OppoIpConnector extends OppoConnector {
      * @param address the IP address of the player or serial over ip adapter
      * @param port the TCP port to be used
      */
-    public OppoIpConnector(@Nullable String address, @Nullable Integer port) {
+    public OppoIpConnector(@Nullable String address, int port) {
         this.address = address;
         this.port = port;
     }
