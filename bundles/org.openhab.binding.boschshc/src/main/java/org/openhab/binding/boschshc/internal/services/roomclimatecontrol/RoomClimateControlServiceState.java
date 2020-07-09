@@ -2,12 +2,14 @@ package org.openhab.binding.boschshc.internal.services.roomclimatecontrol;
 
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 
 import tec.uom.se.unit.Units;
 
+@NonNullByDefault
 public class RoomClimateControlServiceState extends BoschSHCServiceState {
 
     private static final String Type = "climateControlState";
