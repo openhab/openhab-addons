@@ -20,6 +20,8 @@
 			<channel id="stop" typeId="stop"/>
 		</channels>
 
+		<representation-property>uniqueId</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>Network Address</label>

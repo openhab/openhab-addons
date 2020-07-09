@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MPDResponseParser {
 
-    static public Map<String, String> responseToMap(MPDResponse response) {
+    static Map<String, String> responseToMap(MPDResponse response) {
         Map<String, String> map = new HashMap<String, String>();
 
         for (String line : response.getLines()) {

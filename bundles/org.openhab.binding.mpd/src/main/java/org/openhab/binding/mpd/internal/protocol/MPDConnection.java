@@ -65,6 +65,7 @@ public class MPDConnection implements MPDResponseListener {
         final MPDConnectionThread connectionThread = this.connectionThread;
         if (connectionThread != null) {
             connectionThread.dispose();
+            connectionThread.interrupt();
             try {
                 connectionThread.join();
             } catch (InterruptedException e) {

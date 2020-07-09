@@ -44,4 +44,5 @@ public class MPDBindingConstants {
     // Config Parameters
     public static final String PARAMETER_IPADDRESS = "ipAddress";
     public static final String PARAMETER_PORT = "port";
+    public static final String UNIQUE_ID = "uniqueId";
 }

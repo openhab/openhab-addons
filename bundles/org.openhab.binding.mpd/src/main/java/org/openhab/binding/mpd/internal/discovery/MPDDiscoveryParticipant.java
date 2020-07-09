@@ -63,18 +63,21 @@ public class MPDDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         logger.debug("Music Player Daemon found on host {} port {}", host, port);
 
-        if (uid == null || host == null || "".equals(host)) {
+        if (uid == null || host == null || host.isEmpty()) {
             return null;
         }
+
+        String uniquePropVal = String.format("%s-%d", host, port);
 
         final Map<String, Object> properties = new HashMap<>(2);
         properties.put(MPDBindingConstants.PARAMETER_IPADDRESS, host);
         properties.put(MPDBindingConstants.PARAMETER_PORT, port);
+        properties.put(MPDBindingConstants.UNIQUE_ID, uniquePropVal);
 
         String name = service.getName();
 
-        final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(name)
-                .build();
+        final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(name).withProperties(properties)
+                .withRepresentationProperty(MPDBindingConstants.UNIQUE_ID).build();
         return result;
     }
 

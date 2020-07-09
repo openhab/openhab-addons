@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.mpd.internal.MPDBindingConstants;
 import org.openhab.binding.mpd.internal.MPDConfiguration;
 import org.openhab.binding.mpd.internal.action.MPDActions;
 import org.openhab.binding.mpd.internal.protocol.MPDConnection;
@@ -83,21 +84,23 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         MPDConfiguration config = getConfigAs(MPDConfiguration.class);
+        String uniquePropVal = String.format("%s-%d", config.getIpAddress(), config.getPort());
+        updateProperty(MPDBindingConstants.UNIQUE_ID, uniquePropVal);
+
+        updateStatus(ThingStatus.UNKNOWN);
         connection.start(config.getIpAddress(), config.getPort(), config.getPassword());
     }
 
     @Override
     public void dispose() {
         ScheduledFuture<?> future = this.futureUpdateStatus;
-        if (future != null && !future.isCancelled()) {
+        if (future != null) {
             future.cancel(true);
         }
 
         future = this.futureUpdateCurrentSong;
-        if (future != null && !future.isCancelled()) {
+        if (future != null) {
             future.cancel(true);
         }
 
@@ -148,7 +151,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
         logger.debug("scheduleUpdateStatus");
         ScheduledFuture<?> future = this.futureUpdateStatus;
         if (future == null || future.isCancelled() || future.isDone()) {
-            this.futureUpdateStatus = scheduler.schedule(() -> doUpdateStatus(), 100, TimeUnit.MILLISECONDS);
+            this.futureUpdateStatus = scheduler.schedule(this::doUpdateStatus, 100, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -160,7 +163,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
         logger.debug("scheduleUpdateCurrentSong");
         ScheduledFuture<?> future = this.futureUpdateCurrentSong;
         if (future == null || future.isCancelled() || future.isDone()) {
-            this.futureUpdateCurrentSong = scheduler.schedule(() -> doUpdateCurrentSong(), 100, TimeUnit.MILLISECONDS);
+            this.futureUpdateCurrentSong = scheduler.schedule(this::doUpdateCurrentSong, 100, TimeUnit.MILLISECONDS);
         }
     }
 

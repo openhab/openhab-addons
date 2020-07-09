@@ -49,6 +49,7 @@ public class MPDConnectionThread extends Thread {
     private final String password;
 
     private @Nullable Socket socket = null;
+    private @Nullable InputStreamReader inputStreamReader = null;
     private @Nullable BufferedReader reader = null;
     private @Nullable DataOutputStream writer = null;
 
@@ -62,11 +63,11 @@ public class MPDConnectionThread extends Thread {
         this.address = address;
         this.port = port;
         this.password = password;
+        setDaemon(true);
     }
 
     @Override
     public void run() {
-
         try {
             while (!disposed.get()) {
                 try {
@@ -102,10 +103,13 @@ public class MPDConnectionThread extends Thread {
      */
     public void dispose() {
         disposed.set(true);
-        synchronized (pendingCommands) {
-            pendingCommands.add(new MPDCommand("close"));
-            sendNoIdleIfInIdle();
-            interrupt();
+        Socket socket = this.socket;
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+            }
+            this.socket = null;
         }
     }
 
@@ -141,6 +145,7 @@ public class MPDConnectionThread extends Thread {
             try {
                 sendCommand(new MPDCommand("noidle"));
             } catch (IOException e) {
+                logger.debug("sendCommand(noidle) failed");
             }
         }
     }
@@ -166,10 +171,11 @@ public class MPDConnectionThread extends Thread {
     }
 
     private void openSocket() throws IOException {
-        logger.debug("opening connection to {} port {}", this.address, this.port);
-        Socket socket = new Socket(this.address, this.port);
+        logger.debug("opening connection to {} port {}", address, port);
+        Socket socket = new Socket(address, port);
 
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+        inputStreamReader = new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8);
+        reader = new BufferedReader(inputStreamReader);
         writer = new DataOutputStream(socket.getOutputStream());
 
         this.socket = socket;
@@ -211,6 +217,15 @@ public class MPDConnectionThread extends Thread {
             this.reader = null;
         }
 
+        InputStreamReader inputStreamReader = this.inputStreamReader;
+        if (inputStreamReader != null) {
+            try {
+                inputStreamReader.close();
+            } catch (IOException e) {
+            }
+            this.inputStreamReader = null;
+        }
+
         DataOutputStream writer = this.writer;
         if (writer != null) {
             try {
@@ -227,8 +242,6 @@ public class MPDConnectionThread extends Thread {
             } catch (IOException e) {
             }
             this.socket = null;
-            this.reader = null;
-            this.writer = null;
         }
     }
 

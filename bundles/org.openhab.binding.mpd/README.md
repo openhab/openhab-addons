@@ -7,7 +7,7 @@ With the openHAB MPD binding you can control Music Player Daemons.
 
 ## Supported Things
 
-The Music Player Daemon is supported.
+This binding supports one ThingType: mpd
 
 ## Discovery
 
@@ -16,11 +16,11 @@ If zeroconf is enabled in the Music Player Daemon, it is discovered. Each Music 
 
 ## Thing Configuration
 
-The thing requires the following configuration parameters:
+The ThingType mpd requires the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                                                              | Required |
 |-----------------|--------------|--------------------------------------------------------------------------|----------|
-| IP Address      | ipAddress    | Host name or IP address of the Music Player Daemon)                      | yes      |
+| IP Address      | ipAddress    | Host name or IP address of the Music Player Daemon                       | yes      |
 | Port            | port         | Port number on which the Music Player Daemon is listening. Default: 6600 | yes      |
 | Password        | password     | Password to access the Music Player Daemon                               | no       |
 

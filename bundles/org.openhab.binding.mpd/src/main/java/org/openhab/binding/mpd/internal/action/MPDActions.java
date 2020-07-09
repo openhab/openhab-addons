@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mpd.internal.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -53,6 +56,7 @@ public class MPDActions implements ThingActions {
             @ActionInput(name = "parameter") @Nullable String parameter) {
         logger.debug("sendCommand called with {}", command);
 
+        MPDHandler handler = this.handler;
         if (handler != null) {
             handler.sendCommand(command, parameter);
         } else {
@@ -64,6 +68,7 @@ public class MPDActions implements ThingActions {
     public void sendCommand(@ActionInput(name = "command") @Nullable String command) {
         logger.debug("sendCommand called with {}", command);
 
+        MPDHandler handler = this.handler;
         if (handler != null) {
             handler.sendCommand(command);
         } else {
@@ -71,20 +76,31 @@ public class MPDActions implements ThingActions {
         }
     }
 
+    private static MPDActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(MPDActions.class.getName())) {
+            if (actions instanceof MPDActions) {
+                return (MPDActions) actions;
+            } else {
+                return (MPDActions) Proxy.newProxyInstance(MPDActions.class.getClassLoader(),
+                        new Class[] { MPDActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
+    }
+
     public static void sendCommand(@Nullable ThingActions actions, @Nullable String command,
             @Nullable String parameter) {
-        if (actions instanceof MPDActions) {
-            ((MPDActions) actions).sendCommand(command, parameter);
-        } else {
-            throw new IllegalArgumentException("Instance is not an MPDActions class.");
-        }
+        invokeMethodOf(actions).sendCommand(command, parameter);
     }
 
     public static void sendCommand(@Nullable ThingActions actions, @Nullable String command) {
-        if (actions instanceof MPDActions) {
-            ((MPDActions) actions).sendCommand(command);
-        } else {
-            throw new IllegalArgumentException("Instance is not an MPDActions class.");
-        }
+        invokeMethodOf(actions).sendCommand(command);
     }
 }

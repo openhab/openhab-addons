@@ -15,6 +15,8 @@ package org.openhab.binding.mpd.internal.protocol;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for representing a song.
@@ -23,6 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MPDSong {
+
+    private final Logger logger = LoggerFactory.getLogger(MPDSong.class);
+
     private final String filename;
     private final String album;
     private final String artist;
@@ -80,6 +85,7 @@ public class MPDSong {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
+            logger.debug("parseInt of {} failed", value);
         }
         return aDefault;
     }

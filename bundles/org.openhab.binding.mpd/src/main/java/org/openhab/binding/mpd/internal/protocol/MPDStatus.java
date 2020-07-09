@@ -15,6 +15,8 @@ package org.openhab.binding.mpd.internal.protocol;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for representing the status of a Music Player Daemon.
@@ -29,6 +31,8 @@ public class MPDStatus {
         PAUSE,
         STOP
     }
+
+    private final Logger logger = LoggerFactory.getLogger(MPDStatus.class);
 
     private final State state;
     private final int volume;
@@ -64,6 +68,7 @@ public class MPDStatus {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
+            logger.debug("parseVolume of {} failed", value);
         }
         return 0;
     }
