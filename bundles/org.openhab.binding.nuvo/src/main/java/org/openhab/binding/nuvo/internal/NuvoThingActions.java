@@ -38,12 +38,17 @@ public class NuvoThingActions implements ThingActions {
     private @Nullable NuvoHandler handler;
 
     @RuleAction(label = "sendNuvoCommand", description = "Action that sends raw command to the amplifer")
-    public void sendNuvoCommand(@ActionInput(name = "sendNuvoCommand") @Nullable String rawCommand) {
-        handler.handleRawCommand(rawCommand);
-        logger.debug("sendNuvoCommand called with raw command: {}", rawCommand);
+    public void sendNuvoCommand(@ActionInput(name = "sendNuvoCommand") String rawCommand) {
+        NuvoHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.handleRawCommand(rawCommand);
+            logger.debug("sendNuvoCommand called with raw command: {}", rawCommand);
+        } else {
+            logger.warn("unable to send command, NuvoHandler was null");
+        }
     }
 
-    public static void sendRawCommand(@Nullable ThingActions actions, @Nullable String rawCommand)
+    public static void sendRawCommand(@Nullable ThingActions actions, String rawCommand)
             throws IllegalArgumentException {
         if (actions instanceof NuvoThingActions) {
             ((NuvoThingActions) actions).sendNuvoCommand(rawCommand);

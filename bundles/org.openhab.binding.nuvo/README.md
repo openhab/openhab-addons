@@ -32,20 +32,19 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label         | Parameter ID | Description                                                                                                                        | Accepted values          |
-|-------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
-| Serial Port             | serialPort   | Serial port to use for connecting to the Nuvo whole house amplifier device                                                         | a comm port name       | |
-| Address                 | host         | Host name or IP address of the machine connected to the Nuvo whole house amplifier device (serial over IP)                         | host name or ip        | |
-| Port                    | port         | Communication port (serial over IP).                                                                                               | ip port number         | |
-| Number of Zones         | numZones     | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)        | (1-20; default 6)      | |
-| Sync Clock on GConcerto | clockSync    | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock | Boolean; default false | |
+| Parameter Label         | Parameter ID | Description                                                                                                                        | Accepted values        |
+|-------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------|------------------------|
+| Serial Port             | serialPort   | Serial port to use for connecting to the Nuvo whole house amplifier device                                                         | a comm port name       |
+| Address                 | host         | Host name or IP address of the machine connected to the Nuvo whole house amplifier device (serial over IP)                         | host name or ip        |
+| Port                    | port         | Communication port (serial over IP).                                                                                               | ip port number         |
+| Number of Zones         | numZones     | (Optional) Number of zones on the amplifier to utilize in the binding (up to 20 zones when zone expansion modules are used)        | (1-20; default 6)      |
+| Sync Clock on GConcerto | clockSync    | (Optional) If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB host's system clock | Boolean; default false |
 
 Some notes:
 
 * If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
 * Source display_line1 thru 4 can only be updated on non NuvoNet sources.
 * The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
-*
 * On Linux, you may get an error stating the serial port cannot be opened when the Nuvo binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. Nuvo and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
@@ -274,6 +273,7 @@ val actions = getActions("nuvo","nuvo:amplifier:myamp")
 
 // send command a custom command to the Nuvo Amplifier
 // see 'NuVo Grand Concerto Serial Control Protocol.pdf' for more command examples
+// https://www.legrand.us/-/media/brands/nuvo/nuvo/catalog/softwaredownloads-new/i8g_e6g_control_protocol.ashx
 // commands send through the binding do not need the leading '*'
 
 rule "Nuvo Custom Command example"

@@ -248,7 +248,7 @@ public abstract class NuvoConnector {
      *
      * @throws NuvoException - In case of any problem
      */
-    public void sendCommand(String command) throws NuvoException {
+    public void sendCommand(@Nullable String command) throws NuvoException {
         String messageStr = BEGIN_CMD + command + END_CMD;
 
         logger.debug("sending command: {}", messageStr);
@@ -364,8 +364,6 @@ public abstract class NuvoConnector {
             // pull out the zone id and the remainder of the message
             dispatchKeyValue(TYPE_ZONE_CONFIG, matcher.group(1), matcher.group(2));
             return;
-        } else {
-            logger.debug("no match on message: {}", message);
         }
 
         logger.debug("unhandled message: {}", message);

@@ -42,9 +42,9 @@ public class NuvoHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AMP);
 
-    private final @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
-    private final @NonNullByDefault({}) NuvoStateDescriptionOptionProvider stateDescriptionProvider;
+    private final NuvoStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

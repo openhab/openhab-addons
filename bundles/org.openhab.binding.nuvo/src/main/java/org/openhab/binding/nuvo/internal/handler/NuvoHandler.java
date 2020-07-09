@@ -81,13 +81,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventListener {
-    private static final long RECON_POLLING_INTERVAL = 60;
-    private static final long POLLING_INTERVAL = 30;
-    private static final long CLOCK_SYNC_INTERVAL = 3600;
-    private static final long INITIAL_POLLING_DELAY = 30;
-    private static final long INITIAL_CLOCK_SYNC_DELAY = 10;
+    private static final long RECON_POLLING_INTERVAL_SEC = 60;
+    private static final long POLLING_INTERVAL_SEC = 30;
+    private static final long CLOCK_SYNC_INTERVAL_SEC = 3600;
+    private static final long INITIAL_POLLING_DELAY_SEC = 30;
+    private static final long INITIAL_CLOCK_SYNC_DELAY_SEC = 10;
     // spec says wait 50ms, min is 100
-    private static final long SLEEP_BETWEEN_CMD = 100;
+    private static final long SLEEP_BETWEEN_CMD_MS = 100;
     private static final Unit<Time> API_SECOND_UNIT = SmartHomeUnits.SECOND;
 
     private static final String ZONE = "ZONE";
@@ -143,20 +143,23 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     @Override
     public void initialize() {
         NuvoThingConfiguration config = getConfigAs(NuvoThingConfiguration.class);
+        String serialPort = config.serialPort;
+        String host = config.host;
+        Integer port = config.port;
+        Integer numZones = config.numZones;
 
         // Check configuration settings
         String configError = null;
-        if ((config.serialPort == null || config.serialPort.isEmpty())
-                && (config.host == null || config.host.isEmpty())) {
+        if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
             configError = "undefined serialPort and host configuration settings; please set one of them";
-        } else if (config.host == null || config.host.isEmpty()) {
-            if (config.serialPort.toLowerCase().startsWith("rfc2217")) {
+        } else if (serialPort != null && (host == null || host.isEmpty())) {
+            if (serialPort.toLowerCase().startsWith("rfc2217")) {
                 configError = "use host and port configuration settings for a serial over IP connection";
             }
         } else {
-            if (config.port == null) {
+            if (port == null) {
                 configError = "undefined port configuration setting";
-            } else if (config.port <= 0) {
+            } else if (port <= 0) {
                 configError = "invalid port configuration setting";
             }
         }
@@ -166,25 +169,30 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             return;
         }
 
-        if (config.serialPort != null) {
-            String serialPort = config.serialPort;
+        if (serialPort != null) {
             connector = new NuvoSerialConnector(serialPortManager, serialPort);
+        } else if (port != null) {
+            connector = new NuvoIpConnector(host, port);
         } else {
-            connector = new NuvoIpConnector(config.host, config.port);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "configuration error");
+            return;
         }
 
-        numZones = config.numZones;
-        activeZones = IntStream.range((1), (numZones + 1)).boxed().collect(Collectors.toSet());
+        if (numZones != null) {
+            this.numZones = numZones;
+        }
+
+        activeZones = IntStream.range((1), (this.numZones + 1)).boxed().collect(Collectors.toSet());
 
         // remove the channels for the zones we are not using
-        if (numZones < MAX_ZONES) {
+        if (this.numZones < MAX_ZONES) {
             List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
-            List<Integer> zonesToRemove = IntStream.range((numZones + 1), (MAX_ZONES + 1)).boxed()
+            List<Integer> zonesToRemove = IntStream.range((this.numZones + 1), (MAX_ZONES + 1)).boxed()
                     .collect(Collectors.toList());
 
             zonesToRemove.forEach(zone -> {
-                channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone.toString())));
+                channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone)));
             });
             updateThing(editThing().withChannels(channels).build());
         }
@@ -193,9 +201,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             scheduleClockSyncJob();
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
         scheduleReconnectJob();
         schedulePollingJob();
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -213,10 +221,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     }
 
     public void handleRawCommand(@Nullable String command) {
-        try {
-            connector.sendCommand(command.toString());
-        } catch (NuvoException e) {
-            logger.warn("Nuvo Command: {} failed", command);
+        synchronized (sequenceLock) {
+            try {
+                connector.sendCommand(command);
+            } catch (NuvoException e) {
+                logger.warn("Nuvo Command: {} failed", command);
+            }
         }
     }
 
@@ -329,22 +339,22 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         break;
                     case CHANNEL_DISPLAY_LINE1:
                         if (command instanceof StringType) {
-                            connector.sendCommand(target, NuvoCommand.DISPLINE1, "\"" + command.toString() + "\"");
+                            connector.sendCommand(target, NuvoCommand.DISPLINE1, "\"" + command + "\"");
                         }
                         break;
                     case CHANNEL_DISPLAY_LINE2:
                         if (command instanceof StringType) {
-                            connector.sendCommand(target, NuvoCommand.DISPLINE2, "\"" + command.toString() + "\"");
+                            connector.sendCommand(target, NuvoCommand.DISPLINE2, "\"" + command + "\"");
                         }
                         break;
                     case CHANNEL_DISPLAY_LINE3:
                         if (command instanceof StringType) {
-                            connector.sendCommand(target, NuvoCommand.DISPLINE3, "\"" + command.toString() + "\"");
+                            connector.sendCommand(target, NuvoCommand.DISPLINE3, "\"" + command + "\"");
                         }
                         break;
                     case CHANNEL_DISPLAY_LINE4:
                         if (command instanceof StringType) {
-                            connector.sendCommand(target, NuvoCommand.DISPLINE4, "\"" + command.toString() + "\"");
+                            connector.sendCommand(target, NuvoCommand.DISPLINE4, "\"" + command + "\"");
                         }
                         break;
                     case CHANNEL_TYPE_ALLOFF:
@@ -429,13 +439,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case TYPE_ALLOFF:
                 activeZones.forEach(zoneNum -> {
-                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneNum.toString()), CHANNEL_TYPE_POWER, OFF);
+                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneNum), CHANNEL_TYPE_POWER, OFF);
                 });
                 break;
             case TYPE_ALLMUTE:
                 updateChannelState(NuvoEnum.SYSTEM, CHANNEL_TYPE_ALLMUTE, ONE.equals(updateData) ? ON : OFF);
                 activeZones.forEach(zoneNum -> {
-                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneNum.toString()), CHANNEL_TYPE_MUTE,
+                    updateChannelState(NuvoEnum.valueOf(ZONE + zoneNum), CHANNEL_TYPE_MUTE,
                             ONE.equals(updateData) ? ON : OFF);
                 });
                 break;
@@ -548,11 +558,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             NuvoEnum.VALID_SOURCES.forEach(source -> {
                                 try {
                                     connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.NAME);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD);
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                     connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.DISPINFO);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD);
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                     connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.DISPLINE);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD);
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                 } catch (NuvoException | InterruptedException e) {
                                     logger.debug("Error Querying Source data: {}", e.getMessage());
                                 }
@@ -562,10 +572,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             activeZones.forEach(zoneNum -> {
                                 try {
                                     connector.sendQuery(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.STATUS);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD);
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                     connector.sendCfgCommand(NuvoEnum.valueOf(ZONE + zoneNum), NuvoCommand.EQ_QUERY,
                                             BLANK);
-                                    Thread.sleep(SLEEP_BETWEEN_CMD);
+                                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                 } catch (NuvoException | InterruptedException e) {
                                     logger.debug("Error Querying Zone data: {}", e.getMessage());
                                 }
@@ -577,9 +587,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             } else {
                                 // Put the source labels on all active zones
                                 activeZones.forEach(zoneNum -> {
-                                    stateDescriptionProvider.setStateOptions(
-                                            new ChannelUID(getThing().getUID(), ZONE.toLowerCase() + zoneNum.toString()
-                                                    + CHANNEL_DELIMIT + CHANNEL_TYPE_SOURCE),
+                                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(),
+                                            ZONE.toLowerCase() + zoneNum + CHANNEL_DELIMIT + CHANNEL_TYPE_SOURCE),
                                             sourceLabels);
                                 });
                             }
@@ -598,7 +607,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.versionString);
                 }
             }
-        }, 1, RECON_POLLING_INTERVAL, TimeUnit.SECONDS);
+        }, 1, RECON_POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     /**
@@ -634,7 +643,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                     // if the last event received was more than 1.25 intervals ago,
                     // the component is not responding even though the connection is still good
-                    if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL * 1.25 * 1000)) {
+                    if ((System.currentTimeMillis() - lastEventReceived) > (POLLING_INTERVAL_SEC * 1.25 * 1000)) {
                         logger.debug("Component not responding to status requests");
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Component not responding to status requests");
@@ -643,7 +652,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     }
                 }
             }
-        }, INITIAL_POLLING_DELAY, POLLING_INTERVAL, TimeUnit.SECONDS);
+        }, INITIAL_POLLING_DELAY_SEC, POLLING_INTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     /**
@@ -674,7 +683,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             } else {
                 this.cancelClockSyncJob();
             }
-        }, INITIAL_CLOCK_SYNC_DELAY, CLOCK_SYNC_INTERVAL, TimeUnit.SECONDS);
+        }, INITIAL_CLOCK_SYNC_DELAY_SEC, CLOCK_SYNC_INTERVAL_SEC, TimeUnit.SECONDS);
     }
 
     /**

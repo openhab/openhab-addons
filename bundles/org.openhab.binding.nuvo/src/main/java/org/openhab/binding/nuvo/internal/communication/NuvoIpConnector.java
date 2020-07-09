@@ -47,7 +47,7 @@ public class NuvoIpConnector extends NuvoConnector {
      * @param address the IP address of the serial over ip adapter
      * @param port the TCP port to be used
      */
-    public NuvoIpConnector(@Nullable String address, @Nullable Integer port) {
+    public NuvoIpConnector(@Nullable String address, int port) {
         this.address = address;
         this.port = port;
     }
