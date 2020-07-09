@@ -1,9 +1,8 @@
 # Caddx Binding
 
-The Caddx binding is used for communicating with the Caddx alarm panels
+The Caddx binding is used for communicating with the Caddx alarm panels. Also known as Interlogix.
 
-It provides connectivity to the alarm panel via a RS-232 serial connection to the Caddx interface or directly to the NX8E.
-
+It provides connectivity to the NetworX alarm panels via a RS-232 serial connection to the NX-584E interface or directly to the NX-8E.
 
 ## Supported Things
 
@@ -15,19 +14,48 @@ This binding supports the following Thing types
 | panel      | Thing      | The basic representation of the alarm System.                          |
 | partition  | Thing      | Represents a controllable area within the alarm system.                |
 | zone       | Thing      | Represents a physical device such as a door, window, or motion sensor. |
-| keypad     | Thing      | Represents a keypad.                                                   |
+| keypad     | Thing      | Represents a keypad. (Not yet functional)                              |
 
 ## Discovery
 
-First the Caddx bridge must be manually defined. The serial port, baud rate and protocol have to be set correctly to match the respective configuration of the panel.
+First the bridge must be **manually** defined. The serial port, baud rate and protocol have to be set correctly to match the respective configuration of the panel (see below Prerequisites section).
 After the bridge is manually added and available to openHAB, the binding will automatically start to discover partitions and zones and add them to the discovery inbox.
 
 Note:
 There is currently no support to discover the available keypads.
 
-## Binding Configuration
+## Prerequisites
 
-No binding configuration required.
+For the binding to work the panel has also to be programmed appropriately. 
+
+### Programming locations for the NX-8E control panel
+
+| Location | Segment | Value       | Description                                                                                            |
+|----------|---------|-------------|--------------------------------------------------------------------------------------------------------|
+| 207      | 1       | 1           | Serial Port selector                                                                                   |
+| 208      | 1       | 0 - 4       | Baud rate table<br>0 = 2400 Baud<br>1 = 4800 Baud<br>2 = 9600 Baud<br>3 = 19200 Baud<br>4 = 38400 Baud |
+| 209      | 1       | Off/On      | Home automation protocol<br>1 = Off: Binary. On: ASCII.                                                |
+| 210      | 1       | 2,5,6,7,8   | PROGRAMMING THE NX-8E HOME AUTOMATION PROTOCOL                                                         |
+| 210      | 2       | 1,2,3,4     |                                                                                                        |
+| 211      | 1       | 2,4,5,6,7,8 | PROGRAMMING THE COMMAND / REQUEST ENABLES                                                              |
+| 211      | 2       | 1,2,3,4,5   | (Flags 4 and 5 are not yet functional. Can be ignored.)                                                |
+| 211      | 3       |             |                                                                                                        |
+| 211      | 4       | 5,7,8       |                                                                                                        |
+| 212      | 1       | 192         | Programming the LCD keypad address. (Not yet functional. Can be ignored.)                              |
+
+### Programming locations for the NX-584E home automation module
+
+| Location | Segment | Value       | Description                                                                                            |
+|----------|---------|-------------|--------------------------------------------------------------------------------------------------------|
+| 0        | 1       | Off/On      | Home automation protocol<br>1 = Off: Binary. On: ASCII.                                                |
+| 1        | 1       | 0 - 4       | Baud rate table<br>0 = 600 Baud<br>1 = 1200 Baud<br>2 = 2400 Baud<br>3 = 4800 Baud<br>4 = 9600 Baud<br>5 = 19200 Baud<br>6 = 38400 Baud<br>7 = 76800 Baud |
+| 2        | 1       | 2,5,6,7,8   | Enabling the Transitions                                                                               |
+| 2        | 2       | 1,2,3,4     |                                                                                                        |
+| 3        | 1       | 2,4,5,6,7,8 | Programming the Command/Request enables                                                                |
+| 3        | 2       | 1,2,3,4,5   | (Flags 4 and 5 are not yet functional. Can be ignored.)                                                |
+| 3        | 3       |             |                                                                                                        |
+| 3        | 4       | 5,7,8       |                                                                                                        |
+| 4        | 1       | 192         | Programming the LCD keypad address. (Not yet functional. Can be ignored.)                              |
 
 ## Thing Configuration
 
@@ -43,7 +71,6 @@ The following table shows the available configuration parameters for each thing.
 | zone      | `zoneNumber` - Zone number (1-192) - Required                                                  |
 | keypad    | `keypadAddress` - Keypad address (192-255) - Required                                          |
 
-The binding can be configured manually if discovery is not utilized.
 A full example is further below.
 
 ## Channels
@@ -52,6 +79,8 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 
 | Channel                                          | Item Type | Type                | Description                                |
 |--------------------------------------------------|-----------|---------------------|--------------------------------------------|
+| send_Command                                     | String    | Command             | Send a command to the panel                |
+| panel_firmware_version                           | String    | Configuration       | Firmware version                           |
 | panel_firmware_version                           | String    | Configuration       | Firmware version                           |
 | panel_log_message_n_0                            | String    | Runtime             | Log message 10                             |
 | panel_log_message_n_1                            | String    | Runtime             | Log message 9                              |

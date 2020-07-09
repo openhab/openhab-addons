@@ -9,13 +9,9 @@
 		<description>This bridge represents the Caddx Serial interface.</description>
 
 		<channels>
-			<channel id="bridge_reset" typeId="reset">
-				<label>Reset Bridge</label>
-				<description>Resets the communication with the panel</description>
-			</channel>
 			<channel id="send_command" typeId="command">
 				<label>Send Command</label>
-				<description>Sends an Alarm Command</description>
+				<description>Sends an Alarm Panel Command</description>
 			</channel>
 		</channels>
 
@@ -30,15 +26,19 @@
 
 			<parameter name="baudrate" type="integer" required="true">
 				<label>Baud Rate</label>
-				<description>The baud rate of the serial port. Valid values are 9600
-					(default), 19200, 38400, 57600, and 115200.</description>
+				<description>The baud rate of the serial port. Valid values for the NX-584E are 600, 1200, 2400, 4800, 9600
+					(default), 19200, 38400, and 76800. Valid values for the NX-8E are 2400, 4800, 9600
+					(default), 19200 and 38400.</description>
 				<default>9600</default>
 				<options>
+					<option value="600">600</option>
+					<option value="1200">1200</option>
+					<option value="2400">2400</option>
+					<option value="4800">4800</option>
 					<option value="9600">9600</option>
 					<option value="19200">19200</option>
 					<option value="38400">38400</option>
-					<option value="57600">57600</option>
-					<option value="115200">115200</option>
+					<option value="76800">76800</option>
 				</options>
 			</parameter>
 
