@@ -5,6 +5,7 @@ import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHA
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -17,8 +18,10 @@ import org.openhab.binding.boschshc.internal.services.temperaturelevel.Temperatu
 
 import tec.uom.se.unit.Units;
 
+@NonNullByDefault
 public class ClimateControlHandler extends BoschSHCHandler {
 
+    @NonNullByDefault({})
     private RoomClimateControlService roomClimateControlService;
 
     public ClimateControlHandler(Thing thing) {
@@ -40,10 +43,7 @@ public class ClimateControlHandler extends BoschSHCHandler {
         switch (channelUID.getId()) {
             case CHANNEL_SETPOINT_TEMPERATURE:
                 if (command instanceof QuantityType<?>) {
-                    // Set specific temperature
-                    QuantityType<?> quantityType = (QuantityType<?>) command;
-                    double setpointTemperature = quantityType.toUnit(Units.CELSIUS).doubleValue();
-                    this.roomClimateControlService.setState(new RoomClimateControlServiceState(setpointTemperature));
+                    updateSetpointTemperature((QuantityType<?>) command);
                 }
                 break;
         }
@@ -55,5 +55,21 @@ public class ClimateControlHandler extends BoschSHCHandler {
 
     protected void updateChannels(RoomClimateControlServiceState state) {
         super.updateState(CHANNEL_SETPOINT_TEMPERATURE, state.getSetpointTemperatureState());
+    }
+
+    private void updateSetpointTemperature(QuantityType<?> quantityType) {
+        QuantityType<?> celsiusType = quantityType.toUnit(Units.CELSIUS);
+        if (celsiusType == null) {
+            logger.debug("Could not convert quantity command to celsius");
+            return;
+        }
+
+        if (this.roomClimateControlService != null) {
+            logger.debug("RoomClimateControlService not initialized");
+            return;
+        }
+
+        double setpointTemperature = celsiusType.doubleValue();
+        this.roomClimateControlService.setState(new RoomClimateControlServiceState(setpointTemperature));
     }
 }

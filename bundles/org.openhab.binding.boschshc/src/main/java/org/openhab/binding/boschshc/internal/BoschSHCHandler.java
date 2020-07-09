@@ -33,7 +33,14 @@ import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@NonNullByDefault
 class DeviceService<TState extends BoschSHCServiceState> {
+
+    DeviceService(BoschSHCService<TState> service, Collection<String> affectedChannels) {
+        this.service = service;
+        this.affectedChannels = affectedChannels;
+    }
+
     /**
      * Service which belongs to the device.
      */
@@ -171,9 +178,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     protected <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
             Collection<String> affectedChannels) {
-        DeviceService<TState> deviceService = new DeviceService<TState>();
-        deviceService.service = service;
-        deviceService.affectedChannels = affectedChannels;
-        this.services.add(deviceService);
+        this.services.add(new DeviceService<TState>(service, affectedChannels));
     }
 }

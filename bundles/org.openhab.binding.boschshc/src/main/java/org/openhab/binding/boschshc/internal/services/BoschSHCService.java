@@ -5,10 +5,11 @@ import java.util.function.Consumer;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
 
+@NonNullByDefault
 public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
     /**
      * Unique service name
@@ -23,16 +24,19 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
     /**
      * Bridge to use for communication from/to the device
      */
+    @NonNullByDefault({})
     private BoschSHCBridgeHandler bridgeHandler;
 
     /**
      * Id of device the service belongs to
      */
+    @NonNullByDefault({})
     private String deviceId;
 
     /**
      * Function to call after receiving state updates from the device
      */
+    @Nullable
     private Consumer<TState> stateUpdateListener;
 
     protected BoschSHCService(String serviceName, Class<TState> stateClass) {
@@ -48,8 +52,8 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * @param stateUpdateListener Function to call when a state update was received
      *                            from the device.
      */
-    public void initialize(@NonNull BoschSHCBridgeHandler bridgeHandler, @NonNull String deviceId,
-            Consumer<TState> stateUpdateListener) {
+    public void initialize(BoschSHCBridgeHandler bridgeHandler, String deviceId,
+            @Nullable Consumer<TState> stateUpdateListener) {
         this.bridgeHandler = bridgeHandler;
         this.deviceId = deviceId;
         this.stateUpdateListener = stateUpdateListener;
@@ -87,7 +91,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * @return Current state of the device.
      */
     public @Nullable TState getState() {
-        return this.bridgeHandler.getState(deviceId, this.serviceName, this.stateClass);
+        return this.bridgeHandler.getState(this.deviceId, this.serviceName, this.stateClass);
     }
 
     /**
@@ -96,8 +100,8 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * @param deviceId Id of device to set state for.
      * @param state    State to set.
      */
-    public void setState(@NonNull TState state) {
-        this.bridgeHandler.putState(deviceId, this.serviceName, state);
+    public void setState(TState state) {
+        this.bridgeHandler.putState(this.deviceId, this.serviceName, state);
     }
 
     /**
@@ -105,15 +109,16 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * 
      * @param stateData Current state of service. Serialized as JSON.
      */
-    public void onStateUpdate(@NonNull JsonElement stateData) {
+    public void onStateUpdate(JsonElement stateData) {
         Gson gson = new Gson();
         TState state = gson.fromJson(stateData, this.stateClass);
         this.onStateUpdate(state);
     }
 
     private void onStateUpdate(TState state) {
-        if (this.stateUpdateListener != null) {
-            this.stateUpdateListener.accept(state);
+        Consumer<TState> stateUpdateListener = this.stateUpdateListener;
+        if (stateUpdateListener != null) {
+            stateUpdateListener.accept(state);
         }
     }
 }
