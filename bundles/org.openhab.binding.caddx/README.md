@@ -35,9 +35,9 @@ For the binding to work the panel has also to be programmed appropriately.
 | 207      | 1       | 1           | Serial Port selector                                                                                   |
 | 208      | 1       | 0 - 4       | Baud rate table<br>0 = 2400 Baud<br>1 = 4800 Baud<br>2 = 9600 Baud<br>3 = 19200 Baud<br>4 = 38400 Baud |
 | 209      | 1       | Off/On      | Home automation protocol<br>1 = Off: Binary. On: ASCII.                                                |
-| 210      | 1       | 2,5,6,7,8   | PROGRAMMING THE NX-8E HOME AUTOMATION PROTOCOL                                                         |
+| 210      | 1       | 2,5,6,7,8   | Enabling the Transitions                                                                               |
 | 210      | 2       | 1,2,3,4     |                                                                                                        |
-| 211      | 1       | 2,4,5,6,7,8 | PROGRAMMING THE COMMAND / REQUEST ENABLES                                                              |
+| 211      | 1       | 2,4,5,6,7,8 | Programming the Command/Request enables                                                                |
 | 211      | 2       | 1,2,3,4,5   | (Flags 4 and 5 are not yet functional. Can be ignored.)                                                |
 | 211      | 3       |             |                                                                                                        |
 | 211      | 4       | 5,7,8       |                                                                                                        |
