@@ -177,15 +177,15 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_IS_BATHROOM2_SWITCH = "isBathroom2Switch";
     // Analog channels
     public static final String CHANNEL_IS_ANALOG = "isAnalog";
-    public static final String CHANNEL_IS_RF = "isRF";
     public static final String CHANNEL_ANALOG_MODE = "analogMode";
-    public static final String CHANNEL_RF_MODE = "RFMode";
     public static final String CHANNEL_ANALOG_NEGATIVE = "analogNegative";
+    public static final String CHANNEL_ANALOG_VOLT = "analogVolt";
+    public static final String CHANNEL_ANALOG_MIN = "analogMin";
+    public static final String CHANNEL_ANALOG_MAX = "analogMax";
+    public static final String CHANNEL_ANALOG_VALUE = "analogValue";
+    public static final String CHANNEL_IS_RF = "isRF";
+    public static final String CHANNEL_RF_MODE = "RFMode";
     public static final String CHANNEL_RF_NEGATIVE = "RFNegative";
-    public static final String CHANNEL_ANALOG_VOLT = "analog1Volt";
-    public static final String CHANNEL_ANALOG_MIN = "analog1Min";
-    public static final String CHANNEL_ANALOG_MAX = "analog1Max";
-    public static final String CHANNEL_ANALOG_VALUE = "analog1Value";
     public static final String CHANNEL_RF_MIN = "RFMin";
     public static final String CHANNEL_RF_MAX = "RFMax";
     public static final String CHANNEL_RF_VALUE = "RFValue";
@@ -194,8 +194,8 @@ public class ComfoAirBindingConstants {
     public static final String CHANNEL_FILTER_ERROR = "filterError";
     public static final String CHANNEL_ERRORS_CURRENT = "errorsCurrent";
     public static final String CHANNEL_ERRORS_LAST = "errorsLast";
-    public static final String CHANNEL_ERRORS_PRELAST = "errorsPreLast";
-    public static final String CHANNEL_ERRORS_PREPRELAST = "errorsPrePreLast";
+    public static final String CHANNEL_ERRORS_PRELAST = "errorsPrelast";
+    public static final String CHANNEL_ERRORS_PREPRELAST = "errorsPrePrelast";
     // Reset channels
     public static final String CHANNEL_FILTER_RESET = "filterReset";
     public static final String CHANNEL_ERROR_RESET = "errorReset";
