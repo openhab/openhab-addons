@@ -92,4 +92,8 @@ public class RefreshStrategy {
         ZonedDateTime now = ZonedDateTime.now().minus(this.dataValidityPeriod, ChronoUnit.MILLIS);
         dataTimeStamp = now.toInstant().toEpochMilli();
     }
+
+    public boolean isSearchingRefreshInterval() {
+        return searchRefreshInterval && dataTimestamp0 != null;
+    }
 }

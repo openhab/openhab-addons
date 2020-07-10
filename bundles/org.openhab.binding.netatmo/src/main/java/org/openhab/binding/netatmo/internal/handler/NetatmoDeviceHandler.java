@@ -55,6 +55,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     private static final int DEFAULT_REFRESH_INTERVAL = 300000;
 
     private final Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
+    private final Object updateLock = new Object();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable RefreshStrategy refreshStrategy;
     private @Nullable DEVICE device;
@@ -79,7 +80,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
         long delay = strategy.nextRunDelayInS();
         logger.debug("Scheduling update channel thread in {} s", delay);
         refreshJob = scheduler.schedule(() -> {
-            updateChannels();
+            updateChannels(false);
             ScheduledFuture<?> job = refreshJob;
             if (job != null) {
                 job.cancel(false);
@@ -106,53 +107,62 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
 
     @Override
     protected void updateChannels() {
-        RefreshStrategy strategy = refreshStrategy;
-        if (strategy != null) {
-            logger.debug("Data aged of {} s", strategy.dataAge() / 1000);
-            if (strategy.isDataOutdated()) {
-                logger.debug("Trying to update channels on device {}", getId());
-                childs.clear();
+        updateChannels(true);
+    }
 
-                Optional<DEVICE> newDeviceReading = Optional.empty();
-                try {
-                    newDeviceReading = updateReadings();
-                } catch (RetrofitError e) {
-                    if (logger.isDebugEnabled()) {
-                        // we also attach the stack trace
-                        logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
-                    } else {
-                        logger.error("Unable to connect Netatmo API : {}", e.getMessage());
+    private void updateChannels(boolean requireDefinedRefreshInterval) {
+        // Avoid concurrent data readings
+        synchronized (updateLock) {
+            RefreshStrategy strategy = refreshStrategy;
+            if (strategy != null) {
+                logger.debug("Data aged of {} s", strategy.dataAge() / 1000);
+                boolean dataOutdated = (requireDefinedRefreshInterval && strategy.isSearchingRefreshInterval()) ? false
+                        : strategy.isDataOutdated();
+                if (dataOutdated) {
+                    logger.debug("Trying to update channels on device {}", getId());
+                    childs.clear();
+
+                    Optional<DEVICE> newDeviceReading = Optional.empty();
+                    try {
+                        newDeviceReading = updateReadings();
+                    } catch (RetrofitError e) {
+                        if (logger.isDebugEnabled()) {
+                            // we also attach the stack trace
+                            logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                        } else {
+                            logger.error("Unable to connect Netatmo API : {}", e.getMessage());
+                        }
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Unable to connect Netatmo API : " + e.getLocalizedMessage());
                     }
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unable to connect Netatmo API : " + e.getLocalizedMessage());
-                }
-                if (newDeviceReading.isPresent()) {
-                    updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Successfully updated device {} readings! Now updating channels", getId());
-                    DEVICE theDevice = newDeviceReading.get();
-                    this.device = theDevice;
-                    updateProperties(theDevice);
-                    getDataTimestamp().ifPresent(dataTimeStamp -> {
-                        strategy.setDataTimeStamp(dataTimeStamp, timeZoneProvider.getTimeZone());
-                    });
-                    getRadioHelper().ifPresent(helper -> helper.setModule(theDevice));
-                    getBridgeHandler().ifPresent(handler -> {
-                        handler.checkForNewThings(theDevice);
+                    if (newDeviceReading.isPresent()) {
+                        updateStatus(ThingStatus.ONLINE);
+                        logger.debug("Successfully updated device {} readings! Now updating channels", getId());
+                        DEVICE theDevice = newDeviceReading.get();
+                        this.device = theDevice;
+                        updateProperties(theDevice);
+                        getDataTimestamp().ifPresent(dataTimeStamp -> {
+                            strategy.setDataTimeStamp(dataTimeStamp, timeZoneProvider.getTimeZone());
+                        });
+                        getRadioHelper().ifPresent(helper -> helper.setModule(theDevice));
+                        getBridgeHandler().ifPresent(handler -> {
+                            handler.checkForNewThings(theDevice);
+                        });
+                    } else {
+                        logger.debug("Failed to update device {} readings! Skip updating channels", getId());
+                    }
+                    // Be sure that all channels for the modules will be updated with refreshed data
+                    childs.forEach((childId, moduleData) -> {
+                        findNAThing(childId).map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+                            naChildModule.setRefreshRequired(true);
+                        });
                     });
                 } else {
-                    logger.debug("Failed to update device {} readings! Skip updating channels", getId());
+                    logger.debug("Data still valid for device {}", getId());
                 }
-                // Be sure that all channels for the modules will be updated with refreshed data
-                childs.forEach((childId, moduleData) -> {
-                    findNAThing(childId).map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
-                        naChildModule.setRefreshRequired(true);
-                    });
-                });
-            } else {
-                logger.debug("Data still valid for device {}", getId());
+                super.updateChannels();
+                updateChildModules();
             }
-            super.updateChannels();
-            updateChildModules();
         }
     }
 
