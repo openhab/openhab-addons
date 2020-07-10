@@ -15,18 +15,10 @@ package org.openhab.io.transport.modbus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Poll task represents Modbus write request
- *
- * Unlike {@link PollTask}, this does not have to be hashable.
+ * Base interface for callbacks used in Modbus
  *
  * @author Sami Salonen - Initial contribution
- *
  */
 @NonNullByDefault
-public interface WriteTask extends
-        TaskWithEndpoint<ModbusWriteRequestBlueprint, ModbusWriteCallback, ModbusFailureCallback<ModbusWriteRequestBlueprint>> {
-    @Override
-    default int getMaxTries() {
-        return getRequest().getMaxTries();
-    }
+public interface ModbusResultCallback {
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.transport.modbus;
+package org.openhab.io.transport.modbus.internal;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -18,6 +18,10 @@ import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.transport.modbus.ModbusFailureCallback;
+import org.openhab.io.transport.modbus.ModbusReadCallback;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
@@ -32,7 +36,7 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
  *
  */
 @NonNullByDefault
-public class BasicPollTaskImpl implements PollTask {
+public class BasicPollTask implements PollTask {
 
     static StandardToStringStyle toStringStyle = new StandardToStringStyle();
     static {
@@ -40,18 +44,16 @@ public class BasicPollTaskImpl implements PollTask {
     }
 
     private ModbusSlaveEndpoint endpoint;
-    private BasicModbusReadRequestBlueprint request;
-    private @Nullable ModbusReadCallback callback;
+    private ModbusReadRequestBlueprint request;
+    private ModbusReadCallback resultCallback;
+    private ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback;
 
-    public BasicPollTaskImpl(ModbusSlaveEndpoint endpoint, BasicModbusReadRequestBlueprint request) {
-        this(endpoint, request, null);
-    }
-
-    public BasicPollTaskImpl(ModbusSlaveEndpoint endpoint, BasicModbusReadRequestBlueprint request,
-            @Nullable ModbusReadCallback callback) {
+    public BasicPollTask(ModbusSlaveEndpoint endpoint, ModbusReadRequestBlueprint request,
+            ModbusReadCallback resultCallback, ModbusFailureCallback<ModbusReadRequestBlueprint> failureCallback) {
         this.endpoint = endpoint;
         this.request = request;
-        this.callback = callback;
+        this.resultCallback = resultCallback;
+        this.failureCallback = failureCallback;
     }
 
     @Override
@@ -65,19 +67,26 @@ public class BasicPollTaskImpl implements PollTask {
     }
 
     @Override
-    public @Nullable ModbusReadCallback getCallback() {
-        return callback;
+    public ModbusReadCallback getResultCallback() {
+        return resultCallback;
+    }
+
+    @Override
+    public ModbusFailureCallback<ModbusReadRequestBlueprint> getFailureCallback() {
+        return failureCallback;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(69, 5).append(request).append(getEndpoint()).append(getCallback()).toHashCode();
+        return new HashCodeBuilder(69, 5).append(request).append(getEndpoint()).append(getResultCallback())
+                .append(getFailureCallback()).toHashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, toStringStyle).append("request", request).append("endpoint", endpoint)
-                .append("callback", getCallback()).toString();
+                .append("resultCallback", getResultCallback()).append("failureCallback", getFailureCallback())
+                .toString();
     }
 
     @Override
@@ -91,8 +100,9 @@ public class BasicPollTaskImpl implements PollTask {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        BasicPollTaskImpl rhs = (BasicPollTaskImpl) obj;
+        BasicPollTask rhs = (BasicPollTask) obj;
         return new EqualsBuilder().append(request, rhs.request).append(endpoint, rhs.endpoint)
-                .append(getCallback(), rhs.getCallback()).isEquals();
+                .append(getResultCallback(), rhs.getResultCallback())
+                .append(getFailureCallback(), rhs.getFailureCallback()).isEquals();
     }
 }

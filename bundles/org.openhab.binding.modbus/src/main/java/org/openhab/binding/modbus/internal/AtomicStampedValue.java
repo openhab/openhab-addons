@@ -18,38 +18,33 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Timestamped key-value pair that can be updated atomically
+ * Timestamp-value pair that can be updated atomically
  *
  * @author Sami Salonen - Initial contribution
  *
- * @param <K> type of the key
  * @param <V> type of the value
  */
 @NonNullByDefault
-public class AtomicStampedKeyValue<K, V> implements Cloneable {
+public class AtomicStampedValue<V> implements Cloneable {
 
     private long stamp;
-    private K key;
     private V value;
 
-    private AtomicStampedKeyValue(AtomicStampedKeyValue<K, V> copy) {
-        this(copy.stamp, copy.key, copy.value);
+    private AtomicStampedValue(AtomicStampedValue<V> copy) {
+        this(copy.stamp, copy.value);
     }
 
     /**
      * Construct new stamped key-value pair
      *
      * @param stamp stamp for the data
-     * @param key key for the data
      * @param value value for the data
      *
      * @throws NullPointerException when key or value is null
      */
-    public AtomicStampedKeyValue(long stamp, K key, V value) {
-        Objects.requireNonNull(key, "key should not be null!");
+    public AtomicStampedValue(long stamp, V value) {
         Objects.requireNonNull(value, "value should not be null!");
         this.stamp = stamp;
-        this.key = key;
         this.value = value;
     }
 
@@ -57,16 +52,13 @@ public class AtomicStampedKeyValue<K, V> implements Cloneable {
      * Update data in this instance atomically
      *
      * @param stamp stamp for the data
-     * @param key key for the data
      * @param value value for the data
      *
-     * @throws NullPointerException when key or value is null
+     * @throws NullPointerException when value is null
      */
-    public synchronized void update(long stamp, K key, V value) {
-        Objects.requireNonNull(key, "key should not be null!");
+    public synchronized void update(long stamp, V value) {
         Objects.requireNonNull(value, "value should not be null!");
         this.stamp = stamp;
-        this.key = key;
         this.value = value;
     }
 
@@ -77,8 +69,8 @@ public class AtomicStampedKeyValue<K, V> implements Cloneable {
      * @throws CloneNotSupportedException
      */
     @SuppressWarnings("unchecked")
-    public synchronized AtomicStampedKeyValue<K, V> copy() {
-        return (AtomicStampedKeyValue<K, V>) this.clone();
+    public synchronized AtomicStampedValue<V> copy() {
+        return (AtomicStampedValue<V>) this.clone();
     }
 
     /**
@@ -100,9 +92,9 @@ public class AtomicStampedKeyValue<K, V> implements Cloneable {
      * @param stampMin
      * @return null, if the stamp of this instance is before stampMin. Otherwise return the data copied
      */
-    public synchronized @Nullable AtomicStampedKeyValue<K, V> copyIfStampAfter(long stampMin) {
+    public synchronized @Nullable AtomicStampedValue<V> copyIfStampAfter(long stampMin) {
         if (stampMin <= this.stamp) {
-            return new AtomicStampedKeyValue<>(this);
+            return new AtomicStampedValue<>(this);
         } else {
             return null;
         }
@@ -113,13 +105,6 @@ public class AtomicStampedKeyValue<K, V> implements Cloneable {
      */
     public long getStamp() {
         return stamp;
-    }
-
-    /**
-     * Get key
-     */
-    public K getKey() {
-        return key;
     }
 
     /**
@@ -139,8 +124,8 @@ public class AtomicStampedKeyValue<K, V> implements Cloneable {
      * @return a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater
      *         than the second.
      */
-    public static int compare(@SuppressWarnings("rawtypes") @Nullable AtomicStampedKeyValue x,
-            @SuppressWarnings("rawtypes") @Nullable AtomicStampedKeyValue y) {
+    public static int compare(@SuppressWarnings("rawtypes") @Nullable AtomicStampedValue x,
+            @SuppressWarnings("rawtypes") @Nullable AtomicStampedValue y) {
         if (x == null) {
             return -1;
         } else if (y == null) {
