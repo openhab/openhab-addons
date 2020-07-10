@@ -117,6 +117,12 @@ public class FeedHandler extends BaseThingHandler {
     private void publishDynamicChannelsIfLinked() {
         int numberOfEntries = configuration.numberOfEntries;
 
+        if (currentFeedState == null) {
+            // This will happen if the binding could not download data from the server
+            logger.trace("Cannot update channels; no data has been downloaded from the server!");
+            return;
+        }
+
         List<SyndEntry> entries = currentFeedState.getEntries().stream().limit(numberOfEntries)
                 .collect(Collectors.toList());
 
