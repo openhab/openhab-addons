@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.modbus.handler;
 
-import java.util.function.Supplier;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.registry.Identifiable;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 
 /**
  * Base interface for thing handlers of endpoint things
@@ -31,13 +28,13 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 public interface ModbusEndpointThingHandler extends Identifiable<ThingUID> {
 
     /**
-     * Gets the {@link ModbusSlaveEndpoint} represented by the thing
+     * Gets the {@link ModbusCommunicationInterface} represented by the thing
      *
-     * Note that the endpoint can be <code>null</code> in case of incomplete initialization
+     * Note that this can be <code>null</code> in case of incomplete initialization
      *
-     * @return endpoint represented by this thing handler
+     * @return communication interface represented by this thing handler
      */
-    public @Nullable ModbusSlaveEndpoint asSlaveEndpoint();
+    public @Nullable ModbusCommunicationInterface getCommunicationInterface();
 
     /**
      * Get Slave ID, also called as unit id, represented by the thing
@@ -46,13 +43,6 @@ public interface ModbusEndpointThingHandler extends Identifiable<ThingUID> {
      * @throws EndpointNotInitializedException in case the initialization is not complete
      */
     public int getSlaveId() throws EndpointNotInitializedException;
-
-    /**
-     * Get {@link ModbusManager} supplier
-     *
-     * @return reference to ModbusManager
-     */
-    public Supplier<ModbusManager> getManagerRef();
 
     /**
      * Return true if auto discovery is enabled for this endpoint

@@ -15,13 +15,17 @@ package org.openhab.io.transport.modbus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Exception for all IO errors
+ * Callback used to report failure in Modbus
  *
- * @author Sami Salonen - Initial contribution
- *
+ * @author Nagy Attila Gabor - Initial contribution
  */
+@FunctionalInterface
 @NonNullByDefault
-public class ModbusSlaveIOException extends ModbusTransportException {
-
-    private static final long serialVersionUID = -8568199166837844463L;
+public interface ModbusFailureCallback<R> {
+    /**
+     * Callback handling response with error
+     *
+     * @param asyncModbusFailure details of the failure
+     */
+    void handle(AsyncModbusFailure<R> failure);
 }

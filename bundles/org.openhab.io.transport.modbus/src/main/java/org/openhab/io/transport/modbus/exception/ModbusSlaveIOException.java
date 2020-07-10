@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.transport.modbus;
+package org.openhab.io.transport.modbus.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Base exception for all exceptions in Modbus transport bundle
+ * Exception for all IO errors
  *
  * @author Sami Salonen - Initial contribution
  *
  */
 @NonNullByDefault
-public class ModbusTransportException extends Exception {
+public class ModbusSlaveIOException extends ModbusTransportException {
 
-    private static final long serialVersionUID = 1684767401685843339L;
+    private static final long serialVersionUID = -8568199166837844463L;
 }
