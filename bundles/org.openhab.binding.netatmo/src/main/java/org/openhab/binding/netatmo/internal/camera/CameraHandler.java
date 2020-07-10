@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.netatmo.internal.camera;
 
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import java.io.IOException;
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -29,19 +32,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
-
-import io.swagger.client.model.NAWelcomeCamera;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Optional;
+import io.swagger.client.model.NAWelcomeCamera;
 
 /**
  * {@link CameraHandler} is the class used to handle Camera Data
  *
- * @author Sven Strohschein (partly moved code from NAWelcomeCameraHandler to introduce inheritance, see
- *         NAWelcomeCameraHandler)
+ * @author Sven Strohschein - Initial contribution (partly moved code from NAWelcomeCameraHandler to introduce
+ *         inheritance, see NAWelcomeCameraHandler)
  *
  */
 @NonNullByDefault
@@ -53,7 +53,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
 
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
 
-    private Optional<CameraAddress> cameraAddress = Optional.empty();
+    private @Nullable CameraAddress cameraAddress;
 
     protected CameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
@@ -65,9 +65,9 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
         switch (channelId) {
             case CHANNEL_CAMERA_STATUS:
             case CHANNEL_WELCOME_CAMERA_STATUS:
-                if(command == OnOffType.ON) {
+                if (command == OnOffType.ON) {
                     switchVideoSurveillance(true);
-                } else if(command == OnOffType.OFF) {
+                } else if (command == OnOffType.OFF) {
                     switchVideoSurveillance(false);
                 }
                 break;
@@ -81,7 +81,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
+    protected State getNAThingProperty(String channelId) {
         switch (channelId) {
             case CHANNEL_CAMERA_STATUS:
                 return getStatusState();
@@ -188,7 +188,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
         Optional<String> localCameraURL = getLocalCameraURL();
         if (localCameraURL.isPresent()) {
             String url = localCameraURL.get() + STATUS_CHANGE_URL_PATH + "?status=";
-            if(isOn) {
+            if (isOn) {
                 url += "on";
             } else {
                 url += "off";
@@ -201,17 +201,20 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
 
     protected Optional<String> getLocalCameraURL() {
         Optional<String> vpnURLOptional = getVpnUrl();
+        CameraAddress address = cameraAddress;
         if (vpnURLOptional.isPresent()) {
             final String vpnURL = vpnURLOptional.get();
 
-            //The local address is (re-)requested when it wasn't already determined or when the vpn address was changed.
-            if (!cameraAddress.isPresent() || cameraAddress.get().isVpnURLChanged(vpnURL)) {
+            // The local address is (re-)requested when it wasn't already determined or when the vpn address was
+            // changed.
+            if (address == null || address.isVpnURLChanged(vpnURL)) {
                 Optional<JSONObject> json = executeGETRequestJSON(vpnURL + PING_URL_PATH);
-                cameraAddress = json.map(j -> j.optString("local_url", null))
-                        .map(localURL -> new CameraAddress(vpnURL, localURL));
+                address = json.map(j -> j.optString("local_url", null))
+                        .map(localURL -> new CameraAddress(vpnURL, localURL)).orElse(null);
+                cameraAddress = address;
             }
         }
-        return cameraAddress.map(CameraAddress::getLocalURL);
+        return Optional.ofNullable(address).map(CameraAddress::getLocalURL);
     }
 
     private Optional<JSONObject> executeGETRequestJSON(String url) {

@@ -27,6 +27,20 @@ It provides features to control and view the current state of echo devices:
 - get information about the next alarm, reminder and timer
 - send a message to the echo devices
 
+It also provides features to control devices connected to your echo:
+
+- turn on/off your lights
+- change the color
+- control groups of lights or just single bulbs
+- receive the current state of the lights
+- turn on/off smart plugs (e. g. OSRAM)
+
+Restrictions:
+
+- groups can't receive their current color (multiple colors are possible)
+- devices can only receive their state every 60 seconds
+- turning on/off (or switch color, change brightness) will send a request for every single bulb in a group
+
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
 - Automatic turn on your amplifier and connect echo with bluetooth if the echo plays music
@@ -41,26 +55,21 @@ Some ideas what you can do in your home by using rules and other openHAB control
 - Let Alexa say 'welcome' to you if you open the door
 - Implement own handling for voice commands in a rule
 - Change the equalizer settings depending on the bluetooth connection
-- Turn on a light on your Alexa alarm time
+- Turn on a light on your alexa alarm time
+- Activate or deactivate the Alexa Guard with presence detection
 
-## Note
+With the possibility to control your lights you could do:
 
-This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon.de).
-In other words, it simulates a user which is using the web page.
-Unfortunately, the binding can get broken if Amazon change the web site.
+- a scene-based configuration of your rooms
+- connect single bulbs to functions of openhab
+- simulate your presence at home
+- automatically turn on your lights at the evening
+- integrate your smart bulbs with rules 
 
-The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazon.co.uk accounts, but should also work with all others. 
+## Binding Configuration
 
-## Supported Things
-
-| Thing type id        | Name                                  |
-|----------------------|---------------------------------------|
-| account              | Amazon Account                        |
-| echo                 | Amazon Echo Device                    |
-| echospot             | Amazon Echo Spot Device               |
-| echoshow             | Amazon Echo Show Device               |
-| wha                  | Amazon Echo Whole House Audio Control |
-| flashbriefingprofile | Flash briefing profile                |
+The binding does not have any configuration.
+The configuration of your amazon account must be done in the 'Amazon Account' device.
 
 ## First Steps
 
@@ -75,18 +84,52 @@ If the device type is not known by the binding, the device will not be discovere
 But you can define any device listed in your Alexa app with the best matching existing device (e.g. echo).
 You will find the required serial number in settings of the device in the Alexa app.
 
-## Binding Configuration
+### Discover Smart Home Devices
 
-The binding does not have any configuration.
+If you want to discover your smart home devices you need to activate it in the 'Amazon Account' thing.
+Devices from other skills can be discovered too.
+See section *Smart Home Devices* below for more information.
+
+## Account
+
 The configuration of your Amazon account must be done in the 'Amazon Account' device.
 
-## Thing Configuration
+### Account Thing
 
-The Amazon Account does not need any configuration.
+#### Supported Thing Type
 
-### Amazon Devices
+| Thing type id        | Name                                  |
+|----------------------|---------------------------------------|
+| account              | Amazon Account                        |
 
-All Amazon devices (echo, echospot, echoshow, wha) needs the following configurations:
+#### Thing Configuration
+
+| Configuration name              | Default | Description                                                                           |
+|---------------------------------|---------|---------------------------------------------------------------------------------------|
+| discoverSmartHome               | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and Alexa skill devices, 3...Discover direct, Alexa and openHAB skill devices |
+| pollingIntervalSmartHomeAlexa   | 30      | Defines the time in seconds for openHAB to pull the state of the Alexa connected devices. The minimum is 10 seconds. | 
+| pollingIntervalSmartSkills      | 120     | Defines the time in seconds for openHAB to pull the state of the over a skill connected devices. The minimum is 60 seconds. |
+
+#### Channels
+
+| Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description                                                                                                                                                                
+|-----------------------|-------------|-------------|-------------------------------|------------------------------------------------------------------------------------------
+| sendMessage           | String      | W           | account                       | Write Only! Sends a message to the Echo devices.
+
+## Echo Control (Control Echo devices from openHAB)
+
+### echo, echospot, echoshow, wha Things
+
+#### Supported Thing Type
+
+| Thing type id        | Name                                  |
+|----------------------|---------------------------------------|
+| echo                 | Amazon Echo Device                    |
+| echospot             | Amazon Echo Spot Device               |
+| echoshow             | Amazon Echo Show Device               |
+| wha                  | Amazon Echo Whole House Audio Control |
+
+#### Thing Configuration
 
 | Configuration name       | Description                                        |
 |--------------------------|----------------------------------------------------|
@@ -99,7 +142,7 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 The flashbriefingprofile thing has no configuration parameters.
 It will be configured at runtime by using the save channel to store the current flash briefing configuration in the thing.
 
-## Channels
+#### Channels
 
 | Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description
 |-----------------------|-------------|-------------|-------------------------------|------------------------------------------------------------------------------------------
@@ -124,7 +167,7 @@ It will be configured at runtime by using the save channel to store the current 
 | amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
 | remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the Amazon software)
 | nextReminder          | DateTime    | R           | echo, echoshow, echospot      | Next reminder on the device
-| playAlarmSound        | String      | W           | echo, echoshow, echospot      | Write Only! Plays ans Alarm sound
+| playAlarmSound        | String      | W           | echo, echoshow, echospot      | Write Only! Plays an Alarm sound
 | nextAlarm             | DateTime    | R           | echo, echoshow, echospot      | Next alarm on the device
 | nextMusicAlarm        | DateTime    | R           | echo, echoshow, echospot      | Next music alarm on the device
 | nextTimer             | DateTime    | R           | echo, echoshow, echospot      | Next timer on the device
@@ -132,8 +175,8 @@ It will be configured at runtime by using the save channel to store the current 
 | musicProviderId       | String      | R/W         | echo, echoshow, echospot      | Current Music provider
 | playMusicVoiceCommand | String      | W           | echo, echoshow, echospot      | Write Only! Voice command as text. E.g. 'Yesterday from the Beatles' 
 | startCommand          | String      | W           | echo, echoshow, echospot      | Write Only! Used to start anything. Available options: Weather, Traffic, GoodMorning, SingASong, TellStory, FlashBriefing and FlashBriefing.<FlahshbriefingDeviceID> (Note: The options are case sensitive)
-| announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. Please note: the announcement feature must be activated in the alexa app at the echo device. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
-| textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human. Please note: the announcement feature must be activated in the alexa app at the echo device to use SSML. </amazon:effect></speak>`
+| announcement          | String      | W           | echo, echoshow, echospot      | Write Only! Display the announcement message on the display. See in the tutorial section to learn how it’s possible to set the title and turn off the sound.
+| textToSpeech          | String      | W           | echo, echoshow, echospot      | Write Only! Write some text to this channel and Alexa will speak it. It is possible to use plain text or SSML: e.g. `<speak>I want to tell you a secret.<amazon:effect name="whispered">I am not a real human.</amazon:effect></speak>`
 | textToSpeechVolume    | Dimmer      | R/W         | echo, echoshow, echospot      | Volume of the textToSpeech channel, if 0 the current volume will be used
 | lastVoiceCommand      | String      | R/W         | echo, echoshow, echospot      | Last voice command spoken to the device. Writing to the channel starts voice output.
 | mediaProgress         | Dimmer      | R/W         | echo, echoshow, echospot      | Media progress in percent 
@@ -156,25 +199,21 @@ E.g. to read out the history call from an installation on openhab:8080 with an a
 http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
 
 
-## Full Example
+### Example
 
-### amazonechocontrol.things
+#### echo.things
 
 ```
-Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" 
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2, pollingIntervalSmartHomeAlexa=30, pollingIntervalSmartSkills=120]
 {
     Thing echo                 echo1          "Alexa" @ "Living Room" [serialNumber="SERIAL_NUMBER"]
     Thing echoshow             echoshow1      "Alexa" @ "Kitchen" [serialNumber="SERIAL_NUMBER"]
     Thing echospot             echospot1      "Alexa" @ "Sleeping Room" [serialNumber="SERIAL_NUMBER"]
     Thing wha                  wha1           "Ground Floor Music Group" @ "Music Groups" [serialNumber="SERIAL_NUMBER"]
-    Thing flashbriefingprofile flashbriefing1 "Flash Briefing Technical" @ "Flash Briefings" 
-    Thing flashbriefingprofile flashbriefing2 "Flash Briefing Life Style" @ "Flash Briefings" 
 }
 ```
 
-You will find the serial number in the Alexa app. 
-
-### amazonechocontrol.items:
+#### echo.items:
 
 Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
 Take a look in the channel description above to know, which channels are supported by your thing type.
@@ -222,6 +261,21 @@ Switch Echo_Living_Room_Bluetooth              "Bluetooth"             <bluetoot
 String Echo_Living_Room_BluetoothDeviceName    "Bluetooth Device"      <bluetooth>     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:bluetoothDeviceName"}
 
 // Commands
+String Echo_Living_Room_Announcement          "Announcement"                          (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:announcement"}
+String Echo_Living_Room_TTS                   "Text to Speech"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeech"}
+Dimmer Echo_Living_Room_TTS_Volume            "Text to Speech Volume"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeechVolume"}
+String Echo_Living_Room_Remind                "Remind"                                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:remind"}
+String Echo_Living_Room_PlayAlarmSound        "Play Alarm Sound"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:playAlarmSound"}
+String Echo_Living_Room_StartRoutine          "Start Routine"                         (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:startRoutine"}
+Dimmer Echo_Living_Room_NotificationVolume    "Notification volume"                   (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:notificationVolume"}
+Switch Echo_Living_Room_AscendingAlarm    "Ascending alarm"                           (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:ascendingAlarm"}
+
+// Feedbacks
+String Echo_Living_Room_LastVoiceCommand          "Last voice command"                (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:lastVoiceCommand"}
+DateTime Echo_Living_Room_NextReminder             "Next reminder"                     (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextReminder"}
+DateTime Echo_Living_Room_NextAlarm                "Next alarm"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextAlarm"}
+DateTime Echo_Living_Room_NextMusicAlarm           "Next music alarm"                  (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextMusicAlarm"}
+DateTime Echo_Living_Room_NextTimer                "Next timer"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextTimer"}
 String Echo_Living_Room_Announcement           "Announcement"                          (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:announcement"}
 String Echo_Living_Room_TTS                    "Text to Speech"                        (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeech"}
 Dimmer Echo_Living_Room_TTS_Volume             "Text to Speech Volume"                 (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:textToSpeechVolume"}
@@ -238,7 +292,6 @@ DateTime Echo_Living_Room_NextAlarm            "Next alarm"                     
 DateTime Echo_Living_Room_NextMusicAlarm       "Next music alarm"                      (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextMusicAlarm"}
 DateTime Echo_Living_Room_NextTimer            "Next timer"                            (Alexa_Living_Room) {channel="amazonechocontrol:echo:account1:echo1:nextTimer"}
 
-
 // Flashbriefings
 Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
 Switch FlashBriefing_Technical_Active "Active"            { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
@@ -249,7 +302,7 @@ Switch FlashBriefing_LifeStyle_Active "Active"            { channel="amazonechoc
 String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
 ```
 
-### amazonechocontrol.sitemap:
+#### echo.sitemap:
 
 ```
 sitemap amazonechocontrol label="Echo Devices"
@@ -299,7 +352,62 @@ sitemap amazonechocontrol label="Echo Devices"
             Slider  item=Echo_Living_Room_NotificationVolume
             Switch  item=Echo_Living_Room_AscendingAlarm
         }
+}
+```
 
+## Flash Briefing
+
+#### Supported Things
+
+| Thing type id        | Name                                  |
+|----------------------|---------------------------------------|
+| flashbriefingprofile | Flash briefing profile                |
+
+#### Channels
+
+The flashbriefingprofile thing has no configuration parameters.
+It will be configured at runtime by using the save channel to store the current flash briefing configuration which is set in the alexa app in the thing. Create a flashbriefingprofile Thing for each set you need.
+E.g. One Flashbriefing profile with technical news and wheater, one for playing world news and one for sport news.
+
+| Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description                                                                                                                                                                
+|-----------------------|-------------|-------------|-------------------------------|------------------------------------------------------------------------------------------
+| save                  | Switch      | W           | flashbriefingprofile          | Write Only! Stores the current configuration of flash briefings within the thing
+| active                | Switch      | R/W         | flashbriefingprofile          | Active the profile
+| playOnDevice          | String      | W           | flashbriefingprofile          | Specify the echo serial number or name to start the flash briefing. 
+
+#### Example
+
+#### flashbriefings.things
+
+```
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2]
+{
+    Thing flashbriefingprofile flashbriefing1 "Flash Briefing Technical" @ "Flash Briefings" 
+    Thing flashbriefingprofile flashbriefing2 "Flash Briefing Life Style" @ "Flash Briefings"
+}
+```
+
+#### flashbriefings.items:
+
+Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
+Take a look in the channel description above to know, which channels are supported by your thing type.
+
+```
+// Flashbriefings
+Switch FlashBriefing_Technical_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:save"} 
+Switch FlashBriefing_Technical_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:active"}
+String FlashBriefing_Technical_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing1:playOnDevice"}
+
+Switch FlashBriefing_LifeStyle_Save   "Save (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:save"} 
+Switch FlashBriefing_LifeStyle_Active "Active" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:active"}
+String FlashBriefing_LifeStyle_Play   "Play (Write only)" { channel="amazonechocontrol:flashbriefingprofile:account1:flashbriefing2:playOnDevice"}
+```
+
+#### flashbriefings.sitemap:
+
+```
+sitemap flashbriefings label="Flash Briefings"
+{
         Frame label="Flash Briefing Technical" {
             Switch  item=FlashBriefing_Technical_Save
             Switch  item=FlashBriefing_Technical_Active
@@ -314,12 +422,118 @@ sitemap amazonechocontrol label="Echo Devices"
 }
 ```
 
+## Smart Home Devices
+
+Note: the cannels of smartHomeDevices and smartHomeDeviceGroup will be created dynamically based on the capabilities reported by the amazon server. This can take a little bit of time. 
+The polling interval configured in the Account Thing to get the state is specified in minutes and has a minimum of 10. This means it takes up to 10 minutes to see the state of a channel. The reason for this low interval is, that the polling causes a big server load for the Smart Home Skills.
+
+#### Supported Things
+
+| Thing type id        | Name                                  |
+|----------------------|---------------------------------------|
+| smartHomeDevice      | Smart Home Device                     |
+| smartHomeDeviceGroup | Smart Home Device group               |
+
+
+#### Thing configuration of smartHomeDevice, smartHomeDeviceGroup
+
+| Configuration name       | Description                                                               |
+|--------------------------|---------------------------------------------------------------------------|
+| id                       | The id of the device or device group                                      |
+
+The only possibility to find out the id is by using the discover function in the PaperUI. You can use then the id, if you want define the Thing in a file.
+
+#### Channels
+
+The channels of the smarthome devices will be generated at runtime. Check in the paperUI thing configurations, which channels are created.
+
+| Channel Type ID          | Item Type | Access Mode | Thing Type                    | Description                                                                                                                                                                
+|--------------------------|-----------|-------------|-------------------------------|------------------------------------------------------------------------------------------
+| powerState               | Switch    | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the state (ON/OFF) of your device
+| brightness               | Dimmer    | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the brightness of your lamp
+| color                    | Color     | R           | smartHomeDevice, smartHomeDeviceGroup | Shows the color of your light
+| colorName                | String    | R/W         | smartHomeDevice, smartHomeDeviceGroup | Shows and changes the color name of your light (groups are not able to show their color)
+| colorTemperatureName     | String    | R/W         | smartHomeDevice, smartHomeDeviceGroup | White temperatures name of your lights (groups are not able to show their color)
+| armState                 | String    | R/W         | smartHomeDevice, smartHomeDeviceGroup | State of your alarm guard. Options: ARMED_AWAY, ARMED_STAY, ARMED_NIGHT, DISARMED (groups are not able to show their state)
+| burglaryAlarm            | Contact   | R           | smartHomeDevice | Burglary alarm
+| carbonMonoxideAlarm      | Contact   | R           | smartHomeDevice | Carbon monoxide detection alarm
+| fireAlarm                | Contact   | R           | smartHomeDevice | Fire alarm
+| waterAlarm               | Contact   | R           | smartHomeDevice | Water alarm
+| glassBreakDetectionState | Contact   | R           | smartHomeDevice | Glass break detection alarm
+| smokeAlarmDetectionState | Contact   | R           | smartHomeDevice | Smoke detection alarm
+| temperature              | Number    | R           | smartHomeDevice | Temperature
+
+### Example
+
+#### smarthome.things
+
+```
+Bridge amazonechocontrol:account:account1 "Amazon Account" @ "Accounts" [discoverSmartHome=2, pollingIntervalSmartHomeAlexa=30, pollingIntervalSmartSkills=120]
+{
+    Thing smartHomeDevice      smartHomeDevice1 "Smart Home Device 1" @ "Living Room" [id="ID"]
+    Thing smartHomeDevice      smartHomeDevice2 "Smart Home Device 2" @ "Living Room" [id="ID"]
+    Thing smartHomeDevice      smartHomeDevice3 "Smart Home Device 3" @ "Living Room" [id="ID"]
+    Thing smartHomeDeviceGroup smartHomeDeviceGroup1 "Living Room Group" @   "Living Room" [id="ID"]
+}
+```
+
+#### smarthome.items:
+
+Sample for the Thing echo1 only. But it will work in the same way for the other things, only replace the thing name in the channel link.
+Take a look in the channel description above to know which channels are supported by your thing type.
+
+```
+// Lights and lightgroups
+Switch Light_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:powerState" }
+Dimmer Light_Brightness "Brightness" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:brightness" }
+Color  Light_Color "Color" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:color" }
+String Light_Color_Name "Color Name" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorName" }
+String Light_White "White temperature" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice1:colorTemperatureName" }
+
+// Smart plugs
+Switch Plug_State "On/Off" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice2:powerState" }
+
+// Alexa Guard
+Switch Arm_State "State" { channel="amazonechocontrol:smartHomeDevice:account1:smartHomeDevice3:armState" }
+
+// Smart Home device group
+Switch Group_State "On/Off" { channel="amazonechocontrol:smartHomeDeviceGroup:account1:smartHomeDeviceGroup1:powerState" }
+```
+
+The only possibility to find out the id for the smartHomeDevice and smartHomeDeviceGroup Things is by using the discover function in the PaperUI.
+
+#### smarthome.sitemap:
+
+```
+sitemap smarthome label="Smart Home Devices"
+{
+        Frame label="Lights and light groups" {
+            Switch item=Light_State
+            Slider item=Light_Brightness
+            Default item=Light_Color
+            Selection item=Light_Color_Name mappings=[ ''='', 'red'='Red', 'crimson'='Crimson', 'salmon'='Salmon', 'orange'='Orange', 'gold'='Gold', 'yellow'='Yellow', 'green'='Green', 'turquoise'='Turquoise', 'cyan'='Cyan', 'sky_blue'='Sky Blue', 'blue'='Blue', 'purple'='Purple', 'magenta'='Magenta', 'pink'='Pink', 'lavender'='Lavender' ]
+            Selection item=Light_White mappings=[ ''='', 'warm_white'='Warm white', 'soft_white'='Soft white', 'white'='White', 'daylight_white'='Daylight white', 'cool_white'='Cool white' ]
+            Switch item=Light_State
+            Switch item=Group_State
+            Selection item=Arm_State mappings=[ 'ARMED_AWAY'='Active', 'ARMED_STAY'='Present', 'ARMED_NIGHT'='Night', 'DISARMED'='Deactivated' ]
+        }
+}
+```
+
 ## How To Get IDs 
 
 1) Open the url YOUR_OPENHAB/amazonechocontrol in your browser (e.g. http://openhab:8080/amazonechocontrol/)
 2) Click on the name of the account thing
 3) Click on the name of the echo thing 
 4) Scroll to the channel and copy the required ID
+
+## Advanced Feature Technically Experienced Users
+
+The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the amazon alexa server. This can be used to call alexa api from rules.
+
+E.g. to read out the history call from an installation on openhab:8080 with a account named account1:
+
+http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
 
 ## Tutorials
 
@@ -363,6 +577,7 @@ end
 ```
 
 Expert:
+
 You can use a json formatted string to control title, sound and volume:
 
 ```php
@@ -376,6 +591,7 @@ A volume value smaller then 0 means that the current alexa volume should be used
 No specification uses the volume from the `textToSpeechVolume` channel.
 
 Note: If you turn off the sound and Alexa is playing music, it will anyway turn down the volume for a moment. This behavior can not be changed.
+
 
 ```php
 rule "Say welcome if the door opens"
@@ -462,6 +678,23 @@ then
      Echo_Living_Room_StartCommand.sendCommand('FlashBriefing.flashbriefing1')
 end
 ```
+
+## Advanced Feature Technically Experienced Users
+
+The url <YOUR_OPENHAB>/amazonechocontrol/<YOUR_ACCOUNT>/PROXY/<API_URL> provides a proxy server with an authenticated connection to the Amazon Alexa server.
+This can be used to call Alexa API from rules.
+
+E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
+
+http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+
+## Note
+
+This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon.de).
+In other words, it simulates a user which is using the web page.
+Unfortunately, this binding can break if Amazon changes the web site.
+
+The binding is tested with amazon.de, amazon.fr, amazon.it, amazon.com and amazon.co.uk accounts, but should also work with all others.
 
 ## Credits
 

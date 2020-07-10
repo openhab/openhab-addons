@@ -12,15 +12,14 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.ACTIVE_STATUS;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -34,34 +33,33 @@ import io.github.hapjava.services.impl.FanService;
  * @author Eugen Freiter - Initial contribution
  */
 class HomekitFanImpl extends AbstractHomekitAccessoryImpl implements FanAccessory {
+    private final BooleanItemReader activeReader;
+
     public HomekitFanImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
+        activeReader = createBooleanReader(ACTIVE_STATUS, OnOffType.ON, OpenClosedType.OPEN);
         this.getServices().add(new FanService(this));
     }
 
     @Override
     public CompletableFuture<Boolean> isActive() {
-        final @Nullable State state = getStateAs(HomekitCharacteristicType.ACTIVE_STATUS, OnOffType.class);
-        return CompletableFuture.completedFuture(state == OnOffType.ON);
+        return CompletableFuture.completedFuture(activeReader.getValue());
     }
 
     @Override
-    public CompletableFuture<Void> setActive(final boolean state) throws Exception {
-        final @Nullable SwitchItem item = getItem(HomekitCharacteristicType.ACTIVE_STATUS, SwitchItem.class);
-        if (item != null) {
-            item.send(OnOffType.from(state));
-        }
+    public CompletableFuture<Void> setActive(boolean state) {
+        activeReader.setValue(state);
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void subscribeActive(final HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.ACTIVE_STATUS, callback);
+    public void subscribeActive(HomekitCharacteristicChangeCallback callback) {
+        subscribe(ACTIVE_STATUS, callback);
     }
 
     @Override
     public void unsubscribeActive() {
-        unsubscribe(HomekitCharacteristicType.ACTIVE_STATUS);
+        unsubscribe(ACTIVE_STATUS);
     }
 }

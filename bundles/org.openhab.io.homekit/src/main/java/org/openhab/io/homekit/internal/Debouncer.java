@@ -55,7 +55,7 @@ class Debouncer {
      * @param scheduler The scheduler implementation to use
      * @param delay The time after which to invoke action; each time [[Debouncer.call]] is invoked, this delay is
      *            reset
-     * @param Clock The source from which we get the current time. This input should use the same source. Specified
+     * @param clock The source from which we get the current time. This input should use the same source. Specified
      *            for testing purposes
      * @param action The action to invoke
      */

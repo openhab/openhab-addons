@@ -591,7 +591,7 @@
         <feature name="contact">WirelessMotionSensorContact</feature>
         <feature name="lightlevelabovethreshold">WirelessMotionSensorLightLevelAboveThreshold</feature>
         <feature name="lowbattery">WirelessMotionSensorLowBattery</feature>
-        <feature name="data">MotionSensorData</feature>
+        <feature name="data">MotionSensor2Data</feature>
         <feature name="tamperswitch">WirelessMotionSensor2TamperSwitch</feature>
         <feature name="lastheardfrom">GenericLastTime</feature>
     </device>
