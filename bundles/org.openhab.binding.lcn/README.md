@@ -269,7 +269,7 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Lock Relays                     | Sperre Relais                    | -                      | -    | -                              | Not implemented                                                                                                               |
 | Lock Thresholds                 | Sperre Schwellwerte              | -                      | -    | -                              | Not implemented                                                                                                               |
 | Motor Position                  | Motor Position                   | -                      | -    | -                              | Not implemented                                                                                                               |
-| Relay Timer                     | Relais-Timer                     | -                      | -    | -                              | Not implemented                                                                                                               |
+| Relay Timer                     | Relais-Timer                     | N/A                    | N/A  | N/A                            | Action: "startRelayTimer": Starts a relay timer for the given relay number with the given duration in milliseconds.                                                                                           |
 | Send Keys Delayed               | Sende Tasten verzögert           | -                      | -    | -                              | Not implemented                                                                                                               |
 | Set S0 Counters                 | S0-Zähler setzen                 | -                      | -    | -                              | Not implemented                                                                                                               |
 | Status Command                  | Statuskommandos                  | -                      | -    | -                              | Not implemented                                                                                                               |
@@ -440,6 +440,28 @@ then
     actions.flickerOutput(1, 2, 0, 3)
 end
 ```
+
+### Relay Timer
+
+This *Action* realizes the LCN commmand "Relay Timer" (German: "Relais-Timer").
+The command switches the given relay immediately to on and after a given time back to off.
+
+When programming a "Relay Timer" *Action*, the following parameters need to be set:
+
+*relayNumber* - The relay number: 1-8<br />
+*duration* - Timer duration in milliseconds: 30-240.000 ms<br />
+
+```
+rule "Start relay timer for led driver when dummy switch changed"
+when
+    Item Dummy_Switch changed 
+then
+    val actions = getActions("lcn","lcn:module:b827ebfea4bb:17B4196847")
+    // relayNumber=3, duration=90
+    actions.startRelayTimer(3,90)
+end
+```
+
 
 ## Caveat and Limitations
 
