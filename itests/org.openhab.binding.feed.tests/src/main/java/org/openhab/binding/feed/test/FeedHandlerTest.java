@@ -212,8 +212,9 @@ public class FeedHandlerTest extends JavaOSGiTest {
     private void initializeFeedHandler(String url, BigDecimal refreshTime) {
         // Set up configuration
         Configuration configuration = new Configuration();
-        configuration.put((FeedBindingConstants.URL), url);
-        configuration.put((FeedBindingConstants.REFRESH_TIME), refreshTime);
+        configuration.put("URL", url);
+        configuration.put("refresh", refreshTime);
+        configuration.put("numberOfEntries", 0);
 
         // Create Feed Thing
         ThingUID feedUID = new ThingUID(FeedBindingConstants.FEED_THING_TYPE_UID, THING_NAME);
