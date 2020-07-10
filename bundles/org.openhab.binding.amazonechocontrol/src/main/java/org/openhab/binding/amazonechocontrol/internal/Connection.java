@@ -429,15 +429,18 @@ public class Connection {
         try {
             checkRenewSession();
 
-            if (this.accountCustomerId == null || this.accountCustomerId.isEmpty()) {
+            String accountCustomerId = this.accountCustomerId;
+            if (accountCustomerId == null || accountCustomerId.isEmpty()) {
                 List<Device> devices = this.getDeviceList();
                 for (Device device : devices) {
-                    if (device.serialNumber != null && device.serialNumber.equals(this.serial)) {
+                    final String serial = this.serial;
+                    if (serial != null && serial.equals(device.serialNumber)) {
                         this.accountCustomerId = device.deviceOwnerCustomerId;
                         break;
                     }
                 }
-                if (this.accountCustomerId == null || this.accountCustomerId.isEmpty()) {
+                accountCustomerId = this.accountCustomerId;
+                if (accountCustomerId == null || accountCustomerId.isEmpty()) {
                     for (Device device : devices) {
                         if ("This Device".equals(device.accountName)) {
                             this.accountCustomerId = device.deviceOwnerCustomerId;

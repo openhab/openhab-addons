@@ -18,11 +18,14 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -54,7 +57,6 @@ import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerSendMessage;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.SourceDeviceId;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
@@ -205,7 +207,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     public void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer volume) throws IOException, URISyntaxException {
         EchoHandler echoHandler = findEchoHandlerBySerialNumber(device.serialNumber);
-        echoHandler.startAnnouncment(device, speak, bodyText, title, volume);
+        if (echoHandler != null) {
+            echoHandler.startAnnouncment(device, speak, bodyText, title, volume);
+        }
     }
 
     public List<FlashBriefingProfileHandler> getFlashBriefingProfileHandlers() {
@@ -569,23 +573,18 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     DeviceNotificationState deviceNotificationState = null;
                     AscendingAlarmModel ascendingAlarmModel = null;
                     if (device != null) {
-                        if (ascendingAlarmModels != null) {
-                            for (AscendingAlarmModel current : ascendingAlarmModels) {
-                                if (current.deviceSerialNumber != null
-                                        && current.deviceSerialNumber.equals(device.serialNumber)) {
-                                    ascendingAlarmModel = current;
-                                    break;
-                                }
+                        final String serialNumber = device.serialNumber;
+                        if (serialNumber != null) {
+                            if (ascendingAlarmModels != null) {
+                                ascendingAlarmModel = Arrays.stream(ascendingAlarmModels).filter(Objects::nonNull)
+                                        .filter(current -> serialNumber.equals(current.deviceSerialNumber)).findFirst()
+                                        .orElse(null);
                             }
-                        }
-
-                        if (deviceNotificationStates != null) {
-                            for (DeviceNotificationState current : deviceNotificationStates) {
-                                if (current.deviceSerialNumber != null
-                                        && current.deviceSerialNumber.equals(device.serialNumber)) {
-                                    deviceNotificationState = current;
-                                    break;
-                                }
+                            if (deviceNotificationStates != null) {
+                                deviceNotificationState = Arrays.stream(deviceNotificationStates)
+                                        .filter(Objects::nonNull)
+                                        .filter(current -> serialNumber.equals(current.deviceSerialNumber)).findFirst()
+                                        .orElse(null);
                             }
                         }
                     }
@@ -618,20 +617,19 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     public @Nullable Device findDeviceJsonBySerialOrName(@Nullable String serialOrName) {
-        if (serialOrName != null && !serialOrName.isEmpty()) {
-            Map<String, Device> currentJsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
-            for (Device device : currentJsonSerialNumberDeviceMapping.values()) {
-                if (device.serialNumber != null && device.serialNumber.equalsIgnoreCase(serialOrName)) {
-                    return device;
-                }
-            }
-            for (Device device : currentJsonSerialNumberDeviceMapping.values()) {
-                if (device.accountName != null && device.accountName.equalsIgnoreCase(serialOrName)) {
-                    return device;
-                }
-            }
+        if (serialOrName == null || serialOrName.isEmpty()) {
+            return null;
         }
-        return null;
+
+        Optional<Device> device = this.jsonSerialNumberDeviceMapping.values().stream().filter(
+                d -> serialOrName.equalsIgnoreCase(d.serialNumber) || serialOrName.equalsIgnoreCase(d.accountName))
+                .findFirst();
+
+        if (device.isPresent()) {
+            return device.get();
+        } else {
+            return null;
+        }
     }
 
     public List<Device> updateDeviceList() {
@@ -839,31 +837,18 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 if (connection == null || !connection.getIsLoggedIn()) {
                     return;
                 }
-                Activity[] activities = connection.getActivities(10, pushActivity.timestamp);
-                Activity currentActivity = null;
-                String search = key.registeredUserId + "#" + key.entryId;
-                for (Activity activity : activities) {
-                    if (activity.id != null && activity.id.equals(search)) {
-                        currentActivity = activity;
-                        break;
-                    }
-                }
-                if (currentActivity == null) {
-                    return;
-                }
 
-                @Nullable
-                SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
-                if (sourceDeviceIds != null) {
-                    for (SourceDeviceId sourceDeviceId : sourceDeviceIds) {
-                        if (sourceDeviceId != null) {
-                            EchoHandler echoHandler = findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber);
-                            if (echoHandler != null) {
-                                echoHandler.handlePushActivity(currentActivity);
+                String search = key.registeredUserId + "#" + key.entryId;
+                Arrays.stream(connection.getActivities(10, pushActivity.timestamp))
+                        .filter(activity -> activity != null && search.equals(activity.id)).findFirst().ifPresent(currentActivity -> {
+                            SourceDeviceId[] sourceDeviceIds = currentActivity.sourceDeviceIds;
+                            if (sourceDeviceIds != null) {
+                                Arrays.stream(sourceDeviceIds).filter(Objects::nonNull).map(
+                                        sourceDeviceId -> findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber))
+                                        .filter(Objects::nonNull)
+                                        .forEach(echoHandler -> echoHandler.handlePushActivity(currentActivity));
                             }
-                        }
-                    }
-                }
+                        });
             } finally {
                 pushActivitySenderUnblockFuture = scheduler.schedule(this::queuedPushActivity, 5, TimeUnit.SECONDS);
             }
