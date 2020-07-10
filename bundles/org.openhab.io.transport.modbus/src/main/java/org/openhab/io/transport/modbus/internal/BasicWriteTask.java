@@ -10,12 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.io.transport.modbus;
+package org.openhab.io.transport.modbus.internal;
 
 import org.apache.commons.lang.builder.StandardToStringStyle;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.transport.modbus.ModbusFailureCallback;
+import org.openhab.io.transport.modbus.ModbusWriteCallback;
+import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
+import org.openhab.io.transport.modbus.WriteTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 
 /**
@@ -34,14 +37,16 @@ public class BasicWriteTask implements WriteTask {
 
     private ModbusSlaveEndpoint endpoint;
     private ModbusWriteRequestBlueprint request;
-    private ModbusWriteCallback callback;
+    private ModbusWriteCallback resultCallback;
+    private ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback;
 
     public BasicWriteTask(ModbusSlaveEndpoint endpoint, ModbusWriteRequestBlueprint request,
-            ModbusWriteCallback callback) {
+            ModbusWriteCallback resultCallback, ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback) {
         super();
         this.endpoint = endpoint;
         this.request = request;
-        this.callback = callback;
+        this.resultCallback = resultCallback;
+        this.failureCallback = failureCallback;
     }
 
     @Override
@@ -55,13 +60,18 @@ public class BasicWriteTask implements WriteTask {
     }
 
     @Override
-    public @Nullable ModbusWriteCallback getCallback() {
-        return callback;
+    public ModbusWriteCallback getResultCallback() {
+        return resultCallback;
+    }
+
+    @Override
+    public ModbusFailureCallback<ModbusWriteRequestBlueprint> getFailureCallback() {
+        return failureCallback;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, TO_STRING_STYLE).append("request", request).append("endpoint", endpoint)
-                .append("callback", getCallback()).toString();
+                .append("resultCallback", resultCallback).append("failureCallback", failureCallback).toString();
     }
 }

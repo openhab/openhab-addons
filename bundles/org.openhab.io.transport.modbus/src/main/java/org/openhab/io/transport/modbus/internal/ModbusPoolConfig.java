@@ -18,6 +18,7 @@ import org.apache.commons.pool2.impl.DefaultEvictionPolicy;
 import org.apache.commons.pool2.impl.EvictionPolicy;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.io.transport.modbus.internal.pooling.ModbusSlaveConnectionEvictionPolicy;
 
 import net.wimpi.modbus.net.ModbusSlaveConnection;
 
@@ -61,6 +62,10 @@ public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig {
 
         // disable JMX
         setJmxEnabled(false);
+
+        // Evict idle connections every 10 seconds
+        setEvictionPolicy(new ModbusSlaveConnectionEvictionPolicy());
+        setTimeBetweenEvictionRunsMillis(10000);
     }
 
     public EvictionPolicy<ModbusSlaveConnection> getEvictionPolicy() {
