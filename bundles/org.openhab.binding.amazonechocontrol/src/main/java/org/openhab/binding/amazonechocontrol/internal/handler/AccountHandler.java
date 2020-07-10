@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.storage.Storage;
@@ -572,7 +571,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     if (device != null) {
                         if (ascendingAlarmModels != null) {
                             for (AscendingAlarmModel current : ascendingAlarmModels) {
-                                if (StringUtils.equals(current.deviceSerialNumber, device.serialNumber)) {
+                                if (current.deviceSerialNumber != null
+                                        && current.deviceSerialNumber.equals(device.serialNumber)) {
                                     ascendingAlarmModel = current;
                                     break;
                                 }
@@ -581,7 +581,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
                         if (deviceNotificationStates != null) {
                             for (DeviceNotificationState current : deviceNotificationStates) {
-                                if (StringUtils.equals(current.deviceSerialNumber, device.serialNumber)) {
+                                if (current.deviceSerialNumber != null
+                                        && current.deviceSerialNumber.equals(device.serialNumber)) {
                                     deviceNotificationState = current;
                                     break;
                                 }
@@ -609,7 +610,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     public @Nullable Device findDeviceJson(@Nullable String serialNumber) {
         Device result = null;
-        if (StringUtils.isNotEmpty(serialNumber)) {
+        if (serialNumber != null && !serialNumber.isEmpty()) {
             Map<String, Device> jsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
             result = jsonSerialNumberDeviceMapping.get(serialNumber);
         }
@@ -617,15 +618,15 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     public @Nullable Device findDeviceJsonBySerialOrName(@Nullable String serialOrName) {
-        if (StringUtils.isNotEmpty(serialOrName)) {
+        if (serialOrName != null && !serialOrName.isEmpty()) {
             Map<String, Device> currentJsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
             for (Device device : currentJsonSerialNumberDeviceMapping.values()) {
-                if (StringUtils.equalsIgnoreCase(device.serialNumber, serialOrName)) {
+                if (device.serialNumber != null && device.serialNumber.equalsIgnoreCase(serialOrName)) {
                     return device;
                 }
             }
             for (Device device : currentJsonSerialNumberDeviceMapping.values()) {
-                if (StringUtils.equalsIgnoreCase(device.accountName, serialOrName)) {
+                if (device.accountName != null && device.accountName.equalsIgnoreCase(serialOrName)) {
                     return device;
                 }
             }
@@ -792,8 +793,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     break;
                 default:
                     String payload = pushCommand.payload;
-                    if (payload != null && StringUtils.isNotEmpty(payload) && payload.startsWith("{")
-                            && payload.endsWith("}")) {
+                    if (payload != null && !payload.isEmpty() && payload.startsWith("{") && payload.endsWith("}")) {
                         JsonCommandPayloadPushDevice devicePayload = gson.fromJson(payload,
                                 JsonCommandPayloadPushDevice.class);
                         @Nullable
@@ -843,7 +843,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 Activity currentActivity = null;
                 String search = key.registeredUserId + "#" + key.entryId;
                 for (Activity activity : activities) {
-                    if (StringUtils.equals(activity.id, search)) {
+                    if (activity.id != null && activity.id.equals(search)) {
                         currentActivity = activity;
                         break;
                     }

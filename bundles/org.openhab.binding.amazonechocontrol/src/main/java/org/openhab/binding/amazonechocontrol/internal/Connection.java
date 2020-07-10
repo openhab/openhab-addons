@@ -35,28 +35,29 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncement;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementContent;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAnnouncementTarget.TargetDevice;
@@ -101,7 +102,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonRenewTokenRespon
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeDevices.SmartHomeDevice;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonSmartHomeGroups.SmartHomeGroup;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonStartRoutineRequest;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonTextToSpeech;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonUsersMeResponse;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonWakeWords.WakeWord;
@@ -117,7 +117,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -151,18 +150,18 @@ public class Connection {
     private @Nullable String accountCustomerId;
     private @Nullable String customerName;
 
-    private Map<String, JsonAnnouncement> announcements = new LinkedHashMap<>();
-    private Map<String, JsonTextToSpeech> textToSpeeches = new LinkedHashMap<>();
+    private Map<Integer, Announcement> announcements = new LinkedHashMap<>();
+    private Map<Integer, TextToSpeech> textToSpeeches = new LinkedHashMap<>();
     private @Nullable ScheduledFuture<?> announcementTimer;
     private @Nullable ScheduledFuture<?> textToSpeechTimer;
 
     private final Gson gson;
     private final Gson gsonWithNullSerialization;
 
-    private LinkedBlockingQueue<JsonAnnouncement> announcementQueue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<Announcement> announcementQueue = new LinkedBlockingQueue<>();
     private AtomicBoolean announcementQueueRunning = new AtomicBoolean();
     private @Nullable ScheduledFuture<?> announcementSenderUnblockFuture;
-    private LinkedBlockingQueue<JsonTextToSpeech> textToSpeechQueue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<TextToSpeech> textToSpeechQueue = new LinkedBlockingQueue<>();
     private AtomicBoolean textToSpeechQueueRunning = new AtomicBoolean();
     private @Nullable ScheduledFuture<?> textToSpeechSenderUnblockFuture;
     private LinkedBlockingQueue<JsonObject> sequenceNodeQueue = new LinkedBlockingQueue<>();
@@ -367,7 +366,7 @@ public class Connection {
 
     private @Nullable Date tryRestoreSessionData(@Nullable String data, @Nullable String overloadedDomain) {
         // verify store data
-        if (StringUtils.isEmpty(data)) {
+        if (data == null || data.isEmpty()) {
             return null;
         }
         Scanner scanner = new Scanner(data);
@@ -398,7 +397,7 @@ public class Connection {
             // Note: version 5 have wrong customer id serialized.
             // Only use it, if it at least version 6 of serialization
             if (intVersion > 6) {
-                if (!StringUtils.equals(accountCustomerId, "null")) {
+                if (!"null".equals(accountCustomerId)) {
                     this.accountCustomerId = accountCustomerId;
                 }
             }
@@ -430,17 +429,17 @@ public class Connection {
         try {
             checkRenewSession();
 
-            if (StringUtils.isEmpty(this.accountCustomerId)) {
+            if (this.accountCustomerId == null || this.accountCustomerId.isEmpty()) {
                 List<Device> devices = this.getDeviceList();
                 for (Device device : devices) {
-                    if (StringUtils.equals(device.serialNumber, this.serial)) {
+                    if (device.serialNumber != null && device.serialNumber.equals(this.serial)) {
                         this.accountCustomerId = device.deviceOwnerCustomerId;
                         break;
                     }
                 }
-                if (StringUtils.isEmpty(this.accountCustomerId)) {
+                if (this.accountCustomerId == null || this.accountCustomerId.isEmpty()) {
                     for (Device device : devices) {
-                        if (StringUtils.equals(device.accountName, "This Device")) {
+                        if ("This Device".equals(device.accountName)) {
                             this.accountCustomerId = device.deviceOwnerCustomerId;
                             String serial = device.serialNumber;
                             if (serial != null) {
@@ -460,7 +459,8 @@ public class Connection {
     private @Nullable Authentication tryGetBootstrap() throws IOException, URISyntaxException {
         HttpsURLConnection connection = makeRequest("GET", alexaServer + "/api/bootstrap", null, false, false, null, 0);
         String contentType = connection.getContentType();
-        if (connection.getResponseCode() == 200 && StringUtils.startsWithIgnoreCase(contentType, "application/json")) {
+        if (connection.getResponseCode() == 200 && contentType != null
+                && contentType.toLowerCase().startsWith("application/json")) {
             try {
                 String bootstrapResultJson = convertStream(connection);
                 JsonBootstrapResult result = parseJson(bootstrapResultJson, JsonBootstrapResult.class);
@@ -489,7 +489,7 @@ public class Connection {
         }
 
         InputStream readerStream;
-        if (StringUtils.equalsIgnoreCase(connection.getContentEncoding(), "gzip")) {
+        if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
             readerStream = new GZIPInputStream(connection.getInputStream());
         } else {
             readerStream = input;
@@ -503,7 +503,8 @@ public class Connection {
             }
         }
 
-        Scanner inputScanner = StringUtils.isEmpty(charSet) ? new Scanner(readerStream, StandardCharsets.UTF_8.name())
+        Scanner inputScanner = charSet == null || charSet.isEmpty()
+                ? new Scanner(readerStream, StandardCharsets.UTF_8.name())
                 : new Scanner(readerStream, charSet);
         Scanner scannerWithoutDelimiter = inputScanner.useDelimiter("\\A");
         String result = scannerWithoutDelimiter.hasNext() ? scannerWithoutDelimiter.next() : null;
@@ -552,7 +553,7 @@ public class Connection {
                 if (customHeaders != null) {
                     for (String key : customHeaders.keySet()) {
                         String value = customHeaders.get(key);
-                        if (StringUtils.isNotEmpty(value)) {
+                        if (value != null && !value.isEmpty()) {
                             connection.setRequestProperty(key, value);
                         }
                     }
@@ -612,11 +613,11 @@ public class Connection {
                 Map<String, List<String>> headerFields = connection.getHeaderFields();
                 for (Map.Entry<String, List<String>> header : headerFields.entrySet()) {
                     String key = header.getKey();
-                    if (StringUtils.isNotEmpty(key)) {
+                    if (key != null && !key.isEmpty()) {
                         if (key.equalsIgnoreCase("Set-Cookie")) {
                             // store cookie
                             for (String cookieHeader : header.getValue()) {
-                                if (StringUtils.isNotEmpty(cookieHeader)) {
+                                if (cookieHeader != null && !cookieHeader.isEmpty()) {
                                     List<HttpCookie> cookies = HttpCookie.parse(cookieHeader);
                                     for (HttpCookie cookie : cookies) {
                                         cookieManager.getCookieStore().add(uri, cookie);
@@ -627,7 +628,7 @@ public class Connection {
                         if (key.equalsIgnoreCase("Location")) {
                             // get redirect location
                             location = header.getValue().get(0);
-                            if (StringUtils.isNotEmpty(location)) {
+                            if (location != null && !location.isEmpty()) {
                                 location = uri.resolve(location).toString();
                                 // check for https
                                 if (location.toLowerCase().startsWith("http://")) {
@@ -738,7 +739,7 @@ public class Connection {
             throw new ConnectionException("Error: No bearer received from register application");
         }
         this.refreshToken = bearer.refreshToken;
-        if (StringUtils.isEmpty(this.refreshToken)) {
+        if (this.refreshToken == null || this.refreshToken.isEmpty()) {
             throw new ConnectionException("Error: No refresh token received");
         }
         try {
@@ -1095,7 +1096,7 @@ public class Connection {
     public @Nullable JsonPlaylists getPlaylists(Device device) throws IOException, URISyntaxException {
         String json = makeRequestAndReturnString(alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                + (this.accountCustomerId == null || this.accountCustomerId.isEmpty() ? device.deviceOwnerCustomerId
                         : this.accountCustomerId));
         JsonPlaylists playlists = parseJson(json, JsonPlaylists.class);
         return playlists;
@@ -1215,7 +1216,7 @@ public class Connection {
     }
 
     public void bluetooth(Device device, @Nullable String address) throws IOException, URISyntaxException {
-        if (StringUtils.isEmpty(address)) {
+        if (address == null || address.isEmpty()) {
             // disconnect
             makeRequest("POST",
                     alexaServer + "/api/bluetooth/disconnect-sink/" + device.deviceType + "/" + device.serialNumber, "",
@@ -1228,28 +1229,30 @@ public class Connection {
     }
 
     public void playRadio(Device device, @Nullable String stationId) throws IOException, URISyntaxException {
-        if (StringUtils.isEmpty(stationId)) {
+        if (stationId == null || stationId.isEmpty()) {
             command(device, "{\"type\":\"PauseCommand\"}");
         } else {
             makeRequest("POST",
                     alexaServer + "/api/tunein/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&guideId=" + stationId
                             + "&contentType=station&callSign=&mediaOwnerCustomerId="
-                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            + (this.accountCustomerId == null || this.accountCustomerId.isEmpty()
+                                    ? device.deviceOwnerCustomerId
                                     : this.accountCustomerId),
                     "", true, true, null, 0);
         }
     }
 
     public void playAmazonMusicTrack(Device device, @Nullable String trackId) throws IOException, URISyntaxException {
-        if (StringUtils.isEmpty(trackId)) {
+        if (trackId == null || trackId.isEmpty()) {
             command(device, "{\"type\":\"PauseCommand\"}");
         } else {
             String command = "{\"trackId\":\"" + trackId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            + (this.accountCustomerId == null || this.accountCustomerId.isEmpty()
+                                    ? device.deviceOwnerCustomerId
                                     : this.accountCustomerId)
                             + "&shuffle=false",
                     command, true, true, null, 0);
@@ -1258,14 +1261,15 @@ public class Connection {
 
     public void playAmazonMusicPlayList(Device device, @Nullable String playListId)
             throws IOException, URISyntaxException {
-        if (StringUtils.isEmpty(playListId)) {
+        if (playListId == null || playListId.isEmpty()) {
             command(device, "{\"type\":\"PauseCommand\"}");
         } else {
             String command = "{\"playlistId\":\"" + playListId + "\",\"playQueuePrime\":true}";
             makeRequest("POST",
                     alexaServer + "/api/cloudplayer/queue-and-play?deviceSerialNumber=" + device.serialNumber
                             + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
-                            + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                            + (this.accountCustomerId == null || this.accountCustomerId.isEmpty()
+                                    ? device.deviceOwnerCustomerId
                                     : this.accountCustomerId)
                             + "&shuffle=false",
                     command, true, true, null, 0);
@@ -1277,7 +1281,7 @@ public class Connection {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("notificationMessage", text);
         parameters.put("alexaUrl", "#v2/behaviors");
-        if (title != null && !StringUtils.isEmpty(title)) {
+        if (title != null && !title.isEmpty()) {
             parameters.put("title", title);
         } else {
             parameters.put("title", "OpenHAB");
@@ -1288,104 +1292,79 @@ public class Connection {
 
     public synchronized void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
-        if (speak == null || speak.replaceAll("<.+?>", "").trim().isEmpty() || ttsVolume == null || standardVolume == null) {
+        if (speak.replaceAll("<.+?>", "").trim().isEmpty() || ttsVolume == null || standardVolume == null) {
             return;
         }
         if (announcementTimer != null) {
             announcementTimer.cancel(true);
         }
-        JsonAnnouncement jsonAnnouncement = new JsonAnnouncement();
-        jsonAnnouncement.speak = speak;
-        jsonAnnouncement.bodyText = bodyText;
-        jsonAnnouncement.title = title;
-        String json = gson.toJson(jsonAnnouncement);
-        if (!announcements.containsKey(json)) {
-            jsonAnnouncement.devices = new ArrayList<>();
-            jsonAnnouncement.ttsVolumes = new ArrayList<>();
-            jsonAnnouncement.standardVolumes = new ArrayList<>();
-            announcements.put(json, jsonAnnouncement);
-        } else {
-            jsonAnnouncement = announcements.get(json);
-        }
-        jsonAnnouncement.devices.add(device);
-        jsonAnnouncement.ttsVolumes.add(ttsVolume);
-        jsonAnnouncement.standardVolumes.add(standardVolume);
-        announcementTimer = scheduler.schedule(() -> {
-            sendAnnouncement();
-        }, 1, TimeUnit.SECONDS);
+        Announcement announcement = announcements.computeIfAbsent(Objects.hash(speak, bodyText, title),
+                k -> new Announcement(speak, bodyText, title));
+        announcement.devices.add(device);
+        announcement.ttsVolumes.add(ttsVolume);
+        announcement.standardVolumes.add(standardVolume);
+        announcementTimer = scheduler.schedule(this::sendAnnouncement, 1, TimeUnit.SECONDS);
     }
 
     private void sendAnnouncement() {
         if (announcementTimer != null) {
             announcementTimer.cancel(true);
         }
-        for (String json : announcements.keySet()) {
-            JsonAnnouncement jsonAnnouncement = announcements.get(json);
-            announcementQueue.add(jsonAnnouncement);
-            if (announcementQueueRunning.compareAndSet(false, true)) {
-                queuedAnnouncement();
-            }
-        }
+        announcementQueue.addAll(announcements.values());
         announcements.clear();
+        if (announcementQueueRunning.compareAndSet(false, true)) {
+            queuedAnnouncement();
+        }
     }
 
     public void queuedAnnouncement() {
-        JsonAnnouncement jsonAnnouncement = announcementQueue.poll();
-        if (jsonAnnouncement != null) {
-            String speak = jsonAnnouncement.speak;
+        Announcement announcement = announcementQueue.poll();
+        if (announcement != null) {
+            String speak = announcement.speak;
             try {
-                List<Device> devices = jsonAnnouncement.devices;
-                String bodyText = jsonAnnouncement.bodyText;
-                String title = jsonAnnouncement.title;
-                List<Integer> ttsVolumes = jsonAnnouncement.ttsVolumes;
-                List<Integer> standardVolumes = jsonAnnouncement.standardVolumes;
+                List<Device> devices = announcement.devices;
+                if (devices != null && !devices.isEmpty()) {
+                    String bodyText = announcement.bodyText;
+                    String title = announcement.title;
+                    List<Integer> ttsVolumes = announcement.ttsVolumes;
+                    List<Integer> standardVolumes = announcement.standardVolumes;
 
-                Map<String, Object> parameters = new HashMap<>();
-                parameters.put("expireAfter", "PT5S");
-                JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
-                JsonAnnouncementContent content = new JsonAnnouncementContent();
-                if (StringUtils.isEmpty(title)) {
-                    content.display.title = "OpenHAB";
-                } else {
-                    content.display.title = title;
+                    Map<String, Object> parameters = new HashMap<>();
+                    parameters.put("expireAfter", "PT5S");
+                    JsonAnnouncementContent[] contentArray = new JsonAnnouncementContent[1];
+                    JsonAnnouncementContent content = new JsonAnnouncementContent();
+                    content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
+                    content.display.body = bodyText;
+                    content.display.body = speak.replaceAll("<.+?>", "");
+                    if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
+                        content.speak.type = "ssml";
+                    }
+                    content.speak.value = speak;
+
+                    contentArray[0] = content;
+
+                    parameters.put("content", contentArray);
+
+                    JsonAnnouncementTarget target = new JsonAnnouncementTarget();
+                    target.customerId = devices.get(0).deviceOwnerCustomerId;
+                    TargetDevice[] targetDevices = devices.stream().map(TargetDevice::new).collect(Collectors.toList())
+                            .toArray(new TargetDevice[0]);
+                    target.devices = targetDevices;
+                    parameters.put("target", target);
+
+                    String accountCustomerId = this.accountCustomerId;
+                    String customerId = accountCustomerId == null || accountCustomerId.isEmpty()
+                            ? devices.toArray(new Device[0])[0].deviceOwnerCustomerId
+                            : accountCustomerId;
+
+                    if (customerId != null) {
+                        parameters.put("customerId", customerId);
+                    }
+                    executeSequenceCommandWithVolume(devices.toArray(new Device[0]), "AlexaAnnouncement", parameters,
+                            ttsVolumes.toArray(new Integer[0]), standardVolumes.toArray(new Integer[0]));
                 }
-                content.display.body = bodyText;
-                content.display.body = speak.replaceAll("<.+?>", "");
-                if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
-                    content.speak.type = "ssml";
-                }
-                content.speak.value = speak;
-
-                contentArray[0] = content;
-
-                parameters.put("content", contentArray);
-
-                JsonAnnouncementTarget target = new JsonAnnouncementTarget();
-                target.customerId = devices.get(0).deviceOwnerCustomerId;
-                TargetDevice[] targetDevices = new TargetDevice[devices.size()];
-                for (int i = 0; i < devices.size(); i++) {
-                    Device device = devices.get(i);
-                    TargetDevice deviceTarget = new TargetDevice();
-                    deviceTarget.deviceSerialNumber = device.serialNumber;
-                    deviceTarget.deviceTypeId = device.deviceType;
-                    targetDevices[i] = deviceTarget;
-                }
-                target.devices = targetDevices;
-                parameters.put("target", target);
-
-                String accountCustomerId = this.accountCustomerId;
-                String customerId = StringUtils.isEmpty(accountCustomerId)
-                        ? devices.toArray(new Device[devices.size()])[0].deviceOwnerCustomerId
-                        : accountCustomerId;
-
-                if (customerId != null) {
-                    parameters.put("customerId", customerId);
-                }
-                executeSequenceCommandWithVolume(devices.toArray(new Device[devices.size()]), "AlexaAnnouncement",
-                        parameters, ttsVolumes.toArray(new Integer[ttsVolumes.size()]),
-                        standardVolumes.toArray(new Integer[standardVolumes.size()]));
             } catch (IOException | URISyntaxException e) {
-                logger.error("send textToSpeech fails with unexpected error", e);
+                logger.warn("send textToSpeech fails with unexpected error", e);
             } finally {
                 announcementSenderUnblockFuture = scheduler.schedule(this::queuedAnnouncement, speak.length() * 100,
                         TimeUnit.MILLISECONDS);
@@ -1398,61 +1377,49 @@ public class Connection {
 
     public synchronized void textToSpeech(Device device, String text, @Nullable Integer ttsVolume,
             @Nullable Integer standardVolume) {
-        if (text == null || text.replaceAll("<.+?>", "").trim().isEmpty() || ttsVolume == null || standardVolume == null) {
+        if (text == null || text.replaceAll("<.+?>", "").trim().isEmpty() || ttsVolume == null
+                || standardVolume == null) {
             return;
         }
         if (textToSpeechTimer != null) {
             textToSpeechTimer.cancel(true);
         }
-        JsonTextToSpeech jsonTextToSpeech = new JsonTextToSpeech();
-        jsonTextToSpeech.text = text;
-        String json = gson.toJson(jsonTextToSpeech);
-        if (!textToSpeeches.containsKey(json)) {
-            jsonTextToSpeech.devices = new ArrayList<>();
-            jsonTextToSpeech.ttsVolumes = new ArrayList<>();
-            jsonTextToSpeech.standardVolumes = new ArrayList<>();
-            textToSpeeches.put(json, jsonTextToSpeech);
-        } else {
-            jsonTextToSpeech = textToSpeeches.get(json);
-        }
-        jsonTextToSpeech.devices.add(device);
-        jsonTextToSpeech.ttsVolumes.add(ttsVolume);
-        jsonTextToSpeech.standardVolumes.add(standardVolume);
-        textToSpeechTimer = scheduler.schedule(() -> {
-            sendTextToSpeech();
-        }, 1, TimeUnit.SECONDS);
+        TextToSpeech textToSpeech = textToSpeeches.computeIfAbsent(Objects.hash(text), k -> new TextToSpeech(text));
+        textToSpeech.devices.add(device);
+        textToSpeech.ttsVolumes.add(ttsVolume);
+        textToSpeech.standardVolumes.add(standardVolume);
+        textToSpeechTimer = scheduler.schedule(this::sendTextToSpeech, 1, TimeUnit.SECONDS);
     }
 
     private void sendTextToSpeech() {
         if (textToSpeechTimer != null) {
             textToSpeechTimer.cancel(true);
         }
-        for (String json : textToSpeeches.keySet()) {
-            JsonTextToSpeech jsonTextToSpeech = textToSpeeches.get(json);
-            textToSpeechQueue.add(jsonTextToSpeech);
-            if (textToSpeechQueueRunning.compareAndSet(false, true)) {
-                queuedTextToSpeech();
-            }
-        }
+        textToSpeechQueue.addAll(textToSpeeches.values());
         textToSpeeches.clear();
+
+        if (textToSpeechQueueRunning.compareAndSet(false, true)) {
+            queuedTextToSpeech();
+        }
     }
 
     public void queuedTextToSpeech() {
-        JsonTextToSpeech jsonTextToSpeech = textToSpeechQueue.poll();
-        if (jsonTextToSpeech != null) {
-            String text = jsonTextToSpeech.text;
+        TextToSpeech textToSpeech = textToSpeechQueue.poll();
+        if (textToSpeech != null) {
+            String text = textToSpeech.text;
             try {
-                List<Device> devices = jsonTextToSpeech.devices;
-                List<Integer> ttsVolumes = jsonTextToSpeech.ttsVolumes;
-                List<Integer> standardVolumes = jsonTextToSpeech.standardVolumes;
+                List<Device> devices = textToSpeech.devices;
+                if (devices != null && !devices.isEmpty()) {
+                    List<Integer> ttsVolumes = textToSpeech.ttsVolumes;
+                    List<Integer> standardVolumes = textToSpeech.standardVolumes;
 
-                Map<String, Object> parameters = new HashMap<>();
-                parameters.put("textToSpeak", text);
-                executeSequenceCommandWithVolume(devices.toArray(new Device[devices.size()]), "Alexa.Speak", parameters,
-                        ttsVolumes.toArray(new Integer[ttsVolumes.size()]),
-                        standardVolumes.toArray(new Integer[standardVolumes.size()]));
+                    Map<String, Object> parameters = new HashMap<>();
+                    parameters.put("textToSpeak", text);
+                    executeSequenceCommandWithVolume(devices.toArray(new Device[0]), "Alexa.Speak", parameters,
+                            ttsVolumes.toArray(new Integer[0]), standardVolumes.toArray(new Integer[0]));
+                }
             } catch (IOException | URISyntaxException e) {
-                logger.error("send textToSpeech fails with unexpected error", e);
+                logger.warn("send textToSpeech fails with unexpected error", e);
             } finally {
                 textToSpeechSenderUnblockFuture = scheduler.schedule(this::queuedTextToSpeech, text.length() * 100,
                         TimeUnit.MILLISECONDS);
@@ -1464,9 +1431,8 @@ public class Connection {
     }
 
     private void executeSequenceCommandWithVolume(@Nullable Device[] devices, String command,
-            @Nullable Map<String, Object> parameters, @NonNull Integer[] ttsVolumes,
-            @NonNull Integer[] standardVolumes) throws IOException, URISyntaxException {
-        
+            @Nullable Map<String, Object> parameters, @NonNull Integer[] ttsVolumes, @NonNull Integer[] standardVolumes)
+            throws IOException, URISyntaxException {
         JsonArray ttsVolumeNodesToExecute = new JsonArray();
         for (int i = 0; i < devices.length; i++) {
             if (ttsVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
@@ -1494,11 +1460,15 @@ public class Connection {
 
         JsonArray standardVolumeNodesToExecute = new JsonArray();
         for (int i = 0; i < devices.length; i++) {
-            if (ttsVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
-                Map<String, Object> volumeParameters = new HashMap<>();
-                volumeParameters.put("value", standardVolumes[i]);
-                standardVolumeNodesToExecute
-                        .add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
+            final Device device = devices[i];
+            if (textToSpeechQueue.stream().noneMatch(t -> t.devices.contains(device))
+                    || announcementQueue.stream().noneMatch(t -> t.devices.contains(device))) {
+                if (ttsVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
+                    Map<String, Object> volumeParameters = new HashMap<>();
+                    volumeParameters.put("value", standardVolumes[i]);
+                    standardVolumeNodesToExecute
+                            .add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
+                }
             }
         }
         if (standardVolumeNodesToExecute.size() > 0) {
@@ -1572,7 +1542,7 @@ public class Connection {
             operationPayload.addProperty("deviceSerialNumber", device.serialNumber);
             operationPayload.addProperty("locale", "");
             operationPayload.addProperty("customerId",
-                    StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                    this.accountCustomerId == null || this.accountCustomerId.isEmpty() ? device.deviceOwnerCustomerId
                             : this.accountCustomerId);
         }
         if (parameters != null) {
@@ -1618,7 +1588,7 @@ public class Connection {
                         if (payload == null) {
                             continue;
                         }
-                        if (StringUtils.equalsIgnoreCase(payload.utterance, utterance)) {
+                        if (payload.utterance != null && payload.utterance.equalsIgnoreCase(utterance)) {
                             found = routine;
                             deviceLocale = payload.locale;
                             break;
@@ -1649,7 +1619,7 @@ public class Connection {
             // "customerId": "ALEXA_CUSTOMER_ID"
             String customerId = "\"customerId\":\"ALEXA_CUSTOMER_ID\"";
             String newCustomerId = "\"customerId\":\""
-                    + (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+                    + (this.accountCustomerId == null || this.accountCustomerId.isEmpty() ? device.deviceOwnerCustomerId
                             : this.accountCustomerId)
                     + "\"";
             sequenceJson = sequenceJson.replace(customerId.subSequence(0, customerId.length()),
@@ -1657,7 +1627,7 @@ public class Connection {
 
             // "locale": "ALEXA_CURRENT_LOCALE"
             String locale = "\"locale\":\"ALEXA_CURRENT_LOCALE\"";
-            String newlocale = StringUtils.isNotEmpty(deviceLocale) ? "\"locale\":\"" + deviceLocale + "\""
+            String newlocale = deviceLocale != null && !deviceLocale.isEmpty() ? "\"locale\":\"" + deviceLocale + "\""
                     : "\"locale\":null";
             sequenceJson = sequenceJson.replace(locale.subSequence(0, locale.length()),
                     newlocale.subSequence(0, newlocale.length()));
@@ -1776,7 +1746,7 @@ public class Connection {
             logger.warn("getMusicProviders fails: {}", e.getMessage());
             return new ArrayList<>();
         }
-        if (StringUtils.isEmpty(response)) {
+        if (response == null || response.isEmpty()) {
             return new ArrayList<>();
         }
         JsonMusicProvider[] result = parseJson(response, JsonMusicProvider[].class);
@@ -1786,7 +1756,8 @@ public class Connection {
     public void playMusicVoiceCommand(Device device, String providerId, String voiceCommand)
             throws IOException, URISyntaxException {
         JsonPlaySearchPhraseOperationPayload payload = new JsonPlaySearchPhraseOperationPayload();
-        payload.customerId = (StringUtils.isEmpty(this.accountCustomerId) ? device.deviceOwnerCustomerId
+        payload.customerId = (this.accountCustomerId == null || this.accountCustomerId.isEmpty()
+                ? device.deviceOwnerCustomerId
                 : this.accountCustomerId);
         payload.locale = "ALEXA_CURRENT_LOCALE";
         payload.musicProviderId = providerId;
@@ -1804,7 +1775,7 @@ public class Connection {
         String validateResultJson = makeRequestAndReturnString("POST",
                 alexaServer + "/api/behaviors/operation/validate", postDataValidate, true, null);
 
-        if (StringUtils.isNotEmpty(validateResultJson)) {
+        if (validateResultJson != null && !validateResultJson.isEmpty()) {
             JsonPlayValidationResult validationResult = parseJson(validateResultJson, JsonPlayValidationResult.class);
             if (validationResult != null) {
                 JsonPlaySearchPhraseOperationPayload validatedOperationPayload = validationResult.operationPayload;
@@ -1845,5 +1816,32 @@ public class Connection {
         String postData = gson.toJson(settings);
         makeRequest("POST", alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType, postData,
                 true, true, null, 0);
+    }
+
+    @NonNullByDefault
+    private class Announcement {
+        public List<Device> devices = new ArrayList<>();
+        public String speak;
+        public String bodyText;
+        public @Nullable String title;
+        public List<Integer> ttsVolumes = new ArrayList<>();
+        public List<Integer> standardVolumes = new ArrayList<>();
+
+        public Announcement(String speak, String bodyText, @Nullable String title) {
+            this.speak = speak;
+            this.bodyText = bodyText;
+            this.title = title;
+        }
+    }
+
+    private class TextToSpeech {
+        public List<JsonDevices.Device> devices = new ArrayList<>();
+        public String text;
+        public List<Integer> ttsVolumes = new ArrayList<>();
+        public List<Integer> standardVolumes = new ArrayList<>();
+
+        public TextToSpeech(String text) {
+            this.text = text;
+        }
     }
 }
