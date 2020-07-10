@@ -81,7 +81,6 @@ Caddx Alarm things support a variety of channels as seen below in the following 
 |--------------------------------------------------|-----------|---------------------|--------------------------------------------|
 | send_Command                                     | String    | Command             | Send a command to the panel                |
 | panel_firmware_version                           | String    | Configuration       | Firmware version                           |
-| panel_firmware_version                           | String    | Configuration       | Firmware version                           |
 | panel_log_message_n_0                            | String    | Runtime             | Log message 10                             |
 | panel_log_message_n_1                            | String    | Runtime             | Log message 9                              |
 | panel_log_message_n_2                            | String    | Runtime             | Log message 8                              |
