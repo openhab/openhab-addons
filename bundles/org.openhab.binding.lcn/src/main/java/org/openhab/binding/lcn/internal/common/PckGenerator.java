@@ -732,6 +732,26 @@ public final class PckGenerator {
     }
 
     /**
+     * Generates a command to start a relay timer
+     *
+     * @param relayNumber number of relay (1..8)
+     * @param duration duration in milliseconds
+     * @return the PCK command (without address header) as text
+     * @throws LcnException if out of range
+     */
+    public static String startRelayTimer(int relayNumber, double duration) throws LcnException {
+        if (relayNumber < 1 || relayNumber > 8 || duration < 30 || duration > 240960) {
+            throw new LcnException();
+        }
+        StringBuilder command = new StringBuilder("R8T");
+        command.append(String.format("%03d", convertMsecToLCNTimer(duration)));
+        StringBuilder data = new StringBuilder("--------");
+        data.setCharAt(relayNumber - 1, '1');
+        command.append(data);
+        return command.toString();
+    }
+
+    /**
      * Generates a null command, used for broadcast messages.
      *
      * @return the PCK command (without address header) as text
@@ -777,4 +797,28 @@ public final class PckGenerator {
         }
         return ret;
     }
+
+    /**
+     * Converts duration in milliseconds to lcntimer value
+     * Source: https://www.symcon.de/forum/threads/38603-LCN-Relais-Kurzzeit-Timer-umrechnen
+     *
+     * @param ms time in milliseconds
+     * @return lcn timer value
+     */
+    private static int convertMsecToLCNTimer(double ms) {
+        Integer lcntimer = -1;
+        if (ms >= 0 && ms <= 240960) {
+            double a = ms / 1000 / 0.03;
+            double b = (a / 32.0) + 1.0;
+            double c = Math.log(b) / Math.log(2);
+            double mod = Math.floor(c);
+            double faktor = 32 * (Math.pow(2, mod) - 1);
+            double offset = (a - faktor) / Math.pow(2, mod);
+            lcntimer = (int) (offset + mod * 32);
+        } else {
+            LOGGER.warn("Timer not in [0,240960] ms");
+        }
+        return lcntimer;
+    }
+
 }
