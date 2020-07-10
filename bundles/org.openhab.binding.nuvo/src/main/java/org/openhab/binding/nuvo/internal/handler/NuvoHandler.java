@@ -557,11 +557,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
                             NuvoEnum.VALID_SOURCES.forEach(source -> {
                                 try {
-                                    connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.NAME);
+                                    connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.NAME);
                                     Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                                    connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.DISPINFO);
+                                    connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.DISPINFO);
                                     Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                                    connector.sendQuery(NuvoEnum.valueOf(NuvoEnum.class, source), NuvoCommand.DISPLINE);
+                                    connector.sendQuery(NuvoEnum.valueOf(source), NuvoCommand.DISPLINE);
                                     Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                 } catch (NuvoException | InterruptedException e) {
                                     logger.debug("Error Querying Source data: {}", e.getMessage());

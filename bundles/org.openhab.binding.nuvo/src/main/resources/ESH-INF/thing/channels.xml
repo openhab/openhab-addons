@@ -118,30 +118,28 @@
 			<parameter name="serialPort" type="text" required="false">
 				<context>serial-port</context>
 				<label>Serial Port</label>
-				<description>Serial Port to Use for Connecting to the Nuvo Amplifier</description>
+				<description>Serial Port to use for connecting to the Nuvo amplifier</description>
 			</parameter>
 			<parameter name="host" type="text" required="false">
 				<context>network-address</context>
 				<label>Address</label>
-				<description>Host Name or IP Address of the Machine Connected to the Nuvo Amplifier (Serial over IP)</description>
+				<description>Host Name or IP Address of the machine connected to the Nuvo amplifier (Serial over IP)</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Communication Port (serial over IP). For IP Connection to the Nuvo Amplifier</description>
+				<description>Communication Port (serial over IP). For IP connection to the Nuvo amplifier</description>
 				<default>4444</default>
 			</parameter>
 			<parameter name="numZones" type="integer" min="1" max="20" required="true">
 				<label>Number of Zones</label>
-				<description>Number of Zones On the Amplifier to Utilize in the Binding (Up to 20 Zones When Using Expansion Module)</description>
+				<description>Number of Zones on the amplifier to utilize in the binding (Up to 20 zones when using expansion module)</description>
 				<default>6</default>
 			</parameter>
 			<parameter name="clockSync" type="boolean" required="false">
 				<label>Sync Clock On GConcerto</label>
-				<description>If Set to true, the Binding Will Sync the Internal Clock On the Grand Concerto to Match the openHAB
-					Host's
-					System Clock. The Sync Job Runs at Binding Startup and Once an Hour Thereafter. The Essentia G Has No RTC, So
-					This
-					Setting Has No Effect On That Component.</description>
+				<description>If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB
+					host's system clock. The sync job runs at binding startup and once an hour thereafter. The Essentia G has no RTC,
+					so this setting has no effect on that component.</description>
 				<default>false</default>
 			</parameter>
 		</config-description>

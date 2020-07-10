@@ -50,7 +50,7 @@ public abstract class NuvoConnector {
 
     private static final Pattern SRC_PATTERN = Pattern.compile("^#S(\\d{1})(.*)$");
     private static final Pattern ZONE_PATTERN = Pattern.compile("^#Z(\\d{1,2}),(.*)$");
-    private static final Pattern ZONE_BUTTON_PATTERN = Pattern.compile("^#Z(\\d{1,2})(S\\d{1})(.*)$");
+    private static final Pattern ZONE_BUTTON_PATTERN = Pattern.compile("^#Z(\\d{1,2})S(\\d{1})(.*)$");
     private static final Pattern ZONE_CFG_PATTERN = Pattern.compile("^#ZCFG(\\d{1,2}),(.*)$");
 
     private final Logger logger = LoggerFactory.getLogger(NuvoConnector.class);
@@ -263,11 +263,10 @@ public abstract class NuvoConnector {
             if (this.isEssentia) {
                 dataOut.write(WAKE_STR);
                 dataOut.flush();
-                Thread.sleep(5);
             }
             dataOut.write(messageStr.getBytes(StandardCharsets.US_ASCII));
             dataOut.flush();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             throw new NuvoException("Send command \"" + command + "\" failed: " + e.getMessage(), e);
         }
     }

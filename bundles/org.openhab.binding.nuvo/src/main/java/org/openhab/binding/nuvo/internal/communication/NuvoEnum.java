@@ -58,7 +58,7 @@ public enum NuvoEnum {
 
     // make a list of all valid source ids
     public static final List<String> VALID_SOURCES = Arrays.stream(values()).filter(s -> s.name().contains("SOURCE"))
-            .map(s -> s.getId()).collect(Collectors.toList());
+            .map(s -> s.name()).collect(Collectors.toList());
 
     NuvoEnum(String id, String cfgId) {
         this.id = id;
