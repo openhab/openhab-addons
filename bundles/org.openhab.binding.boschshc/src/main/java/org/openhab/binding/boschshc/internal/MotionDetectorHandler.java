@@ -3,6 +3,7 @@ package org.openhab.binding.boschshc.internal;
 import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_LATEST_MOTION;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -18,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
+@NonNullByDefault
 public class MotionDetectorHandler extends BoschSHCHandler {
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
 
@@ -41,9 +43,11 @@ public class MotionDetectorHandler extends BoschSHCHandler {
 
                 if (CHANNEL_LATEST_MOTION.equals(channelUID.getId())) {
                     if (command instanceof RefreshType) {
-
-                        updateLatestMotionState(
-                                bridgeHandler.refreshState(getThing(), "LatestMotion", LatestMotionState.class));
+                        LatestMotionState state = bridgeHandler.refreshState(getThing(), "LatestMotion",
+                                LatestMotionState.class);
+                        if (state != null) {
+                            updateLatestMotionState(state);
+                        }
                     }
                     // Otherwise: not action supported here.
                 }

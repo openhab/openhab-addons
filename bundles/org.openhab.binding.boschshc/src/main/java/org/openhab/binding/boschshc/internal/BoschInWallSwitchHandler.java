@@ -2,6 +2,7 @@ package org.openhab.binding.boschshc.internal;
 
 import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -24,6 +25,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Stefan Kästle
  */
+@NonNullByDefault
 public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
@@ -48,14 +50,22 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
                 if (command instanceof RefreshType) {
                     switch (channelUID.getId()) {
-                        case CHANNEL_POWER_SWITCH:
-                            updatePowerSwitchState(
-                                    bridgeHandler.refreshState(getThing(), "PowerSwitch", PowerSwitchState.class));
+                        case CHANNEL_POWER_SWITCH: {
+                            PowerSwitchState state = bridgeHandler.refreshState(getThing(), "PowerSwitch",
+                                    PowerSwitchState.class);
+                            if (state != null) {
+                                updatePowerSwitchState(state);
+                            }
                             break;
-                        case CHANNEL_POWER_CONSUMPTION:
-                            updatePowerMeterState(
-                                    bridgeHandler.refreshState(getThing(), "PowerMeter", PowerMeterState.class));
+                        }
+                        case CHANNEL_POWER_CONSUMPTION: {
+                            PowerMeterState state = bridgeHandler.refreshState(getThing(), "PowerMeter",
+                                    PowerMeterState.class);
+                            if (state != null) {
+                                updatePowerMeterState(state);
+                            }
                             break;
+                        }
                         case CHANNEL_ENERGY_CONSUMPTION:
                             // Nothing to do here, since the same update is received from POWER_CONSUMPTION
                             break;
@@ -70,7 +80,6 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge or config is NUL");
         }
-
     }
 
     void updatePowerMeterState(PowerMeterState state) {
@@ -109,5 +118,4 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
             logger.warn("Received unknown update in in-wall switch: {}", state);
         }
     }
-
 }
