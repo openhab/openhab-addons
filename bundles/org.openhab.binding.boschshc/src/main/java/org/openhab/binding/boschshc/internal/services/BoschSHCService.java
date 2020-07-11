@@ -9,6 +9,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
 
+/**
+ * Base class of a service of a Bosch Smart Home device.
+ * The services of the devices and their official APIs can be found here: https://apidocs.bosch-smarthome.com/local/
+ */
 @NonNullByDefault
 public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
     /**
@@ -39,6 +43,12 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
     @Nullable
     private Consumer<TState> stateUpdateListener;
 
+    /**
+     * Constructor
+     * 
+     * @param serviceName Unique name of the service.
+     * @param stateClass State class that this service uses for data transfers from/to the device.
+     */
     protected BoschSHCService(String serviceName, Class<TState> stateClass) {
         this.serviceName = serviceName;
         this.stateClass = stateClass;
@@ -47,10 +57,9 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
     /**
      * Initializes the service
      * 
-     * @param bridgeHandler       Bridge to use for communication from/to the device
-     * @param deviceId            Id of device this service is for
-     * @param stateUpdateListener Function to call when a state update was received
-     *                            from the device.
+     * @param bridgeHandler Bridge to use for communication from/to the device
+     * @param deviceId Id of device this service is for
+     * @param stateUpdateListener Function to call when a state update was received from the device.
      */
     public void initialize(BoschSHCBridgeHandler bridgeHandler, String deviceId,
             @Nullable Consumer<TState> stateUpdateListener) {
@@ -98,7 +107,7 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * Sets the state of the device with the specified id.
      * 
      * @param deviceId Id of device to set state for.
-     * @param state    State to set.
+     * @param state State to set.
      */
     public void setState(TState state) {
         this.bridgeHandler.putState(this.deviceId, this.serviceName, state);
@@ -115,6 +124,11 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
         this.onStateUpdate(state);
     }
 
+    /**
+     * A state update was received from the bridge.
+     * 
+     * @param state Current state of service as an instance of the state class.
+     */
     private void onStateUpdate(TState state) {
         Consumer<TState> stateUpdateListener = this.stateUpdateListener;
         if (stateUpdateListener != null) {

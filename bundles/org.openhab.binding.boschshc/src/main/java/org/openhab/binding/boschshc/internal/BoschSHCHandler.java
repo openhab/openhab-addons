@@ -87,8 +87,8 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     /**
-     * Initializes this handler. Use this method to register all services of the
-     * device with {@link #registerService(BoschSHCService)}.
+     * Initializes this handler. Use this method to register all services of the device with
+     * {@link #registerService(BoschSHCService)}.
      */
     @Override
     public void initialize() {
@@ -100,6 +100,13 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * Handles the refresh command of all registered services. Override it to handle custom commands (e.g. to update
+     * states of services).
+     * 
+     * @param channelUID {@link ChannelUID} of the channel to which the command was sent
+     * @param command {@link Command}
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -116,7 +123,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * Processes an update which is received from the bridge.
      * 
      * @param serviceName Name of service the update came from.
-     * @param stateData   Current state of device service. Serialized as JSON.
+     * @param stateData Current state of device service. Serialized as JSON.
      */
     public void processUpdate(String serviceName, JsonElement stateData) {
         // Check services of device to correctly
@@ -128,6 +135,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Returns the bridge handler for this thing handler.
+     * 
+     * @return Bridge handler for this thing handler. Null if no or an invalid bridge was set in the configuration.
+     */
     protected @Nullable BoschSHCBridgeHandler getBridgeHandler() {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
@@ -139,13 +151,13 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Creates and registers a new service for this device.
      * 
-     * @param <TService>          Type of service.
-     * @param <TState>            Type of service state.
-     * @param serviceClass        Class of service to instantiate a new instance.
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param serviceClass Class of service to instantiate a new instance.
      * @param stateUpdateListener Function to call when a state update was received
-     *                            from the device.
-     * @param affectedChannels    Channels which are affected by the state of this
-     *                            service.
+     *            from the device.
+     * @param affectedChannels Channels which are affected by the state of this
+     *            service.
      * @return Instance of registered service.
      */
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> TService createService(
@@ -172,9 +184,9 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Registers a service of this device.
      * 
-     * @param service          Service which belongs to this device
+     * @param service Service which belongs to this device
      * @param affectedChannels Channels which are affected by the state of this
-     *                         service
+     *            service
      */
     protected <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
             Collection<String> affectedChannels) {
