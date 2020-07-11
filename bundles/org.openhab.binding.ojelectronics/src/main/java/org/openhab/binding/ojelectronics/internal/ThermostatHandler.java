@@ -49,7 +49,7 @@ public class ThermostatHandler extends BaseThingHandler {
     private final String serialNumber;
     private @Nullable Thermostat currentThermostat;
     private static final Map<Integer, String> REGULATION_MODES = createRegulationMap();
-    private final Map<String, Consumer<Thermostat>> CHANNEL_REFRESH_ACTION = createChannelRefreshActionMap();
+    private final Map<String, Consumer<Thermostat>> channelrefreshActions = createChannelRefreshActionMap();
 
     /**
      * Creates a new instance of {@link ThermostatHandler}
@@ -77,8 +77,8 @@ public class ThermostatHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             final Thermostat thermostat = currentThermostat;
-            if (thermostat != null && CHANNEL_REFRESH_ACTION.containsKey(channelUID.getId())) {
-                CHANNEL_REFRESH_ACTION.get(channelUID.getId()).accept(thermostat);
+            if (thermostat != null && channelrefreshActions.containsKey(channelUID.getId())) {
+                channelrefreshActions.get(channelUID.getId()).accept(thermostat);
             }
         }
     }
@@ -98,7 +98,7 @@ public class ThermostatHandler extends BaseThingHandler {
      */
     public void handleThermostatRefresh(Thermostat thermostat) {
         currentThermostat = thermostat;
-        CHANNEL_REFRESH_ACTION.forEach((channelUID, action) -> action.accept(thermostat));
+        channelrefreshActions.forEach((channelUID, action) -> action.accept(thermostat));
     }
 
     private void updateManualSetpoint(Thermostat thermostat) {
