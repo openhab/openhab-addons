@@ -34,7 +34,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.joda.time.DateTime;
 import org.openhab.binding.verisure.internal.DeviceStatusListener;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
@@ -321,7 +320,7 @@ public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends B
 
         @Override
         public void run() {
-            logger.debug("Trigger Event {} on {} at time {}", event, vth, DateTime.now());
+            logger.debug("Trigger Event {} on {} at time {}", event, vth, ZonedDateTime.now());
             String localEvent = event;
             if (vth != null && localEvent != null) {
                 vth.updateTriggerChannel(localEvent);
