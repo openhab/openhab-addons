@@ -36,131 +36,132 @@ import org.slf4j.LoggerFactory;
 
 public class BoschSslUtil {
 
-	private static final String OSS_OPENHAB_BINDING = "oss_openhab_binding";
+    private static final String OSS_OPENHAB_BINDING = "oss_openhab_binding";
 
-	private final Logger logger = LoggerFactory.getLogger(BoschSslUtil.class);
+    private final Logger logger = LoggerFactory.getLogger(BoschSslUtil.class);
 
-	private String keystorePath;
-	private String keystorePassword;
+    private String keystorePath;
+    private String keystorePassword;
 
-	public static String getBoschSHCId() {
-		return OSS_OPENHAB_BINDING + "_" + InstanceUUID.get();
-	}
+    public static String getBoschSHCId() {
+        return OSS_OPENHAB_BINDING + "_" + InstanceUUID.get();
+    }
 
-	public BoschSslUtil(String keystorePassword) {
-		this.keystorePath = Paths.get(ConfigConstants.getUserDataFolder(), "etc", getBoschSHCId() + ".jks").toString();
-		this.keystorePassword = keystorePassword;
-	}
+    public BoschSslUtil(String keystorePassword) {
+        this.keystorePath = Paths.get(ConfigConstants.getUserDataFolder(), "etc", getBoschSHCId() + ".jks").toString();
+        this.keystorePassword = keystorePassword;
+    }
 
-	public SslContextFactory getSslContextFactory() {
-		// Instantiate and configure the SslContextFactory
-		SslContextFactory sslContextFactory = new SslContextFactory(true); // Accept all certificates
+    public SslContextFactory getSslContextFactory() {
+        // Instantiate and configure the SslContextFactory
+        SslContextFactory sslContextFactory = new SslContextFactory(true); // Accept all certificates
 
-		// during pairing the cert from this keystore is accessed by HTTP client via name
-		sslContextFactory.setKeyStore(getKeyStoreAndCreateIfNecessary());
+        // during pairing the cert from this keystore is accessed by HTTP client via name
+        sslContextFactory.setKeyStore(getKeyStoreAndCreateIfNecessary());
 
-		// Keystore for managing the keys that have been used to pair with the SHC
-		// https://www.eclipse.org/jetty/javadoc/9.4.12.v20180830/org/eclipse/jetty/util/ssl/SslContextFactory.html
-		sslContextFactory.setKeyStorePath(keystorePath);
-		sslContextFactory.setKeyStorePassword(keystorePassword);
+        // Keystore for managing the keys that have been used to pair with the SHC
+        // https://www.eclipse.org/jetty/javadoc/9.4.12.v20180830/org/eclipse/jetty/util/ssl/SslContextFactory.html
+        sslContextFactory.setKeyStorePath(keystorePath);
+        sslContextFactory.setKeyStorePassword(keystorePassword);
 
-		// Bosch is using a self signed certificate
-		sslContextFactory.setTrustAll(true);
-		sslContextFactory.setValidateCerts(false);
-		sslContextFactory.setValidatePeerCerts(false);
-		sslContextFactory.setEndpointIdentificationAlgorithm(null);
+        // Bosch is using a self signed certificate
+        sslContextFactory.setTrustAll(true);
+        sslContextFactory.setValidateCerts(false);
+        sslContextFactory.setValidatePeerCerts(false);
+        sslContextFactory.setEndpointIdentificationAlgorithm(null);
 
-		return sslContextFactory;
-	}
+        return sslContextFactory;
+    }
 
-	public KeyStore getKeyStoreAndCreateIfNecessary() {
-		try {
-			File file = new File(keystorePath);
-			if (!file.exists()) {
-				// create new keystore
-				logger.info("Creating new keystore {} because it doesn't exist.", keystorePath);
-				return createKeyStore(keystorePath, keystorePassword);
-			} else {
-				// load keystore as a first check
-				KeyStore keyStore = KeyStore.getInstance("JKS");
-				// TODO if SHC system password is changed the keystore can't be loaded and an IOException "... password was incorrect" is thrown
-				// Either use a different secret instead of the system password (e.g. OpenHAB UUID?) 
-				// or recreate a new keystore with the different system password again (needs pairing)
-				keyStore.load(new FileInputStream(file), keystorePassword.toCharArray());
-				logger.info("Using existing keystore {}", keystorePath);
-				return keyStore;
-			}
-		} catch (OperatorCreationException | GeneralSecurityException | IOException e) {
-			logger.warn("Can not create or load keystore {}. Check path, write access and JKS content.", keystorePath);
-			logger.debug("Exception during kesstore creation: {}", e);
-			throw new IllegalStateException(e);
-		}
-	}
+    public KeyStore getKeyStoreAndCreateIfNecessary() {
+        try {
+            File file = new File(keystorePath);
+            if (!file.exists()) {
+                // create new keystore
+                logger.info("Creating new keystore {} because it doesn't exist.", keystorePath);
+                return createKeyStore(keystorePath, keystorePassword);
+            } else {
+                // load keystore as a first check
+                KeyStore keyStore = KeyStore.getInstance("JKS");
+                // TODO if SHC system password is changed the keystore can't be loaded and an IOException "... password
+                // was incorrect" is thrown
+                // Either use a different secret instead of the system password (e.g. OpenHAB UUID?)
+                // or recreate a new keystore with the different system password again (needs pairing)
+                keyStore.load(new FileInputStream(file), keystorePassword.toCharArray());
+                logger.info("Using existing keystore {}", keystorePath);
+                return keyStore;
+            }
+        } catch (OperatorCreationException | GeneralSecurityException | IOException e) {
+            logger.warn("Can not create or load keystore {}. Check path, write access and JKS content.", keystorePath);
+            logger.debug("Exception during kesstore creation: {}", e);
+            throw new IllegalStateException(e);
+        }
+    }
 
-	private X509Certificate generateClientCertificate(KeyPair keyPair)
-			throws GeneralSecurityException, IOException, OperatorCreationException {
-		final String dirName = "CN=" + getBoschSHCId() + ", O=OpenHAB, L=None, ST=None, C=None";
-		logger.debug("Creating a new self signed certificate: {}", dirName);
-		final Instant now = Instant.now();
-		final Date notBefore = Date.from(now);
-		final Date notAfter = Date.from(now.plus(Duration.ofDays(365 * 10)));
-		X500Name name = new X500Name(dirName);
+    private X509Certificate generateClientCertificate(KeyPair keyPair)
+            throws GeneralSecurityException, IOException, OperatorCreationException {
+        final String dirName = "CN=" + getBoschSHCId() + ", O=OpenHAB, L=None, ST=None, C=None";
+        logger.debug("Creating a new self signed certificate: {}", dirName);
+        final Instant now = Instant.now();
+        final Date notBefore = Date.from(now);
+        final Date notAfter = Date.from(now.plus(Duration.ofDays(365 * 10)));
+        X500Name name = new X500Name(dirName);
 
-		// create the certificate
-		X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(name, // Issuer
-				BigInteger.valueOf(now.toEpochMilli()), notBefore, notAfter, name, // Subject
-				keyPair.getPublic() // Public key to be associated with the certificate
-		);
-		// and sign it
-		ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(keyPair.getPrivate());
-		return new JcaX509CertificateConverter().setProvider(new BouncyCastleProvider())
-				.getCertificate(certificateBuilder.build(contentSigner));
-	}
+        // create the certificate
+        X509v3CertificateBuilder certificateBuilder = new JcaX509v3CertificateBuilder(name, // Issuer
+                BigInteger.valueOf(now.toEpochMilli()), notBefore, notAfter, name, // Subject
+                keyPair.getPublic() // Public key to be associated with the certificate
+        );
+        // and sign it
+        ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(keyPair.getPrivate());
+        return new JcaX509CertificateConverter().setProvider(new BouncyCastleProvider())
+                .getCertificate(certificateBuilder.build(contentSigner));
+    }
 
-	private KeyStore createKeyStore(String keystore, String keystorePassword)
-			throws IOException, OperatorCreationException, GeneralSecurityException {
+    private KeyStore createKeyStore(String keystore, String keystorePassword)
+            throws IOException, OperatorCreationException, GeneralSecurityException {
 
-		// create a new keystore
-		KeyStore keyStore = KeyStore.getInstance("JKS");
-		keyStore.load(null, null);
+        // create a new keystore
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(null, null);
 
-		// create new key pair for BoschSHC binding
-		logger.debug("Creating new keypair");
-		KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
-		kpg.initialize(2048);
-		KeyPair keyPair = kpg.generateKeyPair();
+        // create new key pair for BoschSHC binding
+        logger.debug("Creating new keypair");
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+        kpg.initialize(2048);
+        KeyPair keyPair = kpg.generateKeyPair();
 
-		Security.addProvider(new BouncyCastleProvider());
-		Signature signer = Signature.getInstance("SHA256withRSA", "BC");
-		signer.initSign(keyPair.getPrivate());
-		signer.update("Hello OpenHAB".getBytes());
-		signer.sign();
+        Security.addProvider(new BouncyCastleProvider());
+        Signature signer = Signature.getInstance("SHA256withRSA", "BC");
+        signer.initSign(keyPair.getPrivate());
+        signer.update("Hello OpenHAB".getBytes());
+        signer.sign();
 
-		X509Certificate cert = generateClientCertificate(keyPair);
+        X509Certificate cert = generateClientCertificate(keyPair);
 
-		logger.debug("Adding keypair and self signed certificate to keystore");
-		keyStore.setKeyEntry(getBoschSHCId(), keyPair.getPrivate(), keystorePassword.toCharArray(),
-				new Certificate[] { cert });
+        logger.debug("Adding keypair and self signed certificate to keystore");
+        keyStore.setKeyEntry(getBoschSHCId(), keyPair.getPrivate(), keystorePassword.toCharArray(),
+                new Certificate[] { cert });
 
-		// add Bosch Certs
-		CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        // add Bosch Certs
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
-		logger.debug("Adding Issuing CA to keystore");
-		BufferedInputStream streamIssuingCA = new BufferedInputStream(
-				BoschSslUtil.class.getClassLoader().getResourceAsStream("Smart Home Controller Issuing CA.pem"));
-		Certificate certIssueingCA = cf.generateCertificate(streamIssuingCA);
-		keyStore.setCertificateEntry("Smart Home Controller Issuing CA", certIssueingCA);
+        logger.debug("Adding Issuing CA to keystore");
+        BufferedInputStream streamIssuingCA = new BufferedInputStream(
+                BoschSslUtil.class.getClassLoader().getResourceAsStream("Smart Home Controller Issuing CA.pem"));
+        Certificate certIssueingCA = cf.generateCertificate(streamIssuingCA);
+        keyStore.setCertificateEntry("Smart Home Controller Issuing CA", certIssueingCA);
 
-		logger.debug("Adding root CA to keystore");
-		BufferedInputStream streamRootCa = new BufferedInputStream(BoschSslUtil.class.getClassLoader()
-				.getResourceAsStream("Smart Home Controller Productive Root CA.pem"));
-		Certificate certRooCA = cf.generateCertificate(streamRootCa);
-		keyStore.setCertificateEntry("Smart Home Controller Productive Root CA", certRooCA);
+        logger.debug("Adding root CA to keystore");
+        BufferedInputStream streamRootCa = new BufferedInputStream(BoschSslUtil.class.getClassLoader()
+                .getResourceAsStream("Smart Home Controller Productive Root CA.pem"));
+        Certificate certRooCA = cf.generateCertificate(streamRootCa);
+        keyStore.setCertificateEntry("Smart Home Controller Productive Root CA", certRooCA);
 
-		logger.debug("Storing keystore to file {}", keystore);
-		keyStore.store(new FileOutputStream(new File(keystore)), keystorePassword.toCharArray());
+        logger.debug("Storing keystore to file {}", keystore);
+        keyStore.store(new FileOutputStream(new File(keystore)), keystorePassword.toCharArray());
 
-		return keyStore;
-	}
+        return keyStore;
+    }
 
 }

@@ -36,8 +36,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
-
-public BoschSHCBridgeHandler(Bridge bridge) {
+    public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
@@ -50,14 +49,11 @@ public BoschSHCBridgeHandler(Bridge bridge) {
 
     private @Nullable String subscriptionId;
 
-
-
-
     @Override
     public void initialize() {
 
         config = getConfigAs(BoschSHCBridgeConfiguration.class);
-        
+
         updateStatus(ThingStatus.UNKNOWN);
 
         // Example for background initialization:
@@ -67,23 +63,23 @@ public BoschSHCBridgeHandler(Bridge bridge) {
 
             try {
                 // Instantiate HttpClient with the SslContextFactory
-                this.httpClient = new BoschHttpClient(config.ipAddress, config.password, 
-                    	// prepare SSL key and certificates
-                		new BoschSslUtil(config.password).getSslContextFactory());
+                this.httpClient = new BoschHttpClient(config.ipAddress, config.password,
+                        // prepare SSL key and certificates
+                        new BoschSslUtil(config.password).getSslContextFactory());
                 try {
                     this.httpClient.start();
                 } catch (Exception e) {
                     logger.warn("Failed to start Bosch SHC Bridge: {}", e);
                 }
 
-                logger.warn("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05", config.ipAddress,
-                        this.httpClient);
+                logger.warn("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05",
+                        config.ipAddress, this.httpClient);
 
                 // check access and pair if necessary
-                if ( !this.httpClient.isAccessPossible()) {
+                if (!this.httpClient.isAccessPossible()) {
                     // update status already if access is not possible
-                	updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
-	                    "@text/offline.conf-error-pairing");
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
+                            "@text/offline.conf-error-pairing");
                     this.httpClient.checkAccessAndPairIfNecessary();
                 }
 
@@ -98,19 +94,17 @@ public BoschSHCBridgeHandler(Bridge bridge) {
                     this.longPoll();
 
                 } else {
-                	// TODO add offline conf-error description
+                    // TODO add offline conf-error description
                     updateStatus(ThingStatus.OFFLINE);
                 }
 
-            }
-            catch (PairingFailedException e) {
-	            logger.debug("Failed pairing with Bosch Smart Home Controller: {}", e.getMessage());
-	            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-	                    "@text/offline.conf-error-pairing");
-	        }
-            catch (Exception e) {
+            } catch (PairingFailedException e) {
+                logger.debug("Failed pairing with Bosch Smart Home Controller: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error-pairing");
+            } catch (Exception e) {
                 logger.warn("Failed to initialize Bosch SHC: {}", e);
-            	// TODO add offline conf-error description
+                // TODO add offline conf-error description
                 updateStatus(ThingStatus.OFFLINE);
             }
 
@@ -138,8 +132,6 @@ public BoschSHCBridgeHandler(Bridge bridge) {
         return null;
     }
 
-
-    
     /**
      * Get a list of connected devices from the Smart-Home Controller
      */
@@ -469,9 +461,9 @@ public BoschSHCBridgeHandler(Bridge bridge) {
     /**
      * Query the Bosch Smart Home Controller for the state of the given thing.
      *
-     * @param thing     Thing to query the device state for
+     * @param thing Thing to query the device state for
      * @param stateName Name of the state to query
-     * @param classOfT  Class to convert the resulting JSON to
+     * @param classOfT Class to convert the resulting JSON to
      */
     public <T extends Object> T refreshState(@NonNull Thing thing, String stateName, Class<T> classOfT) {
         BoschSHCHandler handler = (BoschSHCHandler) thing.getHandler();
@@ -485,9 +477,9 @@ public BoschSHCBridgeHandler(Bridge bridge) {
     /**
      * Query the Bosch Smart Home Controller for the state of the given thing.
      *
-     * @param deviceId  Id of device to get state for
+     * @param deviceId Id of device to get state for
      * @param stateName Name of the state to query
-     * @param classOfT  Class to convert the resulting JSON to
+     * @param classOfT Class to convert the resulting JSON to
      */
     public <T extends Object> T getState(String deviceId, String stateName, Class<T> stateClass) {
 
@@ -530,9 +522,9 @@ public BoschSHCBridgeHandler(Bridge bridge) {
     /**
      * Sends a state change for a device to the controller
      * 
-     * @param deviceId    Id of device to change state for
+     * @param deviceId Id of device to change state for
      * @param serviceName Name of service of device to change state for
-     * @param state       New state data to set for service
+     * @param state New state data to set for service
      * 
      * @return Response of request
      */

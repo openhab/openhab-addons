@@ -1,277 +1,281 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="boschshc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="boschshc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-    <!-- Bosch Bridge -->
-    <bridge-type id="shc">
-        <label>Bosch Smart Home Controller</label>
-        <description>The Bosch SHC Bridge representing the Bosch Smart Home Controller.</description>
+	<!-- Bosch Bridge -->
+	<bridge-type id="shc">
+		<label>Bosch Smart Home Controller</label>
+		<description>The Bosch SHC Bridge representing the Bosch Smart Home Controller.</description>
 
-        <config-description>
-            <parameter name="ipAddress" type="text">
-                <context>network-address</context>
-                <label>Network Address</label>
-                <description>Network address of the Bosch Smart Home Controller.</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="password" type="text">
-                <label>System password</label>
-                <description>The system password of the Bosch Smart Home Controller necessary for pairing.</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
-    </bridge-type>
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the Bosch Smart Home Controller.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>System password</label>
+				<description>The system password of the Bosch Smart Home Controller necessary for pairing.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
 
-    <!--Bosch in-wall switch-->
-    <thing-type id="in-wall-switch">
-        <label>Bosch in-wall switch</label>
-        <description>In-wall switch for light control</description>
+	<!--Bosch in-wall switch -->
+	<thing-type id="in-wall-switch">
+		<label>Bosch in-wall switch</label>
+		<description>In-wall switch for light control</description>
 
-        <channels>
-            <channel id="power-switch" typeId="power-switch" />
-            <channel id="power-consumption" typeId="power-consumption" />
-            <channel id="energy-consumption" typeId="energy-consumption" />
-        </channels>
+		<channels>
+			<channel id="power-switch" typeId="power-switch" />
+			<channel id="power-consumption" typeId="power-consumption" />
+			<channel id="energy-consumption" typeId="energy-consumption" />
+		</channels>
 
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Device ID</label>
-                <description>Device ID of the in-wall switch</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the in-wall switch</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    </thing-type>
+	</thing-type>
 
-    <!--Bosch in-wall switch-->
-    <thing-type id="twinguard">
-        <label>Bosch TwinGuard</label>
-        <description>TwinGuard environmental sensor</description>
+	<!--Bosch in-wall switch -->
+	<thing-type id="twinguard">
+		<label>Bosch TwinGuard</label>
+		<description>TwinGuard environmental sensor</description>
 
-        <channels>
-            <channel id="temperature" typeId="temperature" />
-            <channel id="temperature-rating" typeId="temperature-rating" />
-            <channel id="humidity" typeId="humidity" />
-            <channel id="humidity-rating" typeId="humidity-rating" />
-            <channel id="purity" typeId="purity" />
-            <channel id="air-description" typeId="air-description" />
-            <channel id="purity-rating" typeId="purity-rating" />
-            <channel id="combined-rating" typeId="combined-rating" />
-        </channels>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="temperature-rating" typeId="temperature-rating" />
+			<channel id="humidity" typeId="humidity" />
+			<channel id="humidity-rating" typeId="humidity-rating" />
+			<channel id="purity" typeId="purity" />
+			<channel id="air-description" typeId="air-description" />
+			<channel id="purity-rating" typeId="purity-rating" />
+			<channel id="combined-rating" typeId="combined-rating" />
+		</channels>
 
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Device ID</label>
-                <description>Device ID of the Twinguard</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the Twinguard</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    </thing-type>
+	</thing-type>
 
-    <!--Bosch in-wall switch-->
-    <thing-type id="window-contact">
-        <label>Bosch Window/Door Contact</label>
-        <description>Contact for windows and doors</description>
+	<!--Bosch in-wall switch -->
+	<thing-type id="window-contact">
+		<label>Bosch Window/Door Contact</label>
+		<description>Contact for windows and doors</description>
 
-        <channels>
-            <channel id="contact" typeId="contact" />
-        </channels>
+		<channels>
+			<channel id="contact" typeId="contact" />
+		</channels>
 
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Device ID</label>
-                <description>Device ID of the contact</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the contact</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    </thing-type>
+	</thing-type>
 
-    <thing-type id="motion-detector">
-        <label>Motion Detector</label>
-        <description>Bosch Motion Detector</description>
+	<thing-type id="motion-detector">
+		<label>Motion Detector</label>
+		<description>Bosch Motion Detector</description>
 
-        <channels>
-            <channel id="latest-motion" typeId="latest-motion" />
-        </channels>
+		<channels>
+			<channel id="latest-motion" typeId="latest-motion" />
+		</channels>
 
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Device ID</label>
-                <description>Device ID of the contact</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the contact</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    </thing-type>
+	</thing-type>
 
-    <thing-type id="shutter-control">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="shc" />
-        </supported-bridge-type-refs>
+	<thing-type id="shutter-control">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc" />
+		</supported-bridge-type-refs>
 
-        <label>Shutter Control</label>
-        <description>Bosch Shutter Control</description>
+		<label>Shutter Control</label>
+		<description>Bosch Shutter Control</description>
 
-        <channels>
-            <channel id="level" typeId="level" />
-        </channels>
+		<channels>
+			<channel id="level" typeId="level" />
+		</channels>
 
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Device ID</label>
-                <description>Device ID of the shutter control</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the shutter control</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    </thing-type>
+	</thing-type>
 
-    <thing-type id="thermostat">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="shc" />
-        </supported-bridge-type-refs>
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc" />
+		</supported-bridge-type-refs>
 
-        <label>Thermostat</label>
-        <description>Bosch Thermostat</description>
+		<label>Thermostat</label>
+		<description>Bosch Thermostat</description>
 
-        <channels>
-            <channel id="temperature" typeId="temperature" />
-            <channel id="valve-tappet-position" typeId="valve-tappet-position" />
-        </channels>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="valve-tappet-position" typeId="valve-tappet-position" />
+		</channels>
 
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Device ID</label>
-                <description>Device ID of the thermostat</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the thermostat</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    </thing-type>
+	</thing-type>
 
-    <thing-type id="climate-control">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="shc" />
-        </supported-bridge-type-refs>
+	<thing-type id="climate-control">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc" />
+		</supported-bridge-type-refs>
 
-        <label>Climate Control</label>
-        <description>Bosch Climate Control. This is a virtual device which is automatically created for all rooms that have thermostats in it.</description>
+		<label>Climate Control</label>
+		<description>Bosch Climate Control. This is a virtual device which is automatically created for all rooms that have
+			thermostats in it.</description>
 
-        <channels>
-            <channel id="temperature" typeId="temperature" />
-            <channel id="setpoint-temperature" typeId="setpoint-temperature" />
-        </channels>
+		<channels>
+			<channel id="temperature" typeId="temperature" />
+			<channel id="setpoint-temperature" typeId="setpoint-temperature" />
+		</channels>
 
-        <config-description>
-            <parameter name="id" type="text" required="true">
-                <label>Device ID</label>
-                <description>Device ID of the climate control</description>
-                <required>true</required>
-            </parameter>
-        </config-description>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID of the climate control</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
 
-    </thing-type>
+	</thing-type>
 
-    <!-- https://www.eclipse.org/smarthome/documentation/concepts/items.html -->
-    <channel-type id="power-switch">
-        <item-type>Switch</item-type>
-        <label>State</label>
-        <description>State of the Bosch Power Switch</description>
-    </channel-type>
+	<!-- https://www.eclipse.org/smarthome/documentation/concepts/items.html -->
+	<channel-type id="power-switch">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>State of the Bosch Power Switch</description>
+	</channel-type>
 
-    <channel-type id="temperature">
-        <item-type>Number:Temperature</item-type>
-        <label>Temperature</label>
-        <description>Current measured temperature.</description>
-        <state min="0" max="40" step="0.5" pattern="%.1f °C" readOnly="true" />
-    </channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current measured temperature.</description>
+		<state min="0" max="40" step="0.5" pattern="%.1f °C" readOnly="true" />
+	</channel-type>
 
-    <channel-type id="temperature-rating">
-        <item-type>String</item-type>
-        <label>Temperature Rating</label>
-        <description>Rating of the currently measured temperature.</description>
-    </channel-type>
+	<channel-type id="temperature-rating">
+		<item-type>String</item-type>
+		<label>Temperature Rating</label>
+		<description>Rating of the currently measured temperature.</description>
+	</channel-type>
 
-    <channel-type id="humidity">
-        <item-type>Number</item-type>
-        <label>Humidity</label>
-        <description>Current measured humidity.</description>
-    </channel-type>
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Current measured humidity.</description>
+	</channel-type>
 
-    <channel-type id="humidity-rating">
-        <item-type>String</item-type>
-        <label>Rating of current humidity</label>
-        <description>Current measured humidity.</description>
-    </channel-type>
+	<channel-type id="humidity-rating">
+		<item-type>String</item-type>
+		<label>Rating of current humidity</label>
+		<description>Current measured humidity.</description>
+	</channel-type>
 
-    <channel-type id="energy-consumption">
-        <item-type>Number</item-type>
-        <label>Energy consumption (Wh)</label>
-        <description>Energy consumption of the device.</description>
-    </channel-type>
+	<channel-type id="energy-consumption">
+		<item-type>Number</item-type>
+		<label>Energy consumption (Wh)</label>
+		<description>Energy consumption of the device.</description>
+	</channel-type>
 
-    <channel-type id="power-consumption">
-        <item-type>Number</item-type>
-        <label>Power consumption (W)</label>
-        <description>Current power consumption of the device.</description>
-    </channel-type>
+	<channel-type id="power-consumption">
+		<item-type>Number</item-type>
+		<label>Power consumption (W)</label>
+		<description>Current power consumption of the device.</description>
+	</channel-type>
 
-    <channel-type id="purity">
-        <item-type>Number</item-type>
-        <label>Purity</label>
-        <description>Purity of the air.</description>
-    </channel-type>
+	<channel-type id="purity">
+		<item-type>Number</item-type>
+		<label>Purity</label>
+		<description>Purity of the air.</description>
+	</channel-type>
 
-    <channel-type id="air-description">
-        <item-type>String</item-type>
-        <label>Description</label>
-        <description>Overall description of the air quality.</description>
-    </channel-type>
+	<channel-type id="air-description">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Overall description of the air quality.</description>
+	</channel-type>
 
-    <channel-type id="purity-rating">
-        <item-type>String</item-type>
-        <label>Purity Rating</label>
-        <description>Rating of the air purity.</description>
-    </channel-type>
+	<channel-type id="purity-rating">
+		<item-type>String</item-type>
+		<label>Purity Rating</label>
+		<description>Rating of the air purity.</description>
+	</channel-type>
 
-    <channel-type id="combined-rating">
-        <item-type>String</item-type>
-        <label>Combined Rating</label>
-        <description>Combined rating of the air quality.</description>
-    </channel-type>
+	<channel-type id="combined-rating">
+		<item-type>String</item-type>
+		<label>Combined Rating</label>
+		<description>Combined rating of the air quality.</description>
+	</channel-type>
 
-    <channel-type id="contact">
-        <item-type>Contact</item-type>
-        <label>Window/Door contact</label>
-        <description>A Bosch window and door contact.</description>
-    </channel-type>
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Window/Door contact</label>
+		<description>A Bosch window and door contact.</description>
+	</channel-type>
 
-    <channel-type id="latest-motion">
-        <item-type>DateTime</item-type>
-        <label>Latest motion</label>
-        <description>Timestamp of the latest motion.</description>
-    </channel-type>
+	<channel-type id="latest-motion">
+		<item-type>DateTime</item-type>
+		<label>Latest motion</label>
+		<description>Timestamp of the latest motion.</description>
+	</channel-type>
 
-    <channel-type id="level">
-        <item-type>Rollershutter</item-type>
-        <label>Level</label>
-        <description>Current open ratio (0 to 100).</description>
-        <state min="0" max="100" step="0.5" readOnly="false" />
-    </channel-type>
+	<channel-type id="level">
+		<item-type>Rollershutter</item-type>
+		<label>Level</label>
+		<description>Current open ratio (0 to 100).</description>
+		<state min="0" max="100" step="0.5" readOnly="false" />
+	</channel-type>
 
-    <channel-type id="valve-tappet-position">
-        <item-type>Number</item-type>
-        <label>Valve Tappet Position</label>
-        <description>Current open ratio (0 to 100).</description>
-        <state min="0" max="100" step="1" readOnly="true" />
-    </channel-type>
+	<channel-type id="valve-tappet-position">
+		<item-type>Number</item-type>
+		<label>Valve Tappet Position</label>
+		<description>Current open ratio (0 to 100).</description>
+		<state min="0" max="100" step="1" readOnly="true" />
+	</channel-type>
 
-    <channel-type id="setpoint-temperature">
-        <item-type>Number:Temperature</item-type>
-        <label>Setpoint Temperature</label>
-        <description>Desired temperature (in degree celsius).</description>
-        <state min="5" max="30" step="0.5" pattern="%.1f °C" />
-    </channel-type>
+	<channel-type id="setpoint-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>Desired temperature (in degree celsius).</description>
+		<state min="5" max="30" step="0.5" pattern="%.1f °C" />
+	</channel-type>
 
 </thing:thing-descriptions>

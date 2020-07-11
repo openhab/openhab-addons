@@ -1,7 +1,6 @@
 package org.openhab.binding.boschshc.internal.exceptions;
 
-
-/** 
+/**
  * Thrown if the pairing failed multiple times
  * 
  * @author Gerd Zanker
