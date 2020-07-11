@@ -18,12 +18,20 @@ import org.openhab.binding.boschshc.internal.services.temperaturelevel.Temperatu
 
 import tec.uom.se.unit.Units;
 
+/**
+ * A virtual device which controls up to six Bosch Smart Home radiator thermostats in a room.
+ */
 @NonNullByDefault
 public class ClimateControlHandler extends BoschSHCHandler {
 
     @NonNullByDefault({})
     private RoomClimateControlService roomClimateControlService;
 
+    /**
+     * Constructor.
+     * 
+     * @param thing The Bosch Smart Home device that should be handled.
+     */
     public ClimateControlHandler(Thing thing) {
         super(thing);
     }
@@ -49,11 +57,11 @@ public class ClimateControlHandler extends BoschSHCHandler {
         }
     }
 
-    protected void updateChannels(TemperatureLevelServiceState state) {
+    private void updateChannels(TemperatureLevelServiceState state) {
         super.updateState(CHANNEL_TEMPERATURE, state.getTemperatureState());
     }
 
-    protected void updateChannels(RoomClimateControlServiceState state) {
+    private void updateChannels(RoomClimateControlServiceState state) {
         super.updateState(CHANNEL_SETPOINT_TEMPERATURE, state.getSetpointTemperatureState());
     }
 
