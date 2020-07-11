@@ -13,7 +13,6 @@
 package org.openhab.binding.ojelectronics.internal.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -51,10 +50,9 @@ public class RefreshGroupContentService {
     }
 
     private void handleThermostat(Thermostat thermostat) {
-        Optional<ThermostatHandler> handler = things.stream()
-                .filter(thing -> thing.getHandler() instanceof ThermostatHandler)
+        things.stream().filter(thing -> thing.getHandler() instanceof ThermostatHandler)
                 .map(thing -> (ThermostatHandler) thing.getHandler())
-                .filter(thingHandler -> thingHandler.getSerialNumber().equals(thermostat.serialNumber)).findFirst();
-        handler.ifPresent(item -> item.handleThermostatRefresh(thermostat));
+                .filter(thingHandler -> thingHandler.getSerialNumber().equals(thermostat.serialNumber))
+                .forEach(thingHandler -> thingHandler.handleThermostatRefresh(thermostat));
     }
 }
