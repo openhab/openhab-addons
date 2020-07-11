@@ -54,7 +54,7 @@ public final class RefreshService implements AutoCloseable {
     private @Nullable Consumer<@Nullable GroupContentResponseModel> refreshDone;
     private @Nullable ScheduledFuture<?> scheduler;
     private @Nullable Runnable unauthorized;
-    private String sessionId = "";
+    private @Nullable String sessionId;
     private static boolean destroyed = false;
 
     /**
@@ -108,9 +108,9 @@ public final class RefreshService implements AutoCloseable {
     }
 
     private void refresh() {
-        if (sessionId.equals("")) {
+        final String sessionId = this.sessionId;
+        if (sessionId == null) {
             handleConnectionLost();
-            return;
         }
         final Runnable unauthorized = this.unauthorized;
         createRequest().send(new BufferingResponseListener() {
@@ -145,8 +145,8 @@ public final class RefreshService implements AutoCloseable {
                 GroupContentResponseModel content = gson.fromJson(responseBody, GroupContentResponseModel.class);
                 refreshDone.accept(content);
             } catch (JsonSyntaxException exception) {
-                logger.error("Error mapping Result to model", exception);
-                handleConnectionLost();
+                logger.debug("Error mapping Result to model", exception);
+                refreshDone.accept(null);
             }
         }
     }
