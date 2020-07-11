@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.google.gson.JsonElement;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -32,6 +30,8 @@ import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonElement;
 
 @NonNullByDefault
 class DeviceService<TState extends BoschSHCServiceState> {
