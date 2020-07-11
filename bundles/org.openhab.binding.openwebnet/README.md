@@ -5,7 +5,7 @@ This binding integrates BTicino / Legrand MyHOME&reg; BUS and ZigBee wireless (M
 The binding supports:
 
 - both wired BUS/SCS (MyHOME) and wireless setups (MyHOME ZigBee). The two networks can be configured simultaneously
-- discovery of BUS/SCS IP gateways and ZigBee USB gateways and devices
+- auto discovery of BUS/SCS IP gateways and devices and auto discovery of ZigBee USB devices
 - commands from openHAB and feedback (events) from BUS/SCS and wireless network
 
 ![F454 Gateway](doc/F454_gateway.png)
@@ -29,7 +29,7 @@ These gateways have been tested with the binding:
 
 - **ZigBee USB Gateways**, such as [BTicino 3578](https://catalogo.bticino.it/BTI-3578-IT), also known as Legrand 088328
 
-**NOTE** The new BTicino Living Now&reg; wireless system is not supported as it does not use the OpenWebNet protocol.
+**NOTE** The new BTicino Living Now&reg; wireless system is not supported by this binding as it does not use the OpenWebNet protocol.
 
 The following Things and OpenWebNet `WHOs` are supported:
 
@@ -38,13 +38,13 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Category             | WHO          | Thing Type IDs                      | Description                                                 | Status           |
 | -------------------- | :----------: | :---------------------------------: | ----------------------------------------------------------- | ---------------- |
 | Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202  |
-| Lightning            | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers. Green switches.                   | Successfully tested: F411/2, F411/4, F411U2, F422, F429. AM5658 Green Switch. Some discovery issues reported with F429 (DALI Dimmers)  |
+| Lightning            | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers.                   | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 
 ### For ZigBee (Radio)
 
 | Category   | WHO   | Thing Type IDs                    | Description                                                           | Status                               |
 | ---------- | :---: | :-------------------------------: | :-------------------------------------------------------------------: | ------------------------------------ |
-| Gateway    | `13`  | `zb_gateway`                      | Wireless ZigBee USB Gateway (BTicino/Legrand models: BTI-3578/088328) | Tested: BTI-3578 and LG 088328       |
+| Gateway    | `13`  | `zb_gateway`                      | Wireless ZigBee USB Gateway (models: BTI-3578 / LG 088328) | Tested: BTI-3578 and LG 088328       |
 | Lighting   | `1`   | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | ZigBee dimmers, switches and 2-unit switches      | Tested: BTI-4591, BTI-3584, BTI-4585 |
 
 ## Discovery
@@ -68,6 +68,7 @@ If a device cannot be discovered automatically it's always possible to add them 
 
 ### ZigBee Discovery
 
+- Zigbee USB gateway discovery is *not supported* at the moment: the gateway thing must be added manually see [Thing Configuration](#thing-configuration) below
 - The ZigBee USB Gateway must be inserted in one of the USB ports of the openHAB computer before discovery is started
 - ***IMPORTANT NOTE:*** As for other OH2 bindings using the USB/serial ports, on Linux the `openhab` user must be member of the `dialout` group, to be able to use USB/serial port: set the group with the following command:
 
@@ -76,15 +77,16 @@ If a device cannot be discovered automatically it's always possible to add them 
     ```
 
     The user will need to logout and login to see the new group added. If you added your user to this group and still cannot get permission, reboot Linux to ensure the new group permission is attached to the `openhab` user.
-- Once the gateway is discovered and added, a second discovery request from Inbox will discover devices. Because of the ZigBee radio network, discovery will take ~40-60 sec. Be patient!
+- Once the USB gateway is configured/added, a discovery request from Inbox will discover devices connected to it. Because of the ZigBee radio network, discovery will take ~40-60 sec. Be patient!
 - Wireless devices must be part of the same ZigBee network of the ZigBee USB Gateway to discover them. Please refer to [this video by BTicino](https://www.youtube.com/watch?v=CoIgg_Xqhbo) to setup a ZigBee wireless network which includes the ZigBee USB Gateway 
-- Only powered wireless devices part of the same ZigBee network and within radio coverage of the ZigBee USB Gateway will be discovered. Unreachable or not powered devices will be discovered as *GENERIC* devices and cannot be controlled. Control units cannot be discovered by the ZigBee USB Gateway and therefore are not supported
+- Only powered wireless devices part of the same ZigBee network and within radio coverage of the ZigBee USB Gateway will be discovered. Unreachable or not powered devices will be discovered as *GENERIC* devices and cannot be controlled
+- Wireless control units cannot be discovered by the ZigBee USB Gateway and therefore are not supported
 
 ## Thing Configuration
 
 ### Configuring BUS/SCS Gateway
 
-To add a gateway manually using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `OpenWebNet BUS Gateway` device.
+To add a BUS gateway manually using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `BUS Gateway`.
 
 Configuration parameters are:
 
@@ -101,9 +103,12 @@ Alternatively the BUS/SCS Gateway thing can be configured using the `.things` fi
 
 ### Configuring Wireless ZigBee USB Gateway 
 
-The wireless ZigBee USB Gateway is discovered automatically by activating a new Scan from the Inbox.
+To add a ZigBee USB gateway manually using PaperUI: go to *Inbox > "+" > OpenWebNet > click `ADD MANUALLY`* and then select `ZigBee USB Gateway`.
 
-Manual configuration *is not supported* at the moment.
+Configuration parameters are:
+
+- `serialPort` : the serial port where the ZigBee USB Gateway is connected (`String`, *mandatory*)
+    - Example: `COM3`
 
 ### Configuring Devices
 
@@ -140,10 +145,10 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
 
 
 ```xtend
-// ZigBee USB Gateway configuration: only needed for radio devices
-Bridge openwebnet:zb_gateway:myZBgateway  [serialPort="kkkkkkk"] {
-    zb_dimmer          myzigbeedimmer [ where="xxxxx"]
-    zb_on_off_switch   myzigbeeswitch [ where="yyyyy"]
+// ZigBee USB Gateway configuration for radio devices
+Bridge openwebnet:zb_gateway:myZBgateway  [serialPort="COM3"] {
+    zb_dimmer          myzigbeedimmer [ where="123456700#9"]
+    zb_on_off_switch   myzigbeeswitch [ where="765432200#9"]
 }
 ```
 

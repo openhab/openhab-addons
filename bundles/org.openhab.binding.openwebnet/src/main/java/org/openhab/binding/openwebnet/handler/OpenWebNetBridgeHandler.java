@@ -99,7 +99,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     @Override
     public void initialize() {
         ThingTypeUID thingType = getThing().getThingTypeUID();
-        logger.debug("Bridge type: {}", thingType);
+        logger.debug("Initializing Bridge - type: {}", thingType);
         OpenGateway gw;
         if (thingType.equals(THING_TYPE_ZB_GATEWAY)) {
             gw = initZigBeeGateway();
@@ -235,7 +235,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void dispose() {
         logger.debug("dispose() for {}", getThing().getUID());
         disconnectGateway();
-        // logger.debug("calling super.dispose()");
         super.dispose();
     }
 
