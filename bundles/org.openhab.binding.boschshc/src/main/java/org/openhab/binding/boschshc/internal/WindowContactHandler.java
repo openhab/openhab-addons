@@ -59,8 +59,11 @@ public class WindowContactHandler extends BoschSHCHandler {
 
             if (bridgeHandler != null) {
                 if (command instanceof RefreshType && CHANNEL_CONTACT.equals(channelUID.getId())) {
-                    updateShutterContactState(
-                            bridgeHandler.refreshState(getThing(), "ShutterContact", ShutterContactState.class));
+                    ShutterContactState state = bridgeHandler.refreshState(getThing(), "ShutterContact",
+                            ShutterContactState.class);
+                    if (state != null) {
+                        updateShutterContactState(state);
+                    }
                 }
             }
         } else {
@@ -85,5 +88,4 @@ public class WindowContactHandler extends BoschSHCHandler {
             logger.warn("Received unknown update in window contact handler: {}", state);
         }
     }
-
 }

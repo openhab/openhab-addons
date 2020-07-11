@@ -90,8 +90,11 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * Requests the current state of the service and updates it.
      */
     public void refreshState() {
+        @Nullable
         TState state = this.bridgeHandler.getState(deviceId, this.serviceName, this.stateClass);
-        this.onStateUpdate(state);
+        if (state != null) {
+            this.onStateUpdate(state);
+        }
     }
 
     /**
