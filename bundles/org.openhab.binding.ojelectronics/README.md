@@ -44,8 +44,8 @@ Not supported at the moment.
 | floorTemperature   | Number:Temperature | Floor temperature                                                                  |
 | groupName          | Text               | Group name                                                                         |
 | groupId            | Number             | Group Id                                                                           |
-| online             | Switch             | Online                                                                             |
-| heating            | Switch             | Heating                                                                            |
+| online             | Contact            | Online                                                                             |
+| heating            | Contact            | Heating                                                                            |
 | roomTemperature    | Number:Temperature | Room temperature                                                                   |
 | thermostatName     | Text               | Thermostat name                                                                    |
 | regulationMode     | Text               | Regulation mode                                                                    |
@@ -55,3 +55,32 @@ Not supported at the moment.
 | boostEndTime       | Date time          | Date and time when the thermostat switchs back from boost mode to automatic mode   |
 | manualModeSetpoint | Number:Temperature | Target temperature of the manual mode                                              |
 | vacationEnabled    | Switch             | Vacation is enabled                                                                |
+
+## Example
+
+This example shows how to configure the OJElecttronics binding.
+
+### demo.things
+
+```
+Binding ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName" password="MyPassword" apiKey="The Key" ] {
+    Thing owd5 myThermostat [ serialNumber="123" ]
+}
+```
+
+### demo.items
+
+```
+Number Bath_Floor_Temperature "Bathroom: Floor Temperature" {channel="ojelectronics:owd5:myThermostat:floorTemperature"}
+String Bath_Mode "Bathroom: Mode" {channel="ojelectronics:owd5:myThermostat:regulationMode"}
+```
+
+### demo.sitemap
+
+```
+sitemap myHome label="my Home"{
+  Text item=Bath_Floor_Temperature
+  Text item=Bath_Mode
+}
+```
+

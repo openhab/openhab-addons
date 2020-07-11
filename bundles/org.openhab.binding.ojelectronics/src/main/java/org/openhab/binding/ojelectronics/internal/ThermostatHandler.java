@@ -162,20 +162,20 @@ public class ThermostatHandler extends BaseThingHandler {
         return REGULATION_MODES.get(regulationMode);
     }
 
-    private static HashMap<Integer, String> createRegulationMap() {
-        HashMap<Integer, String> map = new HashMap<Integer, String>();
-        map.put(1, "Auto");
-        map.put(2, "Comfort");
-        map.put(3, "Manual");
-        map.put(4, "Vacation");
-        map.put(6, "Frost Protection");
-        map.put(8, "Boost");
-        map.put(9, "Eco");
+    private static Map<Integer, String> createRegulationMap() {
+        HashMap<Integer, String> map = new HashMap<>();
+        map.put(1, "auto");
+        map.put(2, "comfort");
+        map.put(3, "manual");
+        map.put(4, "vacation");
+        map.put(6, "frostProtection");
+        map.put(8, "boost");
+        map.put(9, "eco");
         return map;
     };
 
-    private HashMap<String, Consumer<Thermostat>> createChannelRefreshActionMap() {
-        HashMap<String, Consumer<Thermostat>> map = new HashMap<String, Consumer<Thermostat>>();
+    private Map<String, Consumer<Thermostat>> createChannelRefreshActionMap() {
+        HashMap<String, Consumer<Thermostat>> map = new HashMap<>();
         map.put(BindingConstants.CHANNEL_OWD5_GROUPNAME, this::updateGroupName);
         map.put(BindingConstants.CHANNEL_OWD5_GROUPID, this::updateGroupId);
         map.put(BindingConstants.CHANNEL_OWD5_ONLINE, this::updateOnline);
