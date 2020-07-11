@@ -71,6 +71,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
         Integer partition = event.getPartition();
         Integer zone = event.getZone();
         Integer keypad = event.getKeypad();
+        String representationProperty = null;
 
         switch (caddxThingType) {
             case PANEL:
@@ -85,6 +86,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
 
                 if (partition != null) {
                     properties = Collections.singletonMap(CaddxPartitionConfiguration.PARTITION_NUMBER, partition);
+                    representationProperty = CaddxPartitionConfiguration.PARTITION_NUMBER;
                 }
 
                 break;
@@ -95,6 +97,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
 
                 if (zone != null) {
                     properties = Collections.singletonMap(CaddxZoneConfiguration.ZONE_NUMBER, zone);
+                    representationProperty = CaddxZoneConfiguration.ZONE_NUMBER;
                 }
                 break;
             case KEYPAD:
@@ -104,6 +107,7 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
 
                 if (keypad != null) {
                     properties = Collections.singletonMap(CaddxKeypadConfiguration.KEYPAD_ADDRESS, keypad);
+                    representationProperty = CaddxKeypadConfiguration.KEYPAD_ADDRESS;
                 }
                 break;
         }
@@ -111,9 +115,10 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
         if (thingUID != null) {
             DiscoveryResult discoveryResult;
 
-            if (properties != null) {
+            if (properties != null && representationProperty != null) {
                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridge.getUID()).withLabel(thingLabel).build();
+                        .withRepresentationProperty(representationProperty).withBridge(bridge.getUID())
+                        .withLabel(thingLabel).build();
             } else {
                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getUID())
                         .withLabel(thingLabel).build();
