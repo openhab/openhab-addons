@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ojelectronics.internal;
 
-import static org.openhab.binding.ojelectronics.internal.OJElectronicsBindingConstants.THING_TYPE_OJCLOUD;
+import static org.openhab.binding.ojelectronics.internal.BindingConstants.THING_TYPE_OJCLOUD;
 
 import java.util.Collections;
 import java.util.Set;
@@ -32,13 +32,13 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Factory to create {@link OJElectronicsCloudHandler}
+ * Factory to create {@link OJCloudHandler}
  *
  * @author Christian Kittel - Initial Contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.ojelectronics", service = ThingHandlerFactory.class)
-public class OJElectronicsCloudHandlerFactory extends BaseThingHandlerFactory {
+public class OJCloudHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OJCLOUD);
 
@@ -50,7 +50,7 @@ public class OJElectronicsCloudHandlerFactory extends BaseThingHandlerFactory {
      * @param httpClientFactory Factory for HttpClient
      */
     @Activate
-    public OJElectronicsCloudHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public OJCloudHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -65,7 +65,7 @@ public class OJElectronicsCloudHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
-            OJElectronicsCloudHandler handler = new OJElectronicsCloudHandler((Bridge) thing, httpClient);
+            OJCloudHandler handler = new OJCloudHandler((Bridge) thing, httpClient);
             return handler;
         }
         return null;

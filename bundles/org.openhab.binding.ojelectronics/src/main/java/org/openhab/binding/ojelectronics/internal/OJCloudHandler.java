@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
  * @author Christian Kittel - Initial Contribution
  */
 @NonNullByDefault
-public class OJElectronicsCloudHandler extends BaseBridgeHandler implements BridgeHandler {
+public class OJCloudHandler extends BaseBridgeHandler implements BridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(OJElectronicsCloudHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(OJCloudHandler.class);
     private final HttpClient httpClient;
 
     private @Nullable RefreshService refreshService;
@@ -49,7 +49,7 @@ public class OJElectronicsCloudHandler extends BaseBridgeHandler implements Brid
     private OJElectronicsBridgeConfiguration configuration;
     private @Nullable ScheduledFuture<?> signTask;
 
-    public OJElectronicsCloudHandler(Bridge bridge, HttpClient httpClient) {
+    public OJCloudHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
         this.configuration = new OJElectronicsBridgeConfiguration();

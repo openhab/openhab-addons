@@ -17,12 +17,12 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.ojelectronics.internal.OJElectronicsThermostatHandler;
+import org.openhab.binding.ojelectronics.internal.ThermostatHandler;
 import org.openhab.binding.ojelectronics.internal.models.groups.GroupContent;
 import org.openhab.binding.ojelectronics.internal.models.groups.Thermostat;
 
 /**
- * Refreshes values of {@link OJElectronicsThermostatHandler}
+ * Refreshes values of {@link ThermostatHandler}
  *
  * @author Christian Kittel - Initial Contribution
  */
@@ -51,9 +51,9 @@ public class RefreshGroupContentService {
     }
 
     private void handleThermostat(Thermostat thermostat) {
-        Optional<OJElectronicsThermostatHandler> handler = things.stream()
-                .filter(thing -> thing.getHandler() instanceof OJElectronicsThermostatHandler)
-                .map(thing -> (OJElectronicsThermostatHandler) thing.getHandler())
+        Optional<ThermostatHandler> handler = things.stream()
+                .filter(thing -> thing.getHandler() instanceof ThermostatHandler)
+                .map(thing -> (ThermostatHandler) thing.getHandler())
                 .filter(thingHandler -> thingHandler.getSerialNumber().equals(thermostat.serialNumber)).findFirst();
         handler.ifPresent(item -> item.handleThermostatRefresh(thermostat));
     }

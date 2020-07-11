@@ -35,13 +35,13 @@ import org.openhab.binding.ojelectronics.internal.config.OJElectronicsThermostat
 import org.openhab.binding.ojelectronics.internal.models.groups.Thermostat;
 
 /**
- * The {@link OJElectronicsThermostatHandler} is responsible for handling commands, which are
+ * The {@link ThermostatHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class OJElectronicsThermostatHandler extends BaseThingHandler {
+public class ThermostatHandler extends BaseThingHandler {
 
     private final String serialNumber;
     private static final Map<Integer, String> REGULATION_MODES = createRegulationMap();
@@ -51,7 +51,7 @@ public class OJElectronicsThermostatHandler extends BaseThingHandler {
      *
      * @param thing Thing
      */
-    public OJElectronicsThermostatHandler(Thing thing) {
+    public ThermostatHandler(Thing thing) {
         super(thing);
         serialNumber = getConfigAs(OJElectronicsThermostatConfiguration.class).serialNumber;
     }
@@ -87,27 +87,26 @@ public class OJElectronicsThermostatHandler extends BaseThingHandler {
      * @param thermostat thermostat values
      */
     public void handleThermostatRefresh(Thermostat thermostat) {
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_GROUPNAME, StringType.valueOf(thermostat.groupName));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_GROUPID, new DecimalType(thermostat.groupId));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_ONLINE,
+        updateState(BindingConstants.CHANNEL_OWD5_GROUPNAME, StringType.valueOf(thermostat.groupName));
+        updateState(BindingConstants.CHANNEL_OWD5_GROUPID, new DecimalType(thermostat.groupId));
+        updateState(BindingConstants.CHANNEL_OWD5_ONLINE,
                 thermostat.online ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_HEATING,
+        updateState(BindingConstants.CHANNEL_OWD5_HEATING,
                 thermostat.heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE,
+        updateState(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE,
                 new QuantityType<Temperature>(thermostat.roomTemperature / (double) 100, SIUnits.CELSIUS));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE,
+        updateState(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE,
                 new QuantityType<Temperature>(thermostat.floorTemperature / (double) 100, SIUnits.CELSIUS));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_THERMOSTATNAME,
-                StringType.valueOf(thermostat.thermostatName));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_REGULATIONMODE,
+        updateState(BindingConstants.CHANNEL_OWD5_THERMOSTATNAME, StringType.valueOf(thermostat.thermostatName));
+        updateState(BindingConstants.CHANNEL_OWD5_REGULATIONMODE,
                 StringType.valueOf(getRegulationMode(thermostat.regulationMode)));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_COMFORTSETPOINT,
+        updateState(BindingConstants.CHANNEL_OWD5_COMFORTSETPOINT,
                 new QuantityType<Temperature>(thermostat.comfortSetpoint / (double) 100, SIUnits.CELSIUS));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(
+        updateState(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(
                 ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), ZoneId.systemDefault())));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_BOOSTENDTIME,
+        updateState(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME,
                 new DateTimeType(ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), ZoneId.systemDefault())));
-        updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_MANUALSETPOINT,
+        updateState(BindingConstants.CHANNEL_OWD5_MANUALSETPOINT,
                 new QuantityType<Temperature>(thermostat.manualModeSetpoint / (double) 100, SIUnits.CELSIUS));
     }
 

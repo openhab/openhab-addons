@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ojelectronics.internal;
 
-import static org.openhab.binding.ojelectronics.internal.OJElectronicsBindingConstants.THING_TYPE_OWD5;
+import static org.openhab.binding.ojelectronics.internal.BindingConstants.THING_TYPE_OWD5;
 
 import java.util.Collections;
 import java.util.Set;
@@ -27,13 +27,13 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link OJElectronicsThermostatHandlerFactory} is responsible for creating {@link OJElectronicsThermostatHandler}.
+ * The {@link ThermostatHandlerFactory} is responsible for creating {@link OJElectronicsThermostatHandler}.
  *
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.ojelectronics", service = ThingHandlerFactory.class)
-public class OJElectronicsThermostatHandlerFactory extends BaseThingHandlerFactory {
+public class ThermostatHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OWD5);
 
@@ -50,7 +50,7 @@ public class OJElectronicsThermostatHandlerFactory extends BaseThingHandlerFacto
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_OWD5.equals(thingTypeUID)) {
-            return new OJElectronicsThermostatHandler(thing);
+            return new ThermostatHandler(thing);
         }
 
         return null;

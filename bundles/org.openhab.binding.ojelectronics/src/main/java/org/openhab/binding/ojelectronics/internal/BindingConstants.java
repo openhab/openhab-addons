@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
-public class OJElectronicsBindingConstants {
+public class BindingConstants {
 
     private static final String BINDING_ID = "ojelectronics";
 
