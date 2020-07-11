@@ -3,6 +3,7 @@ package org.openhab.binding.boschshc.internal.shuttercontrol;
 import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
@@ -36,6 +37,7 @@ final class DataConversion {
 /**
  * Handler for a shutter control device
  */
+@NonNullByDefault
 public class ShutterControlHandler extends BoschSHCHandler {
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
 
@@ -104,7 +106,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
         bridgeHandler.putState(deviceId, ShutterControlServiceName, state);
     }
 
-    private void updateState(@NonNull ShutterControlState state) {
+    private void updateState(ShutterControlState state) {
         // Convert level to open ratio
         int openPercentage = DataConversion.levelToOpenPercentage(state.level);
         updateState(CHANNEL_LEVEL, new PercentType(openPercentage));
