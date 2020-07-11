@@ -32,8 +32,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.amazonechocontrol.internal.Connection;
 import org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler;
@@ -51,19 +49,12 @@ import org.slf4j.LoggerFactory;
  * @author Lukas Knoeller - Initial contribution
  */
 @NonNullByDefault
-public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implements ExtendedDiscoveryService {
+public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
     private AccountHandler accountHandler;
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDevicesDiscovery.class);
 
     private @Nullable ScheduledFuture<?> startScanStateJob;
     private @Nullable Long activateTimeStamp;
-
-    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
-
-    @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
-    }
 
     public SmartHomeDevicesDiscovery(AccountHandler accountHandler) {
         super(SUPPORTED_SMART_HOME_THING_TYPES_UIDS, 10);
@@ -143,11 +134,6 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
     };
 
     synchronized void setSmartHomeDevices(List<SmartHomeBaseDevice> deviceList) {
-        DiscoveryServiceCallback discoveryServiceCallback = this.discoveryServiceCallback;
-
-        if (discoveryServiceCallback == null) {
-            return;
-        }
         int smartHomeDeviceDiscoveryMode = accountHandler.getSmartHomeDevicesDiscoveryMode();
         if (smartHomeDeviceDiscoveryMode == 0) {
             return;
@@ -227,14 +213,6 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService implemen
             }
 
             if (thingUID != null) {
-                if (discoveryServiceCallback.getExistingDiscoveryResult(thingUID) != null) {
-                    continue;
-                }
-
-                if (discoveryServiceCallback.getExistingThing(thingUID) != null) {
-                    continue;
-                }
-
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(deviceName)
                         .withProperties(props).withBridge(bridgeThingUID).build();
 
