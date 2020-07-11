@@ -14,7 +14,6 @@ package org.openhab.binding.ojelectronics.internal.models.groups;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -26,18 +25,13 @@ import com.google.gson.annotations.SerializedName;
 public class Event {
 
     @SerializedName("ScheduleType")
-    @Expose
     public Integer scheduleType = 0;
     @SerializedName("Clock")
-    @Expose
     public String clock = "";
     @SerializedName("Temperature")
-    @Expose
     public Integer temperature = 0;
     @SerializedName("Active")
-    @Expose
     public Boolean active = false;
     @SerializedName("EventIsOnNextDay")
-    @Expose
     public Boolean eventIsOnNextDay = false;
 }
