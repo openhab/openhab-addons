@@ -89,7 +89,7 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
             cmd2 = CaddxBindingConstants.ZONE_STATUS_REQUEST;
             data = String.format("%d", getZoneNumber() - 1);
         } else {
-            logger.debug("Unknown command");
+            logger.debug("Unknown command {}", command);
             return;
         }
 

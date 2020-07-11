@@ -89,7 +89,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
 
             bridgeHandler.sendCommand(cmd, data);
         } else {
-            logger.debug("Unknown command");
+            logger.debug("Unknown command {}", command);
         }
     }
 

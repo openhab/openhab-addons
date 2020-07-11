@@ -202,6 +202,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                 }
                 break;
             default:
+                logger.debug("Unknown command {}", command);
                 break;
         }
     }
