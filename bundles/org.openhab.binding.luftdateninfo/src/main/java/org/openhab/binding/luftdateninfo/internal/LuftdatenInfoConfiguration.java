@@ -22,8 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LuftdatenInfoConfiguration {
 
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
     public String sensorid = "undefined";
 }

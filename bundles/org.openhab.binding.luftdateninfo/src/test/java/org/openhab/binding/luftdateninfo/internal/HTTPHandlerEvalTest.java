@@ -35,44 +35,44 @@ public class HTTPHandlerEvalTest {
     private @Nullable List<SensorDataValue> conditions;
     private @Nullable List<SensorDataValue> particulate;
     private @Nullable List<SensorDataValue> noise;
+    private HTTPHandler http = new HTTPHandler();
 
     @Before
     public void setUp() {
         String conditionsStr = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         assertNotNull(conditionsStr);
-        conditions = HTTPHandler.getLatestValues(conditionsStr);
+        conditions = http.getLatestValues(conditionsStr);
 
         String particulateStr = FileReader.readFileInString("src/test/resources/pm-result.json");
         assertNotNull(particulateStr);
-        particulate = HTTPHandler.getLatestValues(particulateStr);
+        particulate = http.getLatestValues(particulateStr);
 
         String noiseStr = FileReader.readFileInString("src/test/resources/noise-result.json");
         assertNotNull(noiseStr);
-        noise = HTTPHandler.getLatestValues(noiseStr);
+        noise = http.getLatestValues(noiseStr);
     }
 
     @Test
     public void testIsCondition() {
-        assertTrue(HTTPHandler.isCondition(conditions));
-        assertFalse(HTTPHandler.isCondition(particulate));
-        assertFalse(HTTPHandler.isCondition(noise));
-        assertFalse(HTTPHandler.isCondition(null));
+        assertTrue(http.isCondition(conditions));
+        assertFalse(http.isCondition(particulate));
+        assertFalse(http.isCondition(noise));
+        assertFalse(http.isCondition(null));
     }
 
     @Test
     public void testIsParticulate() {
-        assertFalse(HTTPHandler.isParticulate(conditions));
-        assertTrue(HTTPHandler.isParticulate(particulate));
-        assertFalse(HTTPHandler.isParticulate(noise));
-        assertFalse(HTTPHandler.isParticulate(null));
+        assertFalse(http.isParticulate(conditions));
+        assertTrue(http.isParticulate(particulate));
+        assertFalse(http.isParticulate(noise));
+        assertFalse(http.isParticulate(null));
     }
 
     @Test
     public void testIsNoise() {
-        assertFalse(HTTPHandler.isNoise(conditions));
-        assertFalse(HTTPHandler.isNoise(particulate));
-        assertTrue(HTTPHandler.isNoise(noise));
-        assertFalse(HTTPHandler.isNoise(null));
+        assertFalse(http.isNoise(conditions));
+        assertFalse(http.isNoise(particulate));
+        assertTrue(http.isNoise(noise));
+        assertFalse(http.isNoise(null));
     }
-
 }

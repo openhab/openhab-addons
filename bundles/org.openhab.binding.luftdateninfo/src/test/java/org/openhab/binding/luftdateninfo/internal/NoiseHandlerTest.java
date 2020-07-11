@@ -17,8 +17,10 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.junit.Test;
+import org.openhab.binding.luftdateninfo.internal.handler.BaseSensorHandler.UpdateStatus;
 import org.openhab.binding.luftdateninfo.internal.mock.NoiseHandlerExtension;
 import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
@@ -43,11 +45,14 @@ public class NoiseHandlerTest {
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
         String pmJson = FileReader.readFileInString("src/test/resources/noise-result.json");
         if (pmJson != null) {
-            int result = noiseHandler.updateChannels(pmJson);
-            assertEquals("Valid update", 0, result);
-            assertEquals("Noise EQ", new DecimalType("51.0"), noiseHandler.getNoiseEQCache());
-            assertEquals("Noise Min", new DecimalType("47.2"), noiseHandler.getNoiseMinCache());
-            assertEquals("Noise Max", new DecimalType("57.0"), noiseHandler.getNoiseMaxCache());
+            UpdateStatus result = noiseHandler.updateChannels(pmJson);
+            assertEquals("Valid update", UpdateStatus.OK, result);
+            assertEquals("Noise EQ", QuantityType.valueOf(51.0, SmartHomeUnits.DECIBEL),
+                    noiseHandler.getNoiseEQCache());
+            assertEquals("Noise Min", QuantityType.valueOf(47.2, SmartHomeUnits.DECIBEL),
+                    noiseHandler.getNoiseMinCache());
+            assertEquals("Noise Max", QuantityType.valueOf(57.0, SmartHomeUnits.DECIBEL),
+                    noiseHandler.getNoiseMaxCache());
         } else {
             assertTrue(false);
         }
@@ -65,11 +70,14 @@ public class NoiseHandlerTest {
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
         String pmJson = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         if (pmJson != null) {
-            int result = noiseHandler.updateChannels(pmJson);
-            assertEquals("Valid update", 2, result);
-            assertEquals("Values undefined", new DecimalType(-1), noiseHandler.getNoiseEQCache());
-            assertEquals("Values undefined", new DecimalType(-1), noiseHandler.getNoiseMinCache());
-            assertEquals("Values undefined", new DecimalType(-1), noiseHandler.getNoiseMaxCache());
+            UpdateStatus result = noiseHandler.updateChannels(pmJson);
+            assertEquals("Valid update", UpdateStatus.VALUE_ERROR, result);
+            assertEquals("Values undefined", QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL),
+                    noiseHandler.getNoiseEQCache());
+            assertEquals("Values undefined", QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL),
+                    noiseHandler.getNoiseMinCache());
+            assertEquals("Values undefined", QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL),
+                    noiseHandler.getNoiseMaxCache());
         } else {
             assertTrue(false);
         }
@@ -85,8 +93,8 @@ public class NoiseHandlerTest {
         t.setConfiguration(properties);
 
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
-        int result = noiseHandler.updateChannels("[]");
-        assertEquals("Valid update", 3, result);
+        UpdateStatus result = noiseHandler.updateChannels("[]");
+        assertEquals("Valid update", UpdateStatus.VALUE_EMPTY, result);
     }
 
     @Test
@@ -99,7 +107,7 @@ public class NoiseHandlerTest {
         t.setConfiguration(properties);
 
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
-        int result = noiseHandler.updateChannels(null);
-        assertEquals("Valid update", 1, result);
+        UpdateStatus result = noiseHandler.updateChannels(null);
+        assertEquals("Valid update", UpdateStatus.CONNECTION_ERROR, result);
     }
 }

@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -37,31 +36,42 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class BaseSensorHandler extends BaseThingHandler {
 
+    protected static final int REFRESH_INTERVAL_MIN = 5;
+    protected static final HTTPHandler HTTP = new HTTPHandler();
+    private static final LuftdatenInfoConfiguration DEFAULT_CONFIG = new LuftdatenInfoConfiguration();
     protected final Logger logger = LoggerFactory.getLogger(BaseSensorHandler.class);
 
-    protected @Nullable LuftdatenInfoConfiguration config;
+    protected LuftdatenInfoConfiguration config = DEFAULT_CONFIG;
     protected @Nullable ScheduledFuture<?> refreshJob;
-    protected int refreshInterval = 5;
 
-    protected int configStatus = -1;
-    protected static final int CONFIG_OK = 0;
-    protected static final int CONFIG_IS_NULL = 1;
-    protected static final int CONFIG_SENSOR_IS_NULL = 2;
-    protected static final int CONFIG_SENSOR_NUMBER = 3;
+    protected ConfigStatus configStatus = ConfigStatus.UNKNOWN;
 
-    protected int updateStatus = -1;
-    protected static final int UPDATE_OK = 0;
-    protected static final int UPDATE_CONNECTION_ERROR = 1;
-    protected static final int UPDATE_VALUE_ERROR = 2;
-    protected static final int UPDATE_VALUE_EMPTY = 3;
+    public enum ConfigStatus {
+        OK,
+        IS_NULL,
+        SENSOR_IS_NULL,
+        SENSOR_NOT_A_NUMBER,
+        UNKNOWN
+    };
 
-    protected static final int LC_UNKNOWN = -1;
-    protected static final int LC_RUNNING = 0;
-    protected static final int LC_INITIALIZING = 1;
-    protected static final int LC_DISPOSED = 2;
-    protected int lifecycleStatus = LC_UNKNOWN;
+    protected UpdateStatus updateStatus = UpdateStatus.UNKNOWN;
 
-    protected static final DecimalType UNDEF = new DecimalType(-1);
+    public enum UpdateStatus {
+        OK,
+        CONNECTION_ERROR,
+        VALUE_ERROR,
+        VALUE_EMPTY,
+        UNKNOWN
+    }
+
+    protected LifecycleStatus lifecycleStatus = LifecycleStatus.UNKNOWN;
+
+    public enum LifecycleStatus {
+        UNKNOWN,
+        RUNNING,
+        INITIALIZING,
+        DISPOSED
+    }
 
     public BaseSensorHandler(Thing thing) {
         super(thing);
@@ -76,32 +86,35 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        lifecycleStatus = LC_INITIALIZING;
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        lifecycleStatus = LifecycleStatus.INITIALIZING;
         scheduler.execute(() -> {
             config = getConfigAs(LuftdatenInfoConfiguration.class);
             configStatus = checkConfig(config);
-            if (configStatus == CONFIG_OK) {
+            if (configStatus == ConfigStatus.OK) {
                 update();
-                if (updateStatus == UPDATE_OK) {
+                if (updateStatus == UpdateStatus.OK) {
                     updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Start refresh job at interval {} min.", refreshInterval);
-                    if (refreshJob != null) {
-                        refreshJob.cancel(true);
+                    logger.debug("Start refresh job at interval {} min.", REFRESH_INTERVAL_MIN);
+                    if (localRefreshJob != null) {
+                        localRefreshJob.cancel(true);
                     }
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::update, 5, refreshInterval * 60,
-                            TimeUnit.SECONDS);
+                    refreshJob = scheduler.scheduleWithFixedDelay(this::update, 5, REFRESH_INTERVAL_MIN,
+                            TimeUnit.MINUTES);
                 } else {
                     switch (updateStatus) {
-                        case UPDATE_CONNECTION_ERROR:
+                        case CONNECTION_ERROR:
                             logger.warn("Update failed due to Connection error. Trying to recover in next refresh");
                             break;
-                        case UPDATE_VALUE_ERROR:
+                        case VALUE_ERROR:
                             logger.warn(
                                     "Sensor values doesn't match - please check if Sensor ID is delivering the correct Thing channel values");
                             break;
-                        case UPDATE_VALUE_EMPTY:
+                        case VALUE_EMPTY:
                             logger.warn(
                                     "No values deliverd by Sensor. Please check for valid Sensor ID in configuration");
+                            break;
+                        default:
                             break;
                     }
                     updateStatus(ThingStatus.OFFLINE);
@@ -110,16 +123,17 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
                 logger.warn("Configuration not valid. Sensor ID as a number is mandatory!");
                 updateStatus(ThingStatus.OFFLINE);
             }
-            lifecycleStatus = LC_RUNNING;
+            lifecycleStatus = LifecycleStatus.RUNNING;
         });
     }
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null) {
+            localRefreshJob.cancel(true);
         }
-        lifecycleStatus = LC_DISPOSED;
+        lifecycleStatus = LifecycleStatus.DISPOSED;
     }
 
     /**
@@ -128,31 +142,29 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
      * @param c
      * @return
      */
-    private int checkConfig(@Nullable LuftdatenInfoConfiguration c) {
+    private ConfigStatus checkConfig(@Nullable LuftdatenInfoConfiguration c) {
         if (c != null) {
             try {
                 Integer.parseInt(c.sensorid);
-                return CONFIG_OK;
+                return ConfigStatus.OK;
             } catch (NumberFormatException t) {
-                return CONFIG_SENSOR_NUMBER;
+                return ConfigStatus.SENSOR_NOT_A_NUMBER;
             }
-        } else
-
-        {
-            return CONFIG_IS_NULL;
+        } else {
+            return ConfigStatus.IS_NULL;
         }
     }
 
-    public int getLifecycleStatus() {
+    public LifecycleStatus getLifecycleStatus() {
         return lifecycleStatus;
     }
 
     protected void update() {
-        String response = HTTPHandler.getResponse(config.sensorid);
+        String response = HTTP.getResponse(config.sensorid);
         updateStatus = updateChannels(response);
     }
 
-    protected abstract int updateChannels(@Nullable String json);
+    protected abstract UpdateStatus updateChannels(@Nullable String json);
 
     protected abstract void updateFromCache();
 }

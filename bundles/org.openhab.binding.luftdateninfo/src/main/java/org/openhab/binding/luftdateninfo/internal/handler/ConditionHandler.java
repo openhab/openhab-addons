@@ -15,12 +15,17 @@ package org.openhab.binding.luftdateninfo.internal.handler;
 import static org.openhab.binding.luftdateninfo.internal.LuftdatenInfoBindingConstants.*;
 import static org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler.*;
 
-import java.util.Iterator;
 import java.util.List;
+
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Pressure;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
@@ -34,49 +39,47 @@ import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 @NonNullByDefault
 public class ConditionHandler extends BaseSensorHandler {
 
-    protected DecimalType temperatureCache = UNDEF;
-    protected DecimalType humidityCache = UNDEF;
-    protected DecimalType pressureCache = UNDEF;
-    protected DecimalType pressureSeaCache = UNDEF;
+    protected QuantityType<Temperature> temperatureCache = QuantityType.valueOf(-1, SIUnits.CELSIUS);
+    protected QuantityType<Dimensionless> humidityCache = QuantityType.valueOf(-1, SmartHomeUnits.PERCENT);
+    protected QuantityType<Pressure> pressureCache = QuantityType.valueOf(-1, SIUnits.PASCAL);
+    protected QuantityType<Pressure> pressureSeaCache = QuantityType.valueOf(-1, SIUnits.PASCAL);
 
     public ConditionHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public int updateChannels(@Nullable String json) {
+    public UpdateStatus updateChannels(@Nullable String json) {
         if (json != null) {
-            List<SensorDataValue> valueList = HTTPHandler.getLatestValues(json);
+            List<SensorDataValue> valueList = HTTP.getLatestValues(json);
             if (valueList != null) {
-                if (HTTPHandler.isCondition(valueList)) {
-                    Iterator<SensorDataValue> iter = valueList.iterator();
-                    while (iter.hasNext()) {
-                        SensorDataValue v = iter.next();
+                if (HTTP.isCondition(valueList)) {
+                    valueList.forEach(v -> {
                         if (v.getValue_type().equals(TEMPERATURE)) {
-                            temperatureCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
+                            temperatureCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
+                                    SIUnits.CELSIUS);
                             updateState(TEMPERATURE_CHANNEL, temperatureCache);
                         } else if (v.getValue_type().equals(HUMIDITY)) {
-                            humidityCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
+                            humidityCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
+                                    SmartHomeUnits.PERCENT);
                             updateState(HUMIDITY_CHANNEL, humidityCache);
                         } else if (v.getValue_type().equals(PRESSURE)) {
-                            double pressure = NumberUtils.convert(v.getValue()) / 100;
-                            pressureCache = new DecimalType(NumberUtils.round(pressure, 1));
+                            pressureCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), SIUnits.PASCAL);
                             updateState(PRESSURE_CHANNEL, pressureCache);
                         } else if (v.getValue_type().equals(PRESSURE_SEALEVEL)) {
-                            double pressureSea = NumberUtils.convert(v.getValue()) / 100;
-                            pressureSeaCache = new DecimalType(NumberUtils.round(pressureSea, 1));
+                            pressureSeaCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), SIUnits.PASCAL);
                             updateState(PRESSURE_SEA_CHANNEL, pressureSeaCache);
                         }
-                    }
-                    return UPDATE_OK;
+                    });
+                    return UpdateStatus.OK;
                 } else {
-                    return UPDATE_VALUE_ERROR;
+                    return UpdateStatus.VALUE_ERROR;
                 }
             } else {
-                return UPDATE_VALUE_EMPTY;
+                return UpdateStatus.VALUE_EMPTY;
             }
         } else {
-            return UPDATE_CONNECTION_ERROR;
+            return UpdateStatus.CONNECTION_ERROR;
         }
     }
 

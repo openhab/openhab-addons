@@ -30,11 +30,11 @@ public class ConditionHandlerExtension extends ConditionHandler {
         super(thing);
     }
 
-    public int getConfigStatus() {
+    public ConfigStatus getConfigStatus() {
         return configStatus;
     }
 
-    public int getUpdateStatus() {
+    public UpdateStatus getUpdateStatus() {
         return updateStatus;
     }
 

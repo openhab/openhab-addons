@@ -20,9 +20,9 @@ import java.util.List;
  * @author Bernd Weymann - Initial contribution
  */
 public class SensorData {
-    private Long id;
+    private long id;
     private String timestamp;
-    private Integer sampling_rate;
+    private int sampling_rate;
     private List<SensorDataValue> sensordatavalues;
     private Location location;
     private Sensor sensor;
@@ -32,11 +32,11 @@ public class SensorData {
         return id + timestamp;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -48,11 +48,11 @@ public class SensorData {
         this.timestamp = timeStamp;
     }
 
-    public Integer getSampling_rate() {
+    public int getSampling_rate() {
         return sampling_rate;
     }
 
-    public void setSampling_rate(Integer sampling_rate) {
+    public void setSampling_rate(int sampling_rate) {
         this.sampling_rate = sampling_rate;
     }
 
@@ -79,5 +79,4 @@ public class SensorData {
     public void setSensor(Sensor sensor) {
         this.sensor = sensor;
     }
-
 }

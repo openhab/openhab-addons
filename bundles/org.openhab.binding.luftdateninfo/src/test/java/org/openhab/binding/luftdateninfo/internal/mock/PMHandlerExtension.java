@@ -30,11 +30,11 @@ public class PMHandlerExtension extends PMHandler {
         super(thing);
     }
 
-    public int getConfigStatus() {
+    public ConfigStatus getConfigStatus() {
         return configStatus;
     }
 
-    public int getUpdateStatus() {
+    public UpdateStatus getUpdateStatus() {
         return updateStatus;
     }
 

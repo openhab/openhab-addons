@@ -17,8 +17,11 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.junit.Test;
+import org.openhab.binding.luftdateninfo.internal.handler.BaseSensorHandler.UpdateStatus;
 import org.openhab.binding.luftdateninfo.internal.mock.ConditionHandlerExtension;
 import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
@@ -43,12 +46,12 @@ public class ConditionHandlerTest {
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
         String pmJson = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         if (pmJson != null) {
-            int result = condHandler.updateChannels(pmJson);
-            assertEquals("Valid update", 0, result);
-            assertEquals("Temperature", new DecimalType("22.7"), condHandler.getTemperature());
-            assertEquals("Humidity", new DecimalType("61.0"), condHandler.getHumidity());
-            assertEquals("Pressure", new DecimalType(-1), condHandler.getPressure());
-            assertEquals("Pressure Sea", new DecimalType(-1), condHandler.getPressureSea());
+            UpdateStatus result = condHandler.updateChannels(pmJson);
+            assertEquals("Valid update", UpdateStatus.OK, result);
+            assertEquals("Temperature", QuantityType.valueOf(22.7, SIUnits.CELSIUS), condHandler.getTemperature());
+            assertEquals("Humidity", QuantityType.valueOf(61.0, SmartHomeUnits.PERCENT), condHandler.getHumidity());
+            assertEquals("Pressure", QuantityType.valueOf(-1, SIUnits.PASCAL), condHandler.getPressure());
+            assertEquals("Pressure Sea", QuantityType.valueOf(-1, SIUnits.PASCAL), condHandler.getPressureSea());
         } else {
             assertTrue(false);
         }
@@ -66,12 +69,12 @@ public class ConditionHandlerTest {
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
         String pmJson = FileReader.readFileInString("src/test/resources/condition-result-plus-pressure.json");
         if (pmJson != null) {
-            int result = condHandler.updateChannels(pmJson);
-            assertEquals("Valid update", 0, result);
-            assertEquals("Temperature", new DecimalType("21.5"), condHandler.getTemperature());
-            assertEquals("Humidity", new DecimalType("58.5"), condHandler.getHumidity());
-            assertEquals("Pressure", new DecimalType("1002.0"), condHandler.getPressure());
-            assertEquals("Pressure Sea", new DecimalType("1019.7"), condHandler.getPressureSea());
+            UpdateStatus result = condHandler.updateChannels(pmJson);
+            assertEquals("Valid update", UpdateStatus.OK, result);
+            assertEquals("Temperature", QuantityType.valueOf(21.5, SIUnits.CELSIUS), condHandler.getTemperature());
+            assertEquals("Humidity", QuantityType.valueOf(58.5, SmartHomeUnits.PERCENT), condHandler.getHumidity());
+            assertEquals("Pressure", QuantityType.valueOf(100200.0, SIUnits.PASCAL), condHandler.getPressure());
+            assertEquals("Pressure Sea", QuantityType.valueOf(101968.7, SIUnits.PASCAL), condHandler.getPressureSea());
         } else {
             assertTrue(false);
         }
@@ -89,8 +92,8 @@ public class ConditionHandlerTest {
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
         String pmJson = FileReader.readFileInString("src/test/resources/noise-result.json");
         if (pmJson != null) {
-            int result = condHandler.updateChannels(pmJson);
-            assertEquals("Valid update", 2, result);
+            UpdateStatus result = condHandler.updateChannels(pmJson);
+            assertEquals("Valid update", UpdateStatus.VALUE_ERROR, result);
         } else {
             assertTrue(false);
         }
@@ -106,8 +109,8 @@ public class ConditionHandlerTest {
         t.setConfiguration(properties);
 
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
-        int result = condHandler.updateChannels("[]");
-        assertEquals("Valid update", 3, result);
+        UpdateStatus result = condHandler.updateChannels("[]");
+        assertEquals("Valid update", UpdateStatus.VALUE_EMPTY, result);
     }
 
     @Test
@@ -120,7 +123,7 @@ public class ConditionHandlerTest {
         t.setConfiguration(properties);
 
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
-        int result = condHandler.updateChannels(null);
-        assertEquals("Valid update", 1, result);
+        UpdateStatus result = condHandler.updateChannels(null);
+        assertEquals("Valid update", UpdateStatus.CONNECTION_ERROR, result);
     }
 }

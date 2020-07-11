@@ -14,7 +14,6 @@ package org.openhab.binding.luftdateninfo.internal;
 
 import static org.junit.Assert.*;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,6 +29,7 @@ import org.openhab.binding.luftdateninfo.internal.util.FileReader;
  */
 @NonNullByDefault
 public class HTTPHandlerValueTest {
+    private HTTPHandler http = new HTTPHandler();
 
     /**
      * test if really the latest values are returned
@@ -39,26 +39,20 @@ public class HTTPHandlerValueTest {
     public void testValueDecoding() {
         String resource1 = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         assertNotNull(resource1);
-        List<SensorDataValue> l = HTTPHandler.getLatestValues(resource1);
+        List<SensorDataValue> l = http.getLatestValues(resource1);
         assertNotNull(l);
-        Iterator<SensorDataValue> iter = l.iterator();
-        while (iter.hasNext()) {
-            SensorDataValue s = iter.next();
-            testSensorValue(s);
-        }
+        l.forEach(sd -> {
+            testSensorValue(sd);
+        });
 
         String resource2 = FileReader
                 .readFileInString("src/test/resources/condition-result-no-pressure-flipped-values.json");
-
         assertNotNull(resource2);
-        l = HTTPHandler.getLatestValues(resource2);
+        l = http.getLatestValues(resource2);
         assertNotNull(l);
-        iter = l.iterator();
-        while (iter.hasNext()) {
-            SensorDataValue s = iter.next();
-            testSensorValue(s);
-        }
-
+        l.forEach(sd -> {
+            testSensorValue(sd);
+        });
     }
 
     private void testSensorValue(SensorDataValue s) {

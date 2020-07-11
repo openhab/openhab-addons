@@ -14,7 +14,6 @@ package org.openhab.binding.luftdateninfo.internal;
 
 import static org.junit.Assert.*;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,16 +49,14 @@ public class DTOTest {
             d = valueArray[1];
         }
         List<SensorDataValue> sensorDataVaueList = d.getSensordatavalues();
-        Iterator<SensorDataValue> iter = sensorDataVaueList.iterator();
-        while (iter.hasNext()) {
-            SensorDataValue v = iter.next();
-            // System.out.println(v.getValue_type() + ":" + v.getValue());
+        assertNotNull(d);
+        sensorDataVaueList.forEach(v -> {
             if (v.getValue_type().equals(HTTPHandler.TEMPERATURE)) {
                 assertEquals("Temperature", "22.70", v.getValue());
             } else if (v.getValue_type().equals(HTTPHandler.HUMIDITY)) {
                 assertEquals("Humidity", "61.00", v.getValue());
             }
-        }
+        });
     }
 
     @Test
@@ -84,5 +81,4 @@ public class DTOTest {
         // check if correct timestamp is included
         assertTrue(json.contains("\"timestamp\":\"2020-06-09 06:40:34\""));
     }
-
 }

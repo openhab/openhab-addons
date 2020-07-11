@@ -18,6 +18,8 @@ import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DateTimeUtils} class provides helpers for converting Dates and Times.
@@ -26,12 +28,14 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class DateTimeUtils {
-    private static SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd hh:mm:ss");
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("YYYY-mm-dd hh:mm:ss");
+    private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeUtils.class);
 
     public static synchronized @Nullable Date toDate(String dateTime) {
         try {
-            return sdf.parse(dateTime);
+            return SDF.parse(dateTime);
         } catch (ParseException | NumberFormatException e) {
+            LOGGER.debug("Uanble to parse date {}", dateTime);
             return null;
         }
     }

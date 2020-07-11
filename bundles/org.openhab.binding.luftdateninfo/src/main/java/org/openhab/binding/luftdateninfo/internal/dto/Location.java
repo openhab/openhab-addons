@@ -18,14 +18,19 @@ package org.openhab.binding.luftdateninfo.internal.dto;
  * @author Bernd Weymann - Initial contribution
  */
 public class Location {
-    private Integer id;
+    private int id;
     private String country;
+    private String altitude;
+    private String latitude;
+    private String longitude;
+    private int indoor;
+    private int exact_location;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -53,43 +58,27 @@ public class Location {
         this.latitude = latitude;
     }
 
-    public String getLongtitude() {
-        return longtitude;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setLongtitude(String longtitude) {
-        this.longtitude = longtitude;
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
     public Integer getIndoor() {
         return indoor;
     }
 
-    public void setIndoor(Integer indoor) {
+    public void setIndoor(int indoor) {
         this.indoor = indoor;
     }
 
-    public Integer getExact_location() {
+    public int getExact_location() {
         return exact_location;
     }
 
     public void setExact_location(Integer exact_location) {
         this.exact_location = exact_location;
     }
-
-    private String altitude;
-    private String latitude;
-    private String longtitude;
-    private Integer indoor;
-    private Integer exact_location;
-    /**
-     * "id": 11447,
-     * "country": "DE",
-     * "altitude": "151.5",
-     * "latitude": "50.562",
-     * "longitude": "8.504",
-     * "indoor": 0,
-     * "exact_location": 0
-     *
-     */
 }

@@ -15,12 +15,14 @@ package org.openhab.binding.luftdateninfo.internal.handler;
 import static org.openhab.binding.luftdateninfo.internal.LuftdatenInfoBindingConstants.*;
 import static org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler.*;
 
-import java.util.Iterator;
 import java.util.List;
+
+import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
@@ -33,43 +35,44 @@ import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
  */
 @NonNullByDefault
 public class NoiseHandler extends BaseSensorHandler {
-    protected DecimalType noiseEQCache = UNDEF;
-    protected DecimalType noiseMinCache = UNDEF;
-    protected DecimalType noiseMaxCache = UNDEF;
+    protected QuantityType<Dimensionless> noiseEQCache = QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL);
+    protected QuantityType<Dimensionless> noiseMinCache = QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL);
+    protected QuantityType<Dimensionless> noiseMaxCache = QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL);
 
     public NoiseHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public int updateChannels(@Nullable String json) {
+    public UpdateStatus updateChannels(@Nullable String json) {
         if (json != null) {
-            List<SensorDataValue> valueList = HTTPHandler.getLatestValues(json);
+            List<SensorDataValue> valueList = HTTP.getLatestValues(json);
             if (valueList != null) {
-                if (HTTPHandler.isNoise(valueList)) {
-                    Iterator<SensorDataValue> iter = valueList.iterator();
-                    while (iter.hasNext()) {
-                        SensorDataValue v = iter.next();
+                if (HTTP.isNoise(valueList)) {
+                    valueList.forEach(v -> {
                         if (v.getValue_type().equals(NOISE_EQ)) {
-                            noiseEQCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
+                            noiseEQCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
+                                    SmartHomeUnits.DECIBEL);
                             updateState(NOISE_EQ_CHANNEL, noiseEQCache);
                         } else if (v.getValue_type().equals(NOISE_MIN)) {
-                            noiseMinCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
+                            noiseMinCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
+                                    SmartHomeUnits.DECIBEL);
                             updateState(NOISE_MIN_CHANNEL, noiseMinCache);
                         } else if (v.getValue_type().equals(NOISE_MAX)) {
-                            noiseMaxCache = new DecimalType(NumberUtils.round(v.getValue(), 1));
+                            noiseMaxCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
+                                    SmartHomeUnits.DECIBEL);
                             updateState(NOISE_MAX_CHANNEL, noiseMaxCache);
                         }
-                    }
-                    return UPDATE_OK;
+                    });
+                    return UpdateStatus.OK;
                 } else {
-                    return UPDATE_VALUE_ERROR;
+                    return UpdateStatus.VALUE_ERROR;
                 }
             } else {
-                return UPDATE_VALUE_EMPTY;
+                return UpdateStatus.VALUE_EMPTY;
             }
         } else {
-            return UPDATE_CONNECTION_ERROR;
+            return UpdateStatus.CONNECTION_ERROR;
         }
     }
 

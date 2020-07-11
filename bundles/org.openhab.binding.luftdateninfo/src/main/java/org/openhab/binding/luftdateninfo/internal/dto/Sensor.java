@@ -18,15 +18,15 @@ package org.openhab.binding.luftdateninfo.internal.dto;
  * @author Bernd Weymann - Initial contribution
  */
 public class Sensor {
-    private Integer id;
+    private int id;
     private String pin;
     private SensorType sensor_type;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

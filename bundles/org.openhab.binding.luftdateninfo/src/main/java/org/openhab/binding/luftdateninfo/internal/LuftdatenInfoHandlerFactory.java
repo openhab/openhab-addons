@@ -59,7 +59,6 @@ public class LuftdatenInfoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        // one handler for all
         if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_PARTICULATE)) {
             return new PMHandler(thing);
         } else if (thing.getThingTypeUID().equals(LuftdatenInfoBindingConstants.THING_TYPE_CONDITIONS)) {

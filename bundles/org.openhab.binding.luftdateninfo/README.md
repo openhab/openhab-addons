@@ -1,16 +1,18 @@
 # LuftdatenInfo Binding
 
 <img style="float: right;" src="doc/logo-rund.png">
-Binding for the Sensor<i>Community <a href=https://luftdaten.info/>luftdaten.info</a>. The community provides instructions to build sensors on your own and they can be integrated into the database.
+Binding for the Sensor Community <a href=https://luftdaten.info/>luftdaten.info</a>. The community provides instructions to build sensors on your own and they can be integrated into the database.
 With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openhab.
 
 ## Supported Things
 
 Three Things are supported
 
-* Particulate Sensor - measure particulate matter PM2.5 and PM10
-* Conditions Sensor - measures environment conditions like temperature, humidity and some also provides atmospheric pressure
-* Noise Sensor - measures noise exposures in the environment
+| Name               | Thing Type ID | Description                                                                                            |
+|--------------------|---------------|--------------------------------------------------------------------------------------------------------|
+| Particulate Sensor | particulate   | measure particulate matter PM2.5 and PM10                                                              |
+| Conditions Sensor  | condition     | measures environment conditions like temperature, humidity and some also provides atmospheric pressure |
+| Noise Sensor       | noise         | measures noise exposures in the environment                                                            |
 
 ## Discovery
 
@@ -37,28 +39,26 @@ Perform the following steps to get the appropriate Sensor ID
 
 | Channel ID           | Item Type            | Description                              |
 |----------------------|----------------------|------------------------------------------|
-| pm25                 | Number               | [Ultrafine particulates](https://en.wikipedia.org/wiki/Particulates#Size,shapeandsolubilitymatter) microgram per cubic meter |
-| pm100                | Number               | [Coarse particulate matter](https://en.wikipedia.org/wiki/Particulates#Size,shapeandsolubilitymatter) microgram per cubic meter  |
+| pm25                 | Number:Density       | [Ultrafine particulates](https://en.wikipedia.org/wiki/Particulates#Size,_shape_and_solubility_matter) microgram per cubic meter |
+| pm100                | Number:Density       | [Coarse particulate matter](https://en.wikipedia.org/wiki/Particulates#Size,_shape_and_solubility_matter) microgram per cubic meter  |
 
 ### Conditions Sensor 
 
 | Channel ID           | Item Type            | Description                              |
 |----------------------|----------------------|------------------------------------------|
-| temperature          | Number               | current temperature in degrees Celsius |
-| humidity             | Number               | current humidity percent  |
-| pressure             | Number               | Atmospheric Pressure in hpa (not supported by all sensors) |
-| pressure-sea         | Number               | Atmospheric Pressure on sea level in hpa (not supported by all sensors)  |
+| temperature          | Number:Temperature   | current temperature in degrees Celsius |
+| humidity             | Number:Dimensionless | current humidity percent  |
+| pressure             | Number:Pressure      | Atmospheric Pressure in hpa (not supported by all sensors) |
+| pressure-sea         | Number:Pressure      | Atmospheric Pressure on sea level in hpa (not supported by all sensors)  |
 
 
 ### Noise Sensor 
 
-Currently in [beta phase of the community](https://luftdaten.info/einfuehrung-zum-laermsensor/)
-
 | Channel ID           | Item Type            | Description                              |
 |----------------------|----------------------|------------------------------------------|
-| noise-eq             | Number               | Average noise in dbA  |
-| noise-min            | Number               | Minimum noise covered in the last 2.5 minutes in dbA |
-| noise-main           | Number               | Maximum noise covered in the last 2.5 minutes in dbA  |
+| noise-eq             | Number:Dimensionless | Average noise in dbA  |
+| noise-min            | Number:Dimensionless | Minimum noise covered in the last 2.5 minutes in dbA |
+| noise-main           | Number:Dimensionless | Maximum noise covered in the last 2.5 minutes in dbA  |
 
 
 ## Full Example

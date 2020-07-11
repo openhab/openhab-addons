@@ -146,5 +146,4 @@ public class ThingMock implements Thing {
     public boolean isEnabled() {
         return false;
     }
-
 }

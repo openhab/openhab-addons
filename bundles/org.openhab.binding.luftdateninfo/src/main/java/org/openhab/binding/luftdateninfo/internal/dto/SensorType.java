@@ -18,7 +18,7 @@ package org.openhab.binding.luftdateninfo.internal.dto;
  * @author Bernd Weymann - Initial contribution
  */
 public class SensorType {
-    private Integer id;
+    private int id;
     private String manufacturer;
     private String name;
 
@@ -26,7 +26,7 @@ public class SensorType {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
