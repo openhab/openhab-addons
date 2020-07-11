@@ -50,15 +50,15 @@ public class NoiseHandler extends BaseSensorHandler {
             if (valueList != null) {
                 if (HTTP.isNoise(valueList)) {
                     valueList.forEach(v -> {
-                        if (v.getValue_type().equals(NOISE_EQ)) {
+                        if (v.getValueType().equals(NOISE_EQ)) {
                             noiseEQCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     SmartHomeUnits.DECIBEL);
                             updateState(NOISE_EQ_CHANNEL, noiseEQCache);
-                        } else if (v.getValue_type().equals(NOISE_MIN)) {
+                        } else if (v.getValueType().equals(NOISE_MIN)) {
                             noiseMinCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     SmartHomeUnits.DECIBEL);
                             updateState(NOISE_MIN_CHANNEL, noiseMinCache);
-                        } else if (v.getValue_type().equals(NOISE_MAX)) {
+                        } else if (v.getValueType().equals(NOISE_MAX)) {
                             noiseMaxCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     SmartHomeUnits.DECIBEL);
                             updateState(NOISE_MAX_CHANNEL, noiseMaxCache);

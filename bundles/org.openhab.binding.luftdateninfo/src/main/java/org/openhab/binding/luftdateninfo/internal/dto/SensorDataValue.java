@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.luftdateninfo.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link SensorDataValue} Data Transfer Object
  *
@@ -19,11 +21,12 @@ package org.openhab.binding.luftdateninfo.internal.dto;
  */
 public class SensorDataValue {
     private long id;
-    private String value_type;
+    @SerializedName(value = "value_type")
+    private String valueType;
 
     @Override
     public String toString() {
-        return value_type + ":" + value;
+        return valueType + ":" + value;
     }
 
     public long getId() {
@@ -34,12 +37,12 @@ public class SensorDataValue {
         this.id = id;
     }
 
-    public String getValue_type() {
-        return value_type;
+    public String getValueType() {
+        return valueType;
     }
 
-    public void setValue_type(String value_type) {
-        this.value_type = value_type;
+    public void setValueType(String valueType) {
+        this.valueType = valueType;
     }
 
     public String getValue() {

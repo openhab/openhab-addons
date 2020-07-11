@@ -49,11 +49,11 @@ public class PMHandler extends BaseSensorHandler {
             if (valueList != null) {
                 if (HTTP.isParticulate(valueList)) {
                     valueList.forEach(v -> {
-                        if (v.getValue_type().equals(P1)) {
+                        if (v.getValueType().equals(P1)) {
                             pm100Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
                             updateState(PM100_CHANNEL, pm100Cache);
-                        } else if (v.getValue_type().equals(P2)) {
+                        } else if (v.getValueType().equals(P2)) {
                             pm25Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     SmartHomeUnits.MICROGRAM_PER_CUBICMETRE);
                             updateState(PM25_CHANNEL, pm25Cache);

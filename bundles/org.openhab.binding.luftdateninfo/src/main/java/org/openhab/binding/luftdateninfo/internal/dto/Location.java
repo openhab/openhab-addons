@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.luftdateninfo.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link LuftdatenInfo} class definition for Logging identification
  *
@@ -24,7 +26,8 @@ public class Location {
     private String latitude;
     private String longitude;
     private int indoor;
-    private int exact_location;
+    @SerializedName(value = "exact_location")
+    private int exactLocation;
 
     public int getId() {
         return id;
@@ -74,11 +77,11 @@ public class Location {
         this.indoor = indoor;
     }
 
-    public int getExact_location() {
-        return exact_location;
+    public int getExactLocation() {
+        return exactLocation;
     }
 
-    public void setExact_location(Integer exact_location) {
-        this.exact_location = exact_location;
+    public void setExactLocation(Integer exactLocation) {
+        this.exactLocation = exactLocation;
     }
 }

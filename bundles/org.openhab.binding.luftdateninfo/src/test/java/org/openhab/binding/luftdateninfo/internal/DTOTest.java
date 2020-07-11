@@ -48,12 +48,12 @@ public class DTOTest {
             // take newer one
             d = valueArray[1];
         }
-        List<SensorDataValue> sensorDataVaueList = d.getSensordatavalues();
+        List<SensorDataValue> sensorDataVaueList = d.getSensorDataValues();
         assertNotNull(d);
         sensorDataVaueList.forEach(v -> {
-            if (v.getValue_type().equals(HTTPHandler.TEMPERATURE)) {
+            if (v.getValueType().equals(HTTPHandler.TEMPERATURE)) {
                 assertEquals("Temperature", "22.70", v.getValue());
-            } else if (v.getValue_type().equals(HTTPHandler.HUMIDITY)) {
+            } else if (v.getValueType().equals(HTTPHandler.HUMIDITY)) {
                 assertEquals("Humidity", "61.00", v.getValue());
             }
         });

@@ -14,6 +14,8 @@ package org.openhab.binding.luftdateninfo.internal.dto;
 
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link SensorData} Data Transfer Object
  *
@@ -22,8 +24,10 @@ import java.util.List;
 public class SensorData {
     private long id;
     private String timestamp;
-    private int sampling_rate;
-    private List<SensorDataValue> sensordatavalues;
+    @SerializedName(value = "sampling_rate")
+    private int samplingRate;
+    @SerializedName(value = "sensordatavalues")
+    private List<SensorDataValue> sensorDataValues;
     private Location location;
     private Sensor sensor;
 
@@ -48,20 +52,20 @@ public class SensorData {
         this.timestamp = timeStamp;
     }
 
-    public int getSampling_rate() {
-        return sampling_rate;
+    public int getSamplingRate() {
+        return samplingRate;
     }
 
-    public void setSampling_rate(int sampling_rate) {
-        this.sampling_rate = sampling_rate;
+    public void setSamplingRate(int samplingRate) {
+        this.samplingRate = samplingRate;
     }
 
-    public List<SensorDataValue> getSensordatavalues() {
-        return sensordatavalues;
+    public List<SensorDataValue> getSensorDataValues() {
+        return sensorDataValues;
     }
 
-    public void setSensordatavalues(List<SensorDataValue> sensordatavalues) {
-        this.sensordatavalues = sensordatavalues;
+    public void setSensorDataValues(List<SensorDataValue> sensorDataValues) {
+        this.sensorDataValues = sensorDataValues;
     }
 
     public Location getLocation() {

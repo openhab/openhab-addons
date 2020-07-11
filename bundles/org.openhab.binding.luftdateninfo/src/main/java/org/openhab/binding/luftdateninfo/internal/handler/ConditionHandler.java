@@ -55,18 +55,18 @@ public class ConditionHandler extends BaseSensorHandler {
             if (valueList != null) {
                 if (HTTP.isCondition(valueList)) {
                     valueList.forEach(v -> {
-                        if (v.getValue_type().equals(TEMPERATURE)) {
+                        if (v.getValueType().equals(TEMPERATURE)) {
                             temperatureCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     SIUnits.CELSIUS);
                             updateState(TEMPERATURE_CHANNEL, temperatureCache);
-                        } else if (v.getValue_type().equals(HUMIDITY)) {
+                        } else if (v.getValueType().equals(HUMIDITY)) {
                             humidityCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     SmartHomeUnits.PERCENT);
                             updateState(HUMIDITY_CHANNEL, humidityCache);
-                        } else if (v.getValue_type().equals(PRESSURE)) {
+                        } else if (v.getValueType().equals(PRESSURE)) {
                             pressureCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), SIUnits.PASCAL);
                             updateState(PRESSURE_CHANNEL, pressureCache);
-                        } else if (v.getValue_type().equals(PRESSURE_SEALEVEL)) {
+                        } else if (v.getValueType().equals(PRESSURE_SEALEVEL)) {
                             pressureSeaCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1), SIUnits.PASCAL);
                             updateState(PRESSURE_SEA_CHANNEL, pressureSeaCache);
                         }

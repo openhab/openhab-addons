@@ -91,7 +91,7 @@ public class HTTPHandler {
             return null;
         } else if (valueArray.length == 1) {
             SensorData v = valueArray[0];
-            return v.getSensordatavalues();
+            return v.getSensorDataValues();
         } else if (valueArray.length > 1) {
             // declare first item as latest
             SensorData latestData = valueArray[0];
@@ -118,7 +118,7 @@ public class HTTPHandler {
                     logger.warn("One or two dates cannot be decoded 1) {} 2) {}", iterTimeStr, latestTimeStr);
                 }
             }
-            return latestData.getSensordatavalues();
+            return latestData.getSensorDataValues();
         } else {
             return null;
         }
@@ -136,7 +136,7 @@ public class HTTPHandler {
         if (valueList == null) {
             return false;
         }
-        return valueList.stream().map(v -> v.getValue_type()).filter(t -> t.equals(P1) || t.equals(P2)).findAny()
+        return valueList.stream().map(v -> v.getValueType()).filter(t -> t.equals(P1) || t.equals(P2)).findAny()
                 .isPresent();
     }
 
@@ -144,7 +144,7 @@ public class HTTPHandler {
         if (valueList == null) {
             return false;
         }
-        return valueList.stream().map(v -> v.getValue_type()).filter(
+        return valueList.stream().map(v -> v.getValueType()).filter(
                 t -> t.equals(TEMPERATURE) || t.equals(HUMIDITY) || t.equals(PRESSURE) || t.equals(PRESSURE_SEALEVEL))
                 .findAny().isPresent();
     }
@@ -153,7 +153,7 @@ public class HTTPHandler {
         if (valueList == null) {
             return false;
         }
-        return valueList.stream().map(v -> v.getValue_type())
+        return valueList.stream().map(v -> v.getValueType())
                 .filter(t -> t.equals(NOISE_EQ) || t.equals(NOISE_MAX) || t.equals(NOISE_MIN)).findAny().isPresent();
     }
 }

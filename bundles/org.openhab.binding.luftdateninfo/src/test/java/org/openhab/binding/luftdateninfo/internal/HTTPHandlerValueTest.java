@@ -56,9 +56,9 @@ public class HTTPHandlerValueTest {
     }
 
     private void testSensorValue(SensorDataValue s) {
-        if (s.getValue_type().equals(HTTPHandler.TEMPERATURE)) {
+        if (s.getValueType().equals(HTTPHandler.TEMPERATURE)) {
             assertEquals("Temperature resource 1", "22.70", s.getValue());
-        } else if (s.getValue_type().equals(HTTPHandler.HUMIDITY)) {
+        } else if (s.getValueType().equals(HTTPHandler.HUMIDITY)) {
             assertEquals("Humidity resource 1", "61.00", s.getValue());
         } else {
             assertTrue(false);
