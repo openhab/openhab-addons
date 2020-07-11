@@ -47,11 +47,7 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
             PercentType type = new PercentType(command.equals(OnOffType.ON) ? 100 : 0);
             return convertToBinding(type, dp);
         } else if (command.getClass() == UpDownType.class) {
-            int result = command.equals(UpDownType.UP) ? 100 : 0;
-            if (MetadataUtils.isRollerShutter(dp)) {
-                result = command.equals(UpDownType.UP) ? 0 : 100;
-            }
-            return convertToBinding(new PercentType(result), dp);
+            return convertToBinding(command.equals(UpDownType.UP) ? PercentType.ZERO : PercentType.HUNDRED, dp);
         } else {
             return super.commandToBinding(command, dp);
         }
@@ -68,7 +64,12 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
         Double number = (type.doubleValue() / 100) * dp.getMaxValue().doubleValue();
 
         if (MetadataUtils.isRollerShutter(dp)) {
-            number = dp.getMaxValue().doubleValue() - number;
+            if (type == PercentType.HUNDRED) { // means DOWN
+                return dp.getMinValue().doubleValue();
+            } else if (type == PercentType.ZERO) { // means UP
+                return 1.0d;
+            }
+            return dp.getMaxValue().doubleValue() - number;
         }
         if (number < 0.0 || number > 100.0) {
             logger.warn("Percent value '{}' out of range, truncating value for {}", number, dp);
