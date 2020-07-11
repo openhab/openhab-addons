@@ -35,8 +35,13 @@ import com.google.gson.JsonElement;
 
 @NonNullByDefault
 class DeviceService<TState extends BoschSHCServiceState> {
-
-    DeviceService(BoschSHCService<TState> service, Collection<String> affectedChannels) {
+    /**
+     * Constructor.
+     * 
+     * @param service Service which belongs to the device.
+     * @param affectedChannels Channels which are affected by the state of this service.
+     */
+    public DeviceService(BoschSHCService<TState> service, Collection<String> affectedChannels) {
         this.service = service;
         this.affectedChannels = affectedChannels;
     }
@@ -75,8 +80,9 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     public @Nullable String getBoschID() {
-        if (this.config != null) {
-            return this.config.id;
+        BoschSHCConfiguration config = this.getBoschConfig();
+        if (config != null) {
+            return config.id;
         } else {
             return null;
         }
@@ -94,7 +100,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     public void initialize() {
 
         this.config = getConfigAs(BoschSHCConfiguration.class);
-        logger.warn("Initializing thing: {}", this.config.id);
+        logger.warn("Initializing thing: {}", this.getBoschID());
 
         // Mark immediately as online - if the bridge is online, the thing is too.
         updateStatus(ThingStatus.ONLINE);
@@ -168,11 +174,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> TService createService(
             Class<TService> serviceClass, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels) {
         BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
-        if (bridgeHandler == null) {
-            throw new Error(String.format("Could not create service for {}, no valid bridge set", this.getThing()));
-        }
 
         String deviceId = this.getBoschID();
+        if (deviceId == null) {
+            throw new Error(String.format("Could not create service for {}, no device id set", this.getThing()));
+        }
 
         TService service;
         try {

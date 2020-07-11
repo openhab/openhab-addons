@@ -65,7 +65,9 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
                     // Only refresh the state for CHANNEL_TEMPERATURE, the rest will be filled in too.
                     TwinguardState state = bridgeHandler.refreshState(getThing(), "AirQualityLevel",
                             TwinguardState.class);
-                    updateAirQualityState(state);
+                    if (state != null) {
+                        updateAirQualityState(state);
+                    }
                 }
             }
         } else {

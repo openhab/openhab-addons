@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandlerFactory.class);
-    private @Nullable BoschSHCBridgeHandler bridge;
 
     // List of all supported Bosch devices.
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SHC,
@@ -103,5 +102,4 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }
