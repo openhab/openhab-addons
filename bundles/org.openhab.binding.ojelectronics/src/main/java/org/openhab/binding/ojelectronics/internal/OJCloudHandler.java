@@ -97,14 +97,15 @@ public class OJCloudHandler extends BaseBridgeHandler implements BridgeHandler {
         }
     }
 
-    private void handleRefreshDone(@Nullable GroupContentResponseModel groupContentResponse) {
+    private void handleRefreshDone(@Nullable GroupContentResponseModel groupContentResponse,
+            @Nullable String errorMessage) {
         logger.trace("OJElectronicsCloudHandler.handleRefreshDone({})", groupContentResponse);
 
         if (groupContentResponse != null && groupContentResponse.errorCode == 0) {
             new RefreshGroupContentService(groupContentResponse.groupContents, getThing().getThings()).handle();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Wrong or no result model; Refreshing stoppped");
+                    (errorMessage == null) ? "Wrong or no result model; Refreshing stoppped" : errorMessage);
             final RefreshService refreshService = this.refreshService;
             if (refreshService != null) {
                 refreshService.stop();

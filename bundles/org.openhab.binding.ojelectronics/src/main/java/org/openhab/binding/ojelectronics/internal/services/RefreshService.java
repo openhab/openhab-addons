@@ -15,7 +15,7 @@ package org.openhab.binding.ojelectronics.internal.services;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,7 +36,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Handles the refreshing of the devices of a OJElectronics session
+ * Handles the refreshing of the devices of a session
  *
  * @author Christian Kittel - Initial Contribution
  */
@@ -51,7 +51,7 @@ public final class RefreshService implements AutoCloseable {
     private final ScheduledExecutorService schedulerService;
 
     private @Nullable Runnable connectionLost;
-    private @Nullable Consumer<@Nullable GroupContentResponseModel> refreshDone;
+    private @Nullable BiConsumer<@Nullable GroupContentResponseModel, @Nullable String> refreshDone;
     private @Nullable ScheduledFuture<?> scheduler;
     private @Nullable Runnable unauthorized;
     private @Nullable String sessionId;
@@ -78,7 +78,7 @@ public final class RefreshService implements AutoCloseable {
      * @param connectionLosed This method is called if no connection could established.
      * @param unauthorized This method is called if the result is unauthorized.
      */
-    public void start(String sessionId, Consumer<@Nullable GroupContentResponseModel> refreshDone,
+    public void start(String sessionId, BiConsumer<@Nullable GroupContentResponseModel, @Nullable String> refreshDone,
             Runnable connectionLost, Runnable unauthorized) {
         logger.trace("RefreshService.startService({})", sessionId);
         this.connectionLost = connectionLost;
@@ -138,15 +138,15 @@ public final class RefreshService implements AutoCloseable {
     }
 
     private void handleRefreshDone(String responseBody) {
-        final Consumer<@Nullable GroupContentResponseModel> refreshDone = this.refreshDone;
+        BiConsumer<@Nullable GroupContentResponseModel, @Nullable String> refreshDone = this.refreshDone;
         if (refreshDone != null) {
             logger.trace("refresh {}", responseBody);
             try {
                 GroupContentResponseModel content = gson.fromJson(responseBody, GroupContentResponseModel.class);
-                refreshDone.accept(content);
+                refreshDone.accept(content, null);
             } catch (JsonSyntaxException exception) {
                 logger.debug("Error mapping Result to model", exception);
-                refreshDone.accept(null);
+                refreshDone.accept(null, exception.getMessage());
             }
         }
     }
