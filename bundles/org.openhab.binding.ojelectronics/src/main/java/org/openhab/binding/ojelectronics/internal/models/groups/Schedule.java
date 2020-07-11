@@ -17,8 +17,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Model for a schedule
  *
@@ -27,8 +25,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Schedule {
 
-    @SerializedName("Days")
     public List<Day> days = new ArrayList<Day>();
-    @SerializedName("ModifiedDueToVerification")
-    public boolean modifiedDueToVerification = false;
+
+    public boolean modifiedDueToVerification;
 }

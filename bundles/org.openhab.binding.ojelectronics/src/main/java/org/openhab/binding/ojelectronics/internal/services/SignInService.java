@@ -26,6 +26,7 @@ import org.openhab.binding.ojelectronics.internal.config.OJElectronicsBridgeConf
 import org.openhab.binding.ojelectronics.internal.models.userprofile.PostSignInQueryModel;
 import org.openhab.binding.ojelectronics.internal.models.userprofile.PostSignInResponseModel;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -37,7 +38,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class SignInService {
 
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson = createGson();
 
     private final HttpClient httpClient;
     private final OJElectronicsBridgeConfiguration config;
@@ -85,6 +86,10 @@ public class SignInService {
                 signInDone.accept(signInModel.sessionId);
             }
         });
+    }
+
+    private Gson createGson() {
+        return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).setPrettyPrinting().create();
     }
 
     private PostSignInQueryModel getPostSignInQueryModel() {

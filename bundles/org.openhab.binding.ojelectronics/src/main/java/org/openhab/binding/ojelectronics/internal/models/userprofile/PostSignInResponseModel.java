@@ -14,9 +14,6 @@ package org.openhab.binding.ojelectronics.internal.models.userprofile;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Response-Model after signing in
  *
@@ -25,15 +22,11 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class PostSignInResponseModel {
 
-    @SerializedName("SessionId")
-    @Expose
     public String sessionId = "";
-    @SerializedName("UserName")
-    @Expose
+
     public String userName = "";
-    @SerializedName("ErrorCode")
-    @Expose
-    public Integer errorCode = 0;
+
+    public int errorCode;
 
     public PostSignInResponseModel withSessionId(String sessionId) {
         this.sessionId = sessionId;
@@ -45,7 +38,7 @@ public class PostSignInResponseModel {
         return this;
     }
 
-    public PostSignInResponseModel withErrorCode(Integer errorCode) {
+    public PostSignInResponseModel withErrorCode(int errorCode) {
         this.errorCode = errorCode;
         return this;
     }

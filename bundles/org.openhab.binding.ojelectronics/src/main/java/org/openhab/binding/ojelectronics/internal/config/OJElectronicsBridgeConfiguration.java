@@ -30,7 +30,7 @@ public class OJElectronicsBridgeConfiguration {
     /**
      * Customer-ID
      */
-    public Integer customerId = 1;
+    public int customerId = 1;
 
     /**
      * User Name

@@ -18,8 +18,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Model for content of a group
  *
@@ -28,36 +26,35 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class GroupContent {
 
-    @SerializedName("Action")
-    public Integer action = 0;
-    @SerializedName("GroupId")
-    public Integer groupId = 0;
-    @SerializedName("GroupName")
+    public int action;
+
+    public int groupId;
+
     public String groupName = "";
-    @SerializedName("Thermostats")
+
     public List<Thermostat> thermostats = new ArrayList<Thermostat>();
-    @SerializedName("RegulationMode")
-    public Integer regulationMode = 0;
-    @SerializedName("Schedule")
+
+    public int regulationMode;
+
     public @Nullable Schedule schedule;
-    @SerializedName("ComfortSetpoint")
-    public Integer comfortSetpoint = 0;
-    @SerializedName("ComfortEndTime")
+
+    public int comfortSetpoint;
+
     public String comfortEndTime = "";
-    @SerializedName("ManualModeSetpoint")
-    public Integer manualModeSetpoint = 0;
-    @SerializedName("VacationEnabled")
-    public Boolean vacationEnabled = false;
-    @SerializedName("VacationBeginDay")
+
+    public int manualModeSetpoint;
+
+    public boolean vacationEnabled;
+
     public String vacationBeginDay = "";
-    @SerializedName("VacationEndDay")
+
     public String vacationEndDay = "";
-    @SerializedName("VacationTemperature")
-    public Integer vacationTemperature = 0;
-    @SerializedName("LastPrimaryModeIsAuto")
-    public Boolean lastPrimaryModeIsAuto = false;
-    @SerializedName("BoostEndTime")
+
+    public int vacationTemperature;
+
+    public boolean lastPrimaryModeIsAuto;
+
     public String boostEndTime = "";
-    @SerializedName("FrostProtectionTemperature")
-    public Integer frostProtectionTemperature = 0;
+
+    public int frostProtectionTemperature;
 }

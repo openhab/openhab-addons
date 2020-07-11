@@ -14,6 +14,8 @@ package org.openhab.binding.ojelectronics.internal;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.measure.quantity.Temperature;
 
@@ -42,6 +44,7 @@ import org.openhab.binding.ojelectronics.internal.models.groups.Thermostat;
 public class OJElectronicsThermostatHandler extends BaseThingHandler {
 
     private final String serialNumber;
+    private static final Map<Integer, String> REGULATION_MODES = createRegulationMap();
 
     /**
      * Creates a new instance of {@link OJElectronicsThermostatHandler}
@@ -97,7 +100,7 @@ public class OJElectronicsThermostatHandler extends BaseThingHandler {
         updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_THERMOSTATNAME,
                 StringType.valueOf(thermostat.thermostatName));
         updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_REGULATIONMODE,
-                StringType.valueOf(thermostat.regulationMode.toString()));
+                StringType.valueOf(getRegulationMode(thermostat.regulationMode)));
         updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_COMFORTSETPOINT,
                 new QuantityType<Temperature>(thermostat.comfortSetpoint / (double) 100, SIUnits.CELSIUS));
         updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(
@@ -107,4 +110,20 @@ public class OJElectronicsThermostatHandler extends BaseThingHandler {
         updateState(OJElectronicsBindingConstants.CHANNEL_OWD5_MANUALSETPOINT,
                 new QuantityType<Temperature>(thermostat.manualModeSetpoint / (double) 100, SIUnits.CELSIUS));
     }
+
+    private String getRegulationMode(int regulationMode) {
+        return REGULATION_MODES.get(regulationMode);
+    }
+
+    private static HashMap<Integer, String> createRegulationMap() {
+        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        map.put(1, "Auto");
+        map.put(2, "Comfort");
+        map.put(3, "Manual");
+        map.put(4, "Vacation");
+        map.put(6, "Frost Protection");
+        map.put(8, "Boost");
+        map.put(9, "Eco");
+        return map;
+    };
 }

@@ -30,6 +30,7 @@ import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentResp
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -45,7 +46,8 @@ public final class RefreshService implements AutoCloseable {
     private final OJElectronicsBridgeConfiguration config;
     private final Logger logger = LoggerFactory.getLogger(RefreshService.class);
     private final HttpClient httpClient;
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+    private final Gson gson = createGson();
+
     private final ScheduledExecutorService schedulerService;
 
     private @Nullable Runnable connectionLost;
@@ -98,6 +100,11 @@ public final class RefreshService implements AutoCloseable {
             scheduler.cancel(false);
         }
         this.scheduler = null;
+    }
+
+    private Gson createGson() {
+        return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).setPrettyPrinting()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
     }
 
     private void refresh() {

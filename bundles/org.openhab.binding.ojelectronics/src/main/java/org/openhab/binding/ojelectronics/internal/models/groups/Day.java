@@ -17,8 +17,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Model for a day
  *
@@ -27,8 +25,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Day {
 
-    @SerializedName("WeekDayGrpNo")
-    public Integer weekDayGrpNo = 0;
-    @SerializedName("Events")
+    public int weekDayGrpNo;
+
     public List<Event> events = new ArrayList<>();
 }

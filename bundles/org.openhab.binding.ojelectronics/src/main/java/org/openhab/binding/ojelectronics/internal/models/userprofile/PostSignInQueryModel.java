@@ -14,7 +14,6 @@ package org.openhab.binding.ojelectronics.internal.models.userprofile;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -26,24 +25,15 @@ import com.google.gson.annotations.SerializedName;
 public class PostSignInQueryModel {
 
     @SerializedName("APIKEY")
-    @Expose
     public String apiKey = "";
 
-    @SerializedName("UserName")
-    @Expose
     public String userName = "";
 
-    @SerializedName("Password")
-    @Expose
     public String password = "";
 
-    @SerializedName("CustomerId")
-    @Expose
-    public Integer customerId = 0;
+    public int customerId;
 
-    @SerializedName("ClientSWVersion")
-    @Expose
-    public Integer clientSWVersion = 0;
+    public int clientSWVersion;
 
     /**
      * Add API-Key
@@ -84,7 +74,7 @@ public class PostSignInQueryModel {
      * @param customerId Customer Id
      * @return Model
      */
-    public PostSignInQueryModel withCustomerId(Integer customerId) {
+    public PostSignInQueryModel withCustomerId(int customerId) {
         this.customerId = customerId;
         return this;
     }
@@ -95,7 +85,7 @@ public class PostSignInQueryModel {
      * @param clientSWVersion Software Version
      * @return Model
      */
-    public PostSignInQueryModel withClientSWVersion(Integer clientSWVersion) {
+    public PostSignInQueryModel withClientSWVersion(int clientSWVersion) {
         this.clientSWVersion = clientSWVersion;
         return this;
     }

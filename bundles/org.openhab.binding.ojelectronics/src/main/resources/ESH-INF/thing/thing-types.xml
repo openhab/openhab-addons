@@ -121,13 +121,13 @@
 		<label>Regulation Mode</label>
 		<state readOnly="true">
 			<options>
-				<option value="1">Auto</option>
-				<option value="2">Comfort</option>
-				<option value="3">Manual</option>
-				<option value="4">Vacation</option>
-				<option value="6">Frost Protection</option>
-				<option value="8">Boost</option>
-				<option value="9">Eco</option>
+				<option value="Auto">Auto</option>
+				<option value="Comfort">Comfort</option>
+				<option value="Manual">Manual</option>
+				<option value="Vacation">Vacation</option>
+				<option value="Frost Protection">Frost Protection</option>
+				<option value="Boost">Boost</option>
+				<option value="Eco">Eco</option>
 			</options>
 		</state>
 	</channel-type>

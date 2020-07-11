@@ -17,8 +17,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Model for the response of a content group
  *
@@ -27,8 +25,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class GroupContentResponseModel {
 
-    @SerializedName("GroupContents")
     public List<GroupContent> groupContents = new ArrayList<GroupContent>();
-    @SerializedName("ErrorCode")
-    public Integer errorCode = 0;
+
+    public int errorCode;
 }

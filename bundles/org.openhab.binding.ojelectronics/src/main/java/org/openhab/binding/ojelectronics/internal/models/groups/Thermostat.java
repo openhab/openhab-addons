@@ -27,72 +27,72 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Thermostat {
 
-    @SerializedName("Id")
-    public Integer id = 0;
-    @SerializedName("Action")
-    public Integer action = 0;
-    @SerializedName("SerialNumber")
+    public int id;
+
+    public int action;
+
     public String serialNumber = "";
-    @SerializedName("GroupName")
+
     public String groupName = "";
-    @SerializedName("GroupId")
-    public Integer groupId = 0;
-    @SerializedName("CustomerId")
-    public Integer customerId = 0;
+
+    public int groupId;
+
+    public int customerId;
+
     @SerializedName("SWversion")
-    public String sWversion = "";
-    @SerializedName("Online")
-    public Boolean online = false;
-    @SerializedName("Heating")
-    public Boolean heating = false;
-    @SerializedName("RoomTemperature")
-    public Integer roomTemperature = 0;
-    @SerializedName("FloorTemperature")
-    public Integer floorTemperature = 0;
-    @SerializedName("RegulationMode")
-    public Integer regulationMode = 0;
-    @SerializedName("Schedule")
+    public String softwareVersion = "";
+
+    public boolean online;
+
+    public boolean heating;
+
+    public int roomTemperature;
+
+    public int floorTemperature;
+
+    public int regulationMode;
+
     public @Nullable Schedule schedule;
-    @SerializedName("ComfortSetpoint")
-    public Integer comfortSetpoint = 0;
-    @SerializedName("ComfortEndTime")
+
+    public int comfortSetpoint;
+
     public Date comfortEndTime = new Date();
-    @SerializedName("ManualModeSetpoint")
-    public Integer manualModeSetpoint = 0;
-    @SerializedName("VacationEnabled")
-    public Boolean vacationEnabled = false;
-    @SerializedName("VacationBeginDay")
+
+    public int manualModeSetpoint;
+
+    public boolean vacationEnabled;
+
     public Date vacationBeginDay = new Date();
-    @SerializedName("VacationEndDay")
+
     public Date vacationEndDay = new Date();
-    @SerializedName("VacationTemperature")
-    public Integer vacationTemperature = 0;
-    @SerializedName("LastPrimaryModeIsAuto")
-    public Boolean lastPrimaryModeIsAuto = false;
-    @SerializedName("BoostEndTime")
+
+    public int vacationTemperature;
+
+    public boolean lastPrimaryModeIsAuto;
+
     public Date boostEndTime = new Date();
-    @SerializedName("FrostProtectionTemperature")
-    public Integer frostProtectionTemperature = 0;
-    @SerializedName("ErrorCode")
-    public Integer errorCode = 0;
-    @SerializedName("ThermostatName")
+
+    public int frostProtectionTemperature;
+
+    public int errorCode;
+
     public String thermostatName = "";
-    @SerializedName("OpenWindow")
-    public Boolean openWindow = false;
-    @SerializedName("AdaptiveMode")
-    public Boolean adaptiveMode = false;
-    @SerializedName("DaylightSaving")
-    public Boolean daylightSaving = false;
-    @SerializedName("SensorAppl")
-    public Integer sensorAppl = 0;
-    @SerializedName("MinSetpoint")
-    public Integer minSetpoint = 0;
-    @SerializedName("MaxSetpoint")
-    public Integer maxSetpoint = 0;
-    @SerializedName("TimeZone")
-    public Integer timeZone = 0;
-    @SerializedName("DaylightSavingActive")
-    public Boolean daylightSavingActive = false;
-    @SerializedName("FloorType")
-    public Integer floorType = 0;
+
+    public boolean openWindow;
+
+    public boolean adaptiveMode;
+
+    public boolean daylightSaving;
+
+    public int sensorAppl;
+
+    public int minSetpoint;
+
+    public int maxSetpoint;
+
+    public int timeZone;
+
+    public boolean daylightSavingActive;
+
+    public int floorType;
 }
