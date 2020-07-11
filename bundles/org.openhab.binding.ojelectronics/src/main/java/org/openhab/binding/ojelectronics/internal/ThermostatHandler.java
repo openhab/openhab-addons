@@ -16,10 +16,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -31,6 +33,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.ojelectronics.internal.config.OJElectronicsThermostatConfiguration;
 import org.openhab.binding.ojelectronics.internal.models.groups.Thermostat;
 
@@ -44,10 +47,12 @@ import org.openhab.binding.ojelectronics.internal.models.groups.Thermostat;
 public class ThermostatHandler extends BaseThingHandler {
 
     private final String serialNumber;
+    private @Nullable Thermostat currentThermostat;
     private static final Map<Integer, String> REGULATION_MODES = createRegulationMap();
+    private final Map<String, Consumer<Thermostat>> CHANNEL_REFRESH_ACTION = createChannelRefreshActionMap();
 
     /**
-     * Creates a new instance of {@link OJElectronicsThermostatHandler}
+     * Creates a new instance of {@link ThermostatHandler}
      *
      * @param thing Thing
      */
@@ -70,7 +75,12 @@ public class ThermostatHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // nothing do here
+        if (command instanceof RefreshType) {
+            final Thermostat thermostat = currentThermostat;
+            if (thermostat != null && CHANNEL_REFRESH_ACTION.containsKey(channelUID.getId())) {
+                CHANNEL_REFRESH_ACTION.get(channelUID.getId()).accept(thermostat);
+            }
+        }
     }
 
     /**
@@ -87,27 +97,65 @@ public class ThermostatHandler extends BaseThingHandler {
      * @param thermostat thermostat values
      */
     public void handleThermostatRefresh(Thermostat thermostat) {
-        updateState(BindingConstants.CHANNEL_OWD5_GROUPNAME, StringType.valueOf(thermostat.groupName));
-        updateState(BindingConstants.CHANNEL_OWD5_GROUPID, new DecimalType(thermostat.groupId));
-        updateState(BindingConstants.CHANNEL_OWD5_ONLINE,
-                thermostat.online ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(BindingConstants.CHANNEL_OWD5_HEATING,
-                thermostat.heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE,
-                new QuantityType<Temperature>(thermostat.roomTemperature / (double) 100, SIUnits.CELSIUS));
-        updateState(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE,
-                new QuantityType<Temperature>(thermostat.floorTemperature / (double) 100, SIUnits.CELSIUS));
-        updateState(BindingConstants.CHANNEL_OWD5_THERMOSTATNAME, StringType.valueOf(thermostat.thermostatName));
-        updateState(BindingConstants.CHANNEL_OWD5_REGULATIONMODE,
-                StringType.valueOf(getRegulationMode(thermostat.regulationMode)));
-        updateState(BindingConstants.CHANNEL_OWD5_COMFORTSETPOINT,
-                new QuantityType<Temperature>(thermostat.comfortSetpoint / (double) 100, SIUnits.CELSIUS));
-        updateState(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(
-                ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), ZoneId.systemDefault())));
-        updateState(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME,
-                new DateTimeType(ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), ZoneId.systemDefault())));
+        currentThermostat = thermostat;
+        CHANNEL_REFRESH_ACTION.forEach((channelUID, action) -> action.accept(thermostat));
+    }
+
+    private void updateManualSetpoint(Thermostat thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_MANUALSETPOINT,
                 new QuantityType<Temperature>(thermostat.manualModeSetpoint / (double) 100, SIUnits.CELSIUS));
+    }
+
+    private void updateBoostEndTime(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME,
+                new DateTimeType(ZonedDateTime.ofInstant(thermostat.boostEndTime.toInstant(), ZoneId.systemDefault())));
+    }
+
+    private void updateComfortEndTime(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, new DateTimeType(
+                ZonedDateTime.ofInstant(thermostat.comfortEndTime.toInstant(), ZoneId.systemDefault())));
+    }
+
+    private void updateComfortSetpoint(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_COMFORTSETPOINT,
+                new QuantityType<Temperature>(thermostat.comfortSetpoint / (double) 100, SIUnits.CELSIUS));
+    }
+
+    private void updateRegulationMode(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_REGULATIONMODE,
+                StringType.valueOf(getRegulationMode(thermostat.regulationMode)));
+    }
+
+    private void updateThermostatName(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_THERMOSTATNAME, StringType.valueOf(thermostat.thermostatName));
+    }
+
+    private void updateFloorTemperature(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE,
+                new QuantityType<Temperature>(thermostat.floorTemperature / (double) 100, SIUnits.CELSIUS));
+    }
+
+    private void updateRoomTemperature(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE,
+                new QuantityType<Temperature>(thermostat.roomTemperature / (double) 100, SIUnits.CELSIUS));
+    }
+
+    private void updateHeating(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_HEATING,
+                thermostat.heating ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+    }
+
+    private void updateOnline(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_ONLINE,
+                thermostat.online ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+    }
+
+    private void updateGroupId(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_GROUPID, new DecimalType(thermostat.groupId));
+    }
+
+    private void updateGroupName(Thermostat thermostat) {
+        updateState(BindingConstants.CHANNEL_OWD5_GROUPNAME, StringType.valueOf(thermostat.groupName));
     }
 
     private String getRegulationMode(int regulationMode) {
@@ -125,4 +173,21 @@ public class ThermostatHandler extends BaseThingHandler {
         map.put(9, "Eco");
         return map;
     };
+
+    private HashMap<String, Consumer<Thermostat>> createChannelRefreshActionMap() {
+        HashMap<String, Consumer<Thermostat>> map = new HashMap<String, Consumer<Thermostat>>();
+        map.put(BindingConstants.CHANNEL_OWD5_GROUPNAME, this::updateGroupName);
+        map.put(BindingConstants.CHANNEL_OWD5_GROUPID, this::updateGroupId);
+        map.put(BindingConstants.CHANNEL_OWD5_ONLINE, this::updateOnline);
+        map.put(BindingConstants.CHANNEL_OWD5_HEATING, this::updateHeating);
+        map.put(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE, this::updateRoomTemperature);
+        map.put(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE, this::updateFloorTemperature);
+        map.put(BindingConstants.CHANNEL_OWD5_THERMOSTATNAME, this::updateThermostatName);
+        map.put(BindingConstants.CHANNEL_OWD5_REGULATIONMODE, this::updateRegulationMode);
+        map.put(BindingConstants.CHANNEL_OWD5_COMFORTSETPOINT, this::updateComfortSetpoint);
+        map.put(BindingConstants.CHANNEL_OWD5_COMFORTENDTIME, this::updateComfortEndTime);
+        map.put(BindingConstants.CHANNEL_OWD5_BOOSTENDTIME, this::updateBoostEndTime);
+        map.put(BindingConstants.CHANNEL_OWD5_MANUALSETPOINT, this::updateManualSetpoint);
+        return map;
+    }
 }

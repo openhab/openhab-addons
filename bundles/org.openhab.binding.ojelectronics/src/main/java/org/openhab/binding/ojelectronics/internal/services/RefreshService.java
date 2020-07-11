@@ -87,6 +87,7 @@ public final class RefreshService implements AutoCloseable {
         this.sessionId = sessionId;
         long refreshTime = config.refreshDelayInSeconds;
         scheduler = schedulerService.scheduleWithFixedDelay(this::refresh, refreshTime, refreshTime, TimeUnit.SECONDS);
+        refresh();
         destroyed = false;
     }
 
