@@ -840,7 +840,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
                 String search = key.registeredUserId + "#" + key.entryId;
                 Arrays.stream(connection.getActivities(10, pushActivity.timestamp))
-                        .filter(activity -> activity != null && search.equals(activity.id)).findFirst().ifPresent(currentActivity -> {
+                        .filter(activity -> activity != null && search.equals(activity.id)).findFirst()
+                        .ifPresent(currentActivity -> {
                             SourceDeviceId[] sourceDeviceIds = currentActivity.sourceDeviceIds;
                             if (sourceDeviceIds != null) {
                                 Arrays.stream(sourceDeviceIds).filter(Objects::nonNull).map(

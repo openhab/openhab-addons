@@ -1320,13 +1320,13 @@ public class Connection {
         }
     }
 
-    public void queuedAnnouncement() {
+    private void queuedAnnouncement() {
         Announcement announcement = announcementQueue.poll();
         if (announcement != null) {
-            String speak = announcement.speak;
             try {
                 List<Device> devices = announcement.devices;
                 if (devices != null && !devices.isEmpty()) {
+                    String speak = announcement.speak;
                     String bodyText = announcement.bodyText;
                     String title = announcement.title;
                     List<Integer> ttsVolumes = announcement.ttsVolumes;
@@ -1369,8 +1369,7 @@ public class Connection {
             } catch (IOException | URISyntaxException e) {
                 logger.warn("send textToSpeech fails with unexpected error", e);
             } finally {
-                announcementSenderUnblockFuture = scheduler.schedule(this::queuedAnnouncement, speak.length() * 100,
-                        TimeUnit.MILLISECONDS);
+                announcementSenderUnblockFuture = scheduler.schedule(this::queuedAnnouncement, 1, TimeUnit.SECONDS);
             }
         } else {
             announcementQueueRunning.set(false);
@@ -1406,13 +1405,13 @@ public class Connection {
         }
     }
 
-    public void queuedTextToSpeech() {
+    private void queuedTextToSpeech() {
         TextToSpeech textToSpeech = textToSpeechQueue.poll();
         if (textToSpeech != null) {
-            String text = textToSpeech.text;
             try {
                 List<Device> devices = textToSpeech.devices;
                 if (devices != null && !devices.isEmpty()) {
+                    String text = textToSpeech.text;
                     List<Integer> ttsVolumes = textToSpeech.ttsVolumes;
                     List<Integer> standardVolumes = textToSpeech.standardVolumes;
 
@@ -1424,8 +1423,7 @@ public class Connection {
             } catch (IOException | URISyntaxException e) {
                 logger.warn("send textToSpeech fails with unexpected error", e);
             } finally {
-                textToSpeechSenderUnblockFuture = scheduler.schedule(this::queuedTextToSpeech, text.length() * 100,
-                        TimeUnit.MILLISECONDS);
+                textToSpeechSenderUnblockFuture = scheduler.schedule(this::queuedTextToSpeech, 1, TimeUnit.SECONDS);
             }
         } else {
             textToSpeechQueueRunning.set(false);
@@ -1451,8 +1449,8 @@ public class Connection {
 
         JsonArray nodesToExecute = new JsonArray();
         if ("Alexa.Speak".equals(command)) {
-            for (int i = 0; i < devices.length; i++) {
-                nodesToExecute.add(createExecutionNode(devices[i], command, parameters));
+            for (Device device : devices) {
+                nodesToExecute.add(createExecutionNode(device, command, parameters));
             }
         } else {
             nodesToExecute.add(createExecutionNode(devices[0], command, parameters));
@@ -1498,6 +1496,7 @@ public class Connection {
     private void queuedExecuteSequenceNode() {
         JsonObject nodeToExecute = sequenceNodeQueue.poll();
         if (nodeToExecute != null) {
+            long delay = 3000;
             try {
                 JsonObject sequenceJson = new JsonObject();
                 sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
@@ -1511,11 +1510,16 @@ public class Connection {
                 headers.put("Routines-Version", "1.1.218665");
 
                 makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
+
+                String text = getTextFromExecutionNode(nodeToExecute);
+                if (text != null && !text.isEmpty()) {
+                    delay += text.length() * 100;
+                }
             } catch (IOException | URISyntaxException e) {
                 logger.warn("send textToSpeech fails with unexpected error", e);
             } finally {
-                sequenceNodeSenderUnblockFuture = scheduler.schedule(this::queuedExecuteSequenceNode, 3,
-                        TimeUnit.SECONDS);
+                sequenceNodeSenderUnblockFuture = scheduler.schedule(this::queuedExecuteSequenceNode, delay,
+                        TimeUnit.MILLISECONDS);
             }
         } else {
             sequenceNodeQueueRunning.set(false);
@@ -1570,6 +1574,37 @@ public class Connection {
         nodeToExecute.addProperty("type", command);
         nodeToExecute.add("operationPayload", operationPayload);
         return nodeToExecute;
+    }
+
+    @Nullable
+    private String getTextFromExecutionNode(JsonObject nodeToExecute) {
+        if (nodeToExecute.has("nodesToExecute")) {
+            JsonArray nodesToExecute = nodeToExecute.getAsJsonArray("nodesToExecute");
+            if (nodesToExecute != null && nodesToExecute.size() > 0) {
+                JsonObject nodesToExecuteJsonObject = nodesToExecute.get(0).getAsJsonObject();
+                if (nodesToExecuteJsonObject != null && nodesToExecuteJsonObject.has("operationPayload")) {
+                    JsonObject operationPayload = nodesToExecuteJsonObject.getAsJsonObject("operationPayload");
+                    if (operationPayload != null) {
+                        if (operationPayload.has("textToSpeak")) {
+                            return operationPayload.get("textToSpeak").getAsString();
+                        } else if (operationPayload.has("content")) {
+                            JsonArray content = operationPayload.getAsJsonArray("content");
+                            if (content != null && content.size() > 0) {
+                                JsonObject contentJsonObject = content.get(0).getAsJsonObject();
+                                if (contentJsonObject != null && contentJsonObject.has("speak")) {
+                                    JsonObject speak = contentJsonObject.getAsJsonObject("speak");
+                                    if (speak != null && speak.has("value")) {
+                                        return speak.get("value").getAsString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     public void startRoutine(Device device, String utterance) throws IOException, URISyntaxException {
