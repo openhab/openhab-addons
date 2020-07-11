@@ -201,13 +201,13 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="ccopulsed">
+	<thing-type id="ccopulsed" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Pulsed CCO</label>
-		<description>Pulsed Contact Closure Output</description>
+		<label>Pulsed CCO (Deprecated)</label>
+		<description>Pulsed Contact Closure Output (Deprecated)</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -228,13 +228,13 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="ccomaintained">
+	<thing-type id="ccomaintained" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Maintained CCO</label>
-		<description>Maintained Contact Closure Output</description>
+		<label>Maintained CCO (Deprecated)</label>
+		<description>Maintained Contact Closure Output (Deprecated)</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
