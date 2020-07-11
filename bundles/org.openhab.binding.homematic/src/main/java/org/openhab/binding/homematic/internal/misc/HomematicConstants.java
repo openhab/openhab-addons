@@ -40,6 +40,7 @@ public class HomematicConstants {
     public static final String CHANNEL_TYPE_RAINDETECTOR = "RAINDETECTOR";
     public static final String CHANNEL_TYPE_POWERMETER = "POWERMETER";
     public static final String CHANNEL_TYPE_SHUTTER_CONTACT = "SHUTTER_CONTACT";
+    public static final String CHANNEL_TYPE_TILT_SENSOR = "TILT_SENSOR";
     public static final String CHANNEL_TYPE_SENSOR = "SENSOR";
     public static final String CHANNEL_TYPE_BLIND = "BLIND";
     public static final String CHANNEL_TYPE_WINMATIC = "WINMATIC";

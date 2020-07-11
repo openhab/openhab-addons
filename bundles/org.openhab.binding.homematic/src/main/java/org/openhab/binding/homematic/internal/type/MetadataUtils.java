@@ -277,7 +277,8 @@ public class MetadataUtils {
 
         if (dp.isBooleanType()) {
             if (((dpName.equals(DATAPOINT_NAME_STATE) || dpName.equals(VIRTUAL_DATAPOINT_NAME_STATE_CONTACT))
-                    && channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT))
+                    && (channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT)
+                            || channelType.contentEquals(CHANNEL_TYPE_TILT_SENSOR)))
                     || (dpName.equals(DATAPOINT_NAME_SENSOR) && channelType.equals(CHANNEL_TYPE_SENSOR))) {
                 return ITEM_TYPE_CONTACT;
             } else {
