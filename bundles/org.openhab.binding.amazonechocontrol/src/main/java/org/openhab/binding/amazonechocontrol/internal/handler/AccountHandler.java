@@ -791,7 +791,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     break;
                 default:
                     String payload = pushCommand.payload;
-                    if (payload != null && !payload.isEmpty() && payload.startsWith("{") && payload.endsWith("}")) {
+                    if (payload != null && payload.startsWith("{") && payload.endsWith("}")) {
                         JsonCommandPayloadPushDevice devicePayload = gson.fromJson(payload,
                                 JsonCommandPayloadPushDevice.class);
                         @Nullable

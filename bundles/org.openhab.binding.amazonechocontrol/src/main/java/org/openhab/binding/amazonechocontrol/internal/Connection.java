@@ -1465,7 +1465,7 @@ public class Connection {
         for (int i = 0; i < devices.length; i++) {
             final Device device = devices[i];
             if (textToSpeechQueue.stream().noneMatch(t -> t.devices.contains(device))
-                    || announcementQueue.stream().noneMatch(t -> t.devices.contains(device))) {
+                    && announcementQueue.stream().noneMatch(t -> t.devices.contains(device))) {
                 if (ttsVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
                     Map<String, Object> volumeParameters = new HashMap<>();
                     volumeParameters.put("value", standardVolumes[i]);
@@ -1512,7 +1512,7 @@ public class Connection {
 
                 makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
             } catch (IOException | URISyntaxException e) {
-                logger.error("send textToSpeech fails with unexpected error", e);
+                logger.warn("send textToSpeech fails with unexpected error", e);
             } finally {
                 sequenceNodeSenderUnblockFuture = scheduler.schedule(this::queuedExecuteSequenceNode, 3,
                         TimeUnit.SECONDS);
@@ -1822,7 +1822,7 @@ public class Connection {
     }
 
     @NonNullByDefault
-    private class Announcement {
+    private static class Announcement {
         public List<Device> devices = new ArrayList<>();
         public String speak;
         public String bodyText;
@@ -1837,8 +1837,9 @@ public class Connection {
         }
     }
 
-    private class TextToSpeech {
-        public List<JsonDevices.Device> devices = new ArrayList<>();
+    @NonNullByDefault
+    private static class TextToSpeech {
+        public List<Device> devices = new ArrayList<>();
         public String text;
         public List<Integer> ttsVolumes = new ArrayList<>();
         public List<Integer> standardVolumes = new ArrayList<>();
