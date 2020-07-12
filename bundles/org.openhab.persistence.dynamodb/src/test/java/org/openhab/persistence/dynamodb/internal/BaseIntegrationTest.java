@@ -195,7 +195,10 @@ public class BaseIntegrationTest {
         }
 
         service.activate(null, config);
+        clearData();
+    }
 
+    protected static void clearData() {
         // Clear data
         for (String table : new String[] { "dynamodb-integration-tests-bigdecimal",
                 "dynamodb-integration-tests-string" }) {
@@ -203,6 +206,8 @@ public class BaseIntegrationTest {
                 service.getDb().getDynamoClient().deleteTable(table);
                 service.getDb().getDynamoDB().getTable(table).waitForDelete();
             } catch (ResourceNotFoundException e) {
+            } catch (InterruptedException e) {
+                LOGGER.warn("Interrupted! Table might not have been deleted");
             }
         }
     }
