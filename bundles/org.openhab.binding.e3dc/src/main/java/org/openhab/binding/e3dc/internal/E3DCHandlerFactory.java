@@ -19,10 +19,17 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.ModbusManager;
+import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
+import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link E3DCHandlerFactory} is responsible for creating things and thing
@@ -33,8 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.e3dc", service = ThingHandlerFactory.class)
 public class E3DCHandlerFactory extends BaseThingHandlerFactory {
-
-    private ModbusManager manager;
+    private final Logger logger = LoggerFactory.getLogger(E3DCHandlerFactory.class);
 
     /**
      * This factory needs a reference to the ModbusManager wich is provided
@@ -45,7 +51,13 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
      */
     @Activate
     public E3DCHandlerFactory(@Reference ModbusManager manager) {
-        this.manager = manager;
+        logger.info("E3DC Info Handler created: Manager {}, Factory ", manager);
+        ModbusTCPSlaveEndpoint slaveEndpoint = new ModbusTCPSlaveEndpoint("192.168.178.56", 502);
+        EndpointPoolConfiguration epc = manager.getEndpointPoolConfiguration(slaveEndpoint);
+        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(1,
+                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 104, 3);
+        BasicPollTaskImpl poller = new BasicPollTaskImpl(slaveEndpoint, request, new E3DCCallback());
+        manager.submitOneTimePoll(poller);
     }
 
     @Override
@@ -64,7 +76,7 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (E3DCBindingConstants.THING_TYPE_E3DC_INFO.equals(thingTypeUID)) {
-            return new E3DCInfoHandler(thing, manager);
+            // return new E3DCInfoHandler(thing, manager);
         }
 
         return null;
