@@ -339,13 +339,13 @@ public class CaddxCommunicator implements SerialPortEventListener {
     private int readAsciiByte(InputStream stream) throws IOException {
         if (!haveFirstByte) { // this is the 1st digit
             int b = readByte(in);
-            tempAsciiByte = (b >= 0x30 && b <= 0x39) ? (b - 0x30) : (b - 0x37) * 0x10;
+            tempAsciiByte = (b >= 0x30 && b <= 0x39) ? (b - 0x30) * 0x10 : (b - 0x37) * 0x10;
             haveFirstByte = true;
         }
 
         if (haveFirstByte) { // this is the 2nd digit
             int b = readByte(in);
-            tempAsciiByte = (b >= 0x30 && b <= 0x39) ? (b - 0x30) : (b - 0x37);
+            tempAsciiByte += (b >= 0x30 && b <= 0x39) ? (b - 0x30) : (b - 0x37);
             haveFirstByte = false;
         }
 
