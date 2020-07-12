@@ -14,39 +14,18 @@ package org.openhab.binding.lutron.internal.config;
 
 import java.math.BigDecimal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration settings for a {@link org.openhab.binding.lutron.internal.handler.DimmerHandler}.
  *
  * @author Allan Tong - Initial contribution
  */
+@NonNullByDefault
 public class DimmerConfig {
     private static final int DEFAULT_FADE = 1;
 
-    private int integrationId;
-    private BigDecimal fadeInTime = new BigDecimal(DEFAULT_FADE);
-    private BigDecimal fadeOutTime = new BigDecimal(DEFAULT_FADE);
-
-    public int getIntegrationId() {
-        return this.integrationId;
-    }
-
-    public void setIntegrationId(int integrationId) {
-        this.integrationId = integrationId;
-    }
-
-    public BigDecimal getFadeInTime() {
-        return this.fadeInTime;
-    }
-
-    public void setFadeInTime(BigDecimal fadeInTime) {
-        this.fadeInTime = fadeInTime;
-    }
-
-    public BigDecimal getFadeOutTime() {
-        return this.fadeOutTime;
-    }
-
-    public void setFadeOutTime(BigDecimal fadeOutTime) {
-        this.fadeOutTime = fadeOutTime;
-    }
+    public int integrationId;
+    public BigDecimal fadeInTime = new BigDecimal(DEFAULT_FADE);
+    public BigDecimal fadeOutTime = new BigDecimal(DEFAULT_FADE);
 }

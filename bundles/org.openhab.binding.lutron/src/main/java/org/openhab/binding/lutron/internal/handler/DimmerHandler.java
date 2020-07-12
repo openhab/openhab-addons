@@ -48,17 +48,17 @@ public class DimmerHandler extends LutronHandler {
 
     @Override
     public int getIntegrationId() {
-        if (this.config == null) {
+        if (config == null) {
             throw new IllegalStateException("handler not initialized");
         }
 
-        return this.config.getIntegrationId();
+        return config.integrationId;
     }
 
     @Override
     public void initialize() {
         config = getThing().getConfiguration().as(DimmerConfig.class);
-        if (config.getIntegrationId() <= 0) {
+        if (config.integrationId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;
         }
@@ -97,9 +97,9 @@ public class DimmerHandler extends LutronHandler {
 
                 output(ACTION_ZONELEVEL, level, 0.25);
             } else if (command.equals(OnOffType.ON)) {
-                output(ACTION_ZONELEVEL, 100, this.config.getFadeInTime());
+                output(ACTION_ZONELEVEL, 100, this.config.fadeInTime);
             } else if (command.equals(OnOffType.OFF)) {
-                output(ACTION_ZONELEVEL, 0, this.config.getFadeOutTime());
+                output(ACTION_ZONELEVEL, 0, this.config.fadeOutTime);
             }
         }
     }
