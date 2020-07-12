@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -81,18 +82,23 @@ public class ValloxMVWebSocket {
     }
 
     public void request(ChannelUID channelUID, String updateState) {
+        Future<?> sessionFuture = null;
         try {
             socket = new ValloxMVWebSocketListener(channelUID, updateState);
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
             logger.debug("Connecting to: {}", destUri);
-            client.connect(socket, destUri, request);
+            sessionFuture = client.connect(socket, destUri, request);
             socket.awaitClose(2, TimeUnit.SECONDS);
         } catch (InterruptedException | IOException e) {
             connectionError(e);
         } catch (Exception e) {
             logger.debug("Unexpected error");
             connectionError(e);
+        } finally {
+            if (sessionFuture != null && !sessionFuture.isDone()) {
+                sessionFuture.cancel(true);
+            }
         }
     }
 
