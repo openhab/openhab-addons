@@ -18,8 +18,7 @@
 	<channel-type id="shutter">
 		<item-type>Rollershutter</item-type>
 		<label>Shutter</label>
-		<description>The Shutter channel allows control shutters
-		</description>
-		<category>Device control (UP, DOWN, STOP, CLOSE 0-100%)</category>
+		<description>The Shutter channel allows control shutters</description>
+		<category>Blinds</category>
 	</channel-type>
 </thing:thing-descriptions>
