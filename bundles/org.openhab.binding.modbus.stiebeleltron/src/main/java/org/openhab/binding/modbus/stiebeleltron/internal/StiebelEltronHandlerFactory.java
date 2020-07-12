@@ -25,10 +25,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.modbus.stiebeleltron.internal.handler.StiebelEltronHandler;
-import org.openhab.io.transport.modbus.ModbusManager;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link Modbus.StiebelEltronHandlerFactory} is responsible for creating things and thing
@@ -40,21 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.stiebeleltron", service = ThingHandlerFactory.class)
 public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
-    private ModbusManager manager;
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_HEATPUMP);
-
-    /**
-     * This factory needs a reference to the ModbusManager wich is provided
-     * by the org.openhab.io.transport.modbus bundle. Please make
-     * sure it's installed and enabled before using this bundle
-     *
-     * @param manager reference to the ModbusManager. We use this for modbus communication
-     */
-    @Activate
-    public StiebelEltronHandlerFactory(@Reference ModbusManager manager) {
-        this.manager = manager;
-    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -66,7 +49,7 @@ public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_HEATPUMP.equals(thingTypeUID)) {
-            return new StiebelEltronHandler(thing, manager);
+            return new StiebelEltronHandler(thing);
         }
 
         return null;

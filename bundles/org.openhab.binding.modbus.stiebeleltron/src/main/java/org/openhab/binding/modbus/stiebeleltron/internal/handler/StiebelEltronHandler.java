@@ -48,24 +48,15 @@ import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParse
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInfromationBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
-import org.openhab.io.transport.modbus.BasicWriteTask;
-import org.openhab.io.transport.modbus.BitArray;
-import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.ModbusReadCallback;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusResponse;
-import org.openhab.io.transport.modbus.ModbusWriteCallback;
+import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,9 +80,11 @@ public class StiebelEltronHandler extends BaseThingHandler {
             if (task == null) {
                 return;
             }
-            logger.debug("Unregistering polling from ModbusManager");
-            StiebelEltronHandler.this.modbusManager.unregisterRegularPoll(task);
 
+            ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
+            if (mycomms != null) {
+                mycomms.unregisterRegularPoll(task);
+            }
             pollTask = null;
         }
 
@@ -102,54 +95,31 @@ public class StiebelEltronHandler extends BaseThingHandler {
 
             logger.debug("Setting up regular polling");
 
-            ModbusSlaveEndpoint myendpoint = StiebelEltronHandler.this.endpoint;
+            ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
             StiebelEltronConfiguration myconfig = StiebelEltronHandler.this.config;
-            if (myconfig == null || myendpoint == null) {
+            if (myconfig == null || mycomms == null) {
                 throw new IllegalStateException("registerPollTask called without proper configuration");
             }
 
-            BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(getSlaveId(),
+            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
                     readFunctionCode, address, length, myconfig.getMaxTries());
 
-            pollTask = new BasicPollTaskImpl(myendpoint, request, new ModbusReadCallback() {
-
-                @Override
-                public void onRegisters(@Nullable ModbusReadRequestBlueprint request,
-                        @Nullable ModbusRegisterArray registers) {
-                    if (registers == null) {
-                        logger.warn("Received empty register array on poll");
-                        return;
-                    }
-                    handlePolledData(registers);
-
-                    if (StiebelEltronHandler.this.getThing().getStatus() != ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                }
-
-                @Override
-                public void onError(@Nullable ModbusReadRequestBlueprint request, @Nullable Exception error) {
-                    StiebelEltronHandler.this.handleError(error);
-                }
-
-                @Override
-                public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                    // don't care, we don't expect this result
-                }
-            });
 
             long refreshMillis = myconfig.getRefreshMillis();
 
-            PollTask task = pollTask;
-            if (task != null) {
-                StiebelEltronHandler.this.modbusManager.registerRegularPoll(task, refreshMillis, 1000);
-            }
+            pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
+                result.getRegisters().ifPresent(this::handlePolledData);
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            }, failure -> {StiebelEltronHandler.this.handleReadError(failure);});
         }
 
         public synchronized void poll() {
             PollTask task = pollTask;
-            if (task != null) {
-                StiebelEltronHandler.this.modbusManager.submitOneTimePoll(task);
+            ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
+            if (task != null && mycomms != null) {
+                mycomms.submitOneTimePoll(task.getRequest(), task.getResultCallback(), task.getFailureCallback());
             }
         }
 
@@ -198,9 +168,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
      */
     private volatile @Nullable AbstractBasePoller systemParameterPoller = null;
     /**
-     * This is the slave endpoint we're connecting to
+     * Communication interface to the slave endpoint we're connecting to
      */
-    protected volatile @Nullable ModbusSlaveEndpoint endpoint = null;
+    protected volatile @Nullable ModbusCommunicationInterface comms = null;
 
     /**
      * This is the slave id, we store this once initialization is complete
@@ -208,19 +178,13 @@ public class StiebelEltronHandler extends BaseThingHandler {
     private volatile int slaveId;
 
     /**
-     * Reference to the modbus manager
-     */
-    protected ModbusManager modbusManager;
-
-    /**
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
      * @param modbusManager the modbus manager
      */
-    public StiebelEltronHandler(Thing thing, ModbusManager modbusManager) {
+    public StiebelEltronHandler(Thing thing) {
         super(thing);
-        this.modbusManager = modbusManager;
     }
 
     /**
@@ -229,41 +193,28 @@ public class StiebelEltronHandler extends BaseThingHandler {
      */
     protected void writeInt16(int address, short shortValue) {
         StiebelEltronConfiguration myconfig = StiebelEltronHandler.this.config;
-        if (myconfig == null) {
+        ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
+
+        if (myconfig == null || mycomms == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
         }
         // big endian byte ordering
         byte b1 = (byte) (shortValue >> 8);
         byte b2 = (byte) shortValue;
 
-        ModbusRegister register = new BasicModbusRegister(b1, b2);
-        ModbusRegisterArray data = new BasicModbusRegisterArray(new ModbusRegister[] { register });
+        ModbusRegister register = new ModbusRegister(b1, b2);
+        ModbusRegisterArray data = new ModbusRegisterArray(new ModbusRegister[] { register });
 
-        BasicModbusWriteRegisterRequestBlueprint request = new BasicModbusWriteRegisterRequestBlueprint(slaveId,
+        ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(slaveId,
                 address, data, false, myconfig.getMaxTries());
 
-        ModbusSlaveEndpoint slaveEndpoint = this.endpoint;
-        if (slaveEndpoint == null) {
-            return;
-        }
-
-        BasicWriteTask writeTask = new BasicWriteTask(slaveEndpoint, request, new ModbusWriteCallback() {
-            @Override
-            public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
-                if (hasConfigurationError()) {
-                    return;
-                }
-                logger.debug("Successful write, matching request {}", request);
-                StiebelEltronHandler.this.updateStatus(ThingStatus.ONLINE);
+        mycomms.submitOneTimeWrite(request, result -> {
+            if (hasConfigurationError()) {
+                return;
             }
-
-            @Override
-            public void onError(ModbusWriteRequestBlueprint request, Exception error) {
-                StiebelEltronHandler.this.handleError(error);
-            }
-        });
-        logger.trace("Submitting write task: {}", writeTask);
-        modbusManager.submitOneTimeWrite(writeTask);
+            logger.debug("Successful write, matching request {}", request);
+            StiebelEltronHandler.this.updateStatus(ThingStatus.ONLINE);
+        }, failure -> {StiebelEltronHandler.this.handleWriteError(failure);});
     }
 
     /**
@@ -350,8 +301,16 @@ public class StiebelEltronHandler extends BaseThingHandler {
                             break;
                     }
                 }
-            } catch (StiebelEltronException e) {
-                handleError(e);
+            } catch (StiebelEltronException error) {
+                if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
+                    return;
+                }
+                String msg = "";
+                String cls = "";
+                cls = error.getClass().getName();
+                msg = error.getMessage();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("Error with: %s: %s", cls, msg));
             }
         }
     }
@@ -374,7 +333,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      */
     private void startUp() {
 
-        if (endpoint != null) {
+        if (comms != null) {
             return;
         }
 
@@ -387,12 +346,12 @@ public class StiebelEltronHandler extends BaseThingHandler {
         try {
             slaveId = slaveEndpointThingHandler.getSlaveId();
 
-            endpoint = slaveEndpointThingHandler.asSlaveEndpoint();
+            comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
             // this will be handled below as endpoint remains null
         }
 
-        if (endpoint == null) {
+        if (comms == null) {
             @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -401,7 +360,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
         }
 
         if (config == null) {
-            logger.debug("Invalid endpoint/config/manager ref for stiebel eltron handler");
+            logger.debug("Invalid comms/config/manager ref for stiebel eltron handler");
             return;
         }
 
@@ -492,7 +451,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
             systemParameterPoller = null;
         }
 
-        endpoint = null;
+        comms = null;
     }
 
     /**
@@ -693,20 +652,31 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Handle errors received during communication
      */
-    protected void handleError(@Nullable Exception error) {
+    protected void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
         // Ignore all incoming data and errors if configuration is not correct
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = "";
-        String cls = "";
-        if (error != null) {
-            cls = error.getClass().getName();
-            msg = error.getMessage();
-        }
+        String msg = failure.getCause().getMessage();
+        String cls = failure.getCause().getClass().getName();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 String.format("Error with read: %s: %s", cls, msg));
     }
+
+    /**
+     * Handle errors received during communication
+     */
+    protected void handleWriteError(AsyncModbusFailure<ModbusWriteRequestBlueprint> failure) {
+        // Ignore all incoming data and errors if configuration is not correct
+        if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
+            return;
+        }
+        String msg = failure.getCause().getMessage();
+        String cls = failure.getCause().getClass().getName();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                String.format("Error with write: %s: %s", cls, msg));
+    }
+
 
     /**
      * Returns true, if we're in a CONFIGURATION_ERROR state
