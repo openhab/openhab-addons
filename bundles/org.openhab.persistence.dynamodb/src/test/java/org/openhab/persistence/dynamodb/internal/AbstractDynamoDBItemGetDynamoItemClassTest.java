@@ -25,6 +25,7 @@ import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
@@ -75,6 +76,11 @@ public class AbstractDynamoDBItemGetDynamoItemClassTest {
     @Test
     public void testDimmerItem() throws IOException {
         assertEquals(DynamoDBBigDecimalItem.class, AbstractDynamoDBItem.getDynamoItemClass(DimmerItem.class));
+    }
+
+    @Test
+    public void testPlayerItem() throws IOException {
+        assertEquals(DynamoDBStringItem.class, AbstractDynamoDBItem.getDynamoItemClass(PlayerItem.class));
     }
 
     @Test
