@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class E3DCInfoHandler extends BaseBridgeHandler {
+public class E3DCInfoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(E3DCInfoHandler.class);
 
@@ -42,6 +42,7 @@ public class E3DCInfoHandler extends BaseBridgeHandler {
 
     public E3DCInfoHandler(Thing thing, ModbusManager manager) {
         super(thing);
+        logger.info("Modbus Manager: {}", manager);
         this.manager = manager;
     }
 
