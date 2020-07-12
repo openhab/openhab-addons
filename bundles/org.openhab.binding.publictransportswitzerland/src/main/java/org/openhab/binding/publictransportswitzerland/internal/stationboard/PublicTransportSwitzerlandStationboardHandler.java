@@ -81,7 +81,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     public void initialize() {
         PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
 
-        cache = new ExpiringCache<>(60_000, this::updateData);
+        // Together with the 10 second timeout, this should be less than a minute
+        cache = new ExpiringCache<>(45_000, this::updateData);
 
         if (config.station == null || config.station.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -97,7 +98,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     private void startChannelUpdate() {
-        updateChannelsJob = scheduler.scheduleWithFixedDelay(this::updateChannels, 0, 10, TimeUnit.SECONDS);
+        updateChannelsJob = scheduler.scheduleWithFixedDelay(this::updateChannels, 0, 60, TimeUnit.SECONDS);
     }
 
     private void stopChannelUpdate() {
