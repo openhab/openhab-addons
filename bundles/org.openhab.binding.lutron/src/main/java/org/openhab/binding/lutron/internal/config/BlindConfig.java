@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.lutron.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Configuration settings for an {@link org.openhab.binding.lutron.internal.handler.BlindHandler}.
  *
  * @author Bob Adair - Initial contribution
  */
+@NonNullByDefault
 public class BlindConfig {
     public int integrationId = 0;
-    public String type;
+    public @Nullable String type;
 }
