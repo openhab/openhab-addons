@@ -46,8 +46,8 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl impl
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         final String invertedConfig = getAccessoryConfiguration(HomekitTaggedItem.INVERTED, "true");
         inverted = invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
-        closedPosition=inverted?0:100;
-        openPosition=inverted?100:0;
+        closedPosition = inverted ? 0 : 100;
+        openPosition = inverted ? 100 : 0;
         this.getServices().add(new WindowCoveringService(this));
     }
 
@@ -68,7 +68,8 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl impl
 
     @Override
     public CompletableFuture<Void> setTargetPosition(int value) {
-        getItem(TARGET_POSITION, RollershutterItem.class).ifPresent(item -> item.send(new PercentType(convertPosition(value))));
+        getItem(TARGET_POSITION, RollershutterItem.class)
+                .ifPresent(item -> item.send(new PercentType(convertPosition(value))));
         return CompletableFuture.completedFuture(null);
     }
 
@@ -107,14 +108,18 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl impl
      * - completely open if position is 0%,
      * - completely closed if position is 100%.
      * HomeKit mapping has inverted mapping
-     * From Specification: "For blinds/shades/awnings, a value of 0 indicates a position that permits the least light and a value
+     * From Specification: "For blinds/shades/awnings, a value of 0 indicates a position that permits the least light
+     * and a value
      * of 100 indicates a position that allows most light.", i.e.
      * HomeKit Blinds is
      * - completely open if position is 100%,
      * - completely closed if position is 0%.
      *
-     * As openHAB rollershutter item is typically used for window covering, the binding has by default inverting mapping.
-     * One can override this default behaviour with inverted="false/no" flag. in this cases, openHAB item value will be sent to HomeKit with no changes.
+     * As openHAB rollershutter item is typically used for window covering, the binding has by default inverting
+     * mapping.
+     * One can override this default behaviour with inverted="false/no" flag. in this cases, openHAB item value will be
+     * sent to HomeKit with no changes.
+     * 
      * @param value source value
      * @return target value
      */
@@ -124,6 +129,6 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl impl
 
     private int convertPositionState(HomekitCharacteristicType type) {
         final @Nullable DecimalType value = getStateAs(type, PercentType.class);
-        return value != null ? convertPosition(value.intValue()): closedPosition;
+        return value != null ? convertPosition(value.intValue()) : closedPosition;
     }
 }

@@ -405,9 +405,9 @@ Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCo
 Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
 
-# Accessory Configuration Details
+## Accessory Configuration Details
 
-## Dimmers
+### Dimmers
 
 The way HomeKit handles dimmer devices can be different to the actual dimmers' way of working.
 HomeKit home app sends following commands/update:
@@ -437,7 +437,7 @@ Following modes are supported:
  Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
  Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
  ```
-## Windows Covering / Blinds
+### Windows Covering / Blinds
 
 HomeKit Windows Covering accessory type has following mandatory characteristics: 
 
@@ -453,7 +453,7 @@ Rollershutter   window_covering         "Window Rollershutter"      {homekit = "
 Rollershutter 	window_covering_long 	"Window Rollershutter long" {homekit = "WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
  ```
 
-By openHAB Rollershutter is defined by default as:
+openHAB Rollershutter is defined by default as:
 
 - OPEN if position is 0%,
 - CLOSED if position is 100%.
@@ -480,7 +480,7 @@ Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)
 Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)        {homekit = "WindowCovering.CurrentVerticalTiltAngle, WindowCovering.TargetVerticalTiltAngle"}
  ```
 
-## Valve
+### Valve
 
 The HomeKit valve accessory supports following 2 optional characteristics:
 
