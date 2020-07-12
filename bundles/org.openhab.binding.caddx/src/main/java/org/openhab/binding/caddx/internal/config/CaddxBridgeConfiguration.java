@@ -37,23 +37,11 @@ public class CaddxBridgeConfiguration {
         return protocol;
     }
 
-    public void setProtocol(CaddxProtocol protocol) {
-        this.protocol = protocol;
-    }
-
     public String getSerialPort() {
         return serialPort;
     }
 
-    public void setSerialPort(String serialPort) {
-        this.serialPort = serialPort;
-    }
-
     public int getBaudrate() {
         return baudrate;
-    }
-
-    public void setBaudrate(int baudrate) {
-        this.baudrate = baudrate;
     }
 }

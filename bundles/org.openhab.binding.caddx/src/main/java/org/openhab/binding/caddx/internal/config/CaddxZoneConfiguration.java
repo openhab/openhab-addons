@@ -34,8 +34,4 @@ public class CaddxZoneConfiguration {
     public int getZoneNumber() {
         return zoneNumber;
     }
-
-    public void setZoneNumber(int zoneNumber) {
-        this.zoneNumber = zoneNumber;
-    }
 }

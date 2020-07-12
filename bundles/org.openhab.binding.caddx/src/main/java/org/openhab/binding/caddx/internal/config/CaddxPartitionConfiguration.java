@@ -39,15 +39,7 @@ public class CaddxPartitionConfiguration {
         return partitionNumber;
     }
 
-    public void setPartitionNumber(int partitionNumber) {
-        this.partitionNumber = partitionNumber;
-    }
-
     public int getUserNumber() {
         return userNumber;
-    }
-
-    public void setUserNumber(int userNumber) {
-        this.userNumber = userNumber;
     }
 }

@@ -31,8 +31,4 @@ public class CaddxKeypadConfiguration {
     public int getKeypadAddress() {
         return keypadAddress;
     }
-
-    public void setKeypadAddress(int keypadAddress) {
-        this.keypadAddress = keypadAddress;
-    }
 }
