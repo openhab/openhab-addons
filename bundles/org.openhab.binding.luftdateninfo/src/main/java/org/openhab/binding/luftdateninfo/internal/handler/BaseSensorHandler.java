@@ -86,45 +86,62 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        ScheduledFuture<?> localRefreshJob = refreshJob;
         lifecycleStatus = LifecycleStatus.INITIALIZING;
         scheduler.execute(() -> {
-            config = getConfigAs(LuftdatenInfoConfiguration.class);
-            configStatus = checkConfig(config);
-            if (configStatus == ConfigStatus.OK) {
-                update();
-                if (updateStatus == UpdateStatus.OK) {
-                    updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Start refresh job at interval {} min.", REFRESH_INTERVAL_MIN);
-                    if (localRefreshJob != null) {
-                        localRefreshJob.cancel(true);
-                    }
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::update, 5, REFRESH_INTERVAL_MIN,
-                            TimeUnit.MINUTES);
-                } else {
-                    switch (updateStatus) {
-                        case CONNECTION_ERROR:
-                            logger.warn("Update failed due to Connection error. Trying to recover in next refresh");
-                            break;
-                        case VALUE_ERROR:
-                            logger.warn(
-                                    "Sensor values doesn't match - please check if Sensor ID is delivering the correct Thing channel values");
-                            break;
-                        case VALUE_EMPTY:
-                            logger.warn(
-                                    "No values deliverd by Sensor. Please check for valid Sensor ID in configuration");
-                            break;
-                        default:
-                            break;
-                    }
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            } else {
-                logger.warn("Configuration not valid. Sensor ID as a number is mandatory!");
-                updateStatus(ThingStatus.OFFLINE);
-            }
-            lifecycleStatus = LifecycleStatus.RUNNING;
+            startUp();
         });
+    }
+
+    private void startUp() {
+        config = getConfigAs(LuftdatenInfoConfiguration.class);
+        configStatus = checkConfig(config);
+        if (configStatus == ConfigStatus.OK) {
+            update();
+            if (updateStatus == UpdateStatus.OK) {
+                updateStatus(ThingStatus.ONLINE);
+                logger.debug("Start refresh job at interval {} min.", REFRESH_INTERVAL_MIN);
+                startSchedule();
+            } else {
+                switch (updateStatus) {
+                    case CONNECTION_ERROR:
+                        logger.warn("Update failed due to Connection error. Trying to recover in next refresh");
+                        // start job even if first update isn't valid
+                        startSchedule();
+                        updateStatus(ThingStatus.OFFLINE);
+                        break;
+                    case VALUE_EMPTY:
+                        logger.warn("No values deliverd by Sensor.  Trying to recover in next refresh");
+                        // start job even if first update isn't valid
+                        startSchedule();
+                        updateStatus(ThingStatus.ONLINE);
+                        break;
+                    case VALUE_ERROR:
+                        logger.warn(
+                                "Sensor values doesn't match - please check if Sensor ID is delivering the correct Thing channel values");
+                        updateStatus(ThingStatus.OFFLINE);
+                        break;
+                    default:
+                        logger.warn("Error during update - please check your config data");
+                        updateStatus(ThingStatus.OFFLINE);
+                        break;
+                }
+            }
+        } else {
+            logger.warn("Configuration not valid. Sensor ID as a number is mandatory!");
+            updateStatus(ThingStatus.OFFLINE);
+        }
+        lifecycleStatus = LifecycleStatus.RUNNING;
+    }
+
+    private void startSchedule() {
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null) {
+            if (localRefreshJob.isCancelled()) {
+                refreshJob = scheduler.scheduleWithFixedDelay(this::update, 5, REFRESH_INTERVAL_MIN, TimeUnit.MINUTES);
+            } // else - scheduler is already running!
+        } else {
+            refreshJob = scheduler.scheduleWithFixedDelay(this::update, 5, REFRESH_INTERVAL_MIN, TimeUnit.MINUTES);
+        }
     }
 
     @Override
