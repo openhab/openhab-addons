@@ -32,6 +32,7 @@ public class NetatmoBridgeConfiguration {
     public boolean readHealthyHomeCoach = false;
     public boolean readWelcome = false;
     public boolean readPresence = false;
+    public boolean includeFavoriteStations = false;
     public @Nullable String webHookUrl;
     public int reconnectInterval = 5400;
 }
