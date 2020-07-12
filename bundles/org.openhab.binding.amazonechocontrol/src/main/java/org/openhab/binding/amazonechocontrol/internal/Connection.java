@@ -1295,7 +1295,7 @@ public class Connection {
 
     public synchronized void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
-        if (speak.replaceAll("<.+?>", "").trim().isEmpty() || ttsVolume == null || standardVolume == null) {
+        if (speak == null || speak.replaceAll("<.+?>", "").trim().isEmpty()) {
             return;
         }
         if (announcementTimer != null) {
@@ -1329,8 +1329,8 @@ public class Connection {
                     String speak = announcement.speak;
                     String bodyText = announcement.bodyText;
                     String title = announcement.title;
-                    List<Integer> ttsVolumes = announcement.ttsVolumes;
-                    List<Integer> standardVolumes = announcement.standardVolumes;
+                    List<@Nullable Integer> ttsVolumes = announcement.ttsVolumes;
+                    List<@Nullable Integer> standardVolumes = announcement.standardVolumes;
 
                     Map<String, Object> parameters = new HashMap<>();
                     parameters.put("expireAfter", "PT5S");
@@ -1379,8 +1379,7 @@ public class Connection {
 
     public synchronized void textToSpeech(Device device, String text, @Nullable Integer ttsVolume,
             @Nullable Integer standardVolume) {
-        if (text == null || text.replaceAll("<.+?>", "").trim().isEmpty() || ttsVolume == null
-                || standardVolume == null) {
+        if (text == null || text.replaceAll("<.+?>", "").trim().isEmpty()) {
             return;
         }
         if (textToSpeechTimer != null) {
@@ -1412,8 +1411,8 @@ public class Connection {
                 List<Device> devices = textToSpeech.devices;
                 if (devices != null && !devices.isEmpty()) {
                     String text = textToSpeech.text;
-                    List<Integer> ttsVolumes = textToSpeech.ttsVolumes;
-                    List<Integer> standardVolumes = textToSpeech.standardVolumes;
+                    List<@Nullable Integer> ttsVolumes = textToSpeech.ttsVolumes;
+                    List<@Nullable Integer> standardVolumes = textToSpeech.standardVolumes;
 
                     Map<String, Object> parameters = new HashMap<>();
                     parameters.put("textToSpeak", text);
@@ -1436,7 +1435,7 @@ public class Connection {
             throws IOException, URISyntaxException {
         JsonArray ttsVolumeNodesToExecute = new JsonArray();
         for (int i = 0; i < devices.length; i++) {
-            if (ttsVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
+            if (ttsVolumes[i] != null && standardVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
                 Map<String, Object> volumeParameters = new HashMap<>();
                 volumeParameters.put("value", ttsVolumes[i]);
                 ttsVolumeNodesToExecute
@@ -1464,7 +1463,7 @@ public class Connection {
             final Device device = devices[i];
             if (textToSpeechQueue.stream().noneMatch(t -> t.devices.contains(device))
                     && announcementQueue.stream().noneMatch(t -> t.devices.contains(device))) {
-                if (ttsVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
+                if (ttsVolumes[i] != null && standardVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
                     Map<String, Object> volumeParameters = new HashMap<>();
                     volumeParameters.put("value", standardVolumes[i]);
                     standardVolumeNodesToExecute
@@ -1862,8 +1861,8 @@ public class Connection {
         public String speak;
         public String bodyText;
         public @Nullable String title;
-        public List<Integer> ttsVolumes = new ArrayList<>();
-        public List<Integer> standardVolumes = new ArrayList<>();
+        public List<@Nullable Integer> ttsVolumes = new ArrayList<>();
+        public List<@Nullable Integer> standardVolumes = new ArrayList<>();
 
         public Announcement(String speak, String bodyText, @Nullable String title) {
             this.speak = speak;
@@ -1876,8 +1875,8 @@ public class Connection {
     private static class TextToSpeech {
         public List<Device> devices = new ArrayList<>();
         public String text;
-        public List<Integer> ttsVolumes = new ArrayList<>();
-        public List<Integer> standardVolumes = new ArrayList<>();
+        public List<@Nullable Integer> ttsVolumes = new ArrayList<>();
+        public List<@Nullable Integer> standardVolumes = new ArrayList<>();
 
         public TextToSpeech(String text) {
             this.text = text;
