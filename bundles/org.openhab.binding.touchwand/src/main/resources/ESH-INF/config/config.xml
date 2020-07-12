@@ -43,7 +43,7 @@
 			<label>Refresh</label>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="addsecondaryunits" type="boolean">
+		<parameter name="addSecondaryUnits" type="boolean">
 			<required>false</required>
 			<default>false</default>
 			<description>if the controller is primary , add seconaries unit as well</description>

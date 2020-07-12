@@ -53,7 +53,7 @@ public class TouchWandBindingConstants {
     public static final String USER = "username";
     public static final String PASS = "password";
     public static final String STATUS_REFRESH_TIME = "statusrefresh";
-    public static final String ADD_SECONDARY_UNITS = "addsecondaryunits";
+    public static final String ADD_SECONDARY_UNITS = "addSecondaryUnits";
 
     // commands
     public static final String SWITCH_STATUS_ON = "255";
