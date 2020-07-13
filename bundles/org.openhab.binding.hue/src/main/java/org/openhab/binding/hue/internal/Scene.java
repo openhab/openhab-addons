@@ -143,8 +143,7 @@ public class Scene {
      */
     public boolean isApplicableTo(FullGroup group) {
         if (getGroupId() == null) {
-            return getLightIds().parallelStream()//
-                    .allMatch(id -> group.getLightIds().contains(id));
+            return getLightIds().stream().allMatch(id -> group.getLightIds().contains(id));
         } else {
             return group.getId().contentEquals(getGroupId());
         }

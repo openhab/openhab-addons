@@ -429,15 +429,11 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         if (handler != null) {
             FullGroup group = handler.getGroupById(groupId);
             if (group != null) {
-                stateOptions = updatedScenes.parallelStream()//
-                        .filter(scene -> scene.isApplicableTo(group))//
-                        .map(Scene::toStateOption)//
-                        .collect(Collectors.toList());
-
-                consoleScenesList = updatedScenes.parallelStream()//
-                        .filter(scene -> scene.isApplicableTo(group))//
-                        .map(scene -> "Id is \"" + scene.getId() + "\" for scene \"" + scene.toStateOption().getLabel()
-                                + "\"")//
+                stateOptions = updatedScenes.stream().filter(scene -> scene.isApplicableTo(group))
+                        .map(Scene::toStateOption).collect(Collectors.toList());
+                consoleScenesList = updatedScenes
+                        .stream().filter(scene -> scene.isApplicableTo(group)).map(scene -> "Id is \"" + scene.getId()
+                                + "\" for scene \"" + scene.toStateOption().getLabel() + "\"")
                         .collect(Collectors.toList());
             }
         }

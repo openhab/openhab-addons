@@ -379,18 +379,14 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         }
 
         private void setBridgeSceneChannelStateOptions(List<Scene> scenes, Map<String, @Nullable FullGroup> groups) {
-            Map<String, String> groupNames = groups.entrySet().parallelStream()
+            Map<String, String> groupNames = groups.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getName()));
-            List<StateOption> stateOptions = scenes.parallelStream()//
-                    .map(scene -> scene.toStateOption(groupNames))//
+            List<StateOption> stateOptions = scenes.stream().map(scene -> scene.toStateOption(groupNames))
                     .collect(Collectors.toList());
             stateDescriptionOptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SCENE),
                     stateOptions);
-
-            consoleScenesList = scenes.parallelStream()//
-                    .map(scene -> "Id is \"" + scene.getId() + "\" for scene \""
-                            + scene.toStateOption(groupNames).getLabel() + "\"")//
-                    .collect(Collectors.toList());
+            consoleScenesList = scenes.stream().map(scene -> "Id is \"" + scene.getId() + "\" for scene \""
+                    + scene.toStateOption(groupNames).getLabel() + "\"").collect(Collectors.toList());
         }
     };
 

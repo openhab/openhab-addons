@@ -876,7 +876,7 @@ public class HueBridge {
         handleErrors(result);
 
         Map<String, Scene> sceneMap = safeFromJson(result.getBody(), Scene.GSON_TYPE);
-        return sceneMap.entrySet().parallelStream()//
+        return sceneMap.entrySet().stream()//
                 .map(e -> {
                     e.getValue().setId(e.getKey());
                     return e.getValue();
