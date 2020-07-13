@@ -16,7 +16,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.StateOption;
 
 import com.google.gson.annotations.SerializedName;
@@ -27,16 +28,17 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Hengrui Jiang - Initial contribution
  */
+@NonNullByDefault
 public class Scene {
     public static final Type GSON_TYPE = new TypeToken<Map<String, Scene>>() {
     }.getType();
 
-    private String id;
-    private String name;
+    private @NonNullByDefault({}) String id;
+    private @NonNullByDefault({}) String name;
     @SerializedName("lights")
-    private List<String> lightIds;
+    private @NonNullByDefault({}) List<String> lightIds;
     @SerializedName("group")
-    private String groupId;
+    private @Nullable String groupId;
     private boolean recycle;
 
     /**
@@ -49,7 +51,7 @@ public class Scene {
     /**
      * Test constructor
      */
-    Scene(String id, String name, String groupId, List<String> lightIds, boolean recycle) {
+    Scene(String id, String name, @Nullable String groupId, List<String> lightIds, boolean recycle) {
         this.id = id;
         this.name = name;
         this.groupId = groupId;
@@ -57,7 +59,6 @@ public class Scene {
         this.recycle = recycle;
     }
 
-    @NonNull
     public String getId() {
         return id;
     }
@@ -72,7 +73,6 @@ public class Scene {
      *
      * @return human readable name of the scene
      */
-    @NonNull
     public String getName() {
         return name;
     }
@@ -83,7 +83,6 @@ public class Scene {
      *
      * @return list of lights that the scene applies to
      */
-    @NonNull
     public List<String> getLightIds() {
         return lightIds;
     }
@@ -94,7 +93,7 @@ public class Scene {
      *
      * @return the group that the scene belongs to
      */
-    public String getGroupId() {
+    public @Nullable String getGroupId() {
         return groupId;
     }
 
