@@ -34,7 +34,7 @@ public interface HueClient {
 
     /**
      * Register {@link HueLightDiscoveryService} to bridge handler
-     * 
+     *
      * @param listener the discovery service
      * @return {@code true} if the new discovery service is accepted
      */
@@ -42,7 +42,7 @@ public interface HueClient {
 
     /**
      * Unregister {@link HueLightDiscoveryService} from bridge handler
-     * 
+     *
      * @return {@code true} if the discovery service was removed
      */
     boolean unregisterDiscoveryListener();
@@ -99,7 +99,7 @@ public interface HueClient {
      * Get the light by its ID.
      *
      * @param lightId the light ID
-     * @return the full light representation of {@code null} if it could not be found
+     * @return the full light representation or {@code null} if it could not be found
      */
     @Nullable
     FullLight getLightById(String lightId);
@@ -108,7 +108,7 @@ public interface HueClient {
      * Get the sensor by its ID.
      *
      * @param sensorId the sensor ID
-     * @return the full sensor representation of {@code null} if it could not be found
+     * @return the full sensor representation or {@code null} if it could not be found
      */
     @Nullable
     FullSensor getSensorById(String sensorId);
@@ -117,7 +117,7 @@ public interface HueClient {
      * Get the group by its ID.
      *
      * @param groupId the group ID
-     * @return the full group representation of {@code null} if it could not be found
+     * @return the full group representation or {@code null} if it could not be found
      */
     @Nullable
     FullGroup getGroupById(String groupId);
@@ -155,4 +155,11 @@ public interface HueClient {
      * @param stateUpdate the state update
      */
     void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime);
+
+    /**
+     * Recall scene to all lights that belong to the scene.
+     *
+     * @param id the ID of the scene to be recalled
+     */
+    void recallScene(String id);
 }
