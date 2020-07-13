@@ -48,7 +48,7 @@
 		<label>Energy Information</label>
 		<channels>
 			<channel id="production-heat-today" typeId="production-heat-today-type"/>
-			<channel id="production_heat-total" typeId="production-heat-total-type"/>
+			<channel id="production-heat-total" typeId="production-heat-total-type"/>
 			<channel id="production-water-today" typeId="production-water-today-type"/>
 			<channel id="production-water-total" typeId="production-water-total-type"/>
 			<channel id="consumption-heat-today" typeId="consumption-heat-today-type"/>

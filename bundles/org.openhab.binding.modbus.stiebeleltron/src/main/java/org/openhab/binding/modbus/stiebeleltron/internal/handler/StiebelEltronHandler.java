@@ -499,7 +499,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @return the scaled value as a DecimalType
      */
     protected State getScaled(Number value, Unit<?> unit) {
-        return QuantityType.valueOf(value.doubleValue(), unit);
+        return QuantityType.valueOf(value.doubleValue() / 10, unit);
     }
 
     /**
@@ -511,7 +511,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      */
     protected State getEnergyQuantity(int high, int low) {
         double value = high * 1000 + low;
-        return new QuantityType<>(value, KILOWATT_HOUR);
+        return QuantityType.valueOf(value, KILOWATT_HOUR);
     }
 
     /**
