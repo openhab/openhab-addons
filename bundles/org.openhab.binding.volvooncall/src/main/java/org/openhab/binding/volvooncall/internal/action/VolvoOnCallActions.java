@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "volvooncall")
 @NonNullByDefault
-public class VolvoOnCallActions implements ThingActions {
+public class VolvoOnCallActions implements ThingActions, IVolvoOnCallActions {
 
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallActions.class);
 
@@ -56,6 +56,7 @@ public class VolvoOnCallActions implements ThingActions {
         return this.handler;
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Close", description = "Closes the car")
     public void closeCarCommand() {
         logger.debug("closeCarCommand called");
@@ -71,6 +72,7 @@ public class VolvoOnCallActions implements ThingActions {
         invokeMethodOf(actions).closeCarCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Open", description = "Opens the car")
     public void openCarCommand() {
         logger.debug("openCarCommand called");
@@ -86,6 +88,7 @@ public class VolvoOnCallActions implements ThingActions {
         invokeMethodOf(actions).openCarCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Start Engine", description = "Starts the engine")
     public void engineStartCommand(@ActionInput(name = "runtime", label = "Runtime") @Nullable Integer runtime) {
         logger.debug("engineStartCommand called");
@@ -101,6 +104,7 @@ public class VolvoOnCallActions implements ThingActions {
         invokeMethodOf(actions).engineStartCommand(runtime);
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Heater Start", description = "Starts car heater")
     public void heaterStartCommand() {
         logger.debug("heaterStartCommand called");
@@ -116,6 +120,7 @@ public class VolvoOnCallActions implements ThingActions {
         invokeMethodOf(actions).heaterStartCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Preclimatization Start", description = "Starts car heater")
     public void preclimatizationStartCommand() {
         logger.debug("preclimatizationStartCommand called");
@@ -131,6 +136,7 @@ public class VolvoOnCallActions implements ThingActions {
         invokeMethodOf(actions).preclimatizationStartCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Heater Stop", description = "Stops car heater")
     public void heaterStopCommand() {
         logger.debug("heaterStopCommand called");
@@ -146,6 +152,7 @@ public class VolvoOnCallActions implements ThingActions {
         invokeMethodOf(actions).heaterStopCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Preclimatization Stop", description = "Stops car heater")
     public void preclimatizationStopCommand() {
         logger.debug("preclimatizationStopCommand called");
@@ -161,6 +168,7 @@ public class VolvoOnCallActions implements ThingActions {
         invokeMethodOf(actions).preclimatizationStopCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Honk-blink", description = "Activates the horn and or lights of the car")
     public void honkBlinkCommand(@ActionInput(name = "honk", label = "Honk") Boolean honk,
             @ActionInput(name = "blink", label = "Blink") Boolean blink) {
