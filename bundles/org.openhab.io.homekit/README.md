@@ -520,6 +520,7 @@ Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.Acti
 Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
 ```
 
+
 ### Sensor
 Sensor have typically 1 mandatory characteristic, e.g. temperature, and several optional characteristics which are typically used for battery power sensors and wireless sensors.
 These optional characteristics includes (check the table above to verify whether the support characteristics)
