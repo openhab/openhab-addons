@@ -13,11 +13,11 @@
 package org.openhab.binding.e3dc.internal;
 
 /**
- * The {@link E3DCConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link E3DCWBConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class E3DCConfiguration {
+public class E3DCWBConfiguration {
 
     /**
      * IP Address
@@ -28,6 +28,11 @@ public class E3DCConfiguration {
      * Port
      */
     public int port;
+
+    /**
+     * Wallbox number
+     */
+    public int number;
 
     /**
      * Refresh interval in seconds

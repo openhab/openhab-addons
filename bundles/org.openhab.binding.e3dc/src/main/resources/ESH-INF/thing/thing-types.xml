@@ -4,26 +4,187 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<label>E3DC Binding Thing</label>
-		<description>Sample thing for E3DC Binding</description>
+	<thing-type id="E3DC-Info">
+		<label>E3DC Information Block</label>
+		<description>E3DCInformation Block</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel" />
+			<channel id="modbus-id" typeId="modbus-id-channel"/>
+			<channel id="modbus-firmware" typeId="modbus-firmware-channel"/>
+			<channel id="supported-registers" typeId="supported-registers-channel"/>
+			<channel id="manufacturer-name" typeId="manufacturer-name-channel"/>
+			<channel id="model-name" typeId="model-name-channel"/>
+			<channel id="serial-number" typeId="serial-number-channel"/>
+			<channel id="firmware-relase" typeId="firmware-relase-channel"/>
 		</channels>
 
 		<config-description>
-			<parameter name="config1" type="text" required="true">
-				<label>Sample Parameter</label>
-				<description>This is a sample text configuration parameter</description>
+			<parameter name="ipAdress" type="text" required="true">
+				<label>IP Address</label>
+				<description>Locale IP Address Of E3DC</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Modbus TCP Port</description>
+			</parameter>
+			<parameter name="refreshInterval_sec" type="integer">
+				<label>Refresh Intervall</label>
+				<description>Data Refresh Rate In Seconds</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
+	<thing-type id="E3DC-Power">
+		<label>E3DC Power Block</label>
+		<description>E3DC Power Information Block</description>
+
+		<channels>
+			<channel id="modbus-id" typeId="modbus-id-channel"/>
+			<channel id="modbus-firmware" typeId="modbus-firmware-channel"/>
+			<channel id="supported-registers" typeId="supported-registers-channel"/>
+			<channel id="model-name" typeId="model-name-channel"/>
+			<channel id="serial-number" typeId="serial-number-channel"/>
+			<channel id="firmware-relase" typeId="firmware-release-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP Address</label>
+				<description>Locale IP Address Of E3DC</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Modbus TCP Port</description>
+			</parameter>
+			<parameter name="refreshInterval_sec" type="integer">
+				<label>Refresh Intervall</label>
+				<description>Data Refresh Rate In Seconds</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="E3DC-Wallbox">
+		<label>E3DC Wallbox Control</label>
+		<description>Displays status and change settings of attached Wallboxes </description>
+
+		<channels>
+			<channel id="modbus-id" typeId="sample-channel"/>
+			<channel id="modbus-firmware" typeId="sample-channel"/>
+			<channel id="supported-registers" typeId="sample-channel"/>
+			<channel id="model-name" typeId="sample-channel"/>
+			<channel id="serial-number" typeId="sample-channel"/>
+			<channel id="firmware-relase" typeId="sample-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAdress" type="text" required="true">
+				<label>IP Address</label>
+				<description>Locale IP Address Of E3DC</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Modbus TCP Port</description>
+			</parameter>
+			<parameter name="number" type="integer" required="true">
+				<label>Wallbox Number</label>
+				<description>E3DC can handle up to 8 attached Wallboxes. Start with 1</description>
+			</parameter>
+			<parameter name="refreshInterval_sec" type="integer">
+				<label>Refresh Intervall</label>
+				<description>Data Refresh Rate In Seconds</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="E3DC-Strings">
+		<label>E3DC String Details</label>
+		<description>Shows details of each attached Power String</description>
+
+		<channels>
+			<channel id="modbus-id" typeId="sample-channel"/>
+			<channel id="modbus-firmware" typeId="sample-channel"/>
+			<channel id="supported-registers" typeId="sample-channel"/>
+			<channel id="model-name" typeId="sample-channel"/>
+			<channel id="serial-number" typeId="sample-channel"/>
+			<channel id="firmware-relase" typeId="sample-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAdress" type="text" required="true">
+				<label>IP Address</label>
+				<description>Locale IP Address Of E3DC</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Modbus TCP Port</description>
+			</parameter>
+			<parameter name="refreshInterval_sec" type="integer">
+				<label>Refresh Intervall</label>
+				<description>Data Refresh Rate In Seconds</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="E3DC-Emergency">
+		<label>E3DC Emergency Status</label>
+		<description>Shows Emergency Status (EMS) details</description>
+
+		<channels>
+			<channel id="modbus-id" typeId="sample-channel"/>
+			<channel id="modbus-firmware" typeId="sample-channel"/>
+			<channel id="supported-registers" typeId="sample-channel"/>
+			<channel id="model-name" typeId="sample-channel"/>
+			<channel id="serial-number" typeId="sample-channel"/>
+			<channel id="firmware-relase" typeId="sample-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAdress" type="text" required="true">
+				<label>IP Address</label>
+				<description>Locale IP Address Of E3DC</description>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<label>Port</label>
+				<description>Modbus TCP Port</description>
+			</parameter>
+			<parameter name="refreshInterval_sec" type="integer">
+				<label>Refresh Intervall</label>
+				<description>Data Refresh Rate In Seconds</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="modbus-id-channel">
+		<item-type>String</item-type>
+		<label>Modbus-ID</label>
+		<description>Modbus ID / Magic Byte of E3DC</description>
+	</channel-type>
+	<channel-type id="modbus-firmware-channel">
+		<item-type>String</item-type>
+		<label>Modbus Firmware</label>
+		<description>Version of Modbus Firmware</description>
+	</channel-type>
+	<channel-type id="supported-registers-channel">
+		<item-type>Number</item-type>
+		<label>Supported Registers</label>
+		<description>Count of the supported registers</description>
+	</channel-type>
+	<channel-type id="manufacturer-name-channel">
+		<item-type>String</item-type>
+		<label>Manufacturer Name</label>
+		<description>Name of the Device Manufacturer</description>
+	</channel-type>
+	<channel-type id="model-name-channel">
+		<item-type>String</item-type>
+		<label>E3DC Model Name</label>
+		<description>Name of the E3DC Model</description>
+	</channel-type>
+	<channel-type id="firmware-release-channel">
+		<item-type>String</item-type>
+		<label>E3DC Firmware Release</label>
+		<description>Firmware installed on this particular E3DC Model</description>
+	</channel-type>
+	<channel-type id="-channel">
 		<item-type>e3dcItem</item-type>
 		<label>E3DC Binding Channel</label>
 		<description>Sample channel for E3DC Binding</description>
