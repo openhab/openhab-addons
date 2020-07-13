@@ -10,27 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.e3dc.internal;
+package org.openhab.binding.e3dc.internal.modbus;
 
 /**
- * The {@link E3DCConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link DataListener} Listener interface will be called after successful modbus poll
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class E3DCConfiguration {
-
-    /**
-     * IP Address
-     */
-    public String ipAddress;
-
-    /**
-     * Port
-     */
-    public int port;
-
-    /**
-     * Refresh interval in seconds
-     */
-    public long refreshInterval_sec = 2;
+public interface DataListener {
+    public void newDataREceived();
 }
