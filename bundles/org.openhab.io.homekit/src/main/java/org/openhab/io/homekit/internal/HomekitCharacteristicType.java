@@ -92,6 +92,7 @@ public enum HomekitCharacteristicType {
 
     VOLUME("Volume"),
     MUTE("Mute"),
+    LIGHT_LEVEL("LightLevel"),
 
     CURRENT_DOOR_STATE("CurrentDoorState"),
     TARGET_DOOR_STATE("TargetDoorState"),
