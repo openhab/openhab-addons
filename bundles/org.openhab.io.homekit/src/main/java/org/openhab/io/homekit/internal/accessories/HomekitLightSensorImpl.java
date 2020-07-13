@@ -1,0 +1,58 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.io.homekit.internal.accessories;
+
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.LIGHT_LEVEL;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitSettings;
+import org.openhab.io.homekit.internal.HomekitTaggedItem;
+
+import io.github.hapjava.accessories.LightSensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.services.impl.LightSensorService;
+
+/**
+ * HomeKit light sensor implementation.
+ *
+ * @author Eugen Freiter - Initial contribution
+ */
+public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl implements LightSensorAccessory {
+
+    public HomekitLightSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        getServices().add(new LightSensorService(this));
+    }
+
+    @Override
+    public CompletableFuture<Double> getCurrentAmbientLightLevel() {
+        final @Nullable DecimalType state = getStateAs(LIGHT_LEVEL, DecimalType.class);
+        return CompletableFuture.completedFuture(state != null ? state.doubleValue() : 0.0);
+    }
+
+    @Override
+    public void subscribeCurrentAmbientLightLevel(HomekitCharacteristicChangeCallback callback) {
+        subscribe(LIGHT_LEVEL, callback);
+    }
+
+    @Override
+    public void unsubscribeCurrentAmbientLightLevel() {
+        unsubscribe(LIGHT_LEVEL);
+    }
+}
