@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -397,7 +398,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private boolean propertiesInitializedSuccessfully = false;
 
-    private @Nullable ScheduledFuture<?> initJob;
+    private @Nullable Future<?> initJob;
     private @Nullable ScheduledFuture<?> lightPollingJob;
     private @Nullable ScheduledFuture<?> sensorPollingJob;
     private @Nullable ScheduledFuture<?> scenePollingJob;
@@ -658,7 +659,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
-        ScheduledFuture<?> job = initJob;
+        Future<?> job = initJob;
         if (job != null) {
             job.cancel(true);
         }
@@ -686,12 +687,11 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                 // Try a first connection that will fail, then try to authenticate,
                 // and finally change the bridge status to ONLINE
-                initJob = scheduler.schedule(new PollingRunnable() {
+                initJob = scheduler.submit(new PollingRunnable() {
                     @Override
                     protected void doConnectedRun() throws IOException, ApiException {
                     }
-                }, 0, TimeUnit.SECONDS);
-
+                });
             }
             onUpdate();
         }
