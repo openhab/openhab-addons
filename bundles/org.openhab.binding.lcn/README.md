@@ -191,7 +191,7 @@ To do so, simply start openHAB's discovery.
 
 If not all LCN modules get listed on the first run, click on the refresh button to start another scan.
 
-When adding a module by discovery, the new *Thing*'s UID will be the module's serial number.
+When adding a module by discovery, the new *Thing*'s UID will be a combination of segment and module id using the following format: *S<segment_id>M<module_id>*.
 
 ### Discover PCK Gateways
 
