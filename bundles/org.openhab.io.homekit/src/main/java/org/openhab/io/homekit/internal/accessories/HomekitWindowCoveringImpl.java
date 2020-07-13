@@ -37,7 +37,6 @@ import io.github.hapjava.services.impl.WindowCoveringService;
  * @author epike - Initial contribution
  */
 public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl implements WindowCoveringAccessory {
-    private final boolean inverted;
     private final int closedPosition;
     private final int openPosition;
 
@@ -45,7 +44,7 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl impl
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         final String invertedConfig = getAccessoryConfiguration(HomekitTaggedItem.INVERTED, "true");
-        inverted = invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
+        final boolean inverted = invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
         closedPosition = inverted ? 0 : 100;
         openPosition = inverted ? 100 : 0;
         this.getServices().add(new WindowCoveringService(this));
