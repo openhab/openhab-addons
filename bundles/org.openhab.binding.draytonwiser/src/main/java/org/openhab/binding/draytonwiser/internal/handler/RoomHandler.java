@@ -15,6 +15,7 @@ package org.openhab.binding.draytonwiser.internal.handler;
 import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
 
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -167,9 +168,9 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     private State getBoostRemainingState() {
         final Integer overrideTimeout = getData().getOverrideTimeoutUnixTime();
         if (overrideTimeout != null && !"NONE".equalsIgnoreCase(getData().getOverrideType())) {
-            return new DecimalType((overrideTimeout - (System.currentTimeMillis() / 1000L)) / 60);
+            return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), SmartHomeUnits.SECOND);
         }
-        return DecimalType.ZERO;
+        return new QuantityType<Time>(0, SmartHomeUnits.SECOND);
     }
 
     private void setBoostDuration(final int durationMinutes) throws DraytonWiserApiException {

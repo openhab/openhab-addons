@@ -360,7 +360,7 @@
 	<channel-type id="boostDuration-channel">
 		<item-type>Number</item-type>
 		<label>Boost Duration</label>
-		<description>Duration to boost hot water for</description>
+		<description>Duration in hours to boost hot water for</description>
 		<state pattern="%.1f h" min="0" max="3" step="0.5"/>
 	</channel-type>
 
@@ -372,10 +372,10 @@
 	</channel-type>
 
 	<channel-type id="boostRemaining-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Boost Remaining</label>
 		<description>How long until the boost deactivates</description>
-		<state readOnly="true" pattern="%.0f m"/>
+		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="windowStateDetection-channel" advanced="true">
