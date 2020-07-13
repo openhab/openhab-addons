@@ -152,7 +152,7 @@ public class AstroActions implements ThingActions, IAstroActions {
                         });
             }
         }
-        throw new IllegalArgumentException("Actions is not an instance of LightActions");
+        throw new IllegalArgumentException("Actions is not an instance of AstroActions");
     }
 
 }
