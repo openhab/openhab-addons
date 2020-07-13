@@ -124,6 +124,8 @@ Switch leaksensor                       "Leak Sensor"                           
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
 ```
 
+### Supported Accessories
+
 A full list of supported accessory types can be found in the table *below*.
 
 | Accessory Tag        | Mandatory Characteristics   | Optional     Characteristics | Supported OH items       | Description                                                      |
@@ -520,20 +522,19 @@ Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.Acti
 Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
 ```
 
+### Sensors
+Sensors have typically one mandatory characteristic, e.g. temperature or lead trigger, and several optional characteristics which are typically used for battery powered sensors and/or wireless sensors.
+Following table summarizes the optional characteristics supported by sensors.
 
-### Sensor
-Sensor have typically 1 mandatory characteristic, e.g. temperature, and several optional characteristics which are typically used for battery power sensors and wireless sensors.
-These optional characteristics includes (check the table above to verify whether the support characteristics)
-
-|  Characteristics             | Supported openHAB items  | Description                                                                                                                                                                                                                     |
+|  Characteristics             | Supported openHAB items  | Description                                                                                                                                                                                                              |
 |:-----------------------------|:-------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Name                         | String                   | Name of the sensor. Interesting only for very specific cases in which the name of accessory is dynamic.  if you not sure then you don't need it.                                                                          |
-| ActiveStatus                 | Switch, Contact          | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                   |
-| FaultStatus                  | Switch, Contact          | accessory fault status.  "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.     |
-| TamperedStatus               | Switch, Contact          | accessory tampered status. A status of "ON"/"OPEN" indicates that the accessory has been tampered with. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                 |
-| BatteryLowStatus             | Switch, Contact          | accessory battery status. A value of "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level thats above the low threshold.      |
+| Name                         | String                   | Name of the sensor. This characteristic is interesting only for very specific cases in which the name of accessory is dynamic. if you not sure then you don't need it.                                                   |
+| ActiveStatus                 | Switch, Contact          | Accessory current working status. "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                              |
+| FaultStatus                  | Switch, Contact          | Accessory fault status. "ON"/"OPEN" value indicates that the accessory has experienced a fault that may be interfering with its intended functionality. A value of "OFF"/"CLOSED" indicates that there is no fault.      |
+| TamperedStatus               | Switch, Contact          | Accessory tampered status. "ON"/"OPEN" indicates that the accessory has been tampered. Value should return to "OFF"/"CLOSED" when the accessory has been reset to a non-tampered state.                                  |
+| BatteryLowStatus             | Switch, Contact          | Accessory battery status. "ON"/"OPEN" indicates that the battery level of the accessory is low. Value should return to "OFF"/"CLOSED" when the battery charges to a level thats above the low threshold.                 |
 
-Examples:
+Examples of sensor definitions.
 Sensors without optional characteristics:
 
 ```xtend
