@@ -112,7 +112,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 if (getThing().getStatus() != ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 }
-            }, failure -> {StiebelEltronHandler.this.handleReadError(failure);});
+            }, StiebelEltronHandler.this::handleReadError);
         }
 
         public synchronized void poll() {
@@ -305,10 +305,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
                     return;
                 }
-                String msg = "";
-                String cls = "";
-                cls = error.getClass().getName();
-                msg = error.getMessage();
+                String cls = error.getClass().getName();
+                String msg = error.getMessage();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("Error with: %s: %s", cls, msg));
             }
