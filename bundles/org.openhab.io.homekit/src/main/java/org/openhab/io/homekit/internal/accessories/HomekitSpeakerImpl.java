@@ -15,7 +15,6 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
@@ -38,24 +37,23 @@ public class HomekitSpeakerImpl extends AbstractHomekitAccessoryImpl implements 
     public HomekitSpeakerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.muteReader = new BooleanItemReader(getItem(HomekitCharacteristicType.MUTE, GenericItem.class),
-                OnOffType.ON, OpenClosedType.OPEN);
+        muteReader = createBooleanReader(HomekitCharacteristicType.MUTE, OnOffType.ON, OpenClosedType.OPEN);
         getServices().add(new SpeakerService(this));
     }
 
     @Override
     public CompletableFuture<Boolean> isMuted() {
-        return CompletableFuture.completedFuture(this.muteReader.getValue() != null && this.muteReader.getValue());
+        return CompletableFuture.completedFuture(muteReader.getValue());
     }
 
     @Override
-    public CompletableFuture<Void> setMute(final boolean state) {
-        this.muteReader.setValue(state);
+    public CompletableFuture<Void> setMute(boolean state) {
+        muteReader.setValue(state);
         return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void subscribeMuteState(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeMuteState(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.MUTE, callback);
     }
 

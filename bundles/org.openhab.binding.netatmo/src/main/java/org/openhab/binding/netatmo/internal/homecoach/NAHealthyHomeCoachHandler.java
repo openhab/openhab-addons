@@ -15,17 +15,17 @@ package org.openhab.binding.netatmo.internal.homecoach;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NADashboardData;
 import io.swagger.client.model.NAHealthyHomeCoach;
-import io.swagger.client.model.NAHealthyHomeCoachDataBody;
 
 /**
  * {@link NAHealthyHomeCoachHandler} is the class used to handle the Health Home Coach device
@@ -41,15 +41,10 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     }
 
     @Override
-    protected @Nullable NAHealthyHomeCoach updateReadings() {
-        NAHealthyHomeCoach result = null;
-        NetatmoBridgeHandler bridgeHandler = getBridgeHandler();
-        NAHealthyHomeCoachDataBody homecoachDataBody = bridgeHandler == null ? null
-                : bridgeHandler.getHomecoachDataBody(getId());
-        if (homecoachDataBody != null) {
-            result = homecoachDataBody.getDevices().get(0);
-        }
-        return result;
+    protected Optional<NAHealthyHomeCoach> updateReadings() {
+        return getBridgeHandler().flatMap(handler -> handler.getHomecoachDataBody(getId()))
+                .map(dataBody -> dataBody.getDevices().stream()
+                        .filter(device -> device.getId().equalsIgnoreCase(getId())).findFirst().orElse(null));
     }
 
     @Override
@@ -59,9 +54,8 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NAHealthyHomeCoach healthyHomeCoachDevice = device;
-        if (healthyHomeCoachDevice != null) {
-            NADashboardData dashboardData = healthyHomeCoachDevice.getDashboardData();
+        NADashboardData dashboardData = getDevice().map(d -> d.getDashboardData()).orElse(null);
+        if (dashboardData != null) {
             switch (channelId) {
                 case CHANNEL_CO2:
                     return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
@@ -117,14 +111,7 @@ public class NAHealthyHomeCoachHandler extends NetatmoDeviceHandler<NAHealthyHom
     }
 
     @Override
-    protected @Nullable Integer getDataTimestamp() {
-        NAHealthyHomeCoach healthyHomeCoachDevice = device;
-        if (healthyHomeCoachDevice != null) {
-            Integer lastStored = healthyHomeCoachDevice.getLastStatusStore();
-            if (lastStored != null) {
-                return lastStored;
-            }
-        }
-        return null;
+    protected Optional<Integer> getDataTimestamp() {
+        return getDevice().map(d -> d.getLastStatusStore());
     }
 }

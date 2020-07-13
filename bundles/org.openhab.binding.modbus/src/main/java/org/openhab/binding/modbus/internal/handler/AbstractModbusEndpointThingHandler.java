@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.modbus.internal.handler;
 
-import java.util.function.Supplier;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -24,8 +22,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.ModbusManagerListener;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
@@ -41,20 +39,18 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEndpoint, C> extends BaseBridgeHandler
-        implements ModbusManagerListener, ModbusEndpointThingHandler {
+        implements ModbusEndpointThingHandler {
 
-    @Nullable
-    protected volatile C config;
-    @Nullable
-    protected volatile E endpoint;
-    protected Supplier<ModbusManager> managerRef;
-    @Nullable
-    protected volatile EndpointPoolConfiguration poolConfiguration;
+    protected volatile @Nullable C config;
+    protected volatile @Nullable E endpoint;
+    protected ModbusManager modbusManager;
+    protected volatile @Nullable EndpointPoolConfiguration poolConfiguration;
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusEndpointThingHandler.class);
+    private @NonNullByDefault({}) ModbusCommunicationInterface comms;
 
-    public AbstractModbusEndpointThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
+    public AbstractModbusEndpointThingHandler(Bridge bridge, ModbusManager modbusManager) {
         super(bridge);
-        this.managerRef = managerRef;
+        this.modbusManager = modbusManager;
     }
 
     @Override
@@ -75,11 +71,15 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
                 @Nullable
                 E endpoint = this.endpoint;
                 if (endpoint == null) {
-                    throw new IllegalArgumentException("endpoint null after configuration!");
+                    throw new IllegalStateException("endpoint null after configuration!");
                 }
-                managerRef.get().addListener(this);
-                managerRef.get().setEndpointPoolConfiguration(endpoint, poolConfiguration);
-                updateStatus(ThingStatus.ONLINE);
+                try {
+                    comms = modbusManager.newModbusCommunicationInterface(endpoint, poolConfiguration);
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (IllegalArgumentException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            formatConflictingParameterError());
+                }
             } catch (ModbusConfigurationException e) {
                 logger.debug("Exception during initialization", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
@@ -92,33 +92,26 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
 
     @Override
     public void dispose() {
-        managerRef.get().removeListener(this);
-    }
-
-    @Override
-    public @Nullable ModbusSlaveEndpoint asSlaveEndpoint() {
-        return endpoint;
-    }
-
-    @Override
-    public Supplier<ModbusManager> getManagerRef() {
-        return managerRef;
-    }
-
-    @Override
-    public void onEndpointPoolConfigurationSet(ModbusSlaveEndpoint otherEndpoint,
-            @Nullable EndpointPoolConfiguration otherPoolConfiguration) {
-        synchronized (this) {
-            if (endpoint == null) {
-                return;
+        try {
+            ModbusCommunicationInterface localComms = comms;
+            if (localComms != null) {
+                localComms.close();
             }
-            EndpointPoolConfiguration poolConfiguration = this.poolConfiguration;
-            if (poolConfiguration != null && otherEndpoint.equals(this.endpoint)
-                    && !poolConfiguration.equals(otherPoolConfiguration)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        formatConflictingParameterError(otherPoolConfiguration));
-            }
+        } catch (Exception e) {
+            logger.warn("Error closing modbus communication interface", e);
+        } finally {
+            comms = null;
         }
+    }
+
+    @Override
+    public @Nullable ModbusCommunicationInterface getCommunicationInterface() {
+        return comms;
+    }
+
+    @Nullable
+    public E getEndpoint() {
+        return endpoint;
     }
 
     @Override
@@ -132,9 +125,6 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     /**
      * Format error message in case some other endpoint has been configured with different
      * {@link EndpointPoolConfiguration}
-     *
-     * @param otherPoolConfig
-     * @return
      */
-    protected abstract String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig);
+    protected abstract String formatConflictingParameterError();
 }

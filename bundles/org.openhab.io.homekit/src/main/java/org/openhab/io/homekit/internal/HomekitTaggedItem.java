@@ -51,10 +51,10 @@ public class HomekitTaggedItem {
     private final HomekitAccessoryType homekitAccessoryType;
 
     // type of HomeKit characteristic, e.g. CurrentTemperature
-    private @Nullable HomekitCharacteristicType homekitCharacteristicType;
+    private HomekitCharacteristicType homekitCharacteristicType;
 
     // configuration attached to the openHAB Item, e.g. minValue, maxValue, valveType
-    private @Nullable Map<String, Object> configuration;
+    private final @Nullable Map<String, Object> configuration;
 
     // link to the groupItem if item is part of a group
     private @Nullable GroupItem parentGroupItem;
@@ -78,14 +78,13 @@ public class HomekitTaggedItem {
     }
 
     public HomekitTaggedItem(HomekitOHItemProxy item, HomekitAccessoryType homekitAccessoryType,
-            @Nullable HomekitCharacteristicType homekitCharacteristicType,
-            @Nullable Map<String, Object> configuration) {
+            HomekitCharacteristicType homekitCharacteristicType, @Nullable Map<String, Object> configuration) {
         this(item, homekitAccessoryType, configuration);
         this.homekitCharacteristicType = homekitCharacteristicType;
     }
 
     public HomekitTaggedItem(HomekitOHItemProxy item, HomekitAccessoryType homekitAccessoryType,
-            @Nullable HomekitCharacteristicType homekitCharacteristicType, @Nullable GroupItem parentGroup,
+            HomekitCharacteristicType homekitCharacteristicType, @Nullable GroupItem parentGroup,
             @Nullable Map<String, Object> configuration) {
         this(item, homekitAccessoryType, homekitCharacteristicType, configuration);
         this.parentGroupItem = parentGroup;
@@ -100,7 +99,7 @@ public class HomekitTaggedItem {
         return homekitAccessoryType;
     }
 
-    public @Nullable HomekitCharacteristicType getCharacteristicType() {
+    public HomekitCharacteristicType getCharacteristicType() {
         return homekitCharacteristicType;
     }
 
@@ -123,7 +122,7 @@ public class HomekitTaggedItem {
      * root deviceGroup.
      */
     public boolean isCharacteristic() {
-        return homekitCharacteristicType != null && homekitCharacteristicType != HomekitCharacteristicType.EMPTY;
+        return homekitCharacteristicType != HomekitCharacteristicType.EMPTY;
     }
 
     /**
@@ -189,10 +188,10 @@ public class HomekitTaggedItem {
      * @param <T> expected class
      * @return value
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "null", "unchecked" })
     public <T> T getConfiguration(String key, T defaultValue) {
         if (configuration != null) {
-            final Object value = configuration.get(key);
+            final @Nullable Object value = configuration.get(key);
             if (value != null && value.getClass().equals(defaultValue.getClass())) {
                 return (T) value;
             }
@@ -216,11 +215,11 @@ public class HomekitTaggedItem {
      */
     private void parseConfiguration() {
         if (configuration != null) {
-            Object dimmerModeConfig = configuration.get(DIMMER_MODE);
+            final @Nullable Object dimmerModeConfig = configuration.get(DIMMER_MODE);
             if (dimmerModeConfig instanceof String) {
                 HomekitDimmerMode.valueOfTag((String) dimmerModeConfig).ifPresent(proxyItem::setDimmerMode);
             }
-            Object delayConfig = configuration.get(DELAY);
+            final @Nullable Object delayConfig = configuration.get(DELAY);
             if (delayConfig instanceof Number) {
                 proxyItem.setDelay(((Number) delayConfig).intValue());
             }
@@ -250,7 +249,7 @@ public class HomekitTaggedItem {
     }
 
     public String toString() {
-        return "Item:" + proxyItem + "  HomeKit type:" + homekitAccessoryType + " HomeKit characteristic:"
+        return "Item:" + proxyItem.getItem() + "  HomeKit type:" + homekitAccessoryType + " HomeKit characteristic:"
                 + homekitCharacteristicType;
     }
 }

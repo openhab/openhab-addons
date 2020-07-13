@@ -12,14 +12,14 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CONTACT_SENSOR_STATE;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -38,26 +38,23 @@ public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl imple
     public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.contactSensedReader = new BooleanItemReader(
-                getItem(HomekitCharacteristicType.CONTACT_SENSOR_STATE, GenericItem.class), OnOffType.ON,
-                OpenClosedType.OPEN);
+        contactSensedReader = createBooleanReader(CONTACT_SENSOR_STATE, OnOffType.ON, OpenClosedType.OPEN);
         getServices().add(new ContactSensorService(this));
     }
 
     @Override
     public CompletableFuture<ContactStateEnum> getCurrentState() {
-        Boolean isOpen = contactSensedReader.getValue();
-        return CompletableFuture
-                .completedFuture((isOpen == Boolean.TRUE) ? ContactStateEnum.NOT_DETECTED : ContactStateEnum.DETECTED);
+        return CompletableFuture.completedFuture(
+                contactSensedReader.getValue() ? ContactStateEnum.NOT_DETECTED : ContactStateEnum.DETECTED);
     }
 
     @Override
     public void subscribeContactState(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.CONTACT_SENSOR_STATE, callback);
+        subscribe(CONTACT_SENSOR_STATE, callback);
     }
 
     @Override
     public void unsubscribeContactState() {
-        unsubscribe(HomekitCharacteristicType.CONTACT_SENSOR_STATE);
+        unsubscribe(CONTACT_SENSOR_STATE);
     }
 }
