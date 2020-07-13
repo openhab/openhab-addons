@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.hue.internal.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -26,14 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the automation engine action handler service for the
- * fadingLightCommand action.
+ * The {@link LightActions} defines the thing actions for the hue binding.
+ * <p>
+ * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
+ * the test <i>actions instanceof LightActions</i> fails. This test can fail
+ * due to an issue in openHAB core v2.5.0 where the {@link LightActions} class
+ * can be loaded by a different classloader than the <i>actions</i> instance.
  *
  * @author Jochen Leopold - Initial contribution
+ * @author Laurent Garnier - new method invokeMethodOf + interface ILightActions
  */
 @ThingActionsScope(name = "hue")
 @NonNullByDefault
-public class LightActions implements ThingActions {
+public class LightActions implements ThingActions, ILightActions {
     private final Logger logger = LoggerFactory.getLogger(LightActions.class);
     private @Nullable HueLightHandler handler;
 
@@ -47,6 +55,7 @@ public class LightActions implements ThingActions {
         return this.handler;
     }
 
+    @Override
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void fadingLightCommand(
             @ActionInput(name = "channel", label = "@text/actionInputChannelLabel", description = "@text/actionInputChannelDesc") @Nullable String channel,
@@ -76,12 +85,27 @@ public class LightActions implements ThingActions {
         logger.debug("send LightAction to {} with {}ms of fadeTime", channel, fadeTime);
     }
 
+    private static ILightActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(LightActions.class.getName())) {
+            if (actions instanceof ILightActions) {
+                return (ILightActions) actions;
+            } else {
+                return (ILightActions) Proxy.newProxyInstance(ILightActions.class.getClassLoader(),
+                        new Class[] { ILightActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of LightActions");
+    }
+
     public static void fadingLightCommand(@Nullable ThingActions actions, @Nullable String channel,
             @Nullable Command command, @Nullable DecimalType fadeTime) {
-        if (actions instanceof LightActions) {
-            ((LightActions) actions).fadingLightCommand(channel, command, fadeTime);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LightActions class.");
-        }
+        invokeMethodOf(actions).fadingLightCommand(channel, command, fadeTime);
     }
 }
