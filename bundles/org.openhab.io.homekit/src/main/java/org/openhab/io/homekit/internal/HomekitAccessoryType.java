@@ -44,6 +44,7 @@ public enum HomekitAccessoryType {
     SPEAKER("Speaker"),
     GARAGE_DOOR_OPENER("GarageDoorOpener"),
     HEATER_COOLER("HeaterCooler"),
+    LIGHT_SENSOR("LightSensor"),
     DUMMY("Dummy"),
     @Deprecated()
     BLINDS("Blinds"),
