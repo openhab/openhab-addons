@@ -62,7 +62,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `hotWaterOverride`       | Switch       | State of the hot water override button on the controller |
 | `hotWaterDemandState`    | Switch       | Is hot water calling the boiler for heat                 |
 | `hotWaterBoosted`        | Switch       | Is hot water currently being boosted                     |
-| `hotWaterBoostRemaining` | Number       | How long until the boost deactivates in minutes          |
+| `hotWaterBoostRemaining` | Number:Time  | How long until the boost deactivates in minutes          |
 
 #### Room
 
@@ -73,7 +73,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `currentDemand`      | Number:Dimensionless | Current heat demand percentage of the room                                   |
 | `heatRequest`        | Switch               | Is the room actively requesting heat from the controller                     |
 | `roomBoosted`        | Switch               | Is the room currently being boosted                                          |
-| `roomBoostRemaining` | Number               | How long until the boost deactivates in minutes                              |
+| `roomBoostRemaining` | Number:Time          | How long until the boost deactivates in minutes                              |
 | `windowState`        | Switch               | Is the window open or closed?                                                |
 
 #### Room Stat
@@ -131,7 +131,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 |-------------------------|--------------|--------------------------------------------|
 | `manualModeState`       | Switch       | Has manual mode been enabled               |
 | `hotWaterSetPoint`      | Switch       | The current hot water setpoint (on or off) |
-| `hotWaterBoostDuration` | Number       | Period in hours to boost the hot water     |
+| `hotWaterBoostDuration` | Number:Time  | Period in hours to boost the hot water     |
 
 #### Room
 
@@ -139,7 +139,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 |------------------------|--------------------|------------------------------------------------|
 | `currentSetPoint`      | Number:Temperature | The current set point temperature for the room |
 | `manualModeState`      | Switch             | Has manual mode been enabled                   |
-| `roomBoostDuration`    | Number             | Period in hours to boost the room temperature  |
+| `roomBoostDuration`    | Number:Time        | Period in hours to boost the room temperature  |
 | `windowStateDetection` | Switch             | Detect whether windows are open                |
 
 #### Room Stat
@@ -183,8 +183,8 @@ Bridge draytonwiser:heathub:HeatHub [ networkAddress="192.168.1.X", refresh=60, 
 	room              bedroom        "Bedroom"                [ name="Bedroom" ]
 	roomstat          livingroomstat "Living Room Thermostat" [ serialNumber="ABCDEF1234" ]
 	itrv              livingroomtrv  "Living Room - TRV"      [ serialNumber="ABCDEF1235" ]
-	hotwater hotwater
-    smart-plug tvplug [ serialNumber="ABCDEF1236" ]
+	hotwater          hotwater
+    smart-plug        tvplug [ serialNumber="ABCDEF1236" ]
 }
 ```
 
