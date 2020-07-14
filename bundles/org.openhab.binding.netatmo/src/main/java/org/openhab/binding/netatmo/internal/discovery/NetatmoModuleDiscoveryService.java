@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.swagger.client.model.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -27,11 +28,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDataListener;
-
-import io.swagger.client.model.NAHealthyHomeCoach;
-import io.swagger.client.model.NAMain;
-import io.swagger.client.model.NAPlug;
-import io.swagger.client.model.NAWelcomeHome;
 
 /**
  * The {@link NetatmoModuleDiscoveryService} searches for available Netatmo
@@ -126,12 +122,45 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     }
 
     private void discoverWeatherStation(NAMain station) {
-        onDeviceAddedInternal(station.getId(), null, station.getType(), station.getStationName(),
+        final boolean isFavorite = station.getFavorite() != null && station.getFavorite();
+        final String weatherStationName = createWeatherStationName(station, isFavorite);
+
+        onDeviceAddedInternal(station.getId(), null, station.getType(), weatherStationName,
                 station.getFirmware());
         station.getModules().forEach(module -> {
-            onDeviceAddedInternal(module.getId(), station.getId(), module.getType(), module.getModuleName(),
-                    module.getFirmware());
+            onDeviceAddedInternal(module.getId(), station.getId(), module.getType(),
+                    createWeatherModuleName(station, module, isFavorite), module.getFirmware());
         });
+    }
+
+    private static String createWeatherStationName(NAMain station, boolean isFavorite) {
+        StringBuilder nameBuilder = new StringBuilder();
+        nameBuilder.append("Main-Module");
+        if(station.getStationName() != null) {
+            nameBuilder.append(' ');
+            nameBuilder.append(station.getStationName());
+        }
+        if(isFavorite) {
+            nameBuilder.append(" (favorite)");
+        }
+        return nameBuilder.toString();
+    }
+
+    private static String createWeatherModuleName(NAMain station, NAStationModule module, boolean isFavorite) {
+        StringBuilder nameBuilder = new StringBuilder();
+        if(module.getModuleName() != null) {
+            nameBuilder.append(module.getModuleName());
+        } else {
+            nameBuilder.append(module.getType());
+        }
+        if(station.getStationName() != null) {
+            nameBuilder.append(' ');
+            nameBuilder.append(station.getStationName());
+        }
+        if(isFavorite) {
+            nameBuilder.append(" (favorite)");
+        }
+        return nameBuilder.toString();
     }
 
     private void discoverWelcomeHome(NAWelcomeHome home) {
