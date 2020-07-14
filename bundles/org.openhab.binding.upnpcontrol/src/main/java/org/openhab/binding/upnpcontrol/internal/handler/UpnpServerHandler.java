@@ -15,7 +15,7 @@ package org.openhab.binding.upnpcontrol.internal.handler;
 import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,18 +69,17 @@ public class UpnpServerHandler extends UpnpHandler {
 
     private ConcurrentMap<String, UpnpRendererHandler> upnpRenderers;
     private volatile @Nullable UpnpRendererHandler currentRendererHandler;
-    private volatile List<StateOption> rendererStateOptionList = new ArrayList<>();
+    private volatile List<StateOption> rendererStateOptionList = Collections.synchronizedList(new ArrayList<>());
 
     private @NonNullByDefault({}) ChannelUID rendererChannelUID;
     private @NonNullByDefault({}) ChannelUID currentSelectionChannelUID;
 
     private volatile UpnpEntry currentEntry = new UpnpEntry(DIRECTORY_ROOT, DIRECTORY_ROOT, DIRECTORY_ROOT,
             "object.container");
-    private volatile List<UpnpEntry> entries = new ArrayList<>(); // current entry list in selection
+    private volatile List<UpnpEntry> entries = Collections.synchronizedList(new ArrayList<>()); // current entry list in
+                                                                                                // selection
     private volatile Map<String, UpnpEntry> parentMap = new HashMap<>(); // store parents in hierarchy separately to be
                                                                          // able to move up in directory structure
-
-    private List<String> source = new ArrayList<>();
 
     private UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     private UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
@@ -123,7 +122,6 @@ public class UpnpServerHandler extends UpnpHandler {
                     "Channel " + BROWSE + " not defined");
             return;
         }
-
         if (config.udn != null) {
             if (service.isRegistered(this)) {
                 initServer();
@@ -138,11 +136,13 @@ public class UpnpServerHandler extends UpnpHandler {
     }
 
     private void initServer() {
-        rendererStateOptionList = new ArrayList<>();
-        upnpRenderers.forEach((key, value) -> {
-            StateOption stateOption = new StateOption(key, value.getThing().getLabel());
-            rendererStateOptionList.add(stateOption);
-        });
+        rendererStateOptionList = Collections.synchronizedList(new ArrayList<>());
+        synchronized (rendererStateOptionList) {
+            upnpRenderers.forEach((key, value) -> {
+                StateOption stateOption = new StateOption(key, value.getThing().getLabel());
+                rendererStateOptionList.add(stateOption);
+            });
+        }
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
 
         getProtocolInfo();
@@ -189,15 +189,15 @@ public class UpnpServerHandler extends UpnpHandler {
                     if (browseTarget != null) {
                         if (!UP.equals(browseTarget)) {
                             final String target = browseTarget;
-                            currentEntry = entries.stream().filter(entry -> target.equals(entry.getId())).findFirst()
-                                    .get();
-                            Optional<UpnpEntry> current = entries.stream().filter(entry -> target.equals(entry.getId()))
-                                    .findFirst();
-                            if (current.isPresent()) {
-                                currentEntry = current.get();
-                            } else {
-                                logger.info("Trying to browse invalid target {}", browseTarget);
-                                browseTarget = UP; // move up on invalid target
+                            synchronized (entries) {
+                                Optional<UpnpEntry> current = entries.stream()
+                                        .filter(entry -> target.equals(entry.getId())).findFirst();
+                                if (current.isPresent()) {
+                                    currentEntry = current.get();
+                                } else {
+                                    logger.info("Trying to browse invalid target {}", browseTarget);
+                                    browseTarget = UP; // move up on invalid target
+                                }
                             }
                         }
                         if (UP.equals(browseTarget)) {
@@ -246,7 +246,9 @@ public class UpnpServerHandler extends UpnpHandler {
      * @param key
      */
     public void addRendererOption(String key) {
-        rendererStateOptionList.add(new StateOption(key, upnpRenderers.get(key).getThing().getLabel()));
+        synchronized (rendererStateOptionList) {
+            rendererStateOptionList.add(new StateOption(key, upnpRenderers.get(key).getThing().getLabel()));
+        }
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
         logger.debug("Renderer option {} added to {}", key, thing.getLabel());
     }
@@ -263,7 +265,9 @@ public class UpnpServerHandler extends UpnpHandler {
             currentRendererHandler = null;
             updateState(rendererChannelUID, UnDefType.UNDEF);
         }
-        rendererStateOptionList.removeIf(stateOption -> (stateOption.getValue().equals(key)));
+        synchronized (rendererStateOptionList) {
+            rendererStateOptionList.removeIf(stateOption -> (stateOption.getValue().equals(key)));
+        }
         updateStateDescription(rendererChannelUID, rendererStateOptionList);
         logger.debug("Renderer option {} removed from {}", key, thing.getLabel());
     }
@@ -284,18 +288,21 @@ public class UpnpServerHandler extends UpnpHandler {
             logger.debug("UP added to selection list on server {}", thing.getLabel());
         }
 
-        entries.clear(); // always only keep the current selection in the entry map to keep memory usage down
-        resultList.forEach((value) -> {
-            CommandOption commandOption = new CommandOption(value.getId(), value.getTitle());
-            commandOptionList.add(commandOption);
-            logger.trace("{} added to selection list on server {}", value.getId(), thing.getLabel());
+        synchronized (entries) {
+            entries.clear(); // always only keep the current selection in the entry map to keep memory usage down
+            resultList.forEach((value) -> {
+                CommandOption commandOption = new CommandOption(value.getId(), value.getTitle());
+                commandOptionList.add(commandOption);
+                logger.trace("{} added to selection list on server {}", value.getId(), thing.getLabel());
 
-            // Keep the entries in a map so we can find the parent and container for the current selection to go back up
-            if (value.isContainer()) {
-                parentMap.put(value.getId(), value);
-            }
-            entries.add(value);
-        });
+                // Keep the entries in a map so we can find the parent and container for the current selection to go
+                // back up
+                if (value.isContainer()) {
+                    parentMap.put(value.getId(), value);
+                }
+                entries.add(value);
+            });
+        }
 
         // Set the currentId to the parent of the first entry in the list
         if (!resultList.isEmpty()) {
@@ -422,11 +429,6 @@ public class UpnpServerHandler extends UpnpHandler {
                 }
                 break;
             case "Source":
-                if (!((value == null) || (value.isEmpty()))) {
-                    source.clear();
-                    source.addAll(Arrays.asList(value.split(",")));
-                }
-                break;
             case "NumberReturned":
             case "TotalMatches":
             case "UpdateID":
