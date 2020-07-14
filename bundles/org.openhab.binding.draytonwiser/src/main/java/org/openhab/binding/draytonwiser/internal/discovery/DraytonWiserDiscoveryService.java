@@ -23,9 +23,12 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.eclipse.smarthome.core.thing.binding.ThingTypeProvider;
+import org.eclipse.smarthome.core.thing.xml.internal.ThingTypeXmlProvider;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserRefreshListener;
 import org.openhab.binding.draytonwiser.internal.handler.DraytonWiserPropertyHelper;
 import org.openhab.binding.draytonwiser.internal.handler.HeatHubHandler;
@@ -108,7 +111,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
         final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(hotWaterId);
 
         if (device != null) {
-            onThingWithSerialNumber("Hot Water", device, getRoomName(domainDTOProxy, hotWaterId));
+            onThingWithSerialNumber(THING_TYPE_HOTWATER, "Hot Water", device, getRoomName(domainDTOProxy, hotWaterId));
         }
     }
 
@@ -117,7 +120,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
         final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(roomStatId);
 
         if (device != null) {
-            onThingWithSerialNumber("Thermostat", device, getRoomName(domainDTOProxy, roomStatId));
+            onThingWithSerialNumber(THING_TYPE_ROOMSTAT, "Thermostat", device, getRoomName(domainDTOProxy, roomStatId));
         }
     }
 
@@ -139,7 +142,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
         final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(smartValueId);
 
         if (device != null) {
-            onThingWithSerialNumber("TRV", device, getRoomName(domainDTOProxy, smartValueId));
+            onThingWithSerialNumber(THING_TYPE_ITRV, "TRV", device, getRoomName(domainDTOProxy, smartValueId));
         }
     }
 
@@ -147,7 +150,7 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
         final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(smartPlug.getId());
 
         if (device != null) {
-            onThingWithSerialNumber("Smart Plug", device, smartPlug.getName());
+            onThingWithSerialNumber(THING_TYPE_SMARTPLUG, "Smart Plug", device, smartPlug.getName());
         }
     }
 
@@ -156,15 +159,15 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
         return assignedRoom == null ? "" : assignedRoom.getName();
     }
 
-    private void onThingWithSerialNumber(final String deviceType, final DeviceDTO device, final String name) {
+    private void onThingWithSerialNumber(final ThingTypeUID deviceType, final String deviceTypeName, final DeviceDTO device, final String name) {
         final String serialNumber = device.getSerialNumber();
-        logger.debug("{} discovered, serialnumber: {}", deviceType, serialNumber);
+        logger.debug("{} discovered, serialnumber: {}", deviceTypeName, serialNumber);
         final Map<String, Object> properties = new HashMap<>();
 
         DraytonWiserPropertyHelper.setPropertiesWithSerialNumber(device, properties);
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(THING_TYPE_SMARTPLUG, bridgeUID, serialNumber)).withProperties(properties)
-                .withBridge(bridgeUID).withLabel((name.isEmpty() ? "" : (name + " - ")) + deviceType)
+                .create(new ThingUID(deviceType, bridgeUID, serialNumber)).withProperties(properties)
+                .withBridge(bridgeUID).withLabel((name.isEmpty() ? "" : (name + " - ")) + deviceTypeName)
                 .withRepresentationProperty(serialNumber).build();
 
         thingDiscovered(discoveryResult);
