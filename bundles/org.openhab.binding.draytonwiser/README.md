@@ -131,7 +131,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 |-------------------------|--------------|--------------------------------------------|
 | `manualModeState`       | Switch       | Has manual mode been enabled               |
 | `hotWaterSetPoint`      | Switch       | The current hot water setpoint (on or off) |
-| `hotWaterBoostDuration` | Number:Time  | Period in hours to boost the hot water     |
+| `hotWaterBoostDuration` | Number       | Period in hours to boost the hot water     |
 
 #### Room
 
@@ -139,7 +139,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 |------------------------|--------------------|------------------------------------------------|
 | `currentSetPoint`      | Number:Temperature | The current set point temperature for the room |
 | `manualModeState`      | Switch             | Has manual mode been enabled                   |
-| `roomBoostDuration`    | Number:Time        | Period in hours to boost the room temperature  |
+| `roomBoostDuration`    | Number             | Period in hours to boost the room temperature  |
 | `windowStateDetection` | Switch             | Detect whether windows are open                |
 
 #### Room Stat
