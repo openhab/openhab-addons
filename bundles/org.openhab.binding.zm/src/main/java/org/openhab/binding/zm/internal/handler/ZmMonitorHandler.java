@@ -32,12 +32,9 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
@@ -82,7 +79,8 @@ public class ZmMonitorHandler extends BaseThingHandler {
         imageRefreshInterval = config.imageRefreshInterval;
         Integer value = config.alarmDuration;
         alarmDuration = value != null ? value : DEFAULT_ALARM_DURATION_SECONDS;
-        updateMonitorStatus();
+        bridgeHandler = (ZmBridgeHandler) getBridge().getHandler();
+        updateStatus(ThingStatus.ONLINE);
         startImageRefreshJob();
     }
 
@@ -135,19 +133,6 @@ public class ZmMonitorHandler extends BaseThingHandler {
                     }
                 }
                 break;
-        }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
-        logger.debug("Monitor {}: Detected bridge status changed to '{}', Update my status", monitorId, bridgeStatus);
-        if (bridgeStatus == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        } else if (bridgeStatus == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge status unknown");
         }
     }
 
@@ -255,22 +240,6 @@ public class ZmMonitorHandler extends BaseThingHandler {
             }
         } catch (RuntimeException e) {
             logger.debug("Monitor {}: Refresh image job got exception: {}", monitorId, e.getMessage(), e);
-        }
-    }
-
-    private void updateMonitorStatus() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            logger.debug("Monitor {}: Set monitor status to match bridge status: {}", monitorId, bridge.getStatus());
-            bridgeHandler = (ZmBridgeHandler) bridge.getHandler();
-            if (bridgeHandler != null) {
-                updateStatus(bridge.getStatus());
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler does not exist");
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge does not exist");
         }
     }
 

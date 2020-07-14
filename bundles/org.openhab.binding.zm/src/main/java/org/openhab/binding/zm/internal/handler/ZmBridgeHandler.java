@@ -514,7 +514,6 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                 return true;
             }
         } else {
-            logger.info("Bridge: Can't get version information from server");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't get version information");
         }
         return false;

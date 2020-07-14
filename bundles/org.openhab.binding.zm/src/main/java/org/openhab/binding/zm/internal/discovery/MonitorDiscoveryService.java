@@ -119,7 +119,7 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
     private DiscoveryResult createDiscoveryResult(ThingUID monitorUID, ThingUID bridgeUID, String id, String name,
             Map<String, Object> properties) {
         return DiscoveryResultBuilder.create(monitorUID).withProperties(properties).withBridge(bridgeUID)
-                .withLabel(buildLabel(name)).build();
+                .withLabel(buildLabel(name)).withRepresentationProperty(CONFIG_MONITOR_ID).build();
     }
 
     private String buildLabel(String name) {
