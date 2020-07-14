@@ -97,7 +97,7 @@ public class UpnpXMLParser {
     public static List<UpnpEntry> getEntriesFromXML(String xml) {
         if (xml.isEmpty()) {
             LOGGER.debug("Could not parse Entries from empty xml");
-            return new ArrayList<UpnpEntry>();
+            return Collections.emptyList();
         }
         EntryHandler handler = new EntryHandler();
         try {
@@ -113,7 +113,6 @@ public class UpnpXMLParser {
         return handler.getEntries();
     }
 
-    @NonNullByDefault
     private static class AVTransportEventHandler extends DefaultHandler {
 
         private final Map<String, String> changes = new HashMap<String, String>();
@@ -139,7 +138,6 @@ public class UpnpXMLParser {
         }
     }
 
-    @NonNullByDefault
     private static class EntryHandler extends DefaultHandler {
 
         // Maintain a set of elements it is not useful to complain about.
@@ -172,6 +170,10 @@ public class UpnpXMLParser {
         @Override
         public void startElement(@Nullable String uri, @Nullable String localName, @Nullable String qName,
                 @Nullable Attributes attributes) throws SAXException {
+            if (qName == null) {
+                element = null;
+                return;
+            }
             switch (qName) {
                 case "container":
                 case "item":

@@ -14,7 +14,6 @@ package org.openhab.binding.upnpcontrol.internal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -49,11 +48,16 @@ public class UpnpEntry {
     private String genre = "";
     private @Nullable Integer originalTrackNumber;
 
+    private boolean isContainer;
+
     public UpnpEntry(String id, String refId, String parentId, String upnpClass) {
         this.id = id;
         this.refId = refId;
         this.parentId = parentId;
         this.upnpClass = upnpClass;
+
+        Matcher matcher = CONTAINER_PATTERN.matcher(upnpClass);
+        isContainer = matcher.find();
     }
 
     public UpnpEntry withTitle(String title) {
@@ -141,13 +145,7 @@ public class UpnpEntry {
      * @return a URI for this entry. Thumbnail resources are not considered.
      */
     public String getRes() {
-        UpnpEntryRes resource;
-        try {
-            resource = resList.stream().filter(res -> !res.isThumbnailRes()).findFirst().get();
-        } catch (NoSuchElementException e) {
-            return "";
-        }
-        return resource.getRes();
+        return resList.stream().filter(res -> !res.isThumbnailRes()).map(UpnpEntryRes::getRes).findAny().orElse("");
     }
 
     public List<String> getProtocolList() {
@@ -162,8 +160,7 @@ public class UpnpEntry {
     }
 
     public boolean isContainer() {
-        Matcher matcher = CONTAINER_PATTERN.matcher(getUpnpClass());
-        return (matcher.find());
+        return isContainer;
     }
 
     /**

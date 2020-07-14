@@ -7,7 +7,7 @@ UPnP AV media renderers take care of playback of the content.
 
 You can select a renderer to play the media served from a server.
 The full content hierarchy of the media on the server can be browsed hierarchically.
-Searching the media library is also supported using uPnP search syntax.
+Searching the media library is also supported using UPnP search syntax.
 
 Controls are available to control the playback of the media on the renderer.
 Each discovered renderer will also be registered as an openHAB audio sink.
@@ -84,8 +84,8 @@ The `upnprenderer` has the following channels:
 | `publisher`     | String    |      R      | media publisher                                    |
 | `genre`         | String    |      R      | media genre                                        |
 | `tracknumber`   | Number    |      R      | track number of current track in album             |
-| `trackduration` | String    |      R      | track duration of current track in album           |
-| `trackposition` | String    |      R      | current position in track during playback or pause |
+| `trackduration` | Number:Time    |      R      | track duration of current track in album           |
+| `trackposition` | Number:Time    |      R      | current position in track during playback or pause |
 
 ## Audio Support
 
@@ -126,8 +126,8 @@ String Artist    "Artist"           <text>             (MediaRenderer) {channel=
 String Publisher "Publisher"        <text>             (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:publisher"}
 String Genre     "Genre"            <text>             (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:genre"}
 Number TrackNumber "Track Number"                      (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:tracknumber"}
-String TrackDuration "Track Duration"                  (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:trackduration"}
-String TrackPosition "Track Position"                  (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:trackposition"}
+Number:Time TrackDuration "Track Duration [%d %unit%]" (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:trackduration"}
+Number:Time TrackPosition "Track Position [%d %unit%]" (MediaRenderer) {channel="upnpcontrol:upnprenderer:mymediarenderer:trackposition"}
 
 String Renderer  "Renderer [%s]"    <text>             (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:title"}
 String CurrentId "Current Entry [%s]" <text>           (MediaServer)   {channel="upnpcontrol:upnpserver:mymediaserver:currentid"}

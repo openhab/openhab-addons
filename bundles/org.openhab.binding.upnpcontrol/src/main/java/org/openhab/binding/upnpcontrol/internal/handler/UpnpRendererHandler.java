@@ -36,8 +36,10 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -91,8 +93,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile @Nullable UpnpEntry currentEntry = null;
     private volatile boolean playerStopped;
     private volatile boolean playing;
-    private volatile String trackDuration = "00:00:00";
-    private volatile String trackPosition = "00:00:00";
+    private volatile int trackDuration = 0;
+    private volatile int trackPosition = 0;
     private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
 
     private volatile @Nullable ScheduledFuture<?> subscriptionRefreshJob;
@@ -441,7 +443,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                         updateState(CONTROL, PlayPauseType.PAUSE);
                         playerStopped = true;
                         stop();
-                        updateState(TRACK_POSITION, StringType.valueOf("00:00:00"));
+                        updateState(TRACK_POSITION, new QuantityType<>(0, SmartHomeUnits.SECOND));
                     }
                     break;
                 case CONTROL:
@@ -488,12 +490,17 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-        if (logger.isDebugEnabled() && !("AbsTime".equals(variable) || "RelCount".equals(variable)
-                || "RelTime".equals(variable) || "AbsCount".equals(variable) || "Track".equals(variable)
-                || "TrackDuration".equals(variable))) {
-            // don't log all variables received when updating the track position every second
-            logger.debug("Upnp device {} received variable {} with value {} from service {}", thing.getLabel(),
+        if (logger.isTraceEnabled()) {
+            logger.trace("Upnp device {} received variable {} with value {} from service {}", thing.getLabel(),
                     variable, value, service);
+        } else {
+            if (logger.isDebugEnabled() && !("AbsTime".equals(variable) || "RelCount".equals(variable)
+                    || "RelTime".equals(variable) || "AbsCount".equals(variable) || "Track".equals(variable)
+                    || "TrackDuration".equals(variable))) {
+                // don't log all variables received when updating the track position every second
+                logger.debug("Upnp device {} received variable {} with value {} from service {}", thing.getLabel(),
+                        variable, value, service);
+            }
         }
         if (variable == null) {
             return;
@@ -534,7 +541,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                                 onValueReceived("CurrentTrackMetaData", entrySet.getValue(), service);
                             }
                         }
-                        if (parsedValues.get("TransportState") != null) {
+                        if (parsedValues.containsKey("TransportState")) {
                             onValueReceived("TransportState", parsedValues.get("TransportState"), service);
                         }
                     }
@@ -564,7 +571,8 @@ public class UpnpRendererHandler extends UpnpHandler {
                 }
                 break;
             case "CurrentTrackURI":
-                if (queueIterator.hasNext() && (currentEntry != null) && !currentEntry.getRes().equals(value)
+                UpnpEntry current = currentEntry;
+                if (queueIterator.hasNext() && (current != null) && !current.getRes().equals(value)
                         && currentQueue.get(queueIterator.nextIndex()).getRes().equals(value)) {
                     // Renderer advanced to next entry independent of openHAB UPnP control point.
                     // Advance in the queue to keep proper position status.
@@ -588,11 +596,28 @@ public class UpnpRendererHandler extends UpnpHandler {
                 }
                 break;
             case "CurrentTrackDuration":
-                trackDuration = value != null ? value : "00:00:00";
-                updateState(TRACK_DURATION, StringType.valueOf(trackDuration));
+            case "TrackDuration":
+                // track duration and track position have format H+:MM:SS[.F+] or H+:MM:SS[.F0/F1]. We are not
+                // interested in the fractional seconds, so drop everything after . and calculate in seconds.
+                if ((value == null) || ("NOT_IMPLEMENTED".equals(value))) {
+                    trackDuration = 0;
+                    updateState(TRACK_DURATION, UnDefType.UNDEF);
+                } else {
+                    trackDuration = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n))
+                            .reduce(0, (n, m) -> n * 60 + m);
+                    updateState(TRACK_DURATION, new QuantityType<>(trackDuration, SmartHomeUnits.SECOND));
+                }
+                break;
             case "RelTime":
-                trackPosition = value != null ? value : "00:00:00";
-                updateState(TRACK_POSITION, StringType.valueOf(trackPosition));
+                if ((value == null) || ("NOT_IMPLEMENTED".equals(value))) {
+                    trackPosition = 0;
+                    updateState(TRACK_POSITION, UnDefType.UNDEF);
+                } else {
+                    trackPosition = Arrays.stream(value.split("\\.")[0].split(":")).mapToInt(n -> Integer.parseInt(n))
+                            .reduce(0, (n, m) -> n * 60 + m);
+                    updateState(TRACK_POSITION, new QuantityType<>(trackPosition, SmartHomeUnits.SECOND));
+                }
+                break;
             default:
                 super.onValueReceived(variable, value, service);
                 break;
@@ -653,7 +678,9 @@ public class UpnpRendererHandler extends UpnpHandler {
         updateState(PUBLISHER, UnDefType.UNDEF);
         updateState(GENRE, UnDefType.UNDEF);
         updateState(TRACK_NUMBER, UnDefType.UNDEF);
+        trackDuration = 0;
         updateState(TRACK_DURATION, UnDefType.UNDEF);
+        trackPosition = 0;
         updateState(TRACK_POSITION, UnDefType.UNDEF);
 
         currentEntry = null;
@@ -750,7 +777,6 @@ public class UpnpRendererHandler extends UpnpHandler {
             }
             setCurrentURI(entry.getRes(), UpnpXMLParser.compileMetadataString(entry));
             play();
-            scheduleTrackPositionRefresh();
 
             // make the next entry available to renderers that support it
             if (queueIterator.hasNext()) {
@@ -768,9 +794,6 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (!isLinked(TRACK_POSITION)) {
             return;
         }
-        if (trackDuration.equals("00:00:00") || trackDuration.equals("NOT_IMPLEMENTED")) {
-            return;
-        }
         if (trackPositionRefresh == null) {
             trackPositionRefresh = scheduler.scheduleWithFixedDelay(this::getPositionInfo, 1, 1, TimeUnit.SECONDS);
         }
@@ -784,8 +807,8 @@ public class UpnpRendererHandler extends UpnpHandler {
         }
         trackPositionRefresh = null;
 
-        trackPosition = "00:00:00";
-        updateState(TRACK_POSITION, StringType.valueOf(trackPosition));
+        trackPosition = 0;
+        updateState(TRACK_POSITION, new QuantityType<>(trackPosition, SmartHomeUnits.SECOND));
     }
 
     /**

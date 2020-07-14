@@ -135,16 +135,16 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="trackduration">
-		<item-type>String</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Track Duration</label>
 		<description>Now playing track duration</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="trackposition">
-		<item-type>String</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Track Position</label>
 		<description>Now playing track position</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="upnprenderer">

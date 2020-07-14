@@ -43,7 +43,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected volatile int connectionId;
     protected volatile int avTransportId;
     protected volatile int rcsId;
-    protected UpnpControlConfiguration config = getConfigAs(UpnpControlConfiguration.class);
+    protected @NonNullByDefault({}) UpnpControlConfiguration config;
 
     public UpnpHandler(Thing thing, UpnpIOService upnpIOService) {
         super(thing);
@@ -54,6 +54,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     @Override
     public void initialize() {
+        config = getConfigAs(UpnpControlConfiguration.class);
         service.registerParticipant(this);
     }
 
@@ -160,7 +161,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
                 onValueReceived(variable, result.get(variable), serviceId);
             }
         });
-        return;
     }
 
     @Override

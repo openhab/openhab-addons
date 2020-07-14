@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -71,10 +72,7 @@ public class UpnpServerHandler extends UpnpHandler {
     private volatile List<StateOption> rendererStateOptionList = new ArrayList<>();
 
     private @NonNullByDefault({}) ChannelUID rendererChannelUID;
-    private @NonNullByDefault({}) ChannelUID currentTitleChannelUID;
-
-    private volatile int numberReturned;
-    private volatile int totalMatches;
+    private @NonNullByDefault({}) ChannelUID currentSelectionChannelUID;
 
     private volatile UpnpEntry currentEntry = new UpnpEntry(DIRECTORY_ROOT, DIRECTORY_ROOT, DIRECTORY_ROOT,
             "object.container");
@@ -87,7 +85,7 @@ public class UpnpServerHandler extends UpnpHandler {
     private UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     private UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
 
-    protected UpnpControlServerConfiguration config = getConfigAs(UpnpControlServerConfiguration.class);
+    protected @NonNullByDefault({}) UpnpControlServerConfiguration config;
 
     public UpnpServerHandler(Thing thing, UpnpIOService upnpIOService,
             ConcurrentMap<String, UpnpRendererHandler> upnpRenderers,
@@ -105,11 +103,26 @@ public class UpnpServerHandler extends UpnpHandler {
     @Override
     public void initialize() {
         super.initialize();
+        config = getConfigAs(UpnpControlServerConfiguration.class);
 
         logger.debug("Initializing handler for media server device {}", thing.getLabel());
 
-        rendererChannelUID = thing.getChannel(UPNPRENDERER).getUID();
-        currentTitleChannelUID = thing.getChannel(BROWSE).getUID();
+        Channel rendererChannel = thing.getChannel(UPNPRENDERER);
+        if (rendererChannel != null) {
+            rendererChannelUID = rendererChannel.getUID();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Channel " + UPNPRENDERER + " not defined");
+            return;
+        }
+        Channel selectionChannel = thing.getChannel(BROWSE);
+        if (selectionChannel != null) {
+            currentSelectionChannelUID = selectionChannel.getUID();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Channel " + BROWSE + " not defined");
+            return;
+        }
 
         if (config.udn != null) {
             if (service.isRegistered(this)) {
@@ -151,8 +164,11 @@ public class UpnpServerHandler extends UpnpHandler {
                         // only refresh title list if filtering by renderer capabilities
                         browse(currentEntry.getId(), "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
                     }
-                } else if ((command instanceof RefreshType) && (currentRendererHandler != null)) {
-                    updateState(channelUID, StringType.valueOf(currentRendererHandler.getThing().getLabel()));
+                } else if (command instanceof RefreshType) {
+                    UpnpRendererHandler renderer = currentRendererHandler;
+                    if (renderer != null) {
+                        updateState(channelUID, StringType.valueOf(renderer.getThing().getLabel()));
+                    }
                 }
                 break;
             case CURRENTID:
@@ -173,10 +189,13 @@ public class UpnpServerHandler extends UpnpHandler {
                     if (browseTarget != null) {
                         if (!UP.equals(browseTarget)) {
                             final String target = browseTarget;
-                            try {
-                                currentEntry = entries.stream().filter(entry -> target.equals(entry.getId()))
-                                        .findFirst().get();
-                            } catch (NoSuchElementException e) {
+                            currentEntry = entries.stream().filter(entry -> target.equals(entry.getId())).findFirst()
+                                    .get();
+                            Optional<UpnpEntry> current = entries.stream().filter(entry -> target.equals(entry.getId()))
+                                    .findFirst();
+                            if (current.isPresent()) {
+                                currentEntry = current.get();
+                            } else {
                                 logger.info("Trying to browse invalid target {}", browseTarget);
                                 browseTarget = UP; // move up on invalid target
                             }
@@ -190,7 +209,7 @@ public class UpnpServerHandler extends UpnpHandler {
                             }
                             currentEntry = parentMap.get(browseTarget);
                         }
-                        updateState(thing.getChannel(CURRENTID).getUID(), StringType.valueOf(currentEntry.getId()));
+                        updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
                         logger.debug("Browse target {}", browseTarget);
                         browse(browseTarget, "BrowseDirectChildren", "*", "0", "0", config.sortcriteria);
                     }
@@ -210,13 +229,14 @@ public class UpnpServerHandler extends UpnpHandler {
                             // No parent found, so make it the root directory
                             searchContainer = DIRECTORY_ROOT;
                         }
-                        updateState(thing.getChannel(CURRENTID).getUID(), StringType.valueOf(currentEntry.getId()));
+                        updateState(CURRENTID, StringType.valueOf(currentEntry.getId()));
                         logger.debug("Search container {} for {}", searchContainer, criteria);
                         search(searchContainer, criteria, "*", "0", "0", config.sortcriteria);
                     }
                 }
                 break;
         }
+
     }
 
     /**
@@ -279,11 +299,11 @@ public class UpnpServerHandler extends UpnpHandler {
 
         // Set the currentId to the parent of the first entry in the list
         if (!resultList.isEmpty()) {
-            updateState(thing.getChannel(CURRENTID).getUID(), StringType.valueOf(resultList.get(0).getId()));
+            updateState(CURRENTID, StringType.valueOf(resultList.get(0).getId()));
         }
 
         logger.debug("{} entries added to selection list on server {}", commandOptionList.size(), thing.getLabel());
-        updateCommandDescription(currentTitleChannelUID, commandOptionList);
+        updateCommandDescription(currentSelectionChannelUID, commandOptionList);
 
         serveMedia();
     }
@@ -401,23 +421,15 @@ public class UpnpServerHandler extends UpnpHandler {
                     updateTitleSelection(new ArrayList<UpnpEntry>());
                 }
                 break;
-            case "NumberReturned":
-                if (!((value == null) || (value.isEmpty()))) {
-                    numberReturned = Integer.parseInt(value);
-                }
-                break;
-            case "TotalMatches":
-                if (!((value == null) || (value.isEmpty()))) {
-                    totalMatches = Integer.parseInt(value);
-                }
-                break;
-            case "UpdateID":
-                break;
             case "Source":
                 if (!((value == null) || (value.isEmpty()))) {
                     source.clear();
                     source.addAll(Arrays.asList(value.split(",")));
                 }
+                break;
+            case "NumberReturned":
+            case "TotalMatches":
+            case "UpdateID":
                 break;
             default:
                 super.onValueReceived(variable, value, service);
