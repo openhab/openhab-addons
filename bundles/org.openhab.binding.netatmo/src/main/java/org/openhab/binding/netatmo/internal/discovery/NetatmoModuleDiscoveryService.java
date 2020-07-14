@@ -133,36 +133,6 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         });
     }
 
-    private static String createWeatherStationName(NAMain station, boolean isFavorite) {
-        StringBuilder nameBuilder = new StringBuilder();
-        nameBuilder.append("Main-Module");
-        if(station.getStationName() != null) {
-            nameBuilder.append(' ');
-            nameBuilder.append(station.getStationName());
-        }
-        if(isFavorite) {
-            nameBuilder.append(" (favorite)");
-        }
-        return nameBuilder.toString();
-    }
-
-    private static String createWeatherModuleName(NAMain station, NAStationModule module, boolean isFavorite) {
-        StringBuilder nameBuilder = new StringBuilder();
-        if(module.getModuleName() != null) {
-            nameBuilder.append(module.getModuleName());
-        } else {
-            nameBuilder.append(module.getType());
-        }
-        if(station.getStationName() != null) {
-            nameBuilder.append(' ');
-            nameBuilder.append(station.getStationName());
-        }
-        if(isFavorite) {
-            nameBuilder.append(" (favorite)");
-        }
-        return nameBuilder.toString();
-    }
-
     private void discoverWelcomeHome(NAWelcomeHome home) {
         // I observed that Thermostat homes are also reported here by Netatmo API
         // So I ignore homes that have an empty list of cameras
@@ -218,5 +188,35 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         }
 
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
+    }
+
+    private static String createWeatherStationName(NAMain station, boolean isFavorite) {
+        StringBuilder nameBuilder = new StringBuilder();
+        nameBuilder.append("Main-Module");
+        if(station.getStationName() != null) {
+            nameBuilder.append(' ');
+            nameBuilder.append(station.getStationName());
+        }
+        if(isFavorite) {
+            nameBuilder.append(" (favorite)");
+        }
+        return nameBuilder.toString();
+    }
+
+    private static String createWeatherModuleName(NAMain station, NAStationModule module, boolean isFavorite) {
+        StringBuilder nameBuilder = new StringBuilder();
+        if(module.getModuleName() != null) {
+            nameBuilder.append(module.getModuleName());
+        } else {
+            nameBuilder.append(module.getType());
+        }
+        if(station.getStationName() != null) {
+            nameBuilder.append(' ');
+            nameBuilder.append(station.getStationName());
+        }
+        if(isFavorite) {
+            nameBuilder.append(" (favorite)");
+        }
+        return nameBuilder.toString();
     }
 }
