@@ -245,6 +245,7 @@
 /bundles/org.openhab.binding.tibber/ @kjoglum
 /bundles/org.openhab.binding.touchwand /@roieg
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
+/bundles/org.openhab.binding.tr064/ @J-N-K
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
 /bundles/org.openhab.binding.unifiedremote/ @GiviMAD
