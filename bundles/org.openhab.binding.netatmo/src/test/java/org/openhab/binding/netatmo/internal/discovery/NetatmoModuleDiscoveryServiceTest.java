@@ -60,6 +60,8 @@ public class NetatmoModuleDiscoveryServiceTest {
     @Test
     public void testStartScanNothingActivated() {
         service.startScan();
+
+        assertEquals(0, service.getDiscoveredThings().size());
     }
 
     @Test
@@ -67,6 +69,8 @@ public class NetatmoModuleDiscoveryServiceTest {
         activateDiscoveryWeatherStation();
 
         service.startScan();
+
+        assertEquals(0, service.getDiscoveredThings().size());
     }
 
     @Test
@@ -75,6 +79,8 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         when(bridgeHandlerSpy.getStationsDataBody(null)).thenReturn(Optional.of(new NAStationDataBody()));
         service.startScan();
+
+        assertEquals(0, service.getDiscoveredThings().size());
     }
 
     @Test
