@@ -149,7 +149,7 @@ public class ShellyColorUtils {
             for (int i = 0; i < rgbw.length; i++) {
                 values[i] = Integer.parseInt(rgbw[i]);
             }
-        } catch (NullPointerException e) { // might be a format problem
+        } catch (RuntimeException e) { // might be a format problem
             throw new IllegalArgumentException(
                     "Unable to convert fullColor value: " + rgbwString + ", " + e.getMessage());
         }

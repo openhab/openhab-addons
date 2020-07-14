@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 
 import tec.uom.se.unit.Units;
 
@@ -232,7 +231,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
                 discovering = true;
             }
-        } catch (IllegalArgumentException | NullPointerException | JsonSyntaxException e) {
+        } catch (RuntimeException e) {
             logger.debug("{}: Unable to process CoIoT Message for payload={}", thingName, payload, e);
             resetSerial();
         }
@@ -301,7 +300,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             } else {
                 sensorMap.replace(sen.id, fixed);
             }
-        } catch (NullPointerException e) { // depending on firmware release the CoAP device description is buggy
+        } catch (RuntimeException e) { // depending on firmware release the CoAP device description is buggy
             logger.debug("{}: Unable to decode sensor definition -> skip", thingName, e);
         }
     }
@@ -565,7 +564,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         logger.debug("{}: Sensor data for id {}, type {}/{} not processed, value={}; payload={}",
                                 thingName, sen.id, sen.type, sen.desc, s.value, payload);
                 }
-            } catch (IllegalArgumentException | NullPointerException | ArrayIndexOutOfBoundsException e) {
+            } catch (RuntimeException e) {
                 // even the processing of one value failed we continue with the next one (sometimes this is caused by
                 // buggy formats provided by the device
                 logger.debug("{}: Unable to process data from sensor[{}], devId={}, payload={}", thingName, i, devId,

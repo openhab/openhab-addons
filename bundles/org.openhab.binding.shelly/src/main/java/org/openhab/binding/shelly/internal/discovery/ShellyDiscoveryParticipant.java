@@ -169,7 +169,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     logger.info("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
                     logger.debug("{}: Discovery failed", name, e);
                 }
-            } catch (IllegalArgumentException | NullPointerException e) { // maybe some format description was buggy
+            } catch (RuntimeException e) { // maybe some format description was buggy
                 logger.debug("{}: Discovery failed!", name, e);
             }
 
@@ -184,7 +184,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                         .withLabel(name + " - " + address).withRepresentationProperty(name).build();
             }
-        } catch (IOException | IllegalArgumentException | NullPointerException e) {
+        } catch (IOException | RuntimeException e) {
             // maybe some format description was buggy
             logger.debug("{}: Exception on processing serviceInfo '{}'", name, service.getNiceTextString(), e);
         }
