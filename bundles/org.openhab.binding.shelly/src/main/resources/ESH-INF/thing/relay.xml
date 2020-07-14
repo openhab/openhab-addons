@@ -204,7 +204,7 @@
 	</thing-type>
 
 	<thing-type id="shellydimmer2">
-		<label>Shelly Dimmer 2 (SHDM-2")</label>
+		<label>Shelly Dimmer 2 (SHDM-2)</label>
 		<description>Shelly Dimmer with 2 Switches</description>
 		<category>DimmableLight</category>
 		<channel-groups>
