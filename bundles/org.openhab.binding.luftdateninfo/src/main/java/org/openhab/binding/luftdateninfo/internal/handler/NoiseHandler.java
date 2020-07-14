@@ -46,9 +46,9 @@ public class NoiseHandler extends BaseSensorHandler {
     @Override
     public UpdateStatus updateChannels(@Nullable String json) {
         if (json != null) {
-            List<SensorDataValue> valueList = HTTP.getLatestValues(json);
+            List<SensorDataValue> valueList = HTTPHandler.getHandler().getLatestValues(json);
             if (valueList != null) {
-                if (HTTP.isNoise(valueList)) {
+                if (HTTPHandler.getHandler().isNoise(valueList)) {
                     valueList.forEach(v -> {
                         if (v.getValueType().equals(NOISE_EQ)) {
                             noiseEQCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),

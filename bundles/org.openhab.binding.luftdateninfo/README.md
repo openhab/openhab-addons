@@ -2,7 +2,7 @@
 
 <img style="float: right;" src="doc/logo-rund.png">
 Binding for the Sensor Community <a href=https://luftdaten.info/>luftdaten.info</a>. The community provides instructions to build sensors on your own and they can be integrated into the database.
-With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openhab.
+With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openHAB.
 
 ## Supported Things
 
@@ -27,8 +27,8 @@ There's no auto discovery. See Thing configuration how to setup a Sensor.
 Perform the following steps to get the appropriate Sensor ID
 
 * Go to to [luftdaten.info map](https://deutschland.maps.sensor.community/)
-* Choose your wanted value in bottom list - now only the Sensors are displayed which are supporting this
-* Click on your / any Sensor and the ID is displayed in the top right corner.Note: Sensor ID is just the number without beginning hash #
+* Choose your desired value in bottom list - now only the Sensors are displayed which are supporting this
+* Click on your / any Sensor and the ID is displayed in the top right corner. Note: Sensor ID is just the number without beginning hash #
 * Enter this Sensor ID into the thing configuration
 
 ![Luftdaten.info Logo](doc/LuftdatenInfo-Map.png)
@@ -46,10 +46,10 @@ Perform the following steps to get the appropriate Sensor ID
 
 | Channel ID           | Item Type            | Description                              |
 |----------------------|----------------------|------------------------------------------|
-| temperature          | Number:Temperature   | current temperature in degrees Celsius |
-| humidity             | Number:Dimensionless | current humidity percent  |
-| pressure             | Number:Pressure      | Atmospheric Pressure in hpa (not supported by all sensors) |
-| pressure-sea         | Number:Pressure      | Atmospheric Pressure on sea level in hpa (not supported by all sensors)  |
+| temperature          | Number:Temperature   | current temperature                      |
+| humidity             | Number:Dimensionless | current humidity percent                 |
+| pressure             | Number:Pressure      | Atmospheric Pressure (not supported by all sensors) |
+| pressure-sea         | Number:Pressure      | Atmospheric Pressure on sea level (not supported by all sensors)  |
 
 
 ### Noise Sensor 

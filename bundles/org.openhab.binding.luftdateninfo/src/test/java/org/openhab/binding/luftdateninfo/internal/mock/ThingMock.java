@@ -37,7 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
  */
 @NonNullByDefault
 public class ThingMock implements Thing {
-    private Configuration config = new Configuration(); // = new HashMap<String, Object>();
+    private Configuration config = new Configuration();
 
     @Override
     public @Nullable String getLabel() {

@@ -38,10 +38,9 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class HTTPHandler {
     private final Logger logger = LoggerFactory.getLogger(HTTPHandler.class);
-    private static final Gson GSON = new Gson();
 
-    private static String sensorUrl = "http://data.sensor.community/airrohr/v1/sensor/";
-    private static @Nullable HttpClient commonHttpClient;
+    private static final Gson GSON = new Gson();
+    private static final HTTPHandler HTTP_HANDLER = new HTTPHandler();
 
     public static final String P1 = "P1";
     public static final String P2 = "P2";
@@ -55,8 +54,15 @@ public class HTTPHandler {
     public static final String NOISE_MIN = "noise_LA_min";
     public static final String NOISE_MAX = "noise_LA_max";
 
+    private static String sensorUrl = "http://data.sensor.community/airrohr/v1/sensor/";
+    private static @Nullable HttpClient commonHttpClient;
+
     public static void init(HttpClient httpClient) {
         commonHttpClient = httpClient;
+    }
+
+    public static HTTPHandler getHandler() {
+        return HTTP_HANDLER;
     }
 
     public @Nullable String getResponse(String sensorId) {
@@ -127,8 +133,7 @@ public class HTTPHandler {
     public void logDateConversionError(final String response, final Object dto) {
         logger.warn("Unable to get timestamp");
         logger.warn("Response: {}", response);
-        Gson gson = new Gson();
-        String json = gson.toJson(dto);
+        String json = GSON.toJson(dto);
         logger.warn("GSon: {}", json);
     }
 

@@ -45,9 +45,9 @@ public class PMHandler extends BaseSensorHandler {
     @Override
     public UpdateStatus updateChannels(@Nullable String json) {
         if (json != null) {
-            List<SensorDataValue> valueList = HTTP.getLatestValues(json);
+            List<SensorDataValue> valueList = HTTPHandler.getHandler().getLatestValues(json);
             if (valueList != null) {
-                if (HTTP.isParticulate(valueList)) {
+                if (HTTPHandler.getHandler().isParticulate(valueList)) {
                     valueList.forEach(v -> {
                         if (v.getValueType().equals(P1)) {
                             pm100Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),

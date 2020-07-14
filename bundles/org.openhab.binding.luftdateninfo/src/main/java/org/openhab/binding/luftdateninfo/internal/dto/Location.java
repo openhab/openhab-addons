@@ -26,7 +26,7 @@ public class Location {
     private String latitude;
     private String longitude;
     private int indoor;
-    @SerializedName(value = "exact_location")
+    @SerializedName("exact_location")
     private int exactLocation;
 
     public int getId() {
@@ -81,7 +81,7 @@ public class Location {
         return exactLocation;
     }
 
-    public void setExactLocation(Integer exactLocation) {
+    public void setExactLocation(int exactLocation) {
         this.exactLocation = exactLocation;
     }
 }

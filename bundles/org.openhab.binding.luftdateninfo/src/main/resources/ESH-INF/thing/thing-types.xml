@@ -59,48 +59,48 @@
 	</thing-type>
 
 	<channel-type id="pm25-channel">
-		<item-type>Number</item-type>
-		<label>PM 2.5:Density</label>
+		<item-type>Number:Density</item-type>
+		<label>PM 2.5</label>
 		<description>Particulate Matter 2.5</description>
 	</channel-type>
 	<channel-type id="pm100-channel">
-		<item-type>Number</item-type>
-		<label>PM 10.0:Density</label>
+		<item-type>Number:Density</item-type>
+		<label>PM 10.0</label>
 		<description>Particulate Matter 10.0</description>
 	</channel-type>
 	<channel-type id="temp-channel">
-		<item-type>Number</item-type>
-		<label>Temperature:Temperature</label>
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
 		<description>Temperature from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="hum-channel">
-		<item-type>Number</item-type>
-		<label>Humidity:Dimensionless</label>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
 		<description>Humidity from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="pressure-channel">
-		<item-type>Number</item-type>
-		<label>Atmospheric Pressure:Pressure</label>
+		<item-type>Number:Pressure</item-type>
+		<label>Atmospheric Pressure</label>
 		<description>Atmospheric Pressure from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="pressure-sea-channel">
-		<item-type>Number</item-type>
-		<label>Atmospheric Pressure Sea Level:Pressure</label>
+		<item-type>Number:Pressure</item-type>
+		<label>Atmospheric Pressure Sea Level</label>
 		<description>Atmospheric Pressure at sea level from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="noise-eq-channel">
-		<item-type>Number</item-type>
-		<label>Noise EQ:Dimensionless</label>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Noise EQ</label>
 		<description>Average noise level from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="noise-min-channel">
-		<item-type>Number</item-type>
-		<label>Min Noise:Dimensionless</label>
-		<description>Minimum noise level (last 2.5 minutes:Dimensionless) from the selected Sensor ID</description>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Min Noise</label>
+		<description>Minimum noise level (last 2.5 minutes) from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="noise-max-channel">
-		<item-type>Number</item-type>
-		<label>Max Noise:Dimensionless</label>
-		<description>Maximum noise level (last 2.5 minutes) from the selected Sensor ID:Dimensionless</description>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Max Noise</label>
+		<description>Maximum noise level (last 2.5 minutes) from the selected Sensor ID</description>
 	</channel-type>
 </thing:thing-descriptions>

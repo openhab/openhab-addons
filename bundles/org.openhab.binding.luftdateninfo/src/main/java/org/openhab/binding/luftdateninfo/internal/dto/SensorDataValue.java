@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SensorDataValue {
     private long id;
-    @SerializedName(value = "value_type")
+    @SerializedName("value_type")
     private String valueType;
 
     @Override

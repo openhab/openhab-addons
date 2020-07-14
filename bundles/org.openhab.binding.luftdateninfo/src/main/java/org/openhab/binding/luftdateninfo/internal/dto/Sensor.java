@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 public class Sensor {
     private int id;
     private String pin;
-    @SerializedName(value = "sensor_type")
+    @SerializedName("sensor_type")
     private SensorType sensorType;
 
     public int getId() {

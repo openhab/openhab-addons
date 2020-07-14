@@ -24,9 +24,9 @@ import com.google.gson.annotations.SerializedName;
 public class SensorData {
     private long id;
     private String timestamp;
-    @SerializedName(value = "sampling_rate")
+    @SerializedName("sampling_rate")
     private int samplingRate;
-    @SerializedName(value = "sensordatavalues")
+    @SerializedName("sensordatavalues")
     private List<SensorDataValue> sensorDataValues;
     private Location location;
     private Sensor sensor;

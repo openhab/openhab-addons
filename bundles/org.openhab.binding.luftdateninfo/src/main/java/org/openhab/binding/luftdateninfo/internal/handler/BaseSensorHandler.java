@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -37,7 +38,6 @@ import org.slf4j.LoggerFactory;
 public abstract class BaseSensorHandler extends BaseThingHandler {
 
     protected static final int REFRESH_INTERVAL_MIN = 5;
-    protected static final HTTPHandler HTTP = new HTTPHandler();
     private static final LuftdatenInfoConfiguration DEFAULT_CONFIG = new LuftdatenInfoConfiguration();
     protected final Logger logger = LoggerFactory.getLogger(BaseSensorHandler.class);
 
@@ -104,25 +104,24 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
             } else {
                 switch (updateStatus) {
                     case CONNECTION_ERROR:
-                        logger.warn("Update failed due to Connection error. Trying to recover in next refresh");
                         // start job even if first update isn't valid
                         startSchedule();
-                        updateStatus(ThingStatus.OFFLINE);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Update failed due to Connection error. Trying to recover in next refresh");
                         break;
                     case VALUE_EMPTY:
-                        logger.warn("No values deliverd by Sensor.  Trying to recover in next refresh");
                         // start job even if first update isn't valid
                         startSchedule();
-                        updateStatus(ThingStatus.ONLINE);
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                "No values delivered by Sensor. Trying to recover in next refresh");
                         break;
                     case VALUE_ERROR:
-                        logger.warn(
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "Sensor values doesn't match - please check if Sensor ID is delivering the correct Thing channel values");
-                        updateStatus(ThingStatus.OFFLINE);
                         break;
                     default:
-                        logger.warn("Error during update - please check your config data");
-                        updateStatus(ThingStatus.OFFLINE);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Error during update - please check your config data");
                         break;
                 }
             }
@@ -177,7 +176,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     }
 
     protected void update() {
-        String response = HTTP.getResponse(config.sensorid);
+        String response = HTTPHandler.getHandler().getResponse(config.sensorid);
         updateStatus = updateChannels(response);
     }
 

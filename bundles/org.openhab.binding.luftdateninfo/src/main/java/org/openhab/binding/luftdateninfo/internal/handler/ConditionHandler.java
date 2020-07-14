@@ -51,9 +51,9 @@ public class ConditionHandler extends BaseSensorHandler {
     @Override
     public UpdateStatus updateChannels(@Nullable String json) {
         if (json != null) {
-            List<SensorDataValue> valueList = HTTP.getLatestValues(json);
+            List<SensorDataValue> valueList = HTTPHandler.getHandler().getLatestValues(json);
             if (valueList != null) {
-                if (HTTP.isCondition(valueList)) {
+                if (HTTPHandler.getHandler().isCondition(valueList)) {
                     valueList.forEach(v -> {
                         if (v.getValueType().equals(TEMPERATURE)) {
                             temperatureCache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
