@@ -92,9 +92,9 @@ public class TeleinfoInputStream extends InputStream {
     private @Nullable String groupLine;
     private ExecutorService executorService;
     private long waitNextHeaderFrameTimeoutInUs;
-    private long readingFrameTimeoutInMs;
+    private long readingFrameTimeoutInUs;
     private boolean autoRepairInvalidADPSgroupLine;
-    private boolean useOpenhabScheduler = false;
+    private boolean useOpenhabScheduler;
 
     static {
         LABEL_VALUE_CONVERTERS = new HashMap<>();
@@ -116,27 +116,37 @@ public class TeleinfoInputStream extends InputStream {
     }
 
     public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
-            long readingFrameTimeoutInMs, boolean autoRepairInvalidADPSgroupLine) {
+            long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
 
         this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInUs;
-        this.readingFrameTimeoutInMs = readingFrameTimeoutInMs;
+        this.readingFrameTimeoutInUs = readingFrameTimeoutInUs;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
 
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
         this.executorService = Executors.newFixedThreadPool(2);
+        this.useOpenhabScheduler = false;
 
         groupLine = null;
     }
 
-    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInMs,
-            long readingFrameTimeoutInMs, boolean autoRepairInvalidADPSgroupLine, ExecutorService executorService) {
-        this(teleinfoInputStream, waitNextHeaderFrameTimeoutInMs, readingFrameTimeoutInMs,
-                autoRepairInvalidADPSgroupLine);
+    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
+            long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine, ExecutorService executorService) {
+        if (teleinfoInputStream == null) {
+            throw new IllegalArgumentException("Teleinfo inputStream is null");
+        }
+
+        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInUs;
+        this.readingFrameTimeoutInUs = readingFrameTimeoutInUs;
+        this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
         this.executorService = executorService;
         this.useOpenhabScheduler = true;
+
+        this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
+
+        groupLine = null;
     }
 
     @Override
@@ -253,8 +263,8 @@ public class TeleinfoInputStream extends InputStream {
 
         try {
             logger.debug("reading data frame...");
-            logger.trace("readingFrameTimeoutInMs = {}", readingFrameTimeoutInMs);
-            Map<Label, Object> frameValues = nextFrameFuture.get(readingFrameTimeoutInMs, TimeUnit.MICROSECONDS);
+            logger.trace("readingFrameTimeoutInUs = {}", readingFrameTimeoutInUs);
+            Map<Label, Object> frameValues = nextFrameFuture.get(readingFrameTimeoutInUs, TimeUnit.MICROSECONDS);
 
             // build the frame from map values
             final Frame frame = buildFrame(frameValues);
@@ -271,20 +281,20 @@ public class TeleinfoInputStream extends InputStream {
         }
     }
 
-    public long getWaitNextHeaderFrameTimeoutInMs() {
+    public long getWaitNextHeaderFrameTimeoutInUs() {
         return waitNextHeaderFrameTimeoutInUs;
     }
 
-    public void setWaitNextHeaderFrameTimeoutInMs(long waitNextHeaderFrameTimeoutInMs) {
-        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInMs;
+    public void setWaitNextHeaderFrameTimeoutInUs(long waitNextHeaderFrameTimeoutInUs) {
+        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInUs;
     }
 
-    public long getReadingFrameTimeoutInMs() {
-        return readingFrameTimeoutInMs;
+    public long getReadingFrameTimeoutInUs() {
+        return readingFrameTimeoutInUs;
     }
 
-    public void setReadingFrameTimeoutInMs(long readingFrameTimeoutInMs) {
-        this.readingFrameTimeoutInMs = readingFrameTimeoutInMs;
+    public void setReadingFrameTimeoutInUs(long readingFrameTimeoutInUs) {
+        this.readingFrameTimeoutInUs = readingFrameTimeoutInUs;
     }
 
     public boolean isAutoRepairInvalidADPSgroupLine() {
