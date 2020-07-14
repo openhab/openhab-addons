@@ -100,6 +100,6 @@ public class BridgeActions implements ThingActions, IBridgeActions {
                         });
             }
         }
-        throw new IllegalArgumentException("Actions is not an instance of VolvoOnCallActions");
+        throw new IllegalArgumentException("Actions is not an instance of BridgeActions");
     }
 }
