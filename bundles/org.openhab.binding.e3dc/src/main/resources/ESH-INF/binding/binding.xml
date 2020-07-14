@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>E3DC Binding</name>
-	<description>This is the binding for E3DC.</description>
+	<name>E3DC Home Power Plant Binding</name>
+	<description>Integrates Home Power Plant models from E3DC. Measurers current consumers and producers. Give you control on attached Wallboxes. </description>
 	<author>Bernd Weymann</author>
 
 </binding:binding>
