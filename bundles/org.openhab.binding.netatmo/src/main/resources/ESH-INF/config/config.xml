@@ -62,12 +62,6 @@
 			<default>false</default>
 		</parameter>
 
-		<parameter name="includeFavoriteStations" type="boolean" required="true">
-			<label>Access Favorite Weather Stations</label>
-			<description>Include favorite weather stations (requires granted read access to weather stations data).</description>
-			<default>false</default>
-		</parameter>
-
 		<parameter name="webHookUrl" type="text" required="false">
 			<label>Webhook Address</label>
 			<description>Protocol, public IP and port to access OH2 server from Internet.</description>

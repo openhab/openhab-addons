@@ -273,7 +273,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
 
     public Optional<NAStationDataBody> getStationsDataBody(@Nullable String equipmentId) {
         Optional<NAStationDataBody> data = getStationApi()
-                .map(api -> api.getstationsdata(equipmentId, configuration.includeFavoriteStations).getBody());
+                .map(api -> api.getstationsdata(equipmentId, true).getBody());
         updateStatus(ThingStatus.ONLINE);
         return data;
     }

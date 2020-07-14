@@ -210,7 +210,6 @@ public class NetatmoModuleDiscoveryServiceTest {
     }
 
     private void activateDiscoveryWeatherStation() {
-        bridgeHandlerSpy.configuration.includeFavoriteStations = true;
         bridgeHandlerSpy.configuration.readStation = true;
     }
 

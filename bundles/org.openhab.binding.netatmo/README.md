@@ -40,7 +40,7 @@ Once you will get needed informations from the Netatmo API, you will be able to 
 E.g.
 
 ```
-Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false, readWelcome=true|false, readPresence=true|false, includeFavoriteStations=true|false] {
+Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_SECRET>", username = "<USERNAME>", password = "<PASSWORD>", readStation=true|false, readHealthyHomeCoach=true|false, readThermostat=true|false, readWelcome=true|false, readPresence=true|false] {
     Thing NAMain    inside  [ id="aa:aa:aa:aa:aa:aa" ]
     Thing NAModule1 outside  [ id="yy:yy:yy:yy:yy:yy", parentId="aa:aa:aa:aa:aa:aa" ]
     Thing NHC       homecoach  [ id="cc:cc:cc:cc:cc:cc", [refreshInterval=60000] ]
