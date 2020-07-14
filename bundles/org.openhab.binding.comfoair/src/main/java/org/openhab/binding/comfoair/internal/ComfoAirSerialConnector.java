@@ -213,6 +213,7 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             logger.warn("Transmission was interrupted: {}", e.getMessage());
+                            throw new RuntimeException(e);
                         }
                     } while (inputStream != null && inputStream.available() > 0);
 
@@ -280,6 +281,8 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                 } catch (IOException ioe) {
                     if (ioe instanceof InterruptedIOException) {
                         Thread.currentThread().interrupt();
+                        logger.warn("Transmission was interrupted: {}", ioe.getMessage());
+                        throw new RuntimeException(ioe);
                     }
                     logger.debug("IO error: {}", ioe.getMessage());
                 }
@@ -293,6 +296,7 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.warn("Transmission was interrupted: {}", e.getMessage());
+                    throw new RuntimeException(e);
                 }
             } while (retry++ < 5);
 
