@@ -115,13 +115,13 @@ public class TeleinfoInputStream extends InputStream {
                 autoRepairInvalidADPSgroupLine);
     }
 
-    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInMs,
+    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
             long readingFrameTimeoutInMs, boolean autoRepairInvalidADPSgroupLine) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
 
-        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInMs;
+        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInUs;
         this.readingFrameTimeoutInMs = readingFrameTimeoutInMs;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
 
