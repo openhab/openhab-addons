@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.nuvo.internal;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -50,11 +53,7 @@ public class NuvoThingActions implements ThingActions {
 
     public static void sendRawCommand(@Nullable ThingActions actions, String rawCommand)
             throws IllegalArgumentException {
-        if (actions instanceof NuvoThingActions) {
-            ((NuvoThingActions) actions).sendNuvoCommand(rawCommand);
-        } else {
-            throw new IllegalArgumentException("Instance is not an NuvoThingActions class.");
-        }
+        invokeMethodOf(actions).sendNuvoCommand(rawCommand);
     }
 
     @Override
@@ -65,5 +64,24 @@ public class NuvoThingActions implements ThingActions {
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return this.handler;
+    }
+
+    private static NuvoThingActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(NuvoThingActions.class.getName())) {
+            if (actions instanceof NuvoThingActions) {
+                return (NuvoThingActions) actions;
+            } else {
+                return (NuvoThingActions) Proxy.newProxyInstance(NuvoThingActions.class.getClassLoader(),
+                        new Class[] { NuvoThingActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of NuvoThingActions");
     }
 }
