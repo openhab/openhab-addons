@@ -16,10 +16,14 @@ import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConst
 
 import java.util.List;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
@@ -125,14 +129,13 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     private State getBoostRemainingState() {
         if (getData().hotWater.size() >= 1) {
             final HotWaterDTO firstChannel = getData().hotWater.get(0);
+            final Integer overrideTimeout = firstChannel.getOverrideTimeoutUnixTime();
 
-            if (firstChannel.getOverrideTimeoutUnixTime() != null
-                    && !"NONE".equalsIgnoreCase(firstChannel.getOverrideType())) {
-                return new DecimalType(
-                        ((firstChannel.getOverrideTimeoutUnixTime() - System.currentTimeMillis() / 1000L)) / 60);
+            if (overrideTimeout != null && !"NONE".equalsIgnoreCase(firstChannel.getOverrideType())) {
+                return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), SmartHomeUnits.SECOND).toUnit(SmartHomeUnits.MINUTE);
             }
         }
-        return DecimalType.ZERO;
+        return new QuantityType<Time>(0, SmartHomeUnits.MINUTE);
     }
 
     static class HotWaterData {

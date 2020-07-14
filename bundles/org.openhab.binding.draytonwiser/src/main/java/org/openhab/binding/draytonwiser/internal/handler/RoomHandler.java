@@ -168,9 +168,9 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     private State getBoostRemainingState() {
         final Integer overrideTimeout = getData().getOverrideTimeoutUnixTime();
         if (overrideTimeout != null && !"NONE".equalsIgnoreCase(getData().getOverrideType())) {
-            return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), SmartHomeUnits.SECOND);
+            return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), SmartHomeUnits.SECOND).toUnit(SmartHomeUnits.MINUTE);
         }
-        return new QuantityType<Time>(0, SmartHomeUnits.SECOND);
+        return new QuantityType<Time>(0, SmartHomeUnits.MINUTE);
     }
 
     private void setBoostDuration(final int durationMinutes) throws DraytonWiserApiException {
