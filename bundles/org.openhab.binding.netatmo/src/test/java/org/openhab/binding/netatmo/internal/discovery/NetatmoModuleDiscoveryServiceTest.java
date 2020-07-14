@@ -238,7 +238,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         private final List<DiscoveryResult> discoveredThings;
 
-        public NetatmoModuleDiscoveryServiceAccessible(NetatmoBridgeHandler netatmoBridgeHandler,
+        private NetatmoModuleDiscoveryServiceAccessible(NetatmoBridgeHandler netatmoBridgeHandler,
                                                        LocaleProvider localeProvider,
                                                        TranslationProvider translationProvider) {
             super(netatmoBridgeHandler, localeProvider, translationProvider);
@@ -251,7 +251,7 @@ public class NetatmoModuleDiscoveryServiceTest {
             discoveredThings.add(discoveryResult);
         }
 
-        public List<DiscoveryResult> getDiscoveredThings() {
+        private List<DiscoveryResult> getDiscoveredThings() {
             return discoveredThings;
         }
     }
