@@ -17,6 +17,8 @@ import io.swagger.client.model.NAStationDataBody;
 import io.swagger.client.model.NAStationModule;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.Before;
@@ -49,7 +51,10 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         bridgeHandlerSpy = spy(new NetatmoBridgeHandler(bridgeMock, null));
 
-        service = new NetatmoModuleDiscoveryServiceAccessible(bridgeHandlerSpy);
+        LocaleProvider localeProviderMock = mock(LocaleProvider.class);
+        TranslationProvider translationProvider = mock(TranslationProvider.class);
+
+        service = new NetatmoModuleDiscoveryServiceAccessible(bridgeHandlerSpy, localeProviderMock, translationProvider);
     }
 
     @Test
@@ -81,7 +86,7 @@ public class NetatmoModuleDiscoveryServiceTest {
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
         //expected is just the type name, because a station name isn't available
-        assertEquals("Main-Module", discoveredThings.get(0).getLabel());
+        assertEquals("NAMain", discoveredThings.get(0).getLabel());
     }
 
     @Test
@@ -95,7 +100,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
-        assertEquals("Main-Module Neu Wulmstorf", discoveredThings.get(0).getLabel());
+        assertEquals("NAMain Neu Wulmstorf", discoveredThings.get(0).getLabel());
     }
 
     @Test
@@ -109,7 +114,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
-        assertEquals("Main-Module (favorite)", discoveredThings.get(0).getLabel());
+        assertEquals("NAMain (favorite)", discoveredThings.get(0).getLabel());
     }
 
     @Test
@@ -124,7 +129,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
-        assertEquals("Main-Module Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
+        assertEquals("NAMain Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
     }
 
     @Test
@@ -138,7 +143,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(2, discoveredThings.size());
-        assertEquals("Main-Module Neu Wulmstorf", discoveredThings.get(0).getLabel());
+        assertEquals("NAMain Neu Wulmstorf", discoveredThings.get(0).getLabel());
         assertEquals("NAModule1 Neu Wulmstorf", discoveredThings.get(1).getLabel());
     }
 
@@ -156,7 +161,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(2, discoveredThings.size());
-        assertEquals("Main-Module Neu Wulmstorf", discoveredThings.get(0).getLabel());
+        assertEquals("NAMain Neu Wulmstorf", discoveredThings.get(0).getLabel());
         assertEquals("Outdoor-Module Neu Wulmstorf", discoveredThings.get(1).getLabel());
     }
 
@@ -172,7 +177,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(2, discoveredThings.size());
-        assertEquals("Main-Module Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
+        assertEquals("NAMain Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
         assertEquals("NAModule1 Neu Wulmstorf (favorite)", discoveredThings.get(1).getLabel());
     }
 
@@ -191,7 +196,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(2, discoveredThings.size());
-        assertEquals("Main-Module Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
+        assertEquals("NAMain Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
         assertEquals("Outdoor-Module Neu Wulmstorf (favorite)", discoveredThings.get(1).getLabel());
     }
 
@@ -234,8 +239,10 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         private final List<DiscoveryResult> discoveredThings;
 
-        public NetatmoModuleDiscoveryServiceAccessible(NetatmoBridgeHandler netatmoBridgeHandler) {
-            super(netatmoBridgeHandler);
+        public NetatmoModuleDiscoveryServiceAccessible(NetatmoBridgeHandler netatmoBridgeHandler,
+                                                       LocaleProvider localeProvider,
+                                                       TranslationProvider translationProvider) {
+            super(netatmoBridgeHandler, localeProvider, translationProvider);
             discoveredThings = new ArrayList<>();
         }
 

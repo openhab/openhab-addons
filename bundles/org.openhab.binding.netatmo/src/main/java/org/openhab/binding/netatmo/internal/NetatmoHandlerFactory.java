@@ -24,7 +24,9 @@ import javax.servlet.http.HttpServlet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -71,15 +73,21 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final HttpService httpService;
     private final NATherm1StateDescriptionProvider stateDescriptionProvider;
     private final TimeZoneProvider timeZoneProvider;
+    private final LocaleProvider localeProvider;
+    private final TranslationProvider translationProvider;
     private boolean backgroundDiscovery;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference HttpService httpService,
             final @Reference NATherm1StateDescriptionProvider stateDescriptionProvider,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference LocaleProvider localeProvider,
+            final @Reference TranslationProvider translationProvider) {
         this.httpService = httpService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.timeZoneProvider = timeZoneProvider;
+        this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
     }
 
     @Override
@@ -149,7 +157,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerDeviceDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
         if (bundleContext != null) {
-            NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
+            NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler,
+                    localeProvider, translationProvider);
             Map<String, @Nullable Object> configProperties = new HashMap<>();
             configProperties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
                     Boolean.valueOf(backgroundDiscovery));
