@@ -62,5 +62,4 @@ public class MowerApp {
     public void setErrorCodeTimestamp(long errorCodeTimestamp) {
         this.errorCodeTimestamp = errorCodeTimestamp;
     }
-
 }

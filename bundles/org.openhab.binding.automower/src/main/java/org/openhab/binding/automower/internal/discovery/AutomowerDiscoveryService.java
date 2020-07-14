@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -32,9 +33,10 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 /**
  * The {@link AutomowerDiscoveryService} is responsible for discovering new mowers available for the
  * configured app key.
- * 
+ *
  * @author Markus Pfleger - Initial contribution
  */
+@NonNullByDefault
 public class AutomowerDiscoveryService extends AbstractDiscoveryService {
 
     private final AutomowerBridgeHandler bridgeHandler;
@@ -47,9 +49,9 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         Optional<MowerListResult> registeredMowers = bridgeHandler.getAutomowers();
-        if (registeredMowers.isPresent()) {
 
-            for (Mower mower : registeredMowers.get().getData()) {
+        registeredMowers.ifPresent(mowers -> {
+            for (Mower mower : mowers.getData()) {
                 ThingUID bridgeUID = bridgeHandler.getThing().getUID();
                 ThingTypeUID thingTypeUID = THING_TYPE_AUTOMOWER;
                 ThingUID mowerThingUid = new ThingUID(THING_TYPE_AUTOMOWER, bridgeUID, mower.getId());
@@ -70,6 +72,6 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
 
                 thingDiscovered(discoveryResult);
             }
-        }
+        });
     }
 }

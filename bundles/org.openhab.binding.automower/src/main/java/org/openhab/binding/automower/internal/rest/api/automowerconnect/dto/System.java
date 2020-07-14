@@ -43,5 +43,4 @@ public class System {
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
-
 }

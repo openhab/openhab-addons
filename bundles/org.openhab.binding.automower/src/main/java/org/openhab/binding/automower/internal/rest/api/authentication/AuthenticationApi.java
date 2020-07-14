@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.automower.internal.rest.api.authentication;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.apache.commons.httpclient.HttpStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -58,10 +61,9 @@ public class AuthenticationApi extends HusqvarnaApi {
         request.content(new FormContentProvider(fields));
 
         ContentResponse response;
-
         try {
             response = request.send();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AutomowerCommunicationException(e);
         }
 
@@ -84,12 +86,11 @@ public class AuthenticationApi extends HusqvarnaApi {
 
         try {
             response = request.send();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AutomowerCommunicationException(e);
         }
 
         return parseResponse(response);
-
     }
 
     private PostOAuth2Response parseResponse(ContentResponse response) throws AutomowerCommunicationException {

@@ -41,14 +41,9 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATUS_ERROR_CODE = "error-code";
     public static final String CHANNEL_STATUS_ERROR_TIMESTAMP = "error-timestamp";
 
-    public static final String CHANNEL_COMMAND = "command";
-    public static final String CHANNEL_COMMAND_DURATION = "command-duration";
-    public static final String CHANNEL_COMMAND_RESPONSE = "command-response";
-
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
     public static final String AUTOMOWER_NAME = "mowerName";
     public static final String AUTOMOWER_MODEL = "mowerModel";
     public static final String AUTOMOWER_SERIAL_NUMBER = "mowerSerialNumber";
-
 }

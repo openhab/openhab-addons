@@ -34,5 +34,4 @@ public class Metadata {
     public void setStatusTimestamp(long statusTimestamp) {
         this.statusTimestamp = statusTimestamp;
     }
-
 }

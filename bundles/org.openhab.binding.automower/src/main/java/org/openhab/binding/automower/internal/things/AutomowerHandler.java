@@ -14,14 +14,12 @@ package org.openhab.binding.automower.internal.things;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
-import java.text.DateFormat;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,10 +35,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.joda.time.DateTime;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
+import org.openhab.binding.automower.internal.actions.AutomowerActions;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
@@ -56,22 +56,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AutomowerHandler extends BaseThingHandler {
-    private static final String NO_ID = "NO_ID";
-    private final Logger logger = LoggerFactory.getLogger(AutomowerHandler.class);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AUTOMOWER);
+    private static final String NO_ID = "NO_ID";
+    private static final long DEFAULT_COMMAND_DURATION_MIN = 60;
+
+    private final Logger logger = LoggerFactory.getLogger(AutomowerHandler.class);
 
     private @Nullable AutomowerConfiguration config;
 
     private AtomicReference<String> automowerId = new AtomicReference<String>(NO_ID);
-    private AtomicLong commandDuration = new AtomicLong(60); // 60min default
     private long lastQueryTime = 0L;
 
     private @Nullable ScheduledFuture<?> automowerPollingJob;
-    private long automowerPollingIntervalS = TimeUnit.HOURS.toSeconds(1);
+    private long automowerPollingIntervalS = TimeUnit.MINUTES.toSeconds(10);
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
-
-    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG,
-            new Locale(System.getProperty("user.language")));
 
     public AutomowerHandler(Thing thing) {
         super(thing);
@@ -87,38 +85,13 @@ public class AutomowerHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
-
         }
-
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             refreshChannels(channelUID);
-        } else {
-            sendCommand(channelUID, command);
-        }
-    }
-
-    private void sendCommand(ChannelUID channelUID, Command command) {
-        switch (channelUID.getId()) {
-            case CHANNEL_COMMAND_DURATION:
-                if (command instanceof DecimalType) {
-                    commandDuration.set(((DecimalType) command).longValue());
-                    updateState(CHANNEL_COMMAND_DURATION, new DecimalType(commandDuration.get()));
-                }
-                break;
-
-            case CHANNEL_COMMAND:
-                if (command instanceof StringType) {
-                    sendAutomowerCommand(command);
-                } else {
-                    logger.debug("Received command of type {} but StringType is expected.",
-                            command.getClass().getName());
-                }
-                break;
-
         }
     }
 
@@ -127,27 +100,28 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(AutomowerActions.class);
+    }
+
+    @Override
     public void initialize() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            config = getConfigAs(AutomowerConfiguration.class);
-
-            final String configMowerId = config.getMowerId();
+            AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
+            config = currentConfig;
+            final String configMowerId = currentConfig.getMowerId();
             if (configMowerId != null) {
                 automowerId.set(configMowerId);
-
-                // bridgeHandler.registerLightStatusListener(this);
-                startAutomowerPolling();
+                startAutomowerPolling(currentConfig);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/conf-error-no-mower-id");
             }
 
         } else {
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
-
     }
 
     @Nullable
@@ -165,16 +139,14 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
         if (!automowerId.get().equals(NO_ID)) {
-            // bridgeHandler.unregisterLightStatusListener(this);
             stopAutomowerPolling();
             automowerId.set(NO_ID);
         }
     }
 
-    private void startAutomowerPolling() {
-        if (automowerPollingJob == null || automowerPollingJob.isCancelled()) {
+    private void startAutomowerPolling(AutomowerConfiguration config) {
+        if (automowerPollingJob == null) {
             if (config.getPollingInterval() < 1) {
                 logger.info("No valid polling interval specified. Using default value: {}s", automowerPollingIntervalS);
             } else {
@@ -186,23 +158,20 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private void stopAutomowerPolling() {
-        if (automowerPollingJob != null && !automowerPollingJob.isCancelled()) {
+        if (automowerPollingJob != null) {
             automowerPollingJob.cancel(true);
             automowerPollingJob = null;
         }
     }
 
     private boolean isValidResult(Mower mower) {
-        return mower != null && mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
+        return mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
                 && mower.getAttributes().getBattery() != null && mower.getAttributes().getSystem() != null;
     }
 
     private boolean isConnected(Mower mower) {
-        if (mower != null && mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
-                && mower.getAttributes().getMetadata().isConnected()) {
-            return true;
-        }
-        return false;
+        return mower.getAttributes() != null && mower.getAttributes().getMetadata() != null
+                && mower.getAttributes().getMetadata().isConnected();
     }
 
     private synchronized void updateAutomowerState() {
@@ -210,45 +179,68 @@ public class AutomowerHandler extends BaseThingHandler {
             lastQueryTime = System.nanoTime();
             String id = automowerId.get();
             try {
-                Mower mower = getAutomowerBridge().getAutomowerStatus(id);
+                AutomowerBridge automowerBridge = getAutomowerBridge();
+                if (automowerBridge != null) {
+                    Mower mower = automowerBridge.getAutomowerStatus(id);
 
-                if (isValidResult(mower)) {
-                    initializeProperties(mower);
+                    if (isValidResult(mower)) {
+                        initializeProperties(mower);
 
-                    updateChannelState(mower);
+                        updateChannelState(mower);
 
-                    if (isConnected(mower)) {
-                        updateStatus(ThingStatus.ONLINE);
+                        if (isConnected(mower)) {
+                            updateStatus(ThingStatus.ONLINE);
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "@text/comm-error-mower-not-connected-to-cloud");
+                        }
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/comm-error-mower-not-connected-to-cloud");
+                                "@text/comm-error-query-mower-failed");
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/comm-error-query-mower-failed");
+                            "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error-query-mower-failed");
-                logger.warn("Unable to query automower status for:  {}", id, e);
+                logger.warn("Unable to query automower status for:  {}. Error: {}", id, e.getMessage());
             }
         }
     }
 
-    private synchronized void sendAutomowerCommand(Command command) {
+    /**
+     * Sends a command to the automower with the default duration of 60min
+     *
+     * @param command The command that should be sent. Valid values are: "Start", "ResumeSchedule", "Pause", "Park",
+     *            "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
+     *
+     * @param command
+     */
+    public void sendAutomowerCommand(AutomowerCommand command) {
+        sendAutomowerCommand(command, DEFAULT_COMMAND_DURATION_MIN);
+    }
+
+    /**
+     * Sends a command to the automower with the given duration
+     *
+     * @param command The command that should be sent. Valid values are: "Start", "ResumeSchedule", "Pause", "Park",
+     *            "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
+     * @param commandDurationMinutes The duration of the command in minutes. This is only evaluated for "Start" and
+     *            "Park" commands
+     */
+    public void sendAutomowerCommand(AutomowerCommand command, long commandDurationMinutes) {
         String id = automowerId.get();
         try {
-            if (getAutomowerBridge().sendAutomowerCommand(id, command.toString(), commandDuration.get())) {
-                updateState(CHANNEL_COMMAND_RESPONSE,
-                        new StringType("Successfully sent command " + command.toString()));
+            AutomowerBridge automowerBridge = getAutomowerBridge();
+            if (automowerBridge != null) {
+                automowerBridge.sendAutomowerCommand(id, command, commandDurationMinutes);
             } else {
-                updateState(CHANNEL_COMMAND_RESPONSE, new StringType("Unable to send command " + command.toString()));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             }
         } catch (AutomowerCommunicationException e) {
-            updateState(CHANNEL_COMMAND_RESPONSE,
-                    new StringType("Unable to send command " + command.toString() + ": " + e.getMessage()));
-
-            logger.warn("Unable to send command to automower: {}", id, e);
+            logger.warn("Unable to send command to automower: {}, Error: {}", id, e.getMessage());
         }
 
         updateAutomowerState();
@@ -256,14 +248,6 @@ public class AutomowerHandler extends BaseThingHandler {
 
     private void updateChannelState(Mower mower) {
         if (isValidResult(mower)) {
-            /*
-             * if (info.getError() != null) {
-             * updateErrorInfo(info.getError());
-             * refreshLastErrorInfo();
-             * } else {
-             * clearErrorInfo();
-             * }
-             */
             updateState(CHANNEL_MOWER_NAME, new StringType(mower.getAttributes().getSystem().getName()));
 
             updateState(CHANNEL_STATUS_MODE, new StringType(mower.getAttributes().getMower().getMode().name()));
@@ -279,7 +263,6 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, new DateTimeType(
                     new DateTime(mower.getAttributes().getMower().getErrorCodeTimestamp()).toString()));
 
-            updateState(CHANNEL_COMMAND_DURATION, new DecimalType(commandDuration.get()));
         }
     }
 
@@ -297,5 +280,4 @@ public class AutomowerHandler extends BaseThingHandler {
 
         updateProperties(properties);
     }
-
 }

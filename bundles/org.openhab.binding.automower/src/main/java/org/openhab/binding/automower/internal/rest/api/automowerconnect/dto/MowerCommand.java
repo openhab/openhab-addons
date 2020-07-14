@@ -34,5 +34,4 @@ public class MowerCommand {
     public void setAttributes(MowerCommandAttributes attributes) {
         this.attributes = attributes;
     }
-
 }

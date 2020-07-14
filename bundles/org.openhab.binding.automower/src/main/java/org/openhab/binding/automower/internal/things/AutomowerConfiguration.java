@@ -43,5 +43,4 @@ public class AutomowerConfiguration {
     public void setPollingInterval(int pollingInterval) {
         this.pollingInterval = pollingInterval;
     }
-
 }

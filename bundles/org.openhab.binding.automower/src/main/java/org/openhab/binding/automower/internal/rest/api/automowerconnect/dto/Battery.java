@@ -25,5 +25,4 @@ public class Battery {
     public void setBatteryPercent(int batteryPercent) {
         this.batteryPercent = batteryPercent;
     }
-
 }

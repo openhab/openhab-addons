@@ -48,14 +48,13 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
     private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
-    private long automowerPollingIntervalS = TimeUnit.HOURS.toSeconds(2);
+    private long automowerPollingIntervalS = TimeUnit.HOURS.toSeconds(1);
 
     private @NonNullByDefault({}) AutomowerBridge bridge;
     private @NonNullByDefault({}) AutomowerBridgeConfiguration bridgeConfiguration;
 
     private final HttpClient httpClient;
 
-    @NonNullByDefault
     private static class AutomowerBridgePollingRunnable implements Runnable {
         private final Logger logger = LoggerFactory.getLogger(AutomowerBridgePollingRunnable.class);
 
@@ -73,11 +72,11 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             try {
                 automowers = bridge.getAutomowers();
                 handler.updateStatus(ThingStatus.ONLINE);
-                logger.info("Found {} automowers", automowers.getData().size());
+                logger.debug("Found {} automowers", automowers.getData().size());
             } catch (AutomowerCommunicationException e) {
                 handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error-query-mowers-failed");
-                logger.warn("Unable to fetch automowers", e);
+                logger.warn("Unable to fetch automowers: {}", e.getMessage());
             }
         }
     }
@@ -89,7 +88,6 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
         if (bridge != null) {
             stopAutomowerBridgePolling(bridge);
             bridge = null;
@@ -98,7 +96,6 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing automower bridge handler.");
         bridgeConfiguration = getConfigAs(AutomowerBridgeConfiguration.class);
 
         final String appKey = bridgeConfiguration.getAppKey();
@@ -111,18 +108,17 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         } else if (password == null || password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-password");
         } else {
-            updateStatus(ThingStatus.UNKNOWN);
             if (bridge == null) {
                 bridge = new AutomowerBridge(appKey, userName, password, httpClient, scheduler);
-                // bridge.setTimeout(5000);
-
                 startAutomowerBridgePolling(bridge);
             }
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
     private void startAutomowerBridgePolling(AutomowerBridge bridge) {
-        if (automowerBridgePollingJob == null || automowerBridgePollingJob.isCancelled()) {
+        ScheduledFuture<?> currentPollingJob = automowerBridgePollingJob;
+        if (currentPollingJob == null) {
             if (bridgeConfiguration.getPollingInterval() < 1) {
                 logger.info("No valid polling interval specified. Using default value: {}s", automowerPollingIntervalS);
             } else {
@@ -134,15 +130,15 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     }
 
     private void stopAutomowerBridgePolling(AutomowerBridge bridge) {
-        if (automowerBridgePollingJob != null && !automowerBridgePollingJob.isCancelled()) {
-            automowerBridgePollingJob.cancel(true);
+        ScheduledFuture<?> currentPollingJob = automowerBridgePollingJob;
+        if (currentPollingJob != null) {
+            currentPollingJob.cancel(true);
             automowerBridgePollingJob = null;
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     public AutomowerBridge getAutomowerBridge() {
@@ -152,7 +148,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     public Optional<MowerListResult> getAutomowers() {
         try {
             return Optional.of(bridge.getAutomowers());
-        } catch (Exception e) {
+        } catch (AutomowerCommunicationException e) {
             logger.debug("Bridge cannot get list of available automowers", e);
             return Optional.empty();
         }

@@ -62,7 +62,6 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         }
 
         return parseResponse(response, MowerListResult.class);
-
     }
 
     public MowerResult getMower(String appKey, String token, String mowerId) throws AutomowerCommunicationException {
@@ -84,7 +83,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         return parseResponse(response, MowerResult.class);
     }
 
-    public boolean sendCommand(String appKey, String token, String id, MowerCommandRequest command)
+    public void sendCommand(String appKey, String token, String id, MowerCommandRequest command)
             throws AutomowerCommunicationException {
         final Request request = getHttpClient().newRequest(getBaseUrl() + "/mowers/" + id + "/actions");
         request.method(HttpMethod.POST);
@@ -104,7 +103,6 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         }
 
         checkForError(response, response.getStatus());
-        return true;
     }
 
     private <T> T parseResponse(ContentResponse response, Class<T> type) throws AutomowerCommunicationException {
@@ -117,11 +115,9 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         } catch (JsonSyntaxException e) {
             throw new AutomowerCommunicationException(e);
         }
-
     }
 
     private void checkForError(ContentResponse response, int statusCode) throws AutomowerCommunicationException {
-
         if (statusCode >= 200 && statusCode < 300) {
             return;
         }

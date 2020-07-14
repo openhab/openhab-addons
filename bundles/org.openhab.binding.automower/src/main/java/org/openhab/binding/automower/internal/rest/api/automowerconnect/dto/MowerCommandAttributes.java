@@ -25,5 +25,4 @@ public class MowerCommandAttributes {
     public void setDuration(long duration) {
         this.duration = duration;
     }
-
 }

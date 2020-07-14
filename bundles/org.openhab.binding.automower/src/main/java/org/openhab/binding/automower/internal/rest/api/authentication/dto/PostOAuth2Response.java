@@ -12,26 +12,39 @@
  */
 package org.openhab.binding.automower.internal.rest.api.authentication.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Authentication response
  *
  * @author Markus Pfleger - Initial contribution
  */
 public class PostOAuth2Response {
-    private String access_token;
-    private String scope;
-    private long expires_in;
-    private String refresh_token;
-    private String provider;
-    private String user_id;
-    private String token_type;
+    @SerializedName(value = "access_token")
+    private String accessToken;
 
-    public String getAccess_token() {
-        return access_token;
+    private String scope;
+
+    @SerializedName(value = "expires_in")
+    private long expiresIn;
+
+    @SerializedName(value = "refresh_token")
+    private String refreshToken;
+
+    private String provider;
+
+    @SerializedName(value = "user_id")
+    private String userId;
+
+    @SerializedName(value = "token_type")
+    private String tokenType;
+
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setAccess_token(String access_token) {
-        this.access_token = access_token;
+    public void setAccessToken(String access_token) {
+        this.accessToken = access_token;
     }
 
     public String getScope() {
@@ -42,20 +55,20 @@ public class PostOAuth2Response {
         this.scope = scope;
     }
 
-    public long getExpires_in() {
-        return expires_in;
+    public long getExpiresIn() {
+        return expiresIn;
     }
 
-    public void setExpires_in(long expires_in) {
-        this.expires_in = expires_in;
+    public void setExpiresIn(long expiresIn) {
+        this.expiresIn = expiresIn;
     }
 
-    public String getRefresh_token() {
-        return refresh_token;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public void setRefresh_token(String refresh_token) {
-        this.refresh_token = refresh_token;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public String getProvider() {
@@ -66,20 +79,19 @@ public class PostOAuth2Response {
         this.provider = provider;
     }
 
-    public String getUser_id() {
-        return user_id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getToken_type() {
-        return token_type;
+    public String getTokenType() {
+        return tokenType;
     }
 
-    public void setToken_type(String token_type) {
-        this.token_type = token_type;
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
     }
-
 }

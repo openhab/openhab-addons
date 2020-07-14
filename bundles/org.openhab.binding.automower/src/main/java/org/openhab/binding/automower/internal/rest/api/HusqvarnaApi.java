@@ -49,5 +49,4 @@ public abstract class HusqvarnaApi {
         }
         return httpClient;
     }
-
 }

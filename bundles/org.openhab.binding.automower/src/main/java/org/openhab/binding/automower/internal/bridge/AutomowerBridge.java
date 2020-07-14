@@ -27,6 +27,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.rest.exceptions.UnauthorizedException;
+import org.openhab.binding.automower.internal.things.AutomowerCommand;
 
 /**
  * The {@link AutomowerBridge} allows the communication to the various Husqvarna rest apis like the
@@ -65,11 +66,12 @@ public class AutomowerBridge {
     }
 
     private PostOAuth2Response refreshAuthentication() throws AutomowerCommunicationException {
-        if (authResponse == null) {
-            throw new AutomowerCommunicationException("Unable to refresh authentication. Initial authentication has not been performed");
+        PostOAuth2Response currentResponse = authResponse;
+        if (currentResponse == null) {
+            throw new AutomowerCommunicationException(
+                    "Unable to refresh authentication. Initial authentication has not been performed");
         } else {
-            @SuppressWarnings("null")
-            PostOAuth2Response result = authApi.loginWithRefreshToken(appKey, authResponse.getRefresh_token());
+            PostOAuth2Response result = authApi.loginWithRefreshToken(appKey, currentResponse.getRefreshToken());
             authResponse = result;
             return result;
         }
@@ -104,41 +106,42 @@ public class AutomowerBridge {
 
     /**
      * Sends a command to the automower with the specified id
-     * 
+     *
      * @param id The id of the mower
      * @param command The command that should be sent. Valid values are: "Start", "ResumeSchedule", "Pause", "Park",
      *            "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
      * @param commandDuration The duration of the command. This is only evaluated for "Start" and "Park" commands
-     * @return true if the command was enqueued sucessfully
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public boolean sendAutomowerCommand(String id, String command, long commandDuration) throws AutomowerCommunicationException {
+    public void sendAutomowerCommand(String id, AutomowerCommand command, long commandDuration)
+            throws AutomowerCommunicationException {
         try {
-            return sendAutomowerCommandInt(id, command, commandDuration);
+            sendAutomowerCommandInt(id, command, commandDuration);
         } catch (UnauthorizedException e) {
             refreshAuthentication();
-            return sendAutomowerCommandInt(id, command, commandDuration);
+            sendAutomowerCommandInt(id, command, commandDuration);
         }
     }
 
     private MowerListResult getAutomowersInt() throws AutomowerCommunicationException {
-        return automowerApi.getMowers(appKey, authenticate().getAccess_token());
+        return automowerApi.getMowers(appKey, authenticate().getAccessToken());
     }
 
     private Mower getAutomowerStatusInt(String id) throws AutomowerCommunicationException {
-        return automowerApi.getMower(appKey, authenticate().getAccess_token(), id).getData();
+        return automowerApi.getMower(appKey, authenticate().getAccessToken(), id).getData();
     }
 
-    private boolean sendAutomowerCommandInt(String id, String command, long commandDuration) throws AutomowerCommunicationException {
+    private void sendAutomowerCommandInt(String id, AutomowerCommand command, long commandDuration)
+            throws AutomowerCommunicationException {
         MowerCommandAttributes attributes = new MowerCommandAttributes();
         attributes.setDuration(commandDuration);
 
         MowerCommand mowerCommand = new MowerCommand();
-        mowerCommand.setType(command);
+        mowerCommand.setType(command.getCommand());
         mowerCommand.setAttributes(attributes);
 
         MowerCommandRequest request = new MowerCommandRequest();
         request.setData(mowerCommand);
-        return automowerApi.sendCommand(appKey, authenticate().getAccess_token(), id, request);
+        automowerApi.sendCommand(appKey, authenticate().getAccessToken(), id, request);
     }
 }
