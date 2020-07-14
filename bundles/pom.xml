@@ -18,6 +18,7 @@
 
   <modules>
     <module>org.openhab.binding.nest</module>
+    <module>org.openhab.binding.tr064</module>
     <module>org.openhab.persistence.dynamodb</module>
     <module>org.openhab.persistence.influxdb</module>
     <module>org.openhab.persistence.jdbc</module>

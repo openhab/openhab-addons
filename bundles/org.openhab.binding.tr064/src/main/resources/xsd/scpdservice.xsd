@@ -1,0 +1,67 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="urn:dslforum-org:service-1-0" targetNamespace="urn:dslforum-org:service-1-0">
+    <xs:element name="scpd" type="scpdType"/>
+    <xs:complexType name="specVersionType">
+        <xs:sequence>
+            <xs:element type="xs:byte" name="major"/>
+            <xs:element type="xs:byte" name="minor"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="argumentType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name" minOccurs="0"/>
+            <xs:element type="xs:string" name="direction" minOccurs="0"/>
+            <xs:element type="xs:string" name="relatedStateVariable" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="argumentListType">
+        <xs:sequence>
+            <xs:element type="argumentType" name="argument" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="actionType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element type="argumentListType" name="argumentList"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="actionListType">
+        <xs:sequence>
+            <xs:element type="actionType" name="action" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="stateVariableType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="name"/>
+            <xs:element type="xs:string" name="dataType"/>
+            <xs:element type="xs:string" name="defaultValue" minOccurs="0"/>
+            <xs:element type="allowedValueRangeType" name="allowedValueRange" minOccurs="0"/>
+            <xs:element type="allowedValueListType" name="allowedValueList" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="sendEvents"/>
+    </xs:complexType>
+    <xs:complexType name="allowedValueRangeType">
+        <xs:sequence>
+            <xs:element type="xs:byte" name="minimum"/>
+            <xs:element type="xs:byte" name="maximum"/>
+            <xs:element type="xs:byte" name="step"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="allowedValueListType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="allowedValue" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="serviceStateTableType">
+        <xs:sequence>
+            <xs:element type="stateVariableType" name="stateVariable" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="scpdType">
+        <xs:sequence>
+            <xs:element type="specVersionType" name="specVersion"/>
+            <xs:element type="actionListType" name="actionList"/>
+            <xs:element type="serviceStateTableType" name="serviceStateTable"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

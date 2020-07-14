@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>2.5.7-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.tr064</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: TR-064 Binding</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>karaf-feature-verification</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.14.0</version>
+        <executions>
+          <execution>
+            <id>generate-jaxb-sources</id>
+            <phase>none</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+          <generateDirectory>src/main/java</generateDirectory>
+          <markGenerated>false</markGenerated>
+          <noFileHeader>true</noFileHeader>
+          <locale>en</locale>
+          <episode>false</episode>
+          <extension>true</extension>
+          <args>
+            <arg>-Xxew</arg>
+            <arg>-Xxew:instantiate early</arg>
+          </args>
+          <plugins>
+            <plugin>
+              <groupId>com.github.jaxb-xew-plugin</groupId>
+              <artifactId>jaxb-xew-plugin</artifactId>
+              <version>1.10</version>
+            </plugin>
+          </plugins>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

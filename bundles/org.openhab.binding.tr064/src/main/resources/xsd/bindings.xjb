@@ -1,0 +1,39 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+               version="2.0">
+    <jaxb:globalBindings>
+        <xjc:serializable uid="1"/>
+    </jaxb:globalBindings>
+
+    <jaxb:bindings schemaLocation="phonebook.xsd">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.openhab.binding.tr064.internal.dto.phonebook"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="channeltypes.xsd">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.openhab.binding.tr064.internal.dto.config"/>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="scpdservice.xsd">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.openhab.binding.tr064.internal.dto.scpd.service"/>
+            <jaxb:nameXmlTransform>
+                <jaxb:typeName prefix="SCPD"/>
+                <jaxb:anonymousTypeName prefix="SCPD"/>
+            </jaxb:nameXmlTransform>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+    <jaxb:bindings schemaLocation="scpddevice.xsd">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.openhab.binding.tr064.internal.dto.scpd.root"/>
+            <jaxb:nameXmlTransform>
+                <jaxb:typeName prefix="SCPD"/>
+                <jaxb:anonymousTypeName prefix="SCPD"/>
+            </jaxb:nameXmlTransform>
+        </jaxb:schemaBindings>
+    </jaxb:bindings>
+
+</jaxb:bindings>

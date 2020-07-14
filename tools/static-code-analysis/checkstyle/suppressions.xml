@@ -20,4 +20,7 @@
     <suppress files=".+org.openhab.binding.yeelight.+" checks="OutsideOfLibExternalLibrariesCheck" />
     <!-- suppress header checks for imported and patched apache commons-io files in logreader binding -->
     <suppress files=".+org.openhab.binding.logreader.internal.thirdparty.commonsio.+" checks="ParameterizedRegexpHeaderCheck|AuthorTagCheck" />
+	<!-- suppress author tag checks for generated sources in tr064 binding -->
+    <suppress files=".+org.openhab.binding.tr064.internal.dto.+" checks="AuthorTagCheck" />
+
 </suppressions>

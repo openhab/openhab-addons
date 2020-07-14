@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:transform:PHONEBOOK">
+		<parameter name="thingUid" type="text" required="true">
+			<label>Thing UID</label>
+			<description>The Thing UID of the phonebook provider.</description>
+		</parameter>
+		<parameter name="phonebookName" type="text" required="false">
+			<label>Phonebook Name</label>
+			<description>The name of the the phonebook (if available) (default is "all")</description>
+		</parameter>
+		<parameter name="matchCount" type="text" required="false">
+			<label>Match Count</label>
+			<description>The number of digits matching the incoming value, counted from far right (default is 0 = all matching)</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
