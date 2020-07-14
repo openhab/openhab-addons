@@ -45,6 +45,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
@@ -99,6 +100,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
     private boolean refreshSettings = false;
+
+    private @Nullable ScheduledFuture<?> asyncButtonRelease;
 
     // delay before enabling channel
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
@@ -593,8 +596,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     case SHELLY_EVENT_TRIPLE_SHORTPUSH:
                     case SHELLY_EVENT_LONGPUSH:
                         if (isButton) {
+                            triggerButton(group, mapButtonEvent(event));
                             channel = CHANNEL_BUTTON_TRIGGER;
-                            payload = mapEvent(event);
+                            payload = ShellyApiJsonDTO.mapButtonEvent(event);
                         } else {
                             logger.debug("{}: Relay button is not in memontary or detached mode, ignore SHORT/LONGPUSH",
                                     thingName);
@@ -639,7 +643,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     case SHELLY_EVENT_ALARM_HEAVY: // DW 1.7+
                     case SHELLY_EVENT_ALARM_OFF: // DW 1.7+
                         channel = CHANNEL_SENSOR_ALARM_STATE;
-                        payload = mapEvent(event);
+                        payload = event.toUpperCase();
                         break;
                     default:
                         // trigger will be provided by input/output channel or sensor channels
@@ -662,20 +666,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             return true;
         }
         return false;
-    }
-
-    private String mapEvent(String event) {
-        switch (event) {
-            case SHELLY_EVENT_SHORTPUSH:
-                return CommonTriggerEvents.SHORT_PRESSED;
-            case SHELLY_EVENT_DOUBLE_SHORTPUSH:
-                return CommonTriggerEvents.DOUBLE_PRESSED;
-            case SHELLY_EVENT_TRIPLE_SHORTPUSH:
-            default:
-                return CommonTriggerEvents.PRESSED;
-            case SHELLY_EVENT_LONGPUSH:
-                return CommonTriggerEvents.LONG_PRESSED;
-        }
     }
 
     /**
@@ -920,6 +910,27 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         return profile.numRelays == 1 ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
     }
 
+    public void triggerButton(String iGroup, String value) {
+        String trigger = mapButtonEvent(value);
+        logger.debug("{}: Update button state with {}", thingName, trigger);
+        if (!trigger.isEmpty()) {
+            triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, trigger);
+            if (!trigger.equals(CommonTriggerEvents.RELEASED)) {
+                // Simulate a RELEASED event
+                ScheduledFuture<?> job = this.asyncButtonRelease;
+                if ((job != null) && !job.isCancelled()) {
+                    job.cancel(true);
+                }
+                asyncButtonRelease = scheduler.schedule(() -> {
+                    logger.debug("{}: Simulating Button RELEASED", thingName);
+                    triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, CommonTriggerEvents.RELEASED);
+                }, 1500, TimeUnit.MILLISECONDS);
+            }
+        } else {
+            logger.debug("{}: Unable to decode button state {}", thingName, value);
+        }
+    }
+
     public void publishState(String channelId, State value) {
         updateState(channelId.contains("$") ? StringUtils.substringBefore(channelId, "$") : channelId, value);
     }
@@ -1123,12 +1134,18 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     public void stop() {
         logger.debug("{}: Shutting down", thingName);
-        ScheduledFuture<?> statusJob = this.statusJob;
-        if (statusJob != null) {
-            statusJob.cancel(true);
+        ScheduledFuture<?> job = this.statusJob;
+        if (job != null) {
+            job.cancel(true);
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
         }
+        job = asyncButtonRelease;
+        if ((job != null) && !job.isCancelled()) {
+            job.cancel(true);
+            asyncButtonRelease = null;
+        }
+
         coap.stop();
         profile.initialized = false;
     }

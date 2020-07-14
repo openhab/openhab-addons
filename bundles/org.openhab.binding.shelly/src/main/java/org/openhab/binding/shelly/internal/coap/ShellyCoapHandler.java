@@ -40,7 +40,6 @@ import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
@@ -70,8 +69,9 @@ import tec.uom.se.unit.Units;
  */
 @NonNullByDefault
 public class ShellyCoapHandler implements ShellyCoapListener {
-    private final Logger logger = LoggerFactory.getLogger(ShellyCoapHandler.class);
+    private static final byte[] EMPTY_BYTE = new byte[0];
 
+    private final Logger logger = LoggerFactory.getLogger(ShellyCoapHandler.class);
     private final ShellyBaseHandler thingHandler;
     private ShellyThingConfiguration config = new ShellyThingConfiguration();
     private final GsonBuilder gsonBuilder = new GsonBuilder();
@@ -88,8 +88,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private String lastPayload = "";
     private Map<String, CoIotDescrBlk> blockMap = new LinkedHashMap<>();
     private LinkedHashMap<String, CoIotDescrSen> sensorMap = new LinkedHashMap<>();
-
-    private static final byte[] EMPTY_BYTE = new byte[0];
 
     public ShellyCoapHandler(ShellyBaseHandler thingHandler, ShellyCoapServer coapServer) {
         this.thingHandler = thingHandler;
@@ -493,10 +491,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 handleInput(sen, s, rGroup, updates);
                                 break;
                             case "input event": // Shelly Button 1
-                                handleEvent(sen, getString(s.valueStr), 0, updates);
+                                handleInputEvent(sen, getString(s.valueStr), 0, updates);
                                 break;
                             case "input event counter": // Shelly Button 1/ix3
-                                handleEvent(sen, "", getInteger((int) s.value), updates);
+                                handleInputEvent(sen, "", getInteger((int) s.value), updates);
                                 break;
                             case "flood":
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
@@ -635,15 +633,13 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             if ((s.value != 0) && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
                     || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
                     || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
-                triggerButton(iGroup, (int) s.value);
+                thingHandler.triggerButton(iGroup, String.valueOf((int) s.value));
             }
-        } else if (profile.isButton || profile.isIX3) {
-            triggerButton(iGroup, (int) s.value);
         }
         updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
     }
 
-    private void handleEvent(CoIotDescrSen sen, String type, Integer count, Map<String, State> updates) {
+    private void handleInputEvent(CoIotDescrSen sen, String type, Integer count, Map<String, State> updates) {
         if (!type.isEmpty()) {
             // event type
             int idx = getSensorNumber("input event", sen.id);
@@ -652,7 +648,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
             String group = thingHandler.getProfile().isButton ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
             updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, getStringType(type));
-            thingHandler.triggerChannel(group, CHANNEL_BUTTON_TRIGGER, mapButtonEvent(type));
+            thingHandler.triggerButton(group, type);
         } else {
             // event count
             int idx = getSensorNumber("input event counter", sen.id);
@@ -661,25 +657,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
             String group = thingHandler.getProfile().isButton ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
             updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
-        }
-    }
-
-    private void triggerButton(String iGroup, int value) {
-        String trigger = "";
-        switch (value) {
-            case 0:
-                trigger = CommonTriggerEvents.RELEASED;
-                break;
-            case 1:
-                trigger = CommonTriggerEvents.SHORT_PRESSED;
-                break;
-            case 2:
-                trigger = CommonTriggerEvents.LONG_PRESSED;
-                break;
-        }
-        if (!trigger.isEmpty()) {
-            logger.debug("{}: Update button state with {}", thingName, trigger);
-            thingHandler.triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, trigger);
         }
     }
 

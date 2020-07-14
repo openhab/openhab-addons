@@ -988,15 +988,27 @@ public class ShellyApiJsonDTO {
      * @return OH button states
      */
     public static String mapButtonEvent(String eventType) {
+        // decode different codings
+        // 0..2: CoAP
+        // S/SS/SSS/L: CoAP for Button and xi3
+        // shortpush/double_shortpush/triple_shortpush/longpush: REST
         switch (eventType) {
+            case "0":
+                return CommonTriggerEvents.RELEASED;
+            case "1":
             case SHELLY_BTNEVENT_1SHORTPUSH:
+            case SHELLY_EVENT_SHORTPUSH:
                 return CommonTriggerEvents.SHORT_PRESSED;
             case SHELLY_BTNEVENT_2SHORTPUSH:
+            case SHELLY_EVENT_DOUBLE_SHORTPUSH:
                 return CommonTriggerEvents.DOUBLE_PRESSED;
             case SHELLY_BTNEVENT_3SHORTPUSH:
+            case SHELLY_EVENT_TRIPLE_SHORTPUSH:
             default:
                 return CommonTriggerEvents.PRESSED;
+            case "2":
             case SHELLY_BTNEVENT_LONGPUSH:
+            case SHELLY_EVENT_LONGPUSH:
                 return CommonTriggerEvents.LONG_PRESSED;
         }
     }
