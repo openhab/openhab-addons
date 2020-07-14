@@ -130,14 +130,14 @@ A full list of supported accessory types can be found in the table *below*.
 
 | Accessory Tag        | Mandatory Characteristics   | Optional     Characteristics | Supported OH items       | Description                                                      |
 |:---------------------|:----------------------------|:-----------------------------|:-------------------------|:-----------------------------------------------------------------|
-| AirQualitySensor     |                             |                              |                          | Air Quality Sensor which can measure different parameters                                                                                        |
-|                      | AirQuality                  |                              | String                   | Air quality state, possible values (UNKNOWN,EXCELLENT,GOOD,FAIR,INFERIOR,POOR). Custom mapping can be defined at item level        |
-|                      |                             | OzoneDensity                | Number                   | Ozone density in micrograms/m3, max 1000                                                                                                                                                                                |
-|                      |                             | NitrogenDioxideDensity      | Number                   | NO2 density in micrograms/m3, max 1000                                                                                                                                                                             |
-|                      |                             | SulphurDioxideDensity       | Number                   | SO2 density in micrograms/m3, max 1000                                                                                                                                                                                |
-|                      |                             | PM25Density                 | Number                   | PM2.5 micrometer particulate density in micrograms/m3, max 1000                                                                                                                                                                                |
-|                      |                             | PM10Density                 | Number                   | PM10 micrometer particulate density in micrograms/m3, max 1000                                                                                                                                                                                |
-|                      |                             | VOCDensity                  | Number                   | VOC Density in micrograms/m3, max 1000                                                                                                                                                                               |
+| AirQualitySensor     |                             |                              |                          | Air Quality Sensor which can measure different parameters        |
+|                      | AirQuality                  |                              | String                   | Air quality state, possible values (UNKNOWN,EXCELLENT,GOOD,FAIR,INFERIOR,POOR). Custom mapping can be defined at item level, e.g. [EXCELLENT="BEST", POOR="BAD"]         |
+|                      |                             | OzoneDensity                 | Number                   | Ozone density in micrograms/m3, max 1000                         |
+|                      |                             | NitrogenDioxideDensity       | Number                   | NO2 density in micrograms/m3, max 1000                           |
+|                      |                             | SulphurDioxideDensity        | Number                   | SO2 density in micrograms/m3, max 1000                           |
+|                      |                             | PM25Density                  | Number                   | PM2.5 micrometer particulate density in micrograms/m3, max 1000  |
+|                      |                             | PM10Density                  | Number                   | PM10 micrometer particulate density in micrograms/m3, max 1000   |
+|                      |                             | VOCDensity                   | Number                   | VOC Density in micrograms/m3, max 1000                           |
 |                      |                             | Name                         | String                   | Name of the sensor                                               |
 |                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
@@ -151,35 +151,35 @@ A full list of supported accessory types can be found in the table *below*.
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
 | MotionSensor         |                             |                              |                          | Motion Sensor                                                    |
-|                      | MotionDetectedState         |                              | Switc, Contact           | Motion sensor state (ON=motion detected, OFF=no motion)          |
+|                      | MotionDetectedState         |                              | Switch, Contact          | Motion sensor state (ON=motion detected, OFF=no motion)          |
 |                      |                             | Name                         | String                   | Name of the sensor                                               |
 |                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
-| OccupancySensor      |                             |                              |                          | Occupancy Sensor                                                                                                                                                                                                                                                                                          |
-|                      | OccupancyDetectedState      |                              | SwitchItem, Contact Item | Occupancy sensor state (ON=occupied, OFF=not occupied                                                                                                                                                                                                                                                     |
+| OccupancySensor      |                             |                              |                          | Occupancy Sensor                                                 |
+|                      | OccupancyDetectedState      |                              | Switch, Contact          | Occupancy sensor state (ON=occupied, OFF=not occupied)           |
 |                      |                             | Name                         | String                   | Name of the sensor                                               |
 |                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
 | ContactSensor        |                             |                              |                          | Contact Sensor,An accessory with on/off state that can be viewed in HomeKit but not changed such as a contact sensor for a door or window                                                                                                                                                                 |
-|                      | ContactSensorState          |                              | SwitchItem, Contact Item | Contact sensor state (ON=open, OFF=closed)                                                                                                                                                                                                                                                                |
+|                      | ContactSensorState          |                              | Switch, Contact          | Contact sensor state (ON=open, OFF=closed)                                                                                                                                                                                                                                                                |
 |                      |                             | Name                         | String                   | Name of the sensor                                               |
 |                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
 | SmokeSensor          |                             |                              |                          | Smoke Sensor                                                                                                                                                                                                                                                                                              |
-|                      | SmokeDetectedState          |                              | SwitchItem, Contact Item | Smoke sensor state (ON=smoke detected, OFF=no smoke)                                                                                                                                                                                                                                                      |
+|                      | SmokeDetectedState          |                              | Switch, Contact          | Smoke sensor state (ON=smoke detected, OFF=no smoke)                                                                                                                                                                                                                                                      |
 |                      |                             | Name                         | String                   | Name of the sensor                                               |
 |                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
 | LightSensor          |                             |                              |                          | Light sensor                                                     |
-|                      | LightLevel                  |                              | Number                   | Light level in lux                                       |
+|                      | LightLevel                  |                              | Number                   | Light level in lux                                               |
 |                      |                             | Name                         | String                   | Name of the sensor                                               |
 |                      |                             | ActiveStatus                 | Switch, Contact          | Working status                                                   |
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
@@ -414,6 +414,15 @@ Switch          contactsensor_bat          "Contact Sensor Battery"             
 Switch          contactsensor_active       "Contact Sensor Active"              (gContactSensor)     {homekit="ContactSensor.ActiveStatus"}
 Switch          contactsensor_fault        "Contact Sensor Fault"               (gContactSensor)     {homekit="ContactSensor.FaultStatus"}
 Switch          contactsensor_tampered     "Contact Sensor Tampered"            (gContactSensor)     {homekit="ContactSensor.TamperedStatus"}
+
+Group           gAirQualitySensor    	    "Air Quality Sensor"      				                 {homekit="AirQualitySensor"}
+String          airquality                  "Air Quality"						(gAirQualitySensor)  {homekit="AirQuality"}
+Number          ozone                       "Ozone Density"						(gAirQualitySensor)  {homekit="OzoneDensity"}
+Number          voc                         "VOC Density"						(gAirQualitySensor)  {homekit="VOCDensity"}
+Number          nitrogen                    "Nitrogen Density"					(gAirQualitySensor)  {homekit="NitrogenDioxideDensity"}
+Number          sulphur                     "Sulphur Density"					(gAirQualitySensor)  {homekit="SulphurDioxideDensity"}
+Number          pm25                        "PM25 Density"						(gAirQualitySensor)  {homekit="PM25Density"}
+Number          pm10                        "PM10 Density"						(gAirQualitySensor)  {homekit="PM10Density"}
 
 Group           gSecuritySystem            "Security System Group"                                   {homekit="SecuritySystem"}
 String          security_current_state     "Security Current State"             (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
