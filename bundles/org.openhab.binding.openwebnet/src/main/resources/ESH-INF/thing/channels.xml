@@ -26,15 +26,4 @@
 		</tags>
 	</channel-type>
 
-
-	<channel-type id="dimmerLevel">
-		<item-type>Number</item-type>
-		<label>Dimmer Level (OpenWebNet)</label>
-		<description>Control the dimmer level</description>
-		<category>DimmableLight</category>
-		<tags>
-			<tag>Lighting</tag>
-		</tags>
-	</channel-type>
-
 </thing:thing-descriptions>

@@ -77,7 +77,6 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
     private void registerDiscoveryService(OpenWebNetBridgeHandler bridgeHandler) {
         OpenWebNetDeviceDiscoveryService deviceDiscoveryService = new OpenWebNetDeviceDiscoveryService(bridgeHandler);
         bridgeHandler.deviceDiscoveryService = deviceDiscoveryService;
-        // deviceDiscoveryService.activate();
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext.registerService(
                 DiscoveryService.class.getName(), deviceDiscoveryService, new Hashtable<String, Object>()));
     }

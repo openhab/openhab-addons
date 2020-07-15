@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenWebNetGenericHandler} is responsible for handling Generic OpenWebNet
- * devices. It does not too much, but it is needed to avoid handler errors.
+ * devices. It does not too much, but it is needed to avoid handler errors and to tell the user
+ * that some device has been found by the gateway but it was not recognised.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution

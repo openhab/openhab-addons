@@ -42,19 +42,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.DEVICE_SUPPORTED_THING_TYPES;
-
-    private static final int SEARCH_TIME = 60;
-
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetDeviceDiscoveryService.class);
+
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.DEVICE_SUPPORTED_THING_TYPES;
+    private static final int SEARCH_TIME_SEC = 60;
+
     private final OpenWebNetBridgeHandler bridgeHandler;
     private final ThingUID bridgeUID;
 
     public OpenWebNetDeviceDiscoveryService(OpenWebNetBridgeHandler handler) {
-        super(SEARCH_TIME);
+        super(SEARCH_TIME_SEC);
         bridgeHandler = handler;
         bridgeUID = handler.getThing().getUID();
-        logger.debug("Constructor for bridge: '{}'", bridgeUID);
     }
 
     @Override
@@ -64,8 +63,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.info("------ startScan() - SEARCHING for DEVICES on bridge '{}' ({}) ...",
-                bridgeHandler.getThing().getLabel(), bridgeUID);
+        logger.info("------ SEARCHING for DEVICES on bridge '{}' ({}) ...", bridgeHandler.getThing().getLabel(),
+                bridgeUID);
         bridgeHandler.searchDevices();
     }
 
@@ -94,31 +93,27 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_GENERIC_DEVICE;
         Who deviceWho = Who.UNKNOWN;
         switch (deviceType) {
-            case ZIGBEE_ON_OFF_SWITCH: {
+            case ZIGBEE_ON_OFF_SWITCH:
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_ON_OFF_SWITCH;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_ON_OFF_SWITCH;
                 deviceWho = Who.LIGHTING;
                 break;
-            }
-            case ZIGBEE_DIMMER_SWITCH: {
+            case ZIGBEE_DIMMER_SWITCH:
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_DIMMER;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_DIMMER;
                 deviceWho = Who.LIGHTING;
                 break;
-            }
-            case SCS_ON_OFF_SWITCH: {
+            case SCS_ON_OFF_SWITCH:
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_ON_OFF_SWITCH;
                 deviceWho = Who.LIGHTING;
                 break;
-            }
-            case SCS_DIMMER_SWITCH: {
+            case SCS_DIMMER_SWITCH:
                 thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_DIMMER;
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DIMMER;
                 deviceWho = Who.LIGHTING;
                 break;
-            }
-            default: {
+            default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
                 if (where instanceof WhereZigBee) {
                     thingLabel = "ZigBee " + thingLabel;
@@ -126,7 +121,6 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
                 if (baseMsg != null) {
                     deviceWho = baseMsg.getWho();
                 }
-            }
         }
         String tId = bridgeHandler.thingIdFromWhere(where);
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);

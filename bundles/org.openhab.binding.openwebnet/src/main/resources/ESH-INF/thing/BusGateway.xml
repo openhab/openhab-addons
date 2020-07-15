@@ -27,14 +27,15 @@
 				<required>true</required>
 			</parameter>
 
-			<parameter name="port" type="integer">
+			<parameter name="port" type="integer" min="1" max="65535">
 				<label>Port</label>
 				<description>OpenWebNet gateway port (default: 20000)</description>
 				<required>false</required>
+				<default>20000</default>
 			</parameter>
 
 			<parameter name="passwd" type="text">
-				<context>password-create</context>
+				<context>password</context>
 				<label>Password</label>
 				<description>OpenWebNet gateway password (default: 12345)</description>
 				<required>false</required>

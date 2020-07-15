@@ -33,7 +33,7 @@ public class OpenWebNetBindingConstants {
 
     public static final String BINDING_ID = "openwebnet";
 
-    public static final int THING_STATE_REQ_TIMEOUT = 5; // seconds
+    public static final int THING_STATE_REQ_TIMEOUT_SEC = 5;
 
     // #LIST OF Thing Type UIDs
     // generic device (used for not identified devices)

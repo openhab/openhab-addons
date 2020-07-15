@@ -14,10 +14,6 @@ https://github.com/openhab/openhab-addons
 
 ## Third-party Content
 
-slf4j-api
-* License: MIT
-* Source: https://github.com/qos-ch/slf4j
-
-nrjavaserial
-* License: LGPL v 2.1 + Linking Over Controlled Interface
-* Source: https://github.com/NeuronRobotics/nrjavaserial
+openwebnet4j
+* License: Eclipse Public License 2.0
+* Source: https://github.com/mvalla/openwebnet4j

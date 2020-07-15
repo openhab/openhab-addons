@@ -14,16 +14,12 @@ package org.openhab.binding.openwebnet.handler;
 
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.Quantity;
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -59,25 +55,26 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     protected @Nullable String ownId; // OpenWebNet identifier for this device: WHO.WHERE
     protected @Nullable Where deviceWhere; // this device Where address
 
+    protected @Nullable ScheduledFuture<?> refreshTimeout;
+
     public OpenWebNetThingHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     public void initialize() {
-        logger.debug("initialize() thing={}", thing.getUID());
         Bridge bridge = getBridge();
         if (bridge != null) {
             OpenWebNetBridgeHandler brH = (OpenWebNetBridgeHandler) bridge.getHandler();
             if (brH != null) {
                 bridgeHandler = brH;
-                String deviceWhereStr = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
-                if (deviceWhereStr == null) {
-                    logger.warn("WHERE parameter in configuration is null or invalid for thing {}", thing.getUID());
+                Object deviceWhereConfig = getConfig().get(CONFIG_PROPERTY_WHERE);
+                if (!(deviceWhereConfig instanceof String)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "WHERE parameter in configuration is null or invalid");
                     return;
                 } else {
+                    String deviceWhereStr = (String) getConfig().get(CONFIG_PROPERTY_WHERE);
                     Where w;
                     if (brH.isBusGateway()) {
                         w = new WhereLightAutom(deviceWhereStr);
@@ -97,7 +94,6 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                 return;
             }
         }
-        logger.warn("No bridge associated, please assign a bridge in thing configuration. thing={}", thing.getUID());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "No bridge associated, please assign a bridge in thing configuration.");
     }
@@ -109,28 +105,24 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         if (handler != null) {
             OpenGateway gw = handler.gateway;
             if (gw != null && !gw.isConnected()) {
-                logger.warn("Gateway is NOT connected, setting thing={} to OFFLINE", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                logger.info("Cannot handle command {}:{} for {}: gateway is not connected", channel, command,
+                        getThing().getUID());
                 return;
             }
             if (command instanceof RefreshType) {
-                logger.debug("Refreshing channel {}", channel);
                 requestChannelState(channel);
-                // set a schedule to put device OFFLINE if no answer is received after THING_STATE_REQ_TIMEOUT
-                scheduler.schedule(() -> {
-                    // if state is still unknown after timer ends, set the thing OFFLINE
+                // set a schedule to put device OFFLINE if no answer is received after THING_STATE_REQ_TIMEOUT_SEC
+                refreshTimeout = scheduler.schedule(() -> {
                     if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
-                        logger.info("Thing state request timer expired, still unknown. Setting thing={} to OFFLINE",
-                                thing.getUID());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Could not get channel state");
+                                "Could not get channel state (timer expired)");
                     }
-                }, THING_STATE_REQ_TIMEOUT, TimeUnit.SECONDS);
+                }, THING_STATE_REQ_TIMEOUT_SEC, TimeUnit.SECONDS);
             } else {
                 handleChannelCommand(channel, command);
             }
         } else {
-            logger.info("Thing {} is not associated to any gateway, skipping command", getThing().getUID());
+            logger.debug("Thing {} is not associated to any gateway, skipping command", getThing().getUID());
         }
     }
 
@@ -144,8 +136,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     protected abstract void handleChannelCommand(ChannelUID channel, Command command);
 
     /**
-     * Handle incoming message from OWN network directed to a device. It should be further implemented by each specific
-     * device handler.
+     * Handle incoming message from OWN network via bridge Thing, directed to this device. It should be further
+     * implemented by each specific device handler.
      *
      * @param msg the message to handle
      */
@@ -179,11 +171,14 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("dispose() for {}", getThing().getUID());
-        OpenWebNetBridgeHandler handler = bridgeHandler;
+        OpenWebNetBridgeHandler bh = bridgeHandler;
         String oid = ownId;
-        if (handler != null && oid != null) {
-            handler.unregisterDevice(oid);
+        if (bh != null && oid != null) {
+            bh.unregisterDevice(oid);
+        }
+        ScheduledFuture<?> sc = refreshTimeout;
+        if (sc != null) {
+            sc.cancel(true);
         }
         super.dispose();
     }
@@ -194,12 +189,4 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      * @return
      */
     protected abstract String ownIdPrefix();
-
-    @SuppressWarnings("unchecked")
-    protected <U extends Quantity<U>> QuantityType<U> commandToQuantityType(Command command, Unit<U> defaultUnit) {
-        if (command instanceof QuantityType<?>) {
-            return ((QuantityType<U>) command);
-        }
-        return new QuantityType<U>(new BigDecimal(command.toString()), defaultUnit);
-    }
 }
