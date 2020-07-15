@@ -29,14 +29,4 @@ public class BoschSHCBridgeConfiguration {
      */
     public String password;
 
-    /**
-     * Location at which to store the Java keystore holding keys and certificates required to connect to the Bosch Smart
-     * Home Controller.
-     */
-    public String keystorePath;
-
-    /**
-     * Password to be used for the Java keystore.
-     */
-    public String keystorePassword;
 }

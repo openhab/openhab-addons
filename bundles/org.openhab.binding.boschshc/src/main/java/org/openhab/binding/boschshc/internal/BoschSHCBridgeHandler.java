@@ -1,25 +1,16 @@
 package org.openhab.binding.boschshc.internal;
 
-import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.eclipse.jetty.http.HttpMethod.POST;
+import static org.eclipse.jetty.http.HttpMethod.PUT;
 
-import java.io.File;
 import java.lang.reflect.Type;
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-//import org.bouncycastle.cert.X509CertificateHolder;
-//import org.bouncycastle.cert.X509v1CertificateBuilder;
-//import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
-//import org.bouncycastle.cert.jcajce.JcaX509v1CertificateBuilder;
-//import org.bouncycastle.operator.ContentSigner;
-//import org.bouncycastle.operator.OperatorCreationException;
-//import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -27,14 +18,15 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,80 +36,56 @@ import com.google.gson.reflect.TypeToken;
 
 public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
-    public BoschSHCBridgeHandler(Bridge bridge) {
+
+public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
 
-    private @Nullable HttpClient httpClient;
+    private @Nullable BoschHttpClient httpClient;
 
     private @Nullable ArrayList<Room> rooms;
     private @Nullable ArrayList<Device> devices;
 
     private @Nullable String subscriptionId;
 
-    private SslContextFactory getSslContext(String keystore, String keystorePassword) {
 
-        // Instantiate and configure the SslContextFactory
-        // SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-        SslContextFactory sslContextFactory = new SslContextFactory(true); // Accept all certificates
 
-        // Keystore for managing the keys that have been used to pair with the SHC
-        // https://www.eclipse.org/jetty/javadoc/9.4.12.v20180830/org/eclipse/jetty/util/ssl/SslContextFactory.html
-        sslContextFactory.setKeyStorePath(keystore);
-        sslContextFactory.setKeyStorePassword(keystorePassword);
-
-        // Bosch is using a self signed certificate
-        sslContextFactory.setTrustAll(true);
-        sslContextFactory.setValidateCerts(false);
-        sslContextFactory.setValidatePeerCerts(false);
-        sslContextFactory.setEndpointIdentificationAlgorithm(null);
-
-        return sslContextFactory;
-    }
-
-    // https://stackoverflow.com/questions/13894699/java-how-to-store-a-key-in-keystore
-    public X509Certificate generateCertificate(KeyPair keyPair) {
-
-        return null;
-    }
 
     @Override
     public void initialize() {
 
         config = getConfigAs(BoschSHCBridgeConfiguration.class);
-
+        
         updateStatus(ThingStatus.UNKNOWN);
 
         // Example for background initialization:
         scheduler.execute(() -> {
 
-            String keystore = config.keystorePath;
-            String keystorePassword = config.keystorePassword;
-
-            logger.warn("Starting with keystore at: {}", keystore);
+            logger.info("Starting Bosch SHC Bridge");
 
             try {
-                if (!new File(keystore).exists()) {
-
-                    logger.warn("Initial pairing for the smart home controller not yet supported: {}");
-                    updateStatus(ThingStatus.OFFLINE);
-
-                    throw new UnsupportedOperationException();
-                }
-
                 // Instantiate HttpClient with the SslContextFactory
-                this.httpClient = new HttpClient(this.getSslContext(keystore, keystorePassword));
-
+                this.httpClient = new BoschHttpClient(config.ipAddress, config.password, 
+                    	// prepare SSL key and certificates
+                		new BoschSslUtil(config.password).getSslContextFactory());
                 try {
                     this.httpClient.start();
                 } catch (Exception e) {
-                    logger.warn("Failed to start http client from: {}", keystore, e);
+                    logger.warn("Failed to start Bosch SHC Bridge: {}", e);
                 }
 
-                logger.warn("Initializing bridge: {} - HTTP client is: {} - version: 2020-04-05", config.ipAddress,
+                logger.warn("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05", config.ipAddress,
                         this.httpClient);
+
+                // check access and pair if necessary
+                if ( !this.httpClient.isAccessPossible()) {
+                    // update status already if access is not possible
+                	updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
+	                    "@text/offline.conf-error-pairing");
+                    this.httpClient.checkAccessAndPairIfNecessary();
+                }
 
                 Boolean thingReachable = true;
                 thingReachable &= this.getRooms();
@@ -130,11 +98,19 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     this.longPoll();
 
                 } else {
+                	// TODO add offline conf-error description
                     updateStatus(ThingStatus.OFFLINE);
                 }
 
-            } catch (Exception e) {
-                logger.warn("Failed to initialize Bosch Smart Home Controller: {}", e);
+            }
+            catch (PairingFailedException e) {
+	            logger.debug("Failed pairing with Bosch Smart Home Controller: {}", e.getMessage());
+	            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+	                    "@text/offline.conf-error-pairing");
+	        }
+            catch (Exception e) {
+                logger.warn("Failed to initialize Bosch SHC: {}", e);
+            	// TODO add offline conf-error description
                 updateStatus(ThingStatus.OFFLINE);
             }
 
@@ -162,6 +138,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         return null;
     }
 
+
+    
     /**
      * Get a list of connected devices from the Smart-Home Controller
      */
