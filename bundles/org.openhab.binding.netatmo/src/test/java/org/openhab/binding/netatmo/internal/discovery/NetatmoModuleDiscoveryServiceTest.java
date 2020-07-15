@@ -91,7 +91,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
-        //expected is just the type name, because a station name isn't available
+        //Expected is only the type name, because a station name isn't available
         assertEquals("NAMain", discoveredThings.get(0).getLabel());
     }
 
@@ -106,6 +106,8 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
+        //Expected is the type name + station name, because both is available
+        // and the station name contains only the city name by default which wouldn't be sufficient.
         assertEquals("NAMain Neu Wulmstorf", discoveredThings.get(0).getLabel());
     }
 
@@ -120,6 +122,8 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
+        //Expected is "(favorite)" within the label to make clear that it is favorite station
+        // (and not the station of the user)
         assertEquals("NAMain (favorite)", discoveredThings.get(0).getLabel());
     }
 
@@ -135,6 +139,8 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
+        //Expected is "(favorite)" within the label to make clear that it is favorite station
+        // (and not the station of the user)
         assertEquals("NAMain Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
     }
 
@@ -150,6 +156,8 @@ public class NetatmoModuleDiscoveryServiceTest {
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(2, discoveredThings.size());
         assertEquals("NAMain Neu Wulmstorf", discoveredThings.get(0).getLabel());
+        //Expected is the type name + station name to make clear that the module belongs to the station.
+        // The module name isn't available, therefore the type name of the module is used.
         assertEquals("NAModule1 Neu Wulmstorf", discoveredThings.get(1).getLabel());
     }
 
@@ -168,6 +176,8 @@ public class NetatmoModuleDiscoveryServiceTest {
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(2, discoveredThings.size());
         assertEquals("NAMain Neu Wulmstorf", discoveredThings.get(0).getLabel());
+        //Expected is the module name + station name to make clear that the module belongs to the station.
+        // Because an explicit module name is available, the module type name isn't required.
         assertEquals("Outdoor-Module Neu Wulmstorf", discoveredThings.get(1).getLabel());
     }
 
@@ -184,6 +194,8 @@ public class NetatmoModuleDiscoveryServiceTest {
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(2, discoveredThings.size());
         assertEquals("NAMain Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
+        //Expected is "(favorite)" within the label to make clear that it is favorite station
+        // (and not the station of the user)
         assertEquals("NAModule1 Neu Wulmstorf (favorite)", discoveredThings.get(1).getLabel());
     }
 
@@ -203,6 +215,8 @@ public class NetatmoModuleDiscoveryServiceTest {
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(2, discoveredThings.size());
         assertEquals("NAMain Neu Wulmstorf (favorite)", discoveredThings.get(0).getLabel());
+        //Expected is "(favorite)" within the label to make clear that it is favorite station
+        // (and not the station of the user)
         assertEquals("Outdoor-Module Neu Wulmstorf (favorite)", discoveredThings.get(1).getLabel());
     }
 
