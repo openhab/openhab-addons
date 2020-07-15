@@ -97,7 +97,8 @@ public class LcnModuleHandler extends BaseThingHandler {
         try {
 
             // Determine serial number of manually added modules
-            if (getThing().getProperties().get(SERIAL_NUMBER).isEmpty()) {
+            if (getThing().getThingTypeUID().getId().equals(LcnBindingConstants.THING_TYPE_MODULE)
+                    && getThing().getProperties().get(SERIAL_NUMBER).isEmpty()) {
                 PckGatewayHandler localBridgeHandler = getPckGatewayHandler();
                 localBridgeHandler.registerPckListener(data -> {
                     Matcher matcher;
