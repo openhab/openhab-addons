@@ -46,7 +46,7 @@ public class IhcAirlinkManagementService extends IhcBaseService {
     public synchronized List<WSRFDevice> getDetectedDeviceList() throws IhcExecption {
         String response = sendSoapQuery("getDetectedDeviceList", EMPTY_QUERY);
 
-        List<WSRFDevice> resourceValueList = new ArrayList<WSRFDevice>();
+        List<WSRFDevice> resourceValueList = new ArrayList<>();
 
         try {
             NodeList nodeList = XPathUtils.parseList(response,
@@ -54,9 +54,12 @@ public class IhcAirlinkManagementService extends IhcBaseService {
 
             if (nodeList != null) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
-                    WSRFDevice newVal = parseResourceValue(nodeList.item(i));
-                    if (newVal != null) {
-                        resourceValueList.add(newVal);
+                    Node node = nodeList.item(i);
+                    if (node != null) {
+                        WSRFDevice dev = parseResourceValue(node);
+                        if (dev != null) {
+                            resourceValueList.add(dev);
+                        }
                     }
                 }
             } else {
@@ -69,14 +72,16 @@ public class IhcAirlinkManagementService extends IhcBaseService {
     }
 
     private WSRFDevice parseResourceValue(Node n) throws XPathExpressionException, NumberFormatException {
-        String batteryLevel = XPathUtils.getValueFromNode(n, "batteryLevel");
-        String deviceType = XPathUtils.getValueFromNode(n, "deviceType");
-        String serialNumber = XPathUtils.getValueFromNode(n, "serialNumber");
-        String signalStrength = XPathUtils.getValueFromNode(n, "signalStrength");
-        String version = XPathUtils.getValueFromNode(n, "version");
-        String detected = XPathUtils.getValueFromNode(n, "detected");
-        return new WSRFDevice(Integer.parseInt(batteryLevel), Integer.parseInt(deviceType),
-                Long.parseLong(serialNumber), Integer.parseInt(signalStrength), Integer.parseInt(version),
-                Boolean.valueOf(detected));
+        try {
+            int batteryLevel = Integer.parseInt(XPathUtils.getValueFromNode(n, "batteryLevel"));
+            int deviceType = Integer.parseInt(XPathUtils.getValueFromNode(n, "deviceType"));
+            long serialNumber = Long.parseLong(XPathUtils.getValueFromNode(n, "serialNumber"));
+            int signalStrength = Integer.parseInt(XPathUtils.getValueFromNode(n, "signalStrength"));
+            int version = Integer.parseInt(XPathUtils.getValueFromNode(n, "version"));
+            boolean detected = Boolean.valueOf(XPathUtils.getValueFromNode(n, "detected"));
+            return new WSRFDevice(batteryLevel, deviceType, serialNumber, signalStrength, version, detected);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

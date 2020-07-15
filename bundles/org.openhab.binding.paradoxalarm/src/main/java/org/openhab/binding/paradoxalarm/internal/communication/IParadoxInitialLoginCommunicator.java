@@ -30,14 +30,16 @@ public interface IParadoxInitialLoginCommunicator extends IConnectionHandler {
 
     void setPanelInfoBytes(byte[] panelInfoBytes);
 
-    byte[] getPcPasswordBytes();
-
+    /**
+     * @return IP150 connection password
+     */
     String getPassword();
+
+    byte[] getPcPasswordBytes();
 
     ScheduledExecutorService getScheduler();
 
     void setListeners(Collection<IDataUpdateListener> listeners);
 
     void updateListeners();
-
 }

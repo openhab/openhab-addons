@@ -17,6 +17,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link JsonExchangeTokenResponse} encapsulate the GSON response data of the token exchange
  *
@@ -35,12 +37,17 @@ public class JsonExchangeTokenResponse {
     }
 
     public static class Cookie {
-        public @Nullable String Path;
-        public @Nullable Boolean Secure;
-        public @Nullable String Value;
-        public @Nullable String Expires;
-        public @Nullable Boolean HttpOnly;
-        public @Nullable String Name;
-
+        @SerializedName("Path")
+        public @Nullable String path;
+        @SerializedName("Secure")
+        public @Nullable Boolean secure;
+        @SerializedName("Value")
+        public @Nullable String value;
+        @SerializedName("Expires")
+        public @Nullable String expires;
+        @SerializedName("HttpOnly")
+        public @Nullable Boolean httpOnly;
+        @SerializedName("Name")
+        public @Nullable String name;
     }
 }

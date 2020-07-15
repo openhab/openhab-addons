@@ -31,14 +31,14 @@ public class ExpiringCacheAsyncTest {
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWrongCacheTime() {
         // Fail if cache time is <= 0
-        new ExpiringCacheAsync<Double>(0, () -> {
+        new ExpiringCacheAsync<>(0, () -> {
         });
     }
 
     @SuppressWarnings("unused")
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorNoRefrehCommand() {
-        new ExpiringCacheAsync<Double>(2000, null);
+        new ExpiringCacheAsync<>(2000, null);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class ExpiringCacheAsyncTest {
         verify(u, times(0)).requestCacheUpdate();
         // Wait
         try {
-            Thread.sleep(100);
+            Thread.sleep(101);
         } catch (InterruptedException ignored) {
             return;
         }

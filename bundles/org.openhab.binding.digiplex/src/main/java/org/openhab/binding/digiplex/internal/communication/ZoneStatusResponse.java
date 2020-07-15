@@ -12,15 +12,20 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Response for {@link ZoneStatusRequest}
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public class ZoneStatusResponse extends AbstractResponse {
 
     public final int zoneNo;
+    @Nullable
     public final ZoneStatus status;
     public final boolean alarm;
     public final boolean fireAlarm;

@@ -39,6 +39,7 @@ public class TeslaBindingConstants {
     public static final String VIN = "vin";
 
     // Tesla REST API commands
+    public static final String COMMAND_ACTUATE_TRUNK = "actuate_trunk";
     public static final String COMMAND_AUTO_COND_START = "auto_conditioning_start";
     public static final String COMMAND_AUTO_COND_STOP = "auto_conditioning_stop";
     public static final String COMMAND_CHARGE_MAX = "charge_max_range";
@@ -56,7 +57,6 @@ public class TeslaBindingConstants {
     public static final String COMMAND_SET_VALET_MODE = "set_valet_mode";
     public static final String COMMAND_SUN_ROOF = "sun_roof_control";
     public static final String COMMAND_THROTTLE = "commandthrottle";
-    public static final String COMMAND_TRUNK_OPEN = "trunk_open";
     public static final String COMMAND_WAKE_UP = "wake_up";
     public static final String DATA_THROTTLE = "datathrottle";
 
@@ -103,5 +103,4 @@ public class TeslaBindingConstants {
     public static final String CONFIG_REFRESHTOKEN = "refreshToken";
     public static final String CONFIG_USERNAME = "username";
     public static final String CONFIG_PASSWORD = "password";
-
 }

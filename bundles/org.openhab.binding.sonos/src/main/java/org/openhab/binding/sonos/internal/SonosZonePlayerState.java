@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.sonos.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * The {@link SonosZoneGroup} is data structure to describe
+ * The {@link SonosZonePlayerState} is data structure to describe
  * state of a Zone Player
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class SonosZonePlayerState {
 
-    public String transportState;
-    public String volume;
-    public String relTime;
-    public SonosEntry entry;
+    public @Nullable String transportState;
+    public @Nullable String volume;
+    public @Nullable String relTime;
+    public @Nullable SonosEntry entry;
     public long track;
-
 }

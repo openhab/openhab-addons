@@ -23,5 +23,4 @@ public class TileCommand extends BaseStringCommand {
     protected TileCommand(int setId) {
         super('d', 'd', setId);
     }
-
 }

@@ -118,5 +118,4 @@ public class NotificationAction {
             cloudService.sendBroadcastNotification(message, icon, severity);
         }
     }
-
 }

@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Response for {@link AreaStatusRequest}
  *
  * @author Robert Michalak - Initial contribution
  */
+@NonNullByDefault
 public class AreaStatusResponse extends AbstractResponse {
 
     public final int areaNo;
-    public final AreaStatus status;
+    public final @Nullable AreaStatus status;
     public final boolean zoneInMemory;
     public final boolean trouble;
     public final boolean ready;
@@ -71,5 +75,4 @@ public class AreaStatusResponse extends AbstractResponse {
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleAreaStatusResponse(this);
     }
-
 }

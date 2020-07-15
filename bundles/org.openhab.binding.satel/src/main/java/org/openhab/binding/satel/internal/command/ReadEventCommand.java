@@ -132,6 +132,15 @@ public class ReadEventCommand extends SatelCommandBase {
     }
 
     /**
+     * Returns number of partition keypad related to the event.
+     *
+     * @return partition keypad number
+     */
+    public int getPartitionKeypad() {
+        return ((getResponse().getPayload()[4] >> 2) & 0x3f) + 1;
+    }
+
+    /**
      * Returns event code the describes the event. It can be used to retrieve description text for this event.
      *
      * @return event code
@@ -203,15 +212,10 @@ public class ReadEventCommand extends SatelCommandBase {
     @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length != 14) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
         }
         return true;
     }
-
 }

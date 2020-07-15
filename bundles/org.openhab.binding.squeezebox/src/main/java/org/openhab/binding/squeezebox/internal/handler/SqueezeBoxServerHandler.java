@@ -24,14 +24,17 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,10 +50,19 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpRequestBuilder;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
+import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
+import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
+import org.openhab.binding.squeezebox.internal.dto.ButtonsDTO;
+import org.openhab.binding.squeezebox.internal.dto.StatusResponseDTO;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Handles connection and event handling to a SqueezeBox Server.
@@ -66,6 +78,7 @@ import org.slf4j.LoggerFactory;
  * @author Philippe Siem - Improve refresh of cover art url,remote title, artist, album, genre, year.
  * @author Patrik Gfeller - Support for mixer volume message added
  * @author Mark Hilbush - Get favorites from LMS; update channel and send to players
+ * @author Mark Hilbush - Add like/unlike functionality
  */
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
@@ -86,11 +99,12 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     private static final String CHANNEL_CONFIG_QUOTE_LIST = "quoteList";
 
-    private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
-            .synchronizedList(new ArrayList<SqueezeBoxPlayerEventListener>());
+    private static final String JSONRPC_STATUS_REQUEST = "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"@@MAC@@\",[\"status\",\"-\",\"tags:yagJlNKjcB\"]]}";
 
-    private Map<String, SqueezeBoxPlayer> players = Collections
-            .synchronizedMap(new HashMap<String, SqueezeBoxPlayer>());
+    private List<SqueezeBoxPlayerEventListener> squeezeBoxPlayerListeners = Collections
+            .synchronizedList(new ArrayList<>());
+
+    private Map<String, SqueezeBoxPlayer> players = Collections.synchronizedMap(new HashMap<>());
 
     // client socket and listener thread
     private Socket clientSocket;
@@ -106,6 +120,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private String userId;
 
     private String password;
+
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(ButtonDTO.class, new ButtonDTODeserializer())
+            .create();
+    private String jsonRpcUrl;
+    private String basicAuthorization;
 
     public SqueezeBoxServerHandler(Bridge bridge) {
         super(bridge);
@@ -145,11 +164,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void mute(String mac) {
-        setVolume(mac, 0);
+        sendCommand(mac + " mixer muting 1");
     }
 
-    public void unMute(String mac, int unmuteVolume) {
-        setVolume(mac, unmuteVolume);
+    public void unMute(String mac) {
+        sendCommand(mac + " mixer muting 0");
     }
 
     public void powerOn(String mac) {
@@ -276,6 +295,12 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         sendCommand(mac + " favorites playlist play item_id:" + favorite);
     }
 
+    public void rate(String mac, String rateCommand) {
+        if (rateCommand != null) {
+            sendCommand(mac + " " + rateCommand);
+        }
+    }
+
     /**
      * Send a generic command to a given player
      *
@@ -307,6 +332,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         if (StringUtils.isEmpty(userId)) {
             return;
         }
+        // Create basic auth string for jsonrpc interface
+        basicAuthorization = new String(
+                Base64.getEncoder().encode((userId + ":" + password).getBytes(StandardCharsets.UTF_8)));
         logger.debug("Logging into Squeeze Server using userId={}", userId);
         sendCommand("login " + userId + " " + password);
     }
@@ -362,6 +390,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "host is not set");
             return;
         }
+        // Create URL for jsonrpc interface
+        jsonRpcUrl = String.format("http://%s:%d/jsonrpc.js", host, webport);
+
         try {
             clientSocket = new Socket(host, cliport);
         } catch (IOException e) {
@@ -378,10 +409,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         } catch (IllegalThreadStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
         updateStatus(ThingStatus.ONLINE);
-
     }
 
     /**
@@ -422,13 +451,14 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         public void run() {
             BufferedReader reader = null;
             boolean endOfStream = false;
+            ScheduledFuture<?> requestFavoritesJob = null;
 
             try {
                 reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 login();
                 updateStatus(ThingStatus.ONLINE);
                 requestPlayers();
-                requestFavorites();
+                requestFavoritesJob = scheduleRequestFavorites();
                 sendCommand("listen 1");
 
                 String message = null;
@@ -476,7 +506,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                         "end of stream on socket read");
                 scheduleReconnect();
             }
-
+            if (requestFavoritesJob != null && !requestFavoritesJob.isDone()) {
+                requestFavoritesJob.cancel(true);
+                logger.debug("Canceled request favorites job");
+            }
             logger.debug("Squeeze Server listener exiting.");
         }
 
@@ -588,7 +621,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     break;
                 default:
                     logger.trace("Unhandled player update message type '{}'.", messageType);
-
             }
         }
 
@@ -601,7 +633,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             switch (action) {
                 case "volume":
                     String volumeStringValue = decode(messageParts[3]);
-
                     updatePlayer(new PlayerUpdateEvent() {
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
@@ -839,6 +870,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             String mode;
             if (action.equals("newsong")) {
                 mode = "play";
+                // Execute in separate thread to avoid delaying listener
+                scheduler.execute(() -> updateCustomButtons(mac));
                 // Set the track duration to 0
                 updatePlayer(new PlayerUpdateEvent() {
                     @Override
@@ -853,6 +886,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 mode = messageParts[3].equals("0") ? "play" : "pause";
             } else if (action.equals("stop")) {
                 mode = "stop";
+            } else if ("play".equals(action) && "playlist".equals(messageParts[1])) {
+                if (messageParts.length >= 4) {
+                    handleSourceChangeMessage(mac, messageParts[3]);
+                }
+                return;
             } else {
                 // Added so that actions (such as delete, index, jump, open) are not treated as "play"
                 logger.trace("Unhandled playlist message type '{}'", Arrays.toString(messageParts));
@@ -860,12 +898,20 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
             final String value = mode;
             updatePlayer(new PlayerUpdateEvent() {
-
                 @Override
                 public void updateListener(SqueezeBoxPlayerEventListener listener) {
                     listener.modeChangeEvent(mac, value);
                 }
+            });
+        }
 
+        private void handleSourceChangeMessage(String mac, String rawSource) {
+            String source = URLDecoder.decode(rawSource);
+            updatePlayer(new PlayerUpdateEvent() {
+                @Override
+                public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                    listener.sourceChangeEvent(mac, source);
+                }
             });
         }
 
@@ -873,12 +919,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             if (messageParts.length < 5) {
                 return;
             }
-
             // server prefsets
             if (messageParts[2].equals("server")) {
                 String function = messageParts[3];
                 String value = messageParts[4];
-
                 if (function.equals("power")) {
                     final boolean power = value.equals("1");
                     updatePlayer(new PlayerUpdateEvent() {
@@ -890,20 +934,16 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 } else if (function.equals("volume")) {
                     final int volume = (int) Double.parseDouble(value);
                     updatePlayer(new PlayerUpdateEvent() {
-
                         @Override
                         public void updateListener(SqueezeBoxPlayerEventListener listener) {
                             listener.absoluteVolumeChangeEvent(mac, volume);
                         }
-
                     });
                 }
             }
         }
 
         private void handleFavorites(String message) {
-            logger.trace("Handle favorites message: {}", message);
-
             String[] messageParts = message.split("\\s");
             if (messageParts.length == 2 && "changed".equals(messageParts[1])) {
                 // LMS informing us that favorites have changed; request an update to the favorites list
@@ -984,6 +1024,62 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 String favoritesList = sb.toString();
                 logger.trace("Updating favorites channel for {} to state {}", getThing().getUID(), favoritesList);
                 updateState(CHANNEL_FAVORITES_LIST, new StringType(favoritesList));
+            }
+        }
+
+        private ScheduledFuture<?> scheduleRequestFavorites() {
+            // Delay the execution to give the player thing handlers a chance to initialize
+            return scheduler.schedule(SqueezeBoxServerHandler.this::requestFavorites, 3L, TimeUnit.SECONDS);
+        }
+
+        private void updateCustomButtons(final String mac) {
+            String response = executePost(jsonRpcUrl, JSONRPC_STATUS_REQUEST.replace("@@MAC@@", mac));
+            if (response != null) {
+                logger.trace("Status response: {}", response);
+                String likeCommand = null;
+                String unlikeCommand = null;
+                try {
+                    StatusResponseDTO status = gson.fromJson(response, StatusResponseDTO.class);
+                    if (status != null && status.result != null && status.result.remoteMeta != null
+                            && status.result.remoteMeta.buttons != null) {
+                        ButtonsDTO buttons = status.result.remoteMeta.buttons;
+                        if (buttons.repeat != null && buttons.repeat.isCustom()) {
+                            likeCommand = buttons.repeat.command;
+                        }
+                        if (buttons.shuffle != null && buttons.shuffle.isCustom()) {
+                            unlikeCommand = buttons.shuffle.command;
+                        }
+                    }
+                } catch (JsonSyntaxException e) {
+                    logger.debug("JsonSyntaxException parsing status response: {}", response, e);
+                }
+                final String like = likeCommand;
+                final String unlike = unlikeCommand;
+                updatePlayer(new PlayerUpdateEvent() {
+                    @Override
+                    public void updateListener(SqueezeBoxPlayerEventListener listener) {
+                        listener.buttonsChangeEvent(mac, like, unlike);
+                    }
+                });
+            }
+        }
+
+        private String executePost(String url, String content) {
+            // @formatter:off
+            HttpRequestBuilder builder = HttpRequestBuilder.postTo(url)
+                .withTimeout(Duration.ofSeconds(5))
+                .withContent(content)
+                .withHeader("charset", "utf-8")
+                .withHeader("Content-Type", "application/json");
+            // @formatter:on
+            if (basicAuthorization != null) {
+                builder = builder.withHeader("Authorization", "Basic " + basicAuthorization);
+            }
+            try {
+                return builder.getContentAsString();
+            } catch (IOException e) {
+                logger.debug("Bridge: IOException on jsonrpc call: {}", e.getMessage(), e);
+                return null;
             }
         }
     }

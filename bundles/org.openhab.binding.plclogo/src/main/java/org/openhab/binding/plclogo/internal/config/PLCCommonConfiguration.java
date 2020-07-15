@@ -59,5 +59,4 @@ abstract class PLCCommonConfiguration {
      * @return Configured Siemens LOGO! blocks kind
      */
     public abstract String getBlockKind();
-
 }

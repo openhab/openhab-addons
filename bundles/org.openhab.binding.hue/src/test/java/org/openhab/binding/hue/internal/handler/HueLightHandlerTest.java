@@ -71,25 +71,25 @@ public class HueLightHandlerTest {
     }
 
     @Test
-    public void assertCommandForOsramPar16_50ForColorTemperatureChannelOn() {
+    public void assertCommandForOsramPar1650ForColorTemperatureChannelOn() {
         String expectedReply = "{\"on\" : true, \"bri\" : 254}";
         assertSendCommandForColorTempForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
     }
 
     @Test
-    public void assertCommandForOsramPar16_50ForColorTemperatureChannelOff() {
+    public void assertCommandForOsramPar1650ForColorTemperatureChannelOff() {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
         assertSendCommandForColorTempForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
     }
 
     @Test
-    public void assertCommandForOsramPar16_50ForBrightnessChannelOn() {
+    public void assertCommandForOsramPar1650ForBrightnessChannelOn() {
         String expectedReply = "{\"on\" : true, \"bri\" : 254}";
         assertSendCommandForBrightnessForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
     }
 
     @Test
-    public void assertCommandForOsramPar16_50ForBrightnessChannelOff() {
+    public void assertCommandForOsramPar1650ForBrightnessChannelOff() {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
         assertSendCommandForBrightnessForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
     }
@@ -371,6 +371,8 @@ public class HueLightHandlerTest {
         HueClient mockClient = mock(HueClient.class);
         when(mockClient.getLightById(any())).thenReturn(light);
 
+        long fadeTime = 400;
+
         HueLightHandler hueLightHandler = new HueLightHandler(mockThing) {
             @Override
             protected synchronized HueClient getHueClient() {
@@ -390,7 +392,8 @@ public class HueLightHandlerTest {
         hueLightHandler.handleCommand(new ChannelUID(new ThingUID("hue::test"), channel), command);
 
         ArgumentCaptor<StateUpdate> captorStateUpdate = ArgumentCaptor.forClass(StateUpdate.class);
-        verify(mockClient).updateLightState(any(FullLight.class), captorStateUpdate.capture());
+        verify(mockClient).updateLightState(any(LightStatusListener.class), any(FullLight.class),
+                captorStateUpdate.capture(), eq(fadeTime));
         assertJson(expectedReply, captorStateUpdate.getValue().toJson());
     }
 
@@ -400,5 +403,4 @@ public class HueLightHandlerTest {
         JsonElement jsonActual = parser.parse(actual);
         assertEquals(jsonExpected, jsonActual);
     }
-
 }

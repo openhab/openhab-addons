@@ -28,7 +28,6 @@ public class ByteUtil {
      * @return the reserved in byte[]
      */
     public static byte[] reverse(byte[] array) {
-
         if (array == null) {
             return null;
         }
@@ -59,5 +58,4 @@ public class ByteUtil {
         }
         return sb.toString();
     }
-
 }

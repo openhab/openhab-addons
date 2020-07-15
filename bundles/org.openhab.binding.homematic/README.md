@@ -248,7 +248,7 @@ All channels have two configs:
 - **delay**: delays transmission of a command **to** the Homematic gateway, duplicate commands are filtered out
 - **receiveDelay**: delays a received event **from** the Homematic gateway, duplicate events are filtered out (OH 2.2)
 
-The `receiveDelay` is handy for dimmers and rollershutters for example.
+The `receiveDelay` is handy for dimmers and roller shutters for example.
 If you have a slider in a UI and you move this slider to a new position, it jumps around because the gateway sends multiple events with different positions until the final has been reached.
 If you set the `receiveDelay` to some seconds, these events are filtered out and only the last position is distributed to the binding.
 The disadvantage is of course, that all events for this channel are delayed.
@@ -299,7 +299,7 @@ Dimmer  Light "Light [%d %%]"           { channel="homematic:HM-LC-Dim1T-Pl-2:cc
 
 **Note:** don't forget to add the `HG-` type prefix for Homegear devices
 
-## Virtual device GATEWAY-EXTRAX
+## Virtual device GATEWAY-EXTRAS
 
 The GATEWAY-EXTRAS is a virtual device which contains a switch to reload all values from all devices and also a switch to put the gateway in the install mode to add new devices.
 If the gateway supports variables and scripts, you can handle them with this device too.
@@ -478,6 +478,124 @@ then
     Display_submit.sendCommand(ON)
 end
 ```
+
+### HmIP-WRCD
+
+The HmIP-WRCD display lines can be set via a combined parameter:
+
+```java
+String Display_CombinedParam "Combined Parameter" {channel="homematic:HmIP-WRCD:ccu:123456:3#COMBINED_PARAMETER"}
+```
+#### Set Display Lines
+
+The combined parameter can be used in a rule file like this:
+
+```java
+Display_CombinedParam.sendCommand("{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=Just a test,DDID=3,DDC=true}")
+```
+
+If you want to use the combined parameter in the console, you have to use ' instead of ", to prevent evaluation of curly braces:
+
+```shell
+smarthome:send Display_CombinedParam '{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=CENTER,DDS=Just a test,DDID=3,DDC=true}'
+```
+
+**Key translation:**
+- DDBC: Background color of this line. (*WHITE*, *BLACK*)
+- DDTC: Text color of this line. (*WHITE*, *BLACK*)
+- DDI: Icon to be shown after text. (see icon listing below)
+- DDA: Alignment of this line. (*LEFT*, *CENTER*, *RIGHT*)
+- DDS: Text of this line. (String, but see special character listing below)
+- DDID: Line number. (*1-5*)
+- DDC: Commit, should be set in the last line, otherwise leave unset. (*true*)
+
+Each line can be updated separately without changing the other lines.
+
+Multiple lines can be updated within one command, use comma to separate each line. 
+Here an example for a rule file:
+
+```java
+Display_CombinedParam.sendCommand("{DDBC=WHITE,DDTC=BLACK,DDI=24,DDA=LEFT,DDS=Window open,DDID=4},{DDBC=WHITE,DDTC=BLACK,DDI=0,DDA=LEFT,DDS=Temp.: %sC,DDID=2,DDC=true}")
+```
+
+**Special Characters:**
+- [ -> Ä
+- \# -> Ö
+- $ -> Ü
+- { -> ä
+- | -> ö
+- } -> ü
+- _ -> ß
+- ] -> &
+- ' -> =
+- ; -> Sand Glass
+- < -> Arrow Down
+- = -> Arrow Up
+- \> -> Arrow Up Right
+- @ -> Arrow Down Right
+
+**Icons:**
+- 0 - No Icon
+- 1 - Light off
+- 2 - Light on
+- 3 - Locked
+- 4 - Unlocked
+- 5 - X
+- 6 - Check
+- 7 - Information
+- 8 - Envelope
+- 9 - Spanner
+- 10 - Sun
+- 11 - Moon
+- 12 - Wind
+- 13 - Cloud
+- 14 - Cloud/Lightning
+- 15 - Cloud/Light Rain
+- 16 - Cloud/Moon
+- 17 - Cloud/Rain
+- 18 - Cloud/Snow
+- 19 - Cloud/Sun
+- 20 - Cloud/Sun/Rain
+- 21 - Cloud/Snowflake
+- 22 - Cloud/Raindrop
+- 23 - Flame
+- 24 - Window Open
+- 25 - Roller Shutter
+- 26 - Eco
+- 27 - ? (Rectangle in circle)
+- 28 - House with person
+- 29 - House empty
+- 30 - Bell
+- 31 - Clock
+
+#### Alarm Beep
+
+The display can also make short beep alarms:
+
+```java
+Display_CombinedParam.sendCommand("{R=0,IN=10,ANS=0}")
+```
+Note, that a commit (`DDC`) is not necessary for sounds. 
+
+As with line configuration, this can be combined with other line updates, separated with a comma.
+
+**Key translations**
+- R: Repetitions (*0 to 15*, 15=infinite)
+- IN: Interval (*5 to 80* in steps of five)
+- ANS: Beep sound (*-1 to 7*, see beep table)
+
+**Beep Sounds**
+This is the official mapping for the beep sounds
+- -1 - No Sound
+- 0 - Empty Battery
+- 1 - Alarm Off
+- 2 - External Alarm activated
+- 3 - Internal Alarm activated
+- 4 - External Alarm delayed activated
+- 5 - Internal Alarm delayed activated
+- 6 - Event
+- 7 - Error
+
 ## Troubleshooting
 
 **SHORT & LONG_PRESS events of push buttons do not occur on the event bus**

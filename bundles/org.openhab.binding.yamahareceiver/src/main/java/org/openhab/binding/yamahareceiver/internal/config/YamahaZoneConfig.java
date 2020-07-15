@@ -14,7 +14,7 @@ package org.openhab.binding.yamahareceiver.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
+import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 
 /**
  * Zone settings.
@@ -24,8 +24,7 @@ import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstant
 @NonNullByDefault
 public class YamahaZoneConfig {
     /**
-     * Zone name, will be one of
-     * {@link org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone}.
+     * Zone name, will be one of {@link Zone}.
      */
     private String zone = "";
     /**
@@ -42,8 +41,8 @@ public class YamahaZoneConfig {
      */
     private float volumeDbMax = 12f; // 12.0 dB
 
-    public YamahaReceiverBindingConstants.@Nullable Zone getZone() {
-        return YamahaUtils.tryParseEnum(YamahaReceiverBindingConstants.Zone.class, zone);
+    public @Nullable Zone getZone() {
+        return YamahaUtils.tryParseEnum(Zone.class, zone);
     }
 
     public String getZoneValue() {

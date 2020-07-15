@@ -28,5 +28,4 @@ public class NeatoCommunicationException extends Exception {
     public NeatoCommunicationException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

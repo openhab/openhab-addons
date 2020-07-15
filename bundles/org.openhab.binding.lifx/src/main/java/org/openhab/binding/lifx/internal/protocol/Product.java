@@ -59,11 +59,17 @@ public enum Product {
     PRODUCT_51(51, "LIFX Mini White", TR_2700_2700),
     PRODUCT_52(52, "LIFX GU10", TR_2500_9000, COLOR),
     PRODUCT_55(55, "LIFX Tile", TR_2500_9000, CHAIN, COLOR, MATRIX, TILE_EFFECT),
-    PRODUCT_57(57, "LIFX Candle", TR_2500_9000, COLOR, MATRIX),
+    PRODUCT_57(57, "LIFX Candle", TR_1500_9000, COLOR, MATRIX),
     PRODUCT_59(59, "LIFX Mini Color", TR_2500_9000, COLOR),
     PRODUCT_60(60, "LIFX Mini Day and Dusk", TR_1500_4000),
     PRODUCT_61(61, "LIFX Mini White", TR_2700_2700),
-    PRODUCT_68(68, "LIFX Candle", TR_2500_9000, COLOR, MATRIX);
+    PRODUCT_62(62, "LIFX A19", TR_2500_9000, COLOR),
+    PRODUCT_63(63, "LIFX BR30", TR_2500_9000, COLOR),
+    PRODUCT_64(64, "LIFX+ A19", TR_2500_9000, COLOR, INFRARED),
+    PRODUCT_65(65, "LIFX+ BR30", TR_2500_9000, COLOR, INFRARED),
+    PRODUCT_68(68, "LIFX Candle", TR_1500_9000, COLOR, MATRIX),
+    PRODUCT_81(81, "LIFX Candle Warm to White", TR_2200_6500, MATRIX),
+    PRODUCT_82(82, "LIFX Filament", TR_2000_2000);
 
     /**
      * Enumerates the product features.
@@ -108,6 +114,21 @@ public enum Product {
          * 1500-4000K
          */
         TR_1500_4000(1500, 4000),
+
+        /**
+         * 1500-9000K
+         */
+        TR_1500_9000(1500, 9000),
+
+        /**
+         * 2000-2000K
+         */
+        TR_2000_2000(2000, 2000),
+
+        /**
+         * 2200-6500K
+         */
+        TR_2200_6500(2200, 6500),
 
         /**
          * 2500-9000K
@@ -260,5 +281,4 @@ public enum Product {
 
         throw new IllegalArgumentException(id + " is not a valid product ID");
     }
-
 }

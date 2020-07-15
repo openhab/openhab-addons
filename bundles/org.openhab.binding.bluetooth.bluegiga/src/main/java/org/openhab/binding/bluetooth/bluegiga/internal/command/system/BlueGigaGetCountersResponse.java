@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.system;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 
 /**
@@ -25,6 +26,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaGetCountersResponse extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x00;
     public static int COMMAND_METHOD = 0x05;
@@ -91,6 +93,7 @@ public class BlueGigaGetCountersResponse extends BlueGigaResponse {
     public int getTxok() {
         return txok;
     }
+
     /**
      * Number of retransmitted packets
      * <p>
@@ -101,6 +104,7 @@ public class BlueGigaGetCountersResponse extends BlueGigaResponse {
     public int getTxretry() {
         return txretry;
     }
+
     /**
      * Number of received packets where CRC was OK
      * <p>
@@ -111,6 +115,7 @@ public class BlueGigaGetCountersResponse extends BlueGigaResponse {
     public int getRxok() {
         return rxok;
     }
+
     /**
      * Number of received packets with CRC error
      * <p>
@@ -121,6 +126,7 @@ public class BlueGigaGetCountersResponse extends BlueGigaResponse {
     public int getRxfail() {
         return rxfail;
     }
+
     /**
      * Number of available packet buffers
      * <p>

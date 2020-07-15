@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Message indicating communication status between PRT3 device and Digiplex controller.
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public class CommunicationStatus extends AbstractResponse {
 
     public static final CommunicationStatus OK = new CommunicationStatus(true);
@@ -31,5 +34,4 @@ public class CommunicationStatus extends AbstractResponse {
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleCommunicationStatus(this);
     }
-
 }

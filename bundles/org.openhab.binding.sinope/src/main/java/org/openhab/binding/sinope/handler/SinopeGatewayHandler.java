@@ -97,7 +97,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "Can't connect to gateway. Please make sure that another instance is not connected.");
         }
-
     }
 
     @Override
@@ -133,7 +132,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     private synchronized void poll() {
-        if (thermostatHandlers.size() > 0) {
+        if (!thermostatHandlers.isEmpty()) {
             logger.debug("Polling for state");
             try {
                 if (connectToBridge()) {
@@ -177,7 +176,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         SinopeAnswer answ = command.getReplyAnswer(inputStream);
 
         return answ;
-
     }
 
     synchronized SinopeAnswer execute(SinopeDataRequest command) throws UnknownHostException, IOException {
@@ -211,7 +209,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
     }
 
     @Override
@@ -252,7 +249,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         this.searching = true;
         pollSearch = scheduler.schedule(() -> search(sinopeThingsDiscoveryService), FIRST_POLL_INTERVAL,
                 TimeUnit.SECONDS);
-
     }
 
     private void search(final SinopeThingsDiscoveryService sinopeThingsDiscoveryService) {
@@ -277,7 +273,6 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         } catch (UnknownHostException e) {
             logger.warn("Unexpected error when searching for new devices", e);
         } catch (IOException e) {
-
             logger.debug("Network connection error, expected when ending search", e);
         } finally {
             schedulePoll();
@@ -313,6 +308,5 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             schedulePoll();
         }
-
     }
 }

@@ -295,8 +295,8 @@ public class ModbusBitUtilities {
                 byte b1 = (byte) (shortValue >> 8);
                 byte b2 = (byte) shortValue;
 
-                ModbusRegister register = new BasicModbusRegister(b1, b2);
-                return new BasicModbusRegisterArray(new ModbusRegister[] { register });
+                ModbusRegister register = new ModbusRegister(b1, b2);
+                return new ModbusRegisterArray(new ModbusRegister[] { register });
             }
             case INT32:
             case UINT32: {
@@ -306,9 +306,9 @@ public class ModbusBitUtilities {
                 byte b2 = (byte) (intValue >> 16);
                 byte b3 = (byte) (intValue >> 8);
                 byte b4 = (byte) intValue;
-                ModbusRegister register = new BasicModbusRegister(b1, b2);
-                ModbusRegister register2 = new BasicModbusRegister(b3, b4);
-                return new BasicModbusRegisterArray(new ModbusRegister[] { register, register2 });
+                ModbusRegister register = new ModbusRegister(b1, b2);
+                ModbusRegister register2 = new ModbusRegister(b3, b4);
+                return new ModbusRegisterArray(new ModbusRegister[] { register, register2 });
             }
             case INT32_SWAP:
             case UINT32_SWAP: {
@@ -318,9 +318,9 @@ public class ModbusBitUtilities {
                 byte b2 = (byte) (intValue >> 16);
                 byte b3 = (byte) (intValue >> 8);
                 byte b4 = (byte) intValue;
-                ModbusRegister register = new BasicModbusRegister(b3, b4);
-                ModbusRegister register2 = new BasicModbusRegister(b1, b2);
-                return new BasicModbusRegisterArray(new ModbusRegister[] { register, register2 });
+                ModbusRegister register = new ModbusRegister(b3, b4);
+                ModbusRegister register2 = new ModbusRegister(b1, b2);
+                return new ModbusRegisterArray(new ModbusRegister[] { register, register2 });
             }
             case FLOAT32: {
                 float floatValue = numericCommand.floatValue();
@@ -330,9 +330,9 @@ public class ModbusBitUtilities {
                 byte b2 = (byte) (intBits >> 16);
                 byte b3 = (byte) (intBits >> 8);
                 byte b4 = (byte) intBits;
-                ModbusRegister register = new BasicModbusRegister(b1, b2);
-                ModbusRegister register2 = new BasicModbusRegister(b3, b4);
-                return new BasicModbusRegisterArray(new ModbusRegister[] { register, register2 });
+                ModbusRegister register = new ModbusRegister(b1, b2);
+                ModbusRegister register2 = new ModbusRegister(b3, b4);
+                return new ModbusRegisterArray(new ModbusRegister[] { register, register2 });
             }
             case FLOAT32_SWAP: {
                 float floatValue = numericCommand.floatValue();
@@ -342,9 +342,9 @@ public class ModbusBitUtilities {
                 byte b2 = (byte) (intBits >> 16);
                 byte b3 = (byte) (intBits >> 8);
                 byte b4 = (byte) intBits;
-                ModbusRegister register = new BasicModbusRegister(b3, b4);
-                ModbusRegister register2 = new BasicModbusRegister(b1, b2);
-                return new BasicModbusRegisterArray(new ModbusRegister[] { register, register2 });
+                ModbusRegister register = new ModbusRegister(b3, b4);
+                ModbusRegister register2 = new ModbusRegister(b1, b2);
+                return new ModbusRegisterArray(new ModbusRegister[] { register, register2 });
             }
             case INT64:
             case UINT64: {
@@ -358,9 +358,8 @@ public class ModbusBitUtilities {
                 byte b6 = (byte) (longValue >> 16);
                 byte b7 = (byte) (longValue >> 8);
                 byte b8 = (byte) longValue;
-                return new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister(b1, b2), new BasicModbusRegister(b3, b4),
-                                new BasicModbusRegister(b5, b6), new BasicModbusRegister(b7, b8) });
+                return new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister(b1, b2),
+                        new ModbusRegister(b3, b4), new ModbusRegister(b5, b6), new ModbusRegister(b7, b8) });
             }
             case INT64_SWAP:
             case UINT64_SWAP: {
@@ -374,9 +373,8 @@ public class ModbusBitUtilities {
                 byte b6 = (byte) (longValue >> 16);
                 byte b7 = (byte) (longValue >> 8);
                 byte b8 = (byte) longValue;
-                return new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister(b7, b8), new BasicModbusRegister(b5, b6),
-                                new BasicModbusRegister(b3, b4), new BasicModbusRegister(b1, b2) });
+                return new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister(b7, b8),
+                        new ModbusRegister(b5, b6), new ModbusRegister(b3, b4), new ModbusRegister(b1, b2) });
             }
             default:
                 throw new NotImplementedException(
@@ -412,5 +410,4 @@ public class ModbusBitUtilities {
         }
         return Optional.empty();
     }
-
 }

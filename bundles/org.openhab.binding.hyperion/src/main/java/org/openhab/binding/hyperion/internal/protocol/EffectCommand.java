@@ -64,5 +64,4 @@ public class EffectCommand extends HyperionCommand {
     public String getOrigin() {
         return origin;
     }
-
 }

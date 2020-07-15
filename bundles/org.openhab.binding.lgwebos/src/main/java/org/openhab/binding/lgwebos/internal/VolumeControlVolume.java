@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
@@ -44,6 +45,10 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
         final PercentType percent;
+        if (RefreshType.REFRESH == command) {
+            handler.getSocket().getVolume(createResponseListener(channelId, handler));
+            return;
+        }
         if (command instanceof PercentType) {
             percent = (PercentType) command;
         } else if (command instanceof DecimalType) {
@@ -63,17 +68,22 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
         } else if (OnOffType.OFF == command || OnOffType.ON == command) {
             handler.getSocket().setMute(OnOffType.OFF == command, objResponseListener);
         } else {
-            logger.warn("Only accept PercentType, DecimalType, StringType command. Type was {}.", command.getClass());
+            logger.info("Only accept PercentType, DecimalType, StringType, RefreshType. Type was {}.",
+                    command.getClass());
         }
     }
 
     @Override
     protected Optional<ServiceSubscription<Float>> getSubscription(String channelUID, LGWebOSHandler handler) {
-        return Optional.of(handler.getSocket().subscribeVolume(new ResponseListener<Float>() {
+        return Optional.of(handler.getSocket().subscribeVolume(createResponseListener(channelUID, handler)));
+    }
+
+    private ResponseListener<Float> createResponseListener(String channelUID, LGWebOSHandler handler) {
+        return new ResponseListener<Float>() {
 
             @Override
             public void onError(@Nullable String error) {
-                logger.debug("Error in listening to volume changes: {}.", error);
+                logger.debug("Error in retrieving volume: {}.", error);
             }
 
             @Override
@@ -82,8 +92,6 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
                     handler.postUpdate(channelUID, new PercentType(Math.round(value * 100)));
                 }
             }
-        }));
-
+        };
     }
-
 }

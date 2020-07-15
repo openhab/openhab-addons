@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This command is used for setting the current input of the device as described in
@@ -28,24 +27,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InputInstructionCommand extends AbstractCommand<InputInstructionRequest, InputInstructionResponse> {
 
-  private Input target;
+    private Input target;
 
-  public InputInstructionCommand(PJLinkDevice pjLinkDevice, Input target) {
-    super(pjLinkDevice);
-    this.target = target;
-  }
+    public InputInstructionCommand(PJLinkDevice pjLinkDevice, Input target) {
+        super(pjLinkDevice);
+        this.target = target;
+    }
 
-  public Input getTarget() {
-    return target;
-  }
+    public Input getTarget() {
+        return target;
+    }
 
-  @Override
-  public InputInstructionRequest createRequest() {
-    return new InputInstructionRequest(this);
-  }
+    @Override
+    public InputInstructionRequest createRequest() {
+        return new InputInstructionRequest(this);
+    }
 
-  @Override
-  public InputInstructionResponse parseResponse(String response) throws ResponseException {
-    return new InputInstructionResponse(response);
-  }
+    @Override
+    public InputInstructionResponse parseResponse(String response) throws ResponseException {
+        return new InputInstructionResponse(response);
+    }
 }

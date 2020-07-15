@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributedb;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 
 /**
@@ -28,6 +29,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaAttributeStatusEvent extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x02;
     public static int COMMAND_METHOD = 0x02;
@@ -70,6 +72,7 @@ public class BlueGigaAttributeStatusEvent extends BlueGigaResponse {
     public int getHandle() {
         return handle;
     }
+
     /**
      * Attribute status flags. See: Attribute Status Flags
      * <p>

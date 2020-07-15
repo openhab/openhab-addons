@@ -133,5 +133,4 @@ public class PLCLogoBridgeConfiguration {
     public void setRefreshRate(final Integer rate) {
         this.refresh = rate;
     }
-
 }

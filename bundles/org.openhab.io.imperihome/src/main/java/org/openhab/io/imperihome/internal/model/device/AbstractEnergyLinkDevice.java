@@ -50,5 +50,4 @@ public abstract class AbstractEnergyLinkDevice extends AbstractDevice {
             }
         }
     }
-
 }

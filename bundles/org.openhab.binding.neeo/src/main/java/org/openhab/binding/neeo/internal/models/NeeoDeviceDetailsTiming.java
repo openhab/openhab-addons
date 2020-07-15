@@ -70,5 +70,4 @@ public class NeeoDeviceDetailsTiming {
         return "NeeoDeviceDetailsTiming [standbyCommandDelay=" + standbyCommandDelay + ", sourceSwitchDelay="
                 + sourceSwitchDelay + ", shutdownDelay=" + shutdownDelay + "]";
     }
-
 }

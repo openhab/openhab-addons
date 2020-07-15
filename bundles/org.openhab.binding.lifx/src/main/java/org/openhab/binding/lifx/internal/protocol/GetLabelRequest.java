@@ -52,5 +52,4 @@ public class GetLabelRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateLabelResponse.TYPE };
     }
-
 }

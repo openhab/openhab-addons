@@ -14,6 +14,7 @@ package org.openhab.binding.miio.internal;
 
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public enum MiIoDevices {
     AIRCONDITION_A1("aux.aircondition.v1", "AUX Air Conditioner", THING_TYPE_UNSUPPORTED),
     AIRCONDITION_I1("idelan.aircondition.v1", "Idelan Air Conditioner", THING_TYPE_UNSUPPORTED),
@@ -29,8 +31,10 @@ public enum MiIoDevices {
     AIRCONDITION_MXA1("midea.aircondition.xa1", "Midea Air Conditioner xa1", THING_TYPE_UNSUPPORTED),
     AIRMONITOR1("zhimi.airmonitor.v1", "Mi Air Monitor v1", THING_TYPE_BASIC),
     AIRMONITOR_B1("cgllc.airmonitor.b1", "Mi Air Quality Monitor 2gen", THING_TYPE_BASIC),
+    AIRMONITOR_S1("cgllc.airmonitor.s1", "Mi Air Quality Monitor S1", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_V1("zhimi.humidifier.v1", "Mi Air Humidifier", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_CA1("zhimi.humidifier.ca1", "Mi Air Humidifier", THING_TYPE_BASIC),
+    AIR_HUMIDIFIER_CB1("zhimi.humidifier.cb1", "Mi Air Humidifier 2", THING_TYPE_BASIC),
     AIR_HUMIDIFIER_MJJSQ("deerma.humidifier.mjjsq", "Mija Smart humidifier", THING_TYPE_BASIC),
     AIR_PURIFIER1("zhimi.airpurifier.v1", "Mi Air Purifier v1", THING_TYPE_BASIC),
     AIR_PURIFIER2("zhimi.airpurifier.v2", "Mi Air Purifier v2", THING_TYPE_BASIC),
@@ -43,15 +47,18 @@ public enum MiIoDevices {
     AIR_PURIFIERMA1("zhimi.airpurifier.ma1", "Mi Air Purifier MS1", THING_TYPE_BASIC),
     AIR_PURIFIERMA2("zhimi.airpurifier.ma2", "Mi Air Purifier MS2", THING_TYPE_BASIC),
     AIR_PURIFIERMA4("zhimi.airpurifier.ma4", "Mi Air Purifier 3", THING_TYPE_BASIC),
+    AIR_PURIFIERMMB3("zhimi.airpurifier.mb3", "Mi Air Purifier 3", THING_TYPE_BASIC),
     AIR_PURIFIERSA1("zhimi.airpurifier.sa1", "Mi Air Purifier Super", THING_TYPE_BASIC),
     AIR_PURIFIERSA2("zhimi.airpurifier.sa2", "Mi Air Purifier Super 2", THING_TYPE_BASIC),
     AIRFRESH_T2017("dmaker.airfresh.t2017", "Mi Fresh Air Ventilator", THING_TYPE_BASIC),
     AIRFRESH_A1("dmaker.airfresh.a1", "Mi Fresh Air Ventilator A1", THING_TYPE_BASIC),
     ALARM_CLOCK_MYK01("zimi.clock.myk01", "Xiao AI Smart Alarm Clock", THING_TYPE_UNSUPPORTED),
     BATHHEATER_V2("yeelight.bhf_light.v2", "Yeelight Smart Bath Heater", THING_TYPE_UNSUPPORTED),
+    CUCOPLUG_CP1("cuco.plug.cp1", "Gosund Plug", THING_TYPE_BASIC),
     DEHUMIDIFIER_FW1("nwt.derh.wdh318efw1", "XIAOMI MIJIA WIDETECH WDH318EFW1 Dehumidifier", THING_TYPE_UNSUPPORTED),
     ZHIMI_AIRPURIFIER_MB1("zhimi.airpurifier.mb1", "Mi Air Purifier mb1", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_MC1("zhimi.airpurifier.mc1", "Mi Air Purifier 2S", THING_TYPE_BASIC),
+    ZHIMI_AIRPURIFIER_MC2("zhimi.airpurifier.mc2", "Mi Air Purifier 2S", THING_TYPE_BASIC),
     ZHIMI_AIRPURIFIER_VIRTUAL("zhimi.airpurifier.virtual", "Mi Air Purifier virtual", THING_TYPE_UNSUPPORTED),
     ZHIMI_AIRPURIFIER_VTL_M1("zhimi.airpurifier.vtl_m1", "Mi Air Purifier vtl m1", THING_TYPE_UNSUPPORTED),
     CHUANGMI_IR2("chuangmi.ir.v2", "Mi Remote v2", THING_TYPE_UNSUPPORTED),
@@ -67,6 +74,7 @@ public enum MiIoDevices {
     FAN3("zhimi.fan.v3", "Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_SA1("zhimi.fan.sa1", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FAN_ZA1("zhimi.fan.za1", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
+    FAN_ZA4("zhimi.fan.za4", "Xiaomi Mi Smart Pedestal Fan", THING_TYPE_BASIC),
     FRIDGE_V3("viomi.fridge.v3", "Viomi Internet refrigerator iLive", THING_TYPE_UNSUPPORTED),
     GATEWAY1("lumi.gateway.v1", "Mi Smart Home Gateway v1", THING_TYPE_UNSUPPORTED),
     GATEWAY2("lumi.gateway.v2", "Mi Smart Home Gateway v2", THING_TYPE_UNSUPPORTED),
@@ -78,6 +86,7 @@ public enum MiIoDevices {
     PHILIPS_C("philips.light.ceiling", "Xiaomi Philips LED Ceiling Lamp", THING_TYPE_BASIC),
     PHILIPS_C2("philips.light.zyceiling", "Xiaomi Philips LED Ceiling Lamp", THING_TYPE_BASIC),
     PHILIPS_BULB("philips.light.bulb", "Xiaomi Philips Bulb", THING_TYPE_BASIC),
+    PHILIPS_HBULB("philips.light.hbulb", "Xiaomi Philips Wi-Fi Bulb E27 White", THING_TYPE_BASIC),
     PHILIPS_CANDLE("philips.light.candle", "PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp", THING_TYPE_BASIC),
     PHILIPS_DOWN("philips.light.downlight", "Xiaomi Philips Downlight", THING_TYPE_BASIC),
     PHILIPS_MOON("philips.light.moonlight", "Xiaomi Philips ZhiRui bedside lamp", THING_TYPE_BASIC),
@@ -100,15 +109,33 @@ public enum MiIoDevices {
     VACUUM_C1("roborock.vacuum.c1", "Mi Xiaowa Vacuum c1", THING_TYPE_VACUUM),
     VACUUM2("roborock.vacuum.s5", "Mi Robot Vacuum v2", THING_TYPE_VACUUM),
     VACUUM1S("roborock.vacuum.m1s", "Mi Robot Vacuum 1S", THING_TYPE_VACUUM),
-    VACUUMS6("roborock.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
+    VACUUMS4("roborock.vacuum.s4", "Mi Robot Vacuum S4", THING_TYPE_VACUUM),
+    VACUUMSTS4V2("roborock.vacuum.s4v2", "Roborock Vacuum S4v2", THING_TYPE_VACUUM),
+    VACUUMST6("roborock.vacuum.t6", "Roborock Vacuum T6", THING_TYPE_VACUUM),
+    VACUUMST6V2("roborock.vacuum.t6v2", "Roborock Vacuum T6 v2", THING_TYPE_VACUUM),
+    VACUUMST6V3("roborock.vacuum.t6v3", "Roborock Vacuum T6 v3", THING_TYPE_VACUUM),
+    VACUUMST4("roborock.vacuum.t4", "Roborock Vacuum T4", THING_TYPE_VACUUM),
+    VACUUMST4V2("roborock.vacuum.t4v2", "Roborock Vacuum T4 v2", THING_TYPE_VACUUM),
+    VACUUMST4V3("roborock.vacuum.t4v3", "Roborock Vacuum T4 v3", THING_TYPE_VACUUM),
+    VACUUMST7("roborock.vacuum.t7", "Roborock Vacuum T7", THING_TYPE_VACUUM),
+    VACUUMST7V2("roborock.vacuum.t7v2", "Roborock Vacuum T7 v2", THING_TYPE_VACUUM),
+    VACUUMST7V3("roborock.vacuum.t7v3", "Roborock Vacuum T7 v3", THING_TYPE_VACUUM),
+    VACUUMST7P("roborock.vacuum.t7p", "Roborock Vacuum T7p", THING_TYPE_VACUUM),
+    VACUUMST7PV2("roborock.vacuum.t7pv2", "Roborock Vacuum T7 v2", THING_TYPE_VACUUM),
+    VACUUMST7PV3("roborock.vacuum.t7pv3", "Roborock Vacuum T7 v3", THING_TYPE_VACUUM),
     VACUUMS5MAX("roborock.vacuum.s5e", "Roborock Vacuum S5 Max", THING_TYPE_VACUUM),
     VACUUMSS6("rockrobo.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
+    VACUUMSS62("roborock.vacuum.s6", "Roborock Vacuum S6", THING_TYPE_VACUUM),
     VACUUME2("roborock.vacuum.e2", "Rockrobo Xiaowa Vacuum v2", THING_TYPE_UNSUPPORTED),
     VACUUME_V6("viomi.vacuum.v6", "Xiaomi Mijia vacuum V-RVCLM21B", THING_TYPE_UNSUPPORTED),
     VACUUME_V7("viomi.vacuum.v7", "Xiaomi Mijia vacuum STYJ02YM", THING_TYPE_UNSUPPORTED),
+    VACUUM_MC1808("dreame.vacuum.mc1808", "Vacuum 1C STYTJ01ZHM", THING_TYPE_BASIC),
     ROBOROCK_VACUUM_C1("roborock.vacuum.c1", "roborock.vacuum.c1", THING_TYPE_UNSUPPORTED),
     SWEEPER2("roborock.sweeper.e2v2", "Rockrobo Xiaowa Sweeper v2", THING_TYPE_UNSUPPORTED),
     SWEEPER3("roborock.sweeper.e2v3", "Rockrobo Xiaowa Sweeper v3", THING_TYPE_UNSUPPORTED),
+    SWITCH01("090615.switch.xswitch01", " Mijia 1 Gang Wall Smart Switch (WIFI) - PTX switch", THING_TYPE_BASIC),
+    SWITCH02("090615.switch.xswitch02", " Mijia 2 Gang Wall Smart Switch (WIFI) - PTX switch", THING_TYPE_BASIC),
+    SWITCH03("090615.switch.xswitch03", " Mijia 3 Gang Wall Smart Switch (WIFI) - PTX switch", THING_TYPE_BASIC),
     WATER_PURIFIER2("yunmi.waterpuri.v2", "Mi Water Purifier v2", THING_TYPE_BASIC),
     WATER_PURIFIERLX2("yunmi.waterpuri.lx2", "Mi Water Purifier lx2", THING_TYPE_BASIC),
     WATER_PURIFIERLX3("yunmi.waterpuri.lx3", "Mi Water Purifier lx3", THING_TYPE_BASIC),
@@ -129,7 +156,11 @@ public enum MiIoDevices {
     YEELIGHT_CEIL6("yeelink.light.ceiling6", "Yeelight LED Ceiling Lamp v6", THING_TYPE_BASIC),
     YEELIGHT_CEIL7("yeelink.light.ceiling7", "Yeelight LED Ceiling Lamp v7", THING_TYPE_BASIC),
     YEELIGHT_CEIL8("yeelink.light.ceiling8", "Yeelight LED Ceiling Lamp v8", THING_TYPE_BASIC),
+    YEELIGHT_CEIL9("yeelink.light.ceiling9", "Yeelight LED Ceiling Lamp v9", THING_TYPE_BASIC),
     YEELIGHT_CEIL10("yeelink.light.ceiling10", "Yeelight LED Meteorite lamp", THING_TYPE_BASIC),
+    YEELIGHT_CEIL11("yeelink.light.ceiling11", "Yeelight LED Ceiling Lamp v11", THING_TYPE_BASIC),
+    YEELIGHT_CEIL12("yeelink.light.ceiling12", "Yeelight LED Ceiling Lamp v12", THING_TYPE_BASIC),
+    YEELIGHT_CEIL13("yeelink.light.ceiling13", "Yeelight LED Ceiling Lamp v13", THING_TYPE_BASIC),
     YEELIGHT_CT2("yeelink.light.ct2", "Yeelight ct2", THING_TYPE_BASIC),
     YEELIGHT_DOLPHIN("yeelink.light.mono1", "Yeelight White Bulb", THING_TYPE_BASIC),
     YEELIGHT_DOLPHIN2("yeelink.light.mono2", "Yeelight White Bulb v2", THING_TYPE_BASIC),
@@ -142,7 +173,8 @@ public enum MiIoDevices {
     YEELIGHT_VIRT("yeelink.light.virtual", "Yeelight", THING_TYPE_BASIC),
     YEELIGHT_C1("yeelink.light.color1", "Yeelight Color Bulb", THING_TYPE_BASIC),
     YEELIGHT_C2("yeelink.light.color2", "Yeelight Color Bulb YLDP06YL 10W", THING_TYPE_BASIC),
-    YEELIGHT_WONDER("yeelink.light.color3", "Yeelight Color Bulb", THING_TYPE_BASIC),
+    YEELIGHT_C3("yeelink.light.color3", "Yeelight Color Bulb YLDP02YL 9W", THING_TYPE_BASIC),
+    YEELIGHT_C4("yeelink.light.color4", "Yeelight Bulb YLDP13YL (8,5W)", THING_TYPE_BASIC),
     UNKNOWN("unknown", "Unknown Mi IO Device", THING_TYPE_UNSUPPORTED);
 
     public static MiIoDevices getType(String modelString) {

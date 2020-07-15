@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.identification;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This command is used for retrieving device information as described in
@@ -33,44 +32,43 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class IdentificationCommand extends AbstractCommand<IdentificationRequest, IdentificationResponse> {
 
-  public enum IdentificationProperty {
-    NAME("NAME"),
-    MANUFACTURER("INF1"),
-    MODEL("INF2"),
-    CLASS("CLSS"),
-    OTHER_INFORMATION("INFO"),
-    LAMP_HOURS("LAMP");
+    public enum IdentificationProperty {
+        NAME("NAME"),
+        MANUFACTURER("INF1"),
+        MODEL("INF2"),
+        CLASS("CLSS"),
+        OTHER_INFORMATION("INFO"),
+        LAMP_HOURS("LAMP");
 
-    private String prefix;
+        private String prefix;
 
-    private IdentificationProperty(String prefix) {
-      this.prefix = prefix;
+        private IdentificationProperty(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public String getPJLinkCommandPrefix() {
+            return this.prefix;
+        }
     }
 
-    public String getPJLinkCommandPrefix() {
-      return this.prefix;
+    private IdentificationProperty identificationProperty;
+
+    public IdentificationCommand(PJLinkDevice pjLinkDevice, IdentificationProperty identificationProperty) {
+        super(pjLinkDevice);
+        this.identificationProperty = identificationProperty;
     }
-  }
 
-  private IdentificationProperty identificationProperty;
+    public IdentificationProperty getIdentificationProperty() {
+        return identificationProperty;
+    }
 
-  public IdentificationCommand(PJLinkDevice pjLinkDevice, IdentificationProperty identificationProperty) {
-    super(pjLinkDevice);
-    this.identificationProperty = identificationProperty;
-  }
+    @Override
+    protected IdentificationRequest createRequest() {
+        return new IdentificationRequest(this);
+    }
 
-  public IdentificationProperty getIdentificationProperty() {
-    return identificationProperty;
-  }
-
-  @Override
-  protected IdentificationRequest createRequest() {
-    return new IdentificationRequest(this);
-  }
-
-  @Override
-  protected IdentificationResponse parseResponse(String response) throws ResponseException {
-    return new IdentificationResponse(this, response);
-  }
-
+    @Override
+    protected IdentificationResponse parseResponse(String response) throws ResponseException {
+        return new IdentificationResponse(this, response);
+    }
 }

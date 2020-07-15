@@ -41,10 +41,13 @@
 			<parameter name="bridgeid" type="text">
 				<label>Bridge ID</label>
 				<description>The mac address of the bridge in upper case letters without delimiter.
-					Use this parameter and leave the IP/Hostname empty for DHCP environments where IPs may often change over time.
+					Use this parameter and leave the
+					IP/Hostname empty for DHCP environments where IPs may often change over time.
 
-					The Bridge ID is also used to check if a given IP corresponds to the right device.
-					The bridge is set offline if the device does not respond with the correct Bridge ID and a re-detection is started.
+					The Bridge ID is also used to check if
+					a given IP corresponds to the right device.
+					The bridge is set offline if the device does not respond with the
+					correct Bridge ID and a re-detection is started.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -61,7 +64,7 @@
 
 	<thing-type id="rgbLed">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridgeV3" />
+			<bridge-type-ref id="bridgeV3"/>
 		</supported-bridge-type-refs>
 		<label>Color Bulb (first Edition)</label>
 		<description>RGB bulb with white channel. No saturation control. If the set saturation is below a threshold of 50%,
@@ -69,12 +72,12 @@
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="lednightmode" typeId="lednightmode" />
-			<channel id="ledwhitemode" typeId="ledwhitemode" />
-			<channel id="ledbrightness" typeId="ledbrightness" />
-			<channel id="ledcolor" typeId="ledcolor" />
-			<channel id="animation_speed_relative" typeId="animation_speed_relative" />
-			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+			<channel id="lednightmode" typeId="lednightmode"/>
+			<channel id="ledwhitemode" typeId="ledwhitemode"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledcolor" typeId="ledcolor"/>
+			<channel id="animation_speed_relative" typeId="animation_speed_relative"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
 		</channels>
 
 		<config-description>
@@ -89,17 +92,17 @@
 
 	<thing-type id="whiteLed">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridgeV3" />
+			<bridge-type-ref id="bridgeV3"/>
 		</supported-bridge-type-refs>
 		<label>Cold/warm White Bulb (first Edition)</label>
 		<description>White bulb for the older bridge (up to 2016)</description>
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="lednightmode" typeId="lednightmode" />
-			<channel id="ledbrightness" typeId="ledbrightness" />
-			<channel id="ledtemperature" typeId="ledtemperature" />
-			<channel id="animation_mode_relative" typeId="animation_mode_relative" />
+			<channel id="lednightmode" typeId="lednightmode"/>
+			<channel id="ledbrightness" typeId="ledbrightness"/>
+			<channel id="ledtemperature" typeId="ledtemperature"/>
+			<channel id="animation_mode_relative" typeId="animation_mode_relative"/>
 		</channels>
 
 		<config-description>

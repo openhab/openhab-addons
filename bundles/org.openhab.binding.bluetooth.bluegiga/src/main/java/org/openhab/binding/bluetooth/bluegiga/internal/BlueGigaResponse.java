@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeChangeReason;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.AttributeValueType;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
@@ -30,7 +31,8 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.ScanResponseT
  * @author Chris Jackson - Initial contribution and API
  *
  */
-public class BlueGigaResponse extends BlueGigaPacket {
+@NonNullByDefault
+public abstract class BlueGigaResponse extends BlueGigaPacket {
     private int[] buffer = new int[131];
     private int position = 0;
     protected boolean event = false;
@@ -93,13 +95,15 @@ public class BlueGigaResponse extends BlueGigaPacket {
         int length = buffer[position++];
         switch (length) {
             case 2:
-                low = 0;
-                high = ((long) buffer[position++] << 32) + ((long) buffer[position++] << 40);
+                // 0000xxxx-0000-1000-8000-00805F9B34FB
+                low = 0x800000805f9b34fbL;
+                high = ((long) buffer[position++] << 32) + ((long) buffer[position++] << 40) + 0x00001000L;
                 break;
             case 4:
-                low = 0;
+                // xxxxxxxx-0000-1000-8000-00805F9B34FB
+                low = 0x800000805f9b34fbL;
                 high = ((long) buffer[position++] << 32) + ((long) buffer[position++] << 40)
-                        + ((long) buffer[position++] << 48) + ((long) buffer[position++] << 56);
+                        + ((long) buffer[position++] << 48) + ((long) buffer[position++] << 56) + 0x00001000L;
                 break;
             case 16:
                 low = (buffer[position++]) + ((long) buffer[position++] << 8) + ((long) buffer[position++] << 16)
@@ -126,7 +130,7 @@ public class BlueGigaResponse extends BlueGigaPacket {
 
     public Set<ConnectionStatusFlag> deserializeConnectionStatusFlag() {
         int val = deserializeUInt8();
-        Set<ConnectionStatusFlag> options = new HashSet<ConnectionStatusFlag>();
+        Set<ConnectionStatusFlag> options = new HashSet<>();
         for (ConnectionStatusFlag option : ConnectionStatusFlag.values()) {
             if (option == ConnectionStatusFlag.UNKNOWN) {
                 continue;

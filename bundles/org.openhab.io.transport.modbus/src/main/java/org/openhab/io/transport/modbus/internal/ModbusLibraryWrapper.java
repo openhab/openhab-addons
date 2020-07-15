@@ -19,10 +19,12 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
@@ -58,6 +60,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
 import net.wimpi.modbus.net.SerialConnection;
 import net.wimpi.modbus.net.TCPMasterConnection;
 import net.wimpi.modbus.net.UDPMasterConnection;
+import net.wimpi.modbus.procimg.InputRegister;
 import net.wimpi.modbus.procimg.Register;
 import net.wimpi.modbus.procimg.SimpleInputRegister;
 import net.wimpi.modbus.util.BitVector;
@@ -73,6 +76,22 @@ public class ModbusLibraryWrapper {
 
     private static Logger getLogger() {
         return LoggerFactory.getLogger(ModbusLibraryWrapper.class);
+    }
+
+    private static BitArray bitArrayFromBitVector(BitVector bitVector, int count) {
+        boolean[] bits = new boolean[count];
+        for (int i = 0; i < count; i++) {
+            bits[i] = bitVector.getBit(i);
+        }
+        return new BitArray(bits);
+    }
+
+    private static ModbusRegisterArray modbusRegisterArrayFromInputRegisters(InputRegister[] inputRegisters) {
+        ModbusRegister[] registers = new ModbusRegister[inputRegisters.length];
+        for (int i = 0; i < inputRegisters.length; i++) {
+            registers[i] = new ModbusRegister(inputRegisters[i].getValue());
+        }
+        return new ModbusRegisterArray(registers);
     }
 
     /**
@@ -256,43 +275,74 @@ public class ModbusLibraryWrapper {
     }
 
     /**
+     * Get number of bits/registers/discrete inputs in the request.
+     *
+     *
+     * @param response
+     * @param request
+     * @return
+     */
+    public static int getNumberOfItemsInResponse(ModbusResponse response, ModbusReadRequestBlueprint request) {
+        // jamod library seems to be a bit buggy when it comes number of coils/discrete inputs in the response. Some
+        // of the methods such as ReadCoilsResponse.getBitCount() are returning wrong values.
+        //
+        // This is the reason we use a bit more verbose way to get the number of items in the response.
+        final int responseCount;
+        if (request.getFunctionCode() == ModbusReadFunctionCode.READ_COILS) {
+            responseCount = ((ReadCoilsResponse) response).getCoils().size();
+        } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_DISCRETES) {
+            responseCount = ((ReadInputDiscretesResponse) response).getDiscretes().size();
+        } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS) {
+            responseCount = ((ReadMultipleRegistersResponse) response).getRegisters().length;
+        } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_REGISTERS) {
+            responseCount = ((ReadInputRegistersResponse) response).getRegisters().length;
+        } else {
+            throw new IllegalArgumentException(String.format("Unexpected function code %s", request.getFunctionCode()));
+        }
+        return responseCount;
+    }
+
+    /**
      * Invoke callback with the data received
      *
      * @param message original request
      * @param callback callback for read
      * @param response Modbus library response object
      */
-    public static void invokeCallbackWithResponse(ModbusReadRequestBlueprint message, ModbusReadCallback callback,
+    public static void invokeCallbackWithResponse(ModbusReadRequestBlueprint request, ModbusReadCallback callback,
             ModbusResponse response) {
         try {
-            getLogger().trace("Calling read response callback {} for request {}. Response was {}", callback, message,
+            getLogger().trace("Calling read response callback {} for request {}. Response was {}", callback, request,
                     response);
-            // jamod library seems to be a bit buggy when it comes number of coils in the response, so we use
-            // minimum(request, response). The underlying reason is that BitVector.createBitVector initializes the
-            // vector
-            // with too many bits as size
-            if (message.getFunctionCode() == ModbusReadFunctionCode.READ_COILS) {
+            // The number of coils/discrete inputs received in response are always in the multiples of 8
+            // bits.
+            // So even if querying 5 bits, you will actually get 8 bits. Here we wrap the data in
+            // BitArrayWrappingBitVector
+            // with will validate that the consumer is not accessing the "invalid" bits of the response.
+            int dataItemsInResponse = getNumberOfItemsInResponse(response, request);
+            if (request.getFunctionCode() == ModbusReadFunctionCode.READ_COILS) {
                 BitVector bits = ((ReadCoilsResponse) response).getCoils();
-                callback.onBits(message,
-                        new BitArrayWrappingBitVector(bits, Math.min(bits.size(), message.getDataLength())));
-            } else if (message.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_DISCRETES) {
+                BitArray payload = bitArrayFromBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength()));
+                callback.handle(new AsyncModbusReadResult(request, payload));
+            } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_DISCRETES) {
                 BitVector bits = ((ReadInputDiscretesResponse) response).getDiscretes();
-                callback.onBits(message,
-                        new BitArrayWrappingBitVector(bits, Math.min(bits.size(), message.getDataLength())));
-            } else if (message.getFunctionCode() == ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS) {
-                callback.onRegisters(message, new RegisterArrayWrappingInputRegister(
-                        ((ReadMultipleRegistersResponse) response).getRegisters()));
-            } else if (message.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_REGISTERS) {
-                callback.onRegisters(message,
-                        new RegisterArrayWrappingInputRegister(((ReadInputRegistersResponse) response).getRegisters()));
+                BitArray payload = bitArrayFromBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength()));
+                callback.handle(new AsyncModbusReadResult(request, payload));
+            } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS) {
+                ModbusRegisterArray payload = modbusRegisterArrayFromInputRegisters(
+                        ((ReadMultipleRegistersResponse) response).getRegisters());
+                callback.handle(new AsyncModbusReadResult(request, payload));
+            } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_REGISTERS) {
+                ModbusRegisterArray payload = modbusRegisterArrayFromInputRegisters(
+                        ((ReadInputRegistersResponse) response).getRegisters());
+                callback.handle(new AsyncModbusReadResult(request, payload));
             } else {
                 throw new IllegalArgumentException(
-                        String.format("Unexpected function code %s", message.getFunctionCode()));
+                        String.format("Unexpected function code %s", request.getFunctionCode()));
             }
         } finally {
-            getLogger().trace("Called read response callback {} for request {}. Response was {}", callback, message,
+            getLogger().trace("Called read response callback {} for request {}. Response was {}", callback, request,
                     response);
         }
     }
-
 }

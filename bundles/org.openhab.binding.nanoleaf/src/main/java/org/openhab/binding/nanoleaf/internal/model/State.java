@@ -14,6 +14,7 @@ package org.openhab.binding.nanoleaf.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -37,6 +38,10 @@ public class State {
 
     public @Nullable On getOn() {
         return on;
+    }
+
+    public OnOffType getOnOff() {
+        return (on != null && on.getValue()) ? OnOffType.ON : OnOffType.OFF;
     }
 
     public void setOn(On on) {

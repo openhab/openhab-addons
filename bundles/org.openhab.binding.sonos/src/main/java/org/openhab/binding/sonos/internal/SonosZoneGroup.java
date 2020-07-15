@@ -16,43 +16,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SonosZoneGroup} is data structure to describe
  * Groups of Zone Players in the Sonos ecosystem
- * 
+ *
  * @author Karel Goderis - Initial contribution
  */
-public class SonosZoneGroup implements Cloneable {
+@NonNullByDefault
+public class SonosZoneGroup {
 
     private final List<String> members;
     private List<String> memberZoneNames;
     private final String coordinator;
     private final String id;
 
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public SonosZoneGroup(String id, String coordinator, Collection<String> members,
             Collection<String> memberZoneNames) {
-        this.members = new ArrayList<String>(members);
+        this.members = new ArrayList<>(members);
         if (!this.members.contains(coordinator)) {
             this.members.add(coordinator);
         }
-        this.memberZoneNames = new ArrayList<String>(memberZoneNames);
-        this.coordinator = coordinator;
-        this.id = id;
-    }
-
-    public SonosZoneGroup(String id, String coordinator, Collection<String> members) {
-        this.members = new ArrayList<String>(members);
-        if (!this.members.contains(coordinator)) {
-            this.members.add(coordinator);
-        }
+        this.memberZoneNames = new ArrayList<>(memberZoneNames);
         this.coordinator = coordinator;
         this.id = id;
     }
@@ -72,22 +58,4 @@ public class SonosZoneGroup implements Cloneable {
     public String getId() {
         return id;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj instanceof SonosZoneGroup) {
-            SonosZoneGroup group = (SonosZoneGroup) obj;
-            return group.getId().equals(getId());
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
-
 }

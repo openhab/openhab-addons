@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.digiplex.internal.communication.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.digiplex.internal.communication.DigiplexResponse;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.digiplex.internal.communication.DigiplexResponse;
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public abstract class AbstractEvent implements DigiplexResponse {
 
     private int areaNo;
@@ -44,5 +46,4 @@ public abstract class AbstractEvent implements DigiplexResponse {
         }
         return false;
     }
-
 }

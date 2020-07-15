@@ -53,6 +53,7 @@ public class PercentageValue extends Value {
     private final BigDecimal max;
     private final BigDecimal span;
     private final BigDecimal step;
+    private final BigDecimal stepPercent;
     private final @Nullable String onValue;
     private final @Nullable String offValue;
 
@@ -69,6 +70,7 @@ public class PercentageValue extends Value {
         }
         this.span = this.max.subtract(this.min);
         this.step = step == null ? BigDecimal.ONE : step;
+        this.stepPercent = this.step.multiply(HUNDRED).divide(this.span, MathContext.DECIMAL128);
     }
 
     @Override
@@ -96,11 +98,11 @@ public class PercentageValue extends Value {
                // Increase or decrease by "step"
         if (command instanceof IncreaseDecreaseType) {
             if (((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE) {
-                final BigDecimal v = oldvalue.toBigDecimal().add(step);
-                state = new PercentType(v.compareTo(max) <= 0 ? v : max);
+                final BigDecimal v = oldvalue.toBigDecimal().add(stepPercent);
+                state = v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
             } else {
-                final BigDecimal v = oldvalue.toBigDecimal().subtract(step);
-                state = new PercentType(v.compareTo(min) >= 0 ? v : min);
+                final BigDecimal v = oldvalue.toBigDecimal().subtract(stepPercent);
+                state = v.compareTo(BigDecimal.ZERO) >= 0 ? new PercentType(v) : PercentType.ZERO;
             }
         } else //
                // On/Off equals 100 or 0 percent
@@ -110,11 +112,11 @@ public class PercentageValue extends Value {
               // Increase or decrease by "step"
         if (command instanceof UpDownType) {
             if (((UpDownType) command) == UpDownType.UP) {
-                final BigDecimal v = oldvalue.toBigDecimal().add(step);
-                state = new PercentType(v.compareTo(max) <= 0 ? v : max);
+                final BigDecimal v = oldvalue.toBigDecimal().add(stepPercent);
+                state = v.compareTo(HUNDRED) <= 0 ? new PercentType(v) : PercentType.HUNDRED;
             } else {
-                final BigDecimal v = oldvalue.toBigDecimal().subtract(step);
-                state = new PercentType(v.compareTo(min) >= 0 ? v : min);
+                final BigDecimal v = oldvalue.toBigDecimal().subtract(stepPercent);
+                state = v.compareTo(BigDecimal.ZERO) >= 0 ? new PercentType(v) : PercentType.ZERO;
             }
         } else //
                // Check against custom on/off values

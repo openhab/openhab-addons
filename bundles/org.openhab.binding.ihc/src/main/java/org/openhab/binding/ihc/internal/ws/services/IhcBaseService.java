@@ -56,7 +56,7 @@ public abstract class IhcBaseService extends IhcHttpsClient {
     protected String sendSoapQuery(String soapAction, String query, int timeout) throws IhcExecption {
         Map<String, String> reqProperties = null;
         if (soapAction != null) {
-            reqProperties = new HashMap<String, String>();
+            reqProperties = new HashMap<>();
             reqProperties.put("SOAPAction", soapAction);
         }
         return sendQuery(url, reqProperties, query, timeout);

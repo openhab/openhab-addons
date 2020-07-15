@@ -25,24 +25,25 @@ class QueueObject {
     private final byte channel;
     private final Command command;
 
-    private int counter;
-    private short upDownTime;
+    private short time;
 
-    public QueueObject(String moduleType, String moduleAddress, String channel, Command command) {
+    public QueueObject(String moduleType, byte moduleAddress, byte channel, Command command) {
         this.moduleType = moduleType;
-        this.moduleAddress = Byte.parseByte(moduleAddress, 2);
+        this.moduleAddress = moduleAddress;
+        this.channel = channel;
+        this.command = command;
+    }
+
+    public QueueObject(String moduleType, int moduleAddress, String channel, Command command) {
+        this.moduleType = moduleType;
+        this.moduleAddress = (byte) moduleAddress;
         this.channel = Byte.parseByte(channel);
         this.command = command;
     }
 
-    public QueueObject(String moduleType, String moduleAddress, String channel, Command command, int counter,
-            short upDownTime) {
-        this.moduleType = moduleType;
-        this.moduleAddress = Byte.parseByte(moduleAddress, 2);
-        this.channel = Byte.parseByte(channel);
-        this.command = command;
-        this.counter = counter;
-        this.upDownTime = upDownTime;
+    public QueueObject(String moduleType, int moduleAddress, String channel, Command command, short time) {
+        this(moduleType, moduleAddress, channel, command);
+        this.time = time;
     }
 
     public String getModuleType() {
@@ -61,15 +62,20 @@ class QueueObject {
         return command;
     }
 
-    public void increaseCounter() {
-        counter++;
+    public short getTime() {
+        return time;
     }
 
-    public int getCounter() {
-        return counter;
-    }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("moduleType: ");
+        sb.append(moduleType);
+        sb.append(", moduleAddress: ");
+        sb.append(moduleAddress);
+        sb.append(", channel: ");
+        sb.append(channel);
 
-    public short getUpDownTime() {
-        return upDownTime;
+        return sb.toString();
     }
 }

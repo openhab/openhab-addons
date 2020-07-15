@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>2.5.2-SNAPSHOT</version>
+    <version>2.5.7-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.chromecast</artifactId>
@@ -14,13 +14,14 @@
 
   <properties>
     <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
+    <jackson.version>2.9.10</jackson.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>su.litvak.chromecast</groupId>
       <artifactId>api-v2</artifactId>
-      <version>0.11.2</version>
+      <version>0.11.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -32,19 +33,19 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.9.9</version>
+      <version>${jackson.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.9.9</version>
+      <version>${jackson.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.9.9</version>
+      <version>${jackson.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

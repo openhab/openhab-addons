@@ -14,34 +14,70 @@ package org.openhab.io.transport.modbus;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import net.wimpi.modbus.procimg.SimpleInputRegister;
+
 /**
- * Interface for 16 bit Modbus registers.
+ * Basic {@link ModbusRegister} implementation
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public interface ModbusRegister {
+public class ModbusRegister {
+
+    private final SimpleInputRegister wrapped;
+
+    /**
+     * Constructs a new instance for bytes
+     *
+     * @param b1 the first (hi) byte of the word.
+     * @param b2 the second (low) byte of the word.
+     */
+    public ModbusRegister(byte b1, byte b2) {
+        wrapped = new SimpleInputRegister(b1, b2);
+    }
+
+    /**
+     * Construct register for at
+     *
+     * @param val value representing register data. The <code>int</code> will be downcasted to <code>short</code>.
+     */
+    public ModbusRegister(int val) {
+        wrapped = new SimpleInputRegister(val);
+    }
 
     /**
      * Get raw data represented by this register. Since register is 16 bits, array of length 2 will be returned.
      *
      * @return byte array of length 2, high byte first.
      */
-    public byte[] getBytes();
+    public byte[] getBytes() {
+        return wrapped.toBytes();
+    }
 
     /**
      * Returns the value of this register as integer representing 16 bit data parsed as signed integer.
      *
      * @return the register content as unsigned integer
      */
-    public int getValue();
+    public int getValue() {
+        return wrapped.getValue();
+    }
 
     /**
      * Returns the value of this register as integer representing 16 bit data parsed as unsigned integer.
      *
      * @return the register content as unsigned integer
      */
-    public int toUnsignedShort();
+    public int toUnsignedShort() {
+        return wrapped.toUnsignedShort();
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer("ModbusRegisterImpl(");
+        buffer.append("uint16=").append(toUnsignedShort()).append(", hex=");
+        return appendHexString(buffer).append(')').toString();
+    }
 
     /**
      * Returns the register value as hex string
@@ -50,7 +86,7 @@ public interface ModbusRegister {
      *
      * @return string representing the register data
      */
-    default String toHexString() {
+    public String toHexString() {
         StringBuffer buffer = new StringBuffer(5);
         return appendHexString(buffer).toString();
     }
@@ -59,7 +95,7 @@ public interface ModbusRegister {
      * Appends the register value as hex string to the given StringBuffer
      *
      */
-    default StringBuffer appendHexString(StringBuffer buffer) {
+    public StringBuffer appendHexString(StringBuffer buffer) {
         byte[] bytes = getBytes();
         for (int i = 0; i < 2; i++) {
             byte b = bytes[i];
@@ -74,5 +110,4 @@ public interface ModbusRegister {
         }
         return buffer;
     }
-
 }

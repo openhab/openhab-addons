@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaAttributeValueEvent;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaAttributeWriteResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient.BlueGigaExecuteWriteResponse;
@@ -96,11 +98,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution and API
  */
+@NonNullByDefault
 class BlueGigaResponsePackets {
 
     private static Logger logger = LoggerFactory.getLogger(BlueGigaResponsePackets.class);
 
-    final private static Map<Integer, Class<?>> packetMap = new HashMap<Integer, Class<?>>();
+    private static final Map<Integer, Class<?>> packetMap = new HashMap<>();
 
     static {
         packetMap.put(Objects.hash(0x00, 0x06, true), BlueGigaProtocolErrorEvent.class);
@@ -175,6 +178,8 @@ class BlueGigaResponsePackets {
         packetMap.put(Objects.hash(0x00, 0x00, true), BlueGigaBootEvent.class);
     }
 
+    @SuppressWarnings({ "null", "unused" })
+    @Nullable
     public static BlueGigaResponse getPacket(int[] data) {
         int cmdClass = data[2];
         int cmdMethod = data[3];

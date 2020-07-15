@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
@@ -15,6 +16,7 @@
 			<label>Client Secret</label>
 			<description>Client Secret provided for the application you created</description>
 			<required>true</required>
+			<context>password</context>
 		</parameter>
 
 		<parameter name="username" type="text">
@@ -54,13 +56,19 @@
 			<default>false</default>
 		</parameter>
 
+		<parameter name="readPresence" type="boolean" required="true">
+			<label>Access Presence Camera</label>
+			<description>Read and Access Presence camera's data.</description>
+			<default>false</default>
+		</parameter>
+
 		<parameter name="webHookUrl" type="text" required="false">
 			<label>Webhook Address</label>
 			<description>Protocol, public IP and port to access OH2 server from Internet.</description>
 			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="reconnectInterval" type="integer" required="true">
+		<parameter name="reconnectInterval" type="integer" unit="s" required="true">
 			<label>Reconnect Interval</label>
 			<description>The reconnection interval to Netatmo API (in s).</description>
 			<default>5400</default>
@@ -84,7 +92,7 @@
 			<required>true</required>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" required="false">
+		<parameter name="refreshInterval" type="integer" min="2000" unit="ms" required="false">
 			<label>Refresh Interval</label>
 			<description>The refresh interval to poll Netatmo API (in ms).</description>
 			<default>300000</default>
@@ -133,7 +141,7 @@
 			<description>UUID of the home</description>
 		</parameter>
 
-		<parameter name="refreshInterval" type="integer" required="false">
+		<parameter name="refreshInterval" type="integer" min="2000" unit="ms" required="false">
 			<label>Refresh Interval</label>
 			<description>The refresh interval to poll Netatmo API (in ms).</description>
 			<default>300000</default>
@@ -141,7 +149,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:netatmo:nawelcomecamera">
+	<config-description uri="thing-type:netatmo:camera">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
 			<label>Camera ID</label>
 			<description>Camera MAC Address</description>

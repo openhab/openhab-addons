@@ -8,20 +8,20 @@
 		<item-type>Switch</item-type>
 		<label>Present</label>
 		<description>ON if device present on OneWire bus</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<!-- Temperature Channel -->
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-por">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="ignorepor" type="boolean">
 				<label>Ignore POR-value</label>
@@ -35,7 +35,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>temperature value of this sensor</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="ignorepor" type="boolean">
 				<label>Ignore POR-value</label>
@@ -62,20 +62,20 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Dewpoint</label>
 		<description>dewpoint (calculated from temperature and relative humidity)</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Relative Humidity Channel -->
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>relative humidity (0-100%)</description>
-		<state readOnly="true" pattern="%d %%" />
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="humidityconf">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>relative humidity (0-100%)</description>
-		<state readOnly="true" pattern="%d %%" />
+		<state readOnly="true" pattern="%d %%"/>
 		<config-description>
 			<parameter name="humiditytype" type="text">
 				<label>Humidity Sensor-Type</label>
@@ -96,35 +96,35 @@
 		<item-type>Number:Density</item-type>
 		<label>Abs. Humidity</label>
 		<description>absolute humidity (calculated from temperature and relative humidity)</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Voltage Channel -->
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>The voltage measured by the sensor</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Supply-Voltage Channel -->
 	<channel-type id="supplyvoltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Supply Voltage</label>
 		<description>The sensor's supply voltage</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Light Channel -->
 	<channel-type id="light">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Ambient light</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<!-- Current Channel -->
 	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>The current measured by the sensor</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Digital I/O Channel -->
 	<channel-type id="dio">
@@ -156,13 +156,13 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
 		<description>The pressure measured by the sensor</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- Counter Channel -->
 	<channel-type id="counter">
 		<item-type>Number</item-type>
 		<label>Counter</label>
 		<description>A single counter (reset on power loss)</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 </thing:thing-descriptions>

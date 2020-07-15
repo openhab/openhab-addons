@@ -44,7 +44,7 @@ public class TextValue extends Value {
     public TextValue(String[] states) {
         super(CoreItemFactory.STRING, Collections.singletonList(StringType.class));
         Set<String> s = Stream.of(states).filter(e -> StringUtils.isNotBlank(e)).collect(Collectors.toSet());
-        if (s.size() > 0) {
+        if (!s.isEmpty()) {
             this.states = s;
         } else {
             this.states = null;

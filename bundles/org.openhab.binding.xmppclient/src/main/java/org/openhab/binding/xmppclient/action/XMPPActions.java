@@ -17,8 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.xmppclient.internal.XMPPClient;
 import org.openhab.binding.xmppclient.handler.XMPPClientHandler;
+import org.openhab.binding.xmppclient.internal.XMPPClient;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.slf4j.Logger;
@@ -47,8 +47,7 @@ public class XMPPActions implements ThingActions {
     }
 
     @RuleAction(label = "publishXMPP", description = "Publish to XMPP")
-    public void publishXMPP(
-            @ActionInput(name = "to", label = "To", description = "Send to") @Nullable String to,
+    public void publishXMPP(@ActionInput(name = "to", label = "To", description = "Send to") @Nullable String to,
             @ActionInput(name = "text", label = "Text", description = "Message text") @Nullable String text) {
         XMPPClientHandler clientHandler = handler;
         if (clientHandler == null) {
@@ -69,7 +68,7 @@ public class XMPPActions implements ThingActions {
     }
 
     public static void publishXMPP(@Nullable ThingActions actions, @Nullable String to, @Nullable String text) {
-        if(actions == null) {
+        if (actions == null) {
             logger.warn("Sending error, actions is NULL");
             throw new IllegalArgumentException("actions is NULL");
         }

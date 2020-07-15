@@ -13,6 +13,7 @@
 package org.openhab.binding.volvooncall.internal.dto;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class PositionData {
     public @Nullable Double longitude;
     public @Nullable Double latitude;
-    public @Nullable ZonedDateTime timestamp;
+    private @Nullable ZonedDateTime timestamp;
     public @Nullable String speed;
     private @Nullable String heading;
 
@@ -36,6 +37,13 @@ public class PositionData {
         return "true".equalsIgnoreCase(heading);
     }
 
+    public Optional<ZonedDateTime> getTimestamp() {
+        ZonedDateTime timestamp = this.timestamp;
+        if (timestamp != null) {
+            return Optional.of(timestamp);
+        }
+        return Optional.empty();
+    }
     /*
      * Currently unused in the binding, maybe interesting in the future
      * private String streetAddress;

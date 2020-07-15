@@ -53,6 +53,7 @@ public class ParadoxAlarmBindingConstants {
 
     // List of all Channel UIDs
     public static final String IP150_COMMUNICATION_COMMAND_CHANNEL_UID = "communicationCommand";
+    public static final String IP150_COMMUNICATION_STATE_CHANNEL_UID = "communicationState";
 
     public static final String PANEL_STATE_CHANNEL_UID = "state";
     public static final String PANEL_SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
@@ -60,6 +61,11 @@ public class ParadoxAlarmBindingConstants {
     public static final String PANEL_HARDWARE_VERSION_PROPERTY_NAME = "hardwareVersion";
     public static final String PANEL_APPLICATION_VERSION_PROPERTY_NAME = "applicationVersion";
     public static final String PANEL_BOOTLOADER_VERSION_PROPERTY_NAME = "bootloaderVersion";
+
+    public static final String PANEL_TIME = "panelTime";
+    public static final String PANEL_INPUT_VOLTAGE = "inputVoltage";
+    public static final String PANEL_BOARD_VOLTAGE = "boardVoltage";
+    public static final String PANEL_BATTERY_VOLTAGE = "batteryVoltage";
 
     public static final String PARTITION_LABEL_CHANNEL_UID = "partitionLabel";
     public static final String PARTITION_STATE_CHANNEL_UID = "state";
@@ -90,5 +96,4 @@ public class ParadoxAlarmBindingConstants {
     // Misc constants
     public static final StringType STATE_OFFLINE = new StringType("Offline");
     public static final StringType STATE_ONLINE = new StringType("Online");
-
 }

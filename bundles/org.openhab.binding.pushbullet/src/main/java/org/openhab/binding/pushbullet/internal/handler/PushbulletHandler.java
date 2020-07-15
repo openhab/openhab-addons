@@ -14,29 +14,6 @@ package org.openhab.binding.pushbullet.internal.handler;
 
 import static org.openhab.binding.pushbullet.internal.PushbulletBindingConstants.*;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.pushbullet.internal.action.PushbulletActions;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.pushbullet.internal.PushbulletConfiguration;
-import org.openhab.binding.pushbullet.internal.model.Push;
-import org.openhab.binding.pushbullet.internal.model.PushResponse;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,8 +23,33 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.pushbullet.internal.PushbulletConfiguration;
+import org.openhab.binding.pushbullet.internal.action.PushbulletActions;
+import org.openhab.binding.pushbullet.internal.model.Push;
+import org.openhab.binding.pushbullet.internal.model.PushResponse;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link PushbulletHandler} is responsible for handling commands, which are
@@ -117,7 +119,6 @@ public class PushbulletHandler extends BaseThingHandler {
         String request = prepareMessageBody(recipient, title, message, type);
 
         try (InputStream stream = new ByteArrayInputStream(request.getBytes(StandardCharsets.UTF_8))) {
-
             String pushAPI = configuration.getApiUrlBase() + "/" + API_METHOD_PUSHES;
 
             String responseString = HttpUtil.executeUrl(HttpMethod.POST.asString(), pushAPI, headers, stream,
@@ -133,8 +134,7 @@ public class PushbulletHandler extends BaseThingHandler {
             if ((null != response) && (null == response.getPushError())) {
                 result = true;
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             logger.warn("IO problems pushing note: {}", e.getMessage());
         }
 

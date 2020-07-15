@@ -35,5 +35,4 @@ public class RoomListHandler {
         response.setRooms(deviceRegistry.getRooms());
         return response;
     }
-
 }

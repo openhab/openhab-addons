@@ -96,8 +96,8 @@ There are even more values supported by the interface but the extraction for mos
 * A\_CYC\_DEFROSTING    0
 * **A_CYC_BOOST_TIMER   0**
 * **A_CYC_FIREPLACE_TIMER   0**
-* A\_CYC\_EXTRA\_TIMER   0
-* A\_CYC\_WEEKLY\_TIMER\_ENABLED  0
+* **A_CYC_EXTRA_TIMER**   0
+* **A_CYC_WEEKLY_TIMER_ENABLED**  0
 * **A\_CYC\_CELL\_STATE**    0
 * **A\_CYC\_TOTAL\_UP\_TIME\_YEARS**   0
 * **A\_CYC\_TOTAL\_UP\_TIME\_HOURS**   1913
@@ -176,15 +176,15 @@ There are even more values supported by the interface but the extraction for mos
 * A\_CYC\_MODBUS\_FRAME  257
 * **A\_CYC\_EXTR\_FAN\_BALANCE\_BASE**     100
 * **A\_CYC\_SUPP\_FAN\_BALANCE\_BASE**     100
-* A\_CYC\_FIREPLACE\_EXTR\_FAN    50
-* A\_CYC\_FIREPLACE\_SUPP\_FAN    50
+* **A_CYC_FIREPLACE_EXTR_FAN**    50
+* **A_CYC_FIREPLACE_SUPP_FAN**    50
 * A\_CYC\_RH\_BASIC\_LEVEL    58
 * A\_CYC\_CO2\_THRESHOLD     900
 * A\_CYC\_EXTRA\_ENABLED     0
-* A\_CYC\_EXTRA\_AIR\_TEMP\_TARGET     28815
-* A\_CYC\_EXTRA\_EXTR\_FAN    50
-* A\_CYC\_EXTRA\_SUPP\_FAN    50
-* A\_CYC\_EXTRA\_TIME    10
+* **A_CYC_EXTRA_AIR_TEMP_TARGET**     28815
+* **A_CYC_EXTRA_EXTR_FAN**    50
+* **A_CYC_EXTRA_SUPP_FAN**    50
+* **A_CYC_EXTRA_TIME**    10
 * A\_CYC\_AWAY\_RH\_CTRL\_ENABLED  0
 * A\_CYC\_AWAY\_CO2\_CTRL\_ENABLED     0
 * **A\_CYC\_AWAY\_SPEED\_SETTING**    35
@@ -216,8 +216,8 @@ There are even more values supported by the interface but the extraction for mos
 * A\_CYC\_BRANDING  0
 * A\_CYC\_SIDEDNESS     0
 * A\_CYC\_RH\_LEVEL\_MODE     0
-* A\_CYC\_BOOST\_TIME    30
-* A\_CYC\_FIREPLACE\_TIME    15
+* **A_CYC_BOOST_TIME**    30
+* **A_CYC_FIREPLACE_TIME**    15
 * **A\_CYC\_FILTER\_CHANGED\_DAY**    1
 * **A\_CYC\_FILTER\_CHANGED\_MONTH**  1
 * **A\_CYC\_FILTER\_CHANGED\_YEAR**   0
@@ -231,13 +231,13 @@ There are even more values supported by the interface but the extraction for mos
 * A\_CYC\_USER\_PASSWORD     0
 * A\_CYC\_ACCESS\_LEVEL  0
 * A\_CYC\_PARENTAL\_CTRL\_ENABLED     0
-* A\_CYC\_BOOST\_TIMER\_ENABLED   0
-* A\_CYC\_FIREPLACE\_TIMER\_ENABLED   1
+* **A_CYC_BOOST_TIMER_ENABLED**   0
+* **A_CYC_FIREPLACE_TIMER_ENABLED**   1
 * A\_CYC\_SUMMER\_TIME\_AUTO\_ENAB     1
 * A\_CYC\_12\_HOUR\_CLOCK\_ENABLED     0
 * A\_CYC\_SLEEP\_DELAY   10
 * A\_CYC\_BG\_LIGHT\_LEVEL    50
-* A\_CYC\_EXTRA\_TIMER\_ENABLED   1
+* **A_CYC_EXTRA_TIMER_ENABLED**   1
     
     
 * A\_CYC\_SUPP\_FAN\_TEST     0

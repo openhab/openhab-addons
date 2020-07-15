@@ -151,7 +151,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "message") @Nullable String message) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegramAnswer(chatId, replyId, message)) {
                     return false;
                 }
@@ -170,7 +170,7 @@ public class TelegramActions implements ThingActions {
     public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegram(chatId, message)) {
                     return false;
                 }
@@ -193,7 +193,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "buttons") @Nullable String... buttons) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegramQuery(chatId, message, replyId, buttons)) {
                     return false;
                 }
@@ -256,7 +256,7 @@ public class TelegramActions implements ThingActions {
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "args") @Nullable Object... args) {
-        return sendTelegram(chatId, args == null || args.length == 0 ? message : String.format(message, args));
+        return sendTelegram(chatId, String.format(message, args));
     }
 
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
@@ -264,7 +264,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "args") @Nullable Object... args) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegram(chatId, message, args)) {
                     return false;
                 }
@@ -377,7 +377,7 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "password") @Nullable String password) {
         TelegramHandler localHandler = handler;
         if (localHandler != null) {
-            for (Long chatId : localHandler.getChatIds()) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
                 if (!sendTelegramPhoto(chatId, photoURL, caption, username, password)) {
                     return false;
                 }
@@ -394,10 +394,10 @@ public class TelegramActions implements ThingActions {
 
     // legacy delegate methods
     /* APIs without chatId parameter */
-    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String message,
+    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String format,
             @Nullable Object... args) {
         if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(message, args);
+            return ((TelegramActions) actions).sendTelegram(format, args);
         } else {
             throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
@@ -441,10 +441,10 @@ public class TelegramActions implements ThingActions {
 
     /* APIs with chatId parameter */
 
-    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable Long chatId, @Nullable String message,
+    public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable Long chatId, @Nullable String format,
             @Nullable Object... args) {
         if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(chatId, message, args);
+            return ((TelegramActions) actions).sendTelegram(chatId, format, args);
         } else {
             throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }

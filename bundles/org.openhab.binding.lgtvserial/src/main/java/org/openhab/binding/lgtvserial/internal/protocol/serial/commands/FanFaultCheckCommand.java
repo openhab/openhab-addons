@@ -23,5 +23,4 @@ public class FanFaultCheckCommand extends BaseStringCommand {
     protected FanFaultCheckCommand(int setId) {
         super('d', 'w', setId, false);
     }
-
 }

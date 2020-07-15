@@ -78,5 +78,4 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
     }
-
 }

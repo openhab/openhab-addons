@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OmnikInverterMessage {
 
-    final private byte[] bytes;
+    private final byte[] bytes;
 
     public OmnikInverterMessage(byte[] b) {
         this.bytes = b;

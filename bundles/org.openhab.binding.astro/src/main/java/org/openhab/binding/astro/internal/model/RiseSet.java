@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Base class for the rise and set ranges.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public abstract class RiseSet {
     private Range rise = new Range();
     private Range set = new Range();
@@ -48,5 +51,4 @@ public abstract class RiseSet {
     public void setSet(Range set) {
         this.set = set;
     }
-
 }

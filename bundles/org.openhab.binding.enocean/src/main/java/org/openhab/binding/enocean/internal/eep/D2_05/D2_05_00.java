@@ -62,7 +62,6 @@ public class D2_05_00 extends _VLDMessage {
     }
 
     protected void setPositionData(Command command, byte outputChannel) {
-
         if (command instanceof UpDownType) {
             if (command == UpDownType.DOWN) {
                 setData(DOWN, (byte) 0x00, (byte) 0x00, (byte) (outputChannel + CMD_ACTUATOR_SET_POSITION));
@@ -105,7 +104,6 @@ public class D2_05_00 extends _VLDMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (channelId.equals(CHANNEL_ROLLERSHUTTER)) {
             if (command == RefreshType.REFRESH) {
                 setPositionQueryData(ChannelA_Mask);
@@ -116,9 +114,8 @@ public class D2_05_00 extends _VLDMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
-
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
                 return getPositionData();
@@ -126,5 +123,4 @@ public class D2_05_00 extends _VLDMessage {
 
         return UnDefType.UNDEF;
     }
-
 }

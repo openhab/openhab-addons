@@ -10,16 +10,16 @@
 		<description>Connection to the Rotel RDG-1520 tuner</description>
 
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="source" typeId="source" />
-			<channel id="playControl" typeId="system.media-control" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="playControl" typeId="system.media-control"/>
 		</channels>
 
 		<properties>
 			<property name="protocol">ASCII_V1</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:rotel:serial" />
+		<config-description-ref uri="thing-type:rotel:serial"/>
 	</thing-type>
 
 </thing:thing-descriptions>

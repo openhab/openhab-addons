@@ -19,7 +19,7 @@
 		</parameter>
 		<parameter name="statusInterval" type="integer" min="4">
 			<label>Status Interval</label>
-			<description>The refresh interval in seconds for polling the printer status</description>
+			<description>The refresh interval in seconds for polling status information</description>
 			<default>4</default>
 			<advanced>true</advanced>
 		</parameter>

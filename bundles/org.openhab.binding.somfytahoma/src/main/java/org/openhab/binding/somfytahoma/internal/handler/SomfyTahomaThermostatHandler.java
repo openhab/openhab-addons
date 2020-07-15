@@ -15,10 +15,7 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 
 /**
  * The {@link SomfyTahomaThermostatHandler} is responsible for handling commands,
@@ -35,6 +32,6 @@ public class SomfyTahomaThermostatHandler extends SomfyTahomaBaseThingHandler {
         stateNames.put(BATTERY_LEVEL, BATTERY_LEVEL_STATE);
         stateNames.put(HEATING_MODE, "somfythermostat:HeatingModeState");
         stateNames.put(DEROGATION_HEATING_MODE, "somfythermostat:DerogationHeatingModeState");
-        stateNames.put(DEROGATION_ACTIVATION, "core:DerogationActivationState" );
+        stateNames.put(DEROGATION_ACTIVATION, "core:DerogationActivationState");
     }
 }

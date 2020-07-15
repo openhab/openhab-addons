@@ -203,9 +203,9 @@ public class ChannelStateTests {
         assertThat(value.getChannelState().toString(), is("50"));
 
         c.processMessage("state", "INCREASE".getBytes());
-        assertThat(value.getChannelState().toString(), is("60"));
-        assertThat(value.getMQTTpublishValue(null), is("20"));
-        assertThat(value.getMQTTpublishValue("%03.0f"), is("020"));
+        assertThat(value.getChannelState().toString(), is("55"));
+        assertThat(value.getMQTTpublishValue(null), is("10"));
+        assertThat(value.getMQTTpublishValue("%03.0f"), is("010"));
     }
 
     @Test

@@ -41,7 +41,7 @@ public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MinecraftHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>();
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 
     static {
         SUPPORTED_THING_TYPES_UIDS.add(MinecraftBindingConstants.THING_TYPE_SERVER);
@@ -49,7 +49,7 @@ public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
         SUPPORTED_THING_TYPES_UIDS.add(MinecraftBindingConstants.THING_TYPE_SIGN);
     }
 
-    private static List<MinecraftServerHandler> minecraftServers = new ArrayList<MinecraftServerHandler>();
+    private static List<MinecraftServerHandler> minecraftServers = new ArrayList<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -88,6 +88,6 @@ public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
      */
     public static List<MinecraftServerHandler> getMinecraftServers() {
         LOGGER.debug("getMinecraftServers {}", minecraftServers.size());
-        return new ArrayList<MinecraftServerHandler>(minecraftServers);
+        return new ArrayList<>(minecraftServers);
     }
 }

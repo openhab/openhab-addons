@@ -202,6 +202,16 @@ public class LGHomBotHandler extends BaseThingHandler {
         setupRefreshTimer(0);
     }
 
+    @Override
+    public void handleRemoval() {
+        ScheduledFuture<?> localTimer = refreshTimer;
+        if (localTimer != null) {
+            localTimer.cancel(false);
+            refreshTimer = null;
+        }
+        updateStatus(ThingStatus.REMOVED);
+    }
+
     /**
      * Sets up a refresh timer (using the scheduler) with the given interval.
      *
@@ -239,6 +249,7 @@ public class LGHomBotHandler extends BaseThingHandler {
 
     private @Nullable String sendCommand(String path) {
         String url = buildHttpAddress(path);
+        logger.trace("Executing: {}", url);
         String status = null;
         try {
             status = HttpUtil.executeUrl("GET", url, 1000);
@@ -556,9 +567,13 @@ public class LGHomBotHandler extends BaseThingHandler {
         final int height = 240;
         final int size = width * height;
         String url = buildHttpAddress("/images/snapshot.yuv");
-        byte[] yuvData = HttpUtil.downloadData(url, null, false, size * 2).getBytes();
-
-        currentImage = CameraUtil.parseImageFromBytes(yuvData, width, height);
+        RawType rawData = HttpUtil.downloadData(url, null, false, size * 2);
+        if (rawData != null) {
+            byte[] yuvData = rawData.getBytes();
+            currentImage = CameraUtil.parseImageFromBytes(yuvData, width, height);
+        } else {
+            logger.info("No camera image returned from HomBot.");
+        }
     }
 
     /** Parse the maps.html file to find the black-box filename. */

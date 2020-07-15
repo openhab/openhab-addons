@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.somfytahoma.internal.handler;
 
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.LUMINANCE;
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,5 +29,6 @@ public class SomfyTahomaLightSensorHandler extends SomfyTahomaBaseThingHandler {
     public SomfyTahomaLightSensorHandler(Thing thing) {
         super(thing);
         stateNames.put(LUMINANCE, "core:LuminanceState");
+        stateNames.put(SENSOR_DEFECT, SENSOR_DEFECT_STATE);
     }
 }

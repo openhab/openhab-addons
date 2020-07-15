@@ -1,40 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="satel" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="satel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="partition">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ethm-1" />
-			<bridge-type-ref id="int-rs" />
+			<bridge-type-ref id="ethm-1"/>
+			<bridge-type-ref id="int-rs"/>
 		</supported-bridge-type-refs>
 
 		<label>Partition</label>
 		<description><![CDATA[The partition is a separated area within the premises protected by the security alarm system.<br>
-The subdivision into partitions enables arming/disarming the system only in part of the protected area, as well as limiting 
+The subdivision into partitions enables arming/disarming the system only in part of the protected area, as well as limiting
 access to some portion of the premises to selected users.]]>
 		</description>
 
 		<channels>
-			<channel typeId="armed" id="armed" />
-			<channel typeId="really_armed" id="really_armed" />
-			<channel typeId="armed_mode_1" id="armed_mode_1" />
-			<channel typeId="armed_mode_2" id="armed_mode_2" />
-			<channel typeId="armed_mode_3" id="armed_mode_3" />
-			<channel typeId="first_code_entered" id="first_code_entered" />
-			<channel typeId="entry_time" id="entry_time" />
-			<channel typeId="exit_time_gt_10" id="exit_time_gt_10" />
-			<channel typeId="exit_time_lt_10" id="exit_time_lt_10" />
-			<channel typeId="temporary_blocked" id="temporary_blocked" />
-			<channel typeId="blocked_for_guard" id="blocked_for_guard" />
-			<channel typeId="alarm" id="alarm" />
-			<channel typeId="alarm_memory" id="alarm_memory" />
-			<channel typeId="fire_alarm" id="fire_alarm" />
-			<channel typeId="fire_alarm_memory" id="fire_alarm_memory" />
-			<channel typeId="verified_alarms" id="verified_alarms" />
-			<channel typeId="warning_alarms" id="warning_alarms" />
-			<channel typeId="violated_zones" id="violated_zones" />
+			<channel typeId="armed" id="armed"/>
+			<channel typeId="really_armed" id="really_armed"/>
+			<channel typeId="armed_mode_1" id="armed_mode_1"/>
+			<channel typeId="armed_mode_2" id="armed_mode_2"/>
+			<channel typeId="armed_mode_3" id="armed_mode_3"/>
+			<channel typeId="first_code_entered" id="first_code_entered"/>
+			<channel typeId="entry_time" id="entry_time"/>
+			<channel typeId="exit_time_gt_10" id="exit_time_gt_10"/>
+			<channel typeId="exit_time_lt_10" id="exit_time_lt_10"/>
+			<channel typeId="temporary_blocked" id="temporary_blocked"/>
+			<channel typeId="blocked_for_guard" id="blocked_for_guard"/>
+			<channel typeId="alarm" id="alarm"/>
+			<channel typeId="alarm_memory" id="alarm_memory"/>
+			<channel typeId="fire_alarm" id="fire_alarm"/>
+			<channel typeId="fire_alarm_memory" id="fire_alarm_memory"/>
+			<channel typeId="verified_alarms" id="verified_alarms"/>
+			<channel typeId="warning_alarms" id="warning_alarms"/>
+			<channel typeId="violated_zones" id="violated_zones"/>
 		</channels>
 
 		<config-description>
@@ -84,42 +85,42 @@ access to some portion of the premises to selected users.]]>
 		<item-type>Switch</item-type>
 		<label>First Code Entered</label>
 		<description>Active when first code of required two codes has been entered</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="entry_time" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Entry Time</label>
 		<description>Active in entry time</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="exit_time_gt_10" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Exit Time &gt; 10s</label>
 		<description>Active when arming is in progress and time to exit is greater than ten seconds</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="exit_time_lt_10" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Exit Time &lt; 10s</label>
 		<description>Active when arming is in progress and time to exit is less than ten seconds</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temporary_blocked" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Temporary Blocked</label>
 		<description>Active when the partition is blocked after arming</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="blocked_for_guard" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Blocked for Guard</label>
 		<description>Active when the partition is blocked for guard round</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarm">
@@ -162,7 +163,7 @@ access to some portion of the premises to selected users.]]>
 		<item-type>Switch</item-type>
 		<label>Violated Zones</label>
 		<description>Active when there are violated zones in the partition</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

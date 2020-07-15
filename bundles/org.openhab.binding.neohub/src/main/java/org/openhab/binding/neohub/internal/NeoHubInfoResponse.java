@@ -15,9 +15,11 @@ package org.openhab.binding.neohub.internal;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
@@ -28,165 +30,179 @@ import com.google.gson.annotations.SerializedName;
  * @author Andrew Fiddian-Green - Refactoring for openHAB v2.x
  * 
  */
-class NeoHubInfoResponse {
+@NonNullByDefault
+public class NeoHubInfoResponse extends NeoHubAbstractDeviceData {
 
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(NeohubBool.class, new NeohubBoolDeserializer()).create();
 
     @SerializedName("devices")
-    private List<DeviceInfo> deviceInfos;
+    private @Nullable List<InfoRecord> deviceRecords;
 
+    @SuppressWarnings("null")
+    @NonNullByDefault
     static class StatMode {
         @SerializedName("MANUAL_OFF")
-        private Boolean manualOff;
+        private @Nullable NeohubBool manualOff;
         @SerializedName("MANUAL_ON")
-        private Boolean manualOn;
+        private @Nullable NeohubBool manualOn;
 
-        private Boolean stateManualOn() {
-            return (manualOn != null && manualOn);
+        private boolean stateManualOn() {
+            NeohubBool manualOn = this.manualOn;
+            return (manualOn == null ? false : manualOn.value);
         }
 
-        private Boolean stateManualOff() {
-            return (manualOff != null && manualOff);
+        private boolean stateManualOff() {
+            NeohubBool manualOff = this.manualOff;
+            return (manualOff == null ? false : manualOff.value);
         }
     }
 
-    static class DeviceInfo {
-
+    @SuppressWarnings("null")
+    @NonNullByDefault
+    public static class InfoRecord extends AbstractRecord {
         @SerializedName("device")
-        private String deviceName;
+        private @Nullable String deviceName;
         @SerializedName("CURRENT_SET_TEMPERATURE")
-        private BigDecimal currentSetTemperature;
+        private @Nullable BigDecimal currentSetTemperature;
         @SerializedName("CURRENT_TEMPERATURE")
-        private BigDecimal currentTemperature;
+        private @Nullable BigDecimal currentTemperature;
         @SerializedName("CURRENT_FLOOR_TEMPERATURE")
-        private BigDecimal currentFloorTemperature;
-        @SerializedName("AWAY")
-        private Boolean away;
-        @SerializedName("HOLIDAY")
-        private Boolean holiday;
-        @SerializedName("HOLIDAY_DAYS")
-        private BigDecimal holidayDays;
+        private @Nullable BigDecimal currentFloorTemperature;
+        @SerializedName("COOL_INP")
+        private @Nullable NeohubBool coolInput;
+        @SerializedName("LOW_BATTERY")
+        private @Nullable NeohubBool batteryLow;
         @SerializedName("STANDBY")
-        private Boolean standby;
+        private @Nullable NeohubBool standby;
         @SerializedName("HEATING")
-        private Boolean heating;
+        private @Nullable NeohubBool heating;
         @SerializedName("PREHEAT")
-        private Boolean preHeat;
+        private @Nullable NeohubBool preHeat;
         @SerializedName("TIMER")
-        private Boolean timerOn;
+        private @Nullable NeohubBool timerOn;
         @SerializedName("DEVICE_TYPE")
-        private BigDecimal deviceType;
+        private @Nullable BigDecimal deviceType;
         @SerializedName("OFFLINE")
-        private Boolean offline;
+        private @Nullable NeohubBool offline;
         @SerializedName("STAT_MODE")
-        private StatMode statMode = new StatMode();
+        private @Nullable StatMode statMode = new StatMode();
 
-        protected Boolean safeBoolean(Boolean value) {
-            return (value != null && value);
+        private boolean safeBoolean(@Nullable NeohubBool value) {
+            return (value == null ? false : value.value);
         }
 
-        protected BigDecimal safeBigDecimal(BigDecimal value) {
-            return value != null ? value : BigDecimal.ZERO;
-        }
-
+        @Override
         public String getDeviceName() {
+            String deviceName = this.deviceName;
             return deviceName != null ? deviceName : "";
         }
 
+        @Override
         public BigDecimal getTargetTemperature() {
             return safeBigDecimal(currentSetTemperature);
         }
 
-        public BigDecimal getRoomTemperature() {
+        @Override
+        public BigDecimal getActualTemperature() {
             return safeBigDecimal(currentTemperature);
         }
 
+        @Override
         public BigDecimal getFloorTemperature() {
             return safeBigDecimal(currentFloorTemperature);
         }
 
-        public Boolean isAway() {
-            return safeBoolean(away);
-        }
-
-        public Boolean isHoliday() {
-            return safeBoolean(holiday);
-        }
-
-        public BigDecimal getHolidayDays() {
-            return safeBigDecimal(holidayDays);
-        }
-
-        public BigDecimal getDeviceType() {
-            return safeBigDecimal(deviceType);
-        }
-
-        public Boolean isStandby() {
+        @Override
+        public boolean isStandby() {
             return safeBoolean(standby);
         }
 
-        public Boolean isHeating() {
+        @Override
+        public boolean isHeating() {
             return safeBoolean(heating);
         }
 
-        public Boolean isPreHeating() {
+        @Override
+        public boolean isPreHeating() {
             return safeBoolean(preHeat);
         }
 
-        public Boolean isTimerOn() {
+        @Override
+        public boolean isTimerOn() {
             return safeBoolean(timerOn);
         }
 
-        public Boolean isOffline() {
+        @Override
+        public boolean offline() {
             return safeBoolean(offline);
         }
 
-        public Boolean stateManual() {
+        @Override
+        public boolean stateManual() {
+            StatMode statMode = this.statMode;
             return (statMode != null && statMode.stateManualOn());
         }
 
-        public Boolean stateAuto() {
+        @Override
+        public boolean stateAuto() {
+            StatMode statMode = this.statMode;
             return (statMode != null && statMode.stateManualOff());
         }
 
-        public Boolean hasStatMode() {
-            return statMode != null;
+        @Override
+        public boolean isWindowOpen() {
+            // legacy API misuses the cool input parameter
+            return safeBoolean(coolInput);
         }
 
+        @Override
+        public boolean isBatteryLow() {
+            return safeBoolean(batteryLow);
+        }
+
+        public int getDeviceType() {
+            BigDecimal deviceType = this.deviceType;
+            return deviceType != null ? deviceType.intValue() : -1;
+        }
     }
 
     /**
-     * Create wrapper around the JSON response
+     * Create wrapper around a JSON string
      * 
-     * @param response the JSON INFO request
-     * @return a NeoHubInfoResponse wrapper around the JSON response
+     * @param fromJson the JSON string
+     * @return a NeoHubInfoResponse wrapper around the JSON
      * @throws JsonSyntaxException
      * 
      */
-    static @Nullable NeoHubInfoResponse createInfoResponse(String response) throws JsonSyntaxException {
-        return GSON.fromJson(response, NeoHubInfoResponse.class);
+    public static @Nullable NeoHubInfoResponse createDeviceData(String fromJson) throws JsonSyntaxException {
+        return GSON.fromJson(fromJson, NeoHubInfoResponse.class);
     }
 
-    /*
-     * returns the DeviceInfo corresponding to a given device name
+    /**
+     * returns the device record corresponding to a given device name
      * 
      * @param deviceName the device name
-     * 
-     * @return its respective DeviceInfo
+     * @return its respective device record
      */
-    public DeviceInfo getDeviceInfo(String deviceName) {
-        for (DeviceInfo d : deviceInfos) {
-            if (deviceName.equals(d.getDeviceName())) {
-                return d;
+    @Override
+    public @Nullable AbstractRecord getDeviceRecord(String deviceName) {
+        List<InfoRecord> deviceRecords = this.deviceRecords;
+        if (deviceRecords != null) {
+            for (AbstractRecord deviceRecord : deviceRecords) {
+                if (deviceName.equals(deviceRecord.getDeviceName())) {
+                    return deviceRecord;
+                }
             }
         }
         return null;
     }
 
-    /*
-     * @return the full list of DeviceInfo objects
+    /**
+     * @return the full list of device records
      */
-    public List<DeviceInfo> getDevices() {
-        return deviceInfos;
+    @Override
+    public @Nullable List<InfoRecord> getDevices() {
+        return deviceRecords;
     }
 }

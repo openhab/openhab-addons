@@ -107,5 +107,4 @@ public class LifxChannelFactoryImpl implements LifxChannelFactory {
     protected void unsetLocaleProvider(LocaleProvider localeProvider) {
         this.localeProvider = null;
     }
-
 }

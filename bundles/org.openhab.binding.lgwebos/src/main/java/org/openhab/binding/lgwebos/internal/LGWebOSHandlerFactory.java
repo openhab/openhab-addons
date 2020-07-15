@@ -44,13 +44,17 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
 
     private final WebSocketClient webSocketClient;
 
+    private final LGWebOSStateDescriptionOptionProvider stateDescriptionProvider;
+
     @Activate
-    public LGWebOSHandlerFactory(final @Reference WebSocketFactory webSocketFactory) {
+    public LGWebOSHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
+            final @Reference LGWebOSStateDescriptionOptionProvider stateDescriptionProvider) {
         /*
          * Cannot use openHAB's shared web socket client (webSocketFactory.getCommonWebSocketClient()) as we have to
          * change client settings.
          */
         this.webSocketClient = webSocketFactory.createWebSocketClient("lgwebos");
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_WEBOSTV)) {
-            return new LGWebOSHandler(thing, webSocketClient);
+            return new LGWebOSHandler(thing, webSocketClient, stateDescriptionProvider);
         }
         return null;
     }
@@ -97,5 +101,4 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
             logger.warn("Unable to to stop websocket client.", e);
         }
     }
-
 }

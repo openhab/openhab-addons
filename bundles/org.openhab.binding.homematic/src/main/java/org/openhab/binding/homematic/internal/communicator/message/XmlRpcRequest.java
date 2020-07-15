@@ -50,7 +50,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
     public XmlRpcRequest(String methodName, TYPE type) {
         this.methodName = methodName;
         this.type = type;
-        parms = new ArrayList<Object>();
+        parms = new ArrayList<>();
     }
 
     @Override

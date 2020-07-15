@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.digiplex.internal.communication.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
 import org.openhab.binding.digiplex.internal.communication.DigiplexResponse;
 import org.openhab.binding.digiplex.internal.communication.ZoneStatus;
@@ -22,6 +23,7 @@ import org.openhab.binding.digiplex.internal.communication.ZoneStatus;
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public class ZoneStatusEvent extends AbstractEvent implements DigiplexResponse {
 
     private int zoneNo;
@@ -44,6 +46,5 @@ public class ZoneStatusEvent extends AbstractEvent implements DigiplexResponse {
     @Override
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleZoneStatusEvent(this);
-
     }
 }

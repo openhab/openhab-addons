@@ -147,5 +147,4 @@ public class JsonReaderDelegate extends JsonReader {
     public String toString() {
         return delegate.toString();
     }
-
 }

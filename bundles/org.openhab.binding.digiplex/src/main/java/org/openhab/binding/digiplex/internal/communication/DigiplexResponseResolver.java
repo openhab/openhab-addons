@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.digiplex.internal.communication.events.AreaEvent;
 import org.openhab.binding.digiplex.internal.communication.events.AreaEventType;
 import org.openhab.binding.digiplex.internal.communication.events.GenericEvent;
 import org.openhab.binding.digiplex.internal.communication.events.SpecialAlarmEvent;
 import org.openhab.binding.digiplex.internal.communication.events.SpecialAlarmType;
+import org.openhab.binding.digiplex.internal.communication.events.TroubleEvent;
+import org.openhab.binding.digiplex.internal.communication.events.TroubleStatus;
+import org.openhab.binding.digiplex.internal.communication.events.TroubleType;
 import org.openhab.binding.digiplex.internal.communication.events.ZoneEvent;
 import org.openhab.binding.digiplex.internal.communication.events.ZoneEventType;
 import org.openhab.binding.digiplex.internal.communication.events.ZoneStatusEvent;
@@ -27,6 +31,7 @@ import org.openhab.binding.digiplex.internal.communication.events.ZoneStatusEven
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public class DigiplexResponseResolver {
 
     private static final String OK = "&ok";
@@ -155,6 +160,12 @@ public class DigiplexResponseResolver {
                 return new ZoneEvent(eventNumber, ZoneEventType.TAMPER, areaNumber);
             case 34:
                 return new ZoneEvent(eventNumber, ZoneEventType.TAMPER_RESTORE, areaNumber);
+            case 36:
+                return new TroubleEvent(TroubleType.fromEventNumber(eventNumber), TroubleStatus.TROUBLE_STARTED,
+                        areaNumber);
+            case 37:
+                return new TroubleEvent(TroubleType.fromEventNumber(eventNumber), TroubleStatus.TROUBLE_RESTORED,
+                        areaNumber);
             case 41:
                 return new ZoneEvent(eventNumber, ZoneEventType.LOW_BATTERY, areaNumber);
             case 42:
@@ -203,5 +214,4 @@ public class DigiplexResponseResolver {
         }
         return new GenericEvent(eventGroup, eventNumber, areaNumber);
     }
-
 }

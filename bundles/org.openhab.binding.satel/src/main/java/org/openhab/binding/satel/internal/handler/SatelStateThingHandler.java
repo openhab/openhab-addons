@@ -31,7 +31,6 @@ import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
 import org.openhab.binding.satel.internal.event.IntegraStateEvent;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.types.StateType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,37 +70,41 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
+    public void incomingEvent(ConnectionStatusEvent event) {
         logger.trace("Handling incoming event: {}", event);
-        if (event instanceof ConnectionStatusEvent) {
-            ConnectionStatusEvent statusEvent = (ConnectionStatusEvent) event;
-            // we have just connected, change thing's status and force refreshing
-            if (statusEvent.isConnected()) {
-                updateStatus(ThingStatus.ONLINE);
-                requiresRefresh.set(true);
+        // we have just connected, change thing's status and force refreshing
+        if (event.isConnected()) {
+            updateStatus(ThingStatus.ONLINE);
+            requiresRefresh.set(true);
+        }
+    }
+
+    @Override
+    public void incomingEvent(NewStatesEvent event) {
+        logger.trace("Handling incoming event: {}", event);
+        // refresh all states that have changed
+        withBridgeHandlerPresent(bridgeHandler -> {
+            for (SatelCommand command : getRefreshCommands(event)) {
+                bridgeHandler.sendCommand(command, true);
             }
-        } else if (event instanceof NewStatesEvent) {
-            // refresh all states that have changed
-            withBridgeHandlerPresent(bridgeHandler -> {
-                for (SatelCommand command : getRefreshCommands((NewStatesEvent) event)) {
-                    bridgeHandler.sendCommand(command, true);
-                }
-            });
-        } else if (event instanceof IntegraStateEvent) {
-            // update thing's state unless it should accept commands only
-            IntegraStateEvent stateEvent = (IntegraStateEvent) event;
-            if (getThingConfig().isCommandOnly()) {
-                return;
-            }
-            for (Channel channel : getThing().getChannels()) {
-                ChannelUID channelUID = channel.getUID();
-                if (isLinked(channel.getUID())) {
-                    StateType stateType = getStateType(channelUID.getId());
-                    if (stateType != StateType.NONE && stateEvent.hasDataForState(stateType)) {
-                        int bitNbr = getStateBitNbr(stateType);
-                        boolean invertState = getThingConfig().isStateInverted();
-                        updateSwitch(channelUID, stateEvent.isSet(stateType, bitNbr) ^ invertState);
-                    }
+        });
+    }
+
+    @Override
+    public void incomingEvent(IntegraStateEvent event) {
+        logger.trace("Handling incoming event: {}", event);
+        // update thing's state unless it should accept commands only
+        if (getThingConfig().isCommandOnly()) {
+            return;
+        }
+        for (Channel channel : getThing().getChannels()) {
+            ChannelUID channelUID = channel.getUID();
+            if (isLinked(channel.getUID())) {
+                StateType stateType = getStateType(channelUID.getId());
+                if (stateType != StateType.NONE && event.hasDataForState(stateType)) {
+                    int bitNbr = getStateBitNbr(stateType);
+                    boolean invertState = getThingConfig().isStateInverted();
+                    updateSwitch(channelUID, event.isSet(stateType, bitNbr) ^ invertState);
                 }
             }
         }
@@ -184,5 +187,4 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
     protected boolean requiresRefresh() {
         return requiresRefresh.getAndSet(false);
     }
-
 }

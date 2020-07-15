@@ -73,5 +73,4 @@ public class PLCDateTimeConfiguration extends PLCCommonConfiguration {
     public String getBlockKind() {
         return block.substring(0, 2);
     }
-
 }

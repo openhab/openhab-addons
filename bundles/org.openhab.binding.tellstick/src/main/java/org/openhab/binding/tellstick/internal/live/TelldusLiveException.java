@@ -33,5 +33,4 @@ public class TelldusLiveException extends TellstickException {
     public String getMessage() {
         return getCause().getMessage();
     }
-
 }

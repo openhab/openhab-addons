@@ -41,6 +41,6 @@ public class LaCrosseSensorDefinition extends SensorDefinition<LaCrosseTemperatu
 
     @Override
     public JeeLinkSensorHandler<LaCrosseTemperatureReading> createHandler(Thing thing) {
-        return new LaCrosseTemperatureSensorHandler(thing);
+        return new LaCrosseTemperatureSensorHandler(thing, type);
     }
 }

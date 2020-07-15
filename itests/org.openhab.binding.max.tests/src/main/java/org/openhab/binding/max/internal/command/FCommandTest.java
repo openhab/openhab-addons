@@ -32,7 +32,6 @@ public class FCommandTest {
 
         assertEquals("f:", prefix);
         assertEquals("f:" + '\r' + '\n', commandStr);
-
     }
 
     @Test
@@ -56,5 +55,4 @@ public class FCommandTest {
         commandStr = scmd.getCommandString();
         assertEquals("f:" + '\r' + '\n', commandStr);
     }
-
 }

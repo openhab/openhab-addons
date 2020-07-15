@@ -62,5 +62,4 @@ public class Controller {
     public Boolean online;
 
     public List<String> tags = null;
-
 }

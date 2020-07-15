@@ -35,5 +35,4 @@ public class TokenRequestPassword extends TokenRequest {
         this.email = email;
         this.password = password;
     }
-
 }

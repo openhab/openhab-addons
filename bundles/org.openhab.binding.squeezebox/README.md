@@ -97,6 +97,7 @@ All devices support some of the following channels:
 | stop                    | Switch    | Stop the current title                                                                 |
 | control                 | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind                  |
 | stream                  | String    | Play the given HTTP or file stream (file:// or http://)                                |
+| source                  | String    | Shows the source of the currently playing playlist entry. (i.e. http://radio.org/radio.mp3 |
 | sync                    | String    | Add another player to your device for synchronized playback (other player mac address) |
 | playListIndex           | Number    | Playlist Index                                                                         |
 | currentPlayingTime      | Number    | Current Playing Time                                                                   |
@@ -113,6 +114,17 @@ All devices support some of the following channels:
 | ircode                  | String    | Received IR code                                                                       |
 | numberPlaylistTracks    | Number    | Number of playlist tracks                                                              |
 | playFavorite            | String    | ID of Favorite to play (channel's state options contains available favorites)          |
+| rate                    | Switch    | "Like" or "unlike" the currently playing song (if supported by the streaming service)  |
+
+## Example .Items File
+
+Add the items you want to the .items file. A few examples are shown below, the power, volume and album art channels are connected here to the items by copying across the channel discriptions from the Paper UI. Make suure each channel is linked for your needs See [openHAB New User Configuration documentation](https://www.openhab.org/docs/tutorial/configuration.html) for further details on linking and channels.
+
+```
+Switch YourPlayer_Power    "Squeezebox Power"  {channel="squeezebox:squeezeboxplayer:736549a3:00042016e7a0:power"}
+Dimmer YourPlayer_Volume   "Squeezebox Volume" {channel="squeezebox:squeezeboxplayer:736549a3:00042016e7a0:volume"}
+Image  YourPlayer_AlbumArt "Squeezebox Cover"  {channel="squeezebox:squeezeboxplayer:736549a3:00042016e7a0:coverartdata"}
+```
 
 ## Playing Favorites
 
@@ -127,7 +139,7 @@ Currently, only favorites from the root level of the LMS favorites list are expo
 -   Add some favorites to your favorites list in LMS (local music playlists, Pandora, Slacker, Internet radio, etc.).
 Keep all favorites at the root level (i.e. favorites in sub-folders will be ignored).
 
--   If you're on an older openHAB build, you may need to delete and readd your squeezebox server and player things to pick up the new channels.
+-   If you're on an older openHAB build, you may need to delete and re-add your squeezebox server and player things to pick up the new channels.
 
 -   Create a new item on each player
 
@@ -196,14 +208,28 @@ then
 end
 ```
 
+## Rating Songs
+
+Some streaming services, such as Pandora and Slacker, all songs to be rated.
+When playing from these streaming services, sending commands to the `rate` channel can be used to *like* or *unlike* the currently playing song.
+Sending the ON command will *like* the song.
+Sending the OFF command will *unlike* the song.
+If the streaming service doesn't support rating, sending commands to the `rate` channel has no effect.
+
 ### Known Issues
 
--   There are some versions of squeezelite that will not correctly play very short duration mp3 files. Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably. For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications. This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
+-   There are some versions of squeezelite that will not correctly play very short duration mp3 files.
+Versions of squeezelite after v1.7 and before v1.8.6 will not play very short duration mp3 files reliably.
+For example, if you're using piCorePlayer (which uses squeezelite), please check your version of squeezelite if you're having trouble playing notifications.
+This bug has been fixed in squeezelite version 1.8.6-985, which is included in piCorePlayer version 3.20.
 
 -   When streaming from a remote service (such as Pandora or Spotify), after the notification plays, the Squeezebox Server starts playing a new track, instead of picking up from where it left off on the currently playing track.
 
--   There have been reports that notifications do not play reliably, or do not play at all, when using Logitech Media Server (LMS) version 7.7.5. Therefore, it is recommended that the LMS be on a more current version than 7.7.5.
+-   There have been reports that notifications do not play reliably, or do not play at all, when using Logitech Media Server (LMS) version 7.7.5.
+Therefore, it is recommended that the LMS be on a more current version than 7.7.5.
 
 -   There have been reports that the LMS does not play some WAV files reliably. If you're using a TTS service that produces WAV files, and the notifications are not playing, try using an MP3-formatted TTS notification.
+This issue reportedly was [fixed in the LMS](https://github.com/Logitech/slimserver/issues/307) by accepting additional MIME types for WAV files.
 
--   The LMS treats player MAC addresses as case-sensitive. Therefore, the case of MAC addresses in the Squeeze Player thing configuration must match the case displayed on the *Information* tab in the LMS Settings.
+-   The LMS treats player MAC addresses as case-sensitive.
+Therefore, the case of MAC addresses in the Squeeze Player thing configuration must match the case displayed on the *Information* tab in the LMS Settings.

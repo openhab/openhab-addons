@@ -50,5 +50,4 @@ public class LIRCBridgeConfiguration {
     public void setPortNumber(int portNumber) {
         this.portNumber = portNumber;
     }
-
 }

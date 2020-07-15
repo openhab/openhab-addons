@@ -14,11 +14,14 @@ package org.openhab.binding.miio.internal.robot;
 
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Vacuum Consumables
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public enum ConsumablesType {
     MAIN_BRUSH(300, "Main Brush"),
     SIDE_BRUSH(200, "Side Brush"),

@@ -33,10 +33,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.mqtt.MqttBindingConstants;
-import org.openhab.binding.mqtt.internal.discovery.MqttServiceDiscoveryService;
 
 /**
- * Tests cases for {@link MqttServiceDiscoveryService}.
+ * Tests cases for {@link org.openhab.binding.mqtt.internal.discovery.MqttServiceDiscoveryService}.
  *
  * @author David Graeff - Initial contribution
  */

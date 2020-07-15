@@ -100,7 +100,6 @@ public class FSInternetRadioDiscoveryParticipantJavaTest {
      *
      * @throws ValidationException
      */
-    @SuppressWarnings("null")
     @Test
     public void validDiscoveryResultWithComplete() throws ValidationException {
         RemoteDevice completeFSInternetRadioDevice = createDefaultFSInternetRadioDevice(DEFAULT_RADIO_BASE_URL);
@@ -111,17 +110,6 @@ public class FSInternetRadioDiscoveryParticipantJavaTest {
                 result.getProperties().get(FSInternetRadioBindingConstants.PROPERTY_MANUFACTURER));
         assertEquals(DEFAULT_RADIO_MODEL_NUMBER,
                 result.getProperties().get(FSInternetRadioBindingConstants.PROPERTY_MODEL));
-    }
-
-    /**
-     * Verify no discovery result for FSInternetRadio device with null details.
-     *
-     * @throws ValidationException
-     */
-    @Test
-    public void noDiscoveryResultIfNullDetails() throws ValidationException {
-        RemoteDevice fsInterntRadioDeviceWithNullDetails = new RemoteDevice(null);
-        assertNull(discoveryParticipant.createResult(fsInterntRadioDeviceWithNullDetails));
     }
 
     /**
@@ -141,7 +129,6 @@ public class FSInternetRadioDiscoveryParticipantJavaTest {
      *
      * @throws ValidationException
      */
-    @SuppressWarnings("null")
     @Test
     public void validDiscoveryResultIfWithoutBaseUrl() throws ValidationException {
         RemoteDevice fsInternetRadioDeviceWithoutUrl = createDefaultFSInternetRadioDevice(null);

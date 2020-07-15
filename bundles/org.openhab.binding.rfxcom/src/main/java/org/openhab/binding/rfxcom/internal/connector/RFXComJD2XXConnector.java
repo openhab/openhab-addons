@@ -14,7 +14,6 @@ package org.openhab.binding.rfxcom.internal.connector;
 
 import java.io.IOException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.slf4j.Logger;
@@ -77,11 +76,19 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
 
         if (out != null) {
             logger.debug("Close serial out stream");
-            IOUtils.closeQuietly(out);
+            try {
+                out.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the out stream: {}", e.getMessage());
+            }
         }
         if (in != null) {
             logger.debug("Close serial in stream");
-            IOUtils.closeQuietly(in);
+            try {
+                in.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the in stream: {}", e.getMessage());
+            }
         }
 
         if (serialPort != null) {
@@ -89,7 +96,7 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
             try {
                 serialPort.close();
             } catch (IOException e) {
-                logger.warn("Serial port closing error", e);
+                logger.debug("Serial port closing error: {}", e.getMessage());
             }
         }
 
@@ -99,7 +106,6 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
         in = null;
 
         logger.debug("Closed");
-
     }
 
     @Override

@@ -30,16 +30,23 @@ import org.openhab.binding.jeelink.internal.config.JeeLinkSensorConfig;
  */
 public abstract class JeeLinkSensorHandler<R extends Reading> extends BaseThingHandler implements ReadingHandler<R> {
     protected String id;
+    protected final String sensorType;
 
     private ReadingPublisher<R> publisher;
     private long secsSinceLastReading;
     private ScheduledFuture<?> statusUpdateJob;
 
-    public JeeLinkSensorHandler(Thing thing) {
+    public JeeLinkSensorHandler(Thing thing, String sensorType) {
         super(thing);
+        this.sensorType = sensorType;
     }
 
     public abstract ReadingPublisher<R> createPublisher();
+
+    @Override
+    public String getSensorType() {
+        return sensorType;
+    }
 
     @Override
     public void handleReading(R r) {

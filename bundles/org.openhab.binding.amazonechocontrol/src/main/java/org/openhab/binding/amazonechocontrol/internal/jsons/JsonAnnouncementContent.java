@@ -31,12 +31,10 @@ public class JsonAnnouncementContent {
     public static class Display {
         public @Nullable String title;
         public @Nullable String body;
-
     }
 
     public static class Speak {
         public String type = "text";
         public @Nullable String value;
-
     }
 }

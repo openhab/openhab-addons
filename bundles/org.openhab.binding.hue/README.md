@@ -75,11 +75,13 @@ hue:0210:00178810d0dc:1
 
 The thing type is the second string behind the first colon and in this example it is **0210**.
 
+Finally, the Hue binding also supports the groups of lights and rooms set up on the Hue bridge.
+
 ## Discovery
 
 The Hue bridge is discovered through UPnP in the local network.
 Once it is added as a Thing, its authentication button (in the middle) needs to be pressed in order to authorize the binding to access it.
-Once the binding is authorized, it automatically reads all devices that are set up on the Hue bridge and puts them into the Inbox.
+Once the binding is authorized, it automatically reads all devices and groups that are set up on the Hue bridge and puts them into the Inbox.
 
 ## Thing Configuration
 
@@ -92,7 +94,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ]
 
 A user to authenticate against the Hue bridge is automatically generated.
 Please note that the generated user name cannot be written automatically to the `.thing` file, and has to be set manually.
-The generated user name can be found in the log files after pressing the authentication button on the bridge.
+The generated user name can be found, after pressing the authentication button on the bridge, with the following console command: `hue <bridgeUID> username`.
 The user name can be set using the `userName` configuration value, e.g.:
 
 ```
@@ -105,7 +107,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", userName="qwertzuiopasdfghjklyxc
 | port                  |  Port of the Hue bridge. Optional, default value is 80 or 443, derived from protocol, otherwise user-defined.                                                                                                                            |
 | userName              | Name of a registered Hue bridge user, that allows to access the API. **Mandatory**                                                                                                                                                       |
 | pollingInterval       | Seconds between fetching light values from the Hue bridge. Optional, the default value is 10 (min="1", step="1").                                                                                                                        |
-| sensorPollingInterval | Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the bridge. Optional, the default value is 500 (min="50", step="1"). |
+| sensorPollingInterval | Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the bridge. Optional, the default value is 500. Default value will be considered if the value is lower than 50. Use 0 to disable the polling for sensors. |
 
 ### Devices
 
@@ -138,16 +140,36 @@ The following device types also have an optional configuration value to specify 
 | fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
 
 
+### Groups
+
+The groups are identified by the number that the Hue bridge assigns to them.
+Thus, all it needs for manual configuration is this single value like
+
+```
+group kitchen-bulbs "Kitchen Lamps" @ "Kitchen" [ groupId="1" ]
+```
+
+You can freely choose the thing identifier (such as kitchen-bulbs), its name (such as "Kitchen Lamps") and the location (such as "Kitchen").
+The name will then be used e.g. by Paper UI to show the item.
+
+The group type also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state.
+
+| Parameter | Description                                                                   |
+|-----------|-------------------------------------------------------------------------------|
+| groupId   | Number of the group provided by the Hue bridge. **Mandatory**                 |
+| fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
+
+
 ## Channels
 
 The devices support some of the following channels:
 
 | Channel Type ID   | Item Type          | Description                                                                                                                             | Thing types supporting this channel |
 |-------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------|
-| switch            | Switch             | This channel supports switching the device on and off.                                                                                  | 0000, 0010                          |
-| color             | Color              | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210                          |
-| brightness        | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220                    |
-| color_temperature | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220                          |
+| switch            | Switch             | This channel supports switching the device on and off.                                                                                  | 0000, 0010, group                   |
+| color             | Color              | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210, group                   |
+| brightness        | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220, group             |
+| color_temperature | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220, group                   |
 | alert             | String             | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220        |
 | effect            | Switch             | This channel supports color looping.                                                                                                    | 0200, 0210, 0220                    |
 | dimmer_switch     | Number             | This channel shows which button was last pressed on the dimmer switch.                                                                  | 0820                                |
@@ -160,8 +182,12 @@ The devices support some of the following channels:
 | flag              | Switch             | This channel save flag state for a CLIP sensor.                                                                                         | 0850                                |
 | status            | Number             | This channel save status state for a CLIP sensor.                                                                                       | 0840                                |
 | last_updated      | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302|
-| battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302             |
-| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302             |
+| battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302              |
+| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302              |
+| scene             | String             | This channel activates the scene with the given ID String. The ID String of each scene is assigned by the Hue bridge.                   | bridge, group |
+
+To load a hue scene inside a rule for example, the ID of the scene will be required.
+You can list all the scene IDs with the following console commands: `hue <bridgeUID> scenes` and `hue <groupThingUID> scenes`.
 
 ### Trigger Channels
 
@@ -236,12 +262,13 @@ And there is one Hue Motion Sensor (represented by three devices) and a Hue Dimm
 
 ```
 Bridge hue:bridge:1         "Hue Bridge"                    [ ipAddress="192.168.0.64" ] {
-    0210 bulb1              "Lamp 1"        @ "Kitchen"     [ lightId="1" ]
-    0220 bulb2              "Lamp 2"        @ "Kitchen"     [ lightId="2" ]
-    0106 light-level-sensor "Light-Sensor"  @ "Entrance"    [ sensorId="3" ]
-    0107 motion-sensor      "Motion-Sensor" @ "Entrance"    [ sensorId="4" ]
-    0302 temperature-sensor "Temp-Sensor"   @ "Entrance"    [ sensorId="5" ]
-    0820 dimmer-switch      "Dimmer-Switch" @ "Entrance"    [ sensorId="6" ]
+    0210  bulb1              "Lamp 1"        @ "Kitchen"    [ lightId="1" ]
+    0220  bulb2              "Lamp 2"        @ "Kitchen"    [ lightId="2" ]
+    group kitchen-bulbs      "Kitchen Lamps" @ "Kitchen"    [ groupId="1" ]
+    0106  light-level-sensor "Light-Sensor"  @ "Entrance"   [ sensorId="3" ]
+    0107  motion-sensor      "Motion-Sensor" @ "Entrance"   [ sensorId="4" ]
+    0302  temperature-sensor "Temp-Sensor"   @ "Entrance"   [ sensorId="5" ]
+    0820  dimmer-switch      "Dimmer-Switch" @ "Entrance"   [ sensorId="6" ]
 }
 ```
 
@@ -261,6 +288,12 @@ Switch  Light2_Toggle       { channel="hue:0220:1:bulb2:brightness" }
 Dimmer  Light2_Dimmer       { channel="hue:0220:1:bulb2:brightness" }
 Dimmer  Light2_ColorTemp    { channel="hue:0220:1:bulb2:color_temperature" }
 
+// Kitchen
+Switch  Kitchen_Switch      { channel="hue:group:1:kitchen-bulbs:switch" }
+Dimmer  Kitchen_Dimmer      { channel="hue:group:1:kitchen-bulbs:brightness" }
+Color   Kitchen_Color       { channel="hue:group:1:kitchen-bulbs:color" }
+Dimmer  Kitchen_ColorTemp   { channel="hue:group:1:kitchen-bulbs:color_temperature" }
+
 // Light Level Sensor
 Number:Illuminance LightLevelSensorIlluminance { channel="hue:0106:1:light-level-sensor:illuminance" }
 
@@ -271,7 +304,10 @@ Number   MotionSensorBatteryLevel { channel="hue:0107:1:motion-sensor:battery_le
 Switch   MotionSensorLowBattery   { channel="hue:0107:1:motion-sensor:battery_low" }
 
 // Temperature Sensor
-Number:Temperature TemperatureSensorTemperature { channel="hue:0302:temperature-sensor:temperature" }
+Number:Temperature TemperatureSensorTemperature { channel="hue:0302:1:temperature-sensor:temperature" }
+
+// Scenes
+String LightScene { channel="hue:bridge:1:scene"}
 ```
 
 Note: The bridge ID is in this example **1** but can be different in each system.
@@ -296,11 +332,20 @@ sitemap demo label="Main Menu"
         Slider      item=       Light2_Dimmer
         Slider      item=       Light2_ColorTemp
 
+        // Kitchen
+        Switch      item=       Kitchen_Switch
+        Slider      item=       Kitchen_Dimmer
+        Colorpicker item=       Kitchen_Color
+        Slider      item=       Kitchen_ColorTemp
+
         // Motion Sensor
         Switch item=MotionSensorPresence
         Text item=MotionSensorLastUpdate
         Text item=MotionSensorBatteryLevel
         Switch item=MotionSensorLowBattery
+
+        // Light Scenes
+        Default item=LightScene label="Scene []"
     }
 }
 ```

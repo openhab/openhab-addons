@@ -40,7 +40,7 @@ public class IntegraStateCommand extends SatelCommandBase {
      * Constructs new command instance for specified type of state.
      *
      * @param stateType type of state
-     * @param extended  if <code>true</code> command will be sent as extended (256 zones or outputs)
+     * @param extended if <code>true</code> command will be sent as extended (256 zones or outputs)
      */
     public IntegraStateCommand(StateType stateType, boolean extended) {
         super(stateType.getRefreshCommand(), extended);
@@ -55,30 +55,19 @@ public class IntegraStateCommand extends SatelCommandBase {
     }
 
     @Override
-    public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
-        if (super.handleResponse(eventDispatcher, response)) {
-            // dispatch event
-            eventDispatcher
-                    .dispatchEvent(new IntegraStateEvent(response.getCommand(), response.getPayload(), isExtended()));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != this.stateType.getRefreshCommand()) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length != this.stateType.getPayloadLength(isExtended())) {
-            logger.debug("Invalid payload length for this state type {}: {}", this.stateType,
-                    response.getPayload().length);
+            logger.debug("Invalid payload length for state type {}: {}", this.stateType, response.getPayload().length);
             return false;
         }
         return true;
     }
 
+    @Override
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+        // dispatch event
+        eventDispatcher.dispatchEvent(
+                new IntegraStateEvent(getResponse().getCommand(), getResponse().getPayload(), isExtended()));
+    }
 }

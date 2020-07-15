@@ -21,6 +21,7 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Initial contribution
  *
  */
+@NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
@@ -54,7 +56,7 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(@Nullable ServiceInfo service) {
+    public @Nullable ThingUID getThingUID(@Nullable ServiceInfo service) {
         if (service == null) {
             return null;
         }
@@ -64,9 +66,9 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.trace("mDNS Could not identify Type / Device Id from '{}'", service.getName());
             return null;
         }
-        int did;
+        long did;
         try {
-            did = Integer.parseUnsignedInt(id[1]);
+            did = Long.parseUnsignedLong(id[1]);
         } catch (Exception e) {
             logger.trace("mDNS Could not identify Device ID from '{}'", id[1]);
             return null;
@@ -77,7 +79,7 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
         return new ThingUID(thingType, uidName);
     }
 
-    private InetAddress getIpAddress(ServiceInfo service) {
+    private @Nullable InetAddress getIpAddress(ServiceInfo service) {
         InetAddress address = null;
         for (InetAddress addr : service.getInet4Addresses()) {
             return addr;
@@ -90,7 +92,7 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public DiscoveryResult createResult(ServiceInfo service) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         DiscoveryResult result = null;
         ThingUID uid = getThingUID(service);
         if (uid != null) {
@@ -105,8 +107,8 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ") " + service.getName();
             properties.put(PROPERTY_HOST_IP, inetAddress);
             properties.put(PROPERTY_DID, id);
-            result = DiscoveryResultBuilder.create(uid).withProperties(properties).withRepresentationProperty(id)
-                    .withLabel(label).build();
+            result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withRepresentationProperty(PROPERTY_DID).withLabel(label).build();
             logger.debug("Mi IO mDNS Discovery found {} with address '{}:{}' name '{}'", uid, inetAddress,
                     service.getPort(), label);
         }

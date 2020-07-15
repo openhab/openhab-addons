@@ -100,7 +100,8 @@ public class A5_38_08_Dimming extends _4BSMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc, Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
+            Configuration config) {
         switch (channelId) {
             case CHANNEL_DIMMER:
                 if (!getBit(getDB_0(), 0)) {
@@ -111,10 +112,10 @@ public class A5_38_08_Dimming extends _4BSMessage {
                     int dimmValue = getDB_2Value();
 
                     EnOceanChannelDimmerConfig c = config.as(EnOceanChannelDimmerConfig.class);
-                    
-                    // if Standard dimmer and Dimming Range is absolute (DB0.2==0), 
-                    if (!c.eltakoDimmer && !getBit(getDB_0(),2)) {
-                        //  map range [0...255] to [0%...100%]
+
+                    // if Standard dimmer and Dimming Range is absolute (DB0.2==0),
+                    if (!c.eltakoDimmer && !getBit(getDB_0(), 2)) {
+                        // map range [0...255] to [0%...100%]
                         dimmValue /= 2.55;
                     }
 

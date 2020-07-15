@@ -23,5 +23,4 @@ public class TileHPositionCommand extends BasePercentCommand {
     protected TileHPositionCommand(int setId) {
         super('d', 'e', setId);
     }
-
 }

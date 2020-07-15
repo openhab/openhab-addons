@@ -29,11 +29,7 @@ class NhcMessage2 {
         @Nullable
         List<NhcSystemInfo2> systemInfo;
         @Nullable
-        List<NhcProfile2> profiles;
-        @Nullable
         List<NhcService2> services;
-        @Nullable
-        List<NhcLocation2> locations;
         @Nullable
         List<NhcDevice2> devices;
         @Nullable

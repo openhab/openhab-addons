@@ -41,5 +41,4 @@ public class PowermaxTimeoutMessage extends PowermaxBaseMessage {
 
         return null;
     }
-
 }

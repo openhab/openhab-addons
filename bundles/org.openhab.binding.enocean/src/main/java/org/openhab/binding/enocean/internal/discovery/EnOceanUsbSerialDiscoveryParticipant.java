@@ -38,8 +38,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = UsbSerialDiscoveryParticipant.class)
 public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryParticipant {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_BRIDGE));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE));
 
     public static final int ENOCEAN_USB300_DONGLE_VENDOR_ID = 0x0403;
     public static final int ENOCEAN_USB300_DONGLE_PRODUCT_ID = 0x6001;
@@ -99,5 +98,4 @@ public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryP
             return ENOCEAN_USB300_DONGLE_DEFAULT_LABEL;
         }
     }
-
 }

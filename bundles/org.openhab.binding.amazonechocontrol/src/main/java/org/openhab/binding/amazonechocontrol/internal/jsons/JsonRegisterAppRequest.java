@@ -15,53 +15,65 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link JsonRegisterApp} encapsulate the GSON data of register application request
+ * The {@link JsonRegisterAppRequest} encapsulate the GSON data of register application request
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
 public class JsonRegisterAppRequest {
 
-    public JsonRegisterAppRequest(String serial, String access_token, String frc, JsonWebSiteCookie[] webSiteCookies) {
-        registration_data.device_serial = serial;
-        auth_data.access_token = access_token;
-        user_context_map.frc = frc;
-        cookies.website_cookies = webSiteCookies;
+    public JsonRegisterAppRequest(String serial, String accessToken, String frc, JsonWebSiteCookie[] webSiteCookies) {
+        registrationData.deviceSerial = serial;
+        authData.accessToken = accessToken;
+        userContextMap.frc = frc;
+        cookies.webSiteCookies = webSiteCookies;
     }
 
-    public String[] requested_extensions = { "device_info", "customer_info" };
+    @SerializedName("requested_extensions")
+    public String[] requestedExtensions = { "device_info", "customer_info" };
 
     public Cookies cookies = new Cookies();
-    public RegistrationData registration_data = new RegistrationData();
-    public AuthData auth_data = new AuthData();
-    public UserContextMap user_context_map = new UserContextMap();
-    public String[] requested_token_type = { "bearer", "mac_dms", "website_cookies" };
+    @SerializedName("registration_data")
+    public RegistrationData registrationData = new RegistrationData();
+    @SerializedName("auth_data")
+    public AuthData authData = new AuthData();
+    @SerializedName("user_context_map")
+    public UserContextMap userContextMap = new UserContextMap();
+    @SerializedName("requested_token_type")
+    public String[] requestedTokenType = { "bearer", "mac_dms", "website_cookies" };
 
     public static class Cookies {
-        @Nullable
-        public JsonWebSiteCookie @Nullable [] website_cookies;
-        @Nullable
-        public String domain = ".amazon.com";
-
+        @SerializedName("website_cookies")
+        public @Nullable JsonWebSiteCookie @Nullable [] webSiteCookies;
+        public @Nullable String domain = ".amazon.com";
     }
 
     public static class RegistrationData {
         public String domain = "Device";
-        public String app_version = "2.2.223830.0";
-        public String device_type = "A2IVLV5VM2W81";
-        public String device_name = "%FIRST_NAME%'s%DUPE_STRATEGY_1ST%Open HAB Alexa Binding";
-        public String os_version = "11.4.1";
-        @Nullable
-        public String device_serial;
-        public String device_model = "iPhone";
-        public String app_name = "Open HAB Alexa Binding";// Amazon Alexa";
-        public String software_version = "1";
+        @SerializedName("app_version")
+        public String appVersion = "2.2.223830.0";
+        @SerializedName("device_type")
+        public String deviceType = "A2IVLV5VM2W81";
+        @SerializedName("device_name")
+        public String deviceName = "%FIRST_NAME%'s%DUPE_STRATEGY_1ST%openHAB Alexa Binding";
+        @SerializedName("os_version")
+        public String osVersion = "11.4.1";
+        @SerializedName("device_serial")
+        public @Nullable String deviceSerial;
+        @SerializedName("device_model")
+        public String deviceModel = "iPhone";
+        @SerializedName("app_name")
+        public String appName = "openHAB Alexa Binding";
+        @SerializedName("software_version")
+        public String softwareVersion = "1";
     }
 
     public static class AuthData {
-        @Nullable
-        public String access_token;
+        @SerializedName("access_token")
+        public @Nullable String accessToken;
     }
 
     public static class UserContextMap {

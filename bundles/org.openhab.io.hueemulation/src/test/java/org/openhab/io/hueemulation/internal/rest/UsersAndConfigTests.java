@@ -122,7 +122,6 @@ public class UsersAndConfigTests {
 
     @Test
     public void UnauthorizedAccessTest() {
-
         // Unauthorized config
         Response response;
         response = commonSetup.client.target(commonSetup.basePath + "/config").request().get();
@@ -137,5 +136,4 @@ public class UsersAndConfigTests {
         assertThat(response.getStatus(), is(403));
         assertThat(response.readEntity(String.class), containsString("error"));
     }
-
 }

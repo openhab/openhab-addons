@@ -64,7 +64,6 @@ public class A5_38_08_Blinds extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command outputCommand,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
                 byte db0 = ZERO | SEND_NEW_STATE | TeachInBit;
@@ -148,7 +147,8 @@ public class A5_38_08_Blinds extends _4BSMessage {
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc, Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
+            Configuration config) {
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
                 return getPositionData();

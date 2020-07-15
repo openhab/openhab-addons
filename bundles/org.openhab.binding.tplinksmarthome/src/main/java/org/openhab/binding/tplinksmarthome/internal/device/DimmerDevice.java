@@ -65,6 +65,11 @@ public class DimmerDevice extends SwitchDevice {
             if (percentCommand.intValue() > 0) {
                 response = commands.setDimmerBrightnessResponse(
                         connection.sendCommand(commands.setDimmerBrightness(percentCommand.intValue())));
+                checkErrors(response);
+                if (response == null) {
+                    return false;
+                }
+                response = setOnOffState(channelUid, OnOffType.ON);
             } else {
                 response = setOnOffState(channelUid, OnOffType.OFF);
             }

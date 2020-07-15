@@ -17,12 +17,6 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -49,6 +43,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOParticipant;
 import org.eclipse.smarthome.io.transport.upnp.UpnpIOService;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
@@ -74,9 +69,9 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION)
             .collect(Collectors.toSet());
 
-    private Map<String, Boolean> subscriptionState = new HashMap<String, Boolean>();
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
-    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<String, String>());
+    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     // protected static final int SUBSCRIPTION_DURATION = WemoBindingConstants.SUBSCRIPTION_DURATION;
 
@@ -388,7 +383,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     service.removeSubscription(this, subscription);
                 }
             }
-            subscriptionState = new HashMap<String, Boolean>();
+            subscriptionState = new HashMap<>();
             service.unregisterParticipant(this);
         }
     }
@@ -480,24 +475,23 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 }
             }
             wemoURL = "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
+            logger.trace("WeMo url {}", wemoURL);
             return wemoURL;
         }
         return wemoURL;
     }
 
-    public boolean servicePing(String host, int port) throws IOException {
-        SocketAddress socketAddress = new InetSocketAddress(host, port);
-        try (Socket socket = new Socket()) {
-            logger.trace("Ping WeMo device at '{}'", socketAddress);
-            socket.connect(socketAddress, 250);
-            return true;
-        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
+    public boolean servicePing(String host, int port) {
+        logger.trace("Ping WeMo device at '{}:{}'", host, port);
+        try {
+            HttpUtil.executeUrl("GET", "http://" + host + ":" + port, 250);
+        } catch (IOException e) {
             return false;
         }
+        return true;
     }
 
     @Override
     public void onStatusChanged(boolean status) {
     }
-
 }

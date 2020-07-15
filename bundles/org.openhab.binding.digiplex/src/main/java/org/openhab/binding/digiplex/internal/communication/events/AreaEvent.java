@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.digiplex.internal.communication.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandle
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public class AreaEvent extends AbstractEvent {
 
     private AreaEventType type;

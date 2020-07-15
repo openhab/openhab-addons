@@ -24,7 +24,7 @@ import java.util.List;
 public class SimplePortPool {
     private static int START_PORT = 9125;
 
-    private List<PortInfo> availablePorts = new ArrayList<PortInfo>();
+    private List<PortInfo> availablePorts = new ArrayList<>();
 
     /**
      * Adds the specified port to the pool an mark it as in use.

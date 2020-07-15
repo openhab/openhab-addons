@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.volvooncall.internal.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -31,9 +34,9 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "volvooncall")
 @NonNullByDefault
-public class VolvoOnCallActions implements ThingActions {
+public class VolvoOnCallActions implements ThingActions, IVolvoOnCallActions {
 
-    private final static Logger logger = LoggerFactory.getLogger(VolvoOnCallActions.class);
+    private final Logger logger = LoggerFactory.getLogger(VolvoOnCallActions.class);
 
     private @Nullable VehicleHandler handler;
 
@@ -53,9 +56,11 @@ public class VolvoOnCallActions implements ThingActions {
         return this.handler;
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Close", description = "Closes the car")
     public void closeCarCommand() {
         logger.debug("closeCarCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionClose();
         } else {
@@ -64,16 +69,14 @@ public class VolvoOnCallActions implements ThingActions {
     }
 
     public static void closeCarCommand(@Nullable ThingActions actions) {
-        if (actions instanceof VolvoOnCallActions) {
-            ((VolvoOnCallActions) actions).closeCarCommand();
-        } else {
-            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
-        }
+        invokeMethodOf(actions).closeCarCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Open", description = "Opens the car")
     public void openCarCommand() {
         logger.debug("openCarCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionOpen();
         } else {
@@ -82,16 +85,14 @@ public class VolvoOnCallActions implements ThingActions {
     }
 
     public static void openCarCommand(@Nullable ThingActions actions) {
-        if (actions instanceof VolvoOnCallActions) {
-            ((VolvoOnCallActions) actions).openCarCommand();
-        } else {
-            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
-        }
+        invokeMethodOf(actions).openCarCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Start Engine", description = "Starts the engine")
     public void engineStartCommand(@ActionInput(name = "runtime", label = "Runtime") @Nullable Integer runtime) {
         logger.debug("engineStartCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionStart(runtime != null ? runtime : 5);
         } else {
@@ -100,16 +101,14 @@ public class VolvoOnCallActions implements ThingActions {
     }
 
     public static void engineStartCommand(@Nullable ThingActions actions, @Nullable Integer runtime) {
-        if (actions instanceof VolvoOnCallActions) {
-            ((VolvoOnCallActions) actions).engineStartCommand(runtime);
-        } else {
-            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
-        }
+        invokeMethodOf(actions).engineStartCommand(runtime);
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Heater Start", description = "Starts car heater")
     public void heaterStartCommand() {
         logger.debug("heaterStartCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionHeater(true);
         } else {
@@ -118,16 +117,14 @@ public class VolvoOnCallActions implements ThingActions {
     }
 
     public static void heaterStartCommand(@Nullable ThingActions actions) {
-        if (actions instanceof VolvoOnCallActions) {
-            ((VolvoOnCallActions) actions).heaterStartCommand();
-        } else {
-            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
-        }
+        invokeMethodOf(actions).heaterStartCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Preclimatization Start", description = "Starts car heater")
     public void preclimatizationStartCommand() {
         logger.debug("preclimatizationStartCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionPreclimatization(true);
         } else {
@@ -136,16 +133,14 @@ public class VolvoOnCallActions implements ThingActions {
     }
 
     public static void preclimatizationStartCommand(@Nullable ThingActions actions) {
-        if (actions instanceof VolvoOnCallActions) {
-            ((VolvoOnCallActions) actions).preclimatizationStartCommand();
-        } else {
-            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
-        }
+        invokeMethodOf(actions).preclimatizationStartCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Heater Stop", description = "Stops car heater")
     public void heaterStopCommand() {
         logger.debug("heaterStopCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionHeater(false);
         } else {
@@ -154,16 +149,14 @@ public class VolvoOnCallActions implements ThingActions {
     }
 
     public static void heaterStopCommand(@Nullable ThingActions actions) {
-        if (actions instanceof VolvoOnCallActions) {
-            ((VolvoOnCallActions) actions).heaterStopCommand();
-        } else {
-            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
-        }
+        invokeMethodOf(actions).heaterStopCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Preclimatization Stop", description = "Stops car heater")
     public void preclimatizationStopCommand() {
         logger.debug("preclimatizationStopCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionPreclimatization(false);
         } else {
@@ -172,17 +165,15 @@ public class VolvoOnCallActions implements ThingActions {
     }
 
     public static void preclimatizationStopCommand(@Nullable ThingActions actions) {
-        if (actions instanceof VolvoOnCallActions) {
-            ((VolvoOnCallActions) actions).preclimatizationStopCommand();
-        } else {
-            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
-        }
+        invokeMethodOf(actions).preclimatizationStopCommand();
     }
 
+    @Override
     @RuleAction(label = "Volvo On Call : Honk-blink", description = "Activates the horn and or lights of the car")
     public void honkBlinkCommand(@ActionInput(name = "honk", label = "Honk") Boolean honk,
             @ActionInput(name = "blink", label = "Blink") Boolean blink) {
         logger.debug("honkBlinkCommand called");
+        VehicleHandler handler = this.handler;
         if (handler != null) {
             handler.actionHonkBlink(honk, blink);
         } else {
@@ -191,10 +182,25 @@ public class VolvoOnCallActions implements ThingActions {
     }
 
     public static void honkBlinkCommand(@Nullable ThingActions actions, Boolean honk, Boolean blink) {
-        if (actions instanceof VolvoOnCallActions) {
-            ((VolvoOnCallActions) actions).honkBlinkCommand(honk, blink);
-        } else {
-            throw new IllegalArgumentException("Instance is not an VolvoThingActionsService class.");
+        invokeMethodOf(actions).honkBlinkCommand(honk, blink);
+    }
+
+    private static IVolvoOnCallActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(VolvoOnCallActions.class.getName())) {
+            if (actions instanceof IVolvoOnCallActions) {
+                return (IVolvoOnCallActions) actions;
+            } else {
+                return (IVolvoOnCallActions) Proxy.newProxyInstance(IVolvoOnCallActions.class.getClassLoader(),
+                        new Class[] { IVolvoOnCallActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of VolvoOnCallActions");
     }
 }

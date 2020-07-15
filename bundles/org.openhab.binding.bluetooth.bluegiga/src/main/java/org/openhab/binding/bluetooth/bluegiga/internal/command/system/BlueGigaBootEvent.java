@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.system;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 
 /**
@@ -26,6 +27,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaBootEvent extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x00;
     public static int COMMAND_METHOD = 0x00;
@@ -108,6 +110,7 @@ public class BlueGigaBootEvent extends BlueGigaResponse {
     public int getMajor() {
         return major;
     }
+
     /**
      * Minor software version
      * <p>
@@ -118,6 +121,7 @@ public class BlueGigaBootEvent extends BlueGigaResponse {
     public int getMinor() {
         return minor;
     }
+
     /**
      * Patch ID
      * <p>
@@ -128,6 +132,7 @@ public class BlueGigaBootEvent extends BlueGigaResponse {
     public int getPatch() {
         return patch;
     }
+
     /**
      * Build version
      * <p>
@@ -138,6 +143,7 @@ public class BlueGigaBootEvent extends BlueGigaResponse {
     public int getBuild() {
         return build;
     }
+
     /**
      * Link layer version
      * <p>
@@ -148,6 +154,7 @@ public class BlueGigaBootEvent extends BlueGigaResponse {
     public int getLlVersion() {
         return llVersion;
     }
+
     /**
      * Protocol version
      * <p>
@@ -158,6 +165,7 @@ public class BlueGigaBootEvent extends BlueGigaResponse {
     public int getProtocolVersion() {
         return protocolVersion;
     }
+
     /**
      * Hardware version
      * <p>

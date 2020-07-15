@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.nibeheatpump.internal.models;
 
-import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.NibeDataType;
-import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.Type;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.NibeDataType;
+import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.Type;
 
 /**
  * Class which holds all data variables of F1x55 heat pumps.
@@ -31,7 +31,7 @@ public class F1X55 {
     private static final Map<Integer, VariableInformation> VARIABLE_INFO_F1X55 = Collections
             .unmodifiableMap(new HashMap<Integer, VariableInformation>() {
                 {
-                    // @formatter:off
+            // @formatter:off
                     put(32260, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "NIBE Inverter 216-state"));
                     put(40004, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "BT1 Outdoor Temperature"));
                     put(40005, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EP23-BT2 Supply temp S4"));

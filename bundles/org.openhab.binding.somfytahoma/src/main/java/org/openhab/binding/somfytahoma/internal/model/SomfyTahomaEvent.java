@@ -15,9 +15,10 @@ package org.openhab.binding.somfytahoma.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link SomfyTahomaEvent} holds information about Tahoma

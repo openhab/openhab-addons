@@ -16,26 +16,28 @@ import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -43,17 +45,21 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.hue.internal.ApiVersionUtils;
 import org.openhab.binding.hue.internal.Config;
 import org.openhab.binding.hue.internal.ConfigUpdate;
 import org.openhab.binding.hue.internal.FullConfig;
+import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.HueConfigStatusMessage;
+import org.openhab.binding.hue.internal.Scene;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
+import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.DeviceOffException;
 import org.openhab.binding.hue.internal.exceptions.EntityNotAvailableException;
@@ -76,12 +82,30 @@ import org.slf4j.LoggerFactory;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Samuel Leisering - Added support for sensor API
  * @author Christoph Weitkamp - Added support for sensor API
+ * @author Laurent Garnier - Added support for groups
  */
 @NonNullByDefault
 public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueClient {
 
-    private long lightPollingInterval = TimeUnit.SECONDS.toSeconds(10);
-    private long sensorPollingInterval = TimeUnit.MILLISECONDS.toMillis(500);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+
+    private static final long BYPASS_MIN_DURATION_BEFORE_CMD = 1500L;
+
+    private static final String DEVICE_TYPE = "EclipseSmartHome";
+
+    private static final long SCENE_POLLING_INTERVAL = TimeUnit.SECONDS.convert(10, TimeUnit.MINUTES);
+
+    private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
+    private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
+
+    private final Map<String, @Nullable FullLight> lastLightStates = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable FullSensor> lastSensorStates = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable FullGroup> lastGroupStates = new ConcurrentHashMap<>();
+
+    private @Nullable HueLightDiscoveryService discoveryService;
+    private final Map<String, @Nullable LightStatusListener> lightStatusListeners = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable SensorStatusListener> sensorStatusListeners = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable GroupStatusListener> groupStatusListeners = new ConcurrentHashMap<>();
 
     final ReentrantLock pollingLock = new ReentrantLock();
 
@@ -99,11 +123,16 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 }
                 if (lastBridgeConnectionState) {
                     doConnectedRun();
+                    if (thing.getStatus() != ThingStatus.ONLINE) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 }
             } catch (UnauthorizedException | IllegalStateException e) {
                 if (isReachable(hueBridge.getIPAddress())) {
                     lastBridgeConnectionState = false;
-                    onNotAuthenticated();
+                    if (onNotAuthenticated()) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else if (lastBridgeConnectionState || thing.getStatus() == ThingStatus.INITIALIZING) {
                     lastBridgeConnectionState = false;
                     onConnectionLost();
@@ -122,8 +151,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 pollingLock.unlock();
             }
         }
-
-        protected abstract void doConnectedRun() throws IOException, ApiException;
 
         private boolean isReachable(String ipAddress) {
             try {
@@ -147,76 +174,63 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             }
             return true;
         }
+
+        protected abstract void doConnectedRun() throws IOException, ApiException;
     }
-
-    private static final String STATE_ADDED = "added";
-    private static final String STATE_GONE = "gone";
-    private static final String STATE_CHANGED = "changed";
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
-
-    private static final String DEVICE_TYPE = "EclipseSmartHome";
-
-    private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
-
-    private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
-    private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
-
-    private boolean lastBridgeConnectionState = false;
-
-    private boolean propertiesInitializedSuccessfully = false;
-
-    private final List<LightStatusListener> lightStatusListeners = new CopyOnWriteArrayList<>();
-    private final List<SensorStatusListener> sensorStatusListeners = new CopyOnWriteArrayList<>();
-
-    private @Nullable ScheduledFuture<?> lightPollingJob;
-    private @Nullable ScheduledFuture<?> sensorPollingJob;
-
-    private @NonNullByDefault({}) HueBridge hueBridge = null;
-    private @NonNullByDefault({}) HueBridgeConfig hueBridgeConfig = null;
 
     private final Runnable sensorPollingRunnable = new PollingRunnable() {
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
-            Map<String, FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
+            Map<String, @Nullable FullSensor> lastSensorStateCopy = new HashMap<>(lastSensorStates);
+
+            final HueLightDiscoveryService discovery = discoveryService;
 
             for (final FullSensor sensor : hueBridge.getSensors()) {
                 String sensorId = sensor.getId();
-                if (lastSensorStateCopy.containsKey(sensorId)) {
-                    final FullSensor lastFullSensor = lastSensorStateCopy.remove(sensorId);
-                    final Map<String, Object> lastFullSensorState = lastFullSensor.getState();
-                    lastSensorStates.put(sensorId, sensor);
-                    if (!lastFullSensorState.equals(sensor.getState())) {
-                        logger.debug("Status update for Hue sensor '{}' detected: {}", sensorId, sensor.getState());
-                        notifySensorStatusListeners(sensor, STATE_CHANGED);
-                    }
-                } else {
-                    lastSensorStates.put(sensorId, sensor);
-                    logger.debug("Hue sensor '{}' added.", sensorId);
-                    notifySensorStatusListeners(sensor, STATE_ADDED);
 
+                final SensorStatusListener sensorStatusListener = sensorStatusListeners.get(sensorId);
+                if (sensorStatusListener == null) {
+                    logger.trace("Hue sensor '{}' added.", sensorId);
+
+                    if (discovery != null && !lastSensorStateCopy.containsKey(sensorId)) {
+                        discovery.addSensorDiscovery(sensor);
+                    }
+
+                    lastSensorStates.put(sensorId, sensor);
+                } else {
+                    if (sensorStatusListener.onSensorStateChanged(sensor)) {
+                        lastSensorStates.put(sensorId, sensor);
+                    }
                 }
+                lastSensorStateCopy.remove(sensorId);
             }
 
             // Check for removed sensors
-            for (Entry<String, FullSensor> fullSensorEntry : lastSensorStateCopy.entrySet()) {
-                lastSensorStates.remove(fullSensorEntry.getKey());
-                logger.debug("Hue sensor '{}' removed.", fullSensorEntry.getKey());
-                for (SensorStatusListener sensorStatusListener : sensorStatusListeners) {
-                    try {
-                        sensorStatusListener.onSensorRemoved(hueBridge, fullSensorEntry.getValue());
-                    } catch (Exception e) {
-                        logger.error("An exception occurred while calling the Sensor Listeners", e);
-                    }
+            lastSensorStateCopy.forEach((sensorId, sensor) -> {
+                logger.trace("Hue sensor '{}' removed.", sensorId);
+                lastSensorStates.remove(sensorId);
+
+                final SensorStatusListener sensorStatusListener = sensorStatusListeners.get(sensorId);
+                if (sensorStatusListener != null) {
+                    sensorStatusListener.onSensorRemoved();
                 }
-            }
+
+                if (discovery != null && sensor != null) {
+                    discovery.removeSensorDiscovery(sensor);
+                }
+            });
         }
     };
 
     private final Runnable lightPollingRunnable = new PollingRunnable() {
         @Override
         protected void doConnectedRun() throws IOException, ApiException {
-            Map<String, FullLight> lastLightStateCopy = new HashMap<>(lastLightStates);
+            updateLights();
+            updateGroups();
+        }
+
+        private void updateLights() throws IOException, ApiException {
+            Map<String, @Nullable FullLight> lastLightStateCopy = new HashMap<>(lastLightStates);
 
             List<FullLight> lights;
             if (ApiVersionUtils.supportsFullLights(hueBridge.getVersion())) {
@@ -225,62 +239,203 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 lights = hueBridge.getFullConfig().getLights();
             }
 
+            final HueLightDiscoveryService discovery = discoveryService;
+
             for (final FullLight fullLight : lights) {
                 final String lightId = fullLight.getId();
-                if (lastLightStateCopy.containsKey(lightId)) {
-                    final FullLight lastFullLight = lastLightStateCopy.remove(lightId);
-                    final State lastFullLightState = lastFullLight.getState();
-                    lastLightStates.put(lightId, fullLight);
-                    if (!isEqual(lastFullLightState, fullLight.getState())) {
-                        logger.debug("Status update for Hue light '{}' detected.", lightId);
-                        notifyLightStatusListeners(fullLight, STATE_CHANGED);
+
+                final LightStatusListener lightStatusListener = lightStatusListeners.get(lightId);
+                if (lightStatusListener == null) {
+                    logger.trace("Hue light '{}' added.", lightId);
+
+                    if (discovery != null && !lastLightStateCopy.containsKey(lightId)) {
+                        discovery.addLightDiscovery(fullLight);
                     }
-                } else {
+
                     lastLightStates.put(lightId, fullLight);
-                    logger.debug("Hue light '{}' added.", lightId);
-                    notifyLightStatusListeners(fullLight, STATE_ADDED);
+                } else {
+                    if (lightStatusListener.onLightStateChanged(fullLight)) {
+                        lastLightStates.put(lightId, fullLight);
+                    }
                 }
+                lastLightStateCopy.remove(lightId);
             }
 
             // Check for removed lights
-            for (Entry<String, FullLight> fullLightEntry : lastLightStateCopy.entrySet()) {
-                lastLightStates.remove(fullLightEntry.getKey());
-                logger.debug("Hue light '{}' removed.", fullLightEntry.getKey());
-                for (LightStatusListener lightStatusListener : lightStatusListeners) {
-                    try {
-                        lightStatusListener.onLightRemoved(hueBridge, fullLightEntry.getValue());
-                    } catch (Exception e) {
-                        logger.error("An exception occurred while calling the BridgeHeartbeatListener", e);
+            lastLightStateCopy.forEach((lightId, light) -> {
+                logger.trace("Hue light '{}' removed.", lightId);
+                lastLightStates.remove(lightId);
+
+                final LightStatusListener lightStatusListener = lightStatusListeners.get(lightId);
+                if (lightStatusListener != null) {
+                    lightStatusListener.onLightRemoved();
+                }
+
+                if (discovery != null && light != null) {
+                    discovery.removeLightDiscovery(light);
+                }
+            });
+        }
+
+        private void updateGroups() throws IOException, ApiException {
+            Map<String, @Nullable FullGroup> lastGroupStateCopy = new HashMap<>(lastGroupStates);
+
+            List<FullGroup> groups = hueBridge.getGroups();
+
+            final HueLightDiscoveryService discovery = discoveryService;
+
+            for (final FullGroup fullGroup : groups) {
+                State groupState = new State();
+                boolean on = false;
+                int sumBri = 0;
+                int nbBri = 0;
+                State colorRef = null;
+                HSBType firstColorHsb = null;
+                for (String lightId : fullGroup.getLightIds()) {
+                    FullLight light = lastLightStates.get(lightId);
+                    if (light != null) {
+                        final State lightState = light.getState();
+                        logger.trace("Group {}: light {}: on {} bri {} hue {} sat {} temp {} mode {} XY {}",
+                                fullGroup.getName(), light.getName(), lightState.isOn(), lightState.getBrightness(),
+                                lightState.getHue(), lightState.getSaturation(), lightState.getColorTemperature(),
+                                lightState.getColorMode(), lightState.getXY());
+                        if (lightState.isOn()) {
+                            on = true;
+                            sumBri += lightState.getBrightness();
+                            nbBri++;
+                            if (lightState.getColorMode() != null) {
+                                HSBType lightHsb = LightStateConverter.toHSBType(lightState);
+                                if (firstColorHsb == null) {
+                                    // first color light
+                                    firstColorHsb = lightHsb;
+                                    colorRef = lightState;
+                                } else if (!lightHsb.equals(firstColorHsb)) {
+                                    colorRef = null;
+                                }
+                            }
+                        }
                     }
                 }
+                groupState.setOn(on);
+                groupState.setBri(nbBri == 0 ? 0 : sumBri / nbBri);
+                if (colorRef != null) {
+                    groupState.setColormode(colorRef.getColorMode());
+                    groupState.setHue(colorRef.getHue());
+                    groupState.setSaturation(colorRef.getSaturation());
+                    groupState.setColorTemperature(colorRef.getColorTemperature());
+                    groupState.setXY(colorRef.getXY());
+                }
+                fullGroup.setState(groupState);
+                logger.trace("Group {} ({}): on {} bri {} hue {} sat {} temp {} mode {} XY {}", fullGroup.getName(),
+                        fullGroup.getType(), groupState.isOn(), groupState.getBrightness(), groupState.getHue(),
+                        groupState.getSaturation(), groupState.getColorTemperature(), groupState.getColorMode(),
+                        groupState.getXY());
+
+                String groupId = fullGroup.getId();
+
+                final GroupStatusListener groupStatusListener = groupStatusListeners.get(groupId);
+                if (groupStatusListener == null) {
+                    logger.trace("Hue group '{}' ({}) added (nb lights {}).", groupId, fullGroup.getName(),
+                            fullGroup.getLightIds().size());
+
+                    if (discovery != null && !lastGroupStateCopy.containsKey(groupId)) {
+                        discovery.addGroupDiscovery(fullGroup);
+                    }
+
+                    lastGroupStates.put(groupId, fullGroup);
+                } else {
+                    if (groupStatusListener.onGroupStateChanged(fullGroup)) {
+                        lastGroupStates.put(groupId, fullGroup);
+                    }
+                }
+                lastGroupStateCopy.remove(groupId);
             }
+
+            // Check for removed groups
+            lastGroupStateCopy.forEach((groupId, group) -> {
+                logger.trace("Hue group '{}' removed.", groupId);
+                lastGroupStates.remove(groupId);
+
+                final GroupStatusListener groupStatusListener = groupStatusListeners.get(groupId);
+                if (groupStatusListener != null) {
+                    groupStatusListener.onGroupRemoved();
+                }
+
+                if (discovery != null && group != null) {
+                    discovery.removeGroupDiscovery(group);
+                }
+            });
         }
     };
 
-    public HueBridgeHandler(Bridge bridge) {
+    private final Runnable scenePollingRunnable = new PollingRunnable() {
+        @Override
+        protected void doConnectedRun() throws IOException, ApiException {
+            List<Scene> scenes = hueBridge.getScenes();
+            logger.trace("Scenes detected: {}", scenes);
+
+            setBridgeSceneChannelStateOptions(scenes, lastGroupStates);
+            notifyGroupSceneUpdate(scenes);
+        }
+
+        private void setBridgeSceneChannelStateOptions(List<Scene> scenes, Map<String, @Nullable FullGroup> groups) {
+            Map<String, String> groupNames = groups.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getName()));
+            List<StateOption> stateOptions = scenes.stream().map(scene -> scene.toStateOption(groupNames))
+                    .collect(Collectors.toList());
+            stateDescriptionOptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SCENE),
+                    stateOptions);
+            consoleScenesList = scenes.stream().map(scene -> "Id is \"" + scene.getId() + "\" for scene \""
+                    + scene.toStateOption(groupNames).getLabel() + "\"").collect(Collectors.toList());
+        }
+    };
+
+    private boolean lastBridgeConnectionState = false;
+
+    private boolean propertiesInitializedSuccessfully = false;
+
+    private @Nullable Future<?> initJob;
+    private @Nullable ScheduledFuture<?> lightPollingJob;
+    private @Nullable ScheduledFuture<?> sensorPollingJob;
+    private @Nullable ScheduledFuture<?> scenePollingJob;
+
+    private @NonNullByDefault({}) HueBridge hueBridge = null;
+    private @NonNullByDefault({}) HueBridgeConfig hueBridgeConfig = null;
+
+    private List<String> consoleScenesList = new ArrayList<>();
+
+    public HueBridgeHandler(Bridge bridge, HueStateDescriptionOptionProvider stateDescriptionOptionProvider) {
         super(bridge);
+        this.stateDescriptionOptionProvider = stateDescriptionOptionProvider;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // not needed
+        if (CHANNEL_SCENE.equals(channelUID.getId()) && command instanceof StringType) {
+            recallScene(command.toString());
+        }
     }
 
     @Override
-    public void updateLightState(FullLight light, StateUpdate stateUpdate) {
+    public void updateLightState(LightStatusListener listener, FullLight light, StateUpdate stateUpdate,
+            long fadeTime) {
         if (hueBridge != null) {
+            listener.setPollBypass(BYPASS_MIN_DURATION_BEFORE_CMD);
             hueBridge.setLightState(light, stateUpdate).thenAccept(result -> {
                 try {
                     hueBridge.handleErrors(result);
+                    listener.setPollBypass(fadeTime);
                 } catch (Exception e) {
-                    handleStateUpdateException(light, stateUpdate, e);
+                    listener.unsetPollBypass();
+                    handleLightUpdateException(listener, light, stateUpdate, fadeTime, e);
                 }
             }).exceptionally(e -> {
-                handleStateUpdateException(light, stateUpdate, e);
+                listener.unsetPollBypass();
+                handleLightUpdateException(listener, light, stateUpdate, fadeTime, e);
                 return null;
             });
         } else {
-            logger.warn("No bridge connected or selected. Cannot set light state.");
+            logger.debug("No bridge connected or selected. Cannot set light state.");
         }
     }
 
@@ -291,14 +446,14 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 try {
                     hueBridge.handleErrors(result);
                 } catch (Exception e) {
-                    handleStateUpdateException(sensor, stateUpdate, e);
+                    handleSensorUpdateException(sensor, e);
                 }
             }).exceptionally(e -> {
-                handleStateUpdateException(sensor, stateUpdate, e);
+                handleSensorUpdateException(sensor, e);
                 return null;
             });
         } else {
-            logger.warn("No bridge connected or selected. Cannot set sensor state.");
+            logger.debug("No bridge connected or selected. Cannot set sensor state.");
         }
     }
 
@@ -309,113 +464,204 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 try {
                     hueBridge.handleErrors(result);
                 } catch (Exception e) {
-                    handleConfigUpdateException(sensor, configUpdate, e);
+                    handleSensorUpdateException(sensor, e);
                 }
             }).exceptionally(e -> {
-                handleConfigUpdateException(sensor, configUpdate, e);
+                handleSensorUpdateException(sensor, e);
                 return null;
             });
         } else {
-            logger.warn("No bridge connected or selected. Cannot set sensor config.");
+            logger.debug("No bridge connected or selected. Cannot set sensor config.");
         }
     }
 
-    private void handleStateUpdateException(FullLight light, StateUpdate stateUpdate, Throwable e) {
+    @Override
+    public void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime) {
+        if (hueBridge != null) {
+            setGroupPollBypass(group, BYPASS_MIN_DURATION_BEFORE_CMD);
+            hueBridge.setGroupState(group, stateUpdate).thenAccept(result -> {
+                try {
+                    hueBridge.handleErrors(result);
+                    setGroupPollBypass(group, fadeTime);
+                } catch (Exception e) {
+                    unsetGroupPollBypass(group);
+                    handleGroupUpdateException(group, e);
+                }
+            }).exceptionally(e -> {
+                unsetGroupPollBypass(group);
+                handleGroupUpdateException(group, e);
+                return null;
+            });
+        } else {
+            logger.debug("No bridge connected or selected. Cannot set group state.");
+        }
+    }
+
+    private void setGroupPollBypass(FullGroup group, long bypassTime) {
+        group.getLightIds().forEach((lightId) -> {
+            final LightStatusListener listener = lightStatusListeners.get(lightId);
+            if (listener != null) {
+                listener.setPollBypass(bypassTime);
+            }
+        });
+    }
+
+    private void unsetGroupPollBypass(FullGroup group) {
+        group.getLightIds().forEach((lightId) -> {
+            final LightStatusListener listener = lightStatusListeners.get(lightId);
+            if (listener != null) {
+                listener.unsetPollBypass();
+            }
+        });
+    }
+
+    private void handleLightUpdateException(LightStatusListener listener, FullLight light, StateUpdate stateUpdate,
+            long fadeTime, Throwable e) {
         if (e instanceof DeviceOffException) {
             if (stateUpdate.getColorTemperature() != null && stateUpdate.getBrightness() == null) {
                 // If there is only a change of the color temperature, we do not want the light
                 // to be turned on (i.e. change its brightness).
                 return;
             } else {
-                updateLightState(light, LightStateConverter.toOnOffLightState(OnOffType.ON));
-                updateLightState(light, stateUpdate);
+                updateLightState(listener, light, LightStateConverter.toOnOffLightState(OnOffType.ON), fadeTime);
+                updateLightState(listener, light, stateUpdate, fadeTime);
             }
-        } else if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing light: {}", e.getMessage(), e);
-            notifyLightStatusListeners(light, STATE_GONE);
-        } else if (e instanceof ApiException) {
-            // This should not happen - if it does, it is most likely some bug that should be reported.
-            logger.warn("Error while accessing light: {}", e.getMessage(), e);
-        } else if (e instanceof IllegalStateException) {
-            logger.trace("Error while accessing light: {}", e.getMessage());
+            final HueLightDiscoveryService discovery = discoveryService;
+            if (discovery != null) {
+                discovery.removeLightDiscovery(light);
+            }
+            listener.onLightGone();
+        } else {
+            handleThingUpdateException("light", e);
         }
     }
 
-    private void handleStateUpdateException(FullSensor sensor, StateUpdate stateUpdate, Throwable e) {
-        if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } else if (e instanceof EntityNotAvailableException) {
+    private void handleSensorUpdateException(FullSensor sensor, Throwable e) {
+        if (e instanceof EntityNotAvailableException) {
             logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            notifySensorStatusListeners(sensor, STATE_GONE);
-        } else if (e instanceof ApiException) {
-            // This should not happen - if it does, it is most likely some bug that should be reported.
-            logger.warn("Error while accessing sensor: {}", e.getMessage(), e);
-        } else if (e instanceof IllegalStateException) {
-            logger.trace("Error while accessing sensor: {}", e.getMessage());
+            final HueLightDiscoveryService discovery = discoveryService;
+            if (discovery != null) {
+                discovery.removeSensorDiscovery(sensor);
+            }
+            final SensorStatusListener listener = sensorStatusListeners.get(sensor.getId());
+            if (listener != null) {
+                listener.onSensorGone();
+            }
+        } else {
+            handleThingUpdateException("sensor", e);
         }
     }
 
-    private void handleConfigUpdateException(FullSensor sensor, ConfigUpdate configUpdate, Throwable e) {
+    private void handleGroupUpdateException(FullGroup group, Throwable e) {
+        if (e instanceof EntityNotAvailableException) {
+            logger.debug("Error while accessing group: {}", e.getMessage(), e);
+            final HueLightDiscoveryService discovery = discoveryService;
+            if (discovery != null) {
+                discovery.removeGroupDiscovery(group);
+            }
+            final GroupStatusListener listener = groupStatusListeners.get(group.getId());
+            if (listener != null) {
+                listener.onGroupGone();
+            }
+        } else {
+            handleThingUpdateException("group", e);
+        }
+    }
+
+    private void handleThingUpdateException(String thingType, Throwable e) {
         if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } else if (e instanceof EntityNotAvailableException) {
-            logger.debug("Error while accessing sensor: {}", e.getMessage(), e);
-            notifySensorStatusListeners(sensor, STATE_GONE);
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
-            logger.warn("Error while accessing sensor: {}", e.getMessage(), e);
+            logger.warn("Error while accessing {}: {}", thingType, e.getMessage());
         } else if (e instanceof IllegalStateException) {
-            logger.trace("Error while accessing sensor: {}", e.getMessage());
+            logger.trace("Error while accessing {}: {}", thingType, e.getMessage());
         }
     }
 
     private void startLightPolling() {
-        if (lightPollingJob == null || lightPollingJob.isCancelled()) {
-            if (hueBridgeConfig.getPollingInterval() < 1) {
+        ScheduledFuture<?> job = lightPollingJob;
+        if (job == null || job.isCancelled()) {
+            long lightPollingInterval;
+            int configPollingInterval = hueBridgeConfig.getPollingInterval();
+            if (configPollingInterval < 1) {
+                lightPollingInterval = TimeUnit.SECONDS.toSeconds(10);
                 logger.info("Wrong configuration value for polling interval. Using default value: {}s",
                         lightPollingInterval);
             } else {
-                lightPollingInterval = hueBridgeConfig.getPollingInterval();
+                lightPollingInterval = configPollingInterval;
             }
-            lightPollingJob = scheduler.scheduleWithFixedDelay(lightPollingRunnable, 1, lightPollingInterval,
+            // Delay the first execution to give a chance to have all light and group things registered
+            lightPollingJob = scheduler.scheduleWithFixedDelay(lightPollingRunnable, 3, lightPollingInterval,
                     TimeUnit.SECONDS);
         }
     }
 
     private void stopLightPolling() {
-        if (lightPollingJob != null && !lightPollingJob.isCancelled()) {
-            lightPollingJob.cancel(true);
-            lightPollingJob = null;
+        ScheduledFuture<?> job = lightPollingJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        lightPollingJob = null;
     }
 
     private void startSensorPolling() {
-        if (sensorPollingJob == null || sensorPollingJob.isCancelled()) {
-            if (hueBridgeConfig.getSensorPollingInterval() < 50) {
-                logger.info("Wrong configuration value for sensor polling interval. Using default value: {}ms",
-                        sensorPollingInterval);
-            } else {
-                sensorPollingInterval = hueBridgeConfig.getSensorPollingInterval();
+        ScheduledFuture<?> job = sensorPollingJob;
+        if (job == null || job.isCancelled()) {
+            int configSensorPollingInterval = hueBridgeConfig.getSensorPollingInterval();
+            if (configSensorPollingInterval > 0) {
+                long sensorPollingInterval;
+                if (configSensorPollingInterval < 50) {
+                    sensorPollingInterval = TimeUnit.MILLISECONDS.toMillis(500);
+                    logger.info("Wrong configuration value for sensor polling interval. Using default value: {}ms",
+                            sensorPollingInterval);
+                } else {
+                    sensorPollingInterval = configSensorPollingInterval;
+                }
+                // Delay the first execution to give a chance to have all sensor things registered
+                sensorPollingJob = scheduler.scheduleWithFixedDelay(sensorPollingRunnable, 4000, sensorPollingInterval,
+                        TimeUnit.MILLISECONDS);
             }
-            sensorPollingJob = scheduler.scheduleWithFixedDelay(sensorPollingRunnable, 1, sensorPollingInterval,
-                    TimeUnit.MILLISECONDS);
         }
     }
 
     private void stopSensorPolling() {
-        if (sensorPollingJob != null && !sensorPollingJob.isCancelled()) {
-            sensorPollingJob.cancel(true);
-            sensorPollingJob = null;
+        ScheduledFuture<?> job = sensorPollingJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        sensorPollingJob = null;
+    }
+
+    private void startScenePolling() {
+        ScheduledFuture<?> job = scenePollingJob;
+        if (job == null || job.isCancelled()) {
+            // Delay the first execution to give a chance to have all group things registered
+            scenePollingJob = scheduler.scheduleWithFixedDelay(scenePollingRunnable, 5, SCENE_POLLING_INTERVAL,
+                    TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopScenePolling() {
+        ScheduledFuture<?> job = scenePollingJob;
+        if (job != null) {
+            job.cancel(true);
+        }
+        scenePollingJob = null;
     }
 
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
+        Future<?> job = initJob;
+        if (job != null) {
+            job.cancel(true);
+        }
         stopLightPolling();
         stopSensorPolling();
+        stopScenePolling();
         if (hueBridge != null) {
             hueBridge = null;
         }
@@ -428,31 +674,34 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
         String ip = hueBridgeConfig.getIpAddress();
         if (ip == null || ip.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-ip-address");
         } else {
             if (hueBridge == null) {
                 hueBridge = new HueBridge(ip, hueBridgeConfig.getPort(), hueBridgeConfig.getProtocol(), scheduler);
                 hueBridge.setTimeout(5000);
+
+                // Try a first connection that will fail, then try to authenticate,
+                // and finally change the bridge status to ONLINE
+                initJob = scheduler.submit(new PollingRunnable() {
+                    @Override
+                    protected void doConnectedRun() throws IOException, ApiException {
+                    }
+                });
             }
             onUpdate();
         }
     }
 
+    public @Nullable String getUserName() {
+        return hueBridgeConfig == null ? null : hueBridgeConfig.getUserName();
+    }
+
     private synchronized void onUpdate() {
         if (hueBridge != null) {
-            // start light polling only if a light handler has been registered, otherwise stop polling
-            if (lightStatusListeners.isEmpty()) {
-                stopLightPolling();
-            } else {
-                startLightPolling();
-            }
-            // start sensor polling only if a sensor handler has been registered, otherwise stop polling
-            if (sensorStatusListeners.isEmpty()) {
-                stopSensorPolling();
-            } else {
-                startSensorPolling();
-            }
+            startLightPolling();
+            startSensorPolling();
+            startScenePolling();
         }
     }
 
@@ -471,7 +720,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
      * @throws IOException if the physical device could not be reached
      */
     private void onConnectionResumed() throws IOException, ApiException {
-        logger.debug("Bridge connection resumed. Updating thing status to ONLINE.");
+        logger.debug("Bridge connection resumed.");
 
         if (!propertiesInitializedSuccessfully) {
             FullConfig fullConfig = hueBridge.getFullConfig();
@@ -487,8 +736,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                 propertiesInitializedSuccessfully = true;
             }
         }
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     /**
@@ -555,7 +802,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         logger.info("Creating new user on Hue bridge {} - please press the pairing button on the bridge.",
                 hueBridgeConfig.getIpAddress());
         String userName = hueBridge.link(DEVICE_TYPE);
-        logger.info("User '{}' has been successfully added to Hue bridge.", userName);
+        logger.info("User has been successfully added to Hue bridge.");
         return userName;
     }
 
@@ -564,84 +811,138 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         config.put(USER_NAME, userName);
         try {
             updateConfiguration(config);
-            logger.debug("Updated configuration parameter '{}' to '{}'", USER_NAME, userName);
+            logger.debug("Updated configuration parameter '{}'", USER_NAME);
             hueBridgeConfig = getConfigAs(HueBridgeConfig.class);
         } catch (IllegalStateException e) {
             logger.trace("Configuration update failed.", e);
             logger.warn("Unable to update configuration of Hue bridge.");
-            logger.warn("Please configure the following user name manually: {}", userName);
+            logger.warn("Please configure the user name manually.");
         }
     }
 
     private void handleAuthenticationFailure(Exception ex, String userName) {
-        logger.warn("User {} is not authenticated on Hue bridge {}", userName, hueBridgeConfig.getIpAddress());
+        logger.warn("User is not authenticated on Hue bridge {}", hueBridgeConfig.getIpAddress());
         logger.warn("Please configure a valid user or remove user from configuration to generate a new one.");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error-invalid-username");
     }
 
     private void handleLinkButtonNotPressed(LinkButtonException ex) {
         logger.debug("Failed creating new user on Hue bridge: {}", ex.getMessage());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error-press-pairing-button");
     }
 
     private void handleExceptionWhileCreatingUser(Exception ex) {
         logger.warn("Failed creating new user on Hue bridge", ex);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error-creation-username");
     }
 
     @Override
-    public boolean registerLightStatusListener(LightStatusListener lightStatusListener) {
-        boolean result = lightStatusListeners.add(lightStatusListener);
-        if (result && hueBridge != null) {
-            // start light polling only if a light handler has been registered
-            startLightPolling();
-            // inform the listener initially about all lights and their states
-            for (FullLight light : lastLightStates.values()) {
-                lightStatusListener.onLightAdded(hueBridge, light);
-            }
+    public boolean registerDiscoveryListener(HueLightDiscoveryService listener) {
+        if (discoveryService == null) {
+            discoveryService = listener;
+            getFullLights().forEach(listener::addLightDiscovery);
+            getFullSensors().forEach(listener::addSensorDiscovery);
+            getFullGroups().forEach(listener::addGroupDiscovery);
+            return true;
         }
-        return result;
+
+        return false;
+    }
+
+    @Override
+    public boolean unregisterDiscoveryListener() {
+        if (discoveryService != null) {
+            discoveryService = null;
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean registerLightStatusListener(LightStatusListener lightStatusListener) {
+        final String lightId = lightStatusListener.getLightId();
+        if (!lightStatusListeners.containsKey(lightId)) {
+            lightStatusListeners.put(lightId, lightStatusListener);
+            final FullLight lastLightState = lastLightStates.get(lightId);
+            if (lastLightState != null) {
+                lightStatusListener.onLightAdded(lastLightState);
+            }
+
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean unregisterLightStatusListener(LightStatusListener lightStatusListener) {
-        boolean result = lightStatusListeners.remove(lightStatusListener);
-        if (result) {
-            // stop stop light polling
-            if (lightStatusListeners.isEmpty()) {
-                stopLightPolling();
-            }
-        }
-        return result;
+        return lightStatusListeners.remove(lightStatusListener.getLightId()) != null;
     }
 
     @Override
     public boolean registerSensorStatusListener(SensorStatusListener sensorStatusListener) {
-        boolean result = sensorStatusListeners.add(sensorStatusListener);
-        if (result && hueBridge != null) {
-            // start sensor polling only if a sensor handler has been registered
-            startSensorPolling();
-            // inform the listener initially about all sensors and their states
-            for (FullSensor sensor : lastSensorStates.values()) {
-                sensorStatusListener.onSensorAdded(hueBridge, sensor);
+        final String sensorId = sensorStatusListener.getSensorId();
+        if (!sensorStatusListeners.containsKey(sensorId)) {
+            sensorStatusListeners.put(sensorId, sensorStatusListener);
+            final FullSensor lastSensorState = lastSensorStates.get(sensorId);
+            if (lastSensorState != null) {
+                sensorStatusListener.onSensorAdded(lastSensorState);
             }
+            return true;
         }
-        return result;
+
+        return false;
     }
 
     @Override
     public boolean unregisterSensorStatusListener(SensorStatusListener sensorStatusListener) {
-        boolean result = sensorStatusListeners.remove(sensorStatusListener);
-        if (result) {
-            // stop sensor polling
-            if (sensorStatusListeners.isEmpty()) {
-                stopSensorPolling();
+        return sensorStatusListeners.remove(sensorStatusListener.getSensorId()) != null;
+    }
+
+    @Override
+    public boolean registerGroupStatusListener(GroupStatusListener groupStatusListener) {
+        final String groupId = groupStatusListener.getGroupId();
+        if (!groupStatusListeners.containsKey(groupId)) {
+            groupStatusListeners.put(groupId, groupStatusListener);
+            final FullGroup lastGroupState = lastGroupStates.get(groupId);
+            if (lastGroupState != null) {
+                groupStatusListener.onGroupAdded(lastGroupState);
             }
+            return true;
         }
-        return result;
+
+        return false;
+    }
+
+    @Override
+    public boolean unregisterGroupStatusListener(GroupStatusListener groupStatusListener) {
+        return groupStatusListeners.remove(groupStatusListener.getGroupId()) != null;
+    }
+
+    /**
+     * Recall scene to all lights that belong to the scene.
+     *
+     * @param id the ID of the scene to activate
+     */
+    @Override
+    public void recallScene(String id) {
+        if (hueBridge != null) {
+            hueBridge.recallScene(id).thenAccept(result -> {
+                try {
+                    hueBridge.handleErrors(result);
+                } catch (Exception e) {
+                    logger.debug("Error while recalling scene: {}", e.getMessage());
+                }
+            }).exceptionally(e -> {
+                logger.debug("Error while recalling scene: {}", e.getMessage());
+                return null;
+            });
+        } else {
+            logger.debug("No bridge connected or selected. Cannot activate scene.");
+        }
     }
 
     @Override
@@ -654,6 +955,11 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         return lastSensorStates.get(sensorId);
     }
 
+    @Override
+    public @Nullable FullGroup getGroupById(String groupId) {
+        return lastGroupStates.get(groupId);
+    }
+
     public List<FullLight> getFullLights() {
         List<FullLight> ret = withReAuthentication("search for new lights", () -> {
             return hueBridge.getFullLights();
@@ -664,6 +970,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     public List<FullSensor> getFullSensors() {
         List<FullSensor> ret = withReAuthentication("search for new sensors", () -> {
             return hueBridge.getSensors();
+        });
+        return ret != null ? ret : Collections.emptyList();
+    }
+
+    public List<FullGroup> getFullGroups() {
+        List<FullGroup> ret = withReAuthentication("search for new groups", () -> {
+            return hueBridge.getGroups();
         });
         return ret != null ? ret : Collections.emptyList();
     }
@@ -682,7 +995,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         });
     }
 
-    private <T> T withReAuthentication(String taskDescription, Callable<T> runnable) {
+    private @Nullable <T> T withReAuthentication(String taskDescription, Callable<T> runnable) {
         if (hueBridge != null) {
             try {
                 try {
@@ -694,92 +1007,18 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                     }
                 }
             } catch (Exception e) {
-                logger.error("Bridge cannot {}.", taskDescription, e);
+                logger.debug("Bridge cannot {}.", taskDescription, e);
             }
         }
         return null;
     }
 
-    /**
-     * Iterate through lightStatusListeners and notify them about a changed or added light state.
-     *
-     * @param fullLight
-     * @param type Can be "changed" if just a state has changed or "added" if this is a new light on the bridge.
-     */
-    private void notifyLightStatusListeners(final FullLight fullLight, final String type) {
-        if (lightStatusListeners.isEmpty()) {
-            logger.debug("No light status listeners to notify of light change for light '{}'", fullLight.getId());
-            return;
-        }
-
-        for (LightStatusListener lightStatusListener : lightStatusListeners) {
-            try {
-                switch (type) {
-                    case STATE_ADDED:
-                        logger.debug("Sending lightAdded for light '{}'", fullLight.getId());
-                        lightStatusListener.onLightAdded(hueBridge, fullLight);
-                        break;
-                    case STATE_GONE:
-                        lightStatusListener.onLightGone(hueBridge, fullLight);
-                        break;
-                    case STATE_CHANGED:
-                        logger.debug("Sending lightStateChanged for light '{}'", fullLight.getId());
-                        lightStatusListener.onLightStateChanged(hueBridge, fullLight);
-                        break;
-                    default:
-                        throw new IllegalArgumentException(
-                                "Could not notify lightStatusListeners for unknown event type " + type);
-                }
-            } catch (Exception e) {
-                logger.error("An exception occurred while calling the BridgeHeartbeatListener", e);
-            }
-        }
+    private void notifyGroupSceneUpdate(List<Scene> scenes) {
+        groupStatusListeners.forEach((groupId, listener) -> listener.onScenesUpdated(scenes));
     }
 
-    private void notifySensorStatusListeners(final FullSensor fullSensor, final String type) {
-        if (sensorStatusListeners.isEmpty()) {
-            logger.debug("No sensor status listeners to notify of sensor change for sensor '{}'", fullSensor.getId());
-            return;
-        }
-
-        for (SensorStatusListener sensorStatusListener : sensorStatusListeners) {
-            try {
-                switch (type) {
-                    case STATE_ADDED:
-                        logger.debug("Sending sensorAdded for sensor '{}'", fullSensor.getId());
-                        sensorStatusListener.onSensorAdded(hueBridge, fullSensor);
-                        break;
-                    case STATE_GONE:
-                        sensorStatusListener.onSensorGone(hueBridge, fullSensor);
-                        break;
-                    case STATE_CHANGED:
-                        logger.debug("Sending sensorStateChanged for sensor '{}'", fullSensor.getId());
-                        sensorStatusListener.onSensorStateChanged(hueBridge, fullSensor);
-                        break;
-                    default:
-                        throw new IllegalArgumentException(
-                                "Could not notify sensorStatusListeners for unknown event type " + type);
-                }
-            } catch (Exception e) {
-                logger.error("An exception occurred while calling the Sensor Listeners", e);
-            }
-        }
-    }
-
-    /**
-     * Compare to states for equality.
-     *
-     * @param state1 Reference state
-     * @param state2 State which is checked for equality.
-     * @return {@code true} if the available information of both states are equal.
-     */
-    private boolean isEqual(State state1, State state2) {
-        return state1.getAlertMode().equals(state2.getAlertMode()) && state1.isOn() == state2.isOn()
-                && state1.getBrightness() == state2.getBrightness()
-                && state1.getColorTemperature() == state2.getColorTemperature() && state1.getHue() == state2.getHue()
-                && state1.getSaturation() == state2.getSaturation() && state1.isReachable() == state2.isReachable()
-                && Objects.equals(state1.getColorMode(), state2.getColorMode())
-                && Objects.equals(state1.getEffect(), state2.getEffect());
+    public List<String> listScenesForConsole() {
+        return consoleScenesList;
     }
 
     @Override
@@ -788,7 +1027,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         Collection<ConfigStatusMessage> configStatusMessages;
 
         // Check whether an IP address is provided
-        if (hueBridgeConfig.getIpAddress() == null || hueBridgeConfig.getIpAddress().isEmpty()) {
+        String ip = hueBridgeConfig.getIpAddress();
+        if (ip == null || ip.isEmpty()) {
             configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(HOST)
                     .withMessageKeySuffix(HueConfigStatusMessage.IP_ADDRESS_MISSING).withArguments(HOST).build());
         } else {

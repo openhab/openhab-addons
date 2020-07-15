@@ -15,7 +15,7 @@ package org.openhab.io.hueemulation.internal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -193,11 +193,11 @@ public class ConfigStore {
         InetAddress configuredAddress = null;
         int networkPrefixLength = 24; // Default for most networks: 255.255.255.0
 
-        if (config.discoveryIps != null) {
-            discoveryIps = Collections.unmodifiableSet(Stream.of(config.discoveryIps.split(",")).map(String::trim)
+        if (config.discoveryIp != null) {
+            discoveryIps = Collections.unmodifiableSet(Stream.of(config.discoveryIp.split(",")).map(String::trim)
                     .map(this::byName).filter(e -> e != null).collect(Collectors.toSet()));
         } else {
-            discoveryIps = new HashSet<>();
+            discoveryIps = new LinkedHashSet<>();
             configuredAddress = byName(networkAddressService.getPrimaryIpv4HostAddress());
             if (configuredAddress != null) {
                 discoveryIps.add(configuredAddress);
@@ -211,14 +211,19 @@ public class ConfigStore {
             }
         }
 
-        if (discoveryIps.size() == 0) {
-            logger.warn("No interface IP address configured or found. Hue emulation service disabled!");
-            return;
+        if (discoveryIps.isEmpty()) {
+            try {
+                logger.info("No discovery ip specified. Trying to determine the host address");
+                configuredAddress = InetAddress.getLocalHost();
+            } catch (Exception e) {
+                logger.info("Host address cannot be determined. Trying loopback address");
+                configuredAddress = InetAddress.getLoopbackAddress();
+            }
+        } else {
+            configuredAddress = discoveryIps.iterator().next();
         }
 
-        if (configuredAddress == null) {
-            configuredAddress = InetAddress.getLoopbackAddress();
-        }
+        logger.info("Using discovery ip {}", configuredAddress.getHostAddress());
 
         // Get and apply configurations
         ds.config.createNewUserOnEveryEndpoint = config.createNewUserOnEveryEndpoint;
@@ -237,12 +242,22 @@ public class ConfigStore {
 
         setLinkbutton(config.pairingEnabled, config.createNewUserOnEveryEndpoint, config.temporarilyEmulateV1bridge);
         ds.config.mac = NetworkUtils.getMAC(configuredAddress);
-        ds.config.ipaddress = configuredAddress.getHostAddress();
+        ds.config.ipaddress = getConfiguredHostAddress(configuredAddress);
         ds.config.netmask = networkPrefixLength < 32 ? NetUtil.networkPrefixLengthToNetmask(networkPrefixLength)
                 : "255.255.255.0";
 
         if (eventAdmin != null) {
             eventAdmin.postEvent(new Event(EVENT_ADDRESS_CHANGED, Collections.emptyMap()));
+        }
+    }
+
+    private String getConfiguredHostAddress(InetAddress configuredAddress) {
+        String hostAddress = configuredAddress.getHostAddress();
+        int percentIndex = hostAddress.indexOf("%");
+        if (percentIndex != -1) {
+            return hostAddress.substring(0, percentIndex);
+        } else {
+            return hostAddress;
         }
     }
 
@@ -303,7 +318,7 @@ public class ConfigStore {
     }
 
     public boolean isReady() {
-        return discoveryIps.size() > 0;
+        return !discoveryIps.isEmpty();
     }
 
     public HueEmulationConfig getConfig() {

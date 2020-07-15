@@ -18,11 +18,11 @@ package org.openhab.binding.robonect.internal.config;
  * @author Marco Meyer - Initial contribution
  */
 public class JobChannelConfig {
-    
+
     private String remoteStart;
-    
+
     private String afterMode;
-    
+
     private int duration;
 
     public String getRemoteStart() {

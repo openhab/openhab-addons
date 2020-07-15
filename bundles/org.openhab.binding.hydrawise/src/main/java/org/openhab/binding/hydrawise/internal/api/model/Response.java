@@ -20,5 +20,4 @@ package org.openhab.binding.hydrawise.internal.api.model;
 public class Response {
 
     public String errorMsg;
-
 }

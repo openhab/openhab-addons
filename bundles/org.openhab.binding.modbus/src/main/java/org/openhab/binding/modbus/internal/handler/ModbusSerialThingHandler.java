@@ -15,10 +15,8 @@ package org.openhab.binding.modbus.internal.handler;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
@@ -38,8 +36,8 @@ import org.openhab.io.transport.modbus.endpoint.ModbusSerialSlaveEndpoint;
 public class ModbusSerialThingHandler
         extends AbstractModbusEndpointThingHandler<ModbusSerialSlaveEndpoint, ModbusSerialConfiguration> {
 
-    public ModbusSerialThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
-        super(bridge, managerRef);
+    public ModbusSerialThingHandler(Bridge bridge, ModbusManager manager) {
+        super(bridge, manager);
     }
 
     @Override
@@ -86,11 +84,12 @@ public class ModbusSerialThingHandler
         }
     }
 
+    @SuppressWarnings("null") // Since endpoint in Optional.map cannot be null
     @Override
-    protected String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig) {
+    protected String formatConflictingParameterError() {
         return String.format(
-                "Endpoint '%s' has conflicting parameters: parameters of this thing (%s '%s') %s are different from some other things parameter: %s. Ensure that all endpoints pointing to serial port '%s' have same parameters.",
-                endpoint, thing.getUID(), this.thing.getLabel(), this.poolConfiguration, otherPoolConfig,
+                "Endpoint '%s' has conflicting parameters: parameters of this thing (%s '%s') are different from some other thing's parameter. Ensure that all endpoints pointing to serial port '%s' have same parameters.",
+                endpoint, thing.getUID(), this.thing.getLabel(),
                 Optional.ofNullable(this.endpoint).map(e -> e.getPortName()).orElse("<null>"));
     }
 
@@ -112,5 +111,4 @@ public class ModbusSerialThingHandler
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(ModbusEndpointDiscoveryService.class);
     }
-
 }

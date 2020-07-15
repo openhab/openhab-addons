@@ -124,7 +124,6 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                     }
                 }
                 gateway.startWatchdogs();
-
             } catch (IOException ex) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                 logger.debug(
@@ -261,7 +260,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * Updates the thing for the given Homematic device.
      */
     private void updateThing(HmDevice device) {
-        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
+        Thing hmThing = getThing().getThing(UidUtils.generateThingUID(device, getThing()));
         if (hmThing != null) {
             HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
             if (thingHandler != null) {
@@ -275,7 +274,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public void onStateUpdated(HmDatapoint dp) {
-        Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
+        Thing hmThing = getThing().getThing(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
         if (hmThing != null) {
             final ThingStatus status = hmThing.getStatus();
             if (status == ThingStatus.ONLINE || status == ThingStatus.OFFLINE) {
@@ -289,7 +288,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public HmDatapointConfig getDatapointConfig(HmDatapoint dp) {
-        Thing hmThing = getThingByUID(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
+        Thing hmThing = getThing().getThing(UidUtils.generateThingUID(dp.getChannel().getDevice(), getThing()));
         if (hmThing != null) {
             HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
             if (thingHandler != null) {
@@ -311,7 +310,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         discoveryService.deviceRemoved(device);
         updateThing(device);
 
-        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
+        Thing hmThing = getThing().getThing(UidUtils.generateThingUID(device, getThing()));
         if (hmThing != null && hmThing.getHandler() != null) {
             ((HomematicThingHandler) hmThing.getHandler()).deviceRemoved();
         }
@@ -335,7 +334,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             discoveryService.deviceDiscovered(device);
         }
 
-        Thing hmThing = getThingByUID(UidUtils.generateThingUID(device, getThing()));
+        Thing hmThing = getThing().getThing(UidUtils.generateThingUID(device, getThing()));
         if (hmThing != null) {
             HomematicThingHandler thingHandler = (HomematicThingHandler) hmThing.getHandler();
             if (thingHandler != null) {
@@ -427,5 +426,4 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             getGateway().deleteDevice(address, reset, force, defer);
         });
     }
-
 }

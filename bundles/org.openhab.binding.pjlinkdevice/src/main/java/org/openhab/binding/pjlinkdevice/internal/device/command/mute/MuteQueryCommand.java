@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.mute;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This command is used for retrieving the current audio/video mute status of the device as described in
@@ -27,17 +26,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MuteQueryCommand extends AbstractCommand<MuteQueryRequest, MuteQueryResponse> {
 
-  public MuteQueryCommand(PJLinkDevice pjLinkDevice) {
-    super(pjLinkDevice);
-  }
+    public MuteQueryCommand(PJLinkDevice pjLinkDevice) {
+        super(pjLinkDevice);
+    }
 
-  @Override
-  public MuteQueryRequest createRequest() {
-    return new MuteQueryRequest();
-  }
+    @Override
+    public MuteQueryRequest createRequest() {
+        return new MuteQueryRequest();
+    }
 
-  @Override
-  public MuteQueryResponse parseResponse(String response) throws ResponseException {
-    return new MuteQueryResponse(response);
-  }
+    @Override
+    public MuteQueryResponse parseResponse(String response) throws ResponseException {
+        return new MuteQueryResponse(response);
+    }
 }

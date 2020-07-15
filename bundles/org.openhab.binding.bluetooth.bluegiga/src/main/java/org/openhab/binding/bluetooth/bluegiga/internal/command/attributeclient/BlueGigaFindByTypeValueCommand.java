@@ -14,7 +14,8 @@ package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
 import java.util.UUID;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
 
 /**
  * Class to implement the BlueGiga command <b>findByTypeValue</b>.
@@ -28,16 +29,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaFindByTypeValueCommand extends BlueGigaCommand {
+@NonNullByDefault
+public class BlueGigaFindByTypeValueCommand extends BlueGigaDeviceCommand {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x00;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * First requested handle number
@@ -58,23 +53,15 @@ public class BlueGigaFindByTypeValueCommand extends BlueGigaCommand {
      * <p>
      * BlueGiga API type is <i>uuid</i> - Java type is {@link UUID}
      */
-    private UUID uuid;
+    private UUID uuid = new UUID(0, 0);
 
     /**
      * Attribute value to find
      * <p>
      * BlueGiga API type is <i>uint8array</i> - Java type is {@link int[]}
      */
-    private int[] value;
+    private int[] value = new int[0];
 
-    /**
-     * Connection handle
-     *
-     * @param connection the connection to set as {@link int}
-     */
-    public void setConnection(int connection) {
-        this.connection = connection;
-    }
     /**
      * First requested handle number
      *
@@ -83,6 +70,7 @@ public class BlueGigaFindByTypeValueCommand extends BlueGigaCommand {
     public void setStart(int start) {
         this.start = start;
     }
+
     /**
      * Last requested handle number
      *
@@ -91,6 +79,7 @@ public class BlueGigaFindByTypeValueCommand extends BlueGigaCommand {
     public void setEnd(int end) {
         this.end = end;
     }
+
     /**
      * 2 octet UUID to find
      *
@@ -99,6 +88,7 @@ public class BlueGigaFindByTypeValueCommand extends BlueGigaCommand {
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
+
     /**
      * Attribute value to find
      *

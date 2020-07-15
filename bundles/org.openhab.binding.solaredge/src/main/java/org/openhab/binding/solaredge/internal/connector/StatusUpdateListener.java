@@ -23,5 +23,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface StatusUpdateListener {
 
     void update(CommunicationStatus status);
-
 }

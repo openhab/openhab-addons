@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.power;
 
-import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 
 /**
  * The request part of {@link PowerQueryCommand}
@@ -24,9 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PowerQueryRequest implements Request {
 
-  @Override
-  public String getRequestString() {
-    return "%1POWR ?";
-  }
-
+    @Override
+    public String getRequestString() {
+        return "%1POWR ?";
+    }
 }

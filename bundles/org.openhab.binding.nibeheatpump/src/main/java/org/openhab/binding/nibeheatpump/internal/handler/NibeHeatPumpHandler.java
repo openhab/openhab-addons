@@ -12,37 +12,58 @@
  */
 package org.openhab.binding.nibeheatpump.internal.handler;
 
-import org.eclipse.smarthome.core.library.types.*;
+import static org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants.*;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpCommandResult;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.binding.nibeheatpump.internal.config.NibeHeatPumpConfiguration;
-import org.openhab.binding.nibeheatpump.internal.connection.ConnectorFactory;
 import org.openhab.binding.nibeheatpump.internal.connection.NibeHeatPumpConnector;
 import org.openhab.binding.nibeheatpump.internal.connection.NibeHeatPumpEventListener;
-import org.openhab.binding.nibeheatpump.internal.message.*;
+import org.openhab.binding.nibeheatpump.internal.connection.SerialConnector;
+import org.openhab.binding.nibeheatpump.internal.connection.SimulatorConnector;
+import org.openhab.binding.nibeheatpump.internal.connection.UDPConnector;
+import org.openhab.binding.nibeheatpump.internal.message.ModbusDataReadOutMessage;
+import org.openhab.binding.nibeheatpump.internal.message.ModbusReadRequestMessage;
+import org.openhab.binding.nibeheatpump.internal.message.ModbusReadResponseMessage;
+import org.openhab.binding.nibeheatpump.internal.message.ModbusValue;
+import org.openhab.binding.nibeheatpump.internal.message.ModbusWriteRequestMessage;
+import org.openhab.binding.nibeheatpump.internal.message.ModbusWriteResponseMessage;
+import org.openhab.binding.nibeheatpump.internal.message.NibeHeatPumpMessage;
 import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
 import org.openhab.binding.nibeheatpump.internal.models.VariableInformation;
 import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.NibeDataType;
 import org.openhab.binding.nibeheatpump.internal.models.VariableInformation.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 /**
  * The {@link NibeHeatPumpHandler} is responsible for handling commands, which
@@ -55,9 +76,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private static final int TIMEOUT = 4500;
     private final Logger logger = LoggerFactory.getLogger(NibeHeatPumpHandler.class);
     private final PumpModel pumpModel;
+    private final SerialPortManager serialPortManager;
     private final List<Integer> itemsToPoll = Collections.synchronizedList(new ArrayList<>());
     private final List<Integer> itemsToEnableWrite = new ArrayList<>();
-    private final Map<Integer, CacheObject> stateMap = Collections.synchronizedMap(new HashMap<Integer, CacheObject>());
+    private final Map<Integer, CacheObject> stateMap = Collections.synchronizedMap(new HashMap<>());
     private NibeHeatPumpConfiguration configuration;
     private NibeHeatPumpConnector connector;
     private boolean reconnectionRequest;
@@ -66,7 +88,6 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private final Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-
             if (!configuration.enableReadCommands) {
                 logger.trace("All read commands denied, skip polling!");
                 return;
@@ -80,11 +101,9 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             for (int item : items) {
                 if (connector != null && connector.isConnected()
                         && getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
-
                     CacheObject oldValue = stateMap.get(item);
                     if (oldValue == null
                             || (oldValue.lastUpdateTime + refreshIntervalMillis()) < System.currentTimeMillis()) {
-
                         // it's time to refresh data
                         logger.debug("Time to refresh variable '{}' data", item);
 
@@ -123,9 +142,28 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
     private ScheduledFuture<?> pollingJob;
     private long lastUpdateTime = 0;
 
-    public NibeHeatPumpHandler(Thing thing, PumpModel pumpModel) {
+    public NibeHeatPumpHandler(Thing thing, PumpModel pumpModel, SerialPortManager serialPortManager) {
         super(thing);
         this.pumpModel = pumpModel;
+        this.serialPortManager = serialPortManager;
+    }
+
+    private NibeHeatPumpConnector getConnector() throws NibeHeatPumpException {
+        ThingTypeUID type = thing.getThingTypeUID();
+
+        if (THING_TYPE_F1X45_UDP.equals(type) || THING_TYPE_F1X55_UDP.equals(type) || THING_TYPE_F750_UDP.equals(type)
+                || THING_TYPE_F470_UDP.equals(type)) {
+            return new UDPConnector();
+        } else if (THING_TYPE_F1X45_SERIAL.equals(type) || THING_TYPE_F1X55_SERIAL.equals(type)
+                || THING_TYPE_F750_SERIAL.equals(type) || THING_TYPE_F470_SERIAL.equals(type)) {
+            return new SerialConnector(serialPortManager);
+        } else if (THING_TYPE_F1X45_SIMULATOR.equals(type) || THING_TYPE_F1X55_SIMULATOR.equals(type)
+                || THING_TYPE_F750_SIMULATOR.equals(type) || THING_TYPE_F470_SIMULATOR.equals(type)) {
+            return new SimulatorConnector();
+        }
+
+        String description = String.format("Unknown connector type %s", type);
+        throw new NibeHeatPumpException(description);
     }
 
     @Override
@@ -161,8 +199,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                 try {
                     int value = convertCommandToNibeValue(variableInfo, command);
 
-                    ModbusWriteRequestMessage msg = new ModbusWriteRequestMessage.MessageBuilder().coilAddress(coilAddress)
-                            .value(value).build();
+                    ModbusWriteRequestMessage msg = new ModbusWriteRequestMessage.MessageBuilder()
+                            .coilAddress(coilAddress).value(value).build();
 
                     writeResult = sendMessageToNibe(msg);
                     ModbusWriteResponseMessage result = (ModbusWriteResponseMessage) writeResult.get(TIMEOUT,
@@ -186,7 +224,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
                     logger.debug("Message sending to heat pump failed, exception {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 } catch (CommandTypeNotSupportedException e) {
-                    logger.warn("Unsupported command type {} received for channel {}, coil address {}.", command.getClass().getName(), channelUID.getId(), coilAddress);
+                    logger.warn("Unsupported command type {} received for channel {}, coil address {}.",
+                            command.getClass().getName(), channelUID.getId(), coilAddress);
                 } finally {
                     writeResult = null;
                 }
@@ -247,7 +286,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
         try {
             parseWriteEnabledItems();
-            connector = ConnectorFactory.getConnector(thing.getThingTypeUID());
+            connector = getConnector();
         } catch (IllegalArgumentException | NibeHeatPumpException e) {
             String description = String.format("Illegal configuration, %s", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
@@ -330,7 +369,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         return configuration.refreshInterval * 1000;
     }
 
-    private int convertCommandToNibeValue(VariableInformation variableInfo, Command command) throws CommandTypeNotSupportedException {
+    private int convertCommandToNibeValue(VariableInformation variableInfo, Command command)
+            throws CommandTypeNotSupportedException {
         int value;
 
         if (command instanceof DecimalType || command instanceof QuantityType || command instanceof StringType) {
@@ -344,8 +384,10 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             }
             int decimals = (int) Math.log10(variableInfo.factor);
             value = v.movePointRight(decimals).intValue();
-        } else if ((command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType) && variableInfo.factor == 1) {
-            value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP) || command.equals(OpenClosedType.OPEN)) ? 1 : 0;
+        } else if ((command instanceof OnOffType || command instanceof OpenClosedType || command instanceof UpDownType)
+                && variableInfo.factor == 1) {
+            value = (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)
+                    || command.equals(OpenClosedType.OPEN)) ? 1 : 0;
         } else {
             throw new CommandTypeNotSupportedException();
         }
@@ -431,7 +473,6 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
     private synchronized NibeHeatPumpCommandResult sendMessageToNibe(NibeHeatPumpMessage msg)
             throws NibeHeatPumpException {
-
         logger.debug("Sending message: {}", msg);
         connector.sendDatagram(msg);
         return new NibeHeatPumpCommandResult();
@@ -519,7 +560,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
 
             CacheObject oldValue = stateMap.get(coilAddress);
 
-            if (oldValue != null && val == oldValue.value && (oldValue.lastUpdateTime + refreshIntervalMillis() / 2) >= System.currentTimeMillis()) {
+            if (oldValue != null && val == oldValue.value
+                    && (oldValue.lastUpdateTime + refreshIntervalMillis() / 2) >= System.currentTimeMillis()) {
                 logger.trace("Value did not change, ignoring update");
             } else {
                 final String channelPrefix = (variableInfo.type == Type.SETTING ? "setting#" : "sensor#");
@@ -548,11 +590,8 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
         /**
          * Initialize cache object.
          *
-         * @param lastUpdateTime
-         *                           Time in milliseconds.
-         *
-         * @param value
-         *                           Cache value.
+         * @param lastUpdateTime Time in milliseconds.
+         * @param value Cache value.
          */
         CacheObject(long lastUpdateTime, int value) {
             this.lastUpdateTime = lastUpdateTime;

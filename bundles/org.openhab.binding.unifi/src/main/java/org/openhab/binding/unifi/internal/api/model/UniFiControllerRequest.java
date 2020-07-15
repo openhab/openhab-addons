@@ -222,5 +222,4 @@ public class UniFiControllerRequest<T> {
         Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
         return prettyGson.toJson(json);
     }
-
 }

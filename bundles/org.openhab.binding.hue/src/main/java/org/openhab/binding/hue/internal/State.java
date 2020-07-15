@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.hue.internal;
 
+import java.util.Arrays;
+
 /**
  * Current state of light.
  *
  * @author Q42 - Initial contribution
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
+ * @author Laurent Garnier - add few methods to update the object
  */
 public class State {
     private boolean on;
@@ -30,7 +33,7 @@ public class State {
     String colormode;
     private boolean reachable;
 
-    State() {
+    public State() {
     }
 
     /**
@@ -97,6 +100,10 @@ public class State {
         return on;
     }
 
+    public void setOn(boolean on) {
+        this.on = on;
+    }
+
     /**
      * Returns the brightness.
      *
@@ -104,6 +111,10 @@ public class State {
      */
     public int getBrightness() {
         return bri;
+    }
+
+    public void setBri(int bri) {
+        this.bri = bri;
     }
 
     /**
@@ -115,6 +126,10 @@ public class State {
         return hue;
     }
 
+    public void setHue(int hue) {
+        this.hue = hue;
+    }
+
     /**
      * Returns the saturation.
      *
@@ -122,6 +137,10 @@ public class State {
      */
     public int getSaturation() {
         return sat;
+    }
+
+    public void setSaturation(int sat) {
+        this.sat = sat;
     }
 
     /**
@@ -133,6 +152,10 @@ public class State {
         return xy;
     }
 
+    public void setXY(float[] xy) {
+        this.xy = xy;
+    }
+
     /**
      * Returns the color temperature.
      *
@@ -142,6 +165,10 @@ public class State {
         return ct;
     }
 
+    public void setColorTemperature(int ct) {
+        this.ct = ct;
+    }
+
     /**
      * Returns the last alert mode set.
      * Future firmware updates may change this to actually report the current alert mode.
@@ -149,6 +176,9 @@ public class State {
      * @return last alert mode
      */
     public AlertMode getAlertMode() {
+        if (alert == null) {
+            return null;
+        }
         return AlertMode.valueOf(alert.toUpperCase());
     }
 
@@ -162,6 +192,10 @@ public class State {
             return null;
         }
         return ColorMode.valueOf(colormode.toUpperCase());
+    }
+
+    public void setColormode(ColorMode colormode) {
+        this.colormode = colormode.name();
     }
 
     /**
@@ -183,5 +217,79 @@ public class State {
      */
     public boolean isReachable() {
         return reachable;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((alert == null) ? 0 : alert.hashCode());
+        result = prime * result + bri;
+        result = prime * result + ((colormode == null) ? 0 : colormode.hashCode());
+        result = prime * result + ct;
+        result = prime * result + ((effect == null) ? 0 : effect.hashCode());
+        result = prime * result + hue;
+        result = prime * result + (on ? 1231 : 1237);
+        result = prime * result + (reachable ? 1231 : 1237);
+        result = prime * result + sat;
+        result = prime * result + Arrays.hashCode(xy);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        State other = (State) obj;
+        if (alert == null) {
+            if (other.alert != null) {
+                return false;
+            }
+        } else if (!alert.equals(other.alert)) {
+            return false;
+        }
+        if (bri != other.bri) {
+            return false;
+        }
+        if (colormode == null) {
+            if (other.colormode != null) {
+                return false;
+            }
+        } else if (!colormode.equals(other.colormode)) {
+            return false;
+        }
+        if (ct != other.ct) {
+            return false;
+        }
+        if (effect == null) {
+            if (other.effect != null) {
+                return false;
+            }
+        } else if (!effect.equals(other.effect)) {
+            return false;
+        }
+        if (hue != other.hue) {
+            return false;
+        }
+        if (on != other.on) {
+            return false;
+        }
+        if (reachable != other.reachable) {
+            return false;
+        }
+        if (sat != other.sat) {
+            return false;
+        }
+        if (!Arrays.equals(xy, other.xy)) {
+            return false;
+        }
+        return true;
     }
 }

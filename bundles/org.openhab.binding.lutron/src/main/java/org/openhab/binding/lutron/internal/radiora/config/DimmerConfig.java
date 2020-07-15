@@ -48,5 +48,4 @@ public class DimmerConfig {
     public void setFadeInSec(BigDecimal fadeInSec) {
         this.fadeInSec = fadeInSec;
     }
-
 }

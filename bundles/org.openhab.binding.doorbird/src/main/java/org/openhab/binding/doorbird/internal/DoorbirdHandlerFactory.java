@@ -24,6 +24,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.openhab.binding.doorbird.internal.handler.ControllerHandler;
+import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -56,7 +58,9 @@ public class DoorbirdHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_D101.equals(thingTypeUID) || THING_TYPE_D210X.equals(thingTypeUID)) {
-            return new DoorbirdHandler(thing, timeZoneProvider, httpClient);
+            return new DoorbellHandler(thing, timeZoneProvider, httpClient);
+        } else if (THING_TYPE_A1081.equals(thingTypeUID)) {
+            return new ControllerHandler(thing);
         }
         return null;
     }

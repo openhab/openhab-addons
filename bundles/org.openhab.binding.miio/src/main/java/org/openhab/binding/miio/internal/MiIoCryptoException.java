@@ -12,23 +12,30 @@
  */
 package org.openhab.binding.miio.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Will be thrown instead of the many possible errors in the crypto module
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoCryptoException extends Exception {
-
-    public MiIoCryptoException() {
-        super();
-    }
-
-    public MiIoCryptoException(String arg0) {
-        super(arg0);
-    }
 
     /**
      * required variable to avoid IncorrectMultilineIndexException warning
      */
     private static final long serialVersionUID = -1280858607995252320L;
+
+    public MiIoCryptoException() {
+        super();
+    }
+
+    public MiIoCryptoException(String message) {
+        super(message);
+    }
+
+    public MiIoCryptoException(String message, Exception e) {
+        super(message, e);
+    }
 }

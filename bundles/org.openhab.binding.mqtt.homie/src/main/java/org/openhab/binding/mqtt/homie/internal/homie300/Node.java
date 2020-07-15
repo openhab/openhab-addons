@@ -110,8 +110,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
-        return attributes.unsubscribe().thenCompose(
-                b -> CompletableFuture.allOf(properties.stream().map(p -> p.stop()).toArray(CompletableFuture[]::new)));
+        return attributes.unsubscribe().thenCompose(b -> CompletableFuture
+                .allOf(properties.stream().map(Property::stop).toArray(CompletableFuture[]::new)));
     }
 
     /**
@@ -184,7 +184,6 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     @Override
     public void attributeChanged(String name, Object value, MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, boolean allMandatoryFieldsReceived) {
-
         if (!initialized || !allMandatoryFieldsReceived) {
             return;
         }
@@ -209,8 +208,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      *
      * @return Returns a list of relative topics
      */
-    public ArrayList<String> getRetainedTopics() {
-        ArrayList<String> topics = new ArrayList<String>();
+    public List<String> getRetainedTopics() {
+        List<String> topics = new ArrayList<>();
 
         topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
             return String.format("%s/$%s", this.nodeID, f.getName());

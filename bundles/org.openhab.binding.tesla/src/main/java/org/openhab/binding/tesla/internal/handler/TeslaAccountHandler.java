@@ -32,7 +32,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Entity;
@@ -86,14 +85,13 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(TeslaAccountHandler.class);
 
     // REST Client API variables
-    private final Client teslaClient = ClientBuilder.newClient();
-    private final WebTarget teslaTarget = teslaClient.target(URI_OWNERS);
-    private final WebTarget tokenTarget = teslaTarget.path(URI_ACCESS_TOKEN);
-    final WebTarget vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
-    final WebTarget vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
-    final WebTarget dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST);
-    final WebTarget commandTarget = vehicleTarget.path(PATH_COMMAND);
-    final WebTarget wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
+    private final WebTarget teslaTarget;
+    private final WebTarget tokenTarget;
+    WebTarget vehiclesTarget; // this cannot be marked final as it is used in the runnable
+    final WebTarget vehicleTarget;
+    final WebTarget dataRequestTarget;
+    final WebTarget commandTarget;
+    final WebTarget wakeUpTarget;
 
     // Threading and Job related variables
     protected ScheduledFuture<?> connectJob;
@@ -111,8 +109,15 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     private TokenResponse logonToken;
     private final Set<VehicleListener> vehicleListeners = new HashSet<>();
 
-    public TeslaAccountHandler(Bridge bridge) {
+    public TeslaAccountHandler(Bridge bridge, Client teslaClient) {
         super(bridge);
+        this.teslaTarget = teslaClient.target(URI_OWNERS);
+        this.tokenTarget = teslaTarget.path(URI_ACCESS_TOKEN);
+        this.vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
+        this.vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
+        this.dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST);
+        this.commandTarget = vehicleTarget.path(PATH_COMMAND);
+        this.wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
     }
 
     @Override
@@ -199,7 +204,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     }
 
     protected Vehicle[] queryVehicles() {
-
         String authHeader = getAuthHeader();
 
         if (authHeader != null) {
@@ -529,7 +533,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 logger.error("An exception occurred while executing a request to the vehicle: '{}'", e.getMessage(), e);
             }
         }
-
     }
 
     public Request newRequest(TeslaVehicleHandler teslaVehicleHandler, String command, String payLoad,
@@ -541,5 +544,4 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(TeslaVehicleDiscoveryService.class);
     }
-
 }

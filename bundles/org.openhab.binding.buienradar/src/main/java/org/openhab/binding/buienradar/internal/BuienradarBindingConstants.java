@@ -54,5 +54,4 @@ public class BuienradarBindingConstants {
     public static final String FORECAST_105 = "forecast_105";
     public static final String FORECAST_110 = "forecast_110";
     public static final String FORECAST_115 = "forecast_115";
-
 }

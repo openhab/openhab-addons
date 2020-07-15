@@ -21,10 +21,10 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.enocean.internal.EnOceanException;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 import org.openhab.binding.enocean.internal.messages.ESP3Packet;
 import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.binding.enocean.internal.messages.Response;
-import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
 
 /**
  *
@@ -52,13 +52,11 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
 
     @Override
     protected void processMessage(byte firstByte) {
-
         byte[] readingBuffer = new byte[ENOCEAN_MAX_DATA];
         int bytesRead = -1;
         byte _byte;
 
         try {
-
             readingBuffer[0] = firstByte;
 
             bytesRead = this.inputStream.read(readingBuffer, 1, inputStream.available());
@@ -86,7 +84,6 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                             if (ESP3Packet.checkCRC8(dataBuffer, ESP3Packet.ESP3_HEADER_LENGTH, _byte)
                                     && ((dataBuffer[0] & 0xFF) << 8) + (dataBuffer[1] & 0xFF)
                                             + (dataBuffer[2] & 0xFF) > 0) {
-
                                 state = ReadingState.ReadingData;
 
                                 dataLength = ((dataBuffer[0] & 0xFF << 8) | (dataBuffer[1] & 0xFF));
@@ -150,8 +147,8 @@ public class EnOceanESP3Transceiver extends EnOceanTransceiver {
                                                     HexUtils.bytesToHex(msg.getSenderId()), HexUtils.bytesToHex(
                                                             Arrays.copyOf(dataBuffer, dataLength + optionalLength)));
 
-                                            if(msg.getRORG() != RORG.Unknown) {
-                                                    informListeners(msg);
+                                            if (msg.getRORG() != RORG.Unknown) {
+                                                informListeners(msg);
                                             } else {
                                                 logger.debug("Received unknown RORG");
                                             }

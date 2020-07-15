@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Response for {@link ZoneLabelRequest}
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public class ZoneLabelResponse extends AbstractResponse {
 
     public final int zoneNo;
-    public final String zoneName;
+    public final @Nullable String zoneName;
 
     private ZoneLabelResponse(int zoneNo, String zoneName) {
         super(true);

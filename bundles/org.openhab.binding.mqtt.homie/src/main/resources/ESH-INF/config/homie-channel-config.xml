@@ -22,7 +22,8 @@
 		</parameter>
 		<parameter name="retained" type="text">
 			<label>Retained</label>
-			<description>If set to false, the resulting channel will be a trigger channel (stateless), useful for non-permanent events. This flag corresponds to the retained option for MQTT publish.</description>
+			<description>If set to false, the resulting channel will be a trigger channel (stateless), useful for non-permanent
+				events. This flag corresponds to the retained option for MQTT publish.</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="format" type="text">

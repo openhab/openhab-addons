@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Unknown message from PRT3
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public class UnknownResponse implements DigiplexResponse {
 
     public final String message;
@@ -30,5 +33,4 @@ public class UnknownResponse implements DigiplexResponse {
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleUnknownResponse(this);
     }
-
 }

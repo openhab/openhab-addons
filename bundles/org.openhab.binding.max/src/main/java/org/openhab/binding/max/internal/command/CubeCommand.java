@@ -30,5 +30,4 @@ public abstract class CubeCommand {
      *         end of the message
      */
     public abstract String getReturnStrings();
-
 }

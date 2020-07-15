@@ -169,23 +169,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         zoneConfig = getConfigAs(YamahaZoneConfig.class);
         logger.trace("Initialize {} with zone '{}'", getThing().getLabel(), zoneConfig.getZoneValue());
 
-        if (zoneConfig.getZone() == null) {
-            String msg = String.format("Zone not set or invalid zone name used: '%s'. It needs to be on of: '%s'",
-                    zoneConfig.getZoneValue(), Arrays.toString(Zone.values()));
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-            logger.warn("{}", msg);
-            return;
-        }
-
-        YamahaBridgeHandler bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            bridgeStatusChanged(bridgeHandler.getThing().getStatusInfo());
-        }
-    }
-
-    @Override
-    public void dispose() {
-
+        Bridge bridge = getBridge();
+        initializeThing(bridge != null ? bridge.getStatus() : null);
     }
 
     protected YamahaBridgeHandler getBridgeHandler() {
@@ -206,23 +191,40 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            if (zoneControl == null) {
-                YamahaBridgeHandler brHandler = getBridgeHandler();
+        initializeThing(bridgeStatusInfo.getStatus());
+    }
 
-                zoneControl = getProtocolFactory().ZoneControl(getConnection(), zoneConfig, this,
-                        brHandler::getInputConverter, getDeviceInformationState());
-                zoneAvailableInputs = getProtocolFactory().ZoneAvailableInputs(getConnection(), zoneConfig, this,
-                        brHandler::getInputConverter, getDeviceInformationState());
+    private void initializeThing(ThingStatus bridgeStatus) {
+        YamahaBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler != null && bridgeStatus != null) {
+            if (bridgeStatus == ThingStatus.ONLINE) {
+                if (zoneConfig == null || zoneConfig.getZone() == null) {
+                    String msg = String.format(
+                            "Zone not set or invalid zone name used: '%s'. It needs to be on of: '%s'",
+                            zoneConfig.getZoneValue(), Arrays.toString(Zone.values()));
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    logger.info("{}", msg);
+                } else {
+                    if (zoneControl == null) {
+                        YamahaBridgeHandler brHandler = getBridgeHandler();
 
-                updateZoneInformation();
+                        zoneControl = getProtocolFactory().ZoneControl(getConnection(), zoneConfig, this,
+                                brHandler::getInputConverter, getDeviceInformationState());
+                        zoneAvailableInputs = getProtocolFactory().ZoneAvailableInputs(getConnection(), zoneConfig,
+                                this, brHandler::getInputConverter, getDeviceInformationState());
+
+                        updateZoneInformation();
+                    }
+
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                zoneControl = null;
+                zoneAvailableInputs = null;
             }
-
-            updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            zoneControl = null;
-            zoneAvailableInputs = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

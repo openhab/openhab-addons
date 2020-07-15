@@ -163,13 +163,15 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     }
 
     private void sendRenderedEffectCommand(Command command) throws NanoleafException {
+        logger.debug("Command Type: {}", command.getClass());
         HSBType currentPanelColor = getPanelColor();
-        if (currentPanelColor == null)
-            return;
+        if (currentPanelColor != null)
+            logger.debug("currentPanelColor: {}", currentPanelColor.toString());
         HSBType newPanelColor = new HSBType();
+
         if (command instanceof HSBType) {
             newPanelColor = (HSBType) command;
-        } else if (command instanceof OnOffType) {
+        } else if (command instanceof OnOffType && (currentPanelColor != null)) {
             if (OnOffType.ON.equals(command)) {
                 newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(),
                         MAX_PANEL_BRIGHTNESS);
@@ -177,11 +179,11 @@ public class NanoleafPanelHandler extends BaseThingHandler {
                 newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(),
                         MIN_PANEL_BRIGHTNESS);
             }
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType && (currentPanelColor != null)) {
             PercentType brightness = new PercentType(
                     Math.max(MIN_PANEL_BRIGHTNESS.intValue(), ((PercentType) command).intValue()));
             newPanelColor = new HSBType(currentPanelColor.getHue(), currentPanelColor.getSaturation(), brightness);
-        } else if (command instanceof IncreaseDecreaseType) {
+        } else if (command instanceof IncreaseDecreaseType && (currentPanelColor != null)) {
             int brightness = currentPanelColor.getBrightness().intValue();
             if (command.equals(IncreaseDecreaseType.INCREASE)) {
                 brightness = Math.min(MAX_PANEL_BRIGHTNESS.intValue(), brightness + BRIGHTNESS_STEP_SIZE);
@@ -198,16 +200,18 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             return;
         }
         // store panel's new HSB value
+        logger.trace("Setting new color {}", newPanelColor);
         panelInfo.put(getThing().getConfiguration().get(CONFIG_PANEL_ID).toString(), newPanelColor);
         // transform to RGB
         PercentType[] rgbPercent = newPanelColor.toRGB();
+        logger.trace("Setting new rgbpercent {} {} {}", rgbPercent[0], rgbPercent[1], rgbPercent[2]);
         int red = rgbPercent[0].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
                 .multiply(new BigDecimal(255)).intValue();
         int green = rgbPercent[1].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
                 .multiply(new BigDecimal(255)).intValue();
         int blue = rgbPercent[2].toBigDecimal().divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)
                 .multiply(new BigDecimal(255)).intValue();
-
+        logger.trace("Setting new rgb {} {} {}", red, green, blue);
         Bridge bridge = getBridge();
         if (bridge != null) {
             Effects effects = new Effects();
@@ -220,9 +224,12 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             if (handler != null) {
                 NanoleafControllerConfig config = ((NanoleafControllerHandler) handler).getControllerConfig();
                 // Light Panels and Canvas use different stream commands
-                if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)) {
+                if (config.deviceType.equals(CONFIG_DEVICE_TYPE_LIGHTPANELS)
+                        || config.deviceType.equals(CONFIG_DEVICE_TYPE_CANVAS)) {
+                    logger.trace("Anim Data rgb {} {} {} {}", panelID, red, green, blue);
                     write.setAnimData(String.format("1 %s 1 %d %d %d 0 10", panelID, red, green, blue));
                 } else {
+                    // this is only used in special streaming situations with canvas which is not yet supported
                     int quotient = Integer.divideUnsigned(Integer.valueOf(panelID), 256);
                     int remainder = Integer.remainderUnsigned(Integer.valueOf(panelID), 256);
                     write.setAnimData(
@@ -245,6 +252,7 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     public void updatePanelColorChannel() {
         @Nullable
         HSBType panelColor = getPanelColor();
+        logger.trace("updatePanelColorChannel: panelColor: {}", panelColor);
         if (panelColor != null)
             updateState(CHANNEL_PANEL_COLOR, panelColor);
     }
@@ -311,6 +319,10 @@ public class NanoleafPanelHandler extends BaseThingHandler {
             }
         } catch (NanoleafNotFoundException nfe) {
             logger.warn("Panel data could not be retrieved as no data was returned (static type missing?) : {}",
+                    nfe.getMessage());
+        } catch (NanoleafBadRequestException nfe) {
+            logger.debug(
+                    "Panel data could not be retrieved as request not expected(static type missing / dynamic type on) : {}",
                     nfe.getMessage());
         } catch (NanoleafException nue) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

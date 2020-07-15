@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
@@ -149,16 +148,18 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
             // Network devices
             for (FreeboxLanHost host : lanHosts) {
                 String mac = host.getMAC();
-                if (StringUtils.isNotEmpty(mac)) {
+                String primaryName = host.getPrimaryName();
+                String vendorName = host.getVendorName();
+                if (mac != null && !mac.isEmpty()) {
                     if (discoverNetDevice) {
                         String uid = mac.replaceAll("[^A-Za-z0-9_]", "_");
                         thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_DEVICE, bridge, uid);
-                        String name = StringUtils.isEmpty(host.getPrimaryName()) ? ("Freebox Network Device " + mac)
-                                : host.getPrimaryName();
+                        String name = (primaryName == null || primaryName.isEmpty()) ? ("Freebox Network Device " + mac)
+                                : primaryName;
                         logger.trace("Adding new Freebox Network Device {} to inbox", thingUID);
                         Map<String, Object> properties = new HashMap<>(1);
-                        if (StringUtils.isNotEmpty(host.getVendorName())) {
-                            properties.put(Thing.PROPERTY_VENDOR, host.getVendorName());
+                        if (vendorName != null && !vendorName.isEmpty()) {
+                            properties.put(Thing.PROPERTY_VENDOR, vendorName);
                         }
                         properties.put(FreeboxNetDeviceConfiguration.MAC_ADDRESS, mac);
                         discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
@@ -170,18 +171,18 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                     if (host.getL3Connectivities() != null && discoverNetInterface) {
                         for (FreeboxLanHostL3Connectivity l3 : host.getL3Connectivities()) {
                             String addr = l3.getAddr();
-                            if (StringUtils.isNotEmpty(addr)) {
+                            if (addr != null && !addr.isEmpty()) {
                                 String uid = addr.replaceAll("[^A-Za-z0-9_]", "_");
                                 thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_NET_INTERFACE,
                                         bridge, uid);
                                 String name = addr;
-                                if (StringUtils.isNotEmpty(host.getPrimaryName())) {
-                                    name += " (" + (host.getPrimaryName() + ")");
+                                if (primaryName != null && !primaryName.isEmpty()) {
+                                    name += " (" + (primaryName + ")");
                                 }
                                 logger.trace("Adding new Freebox Network Interface {} to inbox", thingUID);
                                 Map<String, Object> properties = new HashMap<>(1);
-                                if (StringUtils.isNotEmpty(host.getVendorName())) {
-                                    properties.put(Thing.PROPERTY_VENDOR, host.getVendorName());
+                                if (vendorName != null && !vendorName.isEmpty()) {
+                                    properties.put(Thing.PROPERTY_VENDOR, vendorName);
                                 }
                                 properties.put(FreeboxNetInterfaceConfiguration.IP_ADDRESS, addr);
                                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
@@ -203,7 +204,7 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
                 // The Freebox API allows pushing media only to receivers with photo or video capabilities
                 // but not to receivers with only audio capability; so receivers without video capability
                 // are ignored by the discovery
-                if (StringUtils.isNotEmpty(name) && videoCapable) {
+                if (name != null && !name.isEmpty() && videoCapable) {
                     String uid = name.replaceAll("[^A-Za-z0-9_]", "_");
                     thingUID = new ThingUID(FreeboxBindingConstants.FREEBOX_THING_TYPE_AIRPLAY, bridge, uid);
                     logger.trace("Adding new Freebox AirPlay Device {} to inbox", thingUID);
@@ -216,5 +217,4 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService implements
             }
         }
     }
-
 }

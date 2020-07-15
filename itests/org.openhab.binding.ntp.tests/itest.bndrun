@@ -8,11 +8,6 @@ Fragment-Host: org.openhab.binding.ntp
     bnd.identity;id='org.openhab.core.binding.xml',\
     bnd.identity;id='org.openhab.core.thing.xml'
 
-# We would like to use the "volatile" storage only
--runblacklist: \
-    bnd.identity;id='org.openhab.core.storage.json',\
-    bnd.identity;id='org.openhab.core.storage.mapdb'
-
 #
 # done
 #
@@ -29,8 +24,6 @@ Fragment-Host: org.openhab.binding.ntp
 	org.apache.felix.scr;version='[2.1.10,2.1.11)',\
 	org.eclipse.equinox.event;version='[1.4.300,1.4.301)',\
 	org.objenesis;version='[2.6.0,2.6.1)',\
-	org.openhab.binding.ntp;version='[2.5.2,2.5.3)',\
-	org.openhab.binding.ntp.tests;version='[2.5.2,2.5.3)',\
 	org.openhab.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.core;version='[2.5.0,2.5.1)',\
 	org.openhab.core.config.discovery;version='[2.5.0,2.5.1)',\
@@ -59,4 +52,6 @@ Fragment-Host: org.openhab.binding.ntp
 	org.eclipse.jetty.security;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.server;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.servlet;version='[9.4.20,9.4.21)',\
-	org.eclipse.jetty.util;version='[9.4.20,9.4.21)'
+	org.eclipse.jetty.util;version='[9.4.20,9.4.21)',\
+	org.openhab.binding.ntp;version='[2.5.7,2.5.8)',\
+	org.openhab.binding.ntp.tests;version='[2.5.7,2.5.8)'

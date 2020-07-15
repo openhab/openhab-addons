@@ -46,5 +46,4 @@ public class LIRCBindingConstants {
 
     // List of all properties
     public static final String PROPERTY_REMOTE = "remote";
-
 }

@@ -19,17 +19,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Defines an EIR record used in the BLE advertisement packets.
  *
- * @author Chris Jackson
+ * @author Chris Jackson - Initial contribution
  *
  */
+@NonNullByDefault
 public class EirRecord {
-    private EirDataType type;
-    private Object record;
+    private EirDataType type = EirDataType.UNKNOWN;
+    private Object record = new Object();
 
-    EirRecord(int[] data) {
+    EirRecord(int @Nullable [] data) {
         if (data == null || data.length == 0) {
             return;
         }
@@ -100,7 +104,7 @@ public class EirRecord {
     }
 
     private List<UUID> processUuid16(int[] data) {
-        List<UUID> uuidList = new ArrayList<UUID>();
+        List<UUID> uuidList = new ArrayList<>();
 
         for (int cnt = 1; cnt < data.length - 1; cnt += 2) {
             uuidList.add(process16BitUUID(data, cnt));
@@ -110,7 +114,7 @@ public class EirRecord {
     }
 
     private List<UUID> processUuid32(int[] data) {
-        List<UUID> uuidList = new ArrayList<UUID>();
+        List<UUID> uuidList = new ArrayList<>();
 
         for (int cnt = 1; cnt < data.length - 1; cnt += 4) {
             uuidList.add(process32BitUUID(data, cnt));
@@ -120,7 +124,7 @@ public class EirRecord {
     }
 
     private List<UUID> processUuid128(int[] data) {
-        List<UUID> uuidList = new ArrayList<UUID>();
+        List<UUID> uuidList = new ArrayList<>();
 
         for (int cnt = 1; cnt < data.length - 1; cnt += 16) {
             uuidList.add(process128BitUUID(data, cnt));
@@ -130,14 +134,16 @@ public class EirRecord {
     }
 
     private UUID process16BitUUID(int[] data, int index) {
-        long high = ((long) data[index] << 32) + ((long) data[index + 1] << 40);
-        return new UUID(high, 0);
+        // 0000xxxx-0000-1000-8000-00805F9B34FB
+        long high = ((long) data[index] << 32) + ((long) data[index + 1] << 40) + 0x00001000L;
+        return new UUID(high, 0x800000805f9b34fbL);
     }
 
     private UUID process32BitUUID(int[] data, int index) {
+        // xxxxxxxx-0000-1000-8000-00805F9B34FB
         long high = ((long) data[index] << 32) + ((long) data[index + 1] << 40) + ((long) data[index + 2] << 48)
-                + ((long) data[index + 3] << 56);
-        return new UUID(high, 0);
+                + ((long) data[index + 3] << 56) + 0x00001000L;
+        return new UUID(high, 0x800000805f9b34fbL);
     }
 
     private UUID process128BitUUID(int[] data, int index) {
@@ -151,7 +157,7 @@ public class EirRecord {
     }
 
     private List<Integer> processUInt16List(int[] data) {
-        List<Integer> intList = new ArrayList<Integer>();
+        List<Integer> intList = new ArrayList<>();
 
         for (int cnt = 1; cnt < data.length - 1; cnt += 2) {
             intList.add(Integer.valueOf(data[cnt] + (data[cnt + 1] << 8)));
@@ -161,7 +167,7 @@ public class EirRecord {
     }
 
     private List<EirFlags> processFlags(int[] data) {
-        List<EirFlags> flags = new ArrayList<EirFlags>();
+        List<EirFlags> flags = new ArrayList<>();
         int flagBit = 0;
         for (int cnt = 1; cnt < data.length; cnt++) {
             for (int bitcnt = 0; bitcnt < 8; bitcnt++) {

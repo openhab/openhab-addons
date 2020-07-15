@@ -35,5 +35,4 @@ public class UniFiTimestampDeserializer implements JsonDeserializer<Calendar> {
         cal.setTimeInMillis(millis);
         return cal;
     }
-
 }

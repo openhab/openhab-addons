@@ -34,6 +34,7 @@ public class ERP1Message extends BasePacket {
         VLD((byte) 0xD2, -1),
         // ADT(0xA6, -1),
         UTE((byte) 0xD4, -1),
+        SIG((byte) 0xD0, -1),
         MSC((byte) 0xD1, -1);
 
         private byte value;
@@ -105,6 +106,10 @@ public class ERP1Message extends BasePacket {
                                 || (payload[1] & UTEResponse.TeachIn_MASK) == UTEResponse.TeachIn_NotSpecified;
                         senderId = Arrays.copyOfRange(payload, dataLength - 5, dataLength - 1);
                     }
+                    break;
+                case SIG:
+                    teachIn = false;
+                    senderId = Arrays.copyOfRange(payload, dataLength - 5, dataLength - 1);
                     break;
                 default:
                     break;

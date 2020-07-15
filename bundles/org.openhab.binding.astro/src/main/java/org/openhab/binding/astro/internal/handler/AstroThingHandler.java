@@ -30,11 +30,15 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.scheduler.ScheduledCompletableFuture;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
@@ -52,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Implementation to be compliant with ESH Scheduler
  */
+@NonNullByDefault
 public abstract class AstroThingHandler extends BaseThingHandler {
 
     private static final String DAILY_MIDNIGHT = "30 0 0 * * ? *";
@@ -62,16 +67,22 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /** Scheduler to schedule jobs */
     private final CronScheduler cronScheduler;
 
-    private int linkedPositionalChannels = 0;
-    protected AstroThingConfig thingConfig;
+    private final TimeZoneProvider timeZoneProvider;
+
     private final Lock monitor = new ReentrantLock();
 
-    private ScheduledCompletableFuture dailyJob;
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
 
-    public AstroThingHandler(Thing thing, CronScheduler scheduler) {
+    private int linkedPositionalChannels = 0;
+
+    protected AstroThingConfig thingConfig = new AstroThingConfig();
+
+    private @Nullable ScheduledCompletableFuture<?> dailyJob;
+
+    public AstroThingHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.cronScheduler = scheduler;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -82,7 +93,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         thingConfig.setThingUid(thingUid);
         boolean validConfig = true;
 
-        if (StringUtils.trimToNull(thingConfig.getGeolocation()) == null) {
+        if (StringUtils.trimToNull(thingConfig.geolocation) == null) {
             logger.error("Astro parameter geolocation is mandatory and must be configured, disabling thing '{}'",
                     thingUid);
             validConfig = false;
@@ -90,13 +101,13 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             thingConfig.parseGeoLocation();
         }
 
-        if (thingConfig.getLatitude() == null || thingConfig.getLongitude() == null) {
+        if (thingConfig.latitude == null || thingConfig.longitude == null) {
             logger.error(
                     "Astro parameters geolocation could not be split into latitude and longitude, disabling thing '{}'",
                     thingUid);
             validConfig = false;
         }
-        if (thingConfig.getInterval() == null || thingConfig.getInterval() < 1 || thingConfig.getInterval() > 86400) {
+        if (thingConfig.interval < 1 || thingConfig.interval > 86400) {
             logger.error("Astro parameter interval must be in the range of 1-86400, disabling thing '{}'", thingUid);
             validConfig = false;
         }
@@ -106,7 +117,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             updateStatus(ONLINE);
             restartJobs();
         } else {
-            updateStatus(OFFLINE);
+            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
         logger.debug("Thing {} initialized {}", getThing().getUID(), getThing().getStatus());
     }
@@ -132,7 +143,11 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Iterates all channels of the thing and updates their states.
      */
     public void publishPlanet() {
-        logger.debug("Publishing planet {} for thing {}", getPlanet().getClass().getSimpleName(), getThing().getUID());
+        Planet planet = getPlanet();
+        if (planet == null) {
+            return;
+        }
+        logger.debug("Publishing planet {} for thing {}", planet.getClass().getSimpleName(), getThing().getUID());
         for (Channel channel : getThing().getChannels()) {
             if (channel.getKind() != TRIGGER) {
                 publishChannelIfLinked(channel.getUID());
@@ -144,7 +159,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Publishes the channel with data if it's linked.
      */
     public void publishChannelIfLinked(ChannelUID channelUID) {
-        if (isLinked(channelUID.getId()) && getPlanet() != null) {
+        Planet planet = getPlanet();
+        if (isLinked(channelUID.getId()) && planet != null) {
             final Channel channel = getThing().getChannel(channelUID.getId());
             if (channel == null) {
                 logger.error("Cannot find channel for {}", channelUID);
@@ -152,7 +168,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             }
             try {
                 AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
-                updateState(channelUID, PropertyUtils.getState(channelUID, config, getPlanet()));
+                updateState(channelUID,
+                        PropertyUtils.getState(channelUID, config, planet, timeZoneProvider.getTimeZone()));
             } catch (Exception ex) {
                 logger.error("Can't update state for channel {} : {}", channelUID, ex.getMessage(), ex);
             }
@@ -170,10 +187,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             stopJobs();
             if (getThing().getStatus() == ONLINE) {
                 String thingUID = getThing().getUID().toString();
-                if (cronScheduler == null) {
-                    logger.warn("Thread Pool Executor is not available");
-                    return;
-                }
                 // Daily Job
                 Job runnable = getDailyJob();
                 dailyJob = cronScheduler.schedule(runnable, DAILY_MIDNIGHT);
@@ -185,10 +198,10 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                 // Use scheduleAtFixedRate to avoid time drift associated with scheduleWithFixedDelay
                 if (isPositionalChannelLinked()) {
                     Job positionalJob = new PositionalJob(thingUID);
-                    ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(positionalJob, 0,
-                            thingConfig.getInterval(), TimeUnit.SECONDS);
+                    ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(positionalJob, 0, thingConfig.interval,
+                            TimeUnit.SECONDS);
                     scheduledFutures.add(future);
-                    logger.info("Scheduled {} every {} seconds", positionalJob, thingConfig.getInterval());
+                    logger.info("Scheduled {} every {} seconds", positionalJob, thingConfig.interval);
                 }
             }
         } finally {
@@ -203,12 +216,11 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         logger.debug("Stopping scheduled jobs for thing {}", getThing().getUID());
         monitor.lock();
         try {
-            if (cronScheduler != null) {
-                if (dailyJob != null) {
-                    dailyJob.cancel(true);
-                }
-                dailyJob = null;
+            ScheduledCompletableFuture<?> job = dailyJob;
+            if (job != null) {
+                job.cancel(true);
             }
+            dailyJob = null;
             for (ScheduledFuture<?> future : scheduledFutures) {
                 if (!future.isDone()) {
                     future.cancel(true);
@@ -316,7 +328,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /**
      * Returns the {@link Planet} instance (cannot be {@code null})
      */
-    public abstract Planet getPlanet();
+    public abstract @Nullable Planet getPlanet();
 
     /**
      * Returns the channelIds for positional calculation (cannot be {@code null})

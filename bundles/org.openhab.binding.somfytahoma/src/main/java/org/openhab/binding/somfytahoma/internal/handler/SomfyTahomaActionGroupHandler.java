@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
@@ -32,11 +31,6 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaActionGroupHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

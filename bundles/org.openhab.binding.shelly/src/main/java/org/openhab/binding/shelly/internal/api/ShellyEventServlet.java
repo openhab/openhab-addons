@@ -16,15 +16,15 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,8 +34,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -54,40 +52,45 @@ public class ShellyEventServlet extends HttpServlet {
     private static final long serialVersionUID = 549582869577534569L;
     private final Logger logger = LoggerFactory.getLogger(ShellyEventServlet.class);
 
-    private @Nullable HttpService httpService;
-    private @Nullable ShellyHandlerFactory handlerFactory;
+    private final HttpService httpService;
+    private final ShellyHandlerFactory handlerFactory;
 
-    @SuppressWarnings("null")
     @Activate
-    protected void activate(Map<String, Object> config) {
+    public ShellyEventServlet(@Reference HttpService httpService, @Reference ShellyHandlerFactory handlerFactory,
+            Map<String, Object> config) {
+        this.httpService = httpService;
+        this.handlerFactory = handlerFactory;
         try {
             httpService.registerServlet(SHELLY_CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
-            logger.debug("Shelly: CallbackServlet started at '{}'", SHELLY_CALLBACK_URI);
-        } catch (NamespaceException | ServletException e) {
-            logger.warn("Shelly: Could not start CallbackServlet: {} ({})", e.getMessage(), e.getClass());
+            logger.debug("ShellyEventServlet started at '{}'", SHELLY_CALLBACK_URI);
+        } catch (NamespaceException | ServletException | IllegalArgumentException e) {
+            logger.warn("Could not start CallbackServlet", e);
         }
     }
 
     @Deactivate
-    @SuppressWarnings("null")
     protected void deactivate() {
-        if (httpService != null) {
-            httpService.unregister(SHELLY_CALLBACK_URI);
-        }
-        logger.debug("Shelly: CallbackServlet stopped");
+        httpService.unregister(SHELLY_CALLBACK_URI);
+        logger.debug("ShellyEventServlet stopped");
     }
 
-    @SuppressWarnings("null")
     @Override
     protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
-            throws ServletException, IOException {
-        String data = inputStreamToString(request);
-        String path = request.getRequestURI().toLowerCase();
+            throws ServletException, IOException, IllegalArgumentException {
+        String data = "";
+        String path = "";
         String deviceName = "";
         String index = "";
         String type = "";
 
+        if ((request == null) || (resp == null)) {
+            logger.debug("request or resp must not be null!");
+            return;
+        }
+
         try {
+            path = request.getRequestURI().toLowerCase();
+            data = IOUtils.toString(request.getInputStream(), "UTF-8");
             String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
             if (ipAddress == null) {
                 ipAddress = request.getRemoteAddr();
@@ -113,52 +116,20 @@ public class ShellyEventServlet extends HttpServlet {
                 index = "";
                 type = StringUtils.substringAfterLast(path, "/").toLowerCase();
             }
-            logger.trace("Process event of type type={} for device {}, index={}", type, deviceName, index);
-            Map<String, String> parms = new HashMap<String, String>();
+            logger.trace("{}: Process event of type type={}, index={}", deviceName, type, index);
+            Map<String, String> parms = new TreeMap<>();
+
             for (Map.Entry<String, String[]> p : parameters.entrySet()) {
                 parms.put(p.getKey(), p.getValue()[0]);
 
             }
-            handlerFactory.onEvent(deviceName, index, type, parms);
-
-        } catch (NullPointerException e) {
-            logger.debug(
-                    "ERROR: Exception processing callback: {} ({}), path={}, data='{}'; deviceName={}, index={}, type={}, parameters={}\n{}",
-                    e.getMessage(), e.getClass(), path, data, deviceName, index, type,
-                    request.getParameterMap().toString(), e.getStackTrace());
+            handlerFactory.onEvent(ipAddress, deviceName, index, type, parms);
+        } catch (IllegalArgumentException e) {
+            logger.debug("{}: Exception processing callback: {path={}, data='{}'; index={}, type={}, parameters={}",
+                    deviceName, path, data, index, type, request.getParameterMap().toString());
         } finally {
             resp.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             resp.getWriter().write("");
         }
     }
-
-    @SuppressWarnings("resource")
-    private String inputStreamToString(@Nullable HttpServletRequest request) throws IOException {
-        @SuppressWarnings("null")
-        Scanner scanner = new Scanner(request.getInputStream()).useDelimiter("\\A");
-        return scanner.hasNext() ? scanner.next() : "";
-    }
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    public void setShellyHandlerFactory(ShellyHandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
-        logger.debug("Shelly Binding: HandlerFactory bound");
-    }
-
-    public void unsetShellyHandlerFactory(ShellyHandlerFactory handlerFactory) {
-        this.handlerFactory = null;
-        logger.debug("Shelly Binding: HandlerFactory unbound");
-    }
-
-    @Reference
-    public void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-        logger.debug("Shelly Binding: httpService bound");
-    }
-
-    public void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-        logger.debug("Shelly Binding: httpService unbound");
-    }
-
 }

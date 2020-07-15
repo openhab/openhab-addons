@@ -26,5 +26,4 @@ public class ColorFlowItem {
         return "ColorFlowItem [duration=" + duration + ", mode=" + mode + ", value=" + value + ", brightness="
                 + brightness + "]";
     }
-
 }

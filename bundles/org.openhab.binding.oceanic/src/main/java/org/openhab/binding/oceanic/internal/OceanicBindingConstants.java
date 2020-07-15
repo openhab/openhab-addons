@@ -291,7 +291,6 @@ public class OceanicBindingConstants {
             }
 
             throw new IllegalArgumentException("Not valid value selector");
-
         }
 
         public String convertValue(String value) {
@@ -302,7 +301,5 @@ public class OceanicBindingConstants {
             GET,
             SET
         }
-
     }
-
 }

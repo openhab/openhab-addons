@@ -31,8 +31,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.io.transport.modbus.ModbusRegister;
@@ -62,10 +60,10 @@ public class BitUtilitiesExtractStateFromRegistersTest {
 
     private static ModbusRegisterArray shortArrayToRegisterArray(int... arr) {
         ModbusRegister[] tmp = new ModbusRegister[0];
-        return new BasicModbusRegisterArray(IntStream.of(arr).mapToObj(val -> {
+        return new ModbusRegisterArray(IntStream.of(arr).mapToObj(val -> {
             ByteBuffer buffer = ByteBuffer.allocate(2);
             buffer.putShort((short) val);
-            return new BasicModbusRegister(buffer.get(0), buffer.get(1));
+            return new ModbusRegister(buffer.get(0), buffer.get(1));
         }).collect(Collectors.toList()).toArray(tmp));
     }
 
@@ -382,7 +380,6 @@ public class BitUtilitiesExtractStateFromRegistersTest {
                         new DecimalType("16124500437522872585"), ValueType.UINT64_SWAP,
                         shortArrayToRegisterArray(0x7909, 0x772E, 0xBBB7, 0xDFC5), 0 })
                 .collect(Collectors.toList()));
-
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

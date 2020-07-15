@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.identification;
 
-import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 
 /**
  * The request part of {@link IdentificationCommand}
@@ -24,15 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class IdentificationRequest implements Request {
 
-  private IdentificationCommand command;
+    private IdentificationCommand command;
 
-  public IdentificationRequest(IdentificationCommand command) {
-    this.command = command;
-  }
+    public IdentificationRequest(IdentificationCommand command) {
+        this.command = command;
+    }
 
-  @Override
-  public String getRequestString() {
-    return "%1" + this.command.getIdentificationProperty().getPJLinkCommandPrefix() + " ?";
-  }
-
+    @Override
+    public String getRequestString() {
+        return "%1" + this.command.getIdentificationProperty().getPJLinkCommandPrefix() + " ?";
+    }
 }

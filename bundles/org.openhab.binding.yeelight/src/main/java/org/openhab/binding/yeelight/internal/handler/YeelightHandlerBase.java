@@ -16,17 +16,8 @@ import static org.openhab.binding.yeelight.internal.YeelightBindingConstants.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.HSBType;
-import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -49,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Coaster Li - Initial contribution
  * @author Joe Ho - Added Duration Thing parameter
+ * @author Nikita Pogudalov - Added DeviceType for ceiling 1
  */
 public abstract class YeelightHandlerBase extends BaseThingHandler
         implements DeviceConnectionStateListener, DeviceStatusChangeListener {
@@ -82,8 +74,12 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     private DeviceType getDeviceModel(ThingTypeUID typeUID) {
         if (typeUID.equals(THING_TYPE_CEILING)) {
             return DeviceType.ceiling;
+        } else if (typeUID.equals(THING_TYPE_CEILING1)) {
+            return DeviceType.ceiling1;
         } else if (typeUID.equals(THING_TYPE_CEILING3)) {
             return DeviceType.ceiling3;
+        } else if (typeUID.equals(THING_TYPE_CEILING4)) {
+            return DeviceType.ceiling4;
         } else if (typeUID.equals(THING_TYPE_WONDER)) {
             return DeviceType.color;
         } else if (typeUID.equals(THING_TYPE_DOLPHIN)) {
@@ -143,18 +139,25 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
             DeviceManager.getInstance().startDiscovery(5 * 1000);
         }
         if (command instanceof RefreshType) {
+            logger.debug("Refresh channel: {} Command: {}", channelUID, command);
+
             DeviceManager.getInstance().startDiscovery(5 * 1000);
             DeviceStatus s = mDevice.getDeviceStatus();
+
             switch (channelUID.getId()) {
                 case CHANNEL_BRIGHTNESS:
                     updateState(channelUID, new PercentType(s.getBrightness()));
                     break;
                 case CHANNEL_COLOR:
-                    HSBType hsb = new HSBType();
                     updateState(channelUID, HSBType.fromRGB(s.getR(), s.getG(), s.getB()));
                     break;
                 case CHANNEL_COLOR_TEMPERATURE:
                     updateState(channelUID, new PercentType(s.getCt()));
+                    break;
+                case CHANNEL_BACKGROUND_COLOR:
+                    final HSBType hsbType = new HSBType(new DecimalType(s.getHue()), new PercentType(s.getSat()),
+                            new PercentType(s.getBackgroundBrightness()));
+                    updateState(channelUID, hsbType);
                     break;
                 default:
                     break;
@@ -194,6 +197,25 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                     handleIncreaseDecreaseBrightnessCommand((IncreaseDecreaseType) command);
                 }
                 break;
+
+            case CHANNEL_BACKGROUND_COLOR:
+                if (command instanceof HSBType) {
+                    HSBType hsbCommand = (HSBType) command;
+                    handleBackgroundHSBCommand(hsbCommand);
+                } else if (command instanceof PercentType) {
+                    handleBackgroundBrightnessPercentMessage((PercentType) command);
+                } else if (command instanceof OnOffType) {
+                    handleBackgroundOnOffCommand((OnOffType) command);
+                }
+                break;
+            case CHANNEL_NIGHTLIGHT:
+                if (command instanceof OnOffType) {
+                    DeviceAction pAction = command == OnOffType.ON ? DeviceAction.nightlight_on
+                            : DeviceAction.nightlight_off;
+                    pAction.putDuration(getDuration());
+                    DeviceManager.getInstance().doAction(deviceId, pAction);
+                }
+                break;
             case CHANNEL_COMMAND:
                 if (!command.toString().isEmpty()) {
                     String[] tokens = command.toString().split(";");
@@ -206,6 +228,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
                     handleCustomCommand(methodAction, methodParams);
                     updateState(channelUID, new StringType(""));
                 }
+                break;
             default:
                 break;
         }
@@ -258,6 +281,30 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         DeviceManager.getInstance().doAction(deviceId, cAction);
     }
 
+    void handleBackgroundHSBCommand(HSBType color) {
+        DeviceAction cAction = DeviceAction.background_color;
+
+        // TODO: actions seem to be an insufficiant abstraction.
+        cAction.putValue(color.getHue() + "," + color.getSaturation());
+        cAction.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, cAction);
+    }
+
+    void handleBackgroundBrightnessPercentMessage(PercentType brightness) {
+        DeviceAction pAction;
+
+        pAction = DeviceAction.background_brightness;
+        pAction.putValue(brightness.intValue());
+        pAction.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, pAction);
+    }
+
+    private void handleBackgroundOnOffCommand(OnOffType command) {
+        DeviceAction pAction = command == OnOffType.ON ? DeviceAction.background_on : DeviceAction.background_off;
+        pAction.putDuration(getDuration());
+        DeviceManager.getInstance().doAction(deviceId, pAction);
+    }
+
     void handleColorTemperatureCommand(PercentType ct) {
         DeviceAction ctAction = DeviceAction.colortemperature;
         ctAction.putValue(COLOR_TEMPERATURE_STEP * ct.intValue() + COLOR_TEMPERATURE_MINIMUM);
@@ -270,7 +317,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     }
 
     @Override
-    public void onStatusChanged(String prop, DeviceStatus status) {
+    public void onStatusChanged(DeviceStatus status) {
         logger.debug("UpdateState->{}", status);
         updateUI(status);
     }
@@ -295,6 +342,5 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         // Duration should not be null, but just in case do a null check.
         return getThing().getConfiguration().get(PARAMETER_DURATION) == null ? 500
                 : ((Number) getThing().getConfiguration().get(PARAMETER_DURATION)).intValue();
-
     }
 }

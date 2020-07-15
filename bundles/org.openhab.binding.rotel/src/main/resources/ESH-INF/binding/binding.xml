@@ -4,7 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Rotel Binding</name>
-	<description>The Rotel binding controls a Rotel audio device like a surround processor, a surround receiver, a stereo preamplifier, an integrated amplifier, a CD player or a tuner.</description>
+	<description>The Rotel binding controls a Rotel audio device like a surround processor, a surround receiver, a stereo
+		preamplifier, an integrated amplifier, a CD player or a tuner.</description>
 	<author>Laurent Garnier</author>
 
 </binding:binding>

@@ -36,5 +36,4 @@ public class LuminosityDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.LUMINOSITY_VALUE, getUnit(), value));
     }
-
 }

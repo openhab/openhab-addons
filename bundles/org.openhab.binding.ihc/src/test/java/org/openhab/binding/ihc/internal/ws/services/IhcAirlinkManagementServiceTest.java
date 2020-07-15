@@ -38,25 +38,27 @@ public class IhcAirlinkManagementServiceTest {
     private IhcAirlinkManagementService ihcAirlinkManagementService;
     private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/AirlinkManagementService";
-    private Map<String, String> requestProps = new HashMap<String, String>();
+    private Map<String, String> requestProps = new HashMap<>();
+    private String query;
     private final int timeout = 100;
 
     @Before
     public void setUp() throws IhcExecption, SocketTimeoutException {
         ihcAirlinkManagementService = spy(new IhcAirlinkManagementService(host, timeout, new IhcConnectionPool()));
 
-        final String query = ResourceFileUtils.getFileContent("EmptyQuery.xml");
-        final String response = ResourceFileUtils.getFileContent("GetDetectedDeviceListResponse.xml");
+        query = ResourceFileUtils.getFileContent("EmptyQuery.xml");
 
         requestProps.clear();
         requestProps.put("SOAPAction", "getDetectedDeviceList");
 
-        doReturn(response).when(ihcAirlinkManagementService).sendQuery(eq(url), eq(requestProps), eq(query),
-                eq(timeout));
     }
 
     @Test
     public void test() throws IhcExecption {
+        final String response = ResourceFileUtils.getFileContent("GetDetectedDeviceListResponse.xml");
+        doReturn(response).when(ihcAirlinkManagementService).sendQuery(eq(url), eq(requestProps), eq(query),
+                eq(timeout));
+
         final List<WSRFDevice> result = ihcAirlinkManagementService.getDetectedDeviceList();
 
         assertEquals(1, result.size());
@@ -67,5 +69,16 @@ public class IhcAirlinkManagementServiceTest {
         assertEquals(123456789, result.get(0).getSerialNumber());
         assertEquals(10, result.get(0).getSignalStrength());
         assertEquals(1, result.get(0).getVersion());
+    }
+
+    @Test
+    public void testEmptyList() throws IhcExecption {
+        final String response = ResourceFileUtils.getFileContent("GetEmptyDetectedDeviceListResponse.xml");
+        doReturn(response).when(ihcAirlinkManagementService).sendQuery(eq(url), eq(requestProps), eq(query),
+                eq(timeout));
+
+        final List<WSRFDevice> result = ihcAirlinkManagementService.getDetectedDeviceList();
+
+        assertEquals(0, result.size());
     }
 }

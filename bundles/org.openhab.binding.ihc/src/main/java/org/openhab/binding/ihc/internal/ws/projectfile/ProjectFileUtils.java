@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -138,8 +140,8 @@ public class ProjectFileUtils {
      * @param doc IHC project file in XML format.
      * @return enum dictionary.
      */
-    public static HashMap<Integer, ArrayList<IhcEnumValue>> parseEnums(Document doc) {
-        HashMap<Integer, ArrayList<IhcEnumValue>> enumDictionary = new HashMap<>();
+    public static Map<Integer, List<IhcEnumValue>> parseEnums(Document doc) {
+        Map<Integer, List<IhcEnumValue>> enumDictionary = new HashMap<>();
         if (doc != null) {
             NodeList nodes = doc.getElementsByTagName("enum_definition");
 
@@ -150,7 +152,7 @@ public class ProjectFileUtils {
                 int typedefId = Integer.parseInt(element.getAttribute("id").replace("_0x", ""), 16);
                 String enumName = element.getAttribute("name");
 
-                ArrayList<IhcEnumValue> enumValues = new ArrayList<IhcEnumValue>();
+                List<IhcEnumValue> enumValues = new ArrayList<>();
 
                 NodeList name = element.getElementsByTagName("enum_value");
 

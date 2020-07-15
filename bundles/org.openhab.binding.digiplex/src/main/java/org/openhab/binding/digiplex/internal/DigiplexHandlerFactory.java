@@ -22,10 +22,13 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.digiplex.internal.handler.DigiplexAreaHandler;
 import org.openhab.binding.digiplex.internal.handler.DigiplexBridgeHandler;
 import org.openhab.binding.digiplex.internal.handler.DigiplexZoneHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DigiplexHandlerFactory} is responsible for creating things and thing
@@ -36,6 +39,13 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.digiplex")
 @NonNullByDefault
 public class DigiplexHandlerFactory extends BaseThingHandlerFactory {
+
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public DigiplexHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -51,9 +61,8 @@ public class DigiplexHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_AREA)) {
             return new DigiplexAreaHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            return new DigiplexBridgeHandler((Bridge) thing);
+            return new DigiplexBridgeHandler((Bridge) thing, serialPortManager);
         }
         return null;
     }
-
 }

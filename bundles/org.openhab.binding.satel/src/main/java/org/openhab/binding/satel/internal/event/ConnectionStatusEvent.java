@@ -40,7 +40,7 @@ public class ConnectionStatusEvent implements SatelEvent {
      * Constructs event class with given connection status and disconnection reason.
      *
      * @param connected value describing connection status
-     * @param reason    disconnection reason
+     * @param reason disconnection reason
      */
     public ConnectionStatusEvent(boolean connected, @Nullable String reason) {
         this.connected = connected;

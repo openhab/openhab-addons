@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributedb;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 
 /**
  * Class to implement the BlueGiga command <b>userReadRequestEvent</b>.
@@ -27,16 +28,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaUserReadRequestEvent extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaUserReadRequestEvent extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x02;
     public static int COMMAND_METHOD = 0x01;
-
-    /**
-     * Connection ID which requested attribute
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Attribute handle requested
@@ -77,16 +72,6 @@ public class BlueGigaUserReadRequestEvent extends BlueGigaResponse {
     }
 
     /**
-     * Connection ID which requested attribute
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
-    /**
      * Attribute handle requested
      * <p>
      * BlueGiga API type is <i>uint16</i> - Java type is {@link int}
@@ -96,6 +81,7 @@ public class BlueGigaUserReadRequestEvent extends BlueGigaResponse {
     public int getHandle() {
         return handle;
     }
+
     /**
      * Attribute offset to send data from
      * <p>
@@ -106,6 +92,7 @@ public class BlueGigaUserReadRequestEvent extends BlueGigaResponse {
     public int getOffset() {
         return offset;
     }
+
     /**
      * Maximum data size to respond with. If more data is sent than indicated by this parameter, the
      * extra bytes will be ignored.

@@ -1,8 +1,9 @@
 # Astro Binding
 
 The Astro binding is used for calculating 
-    * many DateTime and positional values for sun and moon.
-    * Radiation levels (direct, diffuse and total) of the sun during the day
+
+* many DateTime and positional values for sun and moon.
+* Radiation levels (direct, diffuse and total) of the sun during the day
 
 ## Supported Things
 
@@ -24,6 +25,8 @@ All Things require the parameter `geolocation` (as `<latitude>,<longitude>[,<alt
 The altitude segment is optional and sharpens results provided by the Radiation group.
 Optionally, a refresh `interval` (in seconds) can be defined to also calculate positional data like azimuth and elevation.
 
+Season calculation can be switched from equinox based calculation to meteorological based (starting on the first day of the given month).
+This is done by setting `useMeteorologicalSeason` to true in the advanced setting of the sun.
 
 ## Channels
 
@@ -46,7 +49,8 @@ Optionally, a refresh `interval` (in seconds) can be defined to also calculate p
     * **group** `season`
         * **channel**: 
             * `spring, summer, autumn, winter` (DateTime)
-            * `name` (String), values `SPRING, SUMMER, AUTUMN, WINTER`
+            * `name`,`nextName` (String), values `SPRING, SUMMER, AUTUMN, WINTER`
+            * `timeLeft` (Number:Time)
     * **group** `eclipse`
         * **channel**: 
             * `total, partial, ring` (DateTime)

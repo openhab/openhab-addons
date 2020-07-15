@@ -141,5 +141,4 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
 
         return null;
     }
-
 }

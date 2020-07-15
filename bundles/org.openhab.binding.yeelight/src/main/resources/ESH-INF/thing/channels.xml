@@ -9,7 +9,8 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>The brightness channel allows to control the brightness of a light.
-			It is also possible to switch the light on and off.
+			It is also possible to switch the
+			light on and off.
 		</description>
 		<category>DimmableLight</category>
 		<tags>
@@ -44,6 +45,27 @@
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>Send a command directly to the device. For advanced users only.</description>
+	</channel-type>
+
+	<!-- Background Color Channel -->
+	<channel-type id="backgroundColor">
+		<item-type>Color</item-type>
+		<label>Background Color</label>
+		<description>The color channel allows to control the color of a light.</description>
+		<category>ColorLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="nightlight">
+		<item-type>Switch</item-type>
+		<label>nightlight</label>
+		<description>The nightlight channel allows to switch to nightlight mode.
+		</description>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

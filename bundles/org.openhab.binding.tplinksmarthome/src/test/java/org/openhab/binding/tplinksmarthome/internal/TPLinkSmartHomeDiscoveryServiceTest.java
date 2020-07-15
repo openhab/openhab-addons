@@ -92,7 +92,6 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
                 packet.setData(CryptUtil.encrypt(ModelTestUtil.readJson(filename)));
                 return null;
             }
-
         }).when(discoverSocket).receive(any());
         discoveryService.addDiscoveryListener(discoveryListener);
     }
@@ -111,5 +110,4 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
         assertEquals("Check if expected number of properties found", propertiesSize,
                 discoveryResult.getProperties().size());
     }
-
 }

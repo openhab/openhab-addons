@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacketPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 import org.openhab.binding.paradoxalarm.internal.model.EntityType;
 
 /**
@@ -25,8 +25,8 @@ public class EpromRequest extends Request {
     private EntityType entityType;
     private int entityId;
 
-    public EpromRequest(int entityId, EntityType entityType, IPPacketPayload payload) {
-        super(RequestType.EPROM, payload);
+    public EpromRequest(int entityId, EntityType entityType, IPPacket payload, IResponseReceiver receiver) {
+        super(RequestType.EPROM, payload, receiver);
         this.entityId = entityId;
         this.entityType = entityType;
     }
@@ -43,5 +43,4 @@ public class EpromRequest extends Request {
     public String toString() {
         return "EpromRequest [getType()=" + getType() + ", entityType=" + entityType + ", entityId=" + entityId + "]";
     }
-
 }

@@ -109,5 +109,4 @@ public class PlugwiseSenseConfig {
                 + ", wakeupInterval=" + wakeupInterval + ", wakeupDuration=" + wakeupDuration + ", updateConfiguration="
                 + updateConfiguration + "]";
     }
-
 }

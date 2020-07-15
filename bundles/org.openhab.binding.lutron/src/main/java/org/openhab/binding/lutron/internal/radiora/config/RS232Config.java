@@ -47,5 +47,4 @@ public class RS232Config {
     public void setZoneMapQueryInterval(int zoneMapQueryInterval) {
         this.zoneMapQueryInterval = zoneMapQueryInterval;
     }
-
 }

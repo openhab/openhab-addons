@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -102,7 +101,6 @@ class WebSocketV2 extends WebSocketBase {
                     break;
                 default:
                     logger.debug("V2 Unknown event: {}", msg);
-
             }
         } catch (JsonSyntaxException e) {
             logger.warn("{}: Error ({}) in message: {}", this.getClass().getSimpleName(), e.getMessage(), msg, e);
@@ -110,14 +108,17 @@ class WebSocketV2 extends WebSocketBase {
     }
 
     private void handleResult(JSONMessage jsonMsg) {
-        if (StringUtils.isBlank(remoteControllerWebSocket.currentSourceApp) && "true".equals(jsonMsg.result.visible)) {
+        if ((remoteControllerWebSocket.currentSourceApp == null
+                || remoteControllerWebSocket.currentSourceApp.trim().isEmpty())
+                && "true".equals(jsonMsg.result.visible)) {
             logger.debug("Running app: {} = {}", jsonMsg.result.id, jsonMsg.result.name);
             remoteControllerWebSocket.currentSourceApp = jsonMsg.result.name;
             remoteControllerWebSocket.callback.currentAppUpdated(remoteControllerWebSocket.currentSourceApp);
         }
 
         if (remoteControllerWebSocket.lastApp != null && remoteControllerWebSocket.lastApp.equals(jsonMsg.result.id)) {
-            if (StringUtils.isBlank(remoteControllerWebSocket.currentSourceApp)) {
+            if (remoteControllerWebSocket.currentSourceApp == null
+                    || remoteControllerWebSocket.currentSourceApp.trim().isEmpty()) {
                 remoteControllerWebSocket.callback.currentAppUpdated("");
             }
             remoteControllerWebSocket.lastApp = null;

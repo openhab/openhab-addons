@@ -27,5 +27,4 @@ public class PowerInformationRequestMessage extends Message {
     public PowerInformationRequestMessage(MACAddress macAddress) {
         super(POWER_INFORMATION_REQUEST, macAddress);
     }
-
 }

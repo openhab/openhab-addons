@@ -51,5 +51,4 @@ public class HeatSetPoint {
 
     @SerializedName("timeUntil")
     private String timeUntil;
-
 }

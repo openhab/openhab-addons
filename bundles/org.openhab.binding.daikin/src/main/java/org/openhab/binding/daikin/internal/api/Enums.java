@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.daikin.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +20,10 @@ import org.slf4j.LoggerFactory;
  * Container class for enums related to Daikin A/C systems
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Lukas Agethen - Add special modes
  *
  */
+@NonNullByDefault
 public class Enums {
     public enum Mode {
         UNKNOWN(-1),
@@ -47,7 +50,6 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected Mode value of \"{}\"", value);
 
             // Default to auto
@@ -81,7 +83,6 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected FanSpeed value of \"{}\"", value);
 
             // Default to auto
@@ -113,11 +114,99 @@ public class Enums {
                     return m;
                 }
             }
-
             LOGGER.debug("Unexpected FanMovement value of \"{}\"", value);
 
             // Default to stopped
             return STOPPED;
+        }
+    }
+
+    public enum HomekitMode {
+        AUTO("auto"),
+        COOL("cool"),
+        HEAT("heat"),
+        OFF("off");
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(HomekitMode.class);
+        private final String value;
+
+        HomekitMode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public enum SpecialMode {
+        STREAMER("13"),
+        ECO("12"),
+        POWERFUL("2"),
+        POWERFUL_STREAMER("2/13"),
+        ECO_STREAMER("12/13"),
+        OFF(""),
+        UNKNOWN("??");
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(SpecialMode.class);
+        private final String value;
+
+        SpecialMode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public boolean isPowerfulActive() {
+            return this.equals(POWERFUL) || this.equals(POWERFUL_STREAMER);
+        }
+
+        public boolean isUndefined() {
+            return this.equals(UNKNOWN);
+        }
+
+        public static SpecialMode fromValue(String value) {
+            for (SpecialMode m : SpecialMode.values()) {
+                if (m.getValue().equals(value)) {
+                    return m;
+                }
+            }
+            LOGGER.debug("Unexpected SpecialMode value of \"{}\"", value);
+
+            // Default to UNKNOWN
+            return UNKNOWN;
+        }
+    }
+
+    public enum SpecialModeKind {
+        UNKNOWN(-1),
+        STREAMER(0),
+        POWERFUL(1),
+        ECO(2);
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(SpecialModeKind.class);
+        private final int value;
+
+        SpecialModeKind(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static SpecialModeKind fromValue(int value) {
+            for (SpecialModeKind m : SpecialModeKind.values()) {
+                if (m.getValue() == value) {
+                    return m;
+                }
+            }
+            LOGGER.debug("Unexpected SpecialModeKind value of \"{}\"", value);
+
+            // Default to UNKNOWN
+            return UNKNOWN;
         }
     }
 }

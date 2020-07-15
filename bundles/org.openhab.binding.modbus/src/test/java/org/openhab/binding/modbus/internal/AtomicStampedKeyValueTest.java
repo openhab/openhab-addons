@@ -26,97 +26,58 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class AtomicStampedKeyValueTest {
 
     @Test(expected = NullPointerException.class)
-    public void testInitWithNullKey() {
-        new AtomicStampedKeyValue<>(0, null, new Object());
-    }
-
-    @Test(expected = NullPointerException.class)
     public void testInitWithNullValue() {
-        new AtomicStampedKeyValue<>(0, new Object(), null);
+        new AtomicStampedValue<>(0, null);
     }
 
     @Test
     public void testGetters() {
-        Object key = new Object();
         Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
+        AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(equalTo(val)));
-    }
-
-    @Test
-    public void testUpdateWithSameStampAndKey() {
-        Object key = new Object();
-        Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
-        keyValue.update(42L, key, new Object());
-        assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
-        assertThat(keyValue.getValue(), is(not(equalTo(val))));
     }
 
     @Test
     public void testUpdateWithSameStamp() {
-        Object key = new Object();
         Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
-        keyValue.update(42L, new Object(), new Object());
+        AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
+        keyValue.update(42L, new Object());
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(not(equalTo(key))));
         assertThat(keyValue.getValue(), is(not(equalTo(val))));
     }
 
     @Test
-    public void testUpdateWithSameKey() {
-        Object key = new Object();
+    public void testUpdateWithDifferentStamp() {
         Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
-        keyValue.update(-99L, key, new Object());
+        AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
+        keyValue.update(-99L, new Object());
         assertThat(keyValue.getStamp(), is(equalTo(-99L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(not(equalTo(val))));
-    }
-
-    @Test
-    public void testUpdateWithSameValue() {
-        Object key = new Object();
-        Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
-        keyValue.update(-99L, new Object(), val);
-        assertThat(keyValue.getStamp(), is(equalTo(-99L)));
-        assertThat(keyValue.getKey(), is(not(equalTo(key))));
-        assertThat(keyValue.getValue(), is(equalTo(val)));
     }
 
     @Test
     public void testCopy() {
-        Object key = new Object();
         Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
-        AtomicStampedKeyValue<Object, Object> copy = keyValue.copy();
+        AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
+        AtomicStampedValue<Object> copy = keyValue.copy();
 
-        // keyValue unchanged
+        // unchanged
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(equalTo(val)));
 
         // data matches
         assertThat(keyValue.getStamp(), is(equalTo(copy.getStamp())));
-        assertThat(keyValue.getKey(), is(equalTo(copy.getKey())));
         assertThat(keyValue.getValue(), is(equalTo(copy.getValue())));
 
         // after update they live life of their own
-        Object key2 = new Object();
         Object val2 = new Object();
-        copy.update(-99L, key2, val2);
+        copy.update(-99L, val2);
 
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(equalTo(val)));
 
         assertThat(copy.getStamp(), is(equalTo(-99L)));
-        assertThat(copy.getKey(), is(equalTo(key2)));
         assertThat(copy.getValue(), is(equalTo(val2)));
     }
 
@@ -127,30 +88,26 @@ public class AtomicStampedKeyValueTest {
     public void testCopyIfStampAfterEqual() {
         Object key = new Object();
         Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
-        AtomicStampedKeyValue<Object, Object> copy = keyValue.copyIfStampAfter(42L);
+        AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
+        AtomicStampedValue<Object> copy = keyValue.copyIfStampAfter(42L);
 
         // keyValue unchanged
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(equalTo(val)));
 
         // data matches
         assertThat(keyValue.getStamp(), is(equalTo(copy.getStamp())));
-        assertThat(keyValue.getKey(), is(equalTo(copy.getKey())));
         assertThat(keyValue.getValue(), is(equalTo(copy.getValue())));
 
         // after update they live life of their own
         Object key2 = new Object();
         Object val2 = new Object();
-        copy.update(-99L, key2, val2);
+        copy.update(-99L, val2);
 
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(equalTo(val)));
 
         assertThat(copy.getStamp(), is(equalTo(-99L)));
-        assertThat(copy.getKey(), is(equalTo(key2)));
         assertThat(copy.getValue(), is(equalTo(val2)));
     }
 
@@ -159,14 +116,12 @@ public class AtomicStampedKeyValueTest {
      */
     @Test
     public void testCopyIfStampAfterTooOld() {
-        Object key = new Object();
         Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
-        AtomicStampedKeyValue<Object, Object> copy = keyValue.copyIfStampAfter(43L);
+        AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
+        AtomicStampedValue<Object> copy = keyValue.copyIfStampAfter(43L);
 
         // keyValue unchanged
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(equalTo(val)));
 
         // copy is null
@@ -178,49 +133,42 @@ public class AtomicStampedKeyValueTest {
      */
     @Test
     public void testCopyIfStampAfterFresh() {
-        Object key = new Object();
         Object val = new Object();
-        AtomicStampedKeyValue<Object, Object> keyValue = new AtomicStampedKeyValue<>(42L, key, val);
-        AtomicStampedKeyValue<Object, Object> copy = keyValue.copyIfStampAfter(41L);
+        AtomicStampedValue<Object> keyValue = new AtomicStampedValue<>(42L, val);
+        AtomicStampedValue<Object> copy = keyValue.copyIfStampAfter(41L);
 
         // keyValue unchanged
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(equalTo(val)));
 
         // data matches
         assertThat(keyValue.getStamp(), is(equalTo(copy.getStamp())));
-        assertThat(keyValue.getKey(), is(equalTo(copy.getKey())));
         assertThat(keyValue.getValue(), is(equalTo(copy.getValue())));
 
         // after update they live life of their own
         Object key2 = new Object();
         Object val2 = new Object();
-        copy.update(-99L, key2, val2);
+        copy.update(-99L, val2);
 
         assertThat(keyValue.getStamp(), is(equalTo(42L)));
-        assertThat(keyValue.getKey(), is(equalTo(key)));
         assertThat(keyValue.getValue(), is(equalTo(val)));
 
         assertThat(copy.getStamp(), is(equalTo(-99L)));
-        assertThat(copy.getKey(), is(equalTo(key2)));
         assertThat(copy.getValue(), is(equalTo(val2)));
     }
 
     @Test
     public void testCompare() {
         // equal, smaller, larger
-        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<Object, Object>(42L, "", ""),
-                new AtomicStampedKeyValue<Object, Object>(42L, "", "")), is(equalTo(0)));
-        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<Object, Object>(41L, "", ""),
-                new AtomicStampedKeyValue<Object, Object>(42L, "", "")), is(equalTo(-1)));
-        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<Object, Object>(42L, "", ""),
-                new AtomicStampedKeyValue<Object, Object>(41L, "", "")), is(equalTo(1)));
+        assertThat(AtomicStampedValue.compare(new AtomicStampedValue<>(42L, ""), new AtomicStampedValue<>(42L, "")),
+                is(equalTo(0)));
+        assertThat(AtomicStampedValue.compare(new AtomicStampedValue<>(41L, ""), new AtomicStampedValue<>(42L, "")),
+                is(equalTo(-1)));
+        assertThat(AtomicStampedValue.compare(new AtomicStampedValue<>(42L, ""), new AtomicStampedValue<>(41L, "")),
+                is(equalTo(1)));
 
         // Nulls come first
-        assertThat(AtomicStampedKeyValue.compare(null, new AtomicStampedKeyValue<Object, Object>(42L, "", "")),
-                is(equalTo(-1)));
-        assertThat(AtomicStampedKeyValue.compare(new AtomicStampedKeyValue<Object, Object>(42L, "", ""), null),
-                is(equalTo(1)));
+        assertThat(AtomicStampedValue.compare(null, new AtomicStampedValue<>(42L, "")), is(equalTo(-1)));
+        assertThat(AtomicStampedValue.compare(new AtomicStampedValue<>(42L, ""), null), is(equalTo(1)));
     }
 }

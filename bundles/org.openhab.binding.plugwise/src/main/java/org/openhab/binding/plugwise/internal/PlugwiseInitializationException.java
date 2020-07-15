@@ -31,5 +31,4 @@ public class PlugwiseInitializationException extends Exception {
     public PlugwiseInitializationException(String msg, Throwable cause) {
         super(msg, cause);
     }
-
 }

@@ -6,7 +6,7 @@
 
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Thermostat</label>
@@ -20,14 +20,16 @@
 			</parameter>
 			<parameter name="senderIdOffset" type="integer">
 				<label>Sender Id</label>
-				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be determined by bridge</description>
+				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be
+					determined by bridge</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="receivingEEPId" type="text">
 				<label>EEP</label>
 				<description>EEP which is used by sensor</description>
 				<options>
-					<option value="A5_20_04">Heating radiator valve actuating drive with feed and room temperature measurement, local set point control and display</option>
+					<option value="A5_20_04">Heating radiator valve actuating drive with feed and room temperature measurement, local set
+						point control and display</option>
 				</options>
 				<default>"A5_20_04"</default>
 				<limitToOptions>true</limitToOptions>
@@ -36,7 +38,8 @@
 			<parameter name="sendingEEPId" type="text">
 				<label>EEP for Sending Commands</label>
 				<options>
-					<option value="A5_20_04">Heating radiator valve actuating drive with feed and room temperature measurement, local set point control and display</option>
+					<option value="A5_20_04">Heating radiator valve actuating drive with feed and room temperature measurement, local set
+						point control and display</option>
 				</options>
 				<default>"A5_20_04"</default>
 				<limitToOptions>true</limitToOptions>

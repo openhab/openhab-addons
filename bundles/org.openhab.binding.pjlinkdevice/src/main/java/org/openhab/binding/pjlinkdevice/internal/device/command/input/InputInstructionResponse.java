@@ -15,12 +15,11 @@ package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AcknowledgeResponseValue;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ErrorCode;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The response part of {@link InputInstructionCommand}
@@ -29,16 +28,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InputInstructionResponse extends PrefixedResponse<AcknowledgeResponseValue> {
-  private static final HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
-      Arrays.asList(ErrorCode.OUT_OF_PARAMETER, ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
+    private static final HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
+            Arrays.asList(ErrorCode.OUT_OF_PARAMETER, ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
-  public InputInstructionResponse(String response) throws ResponseException {
-    super("INPT=", SPECIFIED_ERRORCODES, response);
-  }
+    public InputInstructionResponse(String response) throws ResponseException {
+        super("INPT=", SPECIFIED_ERRORCODES, response);
+    }
 
-  @Override
-  protected AcknowledgeResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-    return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
-  }
-
+    @Override
+    protected AcknowledgeResponseValue parseResponseWithoutPrefix(String responseWithoutPrefix)
+            throws ResponseException {
+        return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
+    }
 }

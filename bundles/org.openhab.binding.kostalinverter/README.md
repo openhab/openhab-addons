@@ -32,6 +32,10 @@ Currently supported things are:
 
 Others may be supported (like future devices using the same SCB or offering the same Web API, branded OEM devices, ...), but they were not tested!
 
+Kostal bindings to third generation devices require Java's strong cryptography to be enabled in order to establish connections. In case you are allowed to use 
+strong cryptography in your country, you can achieve this by modifying the $JAVA_HOME/jre/lib/security/java.security file (find the line *crypto.policy=limited* and set it to *unlimited*). 
+If you're using the official openHAB docker image you may also enable Java's strong cryptography by specifying an environment variable *CRYPTO_POLICY="unlimited"*.
+
 ## Discovery
 
 None

@@ -15,6 +15,7 @@ package org.openhab.binding.hpprinter.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -32,6 +33,7 @@ public class HPUsage {
     private int totalColorImpressions;
     private int frontpanelCancelCount;
     private int totalImpressions;
+
     private int jamEvents;
     private int inkBlack;
     private int inkCyan;
@@ -43,6 +45,43 @@ public class HPUsage {
     private float inkMagentaMarking;
     private float inkYellowMarking;
     private float inkColorMarking;
+
+    private int inkBlackPagesRemaining;
+    private int inkColorPagesRemaining;
+    private int inkCyanPagesRemaining;
+    private int inkMagentaPagesRemaining;
+    private int inkYellowPagesRemaining;
+
+    //Scan
+    private int scanAdfCount;
+    private int scanFlatbedCount;
+    private int scanToEmailCount;
+    private int scanToFolderCount;
+    private int scanToHostCount;
+
+    //Scanner
+    private int scannerAdfCount;
+    private int scannerFlatbedCount;
+    private int scannerJamEvents;
+    private int scannerMispickEvents;
+
+    //Copy
+    private int copyAdfCount;
+    private int copyFlatbedCount;
+    private int copyTotalImpressions;
+    private int copyTotalMonochromeImpressions;
+    private int copyTotalColorImpressions;
+    
+    //App
+    private int appWindowsCount;
+    private int appOsxCount;
+    private int appIosCount;
+    private int appAndroidCount;
+    private int appSamsungCount;
+    private int appChromeCount;
+
+    //Other
+    private int cloudPrintImpressions;
 
     public HPUsage() {
     }
@@ -66,8 +105,9 @@ public class HPUsage {
                     .getTextContent();
 
             int markAgentLength = currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed").getLength();
-
+            Boolean hasPagesRemaining = currInk.getElementsByTagName("dd:EstimatedPagesRemaining").getLength() > 0;
             float totalMarking = 0;
+            int pagesRemaining = 0;
             if (markAgentLength > 0) { // Check to make sure Cumulative Marking Agent exists
                 for (int ai = 0; ai < markAgentLength; ai++) {
                     Element currMarking = (Element) currInk.getElementsByTagName("dd2:CumulativeMarkingAgentUsed")
@@ -78,40 +118,49 @@ public class HPUsage {
 
                     switch (currMarking.getElementsByTagName("dd:Unit").item(0).getTextContent().toLowerCase()) {
                         case "microliters":
-                            marking = marking / 1000; // Convert to litres
+                            marking = marking / 1000; // Convert from microlitres to millilitres
                             break;
                         case "liters":
-                            marking = marking * 1000; // Convert to millilitres
+                            marking = marking * 1000; // Convert to litres to millilitres
                     }
 
                     totalMarking = totalMarking + marking; // Sum the marking counts together
                 }
             }
 
+            if (hasPagesRemaining) {
+                pagesRemaining = Integer.parseInt(((Element) currInk).getElementsByTagName("dd:EstimatedPagesRemaining").item(0).getTextContent());
+            }
+
             switch (inkName.toLowerCase()) {
                 case "black":
                     inkBlack = Integer.parseInt(inkRemaining);
                     inkBlackMarking = totalMarking;
+                    inkBlackPagesRemaining = pagesRemaining;
                     break;
 
                 case "yellow":
                     inkYellow = Integer.parseInt(inkRemaining);
                     inkYellowMarking = totalMarking;
+                    inkYellowPagesRemaining = pagesRemaining;
                     break;
 
                 case "magenta":
                     inkMagenta = Integer.parseInt(inkRemaining);
                     inkMagentaMarking = totalMarking;
+                    inkMagentaPagesRemaining = pagesRemaining;
                     break;
 
                 case "cyan":
                     inkCyan = Integer.parseInt(inkRemaining);
                     inkCyanMarking = totalMarking;
+                    inkCyanPagesRemaining = pagesRemaining;
                     break;
 
                 case "cyanmagentayellow":
                     inkColor = Integer.parseInt(inkRemaining);
                     inkColorMarking = totalMarking;
+                    inkColorPagesRemaining = pagesRemaining;
                     break;
             }
         }
@@ -147,6 +196,92 @@ public class HPUsage {
                 .getElementsByTagName("dd:TotalFrontPanelCancelPresses");
         if (frontpanelCancelCount.getLength() > 0)
             this.frontpanelCancelCount = Integer.parseInt(frontpanelCancelCount.item(0).getTextContent());
+        
+        //Print Apps
+        NodeList printAppsSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrintApplicationSubunit");
+        if (printAppsSubUnit.getLength() > 0) {
+            Element currPrintAppsSubUnit = (Element) printAppsSubUnit.item(0);
+
+            NodeList cloudPrintImpressions = currPrintAppsSubUnit
+                .getElementsByTagName("dd:CloudPrintImpressions");
+
+            if (cloudPrintImpressions.getLength() > 0)
+                this.cloudPrintImpressions = Integer.parseInt(cloudPrintImpressions.item(0).getTextContent());
+        }
+        
+        //Scan
+        NodeList scanSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        if (scanSubUnit.getLength() > 0) {
+            Element currScanSubUnit = (Element) scanSubUnit.item(0);
+
+            this.scanAdfCount = setInt("dd:AdfImages", currScanSubUnit);
+            this.scanFlatbedCount = setInt("dd:FlatbedImages", currScanSubUnit);
+
+            this.scanToEmailCount = setInt("dd:ImagesSentToEmail", currScanSubUnit);
+            this.scanToFolderCount = setInt("dd:ImagesSentToFolder", currScanSubUnit);
+
+            this.scanToHostCount = setInt("dd:ScanToHostImages", currScanSubUnit);
+        }
+
+        //Scanner
+        NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScannerEngineSubunit");
+        if (scannerSubUnit.getLength() > 0) {
+            Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
+
+            this.scannerAdfCount = setInt("dd:AdfImages", currScannerSubUnit);
+            this.scannerFlatbedCount = setInt("dd:FlatbedImages", currScannerSubUnit);
+            this.scannerJamEvents = setInt("dd:JamEvents", currScannerSubUnit);
+            this.scannerMispickEvents = setInt("dd:MispickEvents", currScannerSubUnit);
+        }
+
+        //Copy
+        NodeList copySubUnit = document.getDocumentElement().getElementsByTagName("pudyn:CopyApplicationSubunit");
+        if (copySubUnit.getLength() > 0) {
+            Element currCopySubUnit = (Element) copySubUnit.item(0);
+
+            this.copyAdfCount = setInt("dd:AdfImages", currCopySubUnit);
+            this.copyFlatbedCount = setInt("dd:FlatbedImages", currCopySubUnit);
+            this.copyTotalColorImpressions = setInt("dd:ColorImpressions", currCopySubUnit);
+            this.copyTotalMonochromeImpressions = setInt("dd:MonochromeImpressions", currCopySubUnit);
+            this.copyTotalImpressions = setInt("dd:TotalImpressions", currCopySubUnit);
+        }
+
+        //App Usage
+        NodeList appSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:MobileApplicationSubunit");
+        if (appSubUnit.getLength() > 0) {
+            Element currAppSubUnit = (Element) appSubUnit.item(0);
+            
+            this.appWindowsCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Windows", "pudyn:TotalImpressions");
+            this.appOsxCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "OSX", "pudyn:TotalImpressions");
+            this.appIosCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "iOS", "pudyn:TotalImpressions");
+            this.appAndroidCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Android", "pudyn:TotalImpressions");
+            this.appSamsungCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "samsung", "pudyn:TotalImpressions");
+            this.appChromeCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Chrome", "pudyn:TotalImpressions");
+        }
+    }
+
+    private static int setIntCollateDirectChildren(Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
+        int value = 0;
+
+        for (Node n = parentNode.getFirstChild(); n != null; n = n.getNextSibling()) {
+            if (n instanceof Element) {
+                Element nodeItem = (Element) n;
+                if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent().equalsIgnoreCase(collateTagNameValue)) {
+                    int nodeValue = Integer.parseInt(nodeItem.getElementsByTagName(valueTagName).item(0).getTextContent());
+
+                    value += nodeValue;
+                }
+            }
+        }
+
+        return value;
+    }
+
+    private int setInt(String tagName, Element parentNode) {
+        NodeList nodeList = parentNode.getElementsByTagName(tagName);
+            if (nodeList.getLength() > 0)
+                return Integer.parseInt(nodeList.item(0).getTextContent());
+        return 0;
     }
 
     public int getFrontPanelCancelCount() {
@@ -171,6 +306,10 @@ public class HPUsage {
 
     public int getTotalImpressions() {
         return totalImpressions;
+    }
+
+    public int getCloudPrintImpressions() {
+        return cloudPrintImpressions;
     }
 
     public int getJamEvents() {
@@ -209,12 +348,112 @@ public class HPUsage {
         return inkYellowMarking;
     }
 
+    public int getInkBlackPagesRemaining() {
+        return inkBlackPagesRemaining;
+    }
+
+    public int getInkColorPagesRemaining() {
+        return inkColorPagesRemaining;
+    }
+
+    public int getInkMagentaPagesRemaining() {
+        return inkMagentaPagesRemaining;
+    }
+
+    public int getInkCyanPagesRemaining() {
+        return inkCyanPagesRemaining;
+    }
+
+    public int getInkYellowPagesRemaining() {
+        return inkYellowPagesRemaining;
+    }
+
     public int getInkColor() {
         return inkColor;
     }
 
     public float getInkColorMarking() {
         return inkColorMarking;
+    }
+
+    public int getScanAdfCount() {
+        return scanAdfCount;
+    }
+
+    public int getScanFlatbedCount() {
+        return scanFlatbedCount;
+    }
+
+    public int getScanToEmailCount() {
+        return scanToEmailCount;
+    }
+
+    public int getScanToFolderCount() {
+        return scanToFolderCount;
+    }
+
+    public int getScanToHostCount() {
+        return scanToHostCount;
+    }
+
+    public int getAppWindowsCount() {
+        return appWindowsCount;
+    }
+
+    public int getAppOSXCount() {
+        return appOsxCount;
+    }
+
+    public int getAppIosCount() {
+        return appIosCount;
+    }
+
+    public int getAppAndroidCount() {
+        return appAndroidCount;
+    }
+
+    public int getAppSamsungCount() {
+        return appSamsungCount;
+    }
+
+    public int getAppChromeCount() {
+        return appChromeCount;
+    }
+
+    public int getScannerAdfCount() {
+        return scannerAdfCount;
+    }
+
+    public int getScannerFlatbedCount() {
+        return scannerFlatbedCount;
+    }
+
+    public int getScannerJamEvents() {
+        return scannerJamEvents;
+    }
+
+    public int getScannerMispickEvents() {
+        return scannerMispickEvents;
+    }
+
+    public int getCopyAdfCount() {
+        return copyAdfCount;
+    }
+
+    public int getCopyFlatbedCount() {
+        return copyFlatbedCount;
+    }
+
+    public int getCopyTotalImpressions() {
+        return copyTotalImpressions;
+    }
+
+    public int getCopyTotalColorImpressions() {
+        return copyTotalColorImpressions;
+    }
+
+    public int getCopyTotalMonochromeImpressions() {
+        return copyTotalMonochromeImpressions;
     }
 
 }

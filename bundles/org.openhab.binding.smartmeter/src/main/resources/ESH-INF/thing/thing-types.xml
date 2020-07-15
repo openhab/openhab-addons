@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="smartmeter" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="smartmeter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
@@ -33,7 +34,8 @@
 				<advanced>true</advanced>
 				<label>Baudrate</label>
 				<default>AUTO</default>
-				<description>The baudrate of the serial port. If set to 'AUTO', it is dependent on the selected mode. The default is 300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML.</description>
+				<description>The baudrate of the serial port. If set to 'AUTO', it is dependent on the selected mode. The default is
+					300 baud for modes A, B, and C and 2400 baud for mode D, and 9600 baud for SML.</description>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="mode" type="text">
@@ -46,7 +48,8 @@
 				<advanced>true</advanced>
 				<label>Conform to Specific Standard Semantics</label>
 				<default>NONE</default>
-				<description>Reserved to conform to special semantics specified in specific standards. EDL_FNN: Currently applies the energy direction to WATT channels (which are absolute values) (see fnn lastenheft edl)</description>
+				<description>Reserved to conform to special semantics specified in specific standards. EDL_FNN: Currently applies
+					the energy direction to WATT channels (which are absolute values) (see fnn lastenheft edl)</description>
 				<limitToOptions>true</limitToOptions>
 			</parameter>
 		</config-description>

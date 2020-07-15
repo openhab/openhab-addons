@@ -14,13 +14,12 @@ package org.openhab.binding.pjlinkdevice.internal.device.command.authentication;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AuthenticationException;
 import org.openhab.binding.pjlinkdevice.internal.device.command.Command;
 import org.openhab.binding.pjlinkdevice.internal.device.command.Response;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This command is used to authenticate to the device after the connection established.
@@ -35,32 +34,31 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AuthenticationCommand<ResponseType extends Response<?>> implements Command<ResponseType> {
 
-  private String challenge;
-  private Command<ResponseType> testCommand;
-  private PJLinkDevice device;
+    private String challenge;
+    private Command<ResponseType> testCommand;
+    private PJLinkDevice device;
 
-  public AuthenticationCommand(PJLinkDevice pjLinkDevice, String challenge, Command<ResponseType> testCommand) {
-    this.device = pjLinkDevice;
-    this.challenge = challenge;
-    this.testCommand = testCommand;
-  }
+    public AuthenticationCommand(PJLinkDevice pjLinkDevice, String challenge, Command<ResponseType> testCommand) {
+        this.device = pjLinkDevice;
+        this.challenge = challenge;
+        this.testCommand = testCommand;
+    }
 
-  @Override
-  public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
-    this.device.addPrefixToNextCommand(createRequest().getRequestString());
-    return this.testCommand.execute();
-  }
+    @Override
+    public ResponseType execute() throws ResponseException, IOException, AuthenticationException {
+        this.device.addPrefixToNextCommand(createRequest().getRequestString());
+        return this.testCommand.execute();
+    }
 
-  protected AuthenticationRequest<ResponseType> createRequest() {
-    return new AuthenticationRequest<>(this);
-  }
+    protected AuthenticationRequest<ResponseType> createRequest() {
+        return new AuthenticationRequest<>(this);
+    }
 
-  public String getChallenge() {
-    return this.challenge;
-  }
+    public String getChallenge() {
+        return this.challenge;
+    }
 
-  public PJLinkDevice getDevice() {
-    return this.device;
-  }
-
+    public PJLinkDevice getDevice() {
+        return this.device;
+    }
 }

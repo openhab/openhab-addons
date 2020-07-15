@@ -41,5 +41,4 @@ public class ModuleJoinedNetworkRequestMessage extends Message {
             throw new PlugwisePayloadMismatchException(MODULE_JOINED_NETWORK_REQUEST, PAYLOAD_PATTERN, payload);
         }
     }
-
 }

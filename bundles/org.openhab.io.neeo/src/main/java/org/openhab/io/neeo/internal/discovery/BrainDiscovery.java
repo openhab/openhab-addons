@@ -64,5 +64,4 @@ public interface BrainDiscovery extends AutoCloseable {
      */
     @Override
     void close();
-
 }

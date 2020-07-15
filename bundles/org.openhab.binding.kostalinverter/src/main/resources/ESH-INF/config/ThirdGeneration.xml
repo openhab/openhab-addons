@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
-xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:kostalplenticorepikoiq_config">
 		<parameter name="url" type="text" required="true">
 			<context>network-address</context>
 			<label>IP Address / Hostname</label>
-			<description>Enter the IP address or the hostname of the inverter. Note that DNS resolution must work properly to identify the inverter by its name</description>
+			<description>Enter the IP address or the hostname of the inverter. Note that DNS resolution must work properly to
+				identify the inverter by its name</description>
 		</parameter>
 		<parameter name="refreshInternalInSeconds" type="integer" required="true" unit="s">
 			<label>Refresh Interval</label>
@@ -20,4 +22,3 @@ xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https:
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
-

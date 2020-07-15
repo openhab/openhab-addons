@@ -73,5 +73,4 @@ public class GenericHandler<T extends Packet> implements PacketHandler<T> {
             throw new IllegalArgumentException("Unable to instantiate empty packet", ex);
         }
     }
-
 }

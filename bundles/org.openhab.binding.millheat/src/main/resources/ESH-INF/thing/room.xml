@@ -6,23 +6,23 @@
 
 	<thing-type id="room">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Room with one or more Wi-Fi enabled heaters</label>
 
 		<channels>
-			<channel id="currentTemperature" typeId="currentTemperature" />
-			<channel id="targetTemperature" typeId="targetTemperatureRoom" />
-			<channel id="comfortTemperature" typeId="comfortTemperature" />
-			<channel id="sleepTemperature" typeId="sleepTemperature" />
-			<channel id="awayTemperature" typeId="awayTemperature" />
-			<channel id="heatingActive" typeId="heatingActive" />
-			<channel id="currentMode" typeId="currentMode" />
-			<channel id="program" typeId="program" />
+			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="targetTemperature" typeId="targetTemperatureRoom"/>
+			<channel id="comfortTemperature" typeId="comfortTemperature"/>
+			<channel id="sleepTemperature" typeId="sleepTemperature"/>
+			<channel id="awayTemperature" typeId="awayTemperature"/>
+			<channel id="heatingActive" typeId="heatingActive"/>
+			<channel id="currentMode" typeId="currentMode"/>
+			<channel id="program" typeId="program"/>
 		</channels>
 
 		<representation-property>roomId</representation-property>
-		<config-description-ref uri="thing-type:millheat:room" />
+		<config-description-ref uri="thing-type:millheat:room"/>
 	</thing-type>
 </thing:thing-descriptions>

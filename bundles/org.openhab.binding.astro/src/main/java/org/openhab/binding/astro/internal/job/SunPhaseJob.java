@@ -13,8 +13,8 @@
 package org.openhab.binding.astro.internal.job;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.CHANNEL_ID_SUN_PHASE_NAME;
-import static org.openhab.binding.astro.internal.job.Job.checkNull;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
@@ -28,6 +28,7 @@ import org.openhab.binding.astro.internal.model.SunPhaseName;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Implementation to be compliant with ESH Scheduler
  */
+@NonNullByDefault
 public final class SunPhaseJob extends AbstractJob {
 
     private final SunPhaseName sunPhaseName;
@@ -42,25 +43,26 @@ public final class SunPhaseJob extends AbstractJob {
      */
     public SunPhaseJob(String thingUID, SunPhaseName sunPhaseName) {
         super(thingUID);
-        checkArgument(sunPhaseName != null, "The sunPhaseName must not be null");
         this.sunPhaseName = sunPhaseName;
     }
 
     @Override
     public void run() {
         AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(getThingUID());
-        if (checkNull(astroHandler, "AstroThingHandler is null")) {
-            return;
-        }
-        Channel phaseNameChannel = astroHandler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
-        if (checkNull(phaseNameChannel, "Phase Name Channel is null")) {
-            return;
-        }
-        Planet planet = astroHandler.getPlanet();
-        if (planet != null && planet instanceof Sun) {
-            final Sun typedSun = (Sun) planet;
-            typedSun.getPhase().setName(sunPhaseName);
-            astroHandler.publishChannelIfLinked(phaseNameChannel.getUID());
+        if (astroHandler != null) {
+            Channel phaseNameChannel = astroHandler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
+            if (phaseNameChannel != null) {
+                Planet planet = astroHandler.getPlanet();
+                if (planet != null && planet instanceof Sun) {
+                    final Sun typedSun = (Sun) planet;
+                    typedSun.getPhase().setName(sunPhaseName);
+                    astroHandler.publishChannelIfLinked(phaseNameChannel.getUID());
+                }
+            } else {
+                LOGGER.trace("{}", "Phase Name Channel is null");
+            }
+        } else {
+            LOGGER.trace("AstroThingHandler is null");
         }
     }
 
@@ -68,5 +70,4 @@ public final class SunPhaseJob extends AbstractJob {
     public String toString() {
         return "Sun phase job " + getThingUID() + "/" + sunPhaseName;
     }
-
 }

@@ -94,7 +94,6 @@ public class LightsAndGroupsTests {
         HueLightEntry device = cs.ds.lights.get(cs.mapItemUIDtoHueID(item));
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
-
     }
 
     @Test
@@ -197,7 +196,6 @@ public class LightsAndGroupsTests {
 
     @Test
     public void changeSwitchState() {
-
         assertThat(((HueStatePlug) cs.ds.lights.get("1").state).on, is(false));
 
         String body = "{'on':true}";
@@ -214,7 +212,6 @@ public class LightsAndGroupsTests {
 
     @Test
     public void changeGroupItemSwitchState() {
-
         assertThat(((HueStatePlug) cs.ds.groups.get("10").action).on, is(false));
 
         String body = "{'on':true}";
@@ -231,7 +228,6 @@ public class LightsAndGroupsTests {
 
     @Test
     public void changeOnValue() {
-
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
 
         String body = "{'on':true}";
@@ -245,7 +241,6 @@ public class LightsAndGroupsTests {
 
     @Test
     public void changeOnAndBriValues() {
-
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
         assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
 

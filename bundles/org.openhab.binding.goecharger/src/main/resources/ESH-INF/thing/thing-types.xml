@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="goecharger"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="goe">
+		<label>Go-eCharger</label>
+		<description>Go-eCharger thing that represents the wallbox configuration and readings</description>
+
+		<channels>
+			<channel id="maxCurrent" typeId="current"/>
+			<channel id="pwmSignal" typeId="pwm"/>
+			<channel id="error" typeId="err"/>
+			<channel id="voltageL1" typeId="vl1"/>
+			<channel id="voltageL2" typeId="vl2"/>
+			<channel id="voltageL3" typeId="vl3"/>
+			<channel id="currentL1" typeId="cl1"/>
+			<channel id="currentL2" typeId="cl2"/>
+			<channel id="currentL3" typeId="cl3"/>
+			<channel id="powerL1" typeId="pl1"/>
+			<channel id="powerL2" typeId="pl2"/>
+			<channel id="powerL3" typeId="pl3"/>
+			<channel id="phases" typeId="pha"/>
+			<channel id="sessionChargeEnergyLimit" typeId="scl"/>
+			<channel id="sessionChargedEnergy" typeId="scs"/>
+			<channel id="totalChargedEnergy" typeId="eto"/>
+			<channel id="allowCharging" typeId="alw"/>
+			<channel id="cableCurrent" typeId="cbl"/>
+			<channel id="temperature" typeId="tmp"/>
+			<channel id="firmware" typeId="fmw"/>
+			<channel id="accessConfiguration" typeId="ast"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<label>IP Address</label>
+				<description>The IP address of the Go-eCharger</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" unit="s">
+				<label>Refresh Interval</label>
+				<description>Refresh interval for acquiring data from Go-eCharger in seconds</description>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="ast">
+		<item-type>String</item-type>
+		<label>Access Configuration</label>
+		<description>Currently set access configuration of the Go-eCharger</description>
+		<state readOnly="false">
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="RFID">RFID</option>
+				<option value="TIMER">Timer</option>
+				<option value="AWATTAR">aWATTar</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Maximum Current</label>
+		<description>Maximum current per phase allowed to use for charging</description>
+		<state pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="pwm">
+		<item-type>String</item-type>
+		<label>PWM signal status</label>
+		<description>Pulse-width modulation signal status</description>
+		<state readOnly="true">
+			<options>
+				<option value="READY_NO_CAR">Ready (no car)</option>
+				<option value="CHARGING">Charging</option>
+				<option value="WAITING_FOR_CAR">Waiting for car</option>
+				<option value="CHARGING_DONE_CAR_CONNECTED">Charging done (car connected)</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="err">
+		<item-type>String</item-type>
+		<label>Error Code</label>
+		<description>Error code of Go-eCharger</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="RCCB">RCCB</option>
+				<option value="NO_GROUND">No ground</option>
+				<option value="INTERNAL">Internal</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="vl1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage L1</label>
+		<description>Voltage on L1</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="vl2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage L2</label>
+		<description>Voltage on L2</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="vl3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage L3</label>
+		<description>Voltage on L3</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="cl1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current L1</label>
+		<description>Current on L1</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="cl2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current L2</label>
+		<description>Current on L2</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="cl3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current L3</label>
+		<description>Current on L3</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pl1">
+		<item-type>Number:Power</item-type>
+		<label>Power L1</label>
+		<description>Power on L1</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pl2">
+		<item-type>Number:Power</item-type>
+		<label>Power L2</label>
+		<description>Power on L2</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pl3">
+		<item-type>Number:Power</item-type>
+		<label>Power L3</label>
+		<description>Power on L3</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="pha">
+		<item-type>Number</item-type>
+		<label>Phases</label>
+		<description>Amount of phases currently used for charging</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="scl">
+		<item-type>Number:Energy</item-type>
+		<label>Current Session Charge Energy Limit</label>
+		<description>Wallbox stops charging after defined value, deactivate with value 0</description>
+		<state pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="scs">
+		<item-type>Number:Energy</item-type>
+		<label>Current Session Charged Energy</label>
+		<description>Amount of energy that has been charged in this session</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="eto">
+		<item-type>Number:Energy</item-type>
+		<label>Total Charged Energy</label>
+		<description>Amount of energy that has been charged since installation</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="alw">
+		<item-type>Switch</item-type>
+		<label>Allow Charging</label>
+		<description>If true charging is allowed</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="cbl">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Cable Encoding</label>
+		<description>Specifies the max amps that can be charged with that cable</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="tmp">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature of the Go-eCharger</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fmw">
+		<item-type>String</item-type>
+		<label>Firmware</label>
+		<description>Firmware Version</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

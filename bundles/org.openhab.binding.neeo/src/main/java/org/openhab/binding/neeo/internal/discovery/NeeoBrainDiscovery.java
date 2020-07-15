@@ -158,5 +158,4 @@ public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
         }
         return null;
     }
-
 }

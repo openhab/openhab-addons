@@ -14,12 +14,15 @@ package org.openhab.binding.daikin.internal;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for when an unexpected response is received from the Daikin controller.
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
  *
  */
+@NonNullByDefault
 public class DaikinCommunicationException extends IOException {
     private static final long serialVersionUID = 529232811860854017L;
 

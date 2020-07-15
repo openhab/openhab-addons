@@ -16,8 +16,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -32,7 +35,6 @@ import org.openhab.binding.bluetooth.bluegiga.BlueGigaAdapterConstants;
 import org.openhab.binding.bluetooth.bluegiga.handler.BlueGigaBridgeHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -42,6 +44,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - added support for adapter service registration
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluegiga")
 public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
 
@@ -50,15 +53,15 @@ public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
-    private SerialPortManager serialPortManager;
+    private Optional<SerialPortManager> serialPortManager = Optional.empty();
 
     @Reference
     protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
+        this.serialPortManager = Optional.of(serialPortManager);
     }
 
     protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
+        this.serialPortManager = Optional.empty();
     }
 
     @Override
@@ -67,11 +70,12 @@ public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    @Nullable
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(BlueGigaAdapterConstants.THING_TYPE_BLUEGIGA)) {
-            BlueGigaBridgeHandler handler = new BlueGigaBridgeHandler((Bridge) thing, serialPortManager);
+            BlueGigaBridgeHandler handler = new BlueGigaBridgeHandler((Bridge) thing, serialPortManager.get());
             registerBluetoothAdapter(handler);
             return handler;
         } else {
@@ -80,10 +84,11 @@ public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerBluetoothAdapter(BluetoothAdapter adapter) {
-        this.serviceRegs.put(adapter.getUID(), bundleContext.registerService(BluetoothAdapter.class.getName(), adapter,
-                new Hashtable<String, Object>()));
+        this.serviceRegs.put(adapter.getUID(),
+                bundleContext.registerService(BluetoothAdapter.class.getName(), adapter, new Hashtable<>()));
     }
 
+    @SuppressWarnings("null")
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof BluetoothAdapter) {

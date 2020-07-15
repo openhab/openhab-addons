@@ -24,5 +24,4 @@ public class NoMessageAvailableException extends Exception {
      * required variable to avoid IncorrectMultilineIndexException warning
      */
     private static final long serialVersionUID = -7663390696233390452L;
-
 }

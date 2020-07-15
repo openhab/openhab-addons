@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.security;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.SmpIoCapabilities;
 
@@ -26,6 +27,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.SmpIoCapabili
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaSetParametersCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x05;
     public static int COMMAND_METHOD = 0x03;
@@ -51,7 +53,7 @@ public class BlueGigaSetParametersCommand extends BlueGigaCommand {
      * <p>
      * BlueGiga API type is <i>SmpIoCapabilities</i> - Java type is {@link SmpIoCapabilities}
      */
-    private SmpIoCapabilities ioCapabilities;
+    private SmpIoCapabilities ioCapabilities = SmpIoCapabilities.UNKNOWN;
 
     /**
      * 1: Man-in-the-middle protection required. 0: No Man-in-the-middle protection. Default:
@@ -62,6 +64,7 @@ public class BlueGigaSetParametersCommand extends BlueGigaCommand {
     public void setRequireMitm(boolean requireMitm) {
         this.requireMitm = requireMitm;
     }
+
     /**
      * Minimum key size in Bytes. Range: 7-16. Default: 7 (56bits)
      *
@@ -70,6 +73,7 @@ public class BlueGigaSetParametersCommand extends BlueGigaCommand {
     public void setMinKeySize(int minKeySize) {
         this.minKeySize = minKeySize;
     }
+
     /**
      * Configures the local devices I/O capabilities. See: SMP IO Capabilities for options.
      * Default: No Input and No Output

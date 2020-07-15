@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
+import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -229,7 +230,6 @@ public class ValueTests {
             v.update(new DecimalType(i));
             assertThat(v.getMQTTpublishValue(null), is("" + i));
         }
-
     }
 
     @Test
@@ -252,6 +252,60 @@ public class ValueTests {
         assertThat((PercentType) v.getChannelState(), is(new PercentType(0)));
         v.update(new DecimalType(0.2));
         assertEquals(((PercentType) v.getChannelState()).floatValue(), 11.11f, 0.01f);
+    }
+
+    @Test
+    public void increaseDecreaseCalc() {
+        PercentageValue v = new PercentageValue(new BigDecimal("1.0"), new BigDecimal("11.0"), new BigDecimal("0.5"),
+                null, null);
+
+        // Normal operation.
+        v.update(new DecimalType("6.0"));
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 50.0f, 0.01f);
+        v.update(IncreaseDecreaseType.INCREASE);
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 55.0f, 0.01f);
+        v.update(IncreaseDecreaseType.DECREASE);
+        v.update(IncreaseDecreaseType.DECREASE);
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 45.0f, 0.01f);
+
+        // Lower limit.
+        v.update(new DecimalType("1.1"));
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 1.0f, 0.01f);
+        v.update(IncreaseDecreaseType.DECREASE);
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 0.0f, 0.01f);
+
+        // Upper limit.
+        v.update(new DecimalType("10.8"));
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 98.0f, 0.01f);
+        v.update(IncreaseDecreaseType.INCREASE);
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 100.0f, 0.01f);
+    }
+
+    @Test
+    public void upDownCalc() {
+        PercentageValue v = new PercentageValue(new BigDecimal("1.0"), new BigDecimal("11.0"), new BigDecimal("0.5"),
+                null, null);
+
+        // Normal operation.
+        v.update(new DecimalType("6.0"));
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 50.0f, 0.01f);
+        v.update(UpDownType.UP);
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 55.0f, 0.01f);
+        v.update(UpDownType.DOWN);
+        v.update(UpDownType.DOWN);
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 45.0f, 0.01f);
+
+        // Lower limit.
+        v.update(new DecimalType("1.1"));
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 1.0f, 0.01f);
+        v.update(UpDownType.DOWN);
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 0.0f, 0.01f);
+
+        // Upper limit.
+        v.update(new DecimalType("10.8"));
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 98.0f, 0.01f);
+        v.update(UpDownType.UP);
+        assertEquals(((PercentType) v.getChannelState()).floatValue(), 100.0f, 0.01f);
     }
 
     @Test(expected = IllegalArgumentException.class)

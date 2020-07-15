@@ -25,11 +25,14 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MiIoCrypto} is responsible for creating Xiaomi messages.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MiIoCrypto {
 
     public static byte[] md5(byte[] source) throws MiIoCryptoException {
@@ -37,7 +40,7 @@ public class MiIoCrypto {
             MessageDigest m = MessageDigest.getInstance("MD5");
             return m.digest(source);
         } catch (NoSuchAlgorithmException e) {
-            throw new MiIoCryptoException(e.getMessage());
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -49,7 +52,7 @@ public class MiIoCrypto {
             System.arraycopy(token, 0, ivbuf, 16, 16);
             return m.digest(ivbuf);
         } catch (NoSuchAlgorithmException e) {
-            throw new MiIoCryptoException(e.getMessage());
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -63,7 +66,7 @@ public class MiIoCrypto {
             return encrypted;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-            throw new MiIoCryptoException(e.getMessage());
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -81,7 +84,7 @@ public class MiIoCrypto {
             return (crypted);
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-            throw new MiIoCryptoException(e.getMessage());
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 
@@ -103,7 +106,7 @@ public class MiIoCrypto {
             }
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
                 | BadPaddingException e) {
-            throw new MiIoCryptoException(e.getMessage());
+            throw new MiIoCryptoException(e.getMessage(), e);
         }
     }
 }

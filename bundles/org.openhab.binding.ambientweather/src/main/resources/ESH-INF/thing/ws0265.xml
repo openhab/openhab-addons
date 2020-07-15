@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="ambientweather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="ambientweather"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Ambient Weather WS-0265 -->
 	<thing-type id="ws0265">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>WS-0265</label>
@@ -49,15 +50,15 @@
 				<description></description>
 			</channel-group>
 		</channel-groups>
-		<config-description-ref uri="thing-type:ambientweather:station" />
+		<config-description-ref uri="thing-type:ambientweather:station"/>
 	</thing-type>
 
 	<channel-group-type id="weatherDataWs0265">
 		<label>Weather Data</label>
 		<description>Weather Data</description>
 		<channels>
-			<channel id="observationTime" typeId="observationTime" />
-			<channel id="temperature" typeId="temperature" />
+			<channel id="observationTime" typeId="observationTime"/>
+			<channel id="temperature" typeId="temperature"/>
 		</channels>
 	</channel-group-type>
 

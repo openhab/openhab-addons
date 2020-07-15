@@ -65,3 +65,7 @@ Configuration parameters are:
 * __stateTopic__: This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example "all/in/#" or "sensors/+/config".
 * __payload__: An optional condition on the value of the MQTT topic that must match before this channel is triggered.
 
+## Legacy MQTT1-Binding
+
+This binding is not supposed to run in parallel to the old mqtt1-binding.
+Please uninstall the old binding before installing this binding.

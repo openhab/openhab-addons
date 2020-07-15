@@ -41,7 +41,6 @@ public abstract class A5_07 extends _4BSMessage {
     protected abstract State getSupplyVoltage();
 
     protected State getSupplyVoltage(int value) {
-
         if (value > 250) {
             logger.warn("EEP A5-07 error code {}", value);
             return UnDefType.UNDEF;
@@ -52,8 +51,8 @@ public abstract class A5_07 extends _4BSMessage {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (!isValid()) {
             return UnDefType.UNDEF;
         }

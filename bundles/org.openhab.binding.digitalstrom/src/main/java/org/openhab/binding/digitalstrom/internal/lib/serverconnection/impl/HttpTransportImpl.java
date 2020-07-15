@@ -581,12 +581,10 @@ public class HttpTransportImpl implements HttpTransport {
 
             @Override
             public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-
             }
 
             @Override
             public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-
             }
         } };
 

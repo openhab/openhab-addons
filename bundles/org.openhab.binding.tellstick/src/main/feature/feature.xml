@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="org.openhab.binding.tellstick-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
-    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
-    <feature name="openhab-binding-tellstick" description="Tellstick Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature>openhab-transport-serial</feature>
-        <feature dependency="true">openhab.tp-netty</feature>
-        <feature dependency="true">openhab.tp-jaxb</feature>
-        <bundle dependency="true">mvn:net.java.dev.jna/jna/4.5.2</bundle>
-        <bundle dependency="true">mvn:net.java.dev.jna/jna-platform/4.5.2</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tellstick/${project.version}</bundle>
-    </feature>
+	<feature name="openhab-binding-tellstick" description="Tellstick Binding" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<feature>openhab-transport-serial</feature>
+		<feature dependency="true">openhab.tp-netty</feature>
+		<feature dependency="true">openhab.tp-jaxb</feature>
+		<bundle dependency="true">mvn:net.java.dev.jna/jna/4.5.2</bundle>
+		<bundle dependency="true">mvn:net.java.dev.jna/jna-platform/4.5.2</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tellstick/${project.version}</bundle>
+	</feature>
 </features>

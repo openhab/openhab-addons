@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
-import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 
 /**
  * The request part of {@link InputInstructionCommand}
@@ -24,15 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InputInstructionRequest implements Request {
 
-  private InputInstructionCommand command;
+    private InputInstructionCommand command;
 
-  public InputInstructionRequest(InputInstructionCommand command) {
-    this.command = command;
-  }
+    public InputInstructionRequest(InputInstructionCommand command) {
+        this.command = command;
+    }
 
-  @Override
-  public String getRequestString() {
-    return "%1INPT " + this.command.getTarget().getPJLinkRepresentation();
-  }
-
+    @Override
+    public String getRequestString() {
+        return "%1INPT " + this.command.getTarget().getPJLinkRepresentation();
+    }
 }

@@ -102,5 +102,4 @@ public class PlugwiseHandlerFactory extends BaseThingHandlerFactory {
             discoveryServiceRegistrations.remove(thingHandler.getThing().getUID());
         }
     }
-
 }

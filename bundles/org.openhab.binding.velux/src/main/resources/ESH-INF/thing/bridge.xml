@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Velux Bridge Things Binding -->
+<thing:thing-descriptions bindingId="velux"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Velux Bridge Binding -->
+	<bridge-type id="klf200">
+		<label>@text/bridge-type.velux.klf200.label</label>
+		<description>@text/bridge-type.velux.klf200.description</description>
+
+		<channels>
+			<channel id="status" typeId="status"/>
+			<channel id="reload" typeId="reload"/>
+			<channel id="downtime" typeId="downtime"/>
+			<channel id="doDetection" typeId="doDetection"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Velux</property>
+			<!-- Bridge properties
+				<property name="firmware" />
+				<property name="ipAddress" />
+				<property name="subnetMask" />
+				<property name="defaultGW" />
+				<property name="DHCP" />
+				<property name="WLANSSID" />
+				<property name="WLANPassword" />
+				<property name="products" />
+				<property name="scenes" />
+				<property name="check" />
+			-->
+		</properties>
+
+		<config-description-ref uri="bridge-type:velux:bridge"/>
+
+	</bridge-type>
+
+</thing:thing-descriptions>

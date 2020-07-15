@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SYNOP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SYNOP);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

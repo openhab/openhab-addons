@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -32,11 +33,14 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class EntityBaseHandler extends BaseThingHandler {
 
-    private static final long INITIAL_DELAY_SECONDS = 20;
+    private static final long INITIAL_DELAY_SECONDS = 15;
+    private static final int MAX_WAIT_TIME_MILLIS = 60000;
+    private long timeStamp;
 
     private final Logger logger = LoggerFactory.getLogger(EntityBaseHandler.class);
 
     protected EntityConfiguration config;
+    private ScheduledFuture<?> delayedSchedule;
 
     public EntityBaseHandler(Thing thing) {
         super(thing);
@@ -44,31 +48,60 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing. {}", thing.getLabel());
+        logger.trace("Start initializing. {}", thing.getUID());
         updateStatus(ThingStatus.UNKNOWN);
 
         config = getConfigAs(EntityConfiguration.class);
 
-        scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
+        timeStamp = System.currentTimeMillis();
+        delayedSchedule = scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     private void initializeDelayed() {
-        logger.trace("Start initializeDelayed() in {}", getThing().getUID());
+        logger.debug("Start initializeDelayed() in {}", getThing().getUID());
         ParadoxPanel panel = ParadoxPanel.getInstance();
-        if (!panel.isPanelSupported()) {
+        // Asynchronous update not yet done
+        if (panel.getPanelInformation() == null) {
+            // Retry until reach MAX_WAIT_TIME
+            if (System.currentTimeMillis() - timeStamp <= MAX_WAIT_TIME_MILLIS) {
+                logger.debug("Panel information is null. Scheduling initializeDelayed() to be executed again in {} sec",
+                        INITIAL_DELAY_SECONDS);
+                delayedSchedule = scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "Panel is not updating the information in " + MAX_WAIT_TIME_MILLIS
+                                + " ms. Giving up. Cannot update entity=" + this + ".");
+            }
+
+            // Asynchronous update done but panel is not supported
+        } else if (!panel.isPanelSupported()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Panel " + panel.getPanelInformation().getPanelType().name() + " is not supported.");
+                    "Panel is not supported. Cannot update entity=" + this + ".");
+            // All OK
+        } else {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (ThingStatus.OFFLINE == getThing().getStatus()) {
+            logger.debug("Received {} command but {} is OFFLINE with the following detailed status {}", command,
+                    getThing().getUID(), getThing().getStatusInfo());
+            return;
+        }
+
         if (command instanceof RefreshType) {
-            if (ThingStatus.ONLINE == getThing().getStatus()) {
-                updateEntity();
-            } else {
-                logger.debug("Received REFRESH command but {} has the following detailed status {}", getThing().getUID(), getThing().getStatusInfo());
-            }
+            updateEntity();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (delayedSchedule != null) {
+            boolean cancelingResult = delayedSchedule.cancel(true);
+            String cancelingSuccessful = cancelingResult ? "successful" : "failed";
+            logger.debug("Canceling schedule of {} is {}", delayedSchedule, cancelingSuccessful);
         }
     }
 

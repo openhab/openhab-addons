@@ -65,8 +65,8 @@ public class BlueZHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerBluetoothAdapter(BluetoothAdapter adapter) {
-        this.serviceRegs.put(adapter.getUID(), bundleContext.registerService(BluetoothAdapter.class.getName(), adapter,
-                new Hashtable<String, Object>()));
+        this.serviceRegs.put(adapter.getUID(),
+                bundleContext.registerService(BluetoothAdapter.class.getName(), adapter, new Hashtable<>()));
     }
 
     @Override

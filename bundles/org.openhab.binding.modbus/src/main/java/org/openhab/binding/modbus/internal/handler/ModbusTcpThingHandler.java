@@ -15,10 +15,8 @@ package org.openhab.binding.modbus.internal.handler;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
@@ -38,8 +36,8 @@ import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 public class ModbusTcpThingHandler
         extends AbstractModbusEndpointThingHandler<ModbusTCPSlaveEndpoint, ModbusTcpConfiguration> {
 
-    public ModbusTcpThingHandler(Bridge bridge, Supplier<ModbusManager> managerRef) {
-        super(bridge, managerRef);
+    public ModbusTcpThingHandler(Bridge bridge, ModbusManager manager) {
+        super(bridge, manager);
     }
 
     @Override
@@ -63,21 +61,23 @@ public class ModbusTcpThingHandler
         poolConfiguration.setReconnectAfterMillis(config.getReconnectAfterMillis());
     }
 
+    @SuppressWarnings("null") // since Optional.map is always called with NonNull argument
     @Override
-    protected String formatConflictingParameterError(@Nullable EndpointPoolConfiguration otherPoolConfig) {
+    protected String formatConflictingParameterError() {
         return String.format(
-                "Endpoint '%s' has conflicting parameters: parameters of this thing (%s '%s') %s are different from some other things parameter: %s. Ensure that all endpoints pointing to tcp slave '%s:%s' have same parameters.",
-                endpoint, thing.getUID(), this.thing.getLabel(), this.poolConfiguration, otherPoolConfig,
+                "Endpoint '%s' has conflicting parameters: parameters of this thing (%s '%s') are different from some other thing's parameter. Ensure that all endpoints pointing to tcp slave '%s:%s' have same parameters.",
+                endpoint, thing.getUID(), this.thing.getLabel(),
                 Optional.ofNullable(this.endpoint).map(e -> e.getAddress()).orElse("<null>"),
                 Optional.ofNullable(this.endpoint).map(e -> String.valueOf(e.getPort())).orElse("<null>"));
     }
 
     @Override
     public int getSlaveId() {
-        if (config == null) {
+        ModbusTcpConfiguration localConfig = config;
+        if (localConfig == null) {
             throw new IllegalStateException("Poller not configured, but slave id is queried!");
         }
-        return config.getId();
+        return localConfig.getId();
     }
 
     @Override
@@ -101,5 +101,4 @@ public class ModbusTcpThingHandler
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(ModbusEndpointDiscoveryService.class);
     }
-
 }

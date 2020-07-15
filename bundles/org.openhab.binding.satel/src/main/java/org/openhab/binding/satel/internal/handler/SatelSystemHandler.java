@@ -30,13 +30,14 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.satel.internal.command.ClearTroublesCommand;
 import org.openhab.binding.satel.internal.command.IntegraStatusCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.command.SetClockCommand;
 import org.openhab.binding.satel.internal.event.IntegraStatusEvent;
 import org.openhab.binding.satel.internal.event.NewStatesEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.types.StateType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,24 +76,20 @@ public class SatelSystemHandler extends SatelStateThingHandler {
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
-        if (event instanceof IntegraStatusEvent) {
-            logger.trace("Handling incoming event: {}", event);
-            IntegraStatusEvent statusEvent = (IntegraStatusEvent) event;
-            if (getThingConfig().isCommandOnly()) {
-                return;
-            }
-            updateState(CHANNEL_DATE_TIME,
-                    new DateTimeType(statusEvent.getIntegraTime().atZone(getBridgeHandler().getZoneId())));
-            updateSwitch(CHANNEL_SERVICE_MODE, statusEvent.inServiceMode());
-            updateSwitch(CHANNEL_TROUBLES, statusEvent.troublesPresent());
-            updateSwitch(CHANNEL_TROUBLES_MEMORY, statusEvent.troublesMemory());
-            updateSwitch(CHANNEL_ACU100_PRESENT, statusEvent.isAcu100Present());
-            updateSwitch(CHANNEL_INTRX_PRESENT, statusEvent.isIntRxPresent());
-            updateSwitch(CHANNEL_GRADE23_SET, statusEvent.isGrade23Set());
-        } else {
-            super.incomingEvent(event);
+    public void incomingEvent(IntegraStatusEvent event) {
+        logger.trace("Handling incoming event: {}", event);
+        if (getThingConfig().isCommandOnly()) {
+            return;
         }
+        updateState(CHANNEL_DATE_TIME,
+                event.getIntegraTime().map(dt -> (State) new DateTimeType(dt.atZone(getBridgeHandler().getZoneId())))
+                        .orElse(UnDefType.UNDEF));
+        updateSwitch(CHANNEL_SERVICE_MODE, event.inServiceMode());
+        updateSwitch(CHANNEL_TROUBLES, event.troublesPresent());
+        updateSwitch(CHANNEL_TROUBLES_MEMORY, event.troublesMemory());
+        updateSwitch(CHANNEL_ACU100_PRESENT, event.isAcu100Present());
+        updateSwitch(CHANNEL_INTRX_PRESENT, event.isIntRxPresent());
+        updateSwitch(CHANNEL_GRADE23_SET, event.isGrade23Set());
     }
 
     @Override
@@ -146,5 +143,4 @@ public class SatelSystemHandler extends SatelStateThingHandler {
 
         return result;
     }
-
 }

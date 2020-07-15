@@ -15,13 +15,15 @@ package org.openhab.binding.astro.internal.util;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -37,6 +39,7 @@ import org.openhab.binding.astro.internal.config.AstroChannelConfig;
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Christoph Weitkamp - Introduced UoM
  */
+@NonNullByDefault
 public class PropertyUtils {
 
     /** Constructor */
@@ -44,12 +47,11 @@ public class PropertyUtils {
         throw new IllegalAccessError("Non-instantiable");
     }
 
-    private static TimeZoneProvider timeZoneProvider;
-
     /**
      * Returns the state of the channel.
      */
-    public static State getState(ChannelUID channelUID, AstroChannelConfig config, Object instance) throws Exception {
+    public static State getState(ChannelUID channelUID, AstroChannelConfig config, Object instance, ZoneId zoneId)
+            throws Exception {
         Object value = getPropertyValue(channelUID, instance);
         if (value == null) {
             return UnDefType.UNDEF;
@@ -58,7 +60,7 @@ public class PropertyUtils {
         } else if (value instanceof Calendar) {
             Calendar cal = (Calendar) value;
             GregorianCalendar gregorianCal = (GregorianCalendar) DateTimeUtils.applyConfig(cal, config);
-            cal.setTimeZone(TimeZone.getTimeZone(timeZoneProvider.getTimeZone()));
+            cal.setTimeZone(TimeZone.getTimeZone(zoneId));
             ZonedDateTime zoned = gregorianCal.toZonedDateTime().withFixedOffsetZone();
             return new DateTimeType(zoned);
         } else if (value instanceof Number) {
@@ -71,19 +73,11 @@ public class PropertyUtils {
         }
     }
 
-    public static void setTimeZone(TimeZoneProvider zone) {
-        PropertyUtils.timeZoneProvider = zone;
-    }
-
-    public static void unsetTimeZone() {
-        PropertyUtils.timeZoneProvider = null;
-    }
-
     /**
      * Returns the property value from the object instance, nested properties are possible. If the propertyName is for
      * example rise.start, the methods getRise().getStart() are called.
      */
-    public static Object getPropertyValue(ChannelUID channelUID, Object instance) throws Exception {
+    public static @Nullable Object getPropertyValue(ChannelUID channelUID, Object instance) throws Exception {
         String[] properties = StringUtils.split(channelUID.getId(), "#");
         return getPropertyValue(instance, properties, 0);
     }
@@ -92,7 +86,8 @@ public class PropertyUtils {
      * Iterates through the nested properties and returns the getter value.
      */
     @SuppressWarnings("all")
-    private static Object getPropertyValue(Object instance, String[] properties, int nestedIndex) throws Exception {
+    private static @Nullable Object getPropertyValue(Object instance, String[] properties, int nestedIndex)
+            throws Exception {
         String propertyName = properties[nestedIndex];
         Method m = instance.getClass().getMethod(toGetterString(propertyName), null);
         Object result = m.invoke(instance, (Object[]) null);
@@ -112,5 +107,4 @@ public class PropertyUtils {
         sb.append(str.substring(1));
         return sb.toString();
     }
-
 }

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.connection;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceCommand;
 
 /**
  * Class to implement the BlueGiga command <b>update</b>.
@@ -31,16 +32,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaUpdateCommand extends BlueGigaCommand {
+@NonNullByDefault
+public class BlueGigaUpdateCommand extends BlueGigaDeviceCommand {
     public static int COMMAND_CLASS = 0x03;
     public static int COMMAND_METHOD = 0x02;
-
-    /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Minimum connection interval (units of 1.25ms)
@@ -71,14 +66,6 @@ public class BlueGigaUpdateCommand extends BlueGigaCommand {
     private int timeout;
 
     /**
-     * Connection handle.
-     *
-     * @param connection the connection to set as {@link int}
-     */
-    public void setConnection(int connection) {
-        this.connection = connection;
-    }
-    /**
      * Minimum connection interval (units of 1.25ms)
      *
      * @param intervalMin the intervalMin to set as {@link int}
@@ -86,6 +73,7 @@ public class BlueGigaUpdateCommand extends BlueGigaCommand {
     public void setIntervalMin(int intervalMin) {
         this.intervalMin = intervalMin;
     }
+
     /**
      * Maximum connection interval (units of 1.25ms)
      *
@@ -94,6 +82,7 @@ public class BlueGigaUpdateCommand extends BlueGigaCommand {
     public void setIntervalMax(int intervalMax) {
         this.intervalMax = intervalMax;
     }
+
     /**
      * Slave latency which defines how many connections intervals a slave may skip.
      *
@@ -102,6 +91,7 @@ public class BlueGigaUpdateCommand extends BlueGigaCommand {
     public void setLatency(int latency) {
         this.latency = latency;
     }
+
     /**
      * Supervision timeout (units of 10ms)
      *

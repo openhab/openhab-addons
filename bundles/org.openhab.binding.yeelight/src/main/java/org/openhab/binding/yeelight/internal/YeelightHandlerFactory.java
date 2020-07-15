@@ -22,24 +22,24 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-import org.openhab.binding.yeelight.internal.handler.YeelightCeilingHandler;
-import org.openhab.binding.yeelight.internal.handler.YeelightColorHandler;
-import org.openhab.binding.yeelight.internal.handler.YeelightStripeHandler;
-import org.openhab.binding.yeelight.internal.handler.YeelightWhiteHandler;
+import org.openhab.binding.yeelight.internal.handler.*;
 import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link YeelightHandlerFactory} is responsible for returning supported things and handlers for the devices.
  *
  * @author Coaster Li - Initial contribution
+ * @author Nikita Pogudalov - Added YeelightCeilingWithNightHandler for Ceiling 1
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.yeelight")
 public class YeelightHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
+
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING1);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING3);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CEILING4);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_DOLPHIN);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_CTBULB);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_WONDER);
@@ -62,9 +62,13 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
             return new YeelightColorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
             return new YeelightStripeHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING1)
-                || thingTypeUID.equals(THING_TYPE_CEILING3) || thingTypeUID.equals(THING_TYPE_DESKLAMP)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING3)
+                || thingTypeUID.equals(THING_TYPE_DESKLAMP)) {
             return new YeelightCeilingHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING1)) {
+            return new YeelightCeilingWithNightHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING4)) {
+            return new YeelightCeilingWithAmbientHandler(thing);
         } else {
             return null;
         }

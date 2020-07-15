@@ -45,7 +45,8 @@ public class D2_03_0A extends _VLDMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent, Configuration config) {
+    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+            Configuration config) {
         switch (channelId) {
             case CHANNEL_PUSHBUTTON:
                 return (bytes[1] == ShortPress) ? CommonTriggerEvents.PRESSED : null;
@@ -53,14 +54,15 @@ public class D2_03_0A extends _VLDMessage {
                 return (bytes[1] == DoublePress) ? CommonTriggerEvents.PRESSED : null;
             case CHANNEL_LONGPRESS:
                 return (bytes[1] == LongPress) ? CommonTriggerEvents.PRESSED
-                    : ((bytes[1] == LongRelease) ? CommonTriggerEvents.RELEASED : null);
+                        : ((bytes[1] == LongRelease) ? CommonTriggerEvents.RELEASED : null);
             default:
                 return null;
         }
     }
 
     @Override
-    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc, Configuration config) {
+    public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
+            Configuration config) {
         if (CHANNEL_BATTERY_LEVEL.equals(channelId)) {
             return new QuantityType<>(bytes[0] & 0xFF, SmartHomeUnits.PERCENT);
         }

@@ -18,12 +18,48 @@ import java.util.stream.IntStream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Interface for immutable sequence of Modbus registers
+ * Immutable {@link ModbusRegisterArray} implementation
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
+public class ModbusRegisterArray implements Iterable<ModbusRegister> {
+
+    private final ModbusRegister[] registers;
+
+    /**
+     * Construct plain <code>ModbusRegister[]</code> array from register values
+     *
+     * @param registerValues register values, each <code>int</code> corresponding to one register
+     * @return
+     */
+    public static ModbusRegister[] registersFromValues(int... registerValues) {
+        ModbusRegister[] registers = new ModbusRegister[registerValues.length];
+        for (int i = 0; i < registerValues.length; i++) {
+            registers[i] = new ModbusRegister(registerValues[i]);
+        }
+        return registers;
+    }
+
+    /**
+     * Construct ModbusRegisterArrayImpl from array of {@link ModbusRegister}
+     *
+     * @param registers
+     */
+    public ModbusRegisterArray(ModbusRegister[] registers) {
+        this.registers = registers;
+    }
+
+    /**
+     * Construct plain <code>ModbusRegisterArrayImpl</code> array from register values
+     *
+     * @param registerValues register values, each <code>int</code> corresponding to one register
+     * @return
+     */
+    public ModbusRegisterArray(int... registerValues) {
+        this(registersFromValues(registerValues));
+    }
+
     /**
      * Return register at the given index
      *
@@ -33,20 +69,33 @@ public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
      * @param index the index of the register to be returned.
      * @throws IndexOutOfBoundsException if the index is out of bounds.
      */
-    ModbusRegister getRegister(int index);
+    public ModbusRegister getRegister(int index) {
+        return registers[index];
+    }
 
     /**
      * Get number of registers stored in this instance
      *
      * @return
      */
-    int size();
+    public int size() {
+        return registers.length;
+    }
+
+    @Override
+    public String toString() {
+        if (registers.length == 0) {
+            return "ModbusRegisterArrayImpl(<empty>)";
+        }
+        StringBuffer buffer = new StringBuffer(registers.length * 2).append("ModbusRegisterArrayImpl(");
+        return appendHexString(buffer).append(')').toString();
+    }
 
     /**
      * Iterator over all the registers
      */
     @Override
-    default Iterator<ModbusRegister> iterator() {
+    public Iterator<ModbusRegister> iterator() {
         return IntStream.range(0, size()).mapToObj(i -> getRegister(i)).iterator();
     }
 
@@ -57,7 +106,7 @@ public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
      *
      * @return string representing the bytes of the register array
      */
-    default String toHexString() {
+    public String toHexString() {
         if (size() == 0) {
             return "";
         }
@@ -70,7 +119,7 @@ public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
      * Appends the register data as hex string to the given StringBuffer
      *
      */
-    default StringBuffer appendHexString(StringBuffer buffer) {
+    public StringBuffer appendHexString(StringBuffer buffer) {
         IntStream.range(0, size()).forEachOrdered(index -> {
             getRegister(index).appendHexString(buffer);
             if (index < size() - 1) {
@@ -79,5 +128,4 @@ public interface ModbusRegisterArray extends Iterable<ModbusRegister> {
         });
         return buffer;
     }
-
 }

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.digiplex.internal.communication.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Area event type.
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public enum AreaEventType {
     ARMED,
     ARMED_FORCE,

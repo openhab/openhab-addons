@@ -43,17 +43,23 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     protected void updateEntity() {
         int index = calculateEntityIndex();
         List<Zone> zones = ParadoxPanel.getInstance().getZones();
-        if (zones != null && zones.size() > index) {
-            Zone zone = zones.get(index);
-            if (zone != null) {
-                updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
-                updateState(ZONE_OPENED_CHANNEL_UID, booleanToContactState(zone.getZoneState().isOpened()));
-                updateState(ZONE_TAMPERED_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().isTampered()));
-                updateState(ZONE_LOW_BATTERY_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().hasLowBattery()));
-            }
-        } else {
-            logger.warn("Attempted to access zone out of bounds of current zone list. Index: {}, List: {}", index,
+        if (zones == null) {
+            logger.debug(
+                    "Zones collection of Paradox Panel object is null. Probably not yet initialized. Skipping update.");
+            return;
+        }
+        if (zones.size() <= index) {
+            logger.debug("Attempted to access zone out of bounds of current zone list. Index: {}, List: {}", index,
                     zones);
+            return;
+        }
+
+        Zone zone = zones.get(index);
+        if (zone != null) {
+            updateState(ZONE_LABEL_CHANNEL_UID, new StringType(zone.getLabel()));
+            updateState(ZONE_OPENED_CHANNEL_UID, booleanToContactState(zone.getZoneState().isOpened()));
+            updateState(ZONE_TAMPERED_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().isTampered()));
+            updateState(ZONE_LOW_BATTERY_CHANNEL_UID, booleanToSwitchState(zone.getZoneState().hasLowBattery()));
         }
     }
 
@@ -64,5 +70,4 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     private OnOffType booleanToSwitchState(boolean value) {
         return value ? OnOffType.ON : OnOffType.OFF;
     }
-
 }

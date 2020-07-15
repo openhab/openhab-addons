@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.gap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 
 /**
@@ -28,6 +29,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaSetAdvParametersCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x08;
@@ -66,6 +68,7 @@ public class BlueGigaSetAdvParametersCommand extends BlueGigaCommand {
     public void setAdvIntervalMin(int advIntervalMin) {
         this.advIntervalMin = advIntervalMin;
     }
+
     /**
      * Maximum advertisement interval in units of 625us. Range: 0x20 to 0x4000. Default: 0x200
      * (320ms)
@@ -75,6 +78,7 @@ public class BlueGigaSetAdvParametersCommand extends BlueGigaCommand {
     public void setAdvIntervalMax(int advIntervalMax) {
         this.advIntervalMax = advIntervalMax;
     }
+
     /**
      * A bit mask to identify which of the three advertisement channels are used. Examples: 0x07:
      * All three channels are used 0x03: Advertisement channels 37 and 38 are used. 0x04: Only

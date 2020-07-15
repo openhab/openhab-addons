@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Command for requesting zone label information from PRT3 device
  *
  * @author Robert Michalak - Initial contribution
  */
-
+@NonNullByDefault
 public class ZoneLabelRequest implements DigiplexRequest {
 
     private int zoneNo;
@@ -30,5 +32,4 @@ public class ZoneLabelRequest implements DigiplexRequest {
     public String getSerialMessage() {
         return String.format("ZL%03d\r", zoneNo);
     }
-
 }

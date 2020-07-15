@@ -83,5 +83,4 @@ public class WiFiLEDConfig {
     public void setFadeSteps(Integer fadeSteps) {
         this.fadeSteps = fadeSteps;
     }
-
 }

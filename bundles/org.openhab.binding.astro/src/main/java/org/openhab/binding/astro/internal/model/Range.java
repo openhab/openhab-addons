@@ -65,9 +65,9 @@ public class Range {
             return null;
         }
         if (start.after(end)) {
-            return new QuantityType<Time>(0, SmartHomeUnits.MINUTE);
+            return new QuantityType<>(0, SmartHomeUnits.MINUTE);
         }
-        return new QuantityType<Time>(end.getTimeInMillis() - start.getTimeInMillis(), MILLI(SmartHomeUnits.SECOND))
+        return new QuantityType<>(end.getTimeInMillis() - start.getTimeInMillis(), MILLI(SmartHomeUnits.SECOND))
                 .toUnit(SmartHomeUnits.MINUTE);
     }
 

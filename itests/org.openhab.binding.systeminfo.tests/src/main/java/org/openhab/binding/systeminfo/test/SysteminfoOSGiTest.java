@@ -107,7 +107,6 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
 
     @Before
     public void setUp() {
-
         VolatileStorageService volatileStorageService = new VolatileStorageService();
         registerService(volatileStorageService);
 
@@ -265,7 +264,6 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             State itemState = item.getState();
             assertThat(itemState, is(equalTo(expectedState)));
         }, waitTime, DFL_SLEEP_TIME);
-
     }
 
     private void intializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
@@ -942,7 +940,6 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         waitForAssert(() -> {
             assertThat("Thing is not initialized.", systemInfoThing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
         });
-
     }
 
     @Test
@@ -1056,5 +1053,4 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
             assertThat(systemInfoHandler.getLowPriorityChannels().contains(channel.getUID()), is(true));
         });
     }
-
 }

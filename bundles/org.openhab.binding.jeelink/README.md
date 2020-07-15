@@ -16,6 +16,7 @@ This binding supports:
 *   LaCrosseGateway (connected over TCP)
 *   LaCrosse temperature sensors
 *   EC3000 power monitors
+*   Revolt power monitors
 *   PCA301 power monitoring wireless sockets
 *   TX22 temperature & humidity Sensors (including connected TX23 wind and TX26 rain sensors)
 
@@ -85,6 +86,13 @@ The available init commands depend on the sketch that is running on the USB stic
 | Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
 | Retry Count       | Number       | The number of times a switch command will be resent to the socket until giving up                                      |
 
+#### Revolt power monitors
+
+| Parameter         | Item Type    | Description                                                                                                            |
+|-------------------|--------------|------------------------------------------------------------------------------------------------------------------------|
+| Sensor ID         | Number       | The ID of the connected sensor                                                                                         |
+| Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
+
 ## Channels
 
 #### LaCrosse temperature sensors
@@ -127,27 +135,38 @@ The available init commands depend on the sketch that is running on the USB stic
 | currentPower            | Number:Power  | Current power draw                                   |
 | consumptionTotal        | Number:Energy | Total energy consumption                             |
 
+#### Revolt power monitors
+
+| Channel Type ID   | Item Type                | Description                               |
+|-------------------|--------------------------|-------------------------------------------|
+| currentPower      | Number:Power             | Current power draw                        |
+| consumptionTotal  | Number:Energy            | Total energy consumption                  |
+| powerFactor       | Number                   | Ratio of real power to apparent power     |
+| electricCurrent   | Number:ElectricCurrent   | The measured Electric Current             |
+| electricPotential | Number:ElectricPotential | The measured Electric Potential           |
+| powerFrequency    | Number:Frequency         | The measured AC power frequency           |
+
 ## Commands
 
 #### PCA301 power monitoring wireless sockets
 
-| Channel Type ID         | Item Type    | Description                                        |
-|-------------------------|--------------|----------------------------------------------------|
-| switchingState          | Switch       | Supports ON and OFF commands to switch the socket. |
+| Channel Type ID         | Item Type    | Description                                       |
+|-------------------------|--------------|---------------------------------------------------|
+| switchingState          | Switch       | Supports ON and OFF commands to switch the socket |
 
 ## Full Example
 
 A typical thing configuration for PCA301 looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:pca301 "Jeelink pca301" @ "home" [ serialPort="/dev/ttyUSB0" ]
+Bridge jeelink:jeelinkUsb:pca301 "Jeelink pca301" @ "home" [ serialPort="/dev/ttyUSB0" ]
 Thing jeelink:pca301:1-160-236 "ec3k 1" (jeelink:jeelinkUsb:pca301)  @ "home" [ sensorId="1-160-236"]
 ```
 
 A typical thing configuration for EC3000 looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4" ]
+Bridge jeelink:jeelinkUsb:ec3k "Jeelink ec3k" @ "home" [ serialPort="COM4" ]
 Thing jeelink:ec3k:0E3D "ec3k 1" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="0E3D"]
 Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="14E7"]
 ```
@@ -155,9 +174,16 @@ Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId=
 A typical Thing configuration for lacrosse looks like this:
 
 ```
-Thing jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6" ]
+Bridge jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6" ]
 Thing jeelink:lacrosse:sensor1 "Jeelink lacrosse 1" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="16", minTemp=10, maxTemp=32]
 Thing jeelink:lacrosse:sensor2 "Jeelink lacrosse 2" (jeelink:jeelinkUsb:lacrosse)  @ "home" [ sensorId="18", minTemp=10, maxTemp=32]
+```
+
+A typical thing configuration for Revolt looks like this:
+
+```
+Bridge jeelink:jeelinkUsb:revolt "Jeelink revolt" @ "home" [ serialPort="COM4" ]
+Thing jeelink:revolt:4F1B "revolt 1" (jeelink:jeelinkUsb:revolt)  @ "home" [ sensorId="4F1B"]
 ```
 
 A typical item configuration for a LaCrosse temperature sensor looks like this:
@@ -189,3 +215,15 @@ Number:Speed WindStrength "Wind [%.1f %unit%]" {channel="jeelink:tx22:42:windStr
 Number:Angle WindDir "Wind dir [%.1f %unit%]" {channel="jeelink:tx22:42:windAngle"}
 Number:Speed GustStrength "Gust [%.1f %unit%]" {channel="jeelink:tx22:42:gustStrength"}
 ```
+
+A typical item configuration for a Revolt power monitor looks like this:
+
+```
+Number:Power SocketWattage {channel="jeelink:revolt:4F1B:currentPower"}
+Number:Energy SocketConsumption {channel="jeelink:revolt:4F1B:consumptionTotal"}
+Number:Dimensionless POwerFactor {channel="jeelink:revolt:4F1B:powerFactor"}
+Number:ElectricCurrent Current {channel="jeelink:revolt:4F1B:electricCurrent"}
+Number:ElectricPotential Voltage {channel="jeelink:revolt:4F1B:electricPotential"}
+Number:Frequency PowerFrequency {channel="jeelink:revolt:4F1B:powerFrequency"}
+```
+

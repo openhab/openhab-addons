@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * The {@link DeviceFactory} creates device handler classes.
  *
  * @author Coaster Li - Initial contribution
+ * @author Nikita Pogudalov - Added CeilingDeviceWithNightDevice for Ceiling 1
  */
 public class DeviceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceFactory.class);
@@ -33,11 +34,12 @@ public class DeviceFactory {
         DeviceType type = DeviceType.valueOf(model);
         switch (type) {
             case ceiling:
-                return new CeilingDevice(id);
-            case ceiling1:
-                return new CeilingDevice(id);
             case ceiling3:
                 return new CeilingDevice(id);
+            case ceiling1:
+                return new CeilingDeviceWithNightDevice(id);
+            case ceiling4:
+                return new CeilingDeviceWithAmbientDevice(id);
             case color:
                 return new WonderDevice(id);
             case mono:
@@ -54,38 +56,12 @@ public class DeviceFactory {
     }
 
     public static DeviceBase build(Map<String, String> bulbInfo) {
-        DeviceType type = DeviceType.valueOf(bulbInfo.get("model"));
-        DeviceBase device;
-        switch (type) {
-            case ceiling:
-                device = new CeilingDevice(bulbInfo.get("id"));
-                break;
-            case ceiling1:
-                device = new CeilingDevice(bulbInfo.get("id"));
-                break;
-            case ceiling3:
-                device = new CeilingDevice(bulbInfo.get("id"));
-                break;
-            case color:
-                device = new WonderDevice(bulbInfo.get("id"));
-                break;
-            case mono:
-                device = new MonoDevice(bulbInfo.get("id"));
-                break;
-            case ct_bulb:
-                device = new CtBulbDevice(bulbInfo.get("id"));
-                break;
-            case stripe:
-                device = new PitayaDevice(bulbInfo.get("id"));
-                break;
-            case desklamp:
-                device = new DesklampDevice(bulbInfo.get("id"));
-                break;
-            default:
-                return null;
+        DeviceBase device = build(bulbInfo.get("model"), bulbInfo.get("id"));
+        if (null == device) {
+            return null;
         }
-        Map<String, Object> infos = new HashMap<>();
-        infos.putAll(bulbInfo);
+
+        Map<String, Object> infos = new HashMap<>(bulbInfo);
         device.setBulbInfo(infos);
         LOGGER.debug("{}: DeviceFactory Device = {}", TAG, bulbInfo.get("Location"));
         // TODO enhancement!!!
@@ -96,5 +72,4 @@ public class DeviceFactory {
         LOGGER.debug("{}: DeviceFactory Device info = {}, port = {}", TAG, device.getAddress(), device.getPort());
         return device;
     }
-
 }

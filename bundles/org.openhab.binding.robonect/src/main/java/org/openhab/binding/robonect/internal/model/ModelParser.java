@@ -21,12 +21,11 @@ import com.google.gson.GsonBuilder;
  * @author Marco Meyer - Initial contribution
  */
 public class ModelParser {
-    
-    
+
     private final Gson gson;
 
     /**
-     * Creates a parser with containing a preconfigured Gson object capable of parsing the JSON answers from the 
+     * Creates a parser with containing a preconfigured Gson object capable of parsing the JSON answers from the
      * Robonect module.
      */
     public ModelParser() {
@@ -34,18 +33,18 @@ public class ModelParser {
         gsonBuilder.registerTypeAdapter(MowerStatus.class, new MowerStatusDeserializer());
         gsonBuilder.registerTypeAdapter(MowerMode.class, new MowerModeDeserializer());
         gsonBuilder.registerTypeAdapter(Timer.TimerMode.class, new TimerModeDeserializer());
-        this.gson = gsonBuilder.create();         
+        this.gson = gsonBuilder.create();
     }
 
     /**
      * Parses a jsonString to a Java Object of the specified type.
+     * 
      * @param jsonString - the json string to parse
      * @param type - the class of the type of the expected object to be returned.
      * @param <T> - the type of expected return value.
      * @return
      */
-    public <T>T parse(String jsonString,Class<T> type){
+    public <T> T parse(String jsonString, Class<T> type) {
         return gson.fromJson(jsonString, type);
     }
-    
 }

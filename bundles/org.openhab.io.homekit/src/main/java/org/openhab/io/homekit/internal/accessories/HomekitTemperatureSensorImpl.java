@@ -12,47 +12,67 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
-import org.eclipse.smarthome.core.library.items.NumberItem;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.TemperatureSensor;
+import io.github.hapjava.accessories.TemperatureSensorAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.thermostat.TargetTemperatureCharacteristic;
+import io.github.hapjava.services.impl.TemperatureSensorService;
 
 /**
- * Implements a Homekit TemperatureSensor using a NumberItem
+ * Implements a HomeKit TemperatureSensor using a NumberItem
  *
  * @author Andy Lintner - Initial contribution
  */
-class HomekitTemperatureSensorImpl extends AbstractTemperatureHomekitAccessoryImpl<NumberItem>
-        implements TemperatureSensor {
+class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implements TemperatureSensorAccessory {
 
-    public HomekitTemperatureSensorImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
+    public HomekitTemperatureSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, itemRegistry, updater, settings, NumberItem.class);
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        getServices().add(new TemperatureSensorService(this));
     }
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        DecimalType state = getItem().getStateAs(DecimalType.class);
-        if (state == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(convertToCelsius(state.doubleValue()));
+        final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
+                DecimalType.class);
+        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
     }
 
     @Override
     public void subscribeCurrentTemperature(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        subscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE, callback);
+    }
+
+    @Override
+    public double getMinCurrentTemperature() {
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+    }
+
+    @Override
+    public double getMaxCurrentTemperature() {
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+    }
+
+    @Override
+    public double getMinStepCurrentTemperature() {
+        return getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.STEP,
+                BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_STEP)).doubleValue();
     }
 
     @Override
     public void unsubscribeCurrentTemperature() {
-        getUpdater().unsubscribe(getItem());
+        unsubscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE);
     }
 }

@@ -36,5 +36,4 @@ public class MillConfig {
      * Number of wind shares ("Winddelen")
      */
     public int wd = 1;
-
 }

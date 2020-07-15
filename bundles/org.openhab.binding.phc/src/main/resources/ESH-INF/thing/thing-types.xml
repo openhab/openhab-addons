@@ -15,6 +15,7 @@
 				<description>Serial Port the PHC modules are connected to</description>
 				<required>true</required>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 		</config-description>
 
@@ -23,14 +24,14 @@
 	<!-- Thing Types -->
 	<thing-type id="AM">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>PHC AM</label>
-		<description>Thing for an AM channel.</description>
+		<description>Thing for an output/relay module (AM).</description>
 
 		<channel-groups>
-			<channel-group id="am" typeId="amChannels" />
+			<channel-group id="am" typeId="amChannels"/>
 		</channel-groups>
 
 		<config-description>
@@ -45,15 +46,15 @@
 
 	<thing-type id="EM">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>PHC EM</label>
-		<description>Thing for an EM channel.</description>
+		<description>Thing for an input/switch module (EM).</description>
 
 		<channel-groups>
-			<channel-group id="em" typeId="emChannels" />
-			<channel-group id="emLed" typeId="amChannels" />
+			<channel-group id="em" typeId="emChannels"/>
+			<channel-group id="emLed" typeId="amChannels"/>
 		</channel-groups>
 
 		<config-description>
@@ -67,16 +68,22 @@
 
 	<thing-type id="JRM">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>PHC JRM</label>
-		<description>Thing for an JRM channel.</description>
+		<description>Thing for an shutter module (JRM).</description>
 
-		<channel-groups>
-			<channel-group id="jrm" typeId="jrmChannels" />
-			<channel-group id="jrmT" typeId="jrmTimeChannels" />
-		</channel-groups>
+		<channels>
+			<channel id="00" typeId="jrm-channel"/>
+			<channel id="01" typeId="jrm-channel"/>
+			<channel id="02" typeId="jrm-channel"/>
+			<channel id="03" typeId="jrm-channel"/>
+			<channel id="00" typeId="jrmTime-channel"/>
+			<channel id="01" typeId="jrmTime-channel"/>
+			<channel id="02" typeId="jrmTime-channel"/>
+			<channel id="03" typeId="jrmTime-channel"/>
+		</channels>
 
 		<config-description>
 			<parameter name="address" type="text" pattern="[0-1]{5}" min="5" max="5">
@@ -84,33 +91,63 @@
 				<description>Address of the module as binary, like the DIP switches.</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="upDownTime1" type="integer">
+			<parameter name="upDownTime1" type="integer" min="1" max="65535">
 				<advanced>true</advanced>
 				<label>Time Shutter 1</label>
 				<description>The Time which the first shutter needs to move up/down.</description>
-				<required>false</required>
 				<default>30</default>
 			</parameter>
-			<parameter name="upDownTime2" type="integer">
+			<parameter name="upDownTime2" type="integer" min="1" max="65535">
 				<advanced>true</advanced>
 				<label>Time Shutter 2</label>
 				<description>The Time which the second shutter needs to move up/down.</description>
-				<required>false</required>
 				<default>30</default>
 			</parameter>
-			<parameter name="upDownTime3" type="integer">
+			<parameter name="upDownTime3" type="integer" min="1" max="65535">
 				<advanced>true</advanced>
 				<label>Time Shutter 3</label>
 				<description>The Time which the third shutter needs to move up/down.</description>
-				<required>false</required>
 				<default>30</default>
 			</parameter>
-			<parameter name="upDownTime4" type="integer">
+			<parameter name="upDownTime4" type="integer" min="1" max="65535">
 				<advanced>true</advanced>
 				<label>Time Shutter 4</label>
 				<description>The Time which the fourth shutter needs to move up/down.</description>
-				<required>false</required>
 				<default>30</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="DIM">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>PHC DIM</label>
+		<description>Thing for a dimmer module (DM).</description>
+
+		<channels>
+			<channel id="00" typeId="dim-channel"/>
+			<channel id="01" typeId="dim-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" pattern="[0-1]{5}" min="5" max="5">
+				<label>Address</label>
+				<description>Address of the module as binary, like the DIP switches.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="dimTime1" type="integer" min="1" max="255">
+				<advanced>true</advanced>
+				<label>Time Dimmer 1</label>
+				<description>The time (in seconds) in which the first dimmer should dim 100%.</description>
+				<default>2</default>
+			</parameter>
+			<parameter name="dimTime2" type="integer" min="1" max="255">
+				<advanced>true</advanced>
+				<label>Time Dimmer 2</label>
+				<description>The time (in seconds) in which the second dimmer should dim 100%.</description>
+				<default>2</default>
 			</parameter>
 		</config-description>
 	</thing-type>

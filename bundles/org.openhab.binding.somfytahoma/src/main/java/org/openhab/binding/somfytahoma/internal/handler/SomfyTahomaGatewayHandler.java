@@ -13,16 +13,12 @@
 package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.STATUS;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaStatus;
 
 /**
@@ -47,16 +43,14 @@ public class SomfyTahomaGatewayHandler extends SomfyTahomaBaseThingHandler {
         if (ch != null) {
             updateState(ch.getUID(), new StringType(tahomaStatus));
         }
-        //update the firmware property
+        // update the firmware property
         String fw = status.getProtocolVersion();
-        if (fw != null) {
-            updateProperty(PROPERTY_FIRMWARE_VERSION, fw);
-        }
+        updateProperty(PROPERTY_FIRMWARE_VERSION, fw);
+
         updateStatus("DISCONNECTED".equals(tahomaStatus) ? ThingStatus.OFFLINE : ThingStatus.ONLINE);
     }
 
     public String getGateWayId() {
         return getThing().getConfiguration().get("id").toString();
     }
-
 }

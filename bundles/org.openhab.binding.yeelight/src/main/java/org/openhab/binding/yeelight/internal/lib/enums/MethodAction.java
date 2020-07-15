@@ -33,7 +33,11 @@ public enum MethodAction {
     CRON_DEL("cron_del"),
     ADJUST("set_adjust"),
     MUSIC("set_music"),
-    NAME("set_name");
+    NAME("set_name"),
+    BG_HSV("bg_set_hsv"),
+    BG_RGB("bg_set_rgb"),
+    BG_BRIGHTNESS("bg_set_bright"),
+    BG_SWITCH("bg_set_power");
 
     public String action;
 

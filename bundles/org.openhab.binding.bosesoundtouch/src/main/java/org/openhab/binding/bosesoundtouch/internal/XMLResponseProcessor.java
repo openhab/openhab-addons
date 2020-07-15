@@ -156,7 +156,7 @@ public class XMLResponseProcessor {
         bassCapabilitiesMap.put("bassMin", XMLHandlerState.BassMin);
         bassCapabilitiesMap.put("bassMax", XMLHandlerState.BassMax);
         bassCapabilitiesMap.put("bassDefault", XMLHandlerState.BassDefault);
-        
+
         Map<String, XMLHandlerState> groupsMap = new HashMap<>();
         stateSwitchingMap.put(XMLHandlerState.Group, groupsMap);
         groupsMap.put("name", XMLHandlerState.GroupName);

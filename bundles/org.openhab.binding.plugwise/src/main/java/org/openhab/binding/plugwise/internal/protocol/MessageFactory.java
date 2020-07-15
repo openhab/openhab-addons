@@ -61,5 +61,4 @@ public class MessageFactory {
                 throw new IllegalArgumentException("Unsupported message type: " + messageType);
         }
     }
-
 }

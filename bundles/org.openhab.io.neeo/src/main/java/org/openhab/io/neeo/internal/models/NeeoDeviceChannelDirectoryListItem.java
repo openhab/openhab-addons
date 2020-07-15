@@ -42,10 +42,10 @@ public class NeeoDeviceChannelDirectoryListItem {
     /**
      * Constructs the list item from the attributes
      *
-     * @param itemValue    a possibly null, possibly empty item value
-     * @param title        a non-null, non-empty title
+     * @param itemValue a possibly null, possibly empty item value
+     * @param title a non-null, non-empty title
      * @param thumbNailUri a possibly null, possibly empty thumbnail URI
-     * @param uiAction     the non-null UI action
+     * @param uiAction the non-null UI action
      */
     public NeeoDeviceChannelDirectoryListItem(String itemValue, String title, @Nullable String thumbNailUri,
             ListUiAction uiAction) {

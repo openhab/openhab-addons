@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Command for requesting zone status information from PRT3 device
  *
  * @author Robert Michalak - Initial contribution
  */
-
+@NonNullByDefault
 public class AreaStatusRequest implements DigiplexRequest {
 
     private int areaNo;
@@ -30,5 +32,4 @@ public class AreaStatusRequest implements DigiplexRequest {
     public String getSerialMessage() {
         return String.format("RA%03d\r", areaNo);
     }
-
 }

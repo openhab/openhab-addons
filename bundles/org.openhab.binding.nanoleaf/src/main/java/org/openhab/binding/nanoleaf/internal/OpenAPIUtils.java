@@ -51,7 +51,7 @@ public class OpenAPIUtils {
     private static final Pattern FIRMWARE_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
 
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
-            String apiOperation, HttpMethod method) throws NanoleafException, NanoleafUnauthorizedException {
+            String apiOperation, HttpMethod method) throws NanoleafException {
         URI requestURI = getUri(controllerConfig, apiOperation, null);
         LOGGER.trace("RequestBuilder: Sending Request {}:{} {} ", requestURI.getHost(), requestURI.getPort(),
                 requestURI.getPath());
@@ -87,12 +87,11 @@ public class OpenAPIUtils {
         return requestURI;
     }
 
-    public static ContentResponse sendOpenAPIRequest(Request request)
-            throws NanoleafException, NanoleafUnauthorizedException {
+    public static ContentResponse sendOpenAPIRequest(Request request) throws NanoleafException {
         try {
             traceSendRequest(request);
-
-            ContentResponse openAPIResponse = request.send();
+            ContentResponse openAPIResponse;
+            openAPIResponse = request.send();
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());
             }
@@ -105,12 +104,16 @@ public class OpenAPIUtils {
                     throw new NanoleafUnauthorizedException("OpenAPI request unauthorized");
                 } else if (openAPIResponse.getStatus() == HttpStatus.NOT_FOUND_404) {
                     throw new NanoleafNotFoundException("OpenAPI request did not get any result back");
+                } else if (openAPIResponse.getStatus() == HttpStatus.BAD_REQUEST_400) {
+                    throw new NanoleafBadRequestException(
+                            String.format("Nanoleaf did not expect this request. HTTP response code %s",
+                                    openAPIResponse.getStatus()));
                 } else {
                     throw new NanoleafException(String.format("OpenAPI request failed. HTTP response code %s",
                             openAPIResponse.getStatus()));
                 }
             }
-        } catch (ExecutionException | TimeoutException | InterruptedException clientException) {
+        } catch (ExecutionException | TimeoutException clientException) {
             if (clientException.getCause() instanceof HttpResponseException
                     && ((HttpResponseException) clientException.getCause()).getResponse()
                             .getStatus() == HttpStatus.UNAUTHORIZED_401) {
@@ -118,6 +121,8 @@ public class OpenAPIUtils {
                 throw new NanoleafUnauthorizedException("Invalid authorization token");
             }
             throw new NanoleafException("Failed to send OpenAPI request", clientException);
+        } catch (InterruptedException interruptedException) {
+            throw new NanoleafInterruptedException("OpenAPI request has been interrupted", interruptedException);
         }
     }
 

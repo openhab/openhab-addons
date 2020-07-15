@@ -59,7 +59,7 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
     /**
      * Contains all supported thing types of this handler, will be filled by DsDeviceThingTypeProvider.
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>();
 
     private String dSID;
     private Circuit circuit;
@@ -180,7 +180,6 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
                 }
             }
         }
-
     }
 
     @Override
@@ -309,5 +308,4 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
     public String getDeviceStatusListenerID() {
         return this.dSID;
     }
-
 }

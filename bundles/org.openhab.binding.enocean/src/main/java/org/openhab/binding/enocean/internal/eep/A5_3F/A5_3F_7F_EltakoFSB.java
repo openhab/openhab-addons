@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_3F;
 
-import java.util.function.Function;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.ZERO;
+
+import java.util.function.Function;
 
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -50,7 +51,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         int shutTime = 0xFF;
         if (config != null) {
             shutTime = Math.min(255, config.as(EnOceanChannelRollershutterConfig.class).shutTime);

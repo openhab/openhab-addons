@@ -30,5 +30,4 @@ public interface RpcServer {
      * Stops the rpc server.
      */
     public void shutdown();
-
 }

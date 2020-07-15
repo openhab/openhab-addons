@@ -10,17 +10,17 @@
 		<description>Connection to the Rotel RSX-1550 surround receiver</description>
 
 		<channel-groups>
-			<channel-group id="mainZone" typeId="mainZoneType3" />
-			<channel-group id="zone2" typeId="zone2type1" />
-			<channel-group id="zone3" typeId="zone3" />
-			<channel-group id="zone4" typeId="zone4" />
+			<channel-group id="mainZone" typeId="mainZoneType3"/>
+			<channel-group id="zone2" typeId="zone2type1"/>
+			<channel-group id="zone3" typeId="zone3"/>
+			<channel-group id="zone4" typeId="zone4"/>
 		</channel-groups>
 
 		<properties>
 			<property name="protocol">HEX</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:rotel:serial4" />
+		<config-description-ref uri="thing-type:rotel:serial4"/>
 	</thing-type>
 
 </thing:thing-descriptions>

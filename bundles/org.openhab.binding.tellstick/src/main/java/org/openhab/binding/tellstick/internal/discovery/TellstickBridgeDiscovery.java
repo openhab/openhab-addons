@@ -103,5 +103,4 @@ public class TellstickBridgeDiscovery extends AbstractDiscoveryService {
                     .withLabel(controller.getType().name() + ": " + controller.getName()).build());
         }
     }
-
 }

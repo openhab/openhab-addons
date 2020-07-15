@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.paradoxalarm.internal.communication.crypto.EncryptionHandler;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
 /**
@@ -26,173 +24,123 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public class ParadoxIPPacket implements IPPacketPayload {
+@NonNullByDefault
+public class ParadoxIPPacket implements IPPacket {
 
     public static final byte[] EMPTY_PAYLOAD = new byte[0];
 
-    /**
-     * Start of header - always 0xAA
-     */
-    private byte startOfHeader = (byte) 0xAA;
-
-    /**
-     * Payload length - 2 bytes (LL HH)
-     */
-    private short payloadLength = 0;
-
-    /**
-     * "Message Type: 0x01: IP responses 0x02: Serial/pass through cmd response
-     * 0x03: IP requests 0x04: Serial/pass through cmd requests"
-     */
-    private byte messageType = 0x03;
-
-    /**
-     * "IP Encryption 0x08: Disabled 0x09: Enabled"
-     */
-    private byte encryption = 0x08;
-    private byte command = 0;
-    private byte subCommand = 0;
-    private byte unknown0 = 0x0A;
-
-    /**
-     * Padding bytes to fill the header to 16 bytes with 0xEE.
-     */
-    private long theRest = 0xEEEEEEEEEEEEEEEEl;
+    private PacketHeader header;
     private byte[] payload;
-    private boolean isChecksumRequired;
 
-    public ParadoxIPPacket(IPPacketPayload payload) {
-        this(payload.getBytes(), true);
+    public ParadoxIPPacket(byte[] bytes) {
+        this(bytes, true);
     }
 
-    public ParadoxIPPacket(String payload, boolean isChecksumRequired) {
-        this(payload.getBytes(StandardCharsets.US_ASCII), isChecksumRequired);
-    }
-
+    @SuppressWarnings("null")
     public ParadoxIPPacket(byte[] payload, boolean isChecksumRequired) {
-        this.isChecksumRequired = isChecksumRequired;
-
-        if (payload == null) {
-            this.payload = new byte[0];
-            this.payloadLength = 0;
-        } else {
-            this.payload = payload;
-            this.payloadLength = (short) payload.length;
+        this.payload = payload != null ? payload : new byte[0];
+        if (isChecksumRequired) {
+            payload[payload.length - 1] = ParadoxUtil.calculateChecksum(payload);
         }
-
-        // TODO: Figure out how to fill up to 16, 32, 48, etc sizes with 0xEE
-        // if (payload.length < 16) {
-        // this.payload = extendPayload(16, payload);
-        // } else {
-        // }
+        short payloadLength = (short) (payload != null ? payload.length : 0);
+        header = new PacketHeader(payloadLength);
     }
 
     @Override
     public byte[] getBytes() {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final byte[] headerBytes = header.getBytes();
+        int bufferLength = headerBytes.length + payload.length;
 
-            outputStream.write(startOfHeader);
-            outputStream.write(ByteBuffer.allocate(Short.SIZE / Byte.SIZE).order(ByteOrder.LITTLE_ENDIAN)
-                .putShort(payloadLength).array());
-            outputStream.write(messageType);
-            outputStream.write(encryption);
-            outputStream.write(command);
-            outputStream.write(subCommand);
-            outputStream.write(unknown0);
-            outputStream.write(ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(theRest).array());
-            outputStream.write(payload);
-            byte[] byteArray = outputStream.toByteArray();
+        byte[] bufferArray = new byte[bufferLength];
+        ByteBuffer buf = ByteBuffer.wrap(bufferArray);
+        buf.put(headerBytes);
+        buf.put(payload);
 
-            if (isChecksumRequired) {
-                byteArray[byteArray.length - 1] = ParadoxUtil.calculateChecksum(payload);
-            }
-
-            return byteArray;
-        } catch (IOException e) {
-            throw new ParadoxRuntimeException("Unable to create byte array stream.", e);
-        }
+        return bufferArray;
     }
 
-    public byte getStartOfHeader() {
-        return startOfHeader;
-    }
-
-    public ParadoxIPPacket setStartOfHeader(byte startOfHeader) {
-        this.startOfHeader = startOfHeader;
-        return this;
-    }
-
-    public short getPayloadLength() {
-        return payloadLength;
-    }
-
-    public ParadoxIPPacket setPayloadLength(short payloadLength) {
-        this.payloadLength = payloadLength;
-        return this;
-    }
-
-    public byte getMessageType() {
-        return messageType;
-    }
-
-    public ParadoxIPPacket setMessageType(byte messageType) {
-        this.messageType = messageType;
+    public ParadoxIPPacket setCommand(HeaderCommand command) {
+        header.command = command.getValue();
         return this;
     }
 
     public ParadoxIPPacket setMessageType(HeaderMessageType messageType) {
-        this.messageType = messageType.getValue();
+        header.messageType = messageType.getValue();
         return this;
     }
 
-    public byte getEncryption() {
-        return encryption;
-    }
-
-    public ParadoxIPPacket setEncryption(byte encryption) {
-        this.encryption = encryption;
+    public ParadoxIPPacket setUnknown0(byte unknownByteValue) {
+        header.unknown0 = unknownByteValue;
         return this;
     }
 
-    public byte getCommand() {
-        return command;
+    @Override
+    public PacketHeader getHeader() {
+        return header;
     }
 
-    public ParadoxIPPacket setCommand(HeaderCommand command) {
-        this.command = command.getValue();
-        return this;
+    @Override
+    public byte[] getPayload() {
+        return payload;
     }
 
-    public ParadoxIPPacket setCommand(byte command) {
-        this.command = command;
-        return this;
+    @Override
+    public void encrypt() {
+        EncryptionHandler encryptionHandler = EncryptionHandler.getInstance();
+        payload = encryptionHandler.encrypt(payload);
+        header.encryption = 0x09;
     }
 
-    public byte getSubCommand() {
-        return subCommand;
+    @Override
+    public String toString() {
+        return "ParadoxIPPacket [" + ParadoxUtil.byteArrayToString(getBytes()) + "]";
     }
 
-    public ParadoxIPPacket setSubCommand(byte subCommand) {
-        this.subCommand = subCommand;
-        return this;
-    }
+    public class PacketHeader {
 
-    public byte getUnknown0() {
-        return unknown0;
-    }
+        public PacketHeader(short payloadLength) {
+            this.payloadLength = payloadLength;
+        }
 
-    public ParadoxIPPacket setUnknown0(byte unknown0) {
-        this.unknown0 = unknown0;
-        return this;
-    }
+        private static final int BYTES_LENGTH = 9;
 
-    public long getTheRest() {
-        return theRest;
-    }
+        /**
+         * Start of header - always 0xAA
+         */
+        private byte startOfHeader = (byte) 0xAA;
 
-    public ParadoxIPPacket setTheRest(long theRest) {
-        this.theRest = theRest;
-        return this;
+        /**
+         * Payload length - 2 bytes (LL HH)
+         */
+        private short payloadLength = 0;
+
+        /**
+         * "Message Type: 0x01: IP responses 0x02: Serial/pass through cmd response
+         * 0x03: IP requests 0x04: Serial/pass through cmd requests"
+         */
+        private byte messageType = 0x03;
+
+        /**
+         * "IP Encryption Disabled=0x08, Enabled=0x09"
+         */
+        private byte encryption = 0x08;
+        private byte command = 0;
+        private byte subCommand = 0;
+        private byte unknown0 = 0x00;
+        private byte unknown1 = 0x01;
+
+        public byte[] getBytes() {
+            byte[] bufferArray = new byte[BYTES_LENGTH];
+            ByteBuffer buf = ByteBuffer.wrap(bufferArray);
+            buf.put(startOfHeader);
+            buf.order(ByteOrder.LITTLE_ENDIAN).putShort(payloadLength);
+            buf.put(messageType);
+            buf.put(encryption);
+            buf.put(command);
+            buf.put(subCommand);
+            buf.put(unknown0);
+            buf.put(unknown1);
+            return ParadoxUtil.extendArray(bufferArray, 16);
+        }
     }
 }

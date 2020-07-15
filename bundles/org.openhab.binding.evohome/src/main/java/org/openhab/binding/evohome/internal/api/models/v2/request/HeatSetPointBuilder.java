@@ -51,5 +51,4 @@ public class HeatSetPointBuilder implements RequestBuilder<HeatSetPoint> {
         cancelSetPoint = true;
         return this;
     }
-
 }

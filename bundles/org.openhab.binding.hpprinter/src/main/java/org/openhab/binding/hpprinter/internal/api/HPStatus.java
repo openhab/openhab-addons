@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -32,36 +33,46 @@ public class HPStatus {
     private static final Map<String, String> STATUS_MESSAGES = initializeStatus();
 
     private final String printerStatus;
+    private final boolean trayEmptyOrOpen;
 
     public HPStatus(Document document) {
         NodeList nodes = document.getDocumentElement().getElementsByTagName("psdyn:Status");
 
-        String localPrinterStatus = null;
+        String localPrinterStatus = "Unknown";
+        boolean localTrayEmptyOrOpen = false;
         for (int i = 0; i < nodes.getLength(); i++) {
             Element element = (Element) nodes.item(i);
             String statusCategory = element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent();
-            if (!"genuineHP".equals(statusCategory)) {
+            if (!"genuineHP".equals(statusCategory) && !"trayEmpty".equals(statusCategory)) {
                 localPrinterStatus = STATUS_MESSAGES.getOrDefault(statusCategory, statusCategory);
             }
+            if ("trayEmpty".equals(statusCategory)) {
+                localTrayEmptyOrOpen = true;
+            }
         }
+        trayEmptyOrOpen = localTrayEmptyOrOpen;
         printerStatus = localPrinterStatus;
     }
 
     private static Map<String, String> initializeStatus() {
         Map<String, String> statusMap = new HashMap<>();
 
-        statusMap.put("processing", "Printing");
-        statusMap.put("scanProcessing", "Scanning");
+        statusMap.put("processing", "Printing...");
+        statusMap.put("scanProcessing", "Scanning...");
         statusMap.put("inPowerSave", "Power Save");
         statusMap.put("ready", "Idle");
         statusMap.put("initializing", "Initializing...");
         statusMap.put("closeDoorOrCover", "Door/Cover Open");
-        statusMap.put("inkSystemInitializing", "Loading Ink");
-        statusMap.put("shuttingDown", "Shutting Down");
+        statusMap.put("inkSystemInitializing", "Loading Ink...");
+        statusMap.put("shuttingDown", "Shutting Down...");
         return statusMap;
     }
 
-    public String getPrinterStatus() {
-        return STATUS_MESSAGES.getOrDefault(printerStatus, printerStatus);
+    public boolean getTrayEmptyOrOpen() {
+        return trayEmptyOrOpen;
+    }
+
+    public @Nullable String getPrinterStatus() {
+        return printerStatus;
     }
 }

@@ -45,5 +45,4 @@ abstract class AbstractHubbedThingHandler extends BaseThingHandler {
         }
         return (HDPowerViewHubHandler) handler;
     }
-
 }

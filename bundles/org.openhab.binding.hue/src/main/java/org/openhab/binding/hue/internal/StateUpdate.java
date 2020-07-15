@@ -202,21 +202,31 @@ public class StateUpdate extends ConfigUpdate {
      * @param flag on if true, off otherwise
      * @return this object for chaining calls
      */
-    
+
     public StateUpdate setFlag(boolean flag) {
         commands.add(new Command("flag", flag));
         return this;
     }
-    
+
     /**
      * Set status of sensor.
      *
-     * @param status status 
+     * @param status status
      * @return this object for chaining calls
      */
     public StateUpdate setStatus(int status) {
         commands.add(new Command("status", status));
         return this;
     }
-    
+
+    /**
+     * Recall the given scene.
+     *
+     * @param sceneId Identifier of the scene
+     * @return this object for chaining calls
+     */
+    public StateUpdate setScene(String sceneId) {
+        commands.add(new Command("scene", sceneId));
+        return this;
+    }
 }

@@ -173,5 +173,4 @@ public class HeatingThermostat extends Device {
     public void setActualTempLastUpdated(Date actualTempLastUpdated) {
         this.actualTempLastUpdated = actualTempLastUpdated;
     }
-
 }

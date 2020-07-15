@@ -25,11 +25,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.BufferOverflowException;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -41,7 +41,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -84,9 +83,9 @@ public class BigAssFanHandler extends BaseThingHandler {
 
     private FanListener fanListener;
 
-    protected Map<String, State> fanStateMap = Collections.synchronizedMap(new HashMap<String, State>());
+    protected Map<String, State> fanStateMap = Collections.synchronizedMap(new HashMap<>());
 
-    public BigAssFanHandler(@NonNull Thing thing, String ipv4Address) {
+    public BigAssFanHandler(Thing thing, String ipv4Address) {
         super(thing);
         this.thing = thing;
 
@@ -990,10 +989,8 @@ public class BigAssFanHandler extends BaseThingHandler {
             logger.debug("Process time update for {}: {}", thing.getUID(), messageParts[3]);
             // (mac|name;TIME;VALUE;2017-03-26T14:06:27Z)
             try {
-                Calendar cal = Calendar.getInstance();
                 Instant instant = Instant.parse(messageParts[3]);
-                cal.setTime(Date.from(instant));
-                DateTimeType state = new DateTimeType(cal);
+                DateTimeType state = new DateTimeType(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()));
                 updateChannel(CHANNEL_TIME, state);
                 fanStateMap.put(CHANNEL_TIME, state);
             } catch (DateTimeParseException e) {

@@ -113,7 +113,7 @@ public class MilightV6SessionManager implements Runnable, Closeable {
          * SESSION_VALID_KEEP_ALIVE will be reported in the interval, given to the constructor of
          * {@link MilightV6SessionManager}.
          *
-         * @param state   The new state
+         * @param state The new state
          * @param address The remote IP address. Only guaranteed to be non null in the SESSION_VALID* states.
          */
         void sessionStateChanged(SessionState state, @Nullable InetAddress address);

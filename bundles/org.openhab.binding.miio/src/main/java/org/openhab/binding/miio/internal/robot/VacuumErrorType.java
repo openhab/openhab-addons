@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.miio.internal.robot;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * List of Errors
  * derived from vacuum_cleaner-EN.pdf
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public enum VacuumErrorType {
 
     ERROR00(0, "No error"),

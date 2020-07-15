@@ -18,7 +18,6 @@ import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -76,7 +75,6 @@ public class OmnikInverterHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Failed to initialize: " + e.getMessage());
         }
-
     }
 
     private void updateData() {
@@ -90,10 +88,10 @@ public class OmnikInverterHandler extends BaseThingHandler {
                 updateState(OmnikInverterBindingConstants.CHANNEL_POWER, powerQuantity);
 
                 updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TODAY,
-                        new QuantityType<Energy>(message.getEnergyToday(), SmartHomeUnits.KILOWATT_HOUR));
+                        new QuantityType<>(message.getEnergyToday(), SmartHomeUnits.KILOWATT_HOUR));
 
                 updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TOTAL,
-                        new QuantityType<Energy>(message.getTotalEnergy(), SmartHomeUnits.KILOWATT_HOUR));
+                        new QuantityType<>(message.getTotalEnergy(), SmartHomeUnits.KILOWATT_HOUR));
             }
         } catch (UnknownHostException | NoRouteToHostException | ConnectException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

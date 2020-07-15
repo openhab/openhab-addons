@@ -32,5 +32,4 @@ public class UniFiSSLException extends UniFiException {
     public UniFiSSLException(Throwable cause) {
         super(cause);
     }
-
 }

@@ -15,15 +15,18 @@ package org.openhab.binding.bluetooth.bluegiga.internal.eir;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Assigned numbers are used in GAP for inquiry response, EIR data type values, manufacturer-specific data, advertising
  * data, low energy UUIDs and appearance characteristics, and class of device.
- * 
+ *
  * https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile
- * 
- * @author Chris Jackson
+ *
+ * @author Chris Jackson - Initial contribution
  *
  */
+@NonNullByDefault
 public enum EirDataType {
     /**
      * Default unknown value
@@ -70,7 +73,7 @@ public enum EirDataType {
      * A mapping between the integer code and its corresponding type to
      * facilitate lookup by code.
      */
-    private static Map<Integer, EirDataType> codeMapping;
+    private static Map<Integer, EirDataType> codeMapping = new HashMap<>();
 
     private int key;
 
@@ -79,7 +82,6 @@ public enum EirDataType {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, EirDataType>();
         for (EirDataType s : values()) {
             codeMapping.put(s.key, s);
         }
@@ -92,8 +94,9 @@ public enum EirDataType {
      *            the code to lookup
      * @return enumeration value.
      */
+    @SuppressWarnings({ "null", "unused" })
     public static EirDataType getEirPacketType(int eirDataType) {
-        if (codeMapping == null) {
+        if (codeMapping.isEmpty()) {
             initMapping();
         }
 

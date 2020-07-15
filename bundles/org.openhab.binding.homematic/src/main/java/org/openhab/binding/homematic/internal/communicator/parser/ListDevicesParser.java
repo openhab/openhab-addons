@@ -44,7 +44,7 @@ public class ListDevicesParser extends CommonRpcParser<Object[], Collection<HmDe
     @SuppressWarnings("unchecked")
     public Collection<HmDevice> parse(Object[] message) throws IOException {
         message = (Object[]) message[0];
-        Map<String, HmDevice> devices = new HashMap<String, HmDevice>();
+        Map<String, HmDevice> devices = new HashMap<>();
 
         for (int i = 0; i < message.length; i++) {
             Map<String, ?> data = (Map<String, ?>) message[i];

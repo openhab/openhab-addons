@@ -103,3 +103,4 @@ Please note: This profile is a one-way transformation, i.e. only values from a d
 * Online validator help to check the syntax of a regex and give information how to design it.
     * [Regex 101](https://regex101.com/)
     * [Regex R](https://regexr.com/)
+    * [ExtendsClass](https://extendsclass.com/regex-tester.html)

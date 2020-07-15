@@ -41,5 +41,4 @@ public class A5_07_02 extends A5_07 {
     protected State getSupplyVoltage() {
         return getSupplyVoltage(getDB_3Value());
     }
-
 }

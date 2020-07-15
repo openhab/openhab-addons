@@ -117,10 +117,10 @@ Be sure it is connected to the Internet.
 Authorization is done as oauth2 workflow with the innogy API.
 
 To receive the auth-code, go to one of the following URLs depending on your brand and login with your credentials (you can find this link also in the SHC thing in Paper UI, if you edit it):
-
-* [innogy SmartHome authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE)
-* [SmartHome Austria authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE)
-* [Start SmartHome authorization page](https://api.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fstart-smarthome.html&scope&lang=de-DE)
+https://auth.services-smarthome.de/AUTH
+* [innogy SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635748&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Finnogy-smarthome.html&scope&lang=de-DE)
+* [SmartHome Austria authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635749&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fsmarthome-austria.html&scope&lang=de-DE)
+* [Start SmartHome authorization page](https://auth.services-smarthome.de/AUTH/authorize?response_type=code&client_id=24635750&redirect_uri=https%3A%2F%2Fwww.openhab.org%2Foauth%2Finnogy%2Fstart-smarthome.html&scope&lang=de-DE)
 
 You will be redirected to openhab.org and the auth-code will be displayed.
 Copy and paste it into your SHC configuration and you are done.
@@ -144,16 +144,10 @@ As an alternative to the automatic discovery process and graphical configuration
 The innogy SmartHome Controller (SHC) can be configured using the following syntax:
 
 ```
-Bridge innogysmarthome:bridge:<bridge-id> [ refreshtoken="<refresh-token>" ]
+Bridge innogysmarthome:bridge:<bridge-id> []
 ```
 
-The easiest way is to retrieve the refresh-token using the Paper UI as described above.
-But you can do it manually by:
-
-1. Changing the log level to TRACE, as the refresh-token is not written into the logs in lower log levels*
-2. Retrieving the auth-code (see description above)
-3. Saving it once in the Bridge configuration like shown below
-4. Fishing the refresh-code from the openhab.log file.
+Then the required authcode is retrieved and set **automatically**:
 
 ```
 Bridge innogysmarthome:bridge:<bridge-id> [ authcode="<authcode>" ]

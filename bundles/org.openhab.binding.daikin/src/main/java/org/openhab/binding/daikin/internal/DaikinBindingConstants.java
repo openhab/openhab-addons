@@ -42,9 +42,19 @@ public class DaikinBindingConstants {
     public static final String CHANNEL_OUTDOOR_TEMP = "outdoortemp";
     public static final String CHANNEL_AC_POWER = "power";
     public static final String CHANNEL_AC_MODE = "mode";
+    public static final String CHANNEL_AC_HOMEKITMODE = "homekitmode";
     public static final String CHANNEL_AC_FAN_SPEED = "fanspeed";
     public static final String CHANNEL_AC_FAN_DIR = "fandir";
     public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_CMP_FREQ = "cmpfrequency";
+
+    // Prefix and channel id format for energy - currentyear
+    public static final String CHANNEL_ENERGY_HEATING_CURRENTYEAR_PREFIX = "energyheatingcurrentyear";
+    public static final String CHANNEL_ENERGY_COOLING_CURRENTYEAR_PREFIX = "energycoolingcurrentyear";
+    public static final String CHANNEL_ENERGY_STRING_FORMAT = "%s-%d";
+
+    public static final String CHANNEL_AC_SPECIALMODE = "specialmode";
+    public static final String CHANNEL_AC_SPECIALMODE_POWERFUL = "specialmode-powerful";
 
     // additional channels for Airbase Controller
     public static final String CHANNEL_AIRBASE_AC_FAN_SPEED = "airbasefanspeed";

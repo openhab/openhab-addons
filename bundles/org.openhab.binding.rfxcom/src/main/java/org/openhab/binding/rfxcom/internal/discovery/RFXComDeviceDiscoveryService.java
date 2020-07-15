@@ -18,8 +18,6 @@ import java.util.Set;
 
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
@@ -36,12 +34,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
-public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
-        implements ExtendedDiscoveryService, DeviceMessageListener {
+public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService implements DeviceMessageListener {
     private final Logger logger = LoggerFactory.getLogger(RFXComDeviceDiscoveryService.class);
+    private final int DISCOVERY_TTL = 3600;
 
     private RFXComBridgeHandler bridgeHandler;
-    private DiscoveryServiceCallback callback;
 
     public RFXComDeviceDiscoveryService(RFXComBridgeHandler rfxcomBridgeHandler) {
         super(null, 1, false);
@@ -68,11 +65,6 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback callback) {
-        this.callback = callback;
-    }
-
-    @Override
     public void onDeviceMessageReceived(ThingUID bridge, RFXComDeviceMessage message) throws RFXComException {
         logger.trace("Received: bridge: {} message: {}", bridge, message);
 
@@ -82,7 +74,8 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService
 
         if (!bridgeHandler.getConfiguration().disableDiscovery) {
             logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
-            DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID).withBridge(bridge);
+            DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUID).withBridge(bridge)
+                    .withTTL(DISCOVERY_TTL);
             message.addDevicePropertiesTo(discoveryResultBuilder);
 
             thingDiscovered(discoveryResultBuilder.build());

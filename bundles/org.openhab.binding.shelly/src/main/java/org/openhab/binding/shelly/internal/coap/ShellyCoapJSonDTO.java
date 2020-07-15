@@ -14,8 +14,7 @@ package org.openhab.binding.shelly.internal.coap;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import org.apache.commons.lang.Validate;
+import java.util.List;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -28,6 +27,17 @@ import com.google.gson.stream.JsonWriter;
  * @author Markus Michels - Initial contribution
  */
 public class ShellyCoapJSonDTO {
+    // Coap
+    public static final int COIOT_PORT = 5683;
+    public static final String COAP_MULTICAST_ADDRESS = "224.0.1.187";
+
+    public static final String COLOIT_URI_BASE = "/cit/";
+    public static final String COLOIT_URI_DEVDESC = COLOIT_URI_BASE + "d";
+    public static final String COLOIT_URI_DEVSTATUS = COLOIT_URI_BASE + "s";
+
+    public static final int COIOT_OPTION_GLOBAL_DEVID = 3332;
+    public static final int COIOT_OPTION_STATUS_VALIDITY = 3412;
+    public static final int COIOT_OPTION_STATUS_SERIAL = 3420;
 
     public static final String COIOT_TAG_BLK = "blk";
     public static final String COIOT_TAG_SEN = "sen";
@@ -79,26 +89,27 @@ public class ShellyCoapJSonDTO {
         @SerializedName("L")
         public String links; // Links
         @SerializedName("P")
-        public ArrayList<CoIotDescrP> pTag; // ?
+        public List<CoIotDescrP> pTag; // ?
     }
 
     public static class CoIotDevDescription {
-        public ArrayList<CoIotDescrBlk> blk;
-        public ArrayList<CoIotDescrSen> sen;
-        public ArrayList<CoIotDescrAct> act;
+        public List<CoIotDescrBlk> blk;
+        public List<CoIotDescrSen> sen;
+        // public List<CoIotDescrAct> act;
     }
 
     public static class CoIotSensor {
-        public String index; // id
+        @SerializedName("index")
+        public String id; // id
         public double value; // value
     }
 
     public static class CoIotGenericSensorList {
         @SerializedName("G")
-        public ArrayList<CoIotSensor> generic;
+        public List<CoIotSensor> generic;
 
         public CoIotGenericSensorList() {
-            generic = new ArrayList<CoIotSensor>();
+            generic = new ArrayList<>();
         }
     }
 
@@ -109,14 +120,13 @@ public class ShellyCoapJSonDTO {
 
             in.beginObject();
             String generic = in.nextName();
-            Validate.notNull(generic, "Invalid JSon format for CoIotSensorList");
             if (generic.equals(COIOT_TAG_GENERIC)) {
                 in.beginArray();
                 while (in.hasNext()) {
                     in.beginArray();
                     final CoIotSensor sensor = new CoIotSensor();
                     in.nextInt(); // alway 0
-                    sensor.index = new Integer(in.nextInt()).toString();
+                    sensor.id = Integer.toString(in.nextInt());
                     sensor.value = in.nextDouble();
                     in.endArray();
                     list.generic.add(sensor);
@@ -137,7 +147,7 @@ public class ShellyCoapJSonDTO {
                 for (int i = 0; i < sensors.generic.size(); i++) {
                     out.beginArray();
                     out.value(0);
-                    out.value(sensors.generic.get(i).index);
+                    out.value(sensors.generic.get(i).id);
                     out.value(sensors.generic.get(i).value);
                     out.endArray();
                 }
@@ -145,7 +155,5 @@ public class ShellyCoapJSonDTO {
             }
             out.endObject();
         }
-
     }
-
 }

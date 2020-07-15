@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.volvooncall.internal.dto;
 
-import java.time.ZonedDateTime;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -28,5 +26,8 @@ public class TyrePressure {
     public @NonNullByDefault({}) String frontRightTyrePressure;
     public @NonNullByDefault({}) String rearLeftTyrePressure;
     public @NonNullByDefault({}) String rearRightTyrePressure;
-    public @NonNullByDefault({}) ZonedDateTime timestamp;
+    /*
+     * Currently unused in the binding, maybe interesting in the future
+     * private ZonedDateTime timestamp;
+     */
 }

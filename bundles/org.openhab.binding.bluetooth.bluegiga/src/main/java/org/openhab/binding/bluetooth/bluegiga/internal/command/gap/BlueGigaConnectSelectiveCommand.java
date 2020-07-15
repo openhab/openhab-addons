@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.gap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 
 /**
@@ -32,6 +33,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaConnectSelectiveCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x05;
@@ -84,6 +86,7 @@ public class BlueGigaConnectSelectiveCommand extends BlueGigaCommand {
     public void setConnIntervalMin(int connIntervalMin) {
         this.connIntervalMin = connIntervalMin;
     }
+
     /**
      * Maximum Connection Interval (in units of 1.25ms). Range: 6 - 3200 Must be equal or bigger than
      * minimum Connection Interval.
@@ -93,6 +96,7 @@ public class BlueGigaConnectSelectiveCommand extends BlueGigaCommand {
     public void setConnIntervalMax(int connIntervalMax) {
         this.connIntervalMax = connIntervalMax;
     }
+
     /**
      * Supervision Timeout (in units of 10ms). The Supervision Timeout defines how long the
      * devices can be out of range before the connection is closed. Range: 10 - 3200 Minimum time for
@@ -105,6 +109,7 @@ public class BlueGigaConnectSelectiveCommand extends BlueGigaCommand {
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
+
     /**
      * This parameter configures the slave latency. Slave latency defines how many connection
      * intervals a slave device can skip. Increasing slave latency will decrease the energy

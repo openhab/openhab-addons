@@ -30,10 +30,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.grohe.ondus.api.OndusService;
 import org.grohe.ondus.api.model.BaseAppliance;
-import org.grohe.ondus.api.model.Location;
-import org.grohe.ondus.api.model.Room;
-import org.grohe.ondus.api.model.SenseAppliance;
-import org.grohe.ondus.api.model.SenseGuardAppliance;
 import org.openhab.binding.groheondus.internal.handler.GroheOndusAccountHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +68,7 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
         }
         List<BaseAppliance> discoveredAppliances = new ArrayList<>();
         try {
-            discoveredAppliances = getApplianceList(service);
+            discoveredAppliances = service.appliances();
         } catch (IOException e) {
             logger.debug("Could not discover appliances.", e);
             return;
@@ -82,10 +78,10 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             ThingUID thingUID = null;
             switch (appliance.getType()) {
-                case SenseGuardAppliance.TYPE:
+                case org.grohe.ondus.api.model.guard.Appliance.TYPE:
                     thingUID = new ThingUID(THING_TYPE_SENSEGUARD, appliance.getApplianceId());
                     break;
-                case SenseAppliance.TYPE:
+                case org.grohe.ondus.api.model.sense.Appliance.TYPE:
                     thingUID = new ThingUID(THING_TYPE_SENSE, appliance.getApplianceId());
                     break;
                 default:
@@ -103,17 +99,5 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
 
             thingDiscovered(discoveryResult);
         });
-    }
-
-    private List<BaseAppliance> getApplianceList(OndusService service) throws IOException {
-        List<BaseAppliance> discoveredAppliances = new ArrayList<>();
-
-        for (Location location : service.getLocations()) {
-            for (Room room : service.getRooms(location)) {
-                discoveredAppliances.addAll(service.getAppliances(room));
-            }
-        }
-
-        return discoveredAppliances;
     }
 }

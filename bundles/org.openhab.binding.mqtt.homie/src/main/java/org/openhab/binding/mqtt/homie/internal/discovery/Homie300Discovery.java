@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -94,16 +93,11 @@ public class Homie300Discovery extends AbstractMQTTDiscovery {
         }
 
         // Retrieve name and update found discovery
-        try {
-            WaitForTopicValue w = new WaitForTopicValue(connection, topic.replace("$homie", "$name"));
-            w.waitForTopicValueAsync(scheduler, 700).thenAccept(name -> {
-                publishDevice(connectionBridge, connection, deviceID, topic, name);
-            });
-        } catch (InterruptedException | ExecutionException ignored) {
-            // The name is nice to have, but not required, use deviceId as fallback
-            publishDevice(connectionBridge, connection, deviceID, topic, deviceID);
-        }
-
+        WaitForTopicValue w = new WaitForTopicValue(connection, topic.replace("$homie", "$name"));
+        w.waitForTopicValueAsync(scheduler, 700).whenComplete((name, ex) -> {
+            String deviceName = ex == null ? name : deviceID;
+            publishDevice(connectionBridge, connection, deviceID, topic, deviceName);
+        });
     }
 
     void publishDevice(ThingUID connectionBridge, MqttBrokerConnection connection, String deviceID, String topic,

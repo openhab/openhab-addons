@@ -30,7 +30,6 @@ import org.openhab.binding.satel.internal.command.NewStatesCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.config.SatelBridgeConfig;
 import org.openhab.binding.satel.internal.event.ConnectionStatusEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.event.SatelEventListener;
 import org.openhab.binding.satel.internal.protocol.SatelModule;
 import org.openhab.binding.satel.internal.types.IntegraType;
@@ -58,17 +57,15 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
+    public void incomingEvent(ConnectionStatusEvent event) {
         final SatelModule satelModule = this.satelModule;
-        if (satelModule != null && event instanceof ConnectionStatusEvent) {
-            ConnectionStatusEvent statusEvent = (ConnectionStatusEvent) event;
+        if (satelModule != null) {
             // update bridge status and get new states from the system
-            if (statusEvent.isConnected()) {
+            if (event.isConnected()) {
                 updateStatus(ThingStatus.ONLINE);
                 satelModule.sendCommand(new NewStatesCommand(satelModule.hasExtPayloadSupport()));
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        statusEvent.getReason());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, event.getReason());
             }
         }
     }
@@ -204,7 +201,7 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
      * Sends given command to communication module.
      *
      * @param command a command to send
-     * @param async   if <code>false</code> method waits for the response
+     * @param async if <code>false</code> method waits for the response
      * @return <code>true</code> if send succeeded
      */
     public boolean sendCommand(SatelCommand command, boolean async) {
@@ -241,5 +238,4 @@ public abstract class SatelBridgeHandler extends ConfigStatusBridgeHandler imple
         }
         return false;
     }
-
 }

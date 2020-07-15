@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.wifiled.internal.handler;
 
+import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -26,10 +30,6 @@ import org.openhab.binding.wifiled.internal.handler.AbstractWiFiLEDDriver.Driver
 import org.openhab.binding.wifiled.internal.handler.AbstractWiFiLEDDriver.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The {@link WiFiLEDHandler} is responsible for handling commands, which are
@@ -66,8 +66,11 @@ public class WiFiLEDHandler extends BaseThingHandler {
                 break;
 
             case FADING:
-                int fadeDurationInMs = config.getFadeDurationInMs() == null ? FadingWiFiLEDDriver.DEFAULT_FADE_DURATION_IN_MS : config.getFadeDurationInMs();
-                int fadeSteps = config.getFadeSteps() == null ? FadingWiFiLEDDriver.DEFAULT_FADE_STEPS : config.getFadeSteps();
+                int fadeDurationInMs = config.getFadeDurationInMs() == null
+                        ? FadingWiFiLEDDriver.DEFAULT_FADE_DURATION_IN_MS
+                        : config.getFadeDurationInMs();
+                int fadeSteps = config.getFadeSteps() == null ? FadingWiFiLEDDriver.DEFAULT_FADE_STEPS
+                        : config.getFadeSteps();
                 driver = new FadingWiFiLEDDriver(config.getIp(), port, protocol, fadeDurationInMs, fadeSteps);
                 break;
         }

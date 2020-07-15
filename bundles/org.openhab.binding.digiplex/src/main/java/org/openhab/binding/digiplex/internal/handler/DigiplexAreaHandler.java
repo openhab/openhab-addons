@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -56,10 +55,8 @@ import org.openhab.binding.digiplex.internal.communication.events.AreaEvent;
 @NonNullByDefault
 public class DigiplexAreaHandler extends BaseThingHandler {
 
-    @Nullable
-    private DigiplexAreaConfiguration config;
-    @Nullable
-    private DigiplexBridgeHandler bridgeHandler;
+    private @Nullable DigiplexAreaConfiguration config;
+    private @Nullable DigiplexBridgeHandler bridgeHandler;
     private DigiplexAreaMessageHandler visitor = new DigiplexAreaMessageHandler();
     private int areaNo;
     private OpenClosedType armed = OpenClosedType.CLOSED;
@@ -72,8 +69,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
     private OpenClosedType strobe = OpenClosedType.CLOSED;
     private StringType lastCommandResult = new StringType();
 
-    @Nullable
-    private ScheduledFuture<?> refreshTask;
+    private @Nullable ScheduledFuture<?> refreshTask;
 
     public DigiplexAreaHandler(Thing thing) {
         super(thing);
@@ -153,7 +149,6 @@ public class DigiplexAreaHandler extends BaseThingHandler {
                 bridgeHandler.sendRequest(new AreaDisarmRequest(areaNo, command.substring(1)));
                 break;
         }
-
     }
 
     @SuppressWarnings("null")
@@ -240,7 +235,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
         }
 
         @Override
-        public void handleArmDisarmAreaResponse(@NonNull AreaArmDisarmResponse response) {
+        public void handleArmDisarmAreaResponse(AreaArmDisarmResponse response) {
             if (response.areaNo == DigiplexAreaHandler.this.areaNo) {
                 if (response.success) {
                     updateControlChannel(COMMAND_OK);
@@ -251,7 +246,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
         }
 
         @Override
-        public void handleAreaEvent(@NonNull AreaEvent event) {
+        public void handleAreaEvent(AreaEvent event) {
             if (event.isForArea(DigiplexAreaHandler.this.areaNo)) {
                 switch (event.getType()) {
                     case READY: // TODO: not sure what it means. Let's send status update request

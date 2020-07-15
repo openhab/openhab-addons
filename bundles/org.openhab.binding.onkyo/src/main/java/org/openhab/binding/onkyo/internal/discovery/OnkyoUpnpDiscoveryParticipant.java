@@ -14,18 +14,22 @@ package org.openhab.binding.onkyo.internal.discovery;
 
 import static org.openhab.binding.onkyo.internal.OnkyoBindingConstants.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.RemoteDevice;
+import org.openhab.binding.onkyo.internal.OnkyoModel;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -37,6 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  */
+@NonNullByDefault
 @Component(immediate = true)
 public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
@@ -72,7 +77,7 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         DiscoveryResult result = null;
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
@@ -89,7 +94,7 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         ThingUID result = null;
         if (isAutoDiscoveryEnabled) {
             if (StringUtils.containsIgnoreCase(device.getDetails().getManufacturerDetails().getManufacturer(),
@@ -115,7 +120,7 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
         return result;
     }
 
-    private ThingTypeUID findThingType(String deviceModel) {
+    private ThingTypeUID findThingType(@Nullable String deviceModel) {
         ThingTypeUID thingTypeUID = THING_TYPE_ONKYO_UNSUPPORTED;
 
         for (ThingTypeUID thingType : SUPPORTED_THING_TYPES_UIDS) {
@@ -137,9 +142,8 @@ public class OnkyoUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
      * @param deviceModel
      * @return
      */
-    private boolean isSupportedDeviceModel(final String deviceModel) {
-        return StringUtils.isNotBlank(deviceModel) && SUPPORTED_DEVICE_MODELS.stream()
-                .filter(device -> StringUtils.startsWithIgnoreCase(deviceModel, device)).count() > 0;
+    private boolean isSupportedDeviceModel(final @Nullable String deviceModel) {
+        return StringUtils.isNotBlank(deviceModel) && Arrays.stream(OnkyoModel.values())
+                .anyMatch(model -> StringUtils.startsWithIgnoreCase(deviceModel, model.getId()));
     }
-
 }

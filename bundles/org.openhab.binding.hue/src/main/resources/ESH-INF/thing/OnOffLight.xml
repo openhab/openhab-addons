@@ -6,15 +6,15 @@
 	<!-- Generic thing for OnOff lights (ZigBee Device ID: 0x0000) -->
 	<thing-type id="0000">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>On/Off Light</label>
 		<description>A light that could be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="switch" />
-			<channel id="alert" typeId="alert" />
+			<channel id="switch" typeId="switch"/>
+			<channel id="alert" typeId="alert"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="ambientweather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="ambientweather"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Ambient Weather WS-2902A -->
 	<thing-type id="ws2902a">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>WS-2902A</label>
@@ -25,7 +26,7 @@
 				<description></description>
 			</channel-group>
 		</channel-groups>
-		<config-description-ref uri="thing-type:ambientweather:station" />
+		<config-description-ref uri="thing-type:ambientweather:station"/>
 	</thing-type>
 
 	<!-- Channel group type specific to WS-2902A -->
@@ -33,31 +34,31 @@
 		<label>Weather Data</label>
 		<description>Weather Data</description>
 		<channels>
-			<channel id="observationTime" typeId="observationTime" />
-			<channel id="batteryIndicator" typeId="batteryIndicator" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="dewPoint" typeId="dewPoint" />
-			<channel id="feelingTemperature" typeId="feelingTemperature" />
-			<channel id="relativeHumidity" typeId="relativeHumidity" />
-			<channel id="pressureAbsolute" typeId="pressure" />
-			<channel id="pressureRelative" typeId="pressure" />
-			<channel id="pressureTrend" typeId="pressureTrend" />
-			<channel id="windDirectionDegrees" typeId="windDirectionDegrees" />
-			<channel id="windDirection" typeId="windDirection" />
-			<channel id="windSpeed" typeId="windSpeed" />
-			<channel id="windGust" typeId="windGust" />
-			<channel id="windGustMaxDaily" typeId="windGustMaxDaily" />
-			<channel id="rainHourlyRate" typeId="rainHourlyRate" />
-			<channel id="rainDay" typeId="rainDay" />
-			<channel id="rainWeek" typeId="rainWeek" />
-			<channel id="rainMonth" typeId="rainMonth" />
-			<channel id="rainYear" typeId="rainYear" />
-			<channel id="rainTotal" typeId="rainTotal" />
-			<channel id="rainEvent" typeId="rainEvent" />
-			<channel id="rainLastTime" typeId="rainLastTime" />
-			<channel id="solarRadiation" typeId="solarRadiation" />
-			<channel id="uvIndex" typeId="uvIndex" />
-			<channel id="uvDanger" typeId="uvDanger" />
+			<channel id="observationTime" typeId="observationTime"/>
+			<channel id="batteryIndicator" typeId="batteryIndicator"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="dewPoint" typeId="dewPoint"/>
+			<channel id="feelingTemperature" typeId="feelingTemperature"/>
+			<channel id="relativeHumidity" typeId="relativeHumidity"/>
+			<channel id="pressureAbsolute" typeId="pressure"/>
+			<channel id="pressureRelative" typeId="pressure"/>
+			<channel id="pressureTrend" typeId="pressureTrend"/>
+			<channel id="windDirectionDegrees" typeId="windDirectionDegrees"/>
+			<channel id="windDirection" typeId="windDirection"/>
+			<channel id="windSpeed" typeId="windSpeed"/>
+			<channel id="windGust" typeId="windGust"/>
+			<channel id="windGustMaxDaily" typeId="windGustMaxDaily"/>
+			<channel id="rainHourlyRate" typeId="rainHourlyRate"/>
+			<channel id="rainDay" typeId="rainDay"/>
+			<channel id="rainWeek" typeId="rainWeek"/>
+			<channel id="rainMonth" typeId="rainMonth"/>
+			<channel id="rainYear" typeId="rainYear"/>
+			<channel id="rainTotal" typeId="rainTotal"/>
+			<channel id="rainEvent" typeId="rainEvent"/>
+			<channel id="rainLastTime" typeId="rainLastTime"/>
+			<channel id="solarRadiation" typeId="solarRadiation"/>
+			<channel id="uvIndex" typeId="uvIndex"/>
+			<channel id="uvDanger" typeId="uvDanger"/>
 		</channels>
 	</channel-group-type>
 

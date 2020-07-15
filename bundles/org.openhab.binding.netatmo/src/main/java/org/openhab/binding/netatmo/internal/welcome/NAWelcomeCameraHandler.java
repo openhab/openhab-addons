@@ -12,19 +12,13 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
-
-import io.swagger.client.model.NAWelcomeCamera;
+import org.openhab.binding.netatmo.internal.camera.CameraHandler;
 
 /**
  * {@link NAWelcomeCameraHandler} is the class used to handle the Welcome Camera Data
@@ -32,87 +26,31 @@ import io.swagger.client.model.NAWelcomeCamera;
  * @author Ing. Peter Weiss - Initial contribution
  *
  */
-public class NAWelcomeCameraHandler extends NetatmoModuleHandler<NAWelcomeCamera> {
-    private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
+@NonNullByDefault
+public class NAWelcomeCameraHandler extends CameraHandler {
 
-    public NAWelcomeCameraHandler(@NonNull Thing thing) {
-        super(thing);
+    public NAWelcomeCameraHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
-    protected void updateProperties(NAWelcomeCamera moduleData) {
-        updateProperties(null, moduleData.getType());
-    }
-
-    @SuppressWarnings("null")
-    @Override
-    protected State getNAThingProperty(String chanelId) {
-        switch (chanelId) {
+    protected State getNAThingProperty(String channelId) {
+        switch (channelId) {
             case CHANNEL_WELCOME_CAMERA_STATUS:
-                return module != null ? toOnOffType(module.getStatus()) : UnDefType.UNDEF;
+                return getStatusState();
             case CHANNEL_WELCOME_CAMERA_SDSTATUS:
-                return module != null ? toOnOffType(module.getSdStatus()) : UnDefType.UNDEF;
+                return getSdStatusState();
             case CHANNEL_WELCOME_CAMERA_ALIMSTATUS:
-                return module != null ? toOnOffType(module.getAlimStatus()) : UnDefType.UNDEF;
+                return getAlimStatusState();
             case CHANNEL_WELCOME_CAMERA_ISLOCAL:
-                return (module == null || module.getIsLocal() == null) ? UnDefType.UNDEF
-                        : module.getIsLocal() ? OnOffType.ON : OnOffType.OFF;
+                return getIsLocalState();
             case CHANNEL_WELCOME_CAMERA_LIVEPICTURE_URL:
-                return getLivePictureURL() == null ? UnDefType.UNDEF : toStringType(getLivePictureURL());
+                return getLivePictureURLState();
             case CHANNEL_WELCOME_CAMERA_LIVEPICTURE:
-                return getLivePictureURL() == null ? UnDefType.UNDEF : HttpUtil.downloadImage(getLivePictureURL());
+                return getLivePictureState();
             case CHANNEL_WELCOME_CAMERA_LIVESTREAM_URL:
-                return getLiveStreamURL() == null ? UnDefType.UNDEF : new StringType(getLiveStreamURL());
+                return getLiveStreamState();
         }
-        return super.getNAThingProperty(chanelId);
+        return super.getNAThingProperty(channelId);
     }
-
-    /**
-     * Get the url for the live snapshot
-     *
-     * @return Url of the live snapshot
-     */
-    private String getLivePictureURL() {
-        String result = getVpnUrl();
-        if (result != null) {
-            result += LIVE_PICTURE;
-        }
-        return result;
-    }
-
-    /**
-     * Get the url for the live stream depending wether local or not
-     *
-     * @return Url of the live stream
-     */
-    private String getLiveStreamURL() {
-        String result = getVpnUrl();
-        if (result != null) {
-            result += "/live/index";
-            result += isLocal() ? "_local" : "";
-            result += ".m3u8";
-        }
-        return result;
-    }
-
-    @SuppressWarnings("null")
-    private String getVpnUrl() {
-        return (module == null) ? null : module.getVpnUrl();
-    }
-
-    public String getStreamURL(String videoId) {
-        String result = getVpnUrl();
-        if (result != null) {
-            result += "/vod/" + videoId + "/index";
-            result += isLocal() ? "_local" : "";
-            result += ".m3u8";
-        }
-        return result;
-    }
-
-    @SuppressWarnings("null")
-    private boolean isLocal() {
-        return (module == null || module.getIsLocal() == null) ? false : module.getIsLocal().booleanValue();
-    }
-
 }

@@ -100,7 +100,5 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(70.0));
         assertThat(((QuantityType<?>) convertedState).getUnit(), is(SmartHomeUnits.PERCENT));
         assertThat(((QuantityType<?>) convertedState).toUnit(SmartHomeUnits.ONE).doubleValue(), is(0.7));
-
     }
-
 }

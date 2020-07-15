@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mihome.internal.socket;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.JsonObject;
 
 /**
@@ -20,6 +22,7 @@ import com.google.gson.JsonObject;
  *
  * @author Patrick Boos - Initial contribution
  */
+@NonNullByDefault
 public interface XiaomiSocketListener {
     /**
      * Callback method for the {@link XiaomiSocketListener}

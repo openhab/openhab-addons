@@ -44,14 +44,18 @@ public class SomfyTahomaMyfoxCameraHandler extends SomfyTahomaBaseThingHandler {
         if (MYFOX_SHUTTER_STATUS_STATE.equals(state.getName())) {
             Channel ch = thing.getChannel(SHUTTER);
             if (ch != null) {
-                //we need to covert opened/closed values to ON/OFF
+                // we need to covert opened/closed values to ON/OFF
                 boolean open = "opened".equals(state.getValue());
                 updateState(ch.getUID(), open ? OnOffType.ON : OnOffType.OFF);
             }
         } else if (CLOUD_DEVICE_STATUS_STATE.equals(state.getName())) {
             Channel ch = thing.getChannel(CLOUD_STATUS);
-            State newState = parseTahomaState(ch.getAcceptedItemType(), state);
-            updateState(ch.getUID(), newState);
+            if (ch != null) {
+                State newState = parseTahomaState(ch.getAcceptedItemType(), state);
+                if (newState != null) {
+                    updateState(ch.getUID(), newState);
+                }
+            }
         }
     }
 

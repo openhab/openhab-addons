@@ -109,7 +109,7 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, long now) {
         try {
-            if ((now >= (digitalLastRefresh + digitalRefreshInterval)) && (thingType == THING_TYPE_AMS)) {
+            if ((now >= (digitalLastRefresh + digitalRefreshInterval)) && (thingType.equals(THING_TYPE_AMS))) {
                 logger.trace("refreshing digital {}", this.thing.getUID());
 
                 Boolean forcedRefresh = digitalLastRefresh == 0;

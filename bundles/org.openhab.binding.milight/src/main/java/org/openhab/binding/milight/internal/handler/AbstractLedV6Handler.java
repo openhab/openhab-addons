@@ -221,5 +221,4 @@ public abstract class AbstractLedV6Handler extends AbstractLedHandler {
         sendQueue.queue(QueueItem.createRepeatable(socket, delayTimeMS, repeatTimes, address, port,
                 session.makeCommand(getAddr(), config.zone, data)));
     }
-
 }

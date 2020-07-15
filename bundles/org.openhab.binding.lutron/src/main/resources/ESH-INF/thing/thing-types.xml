@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="lutron"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="ipbridge">
 		<label>Lutron IP Access Point</label>
@@ -10,6 +10,8 @@
 		<properties>
 			<property name="vendor">Lutron</property>
 		</properties>
+
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -67,6 +69,8 @@
 			<channel id="lightlevel" typeId="lightDimmer"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -95,6 +99,8 @@
 			<channel id="shadelevel" typeId="shadeControl"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -116,6 +122,8 @@
 			<channel id="blindliftlevel" typeId="blindLift"/>
 			<channel id="blindtiltlevel" typeId="blindTilt"/>
 		</channels>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -146,6 +154,8 @@
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -165,6 +175,8 @@
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -201,6 +213,8 @@
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -226,6 +240,8 @@
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -246,6 +262,8 @@
 			<channel id="occupancystatus" typeId="occupiedState"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -261,6 +279,8 @@
 
 		<label>seeTouch Keypad</label>
 		<description>Lutron seeTouch/Hybrid seeTouch wall keypad</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -316,6 +336,8 @@
 		<label>Tabletop seeTouch Keypad</label>
 		<description>Lutron wireless tabletop keypad</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -350,6 +372,8 @@
 
 		<label>International seeTouch Keypad</label>
 		<description>Lutron International seeTouch keypad (HomeWorks QS Only)</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -387,6 +411,8 @@
 
 		<label>Palladiom Keypad</label>
 		<description>Lutron Palladiom keypad (HomeWorks QS Only)</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -428,6 +454,8 @@
 		<label>Pico Keypad</label>
 		<description>Lutron wireless Pico keypad</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -462,6 +490,8 @@
 		<label>GRAFIK Eye QS</label>
 		<description>Lutron GRAFIK Eye QS for RadioRA 2/HomeWorks QS</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -494,6 +524,8 @@
 		<label>VCRX</label>
 		<description>Lutron visor control receiver</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -514,6 +546,8 @@
 
 		<label>WCI</label>
 		<description>QS Wallbox Closure Interface</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -537,10 +571,21 @@
 		<label>Virtual Keypad</label>
 		<description>Virtual integration keypad on repeater</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Address in the Lutron control system</description>
+			</parameter>
+			<parameter name="model" type="text">
+				<label>Virtual Keypad Type</label>
+				<description>System type for virtual keypad</description>
+				<options>
+					<option value="Caseta">Caseta Scene Buttons</option>
+					<option value="Other">HomeWorks/RA 2/Other</option>
+				</options>
+				<default>Other</default>
 			</parameter>
 			<parameter name="autorelease" type="boolean">
 				<label>Auto-release</label>
@@ -557,6 +602,8 @@
 
 		<label>QS IO Interface</label>
 		<description>Lutron QS IO Interface</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -595,6 +642,8 @@
 			</channel>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -614,6 +663,8 @@
 		<channels>
 			<channel id="step" typeId="greenstep"/>
 		</channels>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -688,7 +739,8 @@
 			</parameter>
 			<parameter name="userName" type="text">
 				<label>User Name</label>
-				<description>The user name to log in to the PRG access point (typically "nwk" for connection 1 or "nwk2" for connection 2)</description>
+				<description>The user name to log in to the PRG access point (typically "nwk" for connection 1 or "nwk2" for
+					connection 2)</description>
 				<default>nwk</default>
 			</parameter>
 			<parameter name="retryPolling" type="integer">
@@ -879,10 +931,12 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>HomeWorks Bridge Serial Port</label>
 				<description>
 					The serial port name for the HomeWorks processor. Valid values
-					are e.g. COM1 for Windows and /dev/ttyS0 or /dev/ttyUSB0 for Linux.
+					are e.g. COM1 for Windows and /dev/ttyS0
+					or /dev/ttyUSB0 for Linux.
 				</description>
 			</parameter>
 
@@ -890,7 +944,8 @@
 				<label>Baud Rate</label>
 				<description>
 					The baud rate to use for the RS232 connection.
-					Valid values are 300, 600, 1200, 2400, 4800, 9600 (default),
+					Valid values are 300, 600, 1200, 2400, 4800, 9600
+					(default),
 					19200, 38400, 57600, and 115200.
 				</description>
 				<default>9600</default>
@@ -914,8 +969,10 @@
 				<label>Update Processor Time</label>
 				<description>
 					The older HomeWorks processors seem to have difficulty keeping track of the time,
-					especially where daylight savings is concerned. If this option is selected, the HomeWorks
-					bridge will automatically update the processor on initialization and once per day thereafter.
+					especially where
+					daylight savings is concerned. If this option is selected, the HomeWorks
+					bridge will automatically update the
+					processor on initialization and once per day thereafter.
 				</description>
 			</parameter>
 
@@ -924,14 +981,14 @@
 
 	<thing-type id="hwdimmer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="hwserialbridge" />
+			<bridge-type-ref id="hwserialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>HomeWorks Dimmer</label>
 		<description>Controls dimmable loads</description>
 
 		<channels>
-			<channel id="lightlevel" typeId="lightDimmer" />
+			<channel id="lightlevel" typeId="lightDimmer"/>
 		</channels>
 
 		<config-description>
@@ -959,6 +1016,7 @@
 		<config-description>
 			<parameter name="portName" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>The serial port to use to communicate with a Lutron RadioRA system</description>
 			</parameter>
@@ -1198,7 +1256,7 @@
 		<label>Super Schedule Number</label>
 		<description>Somenumber</description>
 		<state readOnly="true"/>
-		<!--<category>Super Schedule</category>-->
+		<!--<category>Super Schedule</category> -->
 	</channel-type>
 
 	<channel-type id="scene">
@@ -1247,7 +1305,8 @@
 	<channel-type id="zonefade">
 		<item-type>Number</item-type>
 		<label>Zone Fade (in Seconds)</label>
-		<description>Specifies the fade (in seconds [truncated to nearest minute if more than 60 seconds]) when applying intensity changes</description>
+		<description>Specifies the fade (in seconds [truncated to nearest minute if more than 60 seconds]) when applying
+			intensity changes</description>
 		<category>Zone</category>
 		<state min="1" max="3600"/>
 	</channel-type>

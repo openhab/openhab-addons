@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.tools;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,40 +25,37 @@ import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.eclipse.smarthome.io.transport.mqtt.MqttMessageSubscriber;
 
 /**
- * Waits for a topic value to appear on a MQTT topic. One-time useable only per instance.
+ * Waits for a topic value to appear on a MQTT topic. One-time usable only per instance.
  *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 public class WaitForTopicValue {
-    private CompletableFuture<String> future = new CompletableFuture<>();
-    private final CompletableFuture<Boolean> subscripeFuture;
+    private final CompletableFuture<String> composeFuture;
 
     /**
      * Creates an a instance.
      *
      * @param connection A broker connection.
      * @param topic The topic
-     * @throws InterruptedException
-     * @throws ExecutionException
      */
-    public WaitForTopicValue(MqttBrokerConnection connection, String topic)
-            throws InterruptedException, ExecutionException {
+    public WaitForTopicValue(MqttBrokerConnection connection, String topic) {
+        final CompletableFuture<String> future = new CompletableFuture<>();
         final MqttMessageSubscriber mqttMessageSubscriber = (t, payload) -> {
-            future.complete(new String(payload));
+            future.complete(new String(payload, StandardCharsets.UTF_8));
         };
-        future = future.whenComplete((r, e) -> {
+        future.whenComplete((r, e) -> {
             connection.unsubscribe(topic, mqttMessageSubscriber);
         });
 
-        subscripeFuture = connection.subscribe(topic, mqttMessageSubscriber);
+        composeFuture = connection.subscribe(topic, mqttMessageSubscriber).thenCompose(b -> future);
     }
 
     /**
      * Free any resources
      */
     public void stop() {
-        future.completeExceptionally(new Exception("Stopped"));
+        composeFuture.completeExceptionally(new Exception("Stopped"));
     }
 
     /**
@@ -68,15 +66,15 @@ public class WaitForTopicValue {
      */
     public @Nullable String waitForTopicValue(int timeoutInMS) {
         try {
-            return subscripeFuture.thenCompose(b -> future).get(timeoutInMS, TimeUnit.MILLISECONDS);
+            return composeFuture.get(timeoutInMS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             return null;
         }
     }
 
     private void timeout() {
-        if (!future.isDone()) {
-            future.completeExceptionally(new TimeoutException());
+        if (!composeFuture.isDone()) {
+            composeFuture.completeExceptionally(new TimeoutException());
         }
     }
 
@@ -89,6 +87,6 @@ public class WaitForTopicValue {
      */
     public CompletableFuture<String> waitForTopicValueAsync(ScheduledExecutorService scheduler, int timeoutInMS) {
         scheduler.schedule(this::timeout, timeoutInMS, TimeUnit.MILLISECONDS);
-        return subscripeFuture.thenCompose(b -> future);
+        return composeFuture;
     }
 }

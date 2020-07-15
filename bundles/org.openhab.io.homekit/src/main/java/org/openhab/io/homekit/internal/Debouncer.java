@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,6 +42,7 @@ class Debouncer {
     private final Logger logger = LoggerFactory.getLogger(Debouncer.class);
 
     private volatile Long lastCallAttempt;
+    private ScheduledFuture<?> feature;
 
     /**
      * Highly performant generic debouncer
@@ -53,7 +55,7 @@ class Debouncer {
      * @param scheduler The scheduler implementation to use
      * @param delay The time after which to invoke action; each time [[Debouncer.call]] is invoked, this delay is
      *            reset
-     * @param Clock The source from which we get the current time. This input should use the same source. Specified
+     * @param clock The source from which we get the current time. This input should use the same source. Specified
      *            for testing purposes
      * @param action The action to invoke
      */
@@ -74,7 +76,16 @@ class Debouncer {
         lastCallAttempt = clock.millis();
         calls.incrementAndGet();
         if (pending.compareAndSet(false, true)) {
-            scheduler.schedule(this::tryActionOrPostpone, delayMs, TimeUnit.MILLISECONDS);
+            feature = scheduler.schedule(this::tryActionOrPostpone, delayMs, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    public void stop() {
+        logger.trace("stop debouncer");
+        if (feature != null) {
+            feature.cancel(true);
+            calls.set(0);
+            pending.set(false);
         }
     }
 
@@ -86,7 +97,7 @@ class Debouncer {
         if (delaySurpassed) {
             if (pending.compareAndSet(true, false)) {
                 int foldedCalls = calls.getAndSet(0);
-                logger.debug("Debouncer action {} invoked after delay {}  ({} calls)", name, delayMs, foldedCalls);
+                logger.trace("Debouncer action {} invoked after delay {}  ({} calls)", name, delayMs, foldedCalls);
                 try {
                     action.run();
                 } catch (Exception e) {
@@ -100,7 +111,7 @@ class Debouncer {
             // Note: we use Math.max as there's a _very_ small chance lastCallAttempt could advance in another thread,
             // and result in a negative calculation
             long delay = Math.max(1, lastCallAttempt - now + delayMs);
-            scheduler.schedule(this::tryActionOrPostpone, delay, TimeUnit.MILLISECONDS);
+            feature = scheduler.schedule(this::tryActionOrPostpone, delay, TimeUnit.MILLISECONDS);
         }
     }
 }

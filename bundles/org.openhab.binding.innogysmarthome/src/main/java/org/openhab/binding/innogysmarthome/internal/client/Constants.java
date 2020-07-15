@@ -34,9 +34,10 @@ public final class Constants {
 
     // API URLs
     public static final String API_HOST = "api.services-smarthome.de";
+    public static final String AUTH_HOST = "auth.services-smarthome.de";
     public static final String API_VERSION = "1.1";
     public static final String API_URL_BASE = "https://" + API_HOST + "/API/" + API_VERSION;
-    public static final String API_URL_TOKEN = "https://" + API_HOST + "/AUTH/token";
+    public static final String API_URL_TOKEN = "https://" + AUTH_HOST + "/AUTH/token";
 
     public static final String API_URL_CHECK_CONNECTION = API_URL_BASE + "/desc/device/SHC.RWE/1.0/event/StateChanged";
     public static final String API_URL_INITIALIZE = API_URL_BASE + "/initialize";

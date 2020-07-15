@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Base class from which both commands and responses (and events) are derived.
  *
  * @author Chris Jackson - Initial contribution and API
  *
  */
-abstract public class BlueGigaPacket {
+@NonNullByDefault
+public abstract class BlueGigaPacket {
 
 }

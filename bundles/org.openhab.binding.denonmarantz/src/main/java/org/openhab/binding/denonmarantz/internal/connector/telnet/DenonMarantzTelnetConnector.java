@@ -15,6 +15,7 @@ package org.openhab.binding.denonmarantz.internal.connector.telnet;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
@@ -106,7 +107,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
     private void refreshState() {
         // Sends a series of state query commands over the telnet connection
         telnetStateRequest = scheduler.submit(() -> {
-            ArrayList<String> cmds = new ArrayList<String>(Arrays.asList("PW?", "MS?", "MV?", "ZM?", "MU?", "SI?"));
+            List<String> cmds = new ArrayList<>(Arrays.asList("PW?", "MS?", "MV?", "ZM?", "MU?", "SI?"));
             if (config.getZoneCount() > 1) {
                 cmds.add("Z2?");
                 cmds.add("Z2MU?");
@@ -191,6 +192,17 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
                         state.setZone3Volume(fromDenonValue(value));
                     } else {
                         state.setZone3Input(value);
+                    }
+                    break;
+                case "Z4": // Zone 4
+                    if (value.equals("ON") || value.equals("OFF")) {
+                        state.setZone4Power(value.equals("ON"));
+                    } else if (value.equals("MUON") || value.equals("MUOFF")) {
+                        state.setZone4Mute(value.equals("MUON"));
+                    } else if (StringUtils.isNumeric(value)) {
+                        state.setZone4Volume(fromDenonValue(value));
+                    } else {
+                        state.setZone4Input(value);
                     }
                     break;
                 case "ZM": // Main zone

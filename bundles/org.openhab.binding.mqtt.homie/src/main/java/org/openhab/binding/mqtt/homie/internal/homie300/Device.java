@@ -175,7 +175,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> stop() {
         return attributes.unsubscribe().thenCompose(
-                b -> CompletableFuture.allOf(nodes.stream().map(n -> n.stop()).toArray(CompletableFuture[]::new)));
+                b -> CompletableFuture.allOf(nodes.stream().map(Node::stop).toArray(CompletableFuture[]::new)));
     }
 
     /**
@@ -204,7 +204,7 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
         nodes.clear();
         for (Channel channel : channels) {
             final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
-            if (!channelConfig.commandTopic.isEmpty() && channelConfig.retained != true) {
+            if (!channelConfig.commandTopic.isEmpty() && !channelConfig.retained) {
                 logger.warn("Channel {} in device {} is missing the 'retained' flag. Check your configuration.",
                         channel.getUID(), deviceID);
             }
@@ -310,8 +310,8 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      *
      * @return Returns a list of relative topics
      */
-    public ArrayList<String> getRetainedTopics() {
-        ArrayList<String> topics = new ArrayList<String>();
+    public List<String> getRetainedTopics() {
+        List<String> topics = new ArrayList<>();
 
         topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
             return String.format("%s/$%s", this.deviceID, f.getName());

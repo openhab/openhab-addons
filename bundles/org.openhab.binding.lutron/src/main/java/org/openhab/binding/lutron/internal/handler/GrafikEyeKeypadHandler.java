@@ -61,5 +61,4 @@ public class GrafikEyeKeypadHandler extends BaseKeypadHandler {
         super(thing);
         kp = new KeypadConfigGrafikEye();
     }
-
 }

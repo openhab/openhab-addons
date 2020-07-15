@@ -42,7 +42,6 @@ public class A5_3F_7F_Universal extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (config != null) {
             try {
                 EnOceanChannelTransformationConfig transformationInfo = config

@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.mute;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.PJLinkDevice;
 import org.openhab.binding.pjlinkdevice.internal.device.command.AbstractCommand;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This command is used for selecting audio/video mute of the device as described in
@@ -27,62 +26,62 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MuteInstructionCommand extends AbstractCommand<MuteInstructionRequest, MuteInstructionResponse> {
 
-  public enum MuteInstructionState {
-    ON("1"),
-    OFF("0");
+    public enum MuteInstructionState {
+        ON("1"),
+        OFF("0");
 
-    private String pjLinkRepresentation;
+        private String pjLinkRepresentation;
 
-    private MuteInstructionState(String pjLinkRepresentation) {
-      this.pjLinkRepresentation = pjLinkRepresentation;
+        private MuteInstructionState(String pjLinkRepresentation) {
+            this.pjLinkRepresentation = pjLinkRepresentation;
+        }
+
+        public String getPJLinkRepresentation() {
+            return this.pjLinkRepresentation;
+        }
     }
 
-    public String getPJLinkRepresentation() {
-      return this.pjLinkRepresentation;
+    public enum MuteInstructionChannel {
+        VIDEO("1"),
+        AUDIO("2"),
+        AUDIO_AND_VIDEO("3");
+
+        private String pjLinkRepresentation;
+
+        private MuteInstructionChannel(String pjLinkRepresentation) {
+            this.pjLinkRepresentation = pjLinkRepresentation;
+        }
+
+        public String getPJLinkRepresentation() {
+            return this.pjLinkRepresentation;
+        }
     }
-  }
 
-  public enum MuteInstructionChannel {
-    VIDEO("1"),
-    AUDIO("2"),
-    AUDIO_AND_VIDEO("3");
+    private MuteInstructionState targetState;
+    private MuteInstructionChannel targetChannel;
 
-    private String pjLinkRepresentation;
-
-    private MuteInstructionChannel(String pjLinkRepresentation) {
-      this.pjLinkRepresentation = pjLinkRepresentation;
+    public MuteInstructionCommand(PJLinkDevice pjLinkDevice, MuteInstructionState targetState,
+            MuteInstructionChannel targetChannel) {
+        super(pjLinkDevice);
+        this.targetState = targetState;
+        this.targetChannel = targetChannel;
     }
 
-    public String getPJLinkRepresentation() {
-      return this.pjLinkRepresentation;
+    public MuteInstructionState getTargetState() {
+        return this.targetState;
     }
-  }
 
-  private MuteInstructionState targetState;
-  private MuteInstructionChannel targetChannel;
+    public MuteInstructionChannel getTargetChannel() {
+        return this.targetChannel;
+    }
 
-  public MuteInstructionCommand(PJLinkDevice pjLinkDevice, MuteInstructionState targetState,
-      MuteInstructionChannel targetChannel) {
-    super(pjLinkDevice);
-    this.targetState = targetState;
-    this.targetChannel = targetChannel;
-  }
+    @Override
+    public MuteInstructionRequest createRequest() {
+        return new MuteInstructionRequest(this);
+    }
 
-  public MuteInstructionState getTargetState() {
-    return this.targetState;
-  }
-
-  public MuteInstructionChannel getTargetChannel() {
-    return this.targetChannel;
-  }
-
-  @Override
-  public MuteInstructionRequest createRequest() {
-    return new MuteInstructionRequest(this);
-  }
-
-  @Override
-  public MuteInstructionResponse parseResponse(String response) throws ResponseException {
-    return new MuteInstructionResponse(response);
-  }
+    @Override
+    public MuteInstructionResponse parseResponse(String response) throws ResponseException {
+        return new MuteInstructionResponse(response);
+    }
 }

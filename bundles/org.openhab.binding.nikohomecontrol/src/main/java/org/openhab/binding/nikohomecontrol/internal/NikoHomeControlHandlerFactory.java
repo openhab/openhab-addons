@@ -34,6 +34,7 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlActio
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler1;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlEnergyMeterHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
@@ -72,6 +73,8 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (THING_TYPE_THERMOSTAT.equals(thing.getThingTypeUID())) {
             return new NikoHomeControlThermostatHandler(thing);
+        } else if (THING_TYPE_ENERGYMETER.equals(thing.getThingTypeUID())) {
+            return new NikoHomeControlEnergyMeterHandler(thing);
         } else if (ACTION_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new NikoHomeControlActionHandler(thing);
         }
@@ -81,8 +84,8 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerNikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler bridgeHandler) {
         NikoHomeControlDiscoveryService nhcDiscoveryService = new NikoHomeControlDiscoveryService(bridgeHandler);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext.registerService(
-                DiscoveryService.class.getName(), nhcDiscoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), nhcDiscoveryService, new Hashtable<>()));
         nhcDiscoveryService.activate();
     }
 

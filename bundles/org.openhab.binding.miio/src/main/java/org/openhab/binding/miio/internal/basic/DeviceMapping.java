@@ -15,6 +15,10 @@ package org.openhab.binding.miio.internal.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.miio.internal.MiIoCommand;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -23,14 +27,21 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class DeviceMapping {
 
     @SerializedName("id")
     @Expose
-    private List<String> id = new ArrayList<String>();
+    private List<String> id = new ArrayList<>();
+    @SerializedName("propertyMethod")
+    @Expose
+    private @Nullable String propertyMethod;
+    @SerializedName("maxProperties")
+    @Expose
+    private @Nullable Integer maxProperties;
     @SerializedName("channels")
     @Expose
-    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<MiIoBasicChannel>();
+    private List<MiIoBasicChannel> miIoBasicChannels = new ArrayList<>();
 
     public List<String> getId() {
         return id;
@@ -40,6 +51,24 @@ public class DeviceMapping {
         this.id = id;
     }
 
+    public String getPropertyMethod() {
+        final String propertyMethod = this.propertyMethod;
+        return propertyMethod != null ? propertyMethod : MiIoCommand.GET_PROPERTY.getCommand();
+    }
+
+    public void setPropertyMethod(String propertyMethod) {
+        this.propertyMethod = propertyMethod;
+    }
+
+    public int getMaxProperties() {
+        final Integer maxProperties = this.maxProperties;
+        return maxProperties != null ? maxProperties.intValue() : 5;
+    }
+
+    public void setMaxProperties(int maxProperties) {
+        this.maxProperties = maxProperties;
+    }
+
     public List<MiIoBasicChannel> getChannels() {
         return miIoBasicChannels;
     }
@@ -47,5 +76,4 @@ public class DeviceMapping {
     public void setChannels(List<MiIoBasicChannel> miIoBasicChannels) {
         this.miIoBasicChannels = miIoBasicChannels;
     }
-
 }

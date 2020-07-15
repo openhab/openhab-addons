@@ -107,5 +107,4 @@ public class ArtnetPacket extends DmxOverEthernetPacket {
     public int getPacketLength() {
         return (18 + this.payloadSize);
     }
-
 }

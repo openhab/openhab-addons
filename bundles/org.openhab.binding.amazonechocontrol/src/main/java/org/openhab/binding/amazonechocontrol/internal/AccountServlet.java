@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -55,7 +54,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- *
  * Provides the following functions
  * --- Login ---
  * Simple http proxy to forward the login dialog from amazon to the user through the binding
@@ -76,33 +74,27 @@ public class AccountServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(AccountServlet.class);
 
-    final HttpService httpService;
-    String servletUrlWithoutRoot;
-    final String servletUrl;
-    AccountHandler account;
-    String id;
-    @Nullable
-    Connection connectionToInitialize;
-    final Gson gson;
+    private final HttpService httpService;
+    private final String servletUrlWithoutRoot;
+    private final String servletUrl;
+    private final AccountHandler account;
+    private final String id;
+    private @Nullable Connection connectionToInitialize;
+    private final Gson gson;
 
     public AccountServlet(HttpService httpService, String id, AccountHandler account, Gson gson) {
         this.httpService = httpService;
         this.account = account;
         this.id = id;
         this.gson = gson;
+
         try {
             servletUrlWithoutRoot = "amazonechocontrol/" + URLEncoder.encode(id, "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            servletUrlWithoutRoot = "";
-            servletUrl = "";
-            logger.warn("Register servlet fails", e);
-            return;
-        }
-        servletUrl = "/" + servletUrlWithoutRoot;
-        try {
+            servletUrl = "/" + servletUrlWithoutRoot;
+
             httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
-        } catch (NamespaceException | ServletException e) {
-            logger.warn("Register servlet fails", e);
+        } catch (UnsupportedEncodingException | NamespaceException | ServletException e) {
+            throw new IllegalStateException(e.getMessage());
         }
     }
 
@@ -247,7 +239,6 @@ public class AccountServlet extends HttpServlet {
         try {
             Connection connection = this.connectionToInitialize;
             if (uri.startsWith(FORWARD_URI_PART) && connection != null) {
-
                 String getUrl = "https://www." + connection.getAmazonSite() + "/"
                         + uri.substring(FORWARD_URI_PART.length());
 
@@ -271,7 +262,6 @@ public class AccountServlet extends HttpServlet {
             }
 
             if (connection != null && connection.verifyLogin()) {
-
                 // handle commands
                 if (baseUrl.equals("/logout") || baseUrl.equals("/logout/")) {
                     this.connectionToInitialize = reCreateConnection();
@@ -567,7 +557,7 @@ public class AccountServlet extends HttpServlet {
         }
 
         if (playLists != null) {
-            Map<@NonNull String, @Nullable PlayList @Nullable []> playlistMap = playLists.playlists;
+            Map<String, @Nullable PlayList @Nullable []> playlistMap = playLists.playlists;
             if (playlistMap != null && !playlistMap.isEmpty()) {
                 html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
 
@@ -575,7 +565,7 @@ public class AccountServlet extends HttpServlet {
                     {
                         if (innerLists != null && innerLists.length > 0) {
                             PlayList playList = innerLists[0];
-                            if (playList.playlistId != null && playList.title != null) {
+                            if (playList != null && playList.playlistId != null && playList.title != null) {
                                 html.append("<tr><td>");
                                 html.append(StringEscapeUtils.escapeHtml(nullReplacement(playList.title)));
                                 html.append("</td><td>");
@@ -595,24 +585,32 @@ public class AccountServlet extends HttpServlet {
     private void renderBluetoothMacChannel(Connection connection, Device device, StringBuilder html) {
         html.append("<h2>" + StringEscapeUtils.escapeHtml("Channel " + CHANNEL_BLUETOOTH_MAC) + "</h2>");
         JsonBluetoothStates bluetoothStates = connection.getBluetoothConnectionStates();
+        if (bluetoothStates == null) {
+            return;
+        }
         BluetoothState[] innerStates = bluetoothStates.bluetoothStates;
-        if (innerStates != null) {
-            for (BluetoothState state : innerStates) {
-                if (StringUtils.equals(state.deviceSerialNumber, device.serialNumber)) {
-                    PairedDevice[] pairedDeviceList = state.pairedDeviceList;
-                    if (pairedDeviceList != null && pairedDeviceList.length > 0) {
-                        html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
-                        for (PairedDevice pairedDevice : pairedDeviceList) {
-                            html.append("<tr><td>");
-                            html.append(StringEscapeUtils.escapeHtml(nullReplacement(pairedDevice.friendlyName)));
-                            html.append("</td><td>");
-                            html.append(StringEscapeUtils.escapeHtml(nullReplacement(pairedDevice.address)));
-                            html.append("</td></tr>");
-                        }
-                        html.append("</table>");
-                    } else {
-                        html.append(StringEscapeUtils.escapeHtml("No bluetooth devices paired"));
+        if (innerStates == null) {
+            return;
+        }
+        for (BluetoothState state : innerStates) {
+            if (state == null) {
+                continue;
+            }
+            if ((state.deviceSerialNumber == null && device.serialNumber == null)
+                    || (state.deviceSerialNumber != null && state.deviceSerialNumber.equals(device.serialNumber))) {
+                PairedDevice[] pairedDeviceList = state.pairedDeviceList;
+                if (pairedDeviceList != null && pairedDeviceList.length > 0) {
+                    html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
+                    for (PairedDevice pairedDevice : pairedDeviceList) {
+                        html.append("<tr><td>");
+                        html.append(StringEscapeUtils.escapeHtml(nullReplacement(pairedDevice.friendlyName)));
+                        html.append("</td><td>");
+                        html.append(StringEscapeUtils.escapeHtml(nullReplacement(pairedDevice.address)));
+                        html.append("</td></tr>");
                     }
+                    html.append("</table>");
+                } else {
+                    html.append(StringEscapeUtils.escapeHtml("No bluetooth devices paired"));
                 }
             }
         }
@@ -633,7 +631,6 @@ public class AccountServlet extends HttpServlet {
                 {
                     String location = urlConnection.getHeaderField("location");
                     if (location.contains("/ap/maplanding")) {
-
                         try {
                             connection.registerConnectionAsApp(location);
                             account.setConnection(connection);
@@ -646,7 +643,6 @@ public class AccountServlet extends HttpServlet {
                             this.connectionToInitialize = null;
                             return;
                         }
-
                     }
 
                     String startString = "https://www." + connection.getAmazonSite() + "/";

@@ -70,7 +70,7 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
     protected List<String> requiredProperties = new ArrayList<>(REQUIRED_PROPERTIES);
     protected Set<OwSensorType> supportedSensorTypes;
 
-    protected final List<AbstractOwDevice> sensors = new ArrayList<AbstractOwDevice>();
+    protected final List<AbstractOwDevice> sensors = new ArrayList<>();
     protected @NonNullByDefault({}) SensorId sensorId;
     protected @NonNullByDefault({}) OwSensorType sensorType;
 
@@ -139,10 +139,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
 
         refreshInterval = configuration.refresh * 1000;
 
-        if (thing.getChannel(CHANNEL_PRESENT) != null) {
-            showPresence = true;
-        }
-
         // check if all required properties are present. update if not
         for (String property : requiredProperties) {
             if (!properties.containsKey(property)) {
@@ -187,6 +183,10 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
         } catch (OwException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
+        }
+
+        if (thing.getChannel(CHANNEL_PRESENT) != null) {
+            showPresence = true;
         }
 
         validConfig = true;
@@ -234,7 +234,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
             logger.debug("{}: refresh exception {}", this.thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "refresh exception");
         }
-
     }
 
     /**
@@ -318,7 +317,6 @@ public abstract class OwBaseThingHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "required properties missing");
         bridgeHandler.scheduleForPropertiesUpdate(thing);
-
     }
 
     /**

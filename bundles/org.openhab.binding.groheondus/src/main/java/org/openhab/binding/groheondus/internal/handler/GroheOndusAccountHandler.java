@@ -142,7 +142,9 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
                 ondusService = OndusService.login(storage.get(STORAGE_KEY_REFRESH_TOKEN));
                 scheduleTokenRefresh();
             } else {
-                ondusService = OndusService.login(config.username, config.password);
+                // TODO: That's probably really inefficient, internally the loginWebform method acquires a refresh
+                // token, maybe there should be a way to obtain this token here, somehow.
+                ondusService = OndusService.loginWebform(config.username, config.password);
             }
             updateStatus(ThingStatus.ONLINE);
 

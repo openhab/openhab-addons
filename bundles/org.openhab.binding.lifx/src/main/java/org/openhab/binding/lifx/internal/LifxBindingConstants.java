@@ -108,5 +108,4 @@ public class LifxBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_COLORLIGHT,
             THING_TYPE_COLORIRLIGHT, THING_TYPE_COLORMZLIGHT, THING_TYPE_WHITELIGHT, THING_TYPE_TILELIGHT)
             .collect(Collectors.toSet());
-
 }

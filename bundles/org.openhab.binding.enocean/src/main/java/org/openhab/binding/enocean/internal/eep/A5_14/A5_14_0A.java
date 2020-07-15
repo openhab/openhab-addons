@@ -38,10 +38,10 @@ public class A5_14_0A extends A5_14_09 {
     }
 
     @Override
-    protected State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
-            Configuration config) {
+    protected State convertToStateImpl(String channelId, String channelTypeId,
+            Function<String, State> getCurrentStateFunc, Configuration config) {
         if (channelId.equals(CHANNEL_VIBRATION)) {
-                return getVibration();
+            return getVibration();
         }
 
         return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);

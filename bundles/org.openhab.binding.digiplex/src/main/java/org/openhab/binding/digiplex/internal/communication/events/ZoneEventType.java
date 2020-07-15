@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.digiplex.internal.communication.events;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Type of zone-related event
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public enum ZoneEventType {
     TX_DELAY_ZONE_ALARM,
     BYPASSED,

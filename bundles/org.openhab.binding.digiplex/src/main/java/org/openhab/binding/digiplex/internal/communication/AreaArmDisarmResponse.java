@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Response for arm, quick arm and disarm requests
  *
  * @author Robert Michalak - Initial contribution
  */
+@NonNullByDefault
 public class AreaArmDisarmResponse extends AbstractResponse {
 
     public final int areaNo;
@@ -45,7 +48,5 @@ public class AreaArmDisarmResponse extends AbstractResponse {
     @Override
     public void accept(DigiplexMessageHandler visitor) {
         visitor.handleArmDisarmAreaResponse(this);
-
     }
-
 }

@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.satel.internal.command;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.satel.internal.event.EventDispatcher;
@@ -43,11 +45,17 @@ public class IntegraStatusCommand extends SatelCommandBase {
     /**
      * @return date and time
      */
-    public LocalDateTime getIntegraTime() {
+    public Optional<LocalDateTime> getIntegraTime() {
         // parse current date and time
-        final byte[] payload = getResponse().getPayload();
-        return LocalDateTime.of(bcdToInt(payload, 0, 2), bcdToInt(payload, 2, 1), bcdToInt(payload, 3, 1),
-                bcdToInt(payload, 4, 1), bcdToInt(payload, 5, 1), bcdToInt(payload, 6, 1));
+        try {
+            final byte[] payload = getResponse().getPayload();
+            return Optional
+                    .of(LocalDateTime.of(bcdToInt(payload, 0, 2), bcdToInt(payload, 2, 1), bcdToInt(payload, 3, 1),
+                            bcdToInt(payload, 4, 1), bcdToInt(payload, 5, 1), bcdToInt(payload, 6, 1)));
+        } catch (DateTimeException e) {
+            logger.debug("Invalid date/time set in the system", e);
+            return Optional.empty();
+        }
     }
 
     /**
@@ -65,22 +73,7 @@ public class IntegraStatusCommand extends SatelCommandBase {
     }
 
     @Override
-    public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
-        if (super.handleResponse(eventDispatcher, response)) {
-            // dispatch version event
-            eventDispatcher.dispatchEvent(new IntegraStatusEvent(getIntegraTime(), getStatusByte1(), getStatusByte2()));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     protected boolean isResponseValid(SatelMessage response) {
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length != 9) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
@@ -88,4 +81,9 @@ public class IntegraStatusCommand extends SatelCommandBase {
         return true;
     }
 
+    @Override
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+        // dispatch version event
+        eventDispatcher.dispatchEvent(new IntegraStatusEvent(getIntegraTime(), getStatusByte1(), getStatusByte2()));
+    }
 }

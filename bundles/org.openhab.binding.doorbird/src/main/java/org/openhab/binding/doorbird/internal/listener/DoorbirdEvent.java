@@ -71,6 +71,7 @@ public class DoorbirdEvent {
      * - if both of these attempts fail, the binding will be functional, except for
      * its ability to decrypt the UDP events.
      */
+    @NonNullByDefault
     private static class LazySodiumJavaHolder {
         private static final Logger LOGGER = LoggerFactory.getLogger(LazySodiumJavaHolder.class);
 

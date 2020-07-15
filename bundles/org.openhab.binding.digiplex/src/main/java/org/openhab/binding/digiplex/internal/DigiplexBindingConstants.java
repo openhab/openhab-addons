@@ -47,10 +47,19 @@ public class DigiplexBindingConstants {
     public static final String PROPERTY_AREA_NO = "AREA_ID";
 
     // List of all Channel ids
-    // bridge
-    public static final String BRIDGE_MESSAGES_SENT = "messages_sent";
-    public static final String BRIDGE_RESPONSES_RECEIVED = "responses_received";
-    public static final String BRIDGE_EVENTS_RECEIVED = "events_received";
+    // Bridge
+    public static final String BRIDGE_MESSAGES_SENT = "statistics#messages_sent";
+    public static final String BRIDGE_RESPONSES_RECEIVED = "statistics#responses_received";
+    public static final String BRIDGE_EVENTS_RECEIVED = "statistics#events_received";
+
+    public static final String BRIDGE_TLM_TROUBLE = "troubles#tlm_trouble";
+    public static final String BRIDGE_AC_FAILURE = "troubles#ac_failure";
+    public static final String BRIDGE_BATTERY_FAILURE = "troubles#battery_failure";
+    public static final String BRIDGE_AUX_CURRENT_LIMIT = "troubles#aux_current_limit";
+    public static final String BRIDGE_BELL_CURRENT_LIMIT = "troubles#bell_current_limit";
+    public static final String BRIDGE_BELL_ABSENT = "troubles#bell_absent";
+    public static final String BRIDGE_CLOCK_TROUBLE = "troubles#clock_trouble";
+    public static final String BRIDGE_GLOBAL_FIRE_LOOP = "troubles#global_fire_loop";
     // Zone
     public static final String ZONE_STATUS = "status";
     public static final String ZONE_EXTENDED_STATUS = "extended_status";
@@ -76,4 +85,5 @@ public class DigiplexBindingConstants {
     public static final StringType COMMAND_OK = new StringType("Ok");
     public static final StringType COMMAND_FAIL = new StringType("Fail");
 
+    public static final int GLOBAL_AREA_NO = 0;
 }

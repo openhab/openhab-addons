@@ -41,23 +41,8 @@ public class NewStatesCommand extends SatelCommandBase {
     }
 
     @Override
-    public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
-        if (super.handleResponse(eventDispatcher, response)) {
-            // dispatch event
-            eventDispatcher.dispatchEvent(new NewStatesEvent(response.getPayload()));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length < 5 || response.getPayload().length > 6) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
@@ -65,4 +50,9 @@ public class NewStatesCommand extends SatelCommandBase {
         return true;
     }
 
+    @Override
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+        // dispatch event
+        eventDispatcher.dispatchEvent(new NewStatesEvent(getResponse().getPayload()));
+    }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gpstracker.internal.provider;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
 
 /**
@@ -19,13 +21,15 @@ import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
 public interface TrackerRegistry {
 
     /**
      * Returns a handler for a given id
-     * 
+     *
      * @param trackerId the id of the tracker
-     * @return the handler or null if it does not exist
+     * @return the handler
      */
+    @Nullable
     TrackerHandler getTrackerHandler(String trackerId);
 }

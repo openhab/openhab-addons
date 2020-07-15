@@ -51,5 +51,4 @@ public class NeeoRoomsDeserializer implements JsonDeserializer<@Nullable NeeoRoo
         }
         return null;
     }
-
 }

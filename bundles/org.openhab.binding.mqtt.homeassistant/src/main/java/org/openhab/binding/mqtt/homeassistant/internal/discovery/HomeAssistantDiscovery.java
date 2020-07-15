@@ -171,7 +171,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         final String componentNames = components.stream().map(id -> id.component)
                 .map(c -> HA_COMP_TO_NAME.getOrDefault(c, c)).collect(Collectors.joining(", "));
 
-        final List<String> topics = components.stream().map(id -> id.toShortTopic()).collect(Collectors.toList());
+        final List<String> topics = components.stream().map(HaID::toShortTopic).collect(Collectors.toList());
 
         Map<String, Object> properties = new HashMap<>();
         HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
@@ -222,5 +222,4 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             }
         }
     }
-
 }

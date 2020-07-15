@@ -16,8 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -45,11 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link NhcMqttConnection2} manages the MQTT connections to the Connected Controller. The initial secured connection
- * is used for general system communication. This communication also communicates the profile uuid's needed as username
- * for touch profile specific communication. The touch profile specific communication uses the same secure communication
- * with added username and password. It allows receiving state information about specific devices and sending updates to
- * specific devices.
+ * {@link NhcMqttConnection2} manages the MQTT connection to the Connected Controller. It allows receiving state
+ * information about specific devices and sending updates to specific devices.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -58,28 +53,24 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
     private final Logger logger = LoggerFactory.getLogger(NhcMqttConnection2.class);
 
-    private volatile @Nullable MqttBrokerConnection mqttPublicConnection;
-    private volatile @Nullable MqttBrokerConnection mqttProfileConnection;
+    private volatile @Nullable MqttBrokerConnection mqttConnection;
 
-    private volatile @Nullable CompletableFuture<Boolean> publicSubscribedFuture;
-    private volatile @Nullable CompletableFuture<Boolean> profileSubscribedFuture;
-
-    private volatile @Nullable CompletableFuture<Boolean> publicStoppedFuture;
-    private volatile @Nullable CompletableFuture<Boolean> profileStoppedFuture;
+    private volatile @Nullable CompletableFuture<Boolean> subscribedFuture;
+    private volatile @Nullable CompletableFuture<Boolean> stoppedFuture;
 
     private MqttMessageSubscriber messageSubscriber;
     private MqttConnectionObserver connectionObserver;
 
-    private Path persistenceBasePath;
     private TrustManager trustManagers[];
-    private @Nullable String clientId;
+    private String clientId;
 
     private volatile String cocoAddress = "";
     private volatile int port;
+    private volatile String profile = "";
+    private volatile String token = "";
 
-    NhcMqttConnection2(String clientId, String persistencePath, MqttMessageSubscriber messageSubscriber,
+    NhcMqttConnection2(String clientId, MqttMessageSubscriber messageSubscriber,
             MqttConnectionObserver connectionObserver) throws CertificateException {
-        persistenceBasePath = Paths.get(persistencePath).resolve("nikohomecontrol");
         trustManagers = getTrustManagers();
         this.clientId = clientId;
         this.messageSubscriber = messageSubscriber;
@@ -117,154 +108,79 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     }
 
     /**
-     * Start a secure MQTT connection and subscribe to all topics. This is the general connection, not touch profile
-     * specific.
+     * Start a secure MQTT connection and subscribe to all topics.
      *
      * @param subscriber MqttMessageSubscriber that will handle received messages
      * @param cocoAddress IP Address of the Niko Connected Controller
      * @param port Port for MQTT communication with the Niko Connected Controller
+     * @param token JWT token for the hobby profile
      * @throws MqttException
      */
-    synchronized void startPublicConnection(String cocoAddress, int port) throws MqttException {
-        CompletableFuture<Boolean> future = publicStoppedFuture;
+    synchronized void startConnection(String cocoAddress, int port, String profile, String token) throws MqttException {
+        CompletableFuture<Boolean> future = stoppedFuture;
         if (future != null) {
             try {
                 future.get(5000, TimeUnit.MILLISECONDS);
-                logger.debug("Niko Home Control: finished stopping public connection");
+                logger.debug("Niko Home Control: finished stopping connection");
             } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-                logger.debug("Niko Home Control: error stopping public connection");
+                logger.debug("Niko Home Control: error stopping connection");
             }
-            publicStoppedFuture = null;
+            stoppedFuture = null;
         }
 
-        logger.debug("Niko Home Control: starting public connection...");
+        logger.debug("Niko Home Control: starting connection...");
         this.cocoAddress = cocoAddress;
         this.port = port;
-        String clientId = this.clientId + "-public";
-        MqttBrokerConnection connection = createMqttConnection(null, null, clientId);
+        this.profile = profile;
+        this.token = token;
+        MqttBrokerConnection connection = createMqttConnection();
         connection.addConnectionObserver(connectionObserver);
-        mqttPublicConnection = connection;
+        mqttConnection = connection;
         try {
             if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
-                if (publicSubscribedFuture == null) {
-                    publicSubscribedFuture = connection.subscribe("#", messageSubscriber);
+                if (subscribedFuture == null) {
+                    subscribedFuture = connection.subscribe("#", messageSubscriber);
                 }
             } else {
                 logger.debug("Niko Home Control: error connecting");
-                throw new MqttException(32103);
+                throw new MqttException("Connection execution exception");
             }
         } catch (InterruptedException e) {
-            logger.debug("Niko Home Control: public connection interrupted exception");
-            throw new MqttException(0);
+            logger.debug("Niko Home Control: connection interrupted exception");
+            throw new MqttException("Connection interrupted exception");
         } catch (ExecutionException e) {
-            logger.debug("Niko Home Control: public connection execution exception", e.getCause());
-            throw new MqttException(32103);
+            logger.debug("Niko Home Control: connection execution exception", e.getCause());
+            throw new MqttException("Connection execution exception");
         } catch (TimeoutException e) {
-            logger.debug("Niko Home Control: public connection timeout exception");
-            throw new MqttException(32000);
+            logger.debug("Niko Home Control: connection timeout exception");
+            throw new MqttException("Connection timeout exception");
         }
     }
 
-    /**
-     * Start a secure MQTT connection and subscribe to all topics. This is the touch profile specific connection.
-     * Note that {@link startConnection} must be called before this method. This method does not have cocoAddress and
-     * port as parameters. The class fields will already have been set by {@link startConnection}.
-     *
-     * @param subscriber MqttMessageSubscriber that will handle received messages
-     * @param username MQTT username that identifies the specific touch profile. It should be the uuid retrieved from
-     *            the profile list in the general communication that matches the touch profile name.
-     * @param password Password for the touch profile
-     * @throws MqttException
-     */
-    synchronized void startProfileConnection(String username, String password) throws MqttException {
-        CompletableFuture<Boolean> future = profileStoppedFuture;
-        if (future != null) {
-            try {
-                future.get(5000, TimeUnit.MILLISECONDS);
-                logger.debug("Niko Home Control: finished stopping profile connection");
-            } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-                logger.debug("Niko Home Control: error stopping profile connection");
-            }
-            profileStoppedFuture = null;
-        }
-
-        if (isProfileConnected()) {
-            logger.debug("Niko Home Control: profile already connected, no need to connect again");
-            return;
-        }
-
-        logger.debug("Niko Home Control: starting profile connection...");
-        String clientId = this.clientId + "-profile";
-        MqttBrokerConnection connection = createMqttConnection(username, password, clientId);
-        connection.addConnectionObserver(connectionObserver);
-        mqttProfileConnection = connection;
-        try {
-            if (connection.start().get(5000, TimeUnit.MILLISECONDS)) {
-                if (profileSubscribedFuture == null) {
-                    profileSubscribedFuture = connection.subscribe("#", messageSubscriber);
-                }
-            } else {
-                logger.warn("Niko Home Control: error with profile password");
-                throw new MqttException(4);
-            }
-        } catch (InterruptedException e) {
-            logger.debug("Niko Home Control: profile connection interrupted exception ");
-            throw new MqttException(0);
-        } catch (ExecutionException e) {
-            logger.debug("Niko Home Control: profile connection execution exception", e.getCause());
-            throw new MqttException(32103);
-        } catch (TimeoutException e) {
-            logger.debug("Niko Home Control: public connection timeout exception");
-            throw new MqttException(32000);
-        }
-    }
-
-    private MqttBrokerConnection createMqttConnection(@Nullable String username, @Nullable String password,
-            @Nullable String clientId) throws MqttException {
-        Path persistencePath = persistenceBasePath.resolve(clientId);
+    private MqttBrokerConnection createMqttConnection() throws MqttException {
         MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
-        connection.setPersistencePath(persistencePath);
         connection.setTrustManagers(trustManagers);
-        connection.setCredentials(username, password);
+        connection.setCredentials(profile, token);
         connection.setQos(1);
         return connection;
     }
 
     /**
-     * Stop the public MQTT connection.
+     * Stop the MQTT connection.
      */
-    void stopPublicConnection() {
-        logger.debug("Niko Home Control: stopping public connection...");
-        MqttBrokerConnection connection = mqttPublicConnection;
+    void stopConnection() {
+        logger.debug("Niko Home Control: stopping connection...");
+        MqttBrokerConnection connection = mqttConnection;
         if (connection != null) {
             connection.removeConnectionObserver(connectionObserver);
         }
-        publicStoppedFuture = stopConnection(connection);
-        mqttPublicConnection = null;
+        stoppedFuture = stopConnection(connection);
+        mqttConnection = null;
 
-        CompletableFuture<Boolean> future = publicSubscribedFuture;
+        CompletableFuture<Boolean> future = subscribedFuture;
         if (future != null) {
             future.complete(false);
-            publicSubscribedFuture = null;
-        }
-    }
-
-    /**
-     * Stop the profile specific MQTT connection.
-     */
-    void stopProfileConnection() {
-        logger.debug("Niko Home Control: stopping profile connection...");
-        MqttBrokerConnection connection = mqttProfileConnection;
-        if (connection != null) {
-            connection.removeConnectionObserver(connectionObserver);
-        }
-        profileStoppedFuture = stopConnection(mqttProfileConnection);
-        mqttProfileConnection = null;
-
-        CompletableFuture<Boolean> future = profileSubscribedFuture;
-        if (future != null) {
-            future.complete(false);
-            profileSubscribedFuture = null;
+            subscribedFuture = null;
         }
     }
 
@@ -279,21 +195,9 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     /**
      * @return true if connection established and subscribed to all topics
      */
-    private boolean isPublicConnected() {
-        return isConnected(mqttPublicConnection, publicSubscribedFuture);
-    }
-
-    /**
-     * @return true if touch profile specific connection is established and subscribed to all topics
-     */
-    private boolean isProfileConnected() {
-        return isConnected(mqttProfileConnection, profileSubscribedFuture);
-    }
-
-    private boolean isConnected(@Nullable MqttBrokerConnection brokerConnection,
-            @Nullable CompletableFuture<Boolean> completableFuture) {
-        MqttBrokerConnection connection = brokerConnection;
-        CompletableFuture<Boolean> future = completableFuture;
+    private boolean isConnected() {
+        MqttBrokerConnection connection = mqttConnection;
+        CompletableFuture<Boolean> future = subscribedFuture;
 
         if (connection != null) {
             try {
@@ -316,44 +220,19 @@ public class NhcMqttConnection2 implements MqttActionCallback {
      * @param payload
      * @throws MqttException
      */
-    void publicConnectionPublish(String topic, String payload) throws MqttException {
-        MqttBrokerConnection connection = mqttPublicConnection;
+    void connectionPublish(String topic, String payload) throws MqttException {
+        MqttBrokerConnection connection = mqttConnection;
         if (connection == null) {
-            logger.debug("Niko Home Control: cannot publish, no public connection");
-            throw new MqttException(32104);
+            logger.debug("Niko Home Control: cannot publish, no connection");
+            throw new MqttException("No connection exception");
         }
 
-        if (isPublicConnected()) {
-            publish(connection, topic, payload);
+        if (isConnected()) {
+            logger.debug("Niko Home Control: publish {}, {}", topic, payload);
+            connection.publish(topic, payload.getBytes());
         } else {
-            logger.debug("Niko Home Control: cannot publish, not subscribed to public connection messages");
+            logger.debug("Niko Home Control: cannot publish, not subscribed to connection messages");
         }
-    }
-
-    /**
-     * Publish a message on the touch profile specific connection.
-     *
-     * @param topic
-     * @param payload
-     * @throws MqttException
-     */
-    void profileConnectionPublish(String topic, String payload) throws MqttException {
-        MqttBrokerConnection connection = mqttProfileConnection;
-        if (connection == null) {
-            logger.debug("Niko Home Control: cannot publish, no profile connection");
-            throw new MqttException(32104);
-        }
-
-        if (isProfileConnected()) {
-            publish(connection, topic, payload);
-        } else {
-            logger.debug("Niko Home Control: cannot publish, not subscribed to profile connection messages");
-        }
-    }
-
-    private void publish(MqttBrokerConnection connection, String topic, String payload) {
-        logger.debug("Niko Home Control: publish {}, {}", topic, payload);
-        connection.publish(topic, payload.getBytes());
     }
 
     @Override

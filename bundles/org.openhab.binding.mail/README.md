@@ -8,7 +8,7 @@ There are three things: `smtp`, `imap` and `pop3` which represents respective se
 
 ## Thing Configuration
 
-### SMTP server (`smtp`)
+### SMTP Server (`smtp`)
 
 There are two mandatory parameters `hostname` and `sender`.
 
@@ -17,13 +17,13 @@ The `sender` must be a valid mail address used as sender address for mails.
 
 The `security`, `port`, `username` and `password` parameters are optional.
 
-The `security` parameter defines the transport security and can be set to `PLAIN` (default), `SSL` or `TLS`.
+The `security` parameter defines the transport security and can be set to `PLAIN` (default), `STARTTLS` or `SSL` (for implicit SSL/TLS).
 The `port` parameter is used to change the default ports for the SMTP server.
-Default ports are `25` (for `PLAIN` and `TLS`) and `465` (for `SSL`).
+Default ports are `25` (for `PLAIN` and `STARTTLS`) and `465` (for `SSL`).
 For authentication, `username` and `password` can be supplied.
 If one or both are empty, no authentication data is provided to the SMTP server during connect.
 
-### IMAP server (`imap`) / POP3 server (`pop3`)
+### IMAP Server (`imap`) / POP3 Server (`pop3`)
 
 There is one mandatory parameter: `hostname`, `username`, `password`.
 The `hostname` may contain an IP address or a FQDN like `mail.gmail.com`.
@@ -33,9 +33,9 @@ The `refresh`, `security`, `port`, `username` and `password` parameters are opti
 
 The `refresh` parameter is the time in seconds between two refreshes of the thing's channels.
 If omitted, the default of 60s is used.
-The `security` parameter defines the transport security and can be set to `PLAIN` (default), `SSL` or `TLS`.
+The `security` parameter defines the transport security and can be set to `PLAIN` (default), `STARTTLS` or `SSL` (for implicit SSL/TLS).
 The `port` parameter is used to change the default ports for the SMTP server.
-Default ports are `143` (for `PLAIN` and `TLS`) and `993` (for `SSL`) in the case of `imap` or `110` (for `PLAIN` and `TLS`) and `995` (for `SSL`) in the case of `pop3`.
+Default ports are `143` (for `PLAIN` and `STARTTLS`) and `993` (for `SSL`) in the case of `imap` or `110` (for `PLAIN` and `STARTTLS`) and `995` (for `SSL`) in the case of `pop3`.
 
 ## Channels
 
@@ -55,7 +55,7 @@ Channels with type `UNREAD` give the number on unread mails in that folder.
 mail.things:
 
 ```
-Thing mail:smtp:samplesmtp [ hostname="smtp.example.com", sender="mail@example.com", security="TLS", username="user", password="pass" ]
+Thing mail:smtp:samplesmtp [ hostname="smtp.example.com", sender="mail@example.com", security="SSL", username="user", password="pass" ]
 
 Thing mail:imap:sampleimap [ hostname="imap.example.com", security="SSL", username="user", password="pass" ] {
     Channels:
@@ -85,7 +85,7 @@ sitemap demo label="Main Menu"
 
 ## Rule Action
 
-This binding includes rule actions for sending mail.
+This binding includes rule actions for sending email.
 Six different actions available:
 
 * `sendMail(String recipient, String subject, String text)`
@@ -104,7 +104,7 @@ Since there is a separate rule action instance for each `smtp` thing, this needs
 The first parameter always has to be `mail` and the second is the full Thing UID of the SMTP server that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
 
-Please note: all strings are expected to be UTF-8 encoded.
+Please note: All strings are expected to be UTF-8 encoded.
 Using different character sets may produce unwanted results.
 
 Examples:

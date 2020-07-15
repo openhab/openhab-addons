@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.gap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 
@@ -26,12 +27,13 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaSetScanParametersResponse extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x07;
 
     /**
-     *  0: The command was executed successfully. Non-zero: An error occurred
+     * 0: The command was executed successfully. Non-zero: An error occurred
      * <p>
      * BlueGiga API type is <i>BgApiResponse</i> - Java type is {@link BgApiResponse}
      */
@@ -51,7 +53,7 @@ public class BlueGigaSetScanParametersResponse extends BlueGigaResponse {
     }
 
     /**
-     *  0: The command was executed successfully. Non-zero: An error occurred
+     * 0: The command was executed successfully. Non-zero: An error occurred
      * <p>
      * BlueGiga API type is <i>BgApiResponse</i> - Java type is {@link BgApiResponse}
      *

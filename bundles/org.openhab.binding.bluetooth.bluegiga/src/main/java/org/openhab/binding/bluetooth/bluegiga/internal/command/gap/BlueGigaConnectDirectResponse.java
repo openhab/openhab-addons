@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.gap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 
@@ -36,6 +37,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaConnectDirectResponse extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x03;
@@ -78,6 +80,7 @@ public class BlueGigaConnectDirectResponse extends BlueGigaResponse {
     public BgApiResponse getResult() {
         return result;
     }
+
     /**
      * Connection handle that is reserved for new connection
      * <p>

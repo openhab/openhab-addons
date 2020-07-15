@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.digiplex.internal.communication;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Common ancestor for all responses
  *
  * @author Robert Michalak - Initial contribution
  *
  */
+@NonNullByDefault
 public interface DigiplexResponse extends DigiplexMessage {
 
     void accept(DigiplexMessageHandler visitor);
-
 }

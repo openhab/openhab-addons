@@ -12,18 +12,22 @@
  */
 package org.openhab.binding.sonos.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SonosMusicService} is a datastructure to describe a Sonos music service
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class SonosMusicService {
 
     private String id;
     private String name;
-    private Integer type;
+    private @Nullable Integer type;
 
-    public SonosMusicService(String id, String name, Integer type) {
+    public SonosMusicService(String id, String name, @Nullable Integer type) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -41,12 +45,11 @@ public class SonosMusicService {
         return name;
     }
 
-    public Integer getType() {
+    public @Nullable Integer getType() {
         return type;
     }
 
     public void setType(Integer type) {
         this.type = type;
     }
-
 }

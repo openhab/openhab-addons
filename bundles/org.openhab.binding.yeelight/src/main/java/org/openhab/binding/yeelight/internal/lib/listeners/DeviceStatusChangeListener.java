@@ -18,5 +18,5 @@ import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
  * @author Coaster Li - Initial contribution
  */
 public interface DeviceStatusChangeListener {
-    void onStatusChanged(String prop, DeviceStatus status);
+    void onStatusChanged(DeviceStatus status);
 }

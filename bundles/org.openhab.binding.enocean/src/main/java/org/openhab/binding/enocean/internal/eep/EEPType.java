@@ -107,6 +107,7 @@ import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_01_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_09;
 import org.openhab.binding.enocean.internal.eep.A5_14.A5_14_0A;
 import org.openhab.binding.enocean.internal.eep.A5_20.A5_20_04;
+import org.openhab.binding.enocean.internal.eep.A5_30.A5_30_03_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Switching;
@@ -114,6 +115,7 @@ import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFSB;
 import org.openhab.binding.enocean.internal.eep.Base.PTM200Message;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
 import org.openhab.binding.enocean.internal.eep.Base._4BSTeachInVariation3Response;
+import org.openhab.binding.enocean.internal.eep.D0.D0_06;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_00;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_01;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_02;
@@ -137,10 +139,12 @@ import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_03.D2_03_0A;
 import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
+import org.openhab.binding.enocean.internal.eep.D2_14.D2_14_30;
 import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
 import org.openhab.binding.enocean.internal.eep.F6_01.F6_01_01;
 import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_01;
 import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_02;
+import org.openhab.binding.enocean.internal.eep.F6_05.F6_05_02;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_00;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_00_EltakoFPE;
 import org.openhab.binding.enocean.internal.eep.F6_10.F6_10_01;
@@ -197,10 +201,14 @@ public enum EEPType {
     ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT),
     ContactAndSwitch02(RORG._4BS, 0x14, 0x01, false, A5_14_01.class, THING_TYPE_CONTACT, CHANNEL_BATTERY_VOLTAGE,
             CHANNEL_CONTACT),
-    ContactAndSwitch03(RORG.RPS, 0x10, 0x00, false, "EltakoFPE", ELTAKOID, F6_10_00_EltakoFPE.class, THING_TYPE_CONTACT, CHANNEL_CONTACT),
-    
+    ContactAndSwitch03(RORG.RPS, 0x10, 0x00, false, "EltakoFPE", ELTAKOID, F6_10_00_EltakoFPE.class, THING_TYPE_CONTACT,
+            CHANNEL_CONTACT),
+
+    SmokeDetection(RORG.RPS, 0x05, 0x02, false, F6_05_02.class, null, CHANNEL_SMOKEDETECTION, CHANNEL_BATTERYLOW),
+
     BatteryStatus(RORG._4BS, 0x14, 0x01, false, "ELTAKO", ELTAKOID, A5_14_01_ELTAKO.class, THING_TYPE_CONTACT,
             CHANNEL_BATTERY_VOLTAGE, CHANNEL_ENERGY_STORAGE),
+    SigBatteryStatus(RORG.SIG, 0x06, 0x00, false, D0_06.class, null, CHANNEL_BATTERY_LEVEL),
 
     TemperatureSensor_A5_02_01(RORG._4BS, 0x02, 0x01, false, A5_02_01.class, THING_TYPE_TEMPERATURESENSOR,
             CHANNEL_TEMPERATURE),
@@ -370,6 +378,9 @@ public enum EEPType {
     ExtendedLight_A5(RORG._4BS, 0x11, 0x04, false, A5_11_04.class, THING_TYPE_CENTRALCOMMAND, CHANNEL_GENERAL_SWITCHING,
             CHANNEL_DIMMER, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER, CHANNEL_COUNTER),
 
+    SmokeDetection4BS(RORG._4BS, 0x30, 0x03, false, "ELTAKO", ELTAKOID, A5_30_03_ELTAKO.class,
+            THING_TYPE_MULTFUNCTIONSMOKEDETECTOR, CHANNEL_TEMPERATURE, CHANNEL_SMOKEDETECTION),
+
     CentralCommandSwitching(RORG._4BS, 0x38, 0x08, false, A5_38_08_Switching.class, THING_TYPE_CENTRALCOMMAND, 0x01,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_TEACHINCMD),
     CentralCommandDimming(RORG._4BS, 0x38, 0x08, false, A5_38_08_Dimming.class, THING_TYPE_CENTRALCOMMAND, 0x02,
@@ -441,7 +452,12 @@ public enum EEPType {
     SwitchWithEnergyMeasurment_12(RORG.VLD, 0x01, 0x12, true, D2_01_12.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHINGA, CHANNEL_GENERAL_SWITCHINGB),
 
-    Rollershutter_D2(RORG.VLD, 0x05, 0x00, true, D2_05_00.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER);
+    Rollershutter_D2(RORG.VLD, 0x05, 0x00, true, D2_05_00.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER),
+
+    MultiFunctionSensor_30(RORG.VLD, 0x14, 0x30, false, D2_14_30.class, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR,
+            CHANNEL_SMOKEDETECTION, CHANNEL_SENSORFAULT, CHANNEL_TIMESINCELASTMAINTENANCE, CHANNEL_BATTERY_LEVEL,
+            CHANNEL_REMAININGPLT, CHANNEL_TEMPERATURE, CHANNEL_HUMIDITY, CHANNEL_HYGROCOMFORTINDEX,
+            CHANNEL_INDOORAIRANALYSIS);
 
     private RORG rorg;
     private int func;
@@ -454,8 +470,8 @@ public enum EEPType {
 
     private ThingTypeUID thingTypeUID;
 
-    private Hashtable<String, Configuration> channelIdsWithConfig = new Hashtable<String, Configuration>();
-    private Hashtable<String, EnOceanChannelDescription> supportedChannels = new Hashtable<String, EnOceanChannelDescription>();
+    private Hashtable<String, Configuration> channelIdsWithConfig = new Hashtable<>();
+    private Hashtable<String, EnOceanChannelDescription> supportedChannels = new Hashtable<>();
 
     private boolean supportsRefresh;
 
@@ -628,5 +644,4 @@ public enum EEPType {
 
         return fallback;
     }
-
 }

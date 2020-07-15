@@ -146,7 +146,7 @@ public class IpNode {
      * @return a List of IpNodes
      */
     public static List<IpNode> fromString(String addrString, int defaultPort) throws IllegalArgumentException {
-        List<IpNode> ipNodes = new ArrayList<IpNode>();
+        List<IpNode> ipNodes = new ArrayList<>();
         int port;
 
         for (String singleAddrString : addrString.split(",")) {

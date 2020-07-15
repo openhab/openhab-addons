@@ -19,6 +19,9 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -34,6 +37,7 @@ import org.openhab.binding.astro.internal.model.Sun;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Implementation to be compliant with ESH Scheduler
  */
+@NonNullByDefault
 public class SunHandler extends AstroThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_SUN));
@@ -41,13 +45,13 @@ public class SunHandler extends AstroThingHandler {
     private final String[] positionalChannelIds = new String[] { "position#azimuth", "position#elevation",
             "radiation#direct", "radiation#diffuse", "radiation#total" };
     private final SunCalc sunCalc = new SunCalc();
-    private Sun sun;
+    private @Nullable Sun sun;
 
     /**
      * Constructor
      */
-    public SunHandler(Thing thing, CronScheduler scheduler) {
-        super(thing, scheduler);
+    public SunHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider) {
+        super(thing, scheduler, timeZoneProvider);
     }
 
     @Override
@@ -59,13 +63,15 @@ public class SunHandler extends AstroThingHandler {
     @Override
     public void publishPositionalInfo() {
         initializeSun();
-        sunCalc.setPositionalInfo(Calendar.getInstance(), thingConfig.getLatitude(), thingConfig.getLongitude(),
-                thingConfig.getAltitude(), sun);
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        sunCalc.setPositionalInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, thingConfig.altitude, sun);
         publishPlanet();
     }
 
     @Override
-    public Planet getPlanet() {
+    public @Nullable Planet getPlanet() {
         return sun;
     }
 
@@ -86,8 +92,9 @@ public class SunHandler extends AstroThingHandler {
     }
 
     private void initializeSun() {
-        sun = sunCalc.getSunInfo(Calendar.getInstance(), thingConfig.getLatitude(), thingConfig.getLongitude(),
-                thingConfig.getAltitude());
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        sun = sunCalc.getSunInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, thingConfig.altitude, thingConfig.useMeteorologicalSeason);
     }
-
 }

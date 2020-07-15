@@ -15,6 +15,8 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link JsonRegisterAppResponse} encapsulate the GSON data of response from the register command
  *
@@ -23,80 +25,88 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonRegisterAppResponse {
 
-    @Nullable
-    public Response response;
+    public @Nullable Response response;
 
-    @Nullable
-    public String request_id;
+    @SerializedName("request_id")
+    public @Nullable String requestId;
 
     public static class Response {
-        @Nullable
-        public Success success;
+        public @Nullable Success success;
     }
 
     public static class Success {
-        @Nullable
-        public Extensions extensions;
-        @Nullable
-        public Tokens tokens;
-        @Nullable
-        public String customer_id;
+        public @Nullable Extensions extensions;
+
+        public @Nullable Tokens tokens;
+
+        @SerializedName("customer_id")
+        public @Nullable String customerId;
     }
 
     public static class Extensions {
-        @Nullable
-        public DeviceInfo device_info;
-        @Nullable
-        public CustomerInfo customer_info;
-        @Nullable
-        public String customer_id;
+        @SerializedName("device_info")
+        public @Nullable DeviceInfo deviceInfo;
+
+        @SerializedName("customer_info")
+        public @Nullable CustomerInfo customerInfo;
+
+        @SerializedName("customer_id")
+        public @Nullable String customerId;
     }
 
     public static class DeviceInfo {
-        @Nullable
-        public String device_name;
-        @Nullable
-        public String device_serial_number;
-        @Nullable
-        public String device_type;
+        @SerializedName("device_name")
+        public @Nullable String deviceName;
 
+        @SerializedName("device_serial_number")
+        public @Nullable String deviceSerialNumber;
+
+        @SerializedName("device_type")
+        public @Nullable String deviceType;
     }
 
     public static class CustomerInfo {
-        @Nullable
-        public String account_pool;
-        @Nullable
-        public String user_id;
-        @Nullable
-        public String home_region;
-        @Nullable
-        public String name;
-        @Nullable
-        public String given_name;
+        @SerializedName("account_pool")
+        public @Nullable String accountPool;
+
+        @SerializedName("user_id")
+        public @Nullable String userId;
+
+        @SerializedName("home_region")
+        public @Nullable String homeRegion;
+
+        public @Nullable String name;
+
+        @SerializedName("given_name")
+        public @Nullable String givenName;
     }
 
     public static class Tokens {
-        @Nullable
-        public Object website_cookies;
-        @Nullable
-        public MacDms mac_dms;
-        @Nullable
-        public Bearer bearer;
+        @SerializedName("website_cookies")
+        public @Nullable Object websiteCookies;
+
+        @SerializedName("mac_dms")
+        public @Nullable MacDms macDms;
+
+        public @Nullable Bearer bearer;
     }
 
     public static class MacDms {
-        @Nullable
-        public String device_private_key;
-        @Nullable
-        public String adp_token;
+        @SerializedName("device_private_key")
+        public @Nullable String devicePrivateKey;
+
+        @SerializedName("adp_token")
+        public @Nullable String adpToken;
     }
 
     public static class Bearer {
-        @Nullable
-        public String access_token;
-        @Nullable
-        public String refresh_token;
-        @Nullable
-        public String expires_in;
+        @SerializedName("access_token")
+        public @Nullable String accessToken;
+
+        @SerializedName("refresh_token")
+        public @Nullable String refreshToken;
+
+        @SerializedName("expires_in")
+        public @Nullable String expiresIn;
     }
 }

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -25,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.robonect.internal.handler.RobonectHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -40,6 +42,14 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AUTOMOWER);
 
     private HttpClient httpClient;
+    private TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public RobonectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TimeZoneProvider timeZoneProvider) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -51,19 +61,9 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_AUTOMOWER)) {
-            return new RobonectHandler(thing, httpClient);
+            return new RobonectHandler(thing, httpClient, timeZoneProvider);
         }
 
         return null;
     }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
 }

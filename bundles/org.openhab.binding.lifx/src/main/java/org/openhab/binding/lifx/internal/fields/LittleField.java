@@ -67,5 +67,4 @@ public class LittleField<T> extends Field<T> {
 
         return ret;
     }
-
 }

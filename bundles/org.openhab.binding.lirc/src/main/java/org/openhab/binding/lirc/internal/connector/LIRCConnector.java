@@ -21,7 +21,6 @@ import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.binding.lirc.internal.config.LIRCBridgeConfiguration;
 import org.openhab.binding.lirc.internal.messages.LIRCButtonEvent;
 import org.openhab.binding.lirc.internal.messages.LIRCResponse;
@@ -37,7 +36,7 @@ public class LIRCConnector {
 
     private final Logger logger = LoggerFactory.getLogger(LIRCConnector.class);
 
-    private Set<LIRCEventListener> listeners = new CopyOnWriteArraySet<LIRCEventListener>();
+    private Set<LIRCEventListener> listeners = new CopyOnWriteArraySet<>();
     private Socket socket;
     private InputStream in;
     private OutputStream out;
@@ -75,23 +74,19 @@ public class LIRCConnector {
         }
         if (outWriter != null) {
             logger.debug("Close print writer stream");
-            IOUtils.closeQuietly(outWriter);
+            outWriter.close();
             outWriter = null;
-        }
-        if (out != null) {
-            logger.debug("Close tcp out stream");
-            IOUtils.closeQuietly(out);
-            out = null;
-        }
-        if (in != null) {
-            logger.debug("Close tcp in stream");
-            IOUtils.closeQuietly(in);
-            in = null;
         }
         if (socket != null) {
             logger.debug("Close socket");
-            IOUtils.closeQuietly(socket);
+            try {
+                socket.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the socket: {}", e.getMessage());
+            }
             socket = null;
+            out = null;
+            in = null;
         }
         logger.debug("Disconnected");
     }
@@ -193,5 +188,4 @@ public class LIRCConnector {
             logger.error("Error invoking event listener", e);
         }
     }
-
 }

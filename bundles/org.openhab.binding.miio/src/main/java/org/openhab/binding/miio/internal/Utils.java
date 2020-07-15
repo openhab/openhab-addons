@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -29,7 +30,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Marcel Verpaalen - Initial contribution
  *
  */
-
+@NonNullByDefault
 public final class Utils {
 
     /**
@@ -62,9 +63,6 @@ public final class Utils {
      * @return String equivalent to hex string
      **/
     public static String getSpacedHex(byte[] raw) {
-        if (raw == null) {
-            return "";
-        }
         final StringBuilder hex = new StringBuilder(3 * raw.length);
         for (final byte b : raw) {
             hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F))).append(" ");
@@ -74,14 +72,22 @@ public final class Utils {
     }
 
     public static String getHex(byte[] raw) {
-        if (raw == null) {
-            return "";
-        }
         final StringBuilder hex = new StringBuilder(2 * raw.length);
         for (final byte b : raw) {
             hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F)));
         }
         return hex.toString();
+    }
+
+    public static String obfuscateToken(String tokenString) {
+        if (tokenString.length() > 8) {
+            String tokenText = tokenString.substring(0, 8)
+                    .concat((tokenString.length() < 24) ? tokenString.substring(8).replaceAll(".", "X")
+                            : tokenString.substring(8, 24).replaceAll(".", "X").concat(tokenString.substring(24)));
+            return tokenText;
+        } else {
+            return tokenString;
+        }
     }
 
     public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException, IOException {

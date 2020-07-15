@@ -76,7 +76,7 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
      * Creates new command class instance to read description for given
      * parameters.
      *
-     * @param deviceType   type of the device
+     * @param deviceType type of the device
      * @param deviceNumber device number
      */
     public ReadDeviceInfoCommand(DeviceType deviceType, int deviceNumber) {
@@ -147,15 +147,10 @@ public class ReadDeviceInfoCommand extends SatelCommandBase {
     @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length < 19 || response.getPayload().length > 20) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
         }
         return true;
     }
-
 }

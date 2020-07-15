@@ -54,6 +54,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
+import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
 import org.openhab.binding.innogysmarthome.internal.client.entity.capability.Capability;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
@@ -465,7 +466,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             }
 
         }
-
     }
 
     @Override
@@ -601,7 +601,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         } else {
             logger.debug("link type {} not supported (yet?)", event.getSourceLinkType());
         }
-
     }
 
     /**
@@ -651,8 +650,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.trace("Message: {}", gson.toJson(message));
             logger.trace("Messagetype: {}", message.getType());
         }
-        if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDeviceLinkList() != null) {
-            for (final String link : message.getDeviceLinkList()) {
+        if (Message.TYPE_DEVICE_LOW_BATTERY.equals(message.getType()) && message.getDevices() != null) {
+            for (final String link : message.getDevices()) {
                 deviceStructMan.refreshDevice(Link.getId(link));
                 final Device device = deviceStructMan.getDeviceById(Link.getId(link));
                 if (device != null) {
@@ -666,7 +665,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         } else {
             logger.debug("Message received event not yet implemented for Messagetype {}.", message.getType());
         }
-
     }
 
     /**
@@ -863,6 +861,29 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     }
 
     /**
+     * Sends the command to start or stop moving the rollershutter (ISR2) in a specified direction
+     * 
+     * @param deviceId
+     * @param action
+     */
+    public void commandSetRollerShutterStop(final String deviceId, ShutterAction.ShutterActions action) {
+        final DeviceStructureManager deviceStructMan = this.deviceStructMan;
+        if (deviceStructMan == null) {
+            return;
+        }
+        try {
+            final String capabilityId = deviceStructMan.getCapabilityId(deviceId,
+                    Capability.TYPE_ROLLERSHUTTERACTUATOR);
+            if (capabilityId == null) {
+                return;
+            }
+            client.setRollerShutterAction(capabilityId, action);
+        } catch (IOException | ApiException | AuthenticationException e) {
+            handleClientException(e);
+        }
+    }
+
+    /**
      * Handles all Exceptions of the client communication. For minor "errors" like an already existing session, it
      * returns true to inform the binding to continue running. In other cases it may e.g. schedule a reinitialization of
      * the binding.
@@ -894,7 +915,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.debug("IO error: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof ApiException) {
-            logger.warn("Unexcepted API error: {}", e.getMessage(), e);
+            logger.warn("Unexpected API error: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());

@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.gpstracker.internal.message;
 
-import com.google.gson.Gson;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.gson.Gson;
 
 /**
  * Message handling utility
@@ -26,9 +26,8 @@ public class MessageUtil {
     /**
      * Patterns to identify incoming JSON payload.
      */
-    private static final String[] PATTERNS = new String[]{
-            ".*\"_type\"\\s*:\\s*\"transition\".*",     //transition
-            ".*\"_type\"\\s*:\\s*\"location\".*",       //location
+    private static final String[] PATTERNS = new String[] { ".*\"_type\"\\s*:\\s*\"transition\".*", // transition
+            ".*\"_type\"\\s*:\\s*\"location\".*", // location
     };
 
     /**

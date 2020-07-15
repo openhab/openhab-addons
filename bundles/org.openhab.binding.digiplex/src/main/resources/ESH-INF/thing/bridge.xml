@@ -7,11 +7,10 @@
 	<bridge-type id="bridge">
 		<label>Digiplex PRT3 Module</label>
 		<description>Digiplex PRT3 module with Serial Interface</description>
-		<channels>
-			<channel typeId="messages_sent" id="messages_sent" />
-			<channel typeId="responses_received" id="responses_received" />
-			<channel typeId="events_received" id="events_received" />
-		</channels>
+		<channel-groups>
+			<channel-group typeId="statistics" id="statistics"/>
+			<channel-group typeId="troubles" id="troubles"/>
+		</channel-groups>
 
 		<config-description>
 
@@ -24,6 +23,7 @@
 			<parameter name="port" type="text" required="true" groupName="port">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Set the serial port used to access PRT3 device</description>
 				<default></default>
 			</parameter>
@@ -44,6 +44,31 @@
 		</config-description>
 	</bridge-type>
 
+	<channel-group-type id="statistics">
+		<label>Statistics</label>
+		<description>Statistics of PRT3 communication</description>
+		<channels>
+			<channel typeId="messages_sent" id="messages_sent"/>
+			<channel typeId="responses_received" id="responses_received"/>
+			<channel typeId="events_received" id="events_received"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="troubles">
+		<label>Troubles</label>
+		<description>Problems reported by the alarm system</description>
+		<channels>
+			<channel typeId="tlm_trouble" id="tlm_trouble"/>
+			<channel typeId="ac_failure" id="ac_failure"/>
+			<channel typeId="battery_failure" id="battery_failure"/>
+			<channel typeId="aux_current_limit" id="aux_current_limit"/>
+			<channel typeId="bell_current_limit" id="bell_current_limit"/>
+			<channel typeId="bell_absent" id="bell_absent"/>
+			<channel typeId="clock_trouble" id="clock_trouble"/>
+			<channel typeId="global_fire_loop" id="global_fire_loop"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="messages_sent">
 		<item-type>Number</item-type>
 		<label>Messages Sent</label>
@@ -60,6 +85,108 @@
 		<item-type>Number</item-type>
 		<label>Events Received</label>
 		<description>Counts events received from the alarm system</description>
+	</channel-type>
+
+	<channel-type id="tlm_trouble">
+		<item-type>Switch</item-type>
+		<label>Telephone Line</label>
+		<description>Reports telephone line failure</description>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Failure</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ac_failure">
+		<item-type>Switch</item-type>
+		<label>AC Line</label>
+		<description>Reports power line failure</description>
+		<category>Energy</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Failure</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery_failure">
+		<item-type>Switch</item-type>
+		<label>Battery</label>
+		<description>Reports battery failure</description>
+		<category>LowBattery</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Failure</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aux_current_limit">
+		<item-type>Switch</item-type>
+		<label>AUX Current Limit</label>
+		<description>Auxiliary Outputs have exceeded their current limits</description>
+		<category>Energy</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Exceeded</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="bell_current_limit">
+		<item-type>Switch</item-type>
+		<label>Bell Current Limit</label>
+		<description>Bell Output has exceeded its current limit</description>
+		<category>Energy</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Exceeded</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="bell_absent">
+		<item-type>Switch</item-type>
+		<label>Bell Status</label>
+		<description>Reports if bell is absent</description>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Absent</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="clock_trouble">
+		<item-type>Switch</item-type>
+		<label>Clock</label>
+		<description>Reports if clock is not malfunctioning</description>
+		<category>Time</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Failure</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="global_fire_loop">
+		<item-type>Switch</item-type>
+		<label>Global Fire Loop</label>
+		<description>Reports if fire loop has been triggered</description>
+		<category>Smoke</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Fire!</option>
+				<option value="OFF">OK</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

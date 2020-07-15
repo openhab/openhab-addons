@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
@@ -30,6 +31,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Michael Geramb - Initial contribution
  */
+@NonNullByDefault
 public class ChannelHandlerAnnouncement extends ChannelHandler {
     private static final String CHANNEL_NAME = "announcement";
 
@@ -66,10 +68,10 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                             }
                             Boolean sound = request.sound;
                             if (sound != null) {
-                                if (sound == false && !speak.startsWith("<speak>")) {
+                                if (!sound && !speak.startsWith("<speak>")) {
                                     speak = "<speak>" + StringEscapeUtils.escapeXml(speak) + "</speak>";
                                 }
-                                if (sound == true && speak.startsWith("<speak>")) {
+                                if (sound && speak.startsWith("<speak>")) {
                                     body = "Error: The combination of sound and speak in SSML syntax is not allowed";
                                     title = "Error";
                                     speak = "<speak><lang xml:lang=\"en-UK\">Error: The combination of sound and speak in <prosody rate=\"x-slow\"><say-as interpret-as=\"characters\">SSML</say-as></prosody> syntax is not allowed</lang></speak>";
@@ -89,16 +91,16 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                 }
                 thingHandler.startAnnouncment(device, speak, body, title, volume);
             }
-            RefreshChannel();
+            refreshChannel();
         }
         return false;
     }
 
-    void RefreshChannel() {
+    private void refreshChannel() {
         thingHandler.updateChannelState(CHANNEL_NAME, new StringType(""));
     }
 
-    static class AnnouncementRequestJson {
+    private static class AnnouncementRequestJson {
         public @Nullable Boolean sound;
         public @Nullable String title;
         public @Nullable String body;

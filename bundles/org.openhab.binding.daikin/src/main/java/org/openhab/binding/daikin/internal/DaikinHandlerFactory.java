@@ -14,13 +14,17 @@ package org.openhab.binding.daikin.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.daikin.internal.handler.DaikinAcUnitHandler;
+import org.openhab.binding.daikin.internal.handler.DaikinAirbaseUnitHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DaikinHandlerFactory} is responsible for creating things and thing
@@ -28,11 +32,21 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
  * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
-
+ * 
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.daikin")
 @NonNullByDefault
 public class DaikinHandlerFactory extends BaseThingHandlerFactory {
+
+    private final DaikinDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final @Nullable HttpClient httpClient;
+
+    @Activate
+    public DaikinHandlerFactory(@Reference DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Reference DaikinHttpClientFactory httpClientFactory) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpClient = httpClientFactory.getHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,10 +57,11 @@ public class DaikinHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT) || thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT)) {
-            return new DaikinAcUnitHandler(thing);
+        if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AC_UNIT)) {
+            return new DaikinAcUnitHandler(thing, stateDescriptionProvider, httpClient);
+        } else if (thingTypeUID.equals(DaikinBindingConstants.THING_TYPE_AIRBASE_AC_UNIT)) {
+            return new DaikinAirbaseUnitHandler(thing, stateDescriptionProvider, httpClient);
         }
-
         return null;
     }
 }

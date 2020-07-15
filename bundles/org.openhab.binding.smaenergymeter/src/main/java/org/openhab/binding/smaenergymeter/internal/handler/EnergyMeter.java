@@ -106,5 +106,4 @@ public class EnergyMeter {
     public DecimalType getEnergyOut() {
         return new DecimalType(energyOut.getValue());
     }
-
 }

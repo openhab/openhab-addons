@@ -40,5 +40,4 @@ public class BaseConverterTest {
         stubChannel.setDevice(new HmDevice("LEQ123456", HmInterface.RF, "HM-STUB-DEVICE", "", "", ""));
         floatDp.setChannel(stubChannel);
     }
-
 }

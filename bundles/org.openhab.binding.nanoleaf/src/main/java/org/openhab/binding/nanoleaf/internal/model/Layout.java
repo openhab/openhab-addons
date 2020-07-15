@@ -72,7 +72,8 @@ public class Layout {
             int miny = Integer.MAX_VALUE;
             int maxy = Integer.MIN_VALUE;
 
-            for (int index = 0; index < numPanels; index++) {
+            final int noofDefinedPanels = positionData.size();
+            for (int index = 0; index < noofDefinedPanels; index++) {
                 if (positionData != null) {
                     @Nullable
                     PositionDatum panel = positionData.get(index);
@@ -97,11 +98,11 @@ public class Layout {
             int shiftWidth = getSideLength() / 2;
 
             int lineY = maxy;
-            Map<Integer, PositionDatum> map = new TreeMap<>();
+            Map<Integer, PositionDatum> map;
 
             while (lineY >= miny) {
                 map = new TreeMap<>();
-                for (int index = 0; index < numPanels; index++) {
+                for (int index = 0; index < noofDefinedPanels; index++) {
 
                     if (positionData != null) {
                         @Nullable

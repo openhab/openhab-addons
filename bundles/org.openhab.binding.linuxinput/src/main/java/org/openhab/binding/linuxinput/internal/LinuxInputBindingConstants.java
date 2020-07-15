@@ -23,7 +23,8 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class LinuxInputBindingConstants {
-    private LinuxInputBindingConstants() { }
+    private LinuxInputBindingConstants() {
+    }
 
     public static final String BINDING_ID = "linuxinput";
 

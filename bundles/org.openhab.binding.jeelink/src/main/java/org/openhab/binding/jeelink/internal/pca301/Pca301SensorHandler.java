@@ -49,8 +49,8 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
     private ScheduledFuture<?> retry;
     private int sendCount;
 
-    public Pca301SensorHandler(Thing thing) {
-        super(thing);
+    public Pca301SensorHandler(Thing thing, String sensorType) {
+        super(thing, sensorType);
     }
 
     @Override

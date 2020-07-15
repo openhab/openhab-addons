@@ -144,8 +144,8 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     private void registerRoomDiscoveryService(NeeoBrainHandler handler) {
         Objects.requireNonNull(handler, "handler cannot be null");
         final NeeoRoomDiscoveryService discoveryService = new NeeoRoomDiscoveryService(handler);
-        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(handler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     /**
@@ -156,8 +156,8 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     private void registerDeviceDiscoveryService(NeeoRoomHandler handler) {
         Objects.requireNonNull(handler, "handler cannot be null");
         final NeeoDeviceDiscoveryService discoveryService = new NeeoDeviceDiscoveryService(handler);
-        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(handler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

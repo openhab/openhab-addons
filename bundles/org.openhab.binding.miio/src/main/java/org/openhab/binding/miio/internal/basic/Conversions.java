@@ -14,6 +14,7 @@ package org.openhab.binding.miio.internal.basic;
 
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class Conversions {
     private static final Logger LOGGER = LoggerFactory.getLogger(Conversions.class);
 
@@ -70,5 +72,4 @@ public class Conversions {
                 return value;
         }
     }
-
 }

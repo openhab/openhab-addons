@@ -97,5 +97,4 @@ public class LeapMotionColorProfile implements TriggerProfile {
         HSBType newState = new HSBType(new DecimalType(hue), color.getSaturation(), color.getBrightness());
         return newState;
     }
-
 }

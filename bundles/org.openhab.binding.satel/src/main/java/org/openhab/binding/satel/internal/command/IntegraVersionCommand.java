@@ -67,24 +67,8 @@ public class IntegraVersionCommand extends SatelCommandBase {
     }
 
     @Override
-    public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
-        if (super.handleResponse(eventDispatcher, response)) {
-            // dispatch version event
-            eventDispatcher.dispatchEvent(
-                    new IntegraVersionEvent(getType(), getVersion(), getLanguage(), areSettingsInFlash()));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length != 14) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
@@ -92,4 +76,10 @@ public class IntegraVersionCommand extends SatelCommandBase {
         return true;
     }
 
+    @Override
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+        // dispatch version event
+        eventDispatcher
+                .dispatchEvent(new IntegraVersionEvent(getType(), getVersion(), getLanguage(), areSettingsInFlash()));
+    }
 }

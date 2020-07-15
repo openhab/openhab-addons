@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.satel.internal.command.ControlObjectCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
 import org.openhab.binding.satel.internal.event.IntegraStateEvent;
-import org.openhab.binding.satel.internal.event.SatelEvent;
 import org.openhab.binding.satel.internal.types.OutputControl;
 import org.openhab.binding.satel.internal.types.OutputState;
 import org.openhab.binding.satel.internal.types.StateType;
@@ -54,28 +53,22 @@ public class SatelShutterHandler extends SatelStateThingHandler {
     }
 
     @Override
-    public void incomingEvent(SatelEvent event) {
-        if (event instanceof IntegraStateEvent) {
-            logger.trace("Handling incoming event: {}", event);
-
-            final IntegraStateEvent stateEvent = (IntegraStateEvent) event;
-            if (getThingConfig().isCommandOnly() || !stateEvent.hasDataForState(OutputState.STATE)) {
-                return;
-            }
-            Channel channel = getThing().getChannel(CHANNEL_SHUTTER_STATE);
-            if (channel != null) {
-                int upBitNbr = getThingConfig().getUpId() - 1;
-                int downBitNbr = getThingConfig().getDownId() - 1;
-                if (stateEvent.isSet(OutputState.STATE, upBitNbr)) {
-                    if (!stateEvent.isSet(OutputState.STATE, downBitNbr)) {
-                        updateState(channel.getUID(), UpDownType.UP);
-                    }
-                } else if (stateEvent.isSet(OutputState.STATE, downBitNbr)) {
-                    updateState(channel.getUID(), UpDownType.DOWN);
+    public void incomingEvent(IntegraStateEvent event) {
+        logger.trace("Handling incoming event: {}", event);
+        if (getThingConfig().isCommandOnly() || !event.hasDataForState(OutputState.STATE)) {
+            return;
+        }
+        Channel channel = getThing().getChannel(CHANNEL_SHUTTER_STATE);
+        if (channel != null) {
+            int upBitNbr = getThingConfig().getUpId() - 1;
+            int downBitNbr = getThingConfig().getDownId() - 1;
+            if (event.isSet(OutputState.STATE, upBitNbr)) {
+                if (!event.isSet(OutputState.STATE, downBitNbr)) {
+                    updateState(channel.getUID(), UpDownType.UP);
                 }
+            } else if (event.isSet(OutputState.STATE, downBitNbr)) {
+                updateState(channel.getUID(), UpDownType.DOWN);
             }
-        } else {
-            super.incomingEvent(event);
         }
     }
 
@@ -104,5 +97,4 @@ public class SatelShutterHandler extends SatelStateThingHandler {
 
         return result == null ? Optional.empty() : Optional.of(result);
     }
-
 }

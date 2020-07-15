@@ -31,5 +31,4 @@ public interface RotelMessageEventListener extends EventListener {
      * @param event the event object
      */
     public void onNewMessageEvent(EventObject event);
-
 }

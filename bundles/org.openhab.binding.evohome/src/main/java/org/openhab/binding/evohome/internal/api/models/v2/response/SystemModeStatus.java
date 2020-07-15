@@ -31,5 +31,4 @@ public class SystemModeStatus {
     public String getMode() {
         return mode;
     }
-
 }

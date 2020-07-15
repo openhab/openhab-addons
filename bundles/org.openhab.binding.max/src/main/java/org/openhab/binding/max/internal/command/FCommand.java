@@ -52,5 +52,4 @@ public class FCommand extends CubeCommand {
     public String getReturnStrings() {
         return "F:";
     }
-
 }

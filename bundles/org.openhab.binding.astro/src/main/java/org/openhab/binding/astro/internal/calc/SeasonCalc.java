@@ -31,7 +31,7 @@ public class SeasonCalc {
     /**
      * Returns the seasons of the year of the specified calendar.
      */
-    public Season getSeason(Calendar calendar, double latitude) {
+    public Season getSeason(Calendar calendar, double latitude, boolean useMeteorologicalSeason) {
         int year = calendar.get(Calendar.YEAR);
         boolean isSouthernHemisphere = latitude < 0.0;
         Season season = currentSeason;
@@ -52,9 +52,24 @@ public class SeasonCalc {
             currentYear = year;
         }
 
+        if (useMeteorologicalSeason) {
+            atMidnightOfFirstMonthDay(season.getSpring());
+            atMidnightOfFirstMonthDay(season.getSummer());
+            atMidnightOfFirstMonthDay(season.getAutumn());
+            atMidnightOfFirstMonthDay(season.getWinter());
+        }
+
         season.setName(!isSouthernHemisphere ? getCurrentSeasonNameNorthern(calendar)
                 : getCurrentSeasonNameSouthern(calendar));
         return season;
+    }
+
+    private void atMidnightOfFirstMonthDay(Calendar calendar) {
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
     }
 
     /**
@@ -160,5 +175,4 @@ public class SeasonCalc {
     private double cosDeg(double deg) {
         return Math.cos(deg * Math.PI / 180);
     }
-
 }

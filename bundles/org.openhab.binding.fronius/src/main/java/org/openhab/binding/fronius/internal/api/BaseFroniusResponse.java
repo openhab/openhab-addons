@@ -33,5 +33,4 @@ public class BaseFroniusResponse {
     public void setHead(Head head) {
         this.head = head;
     }
-
 }

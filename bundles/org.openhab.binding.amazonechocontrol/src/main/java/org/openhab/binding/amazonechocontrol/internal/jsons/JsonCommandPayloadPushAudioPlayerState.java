@@ -27,5 +27,4 @@ public class JsonCommandPayloadPushAudioPlayerState extends JsonCommandPayloadPu
     public @Nullable Boolean error;
     public @Nullable String audioPlayerState;
     public @Nullable String errorMessage;
-
 }

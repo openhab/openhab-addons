@@ -18,6 +18,21 @@ transform/getValue.js:
 })(input)
 ```
 
+## Test JavaScript
+You can use online JavaScript testers to validate your script.
+E.g. https://www.webtoolkitonline.com/javascript-tester.html
+
+`Input` variable need to be replaced by the test string, e.g. earlier test string `foo bar baz`
+
+```
+(function(i) {
+    var array = i.split(" ");
+    return array[array.length - 1].length;
+})("foo bar baz")
+```
+
+When you press execute button, tester will show the result returned by the script or error if script contains any.
+
 ## Usage as a Profile
 
 The functionality of this `TransformationService` can be used in a `Profile` on an `ItemChannelLink` too.

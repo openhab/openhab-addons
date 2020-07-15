@@ -21,6 +21,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.powermax.internal.PowermaxBindingConstants;
 import org.openhab.binding.powermax.internal.config.PowermaxX10Configuration;
 import org.openhab.binding.powermax.internal.config.PowermaxZoneConfiguration;
@@ -112,10 +113,10 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService implement
         if (zoneSettings != null) {
             // Prevent for adding already known zone
             for (Thing thing : bridgeHandler.getThing().getThings()) {
+                ThingHandler thingHandler = thing.getHandler();
                 if (thing.getThingTypeUID().equals(PowermaxBindingConstants.THING_TYPE_ZONE)
-                        && thing.getHandler() != null) {
-                    PowermaxZoneConfiguration config = ((PowermaxThingHandler) thing.getHandler())
-                            .getZoneConfiguration();
+                        && thingHandler instanceof PowermaxThingHandler) {
+                    PowermaxZoneConfiguration config = ((PowermaxThingHandler) thingHandler).getZoneConfiguration();
                     if (config.zoneNumber == zoneNumber) {
                         return;
                     }
@@ -147,9 +148,10 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService implement
         if (deviceSettings != null && deviceSettings.isEnabled()) {
             // Prevent for adding already known X10 device
             for (Thing thing : bridgeHandler.getThing().getThings()) {
+                ThingHandler thingHandler = thing.getHandler();
                 if (thing.getThingTypeUID().equals(PowermaxBindingConstants.THING_TYPE_X10)
-                        && thing.getHandler() != null) {
-                    PowermaxX10Configuration config = ((PowermaxThingHandler) thing.getHandler()).getX10Configuration();
+                        && thingHandler instanceof PowermaxThingHandler) {
+                    PowermaxX10Configuration config = ((PowermaxThingHandler) thingHandler).getX10Configuration();
                     if (config.deviceNumber == deviceNumber) {
                         return;
                     }
@@ -169,5 +171,4 @@ public class PowermaxDiscoveryService extends AbstractDiscoveryService implement
             thingDiscovered(discoveryResult);
         }
     }
-
 }

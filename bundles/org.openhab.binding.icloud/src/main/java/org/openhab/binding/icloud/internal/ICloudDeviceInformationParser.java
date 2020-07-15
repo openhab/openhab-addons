@@ -13,6 +13,7 @@
 package org.openhab.binding.icloud.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icloud.internal.json.response.ICloudAccountDataResponse;
 
 import com.google.gson.Gson;
@@ -29,7 +30,7 @@ import com.google.gson.JsonSyntaxException;
 public class ICloudDeviceInformationParser {
     private final Gson gson = new GsonBuilder().create();
 
-    public ICloudAccountDataResponse parse(String json) throws JsonSyntaxException {
+    public @Nullable ICloudAccountDataResponse parse(String json) throws JsonSyntaxException {
         return gson.fromJson(json, ICloudAccountDataResponse.class);
     }
 }

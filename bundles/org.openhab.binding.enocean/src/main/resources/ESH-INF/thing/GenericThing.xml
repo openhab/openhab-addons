@@ -6,7 +6,7 @@
 
 	<thing-type id="genericThing" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Generic Thing</label>
@@ -20,7 +20,8 @@
 			</parameter>
 			<parameter name="senderIdOffset" type="integer">
 				<label>Sender Id</label>
-				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be determined by bridge</description>
+				<description>Id is used to generate the EnOcean Id (Int between [1-127]). If not specified the next free Id will be
+					determined by bridge</description>
 			</parameter>
 			<parameter name="sendingEEPId" type="text">
 				<label>EEP for Sending Commands</label>

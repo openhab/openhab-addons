@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -57,7 +58,7 @@ public class RefreshStrategy {
     }
 
     @SuppressWarnings("null")
-    public void setDataTimeStamp(Integer dataTimestamp) {
+    public void setDataTimeStamp(Integer dataTimestamp, ZoneId zoneId) {
         if (searchRefreshInterval) {
             if (dataTimestamp0 == null) {
                 dataTimestamp0 = dataTimestamp;
@@ -70,7 +71,7 @@ public class RefreshStrategy {
                 logger.debug("Data validity period not yet found - data timestamp unchanged");
             }
         }
-        this.dataTimeStamp = ChannelTypeUtils.toZonedDateTime(dataTimestamp).toInstant().toEpochMilli();
+        this.dataTimeStamp = ChannelTypeUtils.toZonedDateTime(dataTimestamp, zoneId).toInstant().toEpochMilli();
     }
 
     public long dataAge() {
@@ -92,4 +93,7 @@ public class RefreshStrategy {
         dataTimeStamp = now.toInstant().toEpochMilli();
     }
 
+    public boolean isSearchingRefreshInterval() {
+        return searchRefreshInterval && dataTimestamp0 != null;
+    }
 }

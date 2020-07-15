@@ -61,7 +61,6 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
                 new OctetString("on"), false));
         assertNull(
                 onResponseSwitchChannel(SnmpChannelMode.TRAP, SnmpDatatype.INT32, "1", "2", new Integer32(2), false));
-
     }
 
     @Test
@@ -94,7 +93,6 @@ public class SnmpTargetHandlerTest extends AbstractSnmpTargetHandlerTest {
         variable = handleCommandNumberStringChannel(SnmpBindingConstants.CHANNEL_TYPE_UID_NUMBER, SnmpDatatype.INT32,
                 new StringType(TEST_STRING), false);
         assertNull(variable);
-
     }
 
     @Test

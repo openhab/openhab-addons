@@ -66,47 +66,21 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        Bridge nhcBridge = getBridge();
-        if (nhcBridge == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Niko Home Control: no bridge initialized when trying to execute thermostat command "
+        NikoHomeControlCommunication nhcComm = getCommunication();
+        if (nhcComm == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Niko Home Control: bridge communication not initialized when trying to execute thermostat command "
                             + thermostatId);
             return;
         }
-        NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) nhcBridge.getHandler();
-        if (nhcBridgeHandler == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Niko Home Control: no bridge initialized when trying to execute thermostat command "
-                            + thermostatId);
-            return;
-        }
-        NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
         // This can be expensive, therefore do it in a job.
         scheduler.submit(() -> {
-            if (nhcComm == null || !nhcComm.communicationActive()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Niko Home Control: bridge communication not initialized when trying to execute thermostat command "
-                                + thermostatId);
-                return;
+            if (!nhcComm.communicationActive()) {
+                restartCommunication(nhcComm);
             }
 
             if (nhcComm.communicationActive()) {
-                handleCommandSelection(channelUID, command);
-            } else {
-                // We lost connection but the connection object is there, so was correctly started.
-                // Try to restart communication.
-                nhcComm.restartCommunication();
-                // If still not active, take thing offline and return.
-                if (!nhcComm.communicationActive()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Niko Home Control: communication socket error");
-                    return;
-                }
-                // Also put the bridge back online
-                nhcBridgeHandler.bridgeOnline();
-
-                // And finally handle the command
                 handleCommandSelection(channelUID, command);
             }
         });
@@ -177,24 +151,15 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         thermostatId = config.thermostatId;
         overruleTime = config.overruleTime;
 
-        Bridge nhcBridge = getBridge();
-        if (nhcBridge == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Niko Home Control: no bridge initialized for thermostat " + thermostatId);
+        NikoHomeControlCommunication nhcComm = getCommunication();
+        if (nhcComm == null) {
             return;
         }
-        NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) nhcBridge.getHandler();
-        if (nhcBridgeHandler == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Niko Home Control: no bridge initialized for thermostat " + thermostatId);
-            return;
-        }
-        NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
 
         // We need to do this in a separate thread because we may have to wait for the
         // communication to become active
         scheduler.submit(() -> {
-            if (nhcComm == null || !nhcComm.communicationActive()) {
+            if (!nhcComm.communicationActive()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Niko Home Control: no connection with Niko Home Control, could not initialize thermostat "
                                 + thermostatId);
@@ -203,7 +168,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
             nhcThermostat = nhcComm.getThermostats().get(thermostatId);
             if (nhcThermostat == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Niko Home Control: thermostatId does not match a thermostat in the controller "
                                 + thermostatId);
                 return;
@@ -239,7 +204,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
-        updateState(CHANNEL_MEASURED, new QuantityType<Temperature>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
+        updateState(CHANNEL_MEASURED, new QuantityType<>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
 
         long overruletime = nhcThermostat.getRemainingOverruletime();
         updateState(CHANNEL_OVERRULETIME, new DecimalType(overruletime));
@@ -249,9 +214,9 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         // If there is an overrule temperature set, use this in the setpoint channel, otherwise use the original
         // setpoint temperature
         if (overruletime == 0) {
-            updateState(CHANNEL_SETPOINT, new QuantityType<Temperature>(setpoint / 10.0, CELSIUS));
+            updateState(CHANNEL_SETPOINT, new QuantityType<>(setpoint / 10.0, CELSIUS));
         } else {
-            updateState(CHANNEL_SETPOINT, new QuantityType<Temperature>(overrule / 10.0, CELSIUS));
+            updateState(CHANNEL_SETPOINT, new QuantityType<>(overrule / 10.0, CELSIUS));
         }
 
         updateState(CHANNEL_MODE, new DecimalType(mode));
@@ -289,5 +254,50 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             timer.cancel(true);
         }
         refreshTimer = null;
+    }
+
+    @Override
+    public void thermostatRemoved() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "Niko Home Control: thermostat has been removed from the controller " + thermostatId);
+    }
+
+    private void restartCommunication(NikoHomeControlCommunication nhcComm) {
+        // We lost connection but the connection object is there, so was correctly started.
+        // Try to restart communication.
+        nhcComm.restartCommunication();
+        // If still not active, take thing offline and return.
+        if (!nhcComm.communicationActive()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Niko Home Control: communication socket error");
+            return;
+        }
+        // Also put the bridge back online
+        NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
+        if (nhcBridgeHandler != null) {
+            nhcBridgeHandler.bridgeOnline();
+        }
+    }
+
+    private @Nullable NikoHomeControlCommunication getCommunication() {
+        NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
+        if (nhcBridgeHandler == null) {
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "Niko Home Control: no bridge initialized for thermostat " + thermostatId);
+            return null;
+        }
+        NikoHomeControlCommunication nhcComm = nhcBridgeHandler.getCommunication();
+        return nhcComm;
+    }
+
+    private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
+        Bridge nhcBridge = getBridge();
+        if (nhcBridge == null) {
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "Niko Home Control: no bridge initialized for thermostat " + thermostatId);
+            return null;
+        }
+        NikoHomeControlBridgeHandler nhcBridgeHandler = (NikoHomeControlBridgeHandler) nhcBridge.getHandler();
+        return nhcBridgeHandler;
     }
 }

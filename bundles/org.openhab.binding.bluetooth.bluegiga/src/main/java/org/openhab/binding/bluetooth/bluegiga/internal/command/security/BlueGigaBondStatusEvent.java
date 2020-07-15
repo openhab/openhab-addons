@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.security;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
 
 /**
@@ -25,6 +26,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaBondStatusEvent extends BlueGigaResponse {
     public static int COMMAND_CLASS = 0x05;
     public static int COMMAND_METHOD = 0x04;
@@ -83,6 +85,7 @@ public class BlueGigaBondStatusEvent extends BlueGigaResponse {
     public int getBond() {
         return bond;
     }
+
     /**
      * Encryption key size used in long-term key
      * <p>
@@ -93,6 +96,7 @@ public class BlueGigaBondStatusEvent extends BlueGigaResponse {
     public int getKeysize() {
         return keysize;
     }
+
     /**
      * Was Man-in-the-Middle mode was used in pairing. 0: No MITM used. 1: MITM was used
      * <p>
@@ -103,6 +107,7 @@ public class BlueGigaBondStatusEvent extends BlueGigaResponse {
     public int getMitm() {
         return mitm;
     }
+
     /**
      * Keys stored for bonding. See: Bonding Keys
      * <p>

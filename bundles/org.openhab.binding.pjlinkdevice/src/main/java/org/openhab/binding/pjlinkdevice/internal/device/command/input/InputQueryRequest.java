@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.device.command.input;
 
-import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.pjlinkdevice.internal.device.command.Request;
 
 /**
  * The request part of {@link InputQueryCommand}
@@ -24,9 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class InputQueryRequest implements Request {
 
-  @Override
-  public String getRequestString() {
-    return "%1INPT ?";
-  }
-
+    @Override
+    public String getRequestString() {
+        return "%1INPT ?";
+    }
 }

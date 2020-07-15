@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
-import java.nio.charset.StandardCharsets;
+import static org.junit.Assert.*;
 
-import org.openhab.binding.robonect.internal.model.ModelParser;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * The goal of this class is to test the model parser to make sure the structures
@@ -101,17 +99,17 @@ public class ModelParserTest {
         assertEquals(28, mowerInfo.getHealth().getTemperature());
         assertEquals(32, mowerInfo.getHealth().getHumidity());
         // "health": { "temperature": 28, "humidity": 32 }
-        
     }
 
     @Test
     public void shouldParseISOEncodedStatusModel() {
-        byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}".getBytes(
-                StandardCharsets.ISO_8859_1);
-        MowerInfo mowerInfo = subject.parse(new String(responseBytesISO88591, StandardCharsets.ISO_8859_1), MowerInfo.class);
+        byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}"
+                .getBytes(StandardCharsets.ISO_8859_1);
+        MowerInfo mowerInfo = subject.parse(new String(responseBytesISO88591, StandardCharsets.ISO_8859_1),
+                MowerInfo.class);
         assertEquals("Utanför arbetsområdet", mowerInfo.getError().getErrorMessage());
     }
-    
+
     @Test
     public void shouldParseCorrectStatusModelWithErrorCode() {
         String correctModel = "{\"successful\": true, \"name\": \"Grasi\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 423, \"mode\": 0, \"battery\": 83, \"hours\": 55}, \"timer\": {\"status\": 2, \"next\": {\"date\": \"15.05.2017\", \"time\": \"19:00:00\", \"unix\": 1494874800}}, \"wlan\": {\"signal\": -76}, \"error\": {\"error_code\": 9, \"error_message\": \"Grasi ist eingeklemmt\", \"date\": \"13.05.2017\", \"time\": \"23:00:22\", \"unix\": 1494716422}}";
@@ -133,7 +131,6 @@ public class ModelParserTest {
         assertEquals(MowerStatus.MOWING, mowerInfo.getStatus().getStatus());
         assertFalse(mowerInfo.getStatus().isStopped());
         assertEquals(MowerMode.MANUAL, mowerInfo.getStatus().getMode());
-
     }
 
     @Test
@@ -183,41 +180,17 @@ public class ModelParserTest {
         assertEquals("2017-03-25 20:10:00", versionInfo.getRobonect().getCompiled());
         assertEquals("V0.9c", versionInfo.getRobonect().getComment());
     }
-    
+
     @Test
-    public void shouldParseVersionInfoV1betaToNA(){
-        String versionResponse = "{\n" +
-                "mower: {\n" +
-                "hardware: {\n" +
-                "serial: 170602001,\n" +
-                "production: \"2017-02-07 15:12:00\"\n" +
-                "},\n" +
-                "msw: {\n" +
-                "title: \"420\",\n" +
-                "version: \"7.10.00\",\n" +
-                "compiled: \"2016-11-29 08:44:06\"\n" +
-                "},\n" +
-                "sub: {\n" +
-                "version: \"6.01.00\"\n" +
-                "}\n" +
-                "},\n" +
-                "serial: \"05D80037-39355548-43163930\",\n" +
-                "bootloader: {\n" +
-                "version: \"V0.4\",\n" +
-                "compiled: \"2016-10-22 01:12:00\",\n" +
-                "comment: \"\"\n" +
-                "},\n" +
-                "wlan: {\n" +
-                "at-version: \"V1.4.0\",\n" +
-                "sdk-version: \"V2.1.0\"\n" +
-                "},\n" +
-                "application: {\n" +
-                "version: \"V1.0\",\n" +
-                "compiled: \"2018-03-12 21:01:00\",\n" +
-                "comment: \"Release V1.0 Beta2\"\n" +
-                "},\n" +
-                "successful: true\n" +
-                "}";
+    public void shouldParseVersionInfoV1betaToNA() {
+        String versionResponse = "{\n" + "mower: {\n" + "hardware: {\n" + "serial: 170602001,\n"
+                + "production: \"2017-02-07 15:12:00\"\n" + "},\n" + "msw: {\n" + "title: \"420\",\n"
+                + "version: \"7.10.00\",\n" + "compiled: \"2016-11-29 08:44:06\"\n" + "},\n" + "sub: {\n"
+                + "version: \"6.01.00\"\n" + "}\n" + "},\n" + "serial: \"05D80037-39355548-43163930\",\n"
+                + "bootloader: {\n" + "version: \"V0.4\",\n" + "compiled: \"2016-10-22 01:12:00\",\n"
+                + "comment: \"\"\n" + "},\n" + "wlan: {\n" + "at-version: \"V1.4.0\",\n" + "sdk-version: \"V2.1.0\"\n"
+                + "},\n" + "application: {\n" + "version: \"V1.0\",\n" + "compiled: \"2018-03-12 21:01:00\",\n"
+                + "comment: \"Release V1.0 Beta2\"\n" + "},\n" + "successful: true\n" + "}";
         VersionInfo versionInfo = subject.parse(versionResponse, VersionInfo.class);
         assertTrue(versionInfo.isSuccessful());
         assertEquals("n/a", versionInfo.getRobonect().getSerial());

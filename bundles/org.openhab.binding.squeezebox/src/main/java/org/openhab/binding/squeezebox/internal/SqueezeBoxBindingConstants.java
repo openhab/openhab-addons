@@ -44,6 +44,7 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_PREV = "prev";
     public static final String CHANNEL_CONTROL = "control";
     public static final String CHANNEL_STREAM = "stream";
+    public static final String CHANNEL_SOURCE = "source";
     public static final String CHANNEL_SYNC = "sync";
     public static final String CHANNEL_UNSYNC = "unsync";
     public static final String CHANNEL_PLAYLIST_INDEX = "playListIndex";
@@ -66,4 +67,5 @@ public class SqueezeBoxBindingConstants {
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_MODEL = "model";
     public static final String CHANNEL_FAVORITES_PLAY = "playFavorite";
+    public static final String CHANNEL_RATE = "rate";
 }

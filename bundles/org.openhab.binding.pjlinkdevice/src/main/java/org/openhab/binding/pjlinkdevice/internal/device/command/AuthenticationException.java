@@ -21,13 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AuthenticationException extends Exception {
-  private static final long serialVersionUID = -3319800607314286998L;
+    private static final long serialVersionUID = -3319800607314286998L;
 
-  public AuthenticationException(String string) {
-    super(string);
-  }
+    public AuthenticationException(String string) {
+        super(string);
+    }
 
-  public AuthenticationException(Throwable cause) {
-    super(cause);
-  }
+    public AuthenticationException(Throwable cause) {
+        super(cause);
+    }
 }

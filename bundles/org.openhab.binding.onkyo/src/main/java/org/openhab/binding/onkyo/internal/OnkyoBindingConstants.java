@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.onkyo.internal;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,91 +27,20 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Paul Frank - Initial contribution
  * @author Pauli Anttila - update for openhab 2
  * @author Stewart Cossey - add additional receiver models
+ * @author Wouter Born - Enumerate supported models using OnkyoModel enum
  */
 @NonNullByDefault
 public class OnkyoBindingConstants {
 
     public static final String BINDING_ID = "onkyo";
 
-    // List of all supported Onkyo Models
-    public static final String ONKYO_TYPE_HTRC560 = "HT-RC560";
-    public static final String ONKYO_TYPE_TXNR414 = "TX-NR414";
-    public static final String ONKYO_TYPE_TXNR474 = "TX-NR474";
-    public static final String ONKYO_TYPE_TXNR509 = "TX-NR509";
-    public static final String ONKYO_TYPE_TXNR515 = "TX-NR515";
-    public static final String ONKYO_TYPE_TXNR525 = "TX-NR525";
-    public static final String ONKYO_TYPE_TXNR535 = "TX-NR535";
-    public static final String ONKYO_TYPE_TXNR545 = "TX-NR545";
-    public static final String ONKYO_TYPE_TXNR555 = "TX-NR555";
-    public static final String ONKYO_TYPE_TXNR575 = "TX-NR575";
-    public static final String ONKYO_TYPE_TXNR575E = "TX-NR575E";
-    public static final String ONKYO_TYPE_TXNR616 = "TX-NR616";
-    public static final String ONKYO_TYPE_TXNR626 = "TX-NR626";
-    public static final String ONKYO_TYPE_TXNR636 = "TX-NR636";
-    public static final String ONKYO_TYPE_TXNR646 = "TX-NR646";
-    public static final String ONKYO_TYPE_TXNR656 = "TX-NR656";
-    public static final String ONKYO_TYPE_TXNR676 = "TX-NR676";
-    public static final String ONKYO_TYPE_TXNR686 = "TX-NR686";
-    public static final String ONKYO_TYPE_TXNR708 = "TX-NR708";
-    public static final String ONKYO_TYPE_TXNR717 = "TX-NR717";
-    public static final String ONKYO_TYPE_TXNR727 = "TX-NR727";
-    public static final String ONKYO_TYPE_TXNR737 = "TX-NR737";
-    public static final String ONKYO_TYPE_TXNR747 = "TX-NR747";
-    public static final String ONKYO_TYPE_TXNR757 = "TX-NR757";
-    public static final String ONKYO_TYPE_TXNR818 = "TX-NR818";
-    public static final String ONKYO_TYPE_TXNR828 = "TX-NR828";
-    public static final String ONKYO_TYPE_TXNR838 = "TX-NR838";
-    public static final String ONKYO_TYPE_TXNR3007 = "TX-NR3007";
-
-    // Extend this set with all successfully tested models
-    public static final Set<String> SUPPORTED_DEVICE_MODELS = Stream
-            .of(ONKYO_TYPE_HTRC560, ONKYO_TYPE_TXNR414, ONKYO_TYPE_TXNR474, ONKYO_TYPE_TXNR509, ONKYO_TYPE_TXNR515, ONKYO_TYPE_TXNR525,
-                    ONKYO_TYPE_TXNR535, ONKYO_TYPE_TXNR555, ONKYO_TYPE_TXNR575, ONKYO_TYPE_TXNR575E, ONKYO_TYPE_TXNR616,
-                    ONKYO_TYPE_TXNR626, ONKYO_TYPE_TXNR636, ONKYO_TYPE_TXNR646, ONKYO_TYPE_TXNR656, ONKYO_TYPE_TXNR676,
-                    ONKYO_TYPE_TXNR686, ONKYO_TYPE_TXNR708, ONKYO_TYPE_TXNR717, ONKYO_TYPE_TXNR727, ONKYO_TYPE_TXNR737,
-                    ONKYO_TYPE_TXNR747, ONKYO_TYPE_TXNR757, ONKYO_TYPE_TXNR818, ONKYO_TYPE_TXNR828, ONKYO_TYPE_TXNR838,
-                    ONKYO_TYPE_TXNR3007)
-            .collect(Collectors.toSet());
-
-    // List of all Thing Type UIDs
+    // List of Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ONKYOAV = new ThingTypeUID(BINDING_ID, "onkyoAVR");
     public static final ThingTypeUID THING_TYPE_ONKYO_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "onkyoUnsupported");
-    public static final ThingTypeUID THING_TYPE_TXNR414 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR414);
-    public static final ThingTypeUID THING_TYPE_HTRC560 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_HTRC560);
-    public static final ThingTypeUID THING_TYPE_TXNR474 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR474);
-    public static final ThingTypeUID THING_TYPE_TXNR509 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR509);
-    public static final ThingTypeUID THING_TYPE_TXNR515 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR515);
-    public static final ThingTypeUID THING_TYPE_TXNR525 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR525);
-    public static final ThingTypeUID THING_TYPE_TXNR535 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR535);
-    public static final ThingTypeUID THING_TYPE_TXNR545 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR545);
-    public static final ThingTypeUID THING_TYPE_TXNR555 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR555);
-    public static final ThingTypeUID THING_TYPE_TXNR575 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR575);
-    public static final ThingTypeUID THING_TYPE_TXNR575E = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR575E);
-    public static final ThingTypeUID THING_TYPE_TXNR616 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR616);
-    public static final ThingTypeUID THING_TYPE_TXNR626 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR626);
-    public static final ThingTypeUID THING_TYPE_TXNR636 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR636);
-    public static final ThingTypeUID THING_TYPE_TXNR646 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR646);
-    public static final ThingTypeUID THING_TYPE_TXNR656 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR656);
-    public static final ThingTypeUID THING_TYPE_TXNR676 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR676);
-    public static final ThingTypeUID THING_TYPE_TXNR686 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR686);
-    public static final ThingTypeUID THING_TYPE_TXNR708 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR708);
-    public static final ThingTypeUID THING_TYPE_TXNR717 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR717);
-    public static final ThingTypeUID THING_TYPE_TXNR727 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR727);
-    public static final ThingTypeUID THING_TYPE_TXNR737 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR737);
-    public static final ThingTypeUID THING_TYPE_TXNR747 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR747);
-    public static final ThingTypeUID THING_TYPE_TXNR757 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR757);
-    public static final ThingTypeUID THING_TYPE_TXNR818 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR818);
-    public static final ThingTypeUID THING_TYPE_TXNR828 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR828);
-    public static final ThingTypeUID THING_TYPE_TXNR838 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR838);
-    public static final ThingTypeUID THING_TYPE_TXNR3007 = new ThingTypeUID(BINDING_ID, ONKYO_TYPE_TXNR3007);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_ONKYOAV, THING_TYPE_ONKYO_UNSUPPORTED, THING_TYPE_HTRC560, THING_TYPE_TXNR414, THING_TYPE_TXNR474,
-                    THING_TYPE_TXNR515, THING_TYPE_TXNR525, THING_TYPE_TXNR535, THING_TYPE_TXNR555, THING_TYPE_TXNR575,
-                    THING_TYPE_TXNR575E, THING_TYPE_TXNR616, THING_TYPE_TXNR626, THING_TYPE_TXNR636, THING_TYPE_TXNR646,
-                    THING_TYPE_TXNR656, THING_TYPE_TXNR676, THING_TYPE_TXNR686, THING_TYPE_TXNR708, THING_TYPE_TXNR717,
-                    THING_TYPE_TXNR727, THING_TYPE_TXNR737, THING_TYPE_TXNR747, THING_TYPE_TXNR757, THING_TYPE_TXNR818,
-                    THING_TYPE_TXNR828, THING_TYPE_TXNR838, THING_TYPE_TXNR3007)
+            .concat(Stream.of(THING_TYPE_ONKYOAV, THING_TYPE_ONKYO_UNSUPPORTED),
+                    Arrays.stream(OnkyoModel.values()).map(model -> new ThingTypeUID(BINDING_ID, model.getId())))
             .collect(Collectors.toSet());
 
     // List of thing parameters names
@@ -162,5 +92,4 @@ public class OnkyoBindingConstants {
     // Used for Discovery service
     public static final String MANUFACTURER = "ONKYO";
     public static final String UPNP_DEVICE_TYPE = "MediaRenderer";
-
 }

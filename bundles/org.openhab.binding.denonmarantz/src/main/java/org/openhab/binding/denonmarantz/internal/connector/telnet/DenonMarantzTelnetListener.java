@@ -34,5 +34,4 @@ public interface DenonMarantzTelnetListener {
      * @param connected whether or not the connection was successful
      */
     void telnetClientConnected(boolean connected);
-
 }

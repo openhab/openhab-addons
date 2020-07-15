@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.jeelink.internal;
 
-import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.jeelink.internal.ec3k.Ec3kSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.LaCrosseSensorDefinition;
+import org.openhab.binding.jeelink.internal.lacrosse.LgwSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.Tx22SensorDefinition;
 import org.openhab.binding.jeelink.internal.pca301.Pca301SensorDefinition;
+import org.openhab.binding.jeelink.internal.revolt.RevoltSensorDefinition;
 
 /**
  * Base class for sensor definitions.
@@ -30,18 +34,19 @@ import org.openhab.binding.jeelink.internal.pca301.Pca301SensorDefinition;
  * @param <R> the Reading type this sensor provides.
  */
 public abstract class SensorDefinition<R extends Reading> {
-    private static final HashSet<SensorDefinition<?>> SENSOR_DEFS = new HashSet<>();
+    public static final String ALL_TYPE = "All";
+
+    private static final Set<SensorDefinition<?>> SENSOR_DEFS = Stream
+            .of(new LaCrosseSensorDefinition(), new Ec3kSensorDefinition(), new Pca301SensorDefinition(),
+                    new Tx22SensorDefinition(), new RevoltSensorDefinition(), new LgwSensorDefinition())
+            .collect(Collectors.toSet());
+    private static final Set<JeeLinkReadingConverter<?>> CONVERTERS = SENSOR_DEFS.stream()
+            .map(SensorDefinition::createConverter).collect(Collectors.toSet());
+
+    protected final String type;
 
     final ThingTypeUID thingTypeUid;
     final String name;
-    final String type;
-
-    static {
-        SENSOR_DEFS.add(new LaCrosseSensorDefinition());
-        SENSOR_DEFS.add(new Ec3kSensorDefinition());
-        SENSOR_DEFS.add(new Pca301SensorDefinition());
-        SENSOR_DEFS.add(new Tx22SensorDefinition());
-    }
 
     public SensorDefinition(ThingTypeUID thingTypeUid, String name, String type) {
         this.thingTypeUid = thingTypeUid;
@@ -73,7 +78,7 @@ public abstract class SensorDefinition<R extends Reading> {
         return null;
     }
 
-    public static HashSet<SensorDefinition<?>> getDefinitions() {
+    public static Set<SensorDefinition<?>> getDefinitions() {
         return SENSOR_DEFS;
     }
 
@@ -94,6 +99,10 @@ public abstract class SensorDefinition<R extends Reading> {
             }
         }
         return null;
+    }
+
+    public static Set<JeeLinkReadingConverter<?>> getDiscoveryConverters() {
+        return CONVERTERS;
     }
 
     private String getSensorType() {

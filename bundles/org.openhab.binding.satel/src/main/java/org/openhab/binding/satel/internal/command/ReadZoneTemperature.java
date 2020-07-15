@@ -52,24 +52,8 @@ public class ReadZoneTemperature extends SatelCommandBase {
     }
 
     @Override
-    public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
-        if (super.handleResponse(eventDispatcher, response)) {
-            // dispatch temperature event
-            int zoneNbr = response.getPayload()[0];
-            eventDispatcher.dispatchEvent(new ZoneTemperatureEvent(zoneNbr == 0 ? 256 : zoneNbr, getTemperature()));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     protected boolean isResponseValid(SatelMessage response) {
         // validate response
-        if (response.getCommand() != COMMAND_CODE) {
-            logger.debug("Invalid response code: {}", response.getCommand());
-            return false;
-        }
         if (response.getPayload().length != 3) {
             logger.debug("Invalid payload length: {}", response.getPayload().length);
             return false;
@@ -77,4 +61,10 @@ public class ReadZoneTemperature extends SatelCommandBase {
         return true;
     }
 
+    @Override
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+        // dispatch temperature event
+        int zoneNbr = getResponse().getPayload()[0];
+        eventDispatcher.dispatchEvent(new ZoneTemperatureEvent(zoneNbr == 0 ? 256 : zoneNbr, getTemperature()));
+    }
 }

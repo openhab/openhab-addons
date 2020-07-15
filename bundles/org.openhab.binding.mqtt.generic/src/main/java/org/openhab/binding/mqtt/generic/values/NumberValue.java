@@ -80,8 +80,8 @@ public class NumberValue extends Value {
         }
 
         String formatPattern = pattern;
-        if (formatPattern == null || "%s".equals(formatPattern)) {
-            formatPattern = "%f";
+        if (formatPattern == null) {
+            formatPattern = "%s";
         }
 
         return state.format(formatPattern);

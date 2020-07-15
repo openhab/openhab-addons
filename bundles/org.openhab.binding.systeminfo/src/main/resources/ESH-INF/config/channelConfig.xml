@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<!-- Channels use the priority configuration parameter to inform the binding how often the channel state must be updated. 
-		High priority should be channels, which change its state dynamically at few seconds interval. Medium priority channels usually 
-		need update of the state more often - at several minutes. Low priority channels do not change their state at all, or very 
+	<!-- Channels use the priority configuration parameter to inform the binding how often the channel state must be updated.
+		High priority should be channels, which change its state dynamically at few seconds interval. Medium priority channels
+		usually
+		need update of the state more often - at several minutes. Low priority channels do not change their state at all, or very
 		often. They do not need regular updates. -->
 
 	<config-description uri="systeminfo:channels:lowpriority">

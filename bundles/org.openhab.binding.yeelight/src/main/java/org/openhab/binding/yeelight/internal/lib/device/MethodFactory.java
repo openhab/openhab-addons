@@ -17,6 +17,7 @@ import org.openhab.binding.yeelight.internal.lib.enums.MethodAction;
 
 /**
  * @author Coaster Li - Initial contribution
+ * @author Nikita Pogudalov - Added DeviceMethod for Ceiling 1
  */
 public class MethodFactory {
     public static DeviceMethod buildBrightnessMethd(int brightness, String effect, int duration) {
@@ -73,10 +74,10 @@ public class MethodFactory {
 
     /**
      * @param type scene type {@link DeviceMethod#SCENE_TYPE_COLOR}
-     *                 {@link DeviceMethod#SCENE_TYPE_CT}
-     *                 {@link DeviceMethod#SCENE_TYPE_DELAY}
-     *                 {@link DeviceMethod#SCENE_TYPE_HSV}
-     *                 {@link DeviceMethod#SCENE_TYPE_CF}
+     *            {@link DeviceMethod#SCENE_TYPE_CT}
+     *            {@link DeviceMethod#SCENE_TYPE_DELAY}
+     *            {@link DeviceMethod#SCENE_TYPE_HSV}
+     *            {@link DeviceMethod#SCENE_TYPE_CF}
      *
      */
     public static DeviceMethod buildScene(String type, int value, int brightness, int count, int endAction,
@@ -151,23 +152,31 @@ public class MethodFactory {
         return new DeviceMethod(MethodAction.NAME, new Object[] { name });
     }
 
+    public static DeviceMethod buildBackgroundHSVMethod(int hue, int sat, String effect, int duration) {
+        return new DeviceMethod(MethodAction.BG_HSV, new Object[] { hue, sat, effect, duration });
+    }
+
+    public static DeviceMethod buildBackgroundBrightnessMethd(int brightness, String effect, int duration) {
+        return new DeviceMethod(MethodAction.BG_BRIGHTNESS, new Object[] { brightness, effect, duration });
+    }
+
     public static DeviceMethod buildQuery(DeviceBase device) {
         DeviceType type = device.getDeviceType();
         switch (type) {
             case mono:
                 return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright" });
             case color:
-                return new DeviceMethod(MethodAction.PROP,
-                        new Object[] { "power", "name", "bright", "ct", "rgb", "hue", "sat" });
-            case ceiling:
-                return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
-            case ct_bulb:
-                return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
             case stripe:
                 return new DeviceMethod(MethodAction.PROP,
                         new Object[] { "power", "name", "bright", "ct", "rgb", "hue", "sat" });
+            case ceiling:
             case desklamp:
+            case ct_bulb:
                 return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct" });
+            case ceiling1:
+            case ceiling4:
+                return new DeviceMethod(MethodAction.PROP, new Object[] { "power", "name", "bright", "ct", "bg_power",
+                        "bg_bright", "bg_hue", "bg_sat", "active_mode" });
             default:
                 return null;
         }

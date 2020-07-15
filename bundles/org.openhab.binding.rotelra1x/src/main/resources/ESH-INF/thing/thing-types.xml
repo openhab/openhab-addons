@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="rotelra1x"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="amp">
 		<label>Rotel Amplifier</label>
@@ -23,7 +23,7 @@
 				<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 				<required>true</required>
 			</parameter>
-			<!-- Max volume could have been queried using the protocol, but would have 
+			<!-- Max volume could have been queried using the protocol, but would have
 				complicated the code, and it could be nice to set 100 % at less than
 				the receiver's max. -->
 			<parameter name="maximum-volume" type="integer" min="1">

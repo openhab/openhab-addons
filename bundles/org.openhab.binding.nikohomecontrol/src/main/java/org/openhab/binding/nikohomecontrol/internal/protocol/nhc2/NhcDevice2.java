@@ -31,7 +31,7 @@ class NhcDevice2 {
         String action;
         String position;
         String moving;
-        // fields for thermostats
+        // fields for thermostats and hvac
         String setpointTemperature;
         String program;
         String overruleActive;
@@ -39,17 +39,37 @@ class NhcDevice2 {
         String overruleTime;
         String ecoSave;
         String demand;
+        String operationMode;
         String ambientTemperature;
+        String protectMode;
+        String thermostatOn;
+        String hvacOn;
+        // fields for fans and ventilation
+        String fanSpeed;
+        // fields for electricity metering
+        String electricalEnergy;
+        String electricalPower;
+        String reportInstantUsage;
+        // fields for access control
+        String doorlock;
     }
 
     static class NhcTrait {
-
+        String macAddress;
+        // fields for energyMeters metering
+        String channel;
+        String meterType;
     }
 
     static class NhcParameter {
         String locationId;
         String locationName;
         String locationIcon;
+        // fields for electricity metering
+        String flow;
+        String segment;
+        String clampType;
+        String shortName;
     }
 
     String name;

@@ -1,183 +1,204 @@
 {
-    "deviceMapping": {
-        "id": [
-            "yeelink.light.ceiling4",
-            "yeelink.light.ceiling10",
-            "yeelink.light.ceiling4.ambi"
-        ],
-        "channels": [
-            {
-                "property": "power",
-                "friendlyName": "Power",
-                "channel": "power",
-                "type": "Switch",
-                "refresh": true,
-                "ChannelGroup": "",
-                "actions": [
-                    {
-                        "command": "set_power",
-                        "parameterType": "ONOFF"
-                    }
-                ]
-            },
-            {
-                "property": "bright",
-                "friendlyName": "Brightness",
-                "channel": "brightness",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_bright",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "bg_bright",
-                "friendlyName": "Ambient Brightness",
-                "channel": "ambientBrightness",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "bg_set_bright",
-                        "parameterType": "NUMBER"
-                    }
-                ]
-            },
-            {
-                "property": "delayoff",
-                "friendlyName": "Shutdowm Timer",
-                "channel": "delayoff",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "cron_add",
-                        "parameterType": "NUMBER",
-                        "preCommandParameter1": "0"
-                    }
-                ]
-            },
-            {
-                "property": "ct",
-                "friendlyName": "Color Temperature",
-                "channel": "colorTemperature",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_ct_abx",
-                        "parameterType": "NUMBER",
-                        "parameter1": "\"smooth\"",
-                        "parameter2": "500"
-                    }
-                ]
-            },
-            {
-                "property": "color_mode",
-                "friendlyName": "Color Mode",
-                "channel": "colorMode",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "",
-                "actions": []
-            },
-            {
-                "property": "name",
-                "friendlyName": "Name",
-                "channel": "name",
-                "type": "String",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_name",
-                        "parameterType": "STRING"
-                    }
-                ]
-            },
-            {
-                "property": "bg_power",
-                "friendlyName": "Ambient Power",
-                "channel": "ambientPower",
-                "type": "Switch",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "bg_set_power",
-                        "parameterType": "ONOFF"
-                    }
-                ]
-            },
-            {
-                "property": "bg_rgb",
-                "friendlyName": "Ambient Color",
-                "channel": "ambientColor",
-                "type": "Color",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "bg_set_rgb",
-                        "parameterType": "COLOR"
-                    }
-                ]
-            },
-            {
-                "property": "bg_ct",
-                "friendlyName": "Ambient Color Temperature",
-                "channel": "ambientColorTemperature",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "bg_set_ct_abx",
-                        "parameterType": "NUMBER",
-                        "parameter1": "\"smooth\"",
-                        "parameter2": "500"
-                    }
-                ]
-            },
-            {
-                "property": "",
-                "friendlyName": "Set Scene",
-                "channel": "customScene",
-                "type": "String",
-                "refresh": false,
-                "ChannelGroup": "actions",
-                "actions": [
-                    {
-                        "command": "set_scene",
-                        "parameterType": "CUSTOMSTRING"
-                    }
-                ]
-            },
-            {
-                "property": "bg_lmode",
-                "friendlyName": "Ambient Color Mode",
-                "channel": "ambientColorMode",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "",
-                "actions": []
-            },
-            {
-                "property": "nl_br",
-                "friendlyName": "Nightlight Brightness",
-                "channel": "nightlightBrightness",
-                "type": "Number",
-                "refresh": true,
-                "ChannelGroup": "",
-                "actions": []
-            }
-        ]
-    }
+	"deviceMapping": {
+		"id": [
+			"yeelink.light.ceiling4",
+			"yeelink.light.ceiling10",
+			"yeelink.light.ceiling4.ambi"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bright",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_bright",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "BrightnessExisting"
+						}
+					},
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"condition": {
+							"name": "BrightnessOnOff"
+						}
+					}
+				]
+			},
+			{
+				"property": "bg_bright",
+				"friendlyName": "Ambient Brightness",
+				"channel": "ambientBrightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_bright",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "delayoff",
+				"friendlyName": "Shutdown Timer",
+				"channel": "delayoff",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "cron_add",
+						"parameterType": "NUMBER",
+						"parameters": [
+							0,
+							"$value$"
+						]
+					}
+				]
+			},
+			{
+				"property": "ct",
+				"friendlyName": "Color Temperature",
+				"channel": "colorTemperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_ct_abx",
+						"parameterType": "NUMBER",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
+					}
+				]
+			},
+			{
+				"property": "color_mode",
+				"friendlyName": "Color Mode",
+				"channel": "colorMode",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "name",
+				"friendlyName": "Name",
+				"channel": "name",
+				"type": "String",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_name",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "bg_power",
+				"friendlyName": "Ambient Power",
+				"channel": "ambientPower",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "bg_rgb",
+				"friendlyName": "Ambient Color",
+				"channel": "ambientColor",
+				"type": "Color",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_rgb",
+						"parameterType": "COLOR"
+					}
+				]
+			},
+			{
+				"property": "bg_ct",
+				"friendlyName": "Ambient Color Temperature",
+				"channel": "ambientColorTemperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "bg_set_ct_abx",
+						"parameterType": "NUMBER",
+						"parameter1": "\"smooth\"",
+						"parameter2": "500",
+						"parameters": [
+							"$value$",
+							"smooth",
+							500
+						]
+					}
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Set Scene",
+				"channel": "customScene",
+				"type": "String",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_scene",
+						"parameterType": "CUSTOMSTRING"
+					}
+				]
+			},
+			{
+				"property": "bg_lmode",
+				"friendlyName": "Ambient Color Mode",
+				"channel": "ambientColorMode",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "nl_br",
+				"friendlyName": "Nightlight Brightness",
+				"channel": "nightlightBrightness",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			}
+		]
+	}
 }

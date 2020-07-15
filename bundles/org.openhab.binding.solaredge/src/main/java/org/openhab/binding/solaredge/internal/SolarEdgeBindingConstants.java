@@ -78,5 +78,4 @@ public class SolarEdgeBindingConstants {
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GENERIC);
-
 }

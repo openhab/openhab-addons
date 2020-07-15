@@ -46,7 +46,7 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
      * Creates new command basing on command code and extended command flag.
      *
      * @param commandCode command code
-     * @param extended    if <code>true</code> command will be sent as extended (256 zones or outputs)
+     * @param extended if <code>true</code> command will be sent as extended (256 zones or outputs)
      */
     public SatelCommandBase(byte commandCode, boolean extended) {
         this(commandCode, extended ? EXTENDED_CMD_PAYLOAD : EMPTY_PAYLOAD);
@@ -81,16 +81,26 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     }
 
     @Override
-    public boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
+    public final boolean matches(@Nullable SatelMessage response) {
+        return response != null
+                && (response.getCommand() == getCommand() || response.getCommand() == COMMAND_RESULT_CODE);
+    }
+
+    @Override
+    public final boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response) {
         // if response is valid, store it for future use
         if (response.getCommand() == COMMAND_RESULT_CODE) {
             if (!hasCommandSucceeded(response)) {
                 return false;
             }
+        } else if (response.getCommand() != getCommand()) {
+            logger.debug("Response code does not match command {}: {}", String.format("%02X", getCommand()), response);
+            return false;
         } else if (!isResponseValid(response)) {
             return false;
         }
         this.response = response;
+        handleResponseInternal(eventDispatcher);
         return true;
     }
 
@@ -115,6 +125,14 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
      */
     protected abstract boolean isResponseValid(SatelMessage response);
 
+    /**
+     * Overriden in subclasses allows to execute action specific to given command (i.e. dispatch an event).
+     *
+     * @param eventDispatcher event dispatcher
+     */
+    protected void handleResponseInternal(final EventDispatcher eventDispatcher) {
+    }
+
     protected static int bcdToInt(byte[] bytes, int offset, int size) {
         int result = 0, digit;
         int byteIdx = offset;
@@ -134,7 +152,7 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
     protected boolean hasCommandSucceeded(SatelMessage response) {
         // validate response message
         if (response.getCommand() != COMMAND_RESULT_CODE) {
-            logger.debug("Invalid response code: {}. {}", response.getCommand(), getRequest());
+            logger.debug("Invalid response code: {}. {}", String.format("%02X", response.getCommand()), getRequest());
             return false;
         }
         if (response.getPayload().length != 1) {
@@ -211,5 +229,4 @@ public abstract class SatelCommandBase extends SatelMessage implements SatelComm
                 + new String(payload, offset + 9, 2);
         return verStr;
     }
-
 }

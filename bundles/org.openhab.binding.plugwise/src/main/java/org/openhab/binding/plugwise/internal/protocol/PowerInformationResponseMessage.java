@@ -77,5 +77,4 @@ public class PowerInformationResponseMessage extends Message {
             throw new PlugwisePayloadMismatchException(POWER_INFORMATION_RESPONSE, PAYLOAD_PATTERN, payload);
         }
     }
-
 }

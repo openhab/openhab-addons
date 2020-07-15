@@ -57,5 +57,4 @@ public class BridgeApiInfoScanResultDto {
     public void setPaired(boolean paired) {
         this.paired = paired;
     }
-
 }

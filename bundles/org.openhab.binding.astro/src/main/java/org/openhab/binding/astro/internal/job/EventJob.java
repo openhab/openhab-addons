@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.openhab.binding.astro.internal.job.Job.checkNull;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 
@@ -23,6 +22,7 @@ import org.openhab.binding.astro.internal.handler.AstroThingHandler;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Implementation to be compliant with ESH Scheduler
  */
+@NonNullByDefault
 public final class EventJob extends AbstractJob {
 
     private final String channelID;
@@ -39,8 +39,6 @@ public final class EventJob extends AbstractJob {
      */
     public EventJob(String thingUID, String channelID, String event) {
         super(thingUID);
-        checkArgument(channelID != null, "The channelID must not be null");
-        checkArgument(event != null, "The event must not be null");
         this.channelID = channelID;
         this.event = event;
     }
@@ -48,15 +46,15 @@ public final class EventJob extends AbstractJob {
     @Override
     public void run() {
         AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(getThingUID());
-        if (checkNull(astroHandler, "AstroThingHandler is null")) {
-            return;
+        if (astroHandler != null) {
+            astroHandler.triggerEvent(channelID, event);
+        } else {
+            LOGGER.trace("AstroThingHandler is null");
         }
-        astroHandler.triggerEvent(channelID, event);
     }
 
     @Override
     public String toString() {
         return "Event job " + getThingUID() + "/" + channelID + "/" + event;
     }
-
 }

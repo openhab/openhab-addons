@@ -97,5 +97,4 @@ public class QSIOHandler extends BaseKeypadHandler {
     public QSIOHandler(Thing thing) {
         super(thing);
     }
-
 }

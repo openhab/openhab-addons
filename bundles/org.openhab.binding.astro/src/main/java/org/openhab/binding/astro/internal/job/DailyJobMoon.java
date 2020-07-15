@@ -15,6 +15,7 @@ package org.openhab.binding.astro.internal.job;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Moon;
@@ -27,6 +28,7 @@ import org.openhab.binding.astro.internal.model.Planet;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Implementation to be compliant with ESH Scheduler
  */
+@NonNullByDefault
 public final class DailyJobMoon extends AbstractJob {
 
     private final AstroThingHandler handler;
@@ -40,7 +42,6 @@ public final class DailyJobMoon extends AbstractJob {
      */
     public DailyJobMoon(String thingUID, AstroThingHandler handler) {
         super(thingUID);
-        checkArgument(handler != null, "The handler must not be null");
         this.handler = handler;
     }
 
@@ -48,7 +49,7 @@ public final class DailyJobMoon extends AbstractJob {
     public void run() {
         handler.publishDailyInfo();
         String thingUID = getThingUID();
-        LOGGER.info("Scheduled Astro event-jobs for thing {}", thingUID);
+        LOGGER.debug("Scheduled Astro event-jobs for thing {}", thingUID);
 
         Planet planet = handler.getPlanet();
         if (planet == null) {
@@ -79,5 +80,4 @@ public final class DailyJobMoon extends AbstractJob {
     public String toString() {
         return "Daily job moon " + getThingUID();
     }
-
 }

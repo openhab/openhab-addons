@@ -60,9 +60,10 @@ import net.wimpi.modbus.net.UDPMasterConnection;
 public class ModbusSlaveConnectionFactoryImpl
         extends BaseKeyedPooledObjectFactory<ModbusSlaveEndpoint, ModbusSlaveConnection> {
 
-    private static class PooledConnection extends DefaultPooledObject<ModbusSlaveConnection> {
+    class PooledConnection extends DefaultPooledObject<ModbusSlaveConnection> {
 
-        private long lastConnected;
+        private volatile long lastConnected;
+        private volatile @Nullable ModbusSlaveEndpoint endpoint;
 
         public PooledConnection(ModbusSlaveConnection object) {
             super(object);
@@ -72,10 +73,41 @@ public class ModbusSlaveConnectionFactoryImpl
             return lastConnected;
         }
 
-        public void setLastConnected(long lastConnected) {
+        public void setLastConnected(ModbusSlaveEndpoint endpoint, long lastConnected) {
+            this.endpoint = endpoint;
             this.lastConnected = lastConnected;
         }
 
+        public boolean maybeResetConnection(String activityName) {
+            long localLastConnected = lastConnected;
+
+            ModbusSlaveConnection connection = getObject();
+
+            @Nullable
+            EndpointPoolConfiguration configuration = endpointPoolConfigs.get(endpoint);
+            long reconnectAfterMillis = configuration == null ? 0 : configuration.getReconnectAfterMillis();
+            long connectionAgeMillis = System.currentTimeMillis() - localLastConnected;
+            long disconnectIfConnectedBeforeMillis = disconnectIfConnectedBefore.getOrDefault(endpoint, -1L);
+            boolean disconnectSinceTooOldConnection = disconnectIfConnectedBeforeMillis < 0L ? false
+                    : localLastConnected <= disconnectIfConnectedBeforeMillis;
+            boolean shouldBeDisconnected = (reconnectAfterMillis == 0
+                    || (reconnectAfterMillis > 0 && connectionAgeMillis > reconnectAfterMillis)
+                    || disconnectSinceTooOldConnection);
+            if (shouldBeDisconnected) {
+                logger.trace(
+                        "({}) Connection {} (endpoint {}) age {}ms is over the reconnectAfterMillis={}ms limit or has been connection time ({}) is after the \"disconnectBeforeConnectedMillis\"={} -> disconnecting.",
+                        activityName, connection, endpoint, connectionAgeMillis, reconnectAfterMillis,
+                        localLastConnected, disconnectIfConnectedBeforeMillis);
+                connection.resetConnection();
+                return true;
+            } else {
+                logger.trace(
+                        "({}) Connection {} (endpoint {}) age ({}ms) is below the reconnectAfterMillis ({}ms) limit and connection time ({}) is after the \"disconnectBeforeConnectedMillis\"={}. Keep the connection open.",
+                        activityName, connection, endpoint, connectionAgeMillis, reconnectAfterMillis,
+                        localLastConnected, disconnectIfConnectedBeforeMillis);
+                return false;
+            }
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(ModbusSlaveConnectionFactoryImpl.class);
@@ -146,9 +178,6 @@ public class ModbusSlaveConnectionFactoryImpl
         }
         logger.trace("destroyObject for connection {} and endpoint {} -> closing the connection", obj.getObject(),
                 endpoint);
-        if (obj.getObject() == null) {
-            return;
-        }
         obj.getObject().resetConnection();
     }
 
@@ -159,9 +188,6 @@ public class ModbusSlaveConnectionFactoryImpl
             return;
         }
         ModbusSlaveConnection connection = obj.getObject();
-        if (connection == null) {
-            return;
-        }
         try {
             @Nullable
             EndpointPoolConfiguration config = getEndpointPoolConfiguration(endpoint);
@@ -192,38 +218,15 @@ public class ModbusSlaveConnectionFactoryImpl
             return;
         }
         ModbusSlaveConnection connection = obj.getObject();
-        if (connection == null) {
-            return;
-        }
         logger.trace("Passivating connection {} for endpoint {}...", connection, endpoint);
         lastPassivateMillis.put(endpoint, System.currentTimeMillis());
-        @Nullable
-        EndpointPoolConfiguration configuration = endpointPoolConfigs.get(endpoint);
-        long connected = ((PooledConnection) obj).getLastConnected();
-        long reconnectAfterMillis = configuration == null ? 0 : configuration.getReconnectAfterMillis();
-        long connectionAgeMillis = System.currentTimeMillis() - ((PooledConnection) obj).getLastConnected();
-        long disconnectIfConnectedBeforeMillis = disconnectIfConnectedBefore.getOrDefault(endpoint, -1L);
-        boolean disconnectSinceTooOldConnection = disconnectIfConnectedBeforeMillis < 0L ? false
-                : connected <= disconnectIfConnectedBeforeMillis;
-        if (reconnectAfterMillis == 0 || (reconnectAfterMillis > 0 && connectionAgeMillis > reconnectAfterMillis)
-                || disconnectSinceTooOldConnection) {
-            logger.trace(
-                    "(passivate) Connection {} (endpoint {}) age {}ms is over the reconnectAfterMillis={}ms limit or has been connection time ({}) is after the \"disconnectBeforeConnectedMillis\"={} -> disconnecting.",
-                    connection, endpoint, connectionAgeMillis, reconnectAfterMillis, connected,
-                    disconnectIfConnectedBeforeMillis);
-            connection.resetConnection();
-        } else {
-            logger.trace(
-                    "(passivate) Connection {} (endpoint {}) age ({}ms) is below the reconnectAfterMillis ({}ms) limit and connection time ({}) is after the \"disconnectBeforeConnectedMillis\"={}. Keep the connection open.",
-                    connection, endpoint, connectionAgeMillis, reconnectAfterMillis, connected,
-                    disconnectIfConnectedBeforeMillis);
-        }
+        ((PooledConnection) obj).maybeResetConnection("passivate");
         logger.trace("...Passivated connection {} for endpoint {}", obj.getObject(), endpoint);
     }
 
     @Override
     public boolean validateObject(ModbusSlaveEndpoint key, @Nullable PooledObject<ModbusSlaveConnection> p) {
-        boolean valid = p != null && p.getObject() != null && p.getObject().isConnected();
+        boolean valid = p != null && p.getObject().isConnected();
         logger.trace("Validating endpoint {} connection {} -> {}", key, p.getObject(), valid);
         return valid;
     }
@@ -292,7 +295,7 @@ public class ModbusSlaveConnectionFactoryImpl
                 }
                 connection.connect();
                 long curTime = System.currentTimeMillis();
-                ((PooledConnection) obj).setLastConnected(curTime);
+                ((PooledConnection) obj).setLastConnected(endpoint, curTime);
                 lastConnectMillis.put(endpoint, curTime);
                 break;
             } catch (InterruptedException e) {
@@ -344,5 +347,4 @@ public class ModbusSlaveConnectionFactoryImpl
     public void disconnectOnReturn(ModbusSlaveEndpoint endpoint, long disconnectBeforeConnectedMillis) {
         disconnectIfConnectedBefore.put(endpoint, disconnectBeforeConnectedMillis);
     }
-
 }

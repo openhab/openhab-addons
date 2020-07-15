@@ -97,5 +97,4 @@ public class MCommandTest {
                 "m:00,VgIEAQALDaMCAA519gMIdGVzdHJvb20PHVQFAAjB1gQCCw2jS0VRMDU0NDI0MgABAQjB1ktFUTA2NDkzMTIABQQOdfZLRVExMTA0MzgwAAIBDx1UTEVRMDE1NTU3OAhUZXN0cm9vbQMB\r\n",
                 commandStr);
     }
-
 }

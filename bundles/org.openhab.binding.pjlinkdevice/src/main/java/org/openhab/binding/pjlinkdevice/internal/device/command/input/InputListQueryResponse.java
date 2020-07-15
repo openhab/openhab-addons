@@ -16,11 +16,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ErrorCode;
 import org.openhab.binding.pjlinkdevice.internal.device.command.PrefixedResponse;
 import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The response part of {@link InputListQueryCommand}
@@ -29,22 +28,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class InputListQueryResponse extends PrefixedResponse<Set<Input>> {
-  private static final HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
-      Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
+    private static final HashSet<ErrorCode> SPECIFIED_ERRORCODES = new HashSet<>(
+            Arrays.asList(ErrorCode.UNAVAILABLE_TIME, ErrorCode.DEVICE_FAILURE));
 
-  public InputListQueryResponse(String response) throws ResponseException {
-    super("INST=", SPECIFIED_ERRORCODES, response);
-  }
-
-  @Override
-  protected Set<Input> parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
-    Set<Input> result = new HashSet<>();
-    int pos = 0;
-    while (pos < responseWithoutPrefix.length()) {
-      result.add(new Input(responseWithoutPrefix.substring(pos, pos + 2)));
-      pos += 3;
+    public InputListQueryResponse(String response) throws ResponseException {
+        super("INST=", SPECIFIED_ERRORCODES, response);
     }
-    return result;
-  }
 
+    @Override
+    protected Set<Input> parseResponseWithoutPrefix(String responseWithoutPrefix) throws ResponseException {
+        Set<Input> result = new HashSet<>();
+        int pos = 0;
+        while (pos < responseWithoutPrefix.length()) {
+            result.add(new Input(responseWithoutPrefix.substring(pos, pos + 2)));
+            pos += 3;
+        }
+        return result;
+    }
 }

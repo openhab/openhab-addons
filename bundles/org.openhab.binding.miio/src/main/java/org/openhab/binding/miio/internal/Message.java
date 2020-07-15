@@ -19,11 +19,14 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Message} is responsible for creating Xiaomi messages.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class Message {
 
     private static final byte[] MAGIC = Utils.hexStringToByteArray("2131");
@@ -40,16 +43,16 @@ public class Message {
     private byte[] raw;
 
     public Message(byte[] raw) {
-        this.setRaw(raw);
-        this.header = java.util.Arrays.copyOf(raw, 16);
-        this.magic = java.util.Arrays.copyOf(raw, 2);
-        byte[] msgL = java.util.Arrays.copyOfRange(raw, 2, 4);
+        this.raw = java.util.Arrays.copyOf(raw, (raw.length < 32) ? 32 : raw.length);
+        this.header = java.util.Arrays.copyOf(this.raw, 16);
+        this.magic = java.util.Arrays.copyOf(this.raw, 2);
+        byte[] msgL = java.util.Arrays.copyOfRange(this.raw, 2, 4);
         this.length = ByteBuffer.wrap(msgL).getShort();
-        this.unknowns = java.util.Arrays.copyOfRange(raw, 4, 8);
-        this.deviceId = java.util.Arrays.copyOfRange(raw, 8, 12);
-        this.tsByte = java.util.Arrays.copyOfRange(raw, 12, 16);
-        this.checksum = java.util.Arrays.copyOfRange(raw, 16, 32);
-        this.data = java.util.Arrays.copyOfRange(raw, 32, length);
+        this.unknowns = java.util.Arrays.copyOfRange(this.raw, 4, 8);
+        this.deviceId = java.util.Arrays.copyOfRange(this.raw, 8, 12);
+        this.tsByte = java.util.Arrays.copyOfRange(this.raw, 12, 16);
+        this.checksum = java.util.Arrays.copyOfRange(this.raw, 16, 32);
+        this.data = java.util.Arrays.copyOfRange(this.raw, 32, length);
     }
 
     public static Message createMsg(byte[] data, byte[] token, byte[] deviceID, int timeStamp)
@@ -189,11 +192,11 @@ public class Message {
 
     /**
      * Set the message content
-     * 
+     *
      * @param raw byte array containing the message
      */
     public void setRaw(byte[] raw) {
-        this.raw = raw;
+        this.raw = java.util.Arrays.copyOf(raw, (raw.length < 32) ? 32 : raw.length);
     }
 
     /**

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gree"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="airconditioner">
+		<label>@text/thing-type.gree.airconditioner.label</label>
+		<channels>
+			<channel id="power" typeId="system.power" />
+			<channel id="mode" typeId="mode" />
+			<channel id="temperature" typeId="temperature" />
+			<channel id="air" typeId="air" />
+			<channel id="dry" typeId="dry" />
+			<channel id="turbo" typeId="turbo" />
+			<channel id="windspeed" typeId="windspeed" />
+			<channel id="quiet" typeId="quiet" />
+			<channel id="swingUpDown" typeId="swingUpDown" />
+			<channel id="swingLeftRight" typeId="swingLeftRight" />
+			<channel id="powersave" typeId="powersave" />
+			<channel id="light" typeId="light" />
+			<channel id="health" typeId="health" />
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+			</parameter>
+			<parameter name="broadcastAddress" type="text" required="false">
+				<context>network-address</context>
+			</parameter>
+			<parameter name="refresh" type="integer" required="true" unit="s">
+				<default>60</default>
+				<unitLabel>seconds</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>@text/channel-type.gree.mode.label</label>
+		<description>@text/channel-type.gree.mode.description</description>
+		<state>
+			<options>
+				<option value="auto">@text/channel-type.gree.mode.state.option.auto</option>
+				<option value="cool">@text/channel-type.gree.mode.state.option.cool</option>
+				<option value="eco">@text/channel-type.gree.mode.state.option.eco</option>
+				<option value="dry">@text/channel-type.gree.mode.state.option.dry</option>
+				<option value="fan">@text/channel-type.gree.mode.state.option.fan</option>
+				<option value="heat">@text/channel-type.gree.mode.state.option.heat</option>
+				<option value="on">@text/channel-type.gree.mode.state.option.on</option>
+				<option value="off">@text/channel-type.gree.mode.state.option.off</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.gree.temperature.label</label>
+		<description>@text/channel-type.gree.temperature.description</description>
+		<state min="16" max="86" step="1" pattern="%d %unit%"></state>
+	</channel-type>
+	<channel-type id="air">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.gree.air.label</label>
+		<description>@text/channel-type.gree.air.description</description>
+	</channel-type>
+	<channel-type id="dry">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.gree.dry.label</label>
+		<description>@text/channel-type.gree.dry.description</description>
+	</channel-type>
+	<channel-type id="turbo">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.gree.turbo.label</label>
+		<description>@text/channel-type.gree.turbo.description</description>
+	</channel-type>
+	<channel-type id="windspeed">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.gree.windspeed.label</label>
+		<description>@text/channel-type.gree.windspeed.description</description>
+		<state>
+			<options>
+				<option value="0">@text/channel-type.gree.windspeed.state.option.0</option>
+				<option value="1">@text/channel-type.gree.windspeed.state.option.1</option>
+				<option value="2">@text/channel-type.gree.windspeed.state.option.2</option>
+				<option value="3">@text/channel-type.gree.windspeed.state.option.3</option>
+				<option value="4">@text/channel-type.gree.windspeed.state.option.4</option>
+				<option value="5">@text/channel-type.gree.windspeed.state.option.5</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="quiet">
+		<item-type>String</item-type>
+		<label>@text/channel-type.gree.quiet.label</label>
+		<description>@text/channel-type.gree.quiet.description</description>
+		<state>
+			<options>
+				<option value="off">@text/channel-type.gree.quiet.state.option.off</option>
+				<option value="auto">@text/channel-type.gree.quiet.state.option.auto</option>
+				<option value="quiet">@text/channel-type.gree.quiet.state.option.quiet</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="swingUpDown">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.gree.swingupdown.label</label>
+		<description>@text/channel-type.gree.swingupdown.description</description>
+		<state>
+			<options>
+				<option value="0">@text/channel-type.gree.swingupdown.option.0</option>
+				<option value="1">@text/channel-type.gree.swingupdown.option.1</option>
+				<option value="2">@text/channel-type.gree.swingupdown.option.2</option>
+				<option value="3">@text/channel-type.gree.swingupdown.option.3</option>
+				<option value="4">@text/channel-type.gree.swingupdown.option.4</option>
+				<option value="5">@text/channel-type.gree.swingupdown.option.5</option>
+				<option value="6">@text/channel-type.gree.swingupdown.option.6</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="swingLeftRight">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.gree.swingleftright.label</label>
+		<description>@text/channel-type.gree.swingleftright.description</description>
+		<state>
+			<options>
+				<option value="0">@text/channel-type.gree.swingleftright.option.0</option>
+				<option value="1">@text/channel-type.gree.swingleftright.option.1</option>
+				<option value="2">@text/channel-type.gree.swingleftright.option.2</option>
+				<option value="3">@text/channel-type.gree.swingleftright.option.3</option>
+				<option value="4">@text/channel-type.gree.swingleftright.option.4</option>
+				<option value="5">@text/channel-type.gree.swingleftright.option.5</option>
+				<option value="6">@text/channel-type.gree.swingleftright.option.6</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="powersave">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.gree.powersave.label</label>
+		<description>@text/channel-type.gree.powersave.description</description>
+	</channel-type>
+	<channel-type id="light">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.gree.light.label</label>
+		<description>@text/channel-type.gree.light.description</description>
+	</channel-type>
+	<channel-type id="health">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.gree.health.label</label>
+		<description>@text/channel-type.gree.health.description</description>
+	</channel-type>
+
+</thing:thing-descriptions>

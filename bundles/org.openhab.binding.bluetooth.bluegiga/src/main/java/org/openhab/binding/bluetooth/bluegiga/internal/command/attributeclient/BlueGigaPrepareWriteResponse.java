@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.attributeclient;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse;
 
 /**
@@ -30,16 +31,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.enumeration.BgApiResponse
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaPrepareWriteResponse extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaPrepareWriteResponse extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x04;
     public static int COMMAND_METHOD = 0x09;
-
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Command result.
@@ -62,16 +57,6 @@ public class BlueGigaPrepareWriteResponse extends BlueGigaResponse {
         result = deserializeBgApiResponse();
     }
 
-    /**
-     * Connection handle
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
     /**
      * Command result.
      * <p>

@@ -13,7 +13,7 @@
 package org.openhab.io.transport.modbus.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.transport.modbus.ModbusSlaveErrorResponseException;
+import org.openhab.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 
 import net.wimpi.modbus.ModbusSlaveException;
 

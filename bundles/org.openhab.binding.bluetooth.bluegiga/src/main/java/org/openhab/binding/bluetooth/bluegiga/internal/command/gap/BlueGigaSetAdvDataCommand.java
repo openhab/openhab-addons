@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.gap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
 
 /**
@@ -30,6 +31,7 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
+@NonNullByDefault
 public class BlueGigaSetAdvDataCommand extends BlueGigaCommand {
     public static int COMMAND_CLASS = 0x06;
     public static int COMMAND_METHOD = 0x09;
@@ -46,7 +48,7 @@ public class BlueGigaSetAdvDataCommand extends BlueGigaCommand {
      * <p>
      * BlueGiga API type is <i>uint8array</i> - Java type is {@link int[]}
      */
-    private int[] advData;
+    private int[] advData = new int[0];
 
     /**
      * Advertisement data type. 0 : sets advertisement data. 1 : sets scan response data
@@ -56,6 +58,7 @@ public class BlueGigaSetAdvDataCommand extends BlueGigaCommand {
     public void setSetScanrsp(int setScanrsp) {
         this.setScanrsp = setScanrsp;
     }
+
     /**
      * Advertisement data to send
      *

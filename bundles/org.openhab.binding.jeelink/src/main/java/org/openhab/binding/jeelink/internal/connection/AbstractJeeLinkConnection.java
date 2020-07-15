@@ -15,13 +15,8 @@ package org.openhab.binding.jeelink.internal.connection;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.ConnectException;
-import java.util.Arrays;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.openhab.binding.jeelink.internal.JeeLinkHandler;
-import org.openhab.binding.jeelink.internal.config.JeeLinkConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +33,6 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
 
     protected String port;
 
-    private String[] initCommands;
     private AtomicBoolean initialized = new AtomicBoolean(false);
 
     public AbstractJeeLinkConnection(String port, ConnectionListener listener) {
@@ -77,14 +71,11 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
 
     @Override
     public void sendCommands(String commands) {
-        if (commands != null && !commands.trim().isEmpty()) {
-            initCommands = commands.split(";");
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Writing to device on port {}: {} ", port, Arrays.toString(initCommands));
-            }
-
-            try (OutputStream initStream = getInitStream()) {
+        try {
+            if (commands != null && !commands.trim().isEmpty()) {
+                // do not create in try-with-resources as this will
+                // close the undelying socket for TCP connections
+                OutputStream initStream = getInitStream();
                 if (initStream == null) {
                     throw new IOException(
                             "Connection on port " + port + " did not provide an init stream for writing init commands");
@@ -93,30 +84,17 @@ public abstract class AbstractJeeLinkConnection implements JeeLinkConnection {
                 // do not close the writer as this closes the underlying stream, and
                 // in case of tcp connections, the underlying socket
                 OutputStreamWriter w = new OutputStreamWriter(initStream);
-                for (String cmd : initCommands) {
-                    w.write(cmd);
+                for (String cmd : commands.split(";")) {
+                    logger.debug("Writing to device on port {}: {} ", port, cmd);
+
+                    w.write(cmd + "\n");
                 }
                 w.flush();
-            } catch (IOException ex) {
-                logger.debug("Error writing to output stream!", ex);
-                closeConnection();
-                notifyAbort("propagate: " + ex.getMessage());
             }
+        } catch (IOException ex) {
+            logger.debug("Error writing to output stream!", ex);
+            closeConnection();
+            notifyAbort("propagate: " + ex.getMessage());
         }
-    }
-
-    public static JeeLinkConnection createFor(JeeLinkConfig config, ScheduledExecutorService scheduler,
-            JeeLinkHandler h) throws ConnectException {
-        JeeLinkConnection connection;
-
-        if (config.serialPort != null && config.baudRate != null) {
-            connection = new JeeLinkSerialConnection(config.serialPort, config.baudRate, h);
-        } else if (config.ipAddress != null && config.port != null) {
-            connection = new JeeLinkTcpConnection(config.ipAddress + ":" + config.port, scheduler, h);
-        } else {
-            throw new ConnectException("Connection configuration incomplete");
-        }
-
-        return connection;
     }
 }

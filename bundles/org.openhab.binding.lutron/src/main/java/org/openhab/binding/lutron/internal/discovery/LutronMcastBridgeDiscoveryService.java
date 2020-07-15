@@ -29,13 +29,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -171,7 +171,7 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
                     StandardCharsets.US_ASCII);
 
             Matcher matcher = BRIDGE_PROP_PATTERN.matcher(data);
-            Map<String, String> bridgeProperties = new HashMap<>();
+            Map<String, @Nullable String> bridgeProperties = new HashMap<>();
 
             while (matcher.find()) {
                 bridgeProperties.put(matcher.group(1), matcher.group(2));
@@ -183,23 +183,34 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
             String productFamily = bridgeProperties.get("PRODFAM");
             String productType = bridgeProperties.get("PRODTYPE");
             String codeVersion = bridgeProperties.get("CODEVER");
+            String macAddress = bridgeProperties.get("MACADDR");
 
-            if (StringUtils.isNotBlank(ipAddress) && StringUtils.isNotBlank(serialNumber)) {
+            if (ipAddress != null && !ipAddress.trim().isEmpty() && serialNumber != null
+                    && !serialNumber.trim().isEmpty()) {
                 Map<String, Object> properties = new HashMap<>();
 
                 properties.put(HOST, ipAddress);
                 properties.put(SERIAL_NUMBER, serialNumber);
 
                 if (PRODFAM_RA2.equals(productFamily)) {
-                    properties.put("productFamily", "RadioRA 2");
+                    properties.put(PROPERTY_PRODFAM, "RadioRA 2");
                 } else if (PRODFAM_HWQS.equals(productFamily)) {
-                    properties.put("productFamily", "HomeWorks QS");
+                    properties.put(PROPERTY_PRODFAM, "HomeWorks QS");
                 } else {
-                    properties.put("productFamily", productFamily);
+                    if (productFamily != null) {
+                        properties.put(PROPERTY_PRODFAM, productFamily);
+                    }
                 }
 
-                properties.put("productType", productType);
-                properties.put("version", codeVersion);
+                if (productType != null && !productType.trim().isEmpty()) {
+                    properties.put(PROPERTY_PRODTYP, productType);
+                }
+                if (codeVersion != null && !codeVersion.trim().isEmpty()) {
+                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, codeVersion);
+                }
+                if (macAddress != null && !macAddress.trim().isEmpty()) {
+                    properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+                }
 
                 ThingUID uid = new ThingUID(THING_TYPE_IPBRIDGE, serialNumber);
                 String label = generateLabel(productFamily, productType);
@@ -212,8 +223,9 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
             }
         }
 
-        private String generateLabel(String productFamily, String productType) {
-            if (StringUtils.isNotBlank(productFamily) && StringUtils.isNotBlank(productType)) {
+        private String generateLabel(@Nullable String productFamily, @Nullable String productType) {
+            if (productFamily != null && !productFamily.trim().isEmpty() && productType != null
+                    && !productType.trim().isEmpty()) {
                 return productFamily + " " + productType;
             }
 

@@ -173,10 +173,13 @@ public class HyperionNgHandler extends BaseThingHandler {
     protected void handleServerInfoResponse(NgResponse response) {
         NgInfo info = response.getInfo();
         if (info != null) {
-            // update Hyperion
+            // update Hyperion, older API compatibility
             Hyperion hyperion = info.getHyperion();
-            updateHyperion(hyperion);
-
+            if (hyperion != null) {
+                
+                updateHyperion(hyperion);
+            }
+            
             // populate the effect states
             List<Effect> effects = info.getEffects();
             populateEffects(effects);
@@ -294,6 +297,9 @@ public class HyperionNgHandler extends BaseThingHandler {
                     break;
                 case COMPONENT_LEDDEVICE:
                     updateState(CHANNEL_LEDDEVICE, componentState);
+                    break;
+                case COMPONENT_ALL:
+                    updateState(CHANNEL_HYPERION_ENABLED, componentState);
                     break;
                 default:
                     logger.debug("Unknown component: {}", componentName);
@@ -459,7 +465,6 @@ public class HyperionNgHandler extends BaseThingHandler {
         } else {
             logger.debug("Channel {} unable to process command {}", CHANNEL_EFFECT, command);
         }
-
     }
 
     private void handleClear(Command command) throws IOException, CommandUnsuccessfulException {
@@ -494,5 +499,4 @@ public class HyperionNgHandler extends BaseThingHandler {
         }
         return response;
     }
-
 }

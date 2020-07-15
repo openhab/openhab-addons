@@ -118,7 +118,7 @@ sitemap demo label="Main Menu"
         Text item=RemoteControlBatteryLevel label="Battery Level [%d %%]"
         Switch item=RemoteControlBatteryLow label="Battery Low Warning"
         Switch item=ControlOutlet label="Power Switch"
-        Rollershutter item)BlindPosition label="Blind Position"
+        Switch item=BlindPosition label="Blind Position [%d]"
     }
 }
 ```

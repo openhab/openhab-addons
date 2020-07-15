@@ -15,12 +15,15 @@ package org.openhab.binding.bluetooth.bluegiga.internal.eir;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Definition of the EIR Flags field
- * 
- * @author Chris Jackson
+ *
+ * @author Chris Jackson - Initial contribution
  *
  */
+@NonNullByDefault
 public enum EirFlags {
     UNKNOWN(-1),
     LE_LIMITED_DISCOVERABLE_MODE(0),
@@ -44,7 +47,7 @@ public enum EirFlags {
      * A mapping between the integer code and its corresponding type to
      * facilitate lookup by code.
      */
-    private static Map<Integer, EirFlags> codeMapping;
+    private static Map<Integer, EirFlags> codeMapping = new HashMap<>();
 
     private int key;
 
@@ -53,7 +56,7 @@ public enum EirFlags {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, EirFlags>();
+        codeMapping = new HashMap<>();
         for (EirFlags s : values()) {
             codeMapping.put(s.key, s);
         }
@@ -66,8 +69,9 @@ public enum EirFlags {
      *            the code to lookup
      * @return enumeration value.
      */
+    @SuppressWarnings({ "null", "unused" })
     public static EirFlags getEirFlag(int eirFlag) {
-        if (codeMapping == null) {
+        if (codeMapping.isEmpty()) {
             initMapping();
         }
 

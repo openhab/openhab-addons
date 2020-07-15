@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.command.connection;
 
-import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaDeviceResponse;
 
 /**
  * Class to implement the BlueGiga command <b>channelMapGet</b>.
@@ -25,16 +26,10 @@ import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaResponse;
  *
  * @author Chris Jackson - Initial contribution of Java code generator
  */
-public class BlueGigaChannelMapGetResponse extends BlueGigaResponse {
+@NonNullByDefault
+public class BlueGigaChannelMapGetResponse extends BlueGigaDeviceResponse {
     public static int COMMAND_CLASS = 0x03;
     public static int COMMAND_METHOD = 0x04;
-
-    /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     */
-    private int connection;
 
     /**
      * Current Channel Map. Each bit corresponds to one channel. 0-bit corresponds to 0 channel.
@@ -58,16 +53,6 @@ public class BlueGigaChannelMapGetResponse extends BlueGigaResponse {
         map = deserializeUInt8Array();
     }
 
-    /**
-     * Connection handle.
-     * <p>
-     * BlueGiga API type is <i>uint8</i> - Java type is {@link int}
-     *
-     * @return the current connection as {@link int}
-     */
-    public int getConnection() {
-        return connection;
-    }
     /**
      * Current Channel Map. Each bit corresponds to one channel. 0-bit corresponds to 0 channel.
      * Size of Channel Map is 5 bytes. Channel range: 0-36

@@ -41,7 +41,6 @@ public class MeteoBlueBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MeteoBlueBridgeHandler.class);
 
     private String apiKey;
-    private boolean isValidConfig;
 
     public MeteoBlueBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -81,7 +80,7 @@ public class MeteoBlueBridgeHandler extends BaseBridgeHandler {
     private void healthCheck() {
         String url = "http://my.meteoblue.com/packages/";
         try {
-            String httpResponse = HttpUtil.executeUrl("GET", url, 30 * 1000);
+            HttpUtil.executeUrl("GET", url, 30 * 1000);
             logger.trace("HealthCheck succeeded.");
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {

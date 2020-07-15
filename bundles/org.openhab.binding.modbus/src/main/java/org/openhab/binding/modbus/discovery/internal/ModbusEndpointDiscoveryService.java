@@ -79,7 +79,7 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
 
     @Override
     public boolean scanInProgress() {
-        return participants.size() > 0 || waitingForParticipant;
+        return !participants.isEmpty() || waitingForParticipant;
     }
 
     /**
@@ -89,7 +89,7 @@ public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscove
      *            discovered items
      */
     private void startNextParticipant(final ModbusEndpointThingHandler handler, final ModbusDiscoveryService service) {
-        if (participants.size() == 0) {
+        if (participants.isEmpty()) {
             logger.trace("All participants has finished");
             service.scanFinished();
             return; // We're finished, this will exit the process

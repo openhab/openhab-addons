@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCrosseTemperatureReading> {
     private final Logger logger = LoggerFactory.getLogger(LaCrosseTemperatureSensorHandler.class);
 
-    public LaCrosseTemperatureSensorHandler(Thing thing) {
-        super(thing);
+    public LaCrosseTemperatureSensorHandler(Thing thing, String sensorType) {
+        super(thing, sensorType);
     }
 
     @Override

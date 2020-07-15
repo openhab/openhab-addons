@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.CommandConfirmation;
@@ -38,20 +39,26 @@ public class VolumeControlMute extends BaseChannelHandler<Boolean> {
 
     @Override
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
-        if (OnOffType.ON == command || OnOffType.OFF == command) {
+        if (RefreshType.REFRESH == command) {
+            handler.getSocket().getMute(createResponseListener(channelId, handler));
+        } else if (OnOffType.ON == command || OnOffType.OFF == command) {
             handler.getSocket().setMute(OnOffType.ON == command, objResponseListener);
         } else {
-            logger.warn("Only accept OnOffType. Type was {}.", command.getClass());
+            logger.info("Only accept OnOffType, RefreshType. Type was {}.", command.getClass());
         }
     }
 
     @Override
     protected Optional<ServiceSubscription<Boolean>> getSubscription(String channelId, LGWebOSHandler handler) {
-        return Optional.of(handler.getSocket().subscribeMute(new ResponseListener<Boolean>() {
+        return Optional.of(handler.getSocket().subscribeMute(createResponseListener(channelId, handler)));
+    }
+
+    private ResponseListener<Boolean> createResponseListener(String channelId, LGWebOSHandler handler) {
+        return new ResponseListener<Boolean>() {
 
             @Override
             public void onError(@Nullable String error) {
-                logger.debug("Error in listening to mute changes: {}.", error);
+                logger.debug("Error in retrieving mute: {}.", error);
             }
 
             @Override
@@ -61,7 +68,6 @@ public class VolumeControlMute extends BaseChannelHandler<Boolean> {
                 }
                 handler.postUpdate(channelId, OnOffType.from(value));
             }
-        }));
+        };
     }
-
 }

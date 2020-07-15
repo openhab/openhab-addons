@@ -44,6 +44,7 @@ import org.eclipse.smarthome.core.transform.TransformationHelper;
 import org.eclipse.smarthome.core.transform.TransformationService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.exec.internal.ExecWhitelistWatchService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  * @author Constantin Piber - Added better argument support (delimiter and pass to shell)
+ * @author Jan N. Klug - Add command whitelist check
  */
 @NonNullByDefault
 public class ExecHandler extends BaseThingHandler {
@@ -68,6 +70,7 @@ public class ExecHandler extends BaseThingHandler {
      */
     public static final String[] SHELL_WINDOWS = new String[] { "cmd" };
     public static final String[] SHELL_NIX = new String[] { "sh", "bash", "zsh", "csh" };
+    private final ExecWhitelistWatchService execWhitelistWatchService;
 
     private Logger logger = LoggerFactory.getLogger(ExecHandler.class);
 
@@ -88,9 +91,10 @@ public class ExecHandler extends BaseThingHandler {
 
     private static Runtime rt = Runtime.getRuntime();
 
-    public ExecHandler(Thing thing) {
+    public ExecHandler(Thing thing, ExecWhitelistWatchService execWhitelistWatchService) {
         super(thing);
         this.bundleContext = FrameworkUtil.getBundle(ExecHandler.class).getBundleContext();
+        this.execWhitelistWatchService = execWhitelistWatchService;
     }
 
     @Override
@@ -101,7 +105,7 @@ public class ExecHandler extends BaseThingHandler {
             if (channelUID.getId().equals(RUN)) {
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
+                        scheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
                     }
                 }
             } else if (channelUID.getId().equals(INPUT)) {
@@ -109,10 +113,10 @@ public class ExecHandler extends BaseThingHandler {
                     String previousInput = lastInput;
                     lastInput = command.toString();
                     if (lastInput != null && !lastInput.equals(previousInput)) {
-                        if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN)).booleanValue()) {
+                        if (getConfig().get(AUTORUN) != null && ((Boolean) getConfig().get(AUTORUN))) {
                             logger.trace("Executing command '{}' after a change of the input channel to '{}'",
                                     getConfig().get(COMMAND), lastInput);
-                            scheduler.schedule(periodicExecutionRunnable, 0, TimeUnit.SECONDS);
+                            scheduler.schedule(this::execute, 0, TimeUnit.SECONDS);
                         }
                     }
                 }
@@ -123,11 +127,9 @@ public class ExecHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         if (executionJob == null || executionJob.isCancelled()) {
-            if (((BigDecimal) getConfig().get(INTERVAL)) != null
-                    && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
+            if ((getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
-                executionJob = scheduler.scheduleWithFixedDelay(periodicExecutionRunnable, 0, pollingInterval,
-                        TimeUnit.SECONDS);
+                executionJob = scheduler.scheduleWithFixedDelay(this::execute, 0, pollingInterval, TimeUnit.SECONDS);
             }
         }
 
@@ -142,166 +144,161 @@ public class ExecHandler extends BaseThingHandler {
         }
     }
 
-    protected Runnable periodicExecutionRunnable = new Runnable() {
+    public void execute() {
+        String commandLine = (String) getConfig().get(COMMAND);
+        if (!execWhitelistWatchService.isWhitelisted(commandLine)) {
+            logger.warn("Tried to execute '{}', but it is not contained in whitelist.", commandLine);
+            return;
+        }
 
-        @Override
-        public void run() {
-            String commandLine = (String) getConfig().get(COMMAND);
+        int timeOut = 60000;
+        if ((getConfig().get(TIME_OUT)) != null) {
+            timeOut = ((BigDecimal) getConfig().get(TIME_OUT)).intValue() * 1000;
+        }
 
-            int timeOut = 60000;
-            if (((BigDecimal) getConfig().get(TIME_OUT)) != null) {
-                timeOut = ((BigDecimal) getConfig().get(TIME_OUT)).intValue() * 1000;
+        if (commandLine != null && !commandLine.isEmpty()) {
+            updateState(RUN, OnOffType.ON);
+
+            // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
+            // Runtime.Exec(), on Mac OS X (Yosemite and El Capitan), there seems to be a lock race condition
+            // randomly appearing (on UNIXProcess) *when* one tries to gobble up the stdout and sterr output of the
+            // subprocess in separate threads. It seems to be common "wisdom" to do that in separate threads, but
+            // only when keeping everything between .exec() and .waitfor() in the same thread, this lock race
+            // condition seems to go away. This approach of not reading the outputs in separate threads *might* be a
+            // problem for external commands that generate a lot of output, but this will be dependent on the limits
+            // of the underlying operating system.
+
+            try {
+                if (lastInput != null) {
+                    commandLine = String.format(commandLine, Calendar.getInstance().getTime(), lastInput);
+                } else {
+                    commandLine = String.format(commandLine, Calendar.getInstance().getTime());
+                }
+            } catch (IllegalFormatException e) {
+                logger.warn(
+                        "An exception occurred while formatting the command line with the current time and input values : '{}'",
+                        e.getMessage());
+                updateState(RUN, OnOffType.OFF);
+                updateState(OUTPUT, new StringType(e.getMessage()));
+                return;
             }
 
-            if (commandLine != null && !commandLine.isEmpty()) {
-                updateState(RUN, OnOffType.ON);
-
-                // For some obscure reason, when using Apache Common Exec, or using a straight implementation of
-                // Runtime.Exec(), on Mac OS X (Yosemite and El Capitan), there seems to be a lock race condition
-                // randomly appearing (on UNIXProcess) *when* one tries to gobble up the stdout and sterr output of the
-                // subprocess in separate threads. It seems to be common "wisdom" to do that in separate threads, but
-                // only when keeping everything between .exec() and .waitfor() in the same thread, this lock race
-                // condition seems to go away. This approach of not reading the outputs in separate threads *might* be a
-                // problem for external commands that generate a lot of output, but this will be dependent on the limits
-                // of the underlying operating system.
-
+            String[] cmdArray;
+            String[] shell;
+            if (commandLine.contains(CMD_LINE_DELIMITER)) {
+                logger.debug("Splitting by '{}'", CMD_LINE_DELIMITER);
                 try {
-                    if (lastInput != null) {
-                        commandLine = String.format(commandLine, Calendar.getInstance().getTime(), lastInput);
-                    } else {
-                        commandLine = String.format(commandLine, Calendar.getInstance().getTime());
-                    }
-                } catch (IllegalFormatException e) {
-                    logger.warn(
-                            "An exception occurred while formatting the command line with the current time and input values : '{}'",
-                            e.getMessage());
-                    updateState(RUN, OnOffType.OFF);
-                    return;
-                }
-
-                String[] cmdArray;
-                String[] shell;
-                if (commandLine.contains(CMD_LINE_DELIMITER)) {
-                    logger.debug("Splitting by '{}'", CMD_LINE_DELIMITER);
-                    try {
-                        cmdArray = commandLine.split(CMD_LINE_DELIMITER);
-                    } catch (PatternSyntaxException e) {
-                        logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
-                        updateState(RUN, OnOffType.OFF);
-                        updateState(OUTPUT, new StringType(e.getMessage()));
-                        return;
-                    }
-                } else {
-                    // Invoke shell with 'c' option and pass string
-                    logger.debug("Passing to shell for parsing command.");
-                    switch (getOperatingSystemType()) {
-                        case WINDOWS:
-                            shell = SHELL_WINDOWS;
-                            logger.debug("OS: WINDOWS ({})", getOperatingSystemName());
-                            cmdArray = createCmdArray(shell, "/c", commandLine);
-                            break;
-
-                        case LINUX:
-                        case MAC:
-                        case SOLARIS:
-                            // assume sh is present, should all be POSIX-compliant
-                            shell = SHELL_NIX;
-                            logger.debug("OS: *NIX ({})", getOperatingSystemName());
-                            cmdArray = createCmdArray(shell, "-c", commandLine);
-
-                        default:
-                            logger.debug("OS: Unknown ({})", getOperatingSystemName());
-                            logger.warn("OS {} not supported, please manually split commands!",
-                                    getOperatingSystemName());
-                            updateState(RUN, OnOffType.OFF);
-                            updateState(OUTPUT, new StringType("OS not supported, please manually split commands!"));
-                            return;
-                    }
-                }
-
-                if (cmdArray.length == 0) {
-                    logger.trace("Empty command received, not executing");
-                    return;
-                }
-
-                logger.trace("The command to be executed will be '{}'", Arrays.asList(cmdArray));
-
-                Process proc = null;
-                try {
-                    proc = rt.exec(cmdArray);
-                } catch (Exception e) {
-                    logger.warn("An exception occurred while executing '{}' : '{}'", Arrays.asList(cmdArray),
-                            e.getMessage());
+                    cmdArray = commandLine.split(CMD_LINE_DELIMITER);
+                } catch (PatternSyntaxException e) {
+                    logger.warn("An exception occurred while splitting '{}' : '{}'", commandLine, e.getMessage());
                     updateState(RUN, OnOffType.OFF);
                     updateState(OUTPUT, new StringType(e.getMessage()));
                     return;
                 }
-
-                StringBuilder outputBuilder = new StringBuilder();
-                StringBuilder errorBuilder = new StringBuilder();
-
-                try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                        BufferedReader br = new BufferedReader(isr)) {
-                    String line = null;
-                    while ((line = br.readLine()) != null) {
-                        outputBuilder.append(line).append("\n");
-                        logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
-                    }
-                    isr.close();
-                } catch (IOException e) {
-                    logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'",
-                            commandLine, e.getMessage());
+            } else {
+                // Invoke shell with 'c' option and pass string
+                logger.debug("Passing to shell for parsing command.");
+                switch (getOperatingSystemType()) {
+                    case WINDOWS:
+                        shell = SHELL_WINDOWS;
+                        logger.debug("OS: WINDOWS ({})", getOperatingSystemName());
+                        cmdArray = createCmdArray(shell, "/c", commandLine);
+                        break;
+                    case LINUX:
+                    case MAC:
+                    case SOLARIS:
+                        // assume sh is present, should all be POSIX-compliant
+                        shell = SHELL_NIX;
+                        logger.debug("OS: *NIX ({})", getOperatingSystemName());
+                        cmdArray = createCmdArray(shell, "-c", commandLine);
+                        break;
+                    default:
+                        logger.debug("OS: Unknown ({})", getOperatingSystemName());
+                        logger.warn("OS {} not supported, please manually split commands!", getOperatingSystemName());
+                        updateState(RUN, OnOffType.OFF);
+                        updateState(OUTPUT, new StringType("OS not supported, please manually split commands!"));
+                        return;
                 }
-
-                try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                        BufferedReader br = new BufferedReader(isr)) {
-                    String line = null;
-                    while ((line = br.readLine()) != null) {
-                        errorBuilder.append(line).append("\n");
-                        logger.debug("Exec [{}]: '{}'", "ERROR", line);
-                    }
-                    isr.close();
-                } catch (IOException e) {
-                    logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'",
-                            commandLine, e.getMessage());
-                }
-
-                boolean exitVal = false;
-                try {
-                    exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    logger.warn("An exception occurred while waiting for the process ('{}') to finish : '{}'",
-                            commandLine, e.getMessage());
-                }
-
-                if (!exitVal) {
-                    logger.warn("Forcibly termininating the process ('{}') after a timeout of {} ms", commandLine,
-                            timeOut);
-                    proc.destroyForcibly();
-                }
-
-                updateState(RUN, OnOffType.OFF);
-                updateState(EXIT, new DecimalType(proc.exitValue()));
-
-                outputBuilder.append(errorBuilder.toString());
-
-                outputBuilder.append(errorBuilder.toString());
-
-                String transformedResponse = StringUtils.chomp(outputBuilder.toString());
-                String transformation = (String) getConfig().get(TRANSFORM);
-
-                if (transformation != null && transformation.length() > 0) {
-                    transformedResponse = transformResponse(transformedResponse, transformation);
-                }
-
-                updateState(OUTPUT, new StringType(transformedResponse));
-
-                DateTimeType stampType = new DateTimeType(ZonedDateTime.now());
-                updateState(LAST_EXECUTION, stampType);
             }
-        }
 
-    };
+            if (cmdArray.length == 0) {
+                logger.trace("Empty command received, not executing");
+                return;
+            }
+
+            logger.trace("The command to be executed will be '{}'", Arrays.asList(cmdArray));
+
+            Process proc;
+            try {
+                proc = rt.exec(cmdArray);
+            } catch (Exception e) {
+                logger.warn("An exception occurred while executing '{}' : '{}'", Arrays.asList(cmdArray),
+                        e.getMessage());
+                updateState(RUN, OnOffType.OFF);
+                updateState(OUTPUT, new StringType(e.getMessage()));
+                return;
+            }
+
+            StringBuilder outputBuilder = new StringBuilder();
+            StringBuilder errorBuilder = new StringBuilder();
+
+            try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+                    BufferedReader br = new BufferedReader(isr)) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    outputBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
+                }
+            } catch (IOException e) {
+                logger.warn("An exception occurred while reading the stdout when executing '{}' : '{}'", commandLine,
+                        e.getMessage());
+            }
+
+            try (InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                    BufferedReader br = new BufferedReader(isr)) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    errorBuilder.append(line).append("\n");
+                    logger.debug("Exec [{}]: '{}'", "ERROR", line);
+                }
+            } catch (IOException e) {
+                logger.warn("An exception occurred while reading the stderr when executing '{}' : '{}'", commandLine,
+                        e.getMessage());
+            }
+
+            boolean exitVal = false;
+            try {
+                exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                logger.warn("An exception occurred while waiting for the process ('{}') to finish : '{}'", commandLine,
+                        e.getMessage());
+            }
+
+            if (!exitVal) {
+                logger.warn("Forcibly termininating the process ('{}') after a timeout of {} ms", commandLine, timeOut);
+                proc.destroyForcibly();
+            }
+
+            updateState(RUN, OnOffType.OFF);
+            updateState(EXIT, new DecimalType(proc.exitValue()));
+
+            outputBuilder.append(errorBuilder.toString());
+
+            outputBuilder.append(errorBuilder.toString());
+
+            String transformedResponse = StringUtils.chomp(outputBuilder.toString());
+            String transformation = (String) getConfig().get(TRANSFORM);
+
+            if (transformation != null && transformation.length() > 0) {
+                transformedResponse = transformResponse(transformedResponse, transformation);
+            }
+
+            updateState(OUTPUT, new StringType(transformedResponse));
+
+            DateTimeType stampType = new DateTimeType(ZonedDateTime.now());
+            updateState(LAST_EXECUTION, stampType);
+        }
+    }
 
     protected @Nullable String transformResponse(String response, String transformation) {
         String transformedResponse;
@@ -361,8 +358,8 @@ public class ExecHandler extends BaseThingHandler {
      * or (if command already starts with one of the shells) splits by space.
      *
      * @param shell (path), picks to first one to execute the command
-     * @param "c"-option string
-     * @param command to execute
+     * @param cOption "c"-option string
+     * @param commandLine to execute
      * @return command array
      */
     protected String[] createCmdArray(String[] shell, String cOption, String commandLine) {
@@ -402,7 +399,7 @@ public class ExecHandler extends BaseThingHandler {
         SOLARIS,
         UNKNOWN,
         NOT_SET
-    };
+    }
 
     private static OS os = OS.NOT_SET;
 
@@ -427,5 +424,4 @@ public class ExecHandler extends BaseThingHandler {
     public static String getOperatingSystemName() {
         return System.getProperty("os.name");
     }
-
 }

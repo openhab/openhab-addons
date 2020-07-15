@@ -50,7 +50,6 @@ public class Room {
         Room room = (Room) o;
 
         return id != null ? id.equals(room.id) : room.id == null;
-
     }
 
     @Override
@@ -62,5 +61,4 @@ public class Room {
     public String toString() {
         return "Room{" + "id='" + id + '\'' + ", name='" + name + '\'' + '}';
     }
-
 }

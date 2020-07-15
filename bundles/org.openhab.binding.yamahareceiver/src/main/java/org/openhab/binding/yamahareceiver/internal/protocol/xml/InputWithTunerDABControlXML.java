@@ -74,7 +74,6 @@ public class InputWithTunerDABControlXML extends AbstractInputControlXML
     public InputWithTunerDABControlXML(String inputID, AbstractConnection con, DabBandStateListener observerForBand,
             PresetInfoStateListener observerForPreset, PlayInfoStateListener observerForPlayInfo,
             DeviceInformationState deviceInformationState) {
-
         super(LoggerFactory.getLogger(InputWithTunerDABControlXML.class), inputID, con, deviceInformationState);
 
         this.inputElement = "DAB";

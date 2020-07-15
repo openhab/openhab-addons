@@ -267,5 +267,4 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
             task.stop();
         }
     }
-
 }

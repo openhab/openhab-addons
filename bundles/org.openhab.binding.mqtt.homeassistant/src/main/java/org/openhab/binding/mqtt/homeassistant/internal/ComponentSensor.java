@@ -65,5 +65,4 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
                 .build();
     }
-
 }

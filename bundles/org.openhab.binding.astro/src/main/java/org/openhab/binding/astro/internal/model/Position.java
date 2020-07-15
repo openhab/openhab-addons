@@ -45,7 +45,7 @@ public class Position {
      * Returns the azimuth.
      */
     public QuantityType<Angle> getAzimuth() {
-        return new QuantityType<Angle>(azimuth, SmartHomeUnits.DEGREE_ANGLE);
+        return new QuantityType<>(azimuth, SmartHomeUnits.DEGREE_ANGLE);
     }
 
     /**
@@ -59,7 +59,7 @@ public class Position {
      * Returns the elevation.
      */
     public QuantityType<Angle> getElevation() {
-        return new QuantityType<Angle>(elevation, SmartHomeUnits.DEGREE_ANGLE);
+        return new QuantityType<>(elevation, SmartHomeUnits.DEGREE_ANGLE);
     }
 
     public double getElevationAsDouble() {

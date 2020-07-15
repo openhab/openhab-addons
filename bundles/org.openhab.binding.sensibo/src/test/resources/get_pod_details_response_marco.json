@@ -1,0 +1,416 @@
+{
+	"status": "success",
+	"result": {
+		"configGroup": "stable",
+		"macAddress": "MA:C:AD:DR:ES:S0",
+		"isGeofenceOnExitEnabled": false,
+		"sensorsCalibration": {
+			"temperature": 0.0,
+			"humidity": 0.0
+		},
+		"cleanFiltersNotificationEnabled": true,
+		"connectionStatus": {
+			"isAlive": true,
+			"lastSeen": {
+				"secondsAgo": 51,
+				"time": "2019-10-08T04:40:03Z"
+			}
+		},
+		"acState": {
+			"on": false,
+			"mode": "dry",
+			"swing": "stopped"
+		},
+		"serial": "serial",
+		"id": "PODID",
+		"firmwareVersion": "IN010056",
+		"firmwareType": "cc3100_stm32f0",
+		"measurements": {
+			"batteryVoltage": null,
+			"temperature": 23.2,
+			"humidity": 59.5,
+			"time": {
+				"secondsAgo": 51,
+				"time": "2019-10-08T04:40:03Z"
+			},
+			"rssi": "-63",
+			"piezo": [
+				null,
+				null
+			]
+		},
+		"remoteFlavor": "Enormous Stegosaurus",
+		"smartMode": null,
+		"shouldShowFilterCleaningNotification": false,
+		"location": {
+			"latLon": [
+				41.9279707,
+				12.4625373
+			],
+			"updateTime": {
+				"secondsAgo": 75125215,
+				"time": "2017-05-21T16:33:59Z"
+			},
+			"name": "Casa di Marco",
+			"country": "Italia",
+			"createTime": {
+				"secondsAgo": 129385606,
+				"time": "2015-09-01T16:14:08Z"
+			},
+			"address": [
+				"XXX",
+				"XX",
+				"XXX"
+			],
+			"id": "XX"
+		},
+		"currentlyAvailableFirmwareVersion": "IN010056",
+		"tags": [],
+		"productModel": "skyv2",
+		"schedules": [
+			{
+				"nextTime": null,
+				"podUid": "PODUID",
+				"recurringDays": [],
+				"createTimeSecondsAgo": 67070291,
+				"isEnabled": false,
+				"createTime": "2017-08-22T22:02:43",
+				"acState": {
+					"on": true,
+					"fanLevel": "quiet",
+					"temperatureUnit": "C",
+					"targetTemperature": 26,
+					"mode": "cool"
+				},
+				"targetTimeLocal": "03:00",
+				"timezone": "Europe/Rome",
+				"nextTimeSecondsFromNow": null,
+				"causedBy": {
+					"username": "XX",
+					"firstName": "XX",
+					"lastName": "XX",
+					"email": "XXX@domain.it"
+				},
+				"id": "XXXXX"
+			},
+			{
+				"nextTime": null,
+				"podUid": "PODUID",
+				"recurringDays": [],
+				"createTimeSecondsAgo": 4605564,
+				"isEnabled": false,
+				"createTime": "2019-08-15T21:21:30",
+				"acState": {
+					"on": false
+				},
+				"targetTimeLocal": "05:30",
+				"timezone": "Europe/Rome",
+				"nextTimeSecondsFromNow": null,
+				"causedBy": {
+					"username": "XX",
+					"firstName": "XX",
+					"lastName": "XX",
+					"email": "XXX@domain.it"
+				},
+				"id": "QwNtU5zq2D"
+			},
+			{
+				"nextTime": null,
+				"podUid": "E69jFpsP",
+				"recurringDays": [],
+				"createTimeSecondsAgo": 67070257,
+				"isEnabled": false,
+				"createTime": "2017-08-22T22:03:17",
+				"acState": {
+					"on": false
+				},
+				"targetTimeLocal": "03:30",
+				"timezone": "Europe/Rome",
+				"nextTimeSecondsFromNow": null,
+				"causedBy": {
+					"username": "XX",
+					"firstName": "XX",
+					"lastName": "XX",
+					"email": "XXX@domain.it"
+				},
+				"id": "RwVeW8U3Hw"
+			},
+			{
+				"nextTime": null,
+				"podUid": "E69jFpsP",
+				"recurringDays": [],
+				"createTimeSecondsAgo": 4605590,
+				"isEnabled": false,
+				"createTime": "2019-08-15T21:21:04",
+				"acState": {
+					"on": true,
+					"fanLevel": "quiet",
+					"temperatureUnit": "C",
+					"targetTemperature": 26,
+					"mode": "cool"
+				},
+				"targetTimeLocal": "05:00",
+				"timezone": "Europe/Rome",
+				"nextTimeSecondsFromNow": null,
+				"causedBy": {
+					"username": "XX",
+					"firstName": "XX",
+					"lastName": "XX",
+					"email": "XXX@domain.it"
+				},
+				"id": "ruzhJCVBeW"
+			}
+		],
+		"isClimateReactGeofenceOnExitEnabled": false,
+		"remoteCapabilities": {
+			"modes": {
+				"dry": {
+					"temperatures": {
+						
+					},
+					"swing": [
+						"stopped",
+						"rangeFull"
+					]
+				},
+				"auto": {
+					"swing": [
+						"stopped",
+						"rangeFull"
+					],
+					"temperatures": {
+						"C": {
+							"isNative": true,
+							"values": [
+								18,
+								19,
+								20,
+								21,
+								22,
+								23,
+								24,
+								25,
+								26,
+								27,
+								28,
+								29,
+								30
+							]
+						},
+						"F": {
+							"isNative": false,
+							"values": [
+								64,
+								66,
+								68,
+								70,
+								72,
+								73,
+								75,
+								77,
+								79,
+								81,
+								82,
+								84,
+								86
+							]
+						}
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium_low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto",
+						"strong"
+					]
+				},
+				"heat": {
+					"swing": [
+						"stopped",
+						"rangeFull"
+					],
+					"temperatures": {
+						"C": {
+							"isNative": true,
+							"values": [
+								10,
+								11,
+								12,
+								13,
+								14,
+								15,
+								16,
+								17,
+								18,
+								19,
+								20,
+								21,
+								22,
+								23,
+								24,
+								25,
+								26,
+								27,
+								28,
+								29,
+								30
+							]
+						},
+						"F": {
+							"isNative": false,
+							"values": [
+								50,
+								52,
+								54,
+								55,
+								57,
+								59,
+								61,
+								63,
+								64,
+								66,
+								68,
+								70,
+								72,
+								73,
+								75,
+								77,
+								79,
+								81,
+								82,
+								84,
+								86
+							]
+						}
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium_low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto",
+						"strong"
+					]
+				},
+				"fan": {
+					"swing": [
+						"stopped",
+						"rangeFull"
+					],
+					"temperatures": {
+						
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium_low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto",
+						"strong"
+					]
+				},
+				"cool": {
+					"swing": [
+						"stopped",
+						"rangeFull"
+					],
+					"temperatures": {
+						"C": {
+							"isNative": true,
+							"values": [
+								18,
+								19,
+								20,
+								21,
+								22,
+								23,
+								24,
+								25,
+								26,
+								27,
+								28,
+								29,
+								30
+							]
+						},
+						"F": {
+							"isNative": false,
+							"values": [
+								64,
+								66,
+								68,
+								70,
+								72,
+								73,
+								75,
+								77,
+								79,
+								81,
+								82,
+								84,
+								86
+							]
+						}
+					},
+					"fanLevels": [
+						"quiet",
+						"low",
+						"medium_low",
+						"medium",
+						"medium_high",
+						"high",
+						"auto",
+						"strong"
+					]
+				}
+			}
+		},
+		"remote": {
+			"window": false,
+			"toggle": false
+		},
+		"room": {
+			"name": "Camera da letto",
+			"icon": "Bedroom"
+		},
+		"temperatureUnit": "C",
+		"timer": {
+			"acState": {
+				"on": false,
+				"mode": "dry",
+				"swing": "stopped"
+			},
+			"targetTimeSecondsFromNow": -5275495,
+			"createTimeSecondsAgo": 5277295,
+			"isEnabled": false,
+			"causedBy": {
+				"username": "XX",
+				"firstName": "XX",
+				"lastName": "XX",
+				"email": "XXX@domain.it"
+			},
+			"id": "KWcppTmrbb",
+			"targetTime": "2019-08-08T03:15:59",
+			"createTime": "2019-08-08T02:45:59"
+		},
+		"motionSensors": [],
+		"remoteAlternatives": [
+			"_daikin2b_comfort",
+			"_daikin2f_33",
+			"_daikin2b_33",
+			"_daikin2b_33_comfort_horizontal_swinging",
+			"_daikin2b",
+			"_daikin2c",
+			"_daikin2bf_comfort",
+			"_daikin2_33",
+			"_daikin2f"
+		]
+	}
+}

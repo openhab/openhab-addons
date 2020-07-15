@@ -31,7 +31,7 @@ public class F1X45 {
     private static final Map<Integer, VariableInformation> VARIABLE_INFO_F1X45 = Collections
             .unmodifiableMap(new HashMap<Integer, VariableInformation>() {
                 {
-                    // @formatter:off
+            // @formatter:off
                     put(40004, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "BT1 Outdoor temp"));
                     put(40005, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EP23-BT2 Supply temp S4"));
                     put(40006, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "EP22-BT2 Supply temp S3"));
@@ -586,6 +586,7 @@ public class F1X45 {
                     put(47134, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Period HW"));
                     put(47135, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Period Heat"));
                     put(47136, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Period Pool"));
+                    put(47137, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Operational mode"));
                     put(47138, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Operational mode heat medium pump"));
                     put(47139, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Operational mode brine medium pump"));
                     put(47206, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "DM start heating"));
@@ -660,6 +661,10 @@ public class F1X45 {
                     put(47370, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Allow Additive Heating"));
                     put(47371, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Allow Heating"));
                     put(47372, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Allow Cooling"));
+                    put(47374, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Start Temperature Cooling"));
+                    put(47375, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Stop Temperature Heating"));
+                    put(47376, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Stop Temperature Additive"));
+                    put(47377, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Outdoor Filter Time"));
                     put(47378, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Max diff. comp."));
                     put(47379, new VariableInformation(  10, NibeDataType.S16, Type.SETTING , "Max diff. add."));
                     put(47380, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Low brine out autoreset"));
@@ -695,6 +700,9 @@ public class F1X45 {
                     put(47540, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "Heat DM diff"));
                     put(47543, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "Cooling DM diff"));
                     put(47570, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Operational mode"));
+                    put(48043, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Holiday - Activated"));
+                    put(48046, new VariableInformation(   1, NibeDataType.S8 , Type.SETTING , "Heat Offset Holiday"));
+                    put(48047, new VariableInformation(   1, NibeDataType.S8 , Type.SETTING , "Hot water mode Holiday"));
                     put(48053, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "FLM 2 speed 4"));
                     put(48054, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "FLM 2 speed 3"));
                     put(48055, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "FLM 2 speed 2"));
@@ -763,6 +771,8 @@ public class F1X45 {
                     put(48458, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Max speed circ.pump Heat"));
                     put(48459, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Speed brine pump cooling"));
                     put(48487, new VariableInformation(   1, NibeDataType.U8 , Type.SETTING , "Speed circ.pump Cooling"));
+                    put(49008, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "Smart energy source, DM diff source prio 2"));
+                    put(49009, new VariableInformation(   1, NibeDataType.S16, Type.SETTING , "Smart energy source, DM start source prio 1"));
                     // @formatter:on
                 }
             });

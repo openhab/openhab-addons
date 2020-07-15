@@ -16,37 +16,50 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.ItemNotFoundException;
 import org.eclipse.smarthome.core.items.ItemRegistry;
 import org.eclipse.smarthome.core.items.ItemRegistryChangeListener;
+import org.eclipse.smarthome.core.items.MetadataRegistry;
+import org.eclipse.smarthome.core.storage.Storage;
+import org.eclipse.smarthome.core.storage.StorageService;
 import org.openhab.io.homekit.internal.accessories.HomekitAccessoryFactory;
-import org.openhab.io.homekit.internal.accessories.IncompleteAccessoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.HomekitRoot;
+import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.server.impl.HomekitRoot;
 
 /**
  * Listens for changes to the item registry. When changes are detected, check
- * for Homekit tags and, if present, add the items to the HomekitAccessoryRegistry.
+ * for HomeKit tags and, if present, add the items to the HomekitAccessoryRegistry.
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 public class HomekitChangeListener implements ItemRegistryChangeListener {
     private final Logger logger = LoggerFactory.getLogger(HomekitChangeListener.class);
+    private final static String REVISION_CONFIG = "revision";
+    private final static String ACCESSORY_COUNT = "accessory_count";
     private final ItemRegistry itemRegistry;
     private final HomekitAccessoryRegistry accessoryRegistry = new HomekitAccessoryRegistry();
+    private final MetadataRegistry metadataRegistry;
+    private final Storage<String> storage;
     private HomekitAccessoryUpdater updater = new HomekitAccessoryUpdater();
     private HomekitSettings settings;
+    private int lastAccessoryCount;
 
-    private Set<String> pendingUpdates = new HashSet<String>();
+    private final Set<String> pendingUpdates = new HashSet<>();
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -61,17 +74,36 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      */
     private final Debouncer applyUpdatesDebouncer;
 
-    HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings) {
+    HomekitChangeListener(ItemRegistry itemRegistry, HomekitSettings settings, MetadataRegistry metadataRegistry,
+            StorageService storageService) {
         this.itemRegistry = itemRegistry;
         this.settings = settings;
+        this.metadataRegistry = metadataRegistry;
+        storage = storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY);
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices", scheduler, Duration.ofMillis(1000),
                 Clock.systemUTC(), this::applyUpdates);
 
         itemRegistry.addRegistryChangeListener(this);
-        itemRegistry.getAll().stream().map(item -> new HomekitTaggedItem(item, itemRegistry))
-                .filter(taggedItem -> taggedItem.isAccessory())
-                .filter(taggedItem -> !taggedItem.isMemberOfAccessoryGroup())
-                .forEach(rootTaggedItem -> createRootAccessory(rootTaggedItem));
+        itemRegistry.getItems().forEach(this::createRootAccessories);
+        initialiseRevision();
+        logger.info("Created {} HomeKit items.", accessoryRegistry.getAllAccessories().size());
+    }
+
+    private void initialiseRevision() {
+        int revision;
+        try {
+            revision = Integer.parseInt(storage.get(REVISION_CONFIG));
+        } catch (NumberFormatException e) {
+            revision = 1;
+            storage.put(REVISION_CONFIG, "" + revision);
+        }
+        try {
+            lastAccessoryCount = Integer.parseInt(storage.get(ACCESSORY_COUNT));
+        } catch (NumberFormatException e) {
+            lastAccessoryCount = 0;
+            storage.put(ACCESSORY_COUNT, "" + accessoryRegistry.getAllAccessories().size());
+        }
+        accessoryRegistry.setConfigurationRevision(revision);
     }
 
     @Override
@@ -91,15 +123,15 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
      * @param item The item that has been changed or removed.
      */
     private synchronized void markDirty(Item item) {
+        logger.trace("Mark dirty item {}", item.getName());
         pendingUpdates.add(item.getName());
         /*
          * If findMyAccessoryGroups fails because the accessory group has already been deleted, then we can count on a
          * later update telling us that the accessory group was removed.
          */
-        for (Item accessoryGroup : HomekitTaggedItem.findMyAccessoryGroups(item, itemRegistry)) {
+        for (Item accessoryGroup : HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry)) {
             pendingUpdates.add(accessoryGroup.getName());
         }
-
         applyUpdatesDebouncer.call();
     }
 
@@ -116,16 +148,25 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         }
     }
 
+    public void makeNewConfigurationRevision() {
+        final int newRevision = accessoryRegistry.makeNewConfigurationRevision();
+        lastAccessoryCount = accessoryRegistry.getAllAccessories().size();
+        logger.trace("make new configuration revision. new revision number {}, number of accessories {}", newRevision,
+                lastAccessoryCount);
+        storage.put(REVISION_CONFIG, "" + newRevision);
+        storage.put(ACCESSORY_COUNT, "" + lastAccessoryCount);
+    }
+
     private synchronized void applyUpdates() {
-        Iterator<String> iter = pendingUpdates.iterator();
-
-        while (iter.hasNext()) {
-            String name = iter.next();
+        logger.trace("apply updates");
+        for (final String name : pendingUpdates) {
             accessoryRegistry.remove(name);
-
-            getItemOptional(name).map(i -> new HomekitTaggedItem(i, itemRegistry))
-                    .filter(i -> i.isAccessory() && !i.isMemberOfAccessoryGroup())
-                    .ifPresent(rootItem -> createRootAccessory(rootItem));
+            logger.trace(" add items {}", name);
+            getItemOptional(name).ifPresent(this::createRootAccessories);
+        }
+        if (!pendingUpdates.isEmpty()) {
+            makeNewConfigurationRevision();
+            pendingUpdates.clear();
         }
     }
 
@@ -133,6 +174,10 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     public void updated(Item oldElement, Item element) {
         markDirty(oldElement);
         markDirty(element);
+    }
+
+    public int getLastAccessoryCount() {
+        return lastAccessoryCount;
     }
 
     public synchronized void clearAccessories() {
@@ -144,6 +189,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
     }
 
     public synchronized void unsetBridge() {
+        applyUpdatesDebouncer.stop();
         accessoryRegistry.unsetBridge();
     }
 
@@ -159,18 +205,38 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         this.itemRegistry.removeRegistryChangeListener(this);
     }
 
+    public Map<String, HomekitAccessory> getAccessories() {
+        return this.accessoryRegistry.getAllAccessories();
+    }
+
+    public int getConfigurationRevision() {
+        return this.accessoryRegistry.getConfigurationRevision();
+    }
+
+    /**
+     * creates one or more HomeKit items for given openhab item.
+     * one openhab item can linked to several HomeKit accessories or characteristics.
+     * 
+     * @param item openhab item
+     */
+    private void createRootAccessories(Item item) {
+        final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
+                .getAccessoryTypes(item, metadataRegistry);
+        final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
+        if (!accessoryTypes.isEmpty() && groups.stream().noneMatch(g -> g.getBaseItem() != null)) {
+            // it has homekit accessory type and is not part of bigger homekit group item without baseItem, i.e. not
+            // Group:Switch
+            final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
+            accessoryTypes.forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
+                    rootAccessory.getKey(), HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));
+        }
+    }
+
     private void createRootAccessory(HomekitTaggedItem taggedItem) {
         try {
-            if (taggedItem.isMemberOfAccessoryGroup()) {
-                logger.warn("Bug! Cannot add {} as a root accessory if it is a member of a group! ",
-                        taggedItem.getItem().getUID());
-                return;
-            }
-            logger.debug("Adding homekit device {}", taggedItem.getItem().getUID());
             accessoryRegistry.addRootAccessory(taggedItem.getName(),
-                    HomekitAccessoryFactory.create(taggedItem, itemRegistry, updater, settings));
-            logger.debug("Added homekit device {}", taggedItem.getItem().getUID());
-        } catch (HomekitException | IncompleteAccessoryException e) {
+                    HomekitAccessoryFactory.create(taggedItem, metadataRegistry, updater, settings));
+        } catch (HomekitException e) {
             logger.warn("Could not add device {}: {}", taggedItem.getItem().getUID(), e.getMessage());
         }
     }

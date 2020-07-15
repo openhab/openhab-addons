@@ -24,9 +24,58 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface SatelEventListener {
 
     /**
-     * Event handler for Satel events.
+     * Event handler for connection status events.
      *
      * @param event incoming event to handle
      */
-    void incomingEvent(SatelEvent event);
+    default void incomingEvent(ConnectionStatusEvent event) {
+    }
+
+    /**
+     * Event handler for state events.
+     *
+     * @param event incoming event to handle
+     */
+    default void incomingEvent(IntegraStateEvent event) {
+    }
+
+    /**
+     * Event handler for status events.
+     *
+     * @param event incoming event to handle
+     */
+    default void incomingEvent(IntegraStatusEvent event) {
+    }
+
+    /**
+     * Event handler for Integra version events.
+     *
+     * @param event incoming event to handle
+     */
+    default void incomingEvent(IntegraVersionEvent event) {
+    }
+
+    /**
+     * Event handler for communication module version events.
+     *
+     * @param event incoming event to handle
+     */
+    default void incomingEvent(ModuleVersionEvent event) {
+    }
+
+    /**
+     * Event handler for events with list of new states.
+     *
+     * @param event incoming event to handle
+     */
+    default void incomingEvent(NewStatesEvent event) {
+    }
+
+    /**
+     * Event handler for zone temperature events.
+     *
+     * @param event incoming event to handle
+     */
+    default void incomingEvent(ZoneTemperatureEvent event) {
+    }
 }

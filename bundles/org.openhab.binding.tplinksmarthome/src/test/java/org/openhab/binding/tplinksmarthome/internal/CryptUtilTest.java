@@ -50,5 +50,4 @@ public class CryptUtilTest {
             assertEquals("Crypting should result in same string", TEST_STRING, CryptUtil.decryptWithLength(is));
         }
     }
-
 }
