@@ -74,6 +74,7 @@ public class HomekitAccessoryFactory {
             put(CONTACT_SENSOR, new HomekitCharacteristicType[] { CONTACT_SENSOR_STATE });
             put(SMOKE_SENSOR, new HomekitCharacteristicType[] { SMOKE_DETECTED_STATE });
             put(HUMIDITY_SENSOR, new HomekitCharacteristicType[] { RELATIVE_HUMIDITY });
+            put(AIR_QUALITY_SENSOR, new HomekitCharacteristicType[] { AIR_QUALITY });
             put(SWITCH, new HomekitCharacteristicType[] { ON_STATE });
             put(CARBON_DIOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_DIOXIDE_DETECTED_STATE });
             put(CARBON_MONOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_MONOXIDE_DETECTED_STATE });
@@ -111,6 +112,7 @@ public class HomekitAccessoryFactory {
             put(CONTACT_SENSOR, HomekitContactSensorImpl.class);
             put(SMOKE_SENSOR, HomekitSmokeSensorImpl.class);
             put(HUMIDITY_SENSOR, HomekitHumiditySensorImpl.class);
+            put(AIR_QUALITY_SENSOR, HomekitAirQualitySensorImpl.class);
             put(SWITCH, HomekitSwitchImpl.class);
             put(CARBON_DIOXIDE_SENSOR, HomekitCarbonDioxideSensorImpl.class);
             put(CARBON_MONOXIDE_SENSOR, HomekitCarbonMonoxideSensorImpl.class);
