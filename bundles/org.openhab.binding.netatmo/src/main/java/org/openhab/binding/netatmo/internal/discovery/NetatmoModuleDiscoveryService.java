@@ -43,7 +43,7 @@ import io.swagger.client.model.NAWelcomeHome;
  */
 @NonNullByDefault
 public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService implements NetatmoDataListener {
-    private static final int SEARCH_TIME = 2;
+    private static final int SEARCH_TIME = 5;
     private final NetatmoBridgeHandler netatmoBridgeHandler;
 
     public NetatmoModuleDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
@@ -93,7 +93,12 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
                 });
             });
         }
-        stopScan();
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+        removeOlderResults(getTimestampOfLastScan(), netatmoBridgeHandler.getThing().getUID());
     }
 
     @Override
