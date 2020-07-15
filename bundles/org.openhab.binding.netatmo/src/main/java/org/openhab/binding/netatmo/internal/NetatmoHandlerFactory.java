@@ -80,8 +80,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public NetatmoHandlerFactory(final @Reference HttpService httpService,
             final @Reference NATherm1StateDescriptionProvider stateDescriptionProvider,
-            final @Reference TimeZoneProvider timeZoneProvider,
-            final @Reference LocaleProvider localeProvider,
+            final @Reference TimeZoneProvider timeZoneProvider, final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider translationProvider) {
         this.httpService = httpService;
         this.stateDescriptionProvider = stateDescriptionProvider;
