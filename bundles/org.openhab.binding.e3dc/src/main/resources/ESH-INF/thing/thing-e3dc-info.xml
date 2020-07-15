@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="e3dc-info">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="e3dc-device"/>
+		</supported-bridge-type-refs>
+		<label>E3DC Information Block</label>
+		<description>E3DCInformation Block</description>
+		<!--
+		<channels>
+			<channel id="modbus-id" typeId="modbus-id-channel"/>
+			<channel id="modbus-firmware" typeId="modbus-firmware-channel"/>
+			<channel id="supported-registers" typeId="supported-registers-channel"/>
+			<channel id="manufacturer-name" typeId="manufacturer-name-channel"/>
+			<channel id="model-name" typeId="model-name-channel"/>
+			<channel id="serial-number" typeId="serial-number-channel"/>
+			<channel id="firmware-relase" typeId="firmware-relase-channel"/>
+		</channels>
+		-->
+	</thing-type>
+</thing:thing-descriptions>
