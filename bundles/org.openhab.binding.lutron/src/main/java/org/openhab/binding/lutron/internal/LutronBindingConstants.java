@@ -65,6 +65,8 @@ public class LutronBindingConstants {
     public static final String CHANNEL_STEP = "step";
     public static final String CHANNEL_BLINDLIFTLEVEL = "blindliftlevel";
     public static final String CHANNEL_BLINDTILTLEVEL = "blindtiltlevel";
+    public static final String CHANNEL_ENABLEFADETIME = "enablefadetime";
+    public static final String CHANNEL_FADETIME = "fadetime";
 
     // Bridge config properties (used by discovery service)
     public static final String HOST = "ipAddress";

@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.lutron.internal.handler;
 
-import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
-
 import java.math.BigDecimal;
 
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -29,6 +28,8 @@ import org.openhab.binding.lutron.internal.protocol.LutronCommandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
+
 /**
  * Handler responsible for communicating with a light dimmer.
  *
@@ -41,6 +42,8 @@ public class DimmerHandler extends LutronHandler {
     private final Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
 
     private DimmerConfig config;
+    private Boolean overrideDefaultFadeTime = false;
+    private BigDecimal customFadeTime = new BigDecimal(0);
 
     public DimmerHandler(Thing thing) {
         super(thing);
@@ -95,11 +98,19 @@ public class DimmerHandler extends LutronHandler {
             if (command instanceof Number) {
                 int level = ((Number) command).intValue();
 
-                output(ACTION_ZONELEVEL, level, 0.25);
+                output(ACTION_ZONELEVEL, level, getFadeTime(new BigDecimal(.25)));
             } else if (command.equals(OnOffType.ON)) {
-                output(ACTION_ZONELEVEL, 100, this.config.fadeInTime);
+                output(ACTION_ZONELEVEL, 100, getFadeTime(this.config.fadeInTime));
             } else if (command.equals(OnOffType.OFF)) {
-                output(ACTION_ZONELEVEL, 0, this.config.fadeOutTime);
+                output(ACTION_ZONELEVEL, 0, getFadeTime(this.config.fadeOutTime));
+            }
+        } else if (channelUID.getId().equals(CHANNEL_ENABLEFADETIME)) {
+            if (command instanceof OnOffType) {
+                this.overrideDefaultFadeTime = command.equals(OnOffType.ON);
+            }
+       } else if (channelUID.getId().equals(CHANNEL_FADETIME)) {
+            if (command instanceof DecimalType) {
+                customFadeTime= ((DecimalType) command).toBigDecimal();
             }
         }
     }
@@ -114,5 +125,14 @@ public class DimmerHandler extends LutronHandler {
             }
             updateState(CHANNEL_LIGHTLEVEL, new PercentType(level));
         }
+        updateState(CHANNEL_ENABLEFADETIME, overrideDefaultFadeTime ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_FADETIME, new DecimalType(customFadeTime));
+    }
+
+    private BigDecimal getFadeTime(BigDecimal defaultFadeTime) {
+        if (overrideDefaultFadeTime && customFadeTime != null) {
+            return customFadeTime;
+        }
+        return defaultFadeTime;
     }
 }

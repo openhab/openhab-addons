@@ -67,6 +67,8 @@
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
+			<channel id="enablefadetime" typeId="enableFadeTime"/>
+			<channel id="fadetime" typeId="fadeTime"/>
 		</channels>
 
 		<representation-property>integrationId</representation-property>
@@ -1098,6 +1100,20 @@
 		<description>Increase/decrease the light level</description>
 		<category>DimmableLight</category>
 		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="enableFadeTime">
+		<item-type>Switch</item-type>
+		<label>Enable Fade Time</label>
+		<description>Allows config fade in/out time to be overridden</description>
+	</channel-type>
+
+	<channel-type id="fadeTime">
+		<item-type>Number</item-type>
+		<label>Fade In/Out Time</label>
+		<description>Sets time in seconds to increase/decrease light level</description>
+		<category>Number</category>
+		<state min="0"/>
 	</channel-type>
 
 	<channel-type id="shadeControl">

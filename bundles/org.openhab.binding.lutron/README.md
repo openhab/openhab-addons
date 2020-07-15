@@ -531,6 +531,8 @@ The following is a summary of channels for all RadioRA 2 binding things:
 | Thing               | Channel           | Item Type     | Description                                  |
 |---------------------|-------------------|---------------|--------------------------------------------- |
 | dimmer              | lightlevel        | Dimmer        | Increase/decrease the light level            |
+| dimmer              | enablefadetime    | Switch        | Override default fade in/out time            |
+| dimmer              | fadetime          | Number        | Fade time when changing light level          |
 | switch              | switchstatus      | Switch        | On/off status of the switch                  |
 | occupancysensor     | occupancystatus   | Switch        | Occupancy status                             |
 | cco                 | switchstatus      | Switch        | On/off status of the CCO                     |
@@ -556,6 +558,8 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 | Thing     | Channel       | Native Type  | Accepts                                               |
 |-----------|---------------|--------------|-------------------------------------------------------|
 |dimmer     |lightlevel     |PercentType   |OnOffType, PercentType                                 |
+|dimmer     |enablefadetime |OnOffType     |OnOffType                                              |
+|dimmer     |fadetime       |DecimalType   |DecimalType                                            |
 |switch     |switchstatus   |OnOffType     |OnOffType                                              |
 |occ. sensor|occupancystatus|OnOffType     |(*readonly*)                                           |
 |cco        |switchstatus   |OnOffType     |OnOffType, RefreshType                                 |
