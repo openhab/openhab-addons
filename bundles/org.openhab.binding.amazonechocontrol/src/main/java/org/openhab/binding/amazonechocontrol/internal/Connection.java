@@ -200,10 +200,10 @@ public class Connection {
         } else {
             // generate device id
             StringBuilder deviceIdBuilder = new StringBuilder();
-            for (int i = 0; i < 64; i++) {
+            for (int i = 0; i < 3; i++) {
                 deviceIdBuilder.append(rand.nextInt(9));
             }
-            deviceIdBuilder.append("23413249564c5635564d32573831");
+            deviceIdBuilder.append("34c4643374c3541464b");
             this.deviceId = deviceIdBuilder.toString();
         }
 
