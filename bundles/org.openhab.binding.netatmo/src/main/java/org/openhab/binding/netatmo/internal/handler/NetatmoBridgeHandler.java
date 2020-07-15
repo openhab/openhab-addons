@@ -168,7 +168,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                             return;
                     }
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.warn("Unable to connect Netatmo API : {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Netatmo Access Failed, will retry in " + configuration.reconnectInterval + " seconds.");
