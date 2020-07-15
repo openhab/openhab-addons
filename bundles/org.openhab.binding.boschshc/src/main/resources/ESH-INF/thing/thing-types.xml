@@ -4,7 +4,7 @@
     <!-- Bosch Bridge -->
     <bridge-type id="shc">
         <label>Bosch Smart Home Controller</label>
-        <description></description>
+        <description>The Bosch SHC Bridge representing the Bosch Smart Home Controller.</description>
 
         <config-description>
             <parameter name="ipAddress" type="text">
@@ -14,18 +14,8 @@
                 <required>true</required>
             </parameter>
             <parameter name="password" type="text">
-                <label>Network Address</label>
-                <description>Network address of the Bosch Smart Home Controller.</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="keystorePath" type="text">
-                <label>Java KeyStore path.</label>
-                <description>Path at which the keystore with SHC access keys is stored.</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="keystorePassword" type="text">
-                <label>Java KeyStore password.</label>
-                <description>Password that should be used for the Java keystore.</description>
+                <label>System password</label>
+                <description>The system password of the Bosch Smart Home Controller necessary for pairing.</description>
                 <required>true</required>
             </parameter>
         </config-description>

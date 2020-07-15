@@ -14,14 +14,23 @@ Binding for the Bosch Smart Home Controller:
 
 ## Limitations
 
- - Initial connection to Bosch SHC is not yet implemented (I bootstrapped the system using external software)
- - Discovery
+ - Discovery of Things
+ - Discovery of Bridge
 
 ## Discovery
 
-Not yet implemented. Configuration via configuration files.
+Not yet implemented. Configuration via configuration files or Paper UI.
 
 ## Binding Configuration
+
+You need to provide at least the ipAddress and the system password of your Bosch Smart Home Controller
+and a path to a JKS keystore file location.
+At this location a keystore file with a self signed certificate is created and stored if not present at the first setup.
+This certificate is used for pairing between the Bridge and the Bosch SHC. 
+
+*Press the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing*.
+        
+## Thing Configuration
 
 Bosch IDs for devices are displayed in the OpenHab log on bootup.
 
@@ -43,7 +52,7 @@ Bridge boschshc:shc:1 [ ipAddress="192.168.x.y" ] {
 }
 ```
 
-## Thing Configuration
+## Item Configuration
 
 ```
 Switch Bosch_Bathroom    "Bath Room"    { channel="boschshc:in-wall-switch:1:bathroom:power-switch" }
