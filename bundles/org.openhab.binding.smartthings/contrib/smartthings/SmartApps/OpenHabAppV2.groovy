@@ -630,8 +630,6 @@ def openhabMessageHandler(evt) {
 def openhabStateHandler(evt) {
     def mapIn = new JsonSlurper().parseText(evt.value)
     log.debug "Received state event from openhabDevice: ${mapIn}"
-    def hubStartTime = mapIn.hubStartTime
-    def openHabStartTime = mapIn.openHabStartTime
 
     // Get the CAPABILITY_MAP entry for this device type
     def capability = CAPABILITY_MAP[mapIn.capabilityKey]
@@ -666,13 +664,11 @@ def openhabStateHandler(evt) {
             }
             def jsonOut = new JsonOutput().toJson([
                 path: "/smartthings/state",
-                hubStartTime: hubStartTime,
                 body: [
                     deviceDisplayName: device.displayName,
                     capabilityAttribute: capabilityAttr,
-                    value: currentState,
-                    openHabStartTime : openHabStartTime,
-                    hubTime : "--hubTime--",]
+                    value: currentState
+                ]
             ]) 
 
             log.debug "State Handler is returning ${jsonOut}"
@@ -761,9 +757,7 @@ def sendErrorResponse (msg) {
 // will send multiple responses anytime the buffer exceeds 30,000 bytes
 def openhabDiscoveryHandler(evt) {
     def mapIn = new JsonSlurper().parseText(evt.value)
-    def hubStartTime = mapIn.hubStartTime
-    def openHabStartTime = mapIn.openHabStartTime
-    log.debug "Entered discovery handler with hubStartTime: ${hubStartTime}, openHabStartTime: ${openHabStartTime}, and mapIn: ${mapIn}"
+    log.debug "Entered discovery handler with mapIn: ${mapIn}"
     def results = []
     def bufferLength = 0
     def deviceCount = 0
@@ -778,7 +772,10 @@ def openhabDiscoveryHandler(evt) {
                 bufferLength += deviceInfo.length()
                 // Check if we have close to a full buffer and if so send it
                 if( bufferLength > 30000 ) {
-                    def json = prepareDiscoveryResult( results, openHabStartTime, hubStartTime)
+                    def json = new groovy.json.JsonOutput().toJson([
+                        path: "/smartthings/discovery",
+                        body: results
+                    ])
                     log.debug "Discovery is returning JSON: ${json}"
                     openhabDevice.deviceNotification(json)
                     results = []
@@ -789,7 +786,10 @@ def openhabDiscoveryHandler(evt) {
     }
     
     if( bufferLength > 0 ) {
-        def json = prepareDiscoveryResult( results, openHabStartTime, hubStartTime)
+        def json = new groovy.json.JsonOutput().toJson([
+            path: "/smartthings/discovery",
+            body: results
+        ])
         log.debug "Discovery is returning FINAL JSON: ${json}"
         openhabDevice.deviceNotification(json)
     }
@@ -797,33 +797,17 @@ def openhabDiscoveryHandler(evt) {
     log.debug "Discovery returned data for ${deviceCount} devices."
 }
 
-// Prepare the discovery result (done in a method since this is needed in multiple places)
-def prepareDiscoveryResult( results, openHabStartTime, hubStartTime) {
-    def resultsWithTimes = [ openHabStartTime : openHabStartTime,
-                             hubTime : "--hubTime--",
-                             data : results]
-    def json = new groovy.json.JsonOutput().toJson([
-        path: "/smartthings/discovery",
-        hubStartTime: hubStartTime,
-        body: resultsWithTimes
-    ])
-    json
-}
-
 // Receive an event from a device and send it onto OpenHAB
 def inputHandler(evt) {
-    def startTime = now()
     def device = evt.device
     def capabilities = device.capabilities
-    log.debug "Entered input handler for \"${evt.displayName}\" with attribute \"${evt.name}\" changed to \"${evt.value}\""
+
     def json = new JsonOutput().toJson([
         path: "/smartthings/state",
-        hubStartTime: startTime,
         body: [
             deviceDisplayName: evt.displayName,
             value: evt.value,
             capabilityAttribute: evt.name,
-            hubTime : "--hubTime--"
         ]
     ])
 

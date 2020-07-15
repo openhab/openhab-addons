@@ -113,7 +113,7 @@ public class SmartthingsServlet extends HttpServlet {
         String[] pathParts = path.replace(PATH + "/", "").split("/");
         if (pathParts.length != 1) {
             logger.warn(
-                    "Smartthing servlet recieved a path with zero or more than one parts. Only one part is allowed. path {}",
+                    "Smartthing servlet received a path with zero or more than one parts. Only one part is allowed. path {}",
                     path);
             return;
         }
@@ -123,7 +123,7 @@ public class SmartthingsServlet extends HttpServlet {
         switch (pathParts[0]) {
             case "state":
                 // This is device state info returned from Smartthings
-                logger.trace("Smartthing servlet processing \"state\" request. data: {}", s);
+                logger.debug("Smartthing servlet processing \"state\" request. data: {}", s);
                 publishEvent(STATE_EVENT_TOPIC, "data", s);
                 break;
             case "discovery":
@@ -138,7 +138,7 @@ public class SmartthingsServlet extends HttpServlet {
                 logger.warn("Error message from Smartthings: {}", map.get("message"));
                 break;
             default:
-                logger.warn("Smartthings servlet recieved a path that is not supported {}", pathParts[0]);
+                logger.warn("Smartthings servlet received a path that is not supported {}", pathParts[0]);
         }
 
         // A user @fx submitted a pull request stating:

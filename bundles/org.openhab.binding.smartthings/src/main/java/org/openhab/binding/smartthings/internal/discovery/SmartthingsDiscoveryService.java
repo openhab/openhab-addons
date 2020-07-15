@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.smartthings.internal.discovery;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -31,7 +33,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
 import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsDeviceData;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsDiscoveryData;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
@@ -136,8 +137,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         final SmartthingsHandlerFactory currentSmartthingsHandlerFactory = smartthingsHandlerFactory;
         if (currentSmartthingsHandlerFactory != null) {
             try {
-                String discoveryMsg = String.format("{\"discovery\": \"yes\", \"openHabStartTime\": %d}",
-                        System.currentTimeMillis());
+                String discoveryMsg = "{\"discovery\": \"yes\"}";
                 currentSmartthingsHandlerFactory.sendDeviceCommand("/discovery", discoveryMsg);
                 // Smartthings will not return a response to this message but will send it's response message
                 // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
@@ -163,21 +163,16 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
             logger.debug("Event received on topic: {} but the data field is null", topic);
             return;
         } else {
-            logger.debug("Event received on topic: {}", topic);
+            logger.trace("Event received on topic: {}", topic);
         }
 
-        // Two classes are required.
-        // 1. SmarthingsDiscoveryData contains timing info and the discovery data which is sent as an array of Strings
-        // 2. SmartthingDeviceData contains the device data for one device.
-        // First the SmarthingsDiscoveryData is converted from json to java. Then each data string is converted into
-        // device data
-        SmartthingsDiscoveryData discoveryData = gson.fromJson(data, SmartthingsDiscoveryData.class);
-
-        if (discoveryData.data != null) {
-            for (String deviceStr : discoveryData.data) {
-                SmartthingsDeviceData deviceData = gson.fromJson(deviceStr, SmartthingsDeviceData.class);
-                createDevice(deviceData);
-            }
+        // The data returned from the Smartthings hub is a list of strings where each
+        // element is the data for one device. That device string is another json object
+        List<String> devices = new ArrayList<String>();
+        devices = gson.fromJson(data, devices.getClass());
+        for (String device : devices) {
+            SmartthingsDeviceData deviceData = gson.fromJson(device, SmartthingsDeviceData.class);
+            createDevice(deviceData);
         }
     }
 

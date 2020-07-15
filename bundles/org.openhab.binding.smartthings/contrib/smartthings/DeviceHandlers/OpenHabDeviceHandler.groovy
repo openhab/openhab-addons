@@ -97,12 +97,8 @@ def parse(String description) {
         return
      }
      
-     // Add start time to message so we can see how long the message is in the hub
-     msg.data.hubStartTime = startTime
-     msg.data.openHabStartTime = msg.json.openHabStartTime  // Must get openHabStartTime from json object, not data object
-     
      log.debug "Creating event with message: ${msg.data}"
-     // Setting parameter isStateChange to true causes the event to be propigated even if the state has not changed.
+     // Setting parameter isStateChange to true causes the event to be propagated even if the state has not changed.
      //return createEvent(name: 'message', value: new JsonOutput().toJson(msg.data), isStateChange: true)
      return createEvent(name: 'message', value: new JsonOutput().toJson(msg.data))
 }
@@ -124,19 +120,6 @@ def deviceNotification(message) {
     headers.put("HOST", "$ip:$port")
     headers.put("Content-Type", "application/json")
     
-    def hubTime = now()
-    def hubStartTime = parsed.hubStartTime;
-    def elapsedTime = null
-    if(hubStartTime != null) {
-        elapsedTime = hubTime - hubStartTime
-        parsed.body.hubTime = elapsedTime
-    } else {
-        // We should not ever get here unless an older version of the OpenHab binding is running
-        parsed.body.hubTime = 0
-    }
-    parsed.body.hubEndTime = hubTime
-    log.debug "hub elapsed time is ${elapsedTime}"
-
     def hubAction = new physicalgraph.device.HubAction(
         method: "POST",
         path: parsed.path,

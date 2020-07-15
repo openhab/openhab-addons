@@ -133,10 +133,10 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
         int status = response.getStatus();
         if (status == 202) {
             logger.debug(
-                    "Sent message \"{}\" with path \"{}\" to the Smartthings hub, recieved HTTP status {} (This is the normal code from Smartthings)",
+                    "Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {} (This is the normal code from Smartthings)",
                     data, path, status);
         } else {
-            logger.warn("Sent message \"{}\" with path \"{}\" to the Smartthings hub, recieved HTTP status {}", data,
+            logger.warn("Sent message \"{}\" with path \"{}\" to the Smartthings hub, received HTTP status {}", data,
                     path, status);
         }
     }
