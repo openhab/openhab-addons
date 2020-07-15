@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="e3dc-device">
+		<label>E3DC Home Power Plant</label>
+		<description>Connection to the E3DC device</description>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>IP Address or Hostname</label>
+				<description>Network address of the device</description>
+				<default>localhost</default>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer">
+				<label>Port</label>
+				<description>Port of the slave</description>
+				<default>502</default>
+			</parameter>
+
+			<!-- connection handling -->
+			<parameter name="refresh" type="integer" min="0" unit="ms">
+				<label>Poll Interval</label>
+				<description>Poll interval in milliseconds. Use zero to disable automatic polling.</description>
+				<default>2000
+				</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
