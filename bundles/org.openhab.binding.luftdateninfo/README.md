@@ -68,9 +68,9 @@ Perform the following steps to get the appropriate Sensor ID
 luftdaten.things
 
 ```perl
-Thing luftdateninfo:particulate:pm_sensor   "PM Sensor"         [ sensorid=28842]
-Thing luftdateninfo:conditions:cond_sensor  "Condition Sensor"  [ sensorid=28843]
-Thing luftdateninfo:noise:noise_sensor      "Noise Sensor"      [ sensorid=39745]
+Thing luftdateninfo:particulate:pm_sensor   "PM Sensor"         [ sensorid="28842"]
+Thing luftdateninfo:conditions:cond_sensor  "Condition Sensor"  [ sensorid="28843"]
+Thing luftdateninfo:noise:noise_sensor      "Noise Sensor"      [ sensorid="39745"]
 ```
 
 ### Items
