@@ -101,6 +101,14 @@ public enum HomekitCharacteristicType {
     COOLING_THRESHOLD_TEMPERATURE("CoolingThresholdTemperature"),
     HEATING_THRESHOLD_TEMPERATURE("HeatingThresholdTemperature"),
 
+    AIR_QUALITY("AirQuality"),
+    OZONE_DENSITY("OzoneDensity"),
+    NITROGEN_DIOXIDE_DENSITY("NitrogenDioxideDensity"),
+    SULPHUR_DIOXIDE_DENSITY("SulphurDioxideDensity"),
+    PM25_DENSITY("PM25Density"),
+    PM10_DENSITY("PM10Density"),
+    VOC_DENSITY("VOCDensity"),
+
     @Deprecated()
     OLD_BATTERY_LEVEL("homekit:BatteryLevel"),
     @Deprecated()
