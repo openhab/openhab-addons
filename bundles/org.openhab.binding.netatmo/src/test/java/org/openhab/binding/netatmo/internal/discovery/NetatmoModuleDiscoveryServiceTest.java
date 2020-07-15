@@ -108,7 +108,7 @@ public class NetatmoModuleDiscoveryServiceTest {
 
         List<DiscoveryResult> discoveredThings = service.getDiscoveredThings();
         assertEquals(1, discoveredThings.size());
-        // Expected is the type name + station name, because both is available
+        // Expected is the type name + station name, because both are available
         // and the station name contains only the city name by default which wouldn't be sufficient.
         assertEquals("NAMain Neu Wulmstorf", discoveredThings.get(0).getLabel());
     }
