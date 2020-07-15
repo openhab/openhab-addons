@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.doorbird.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -51,6 +54,25 @@ public class DoorbirdActions implements ThingActions {
         return this.handler;
     }
 
+    private static IDoorbirdActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(DoorbirdActions.class.getName())) {
+            if (actions instanceof IDoorbirdActions) {
+                return (IDoorbirdActions) actions;
+            } else {
+                return (IDoorbirdActions) Proxy.newProxyInstance(IDoorbirdActions.class.getClassLoader(),
+                        new Class[] { IDoorbirdActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("actions is not an instance of DoorbirdActions");
+    }
+
     @RuleAction(label = "Restart Doorbird", description = "Restarts the Doorbird device")
     public void restart() {
         LOGGER.debug("Doorbird action 'restart' called");
@@ -62,11 +84,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     public static void restart(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            ((DoorbirdActions) actions).restart();
-        } else {
-            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
-        }
+        invokeMethodOf(actions).restart();
     }
 
     @RuleAction(label = "SIP Hangup", description = "Hangup SIP call")
@@ -80,11 +98,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     public static void sipHangup(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            ((DoorbirdActions) actions).sipHangup();
-        } else {
-            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
-        }
+        invokeMethodOf(actions).sipHangup();
     }
 
     @RuleAction(label = "Get Ring Time Limit", description = "Get the value of RING_TIME_LIMIT")
@@ -99,11 +113,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     public static String getRingTimeLimit(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            return ((DoorbirdActions) actions).getRingTimeLimit();
-        } else {
-            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
-        }
+        return invokeMethodOf(actions).getRingTimeLimit();
     }
 
     @RuleAction(label = "Get Call Time Limit", description = "Get the value of CALL_TIME_LIMIT")
@@ -118,11 +128,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     public static String getCallTimeLimit(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            return ((DoorbirdActions) actions).getCallTimeLimit();
-        } else {
-            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
-        }
+        return invokeMethodOf(actions).getCallTimeLimit();
     }
 
     @RuleAction(label = "Get Last Error Code", description = "Get the value of LASTERRORCODE")
@@ -137,11 +143,7 @@ public class DoorbirdActions implements ThingActions {
     }
 
     public static String getLastErrorCode(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            return ((DoorbirdActions) actions).getLastErrorCode();
-        } else {
-            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
-        }
+        return invokeMethodOf(actions).getLastErrorCode();
     }
 
     @RuleAction(label = "Get Last Error Text", description = "Get the value of LASTERRORTEXT")
@@ -156,10 +158,6 @@ public class DoorbirdActions implements ThingActions {
     }
 
     public static String getLastErrorText(@Nullable ThingActions actions) {
-        if (actions instanceof DoorbirdActions) {
-            return ((DoorbirdActions) actions).getLastErrorText();
-        } else {
-            throw new IllegalArgumentException("Instance is not a DoorbirdActions class");
-        }
+        return invokeMethodOf(actions).getLastErrorText();
     }
 }

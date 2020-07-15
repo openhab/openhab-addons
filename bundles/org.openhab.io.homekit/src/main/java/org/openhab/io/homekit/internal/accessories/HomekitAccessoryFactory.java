@@ -80,6 +80,7 @@ public class HomekitAccessoryFactory {
             put(WINDOW_COVERING, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
             put(LIGHTBULB, new HomekitCharacteristicType[] { ON_STATE });
             put(FAN, new HomekitCharacteristicType[] { ACTIVE_STATUS });
+            put(LIGHT_SENSOR, new HomekitCharacteristicType[] { LIGHT_LEVEL });
             put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
             put(THERMOSTAT, new HomekitCharacteristicType[] { CURRENT_HEATING_COOLING_STATE,
                     TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE, TARGET_TEMPERATURE });
@@ -116,6 +117,7 @@ public class HomekitAccessoryFactory {
             put(WINDOW_COVERING, HomekitWindowCoveringImpl.class);
             put(LIGHTBULB, HomekitLightbulbImpl.class);
             put(FAN, HomekitFanImpl.class);
+            put(LIGHT_SENSOR, HomekitLightSensorImpl.class);
             put(TEMPERATURE_SENSOR, HomekitTemperatureSensorImpl.class);
             put(THERMOSTAT, HomekitThermostatImpl.class);
             put(LOCK, HomekitLockImpl.class);

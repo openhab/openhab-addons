@@ -15,7 +15,8 @@ The binding also supports sending and receiving of legacy X10 messages.
 
 The binding does not support linking new devices on the fly, i.e. all devices must be linked with the modem *before* starting the Insteon binding.
 
-openHAB is not a configuration tool! To configure and set up your devices, link the devices manually via the set buttons, or use the free [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) software.
+The openHAB binding supports minimal configuration of devices, currently only monitoring and sending messages.
+For all other configuration and set up of devices, link the devices manually via the set buttons, or use the free [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) software.
 The free HouseLinc software from Insteon can also be used for configuration, but it wipes the modem link database clean on its initial use, requiring to re-link the modem to all devices.
 
 ## Supported Things
@@ -247,9 +248,20 @@ openhab> smarthome:insteon
 Usage: smarthome:insteon display_devices - display devices that are online, along with available channels
 Usage: smarthome:insteon display_channels - display channels that are linked, along with configuration information
 Usage: smarthome:insteon display_local_database - display Insteon PLM or hub database details
+Usage: smarthome:insteon display_monitored - display monitored device(s)
+Usage: smarthome:insteon start_monitoring all|address - start displaying messages received from device(s)
+Usage: smarthome:insteon stop_monitoring all|address - stop displaying messages received from device(s)
+Usage: smarthome:insteon send_standard_message address flags cmd1 cmd2 - send standard message to a device
+Usage: smarthome:insteon send_extended_message address flags cmd1 cmd2 [up to 13 bytes] - send extended message to a device
+Usage: smarthome:insteon send_extended_message_2 address flags cmd1 cmd2 [up to 12 bytes] - send extended message with a two byte crc to a device
 ```
 
 Here is an example of command: `smarthome:insteon display_local_database`.
+
+When monitoring devices, the output will be displayed where openHAB was started.
+You may need to redirect the output to a log file to see the messages.
+The send message commands do not display any results.
+If you want to see the response from the device, you will need to monitor the device.
 
 ## Insteon Groups and Scenes
 
