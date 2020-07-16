@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.lutron.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -32,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "lutron")
 @NonNullByDefault
-public class DimmerActions implements ThingActions {
+public class DimmerActions implements ThingActions, IDimmerActions {
     private final Logger logger = LoggerFactory.getLogger(DimmerActions.class);
 
     private @Nullable DimmerHandler handler;
@@ -53,18 +56,19 @@ public class DimmerActions implements ThingActions {
         return handler;
     }
 
+    @Override
     @RuleAction(label = "setLightLevel", description = "Send light level command with fade and delay times")
     public void setLightLevel(
             @ActionInput(name = "level", label = "level", description = "Level") @Nullable DecimalType level,
             @ActionInput(name = "fadeTime", label = "fadeTime", description = "Fade time") @Nullable DecimalType fadeTime,
             @ActionInput(name = "delayTime", label = "delayTime", description = "Delay time") @Nullable DecimalType delayTime) {
-        // TODO - Allow null values for fade & delay
         DimmerHandler dimmerHandler = handler;
         if (dimmerHandler == null) {
             logger.warn("Handler not set for Dimmer thing actions.");
             return;
         }
 
+        // TODO - Allow null values for fade & delay
         if (level == null) {
             logger.debug("Ignoring setLightLevel command due to null value.");
             return;
@@ -85,11 +89,29 @@ public class DimmerActions implements ThingActions {
     // Static method for Rules DSL backward compatibility
     public static void setLightLevel(@Nullable ThingActions actions, @Nullable DecimalType level,
             @Nullable DecimalType fadeTime, @Nullable DecimalType delayTime) {
-        if (actions instanceof DimmerActions) {
-            ((DimmerActions) actions).setLightLevel(level, fadeTime, delayTime);
-        } else {
-            throw new IllegalArgumentException("Instance is not a DimmerActions class.");
-        }
+        invokeMethodOf(actions).setLightLevel(level, fadeTime, delayTime); // Remove when core issue #1536 is fixed
     }
 
+    /**
+     * This is only necessary to work around a bug in openhab-core (issue #1536). It should be removed once that is
+     * resolved.
+     */
+    private static IDimmerActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(DimmerActions.class.getName())) {
+            if (actions instanceof IDimmerActions) {
+                return (IDimmerActions) actions;
+            } else {
+                return (IDimmerActions) Proxy.newProxyInstance(IDimmerActions.class.getClassLoader(),
+                        new Class[] { IDimmerActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of DimmerActions");
+    }
 }
