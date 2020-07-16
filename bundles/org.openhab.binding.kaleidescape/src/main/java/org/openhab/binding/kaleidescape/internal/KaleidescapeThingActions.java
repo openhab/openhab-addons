@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.kaleidescape.internal;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -43,16 +46,12 @@ public class KaleidescapeThingActions implements ThingActions {
             localHandler.handleRawCommand(kCommand);
             logger.debug("sendKCommand called with command: {}", kCommand);
         } else {
-            logger.debug("sendKCommand called with null command, ignoring");
+            logger.warn("unable to send command, KaleidescapeHandler was null");
         }
     }
 
     public static void sendKCommand(@Nullable ThingActions actions, String kCommand) throws IllegalArgumentException {
-        if (actions instanceof KaleidescapeThingActions) {
-            ((KaleidescapeThingActions) actions).sendKCommand(kCommand);
-        } else {
-            throw new IllegalArgumentException("Instance is not an KaleidescapeThingActions class.");
-        }
+        invokeMethodOf(actions).sendKCommand(kCommand);
     }
 
     @Override
@@ -63,5 +62,25 @@ public class KaleidescapeThingActions implements ThingActions {
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return this.handler;
+    }
+
+    private static KaleidescapeThingActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(KaleidescapeThingActions.class.getName())) {
+            if (actions instanceof KaleidescapeThingActions) {
+                return (KaleidescapeThingActions) actions;
+            } else {
+                return (KaleidescapeThingActions) Proxy.newProxyInstance(
+                        KaleidescapeThingActions.class.getClassLoader(), new Class[] { KaleidescapeThingActions.class },
+                        (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of KaleidescapeThingActions");
     }
 }
