@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.e3dc.internal.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Data} Marker Interface for delivered Modbus Data
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public interface Data {
     public enum DataType {
         INFO,

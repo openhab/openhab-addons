@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="string1-dc-voltage-channel">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>String 1 Potential</label>
+	</channel-type>
+	<channel-type id="string2-dc-voltage-channel">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>String 2 Potential</label>
+	</channel-type>
+	<channel-type id="string3-dc-voltage-channel">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>String 3 Potential</label>
+	</channel-type>
+	<channel-type id="string1-dc-current-channel">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>String 1 Current</label>
+	</channel-type>
+	<channel-type id="string2-dc-current-channel">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>String 2 Current</label>
+	</channel-type>
+	<channel-type id="string3-dc-current-channel">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>String 3 Current</label>
+	</channel-type>
+	<channel-type id="string1-dc-output-channel">
+		<item-type>Number:Power</item-type>
+		<label>String 1 Power</label>
+	</channel-type>
+	<channel-type id="string2-dc-output-channel">
+		<item-type>Number:Power</item-type>
+		<label>String 2 Power</label>
+	</channel-type>
+	<channel-type id="string3-dc-output-channel">
+		<item-type>Number:Power</item-type>
+		<label>String 3 Power</label>
+	</channel-type>
+</thing:thing-descriptions>

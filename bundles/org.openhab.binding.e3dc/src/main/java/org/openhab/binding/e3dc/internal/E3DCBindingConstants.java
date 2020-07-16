@@ -82,11 +82,12 @@ public class E3DCBindingConstants {
     public static final String STRING3_DC_OUTPUT_CHANNEL = "string3-dc-output";
 
     // Channels for Emergency Status
-    public static final String EMERGENCY_POWER_STATUS = "pv-power-production";
-    public static final String BATTERY_LOADING_LOCKED = "battery-power-supply";
-    public static final String BATTERY_UNLOADING_LOCKED = "grid-power-supply";
-    public static final String WEATHER_PREDICTION_LOADING = "pv-power-production";
-    public static final String REGULATION_STATUS = "battery-power-supply";
-    public static final String LOADING_LOCK_TIME = "grid-power-supply";
-    public static final String UNLOADING_LOCKTIME = "pv-power-production";
+    public static final String EMERGENCY_POWER_STATUS = "emergency-power-status";
+    public static final String BATTERY_LOADING_LOCKED = "battery-loading-lock";
+    public static final String BATTERY_UNLOADING_LOCKED = "battery-unloading-lock";
+    public static final String EMERGENCY_POWER_POSSIBLE = "emergency-power-possible";
+    public static final String WEATHER_PREDICTION_LOADING = "weather-predicted-loading";
+    public static final String REGULATION_STATUS = "regulation-status";
+    public static final String LOADING_LOCK_TIME = "loading-lock-timey";
+    public static final String UNLOADING_LOCKTIME = "unloading-lock-time";
 }

@@ -14,13 +14,16 @@ package org.openhab.binding.e3dc.internal.dto;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The {@link DataConverter} Helper class to convert bytes from modbus into desired data format
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class DataConverter {
-    // private static final Logger LOGGER = LoggerFactory.getLogger(DataConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataConverter.class);
     private static final long MAX_INT32 = new Long("4294967296");
 
     public static int getIntValue(byte[] bytes, int start) {
@@ -50,5 +53,14 @@ public class DataConverter {
     public static String getString(byte[] bArray, int i) {
         byte[] slice = Arrays.copyOfRange(bArray, i, i + 32);
         return new String(slice);
+    }
+
+    public static void logArray(byte[] bArray) {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < bArray.length; i++) {
+            // logger.info("Byte {} is {}", i, bArray[i]);
+            s.append(bArray[i] + " : ");
+        }
+        LOGGER.info("PowerBlock: {}", s.toString());
     }
 }

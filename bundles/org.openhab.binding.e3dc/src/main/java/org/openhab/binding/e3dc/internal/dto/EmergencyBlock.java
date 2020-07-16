@@ -22,12 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PowerBlock} Data object for E3DC Info Block
+ * The {@link EmergencyBlock} Data object for E3DC Info Block
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class PowerBlock implements Data {
-    private final Logger logger = LoggerFactory.getLogger(PowerBlock.class);
+public class EmergencyBlock implements Data {
+    private final Logger logger = LoggerFactory.getLogger(EmergencyBlock.class);
     public QuantityType<Power> pvPowerSupply;
     public QuantityType<Power> batteryPowerSupply;
     public QuantityType<Power> batteryPowerConsumption;
@@ -41,7 +41,7 @@ public class PowerBlock implements Data {
     public QuantityType<Dimensionless> selfConsumption;
     public QuantityType<Dimensionless> batterySOC;
 
-    public PowerBlock(byte[] bArray) {
+    public EmergencyBlock(byte[] bArray) {
         long pvPowerSupplyL = DataConverter.getInt32_swap(bArray, 0);
         pvPowerSupply = new QuantityType<Power>(pvPowerSupplyL, SmartHomeUnits.WATT);
         long batteryPower = DataConverter.getInt32_swap(bArray, 4);
