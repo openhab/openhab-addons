@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.e3dc.internal.modbus;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link DataListener} Listener interface will be called after successful modbus poll
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public interface DataListener {
     /**
      * Informs all listeners that new data is arrived. Data needs to fetched by
      */
-    public void dataAvailable(@NonNull ModbusDataProvider provider);
+    public void dataAvailable(ModbusDataProvider provider);
 }

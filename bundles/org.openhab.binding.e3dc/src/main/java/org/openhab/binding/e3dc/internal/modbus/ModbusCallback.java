@@ -16,8 +16,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.e3dc.internal.dto.PowerBlock;
+import org.openhab.binding.e3dc.internal.dto.StringBlock;
 import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
@@ -36,11 +39,12 @@ import net.wimpi.modbus.ModbusSlaveException;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class ModbusCallback extends ModbusDataProvider implements ModbusReadCallback {
     public static final int REGISTER_LENGTH = 104;
 
     private final Logger logger = LoggerFactory.getLogger(ModbusCallback.class);
-    private InfoBlock infoBlock;
+    private @Nullable InfoBlock infoBlock;
     private byte[] bArray = new byte[REGISTER_LENGTH * 2];
     private int counter = 0;
     private long maxDuration = Long.MIN_VALUE;
@@ -48,7 +52,7 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
     private long avgDuration = 0;
 
     @Override
-    public void onRegisters(@NonNull ModbusReadRequestBlueprint request, @NonNull ModbusRegisterArray registers) {
+    public void onRegisters(ModbusReadRequestBlueprint request, @NonNull ModbusRegisterArray registers) {
         byte[] newArray = new byte[REGISTER_LENGTH * 2];
         long startTime = System.currentTimeMillis();
         Iterator<ModbusRegister> iter = registers.iterator();
@@ -59,11 +63,13 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
             // if (counter % 30 == 0) {
             // logger.info("Reg {} value {} bytes {}", registerCounter, reg.getValue(), reg.getBytes());
             // }
-            byte[] b = reg.getBytes();
-            for (int j = 0; j < b.length; j++) {
-                newArray[i] = b[j];
-                i++;
-            }
+            System.arraycopy(reg.getBytes(), 0, newArray, i, 2);
+            i += 2;
+            // byte[] b = reg.getBytes();
+            // for (int j = 0; j < b.length; j++) {
+            // newArray[i] = b[j];
+            // i++;
+            // }
             registerCounter++;
         }
 
@@ -92,24 +98,28 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
     }
 
     @Override
-    public void onBits(@NonNull ModbusReadRequestBlueprint request, @NonNull BitArray bits) {
+    public void onBits(ModbusReadRequestBlueprint request, BitArray bits) {
         // TODO Auto-generated method stub
     }
 
     @Override
-    public void onError(@NonNull ModbusReadRequestBlueprint request, @NonNull Exception error) {
+    public void onError(ModbusReadRequestBlueprint request, Exception error) {
         ModbusUnexpectedTransactionIdException e;
         ModbusTransportException e1;
         ModbusSlaveException e2;
     }
 
     @Override
-    public Data getData(DataType type) {
+    public @Nullable Data getData(DataType type) {
         synchronized (bArray) {
             if (type.equals(DataType.INFO)) {
                 return new InfoBlock(Arrays.copyOfRange(bArray, 0, 133));
             } else if (type.equals(DataType.POWER)) {
-                return new PowerBlock(Arrays.copyOfRange(bArray, 134, 166));
+                return new PowerBlock(Arrays.copyOfRange(bArray, 67 * 2, 67 * 2 + 32));
+            } else if (type.equals(DataType.EMERGENCY)) {
+                return new StringBlock(Arrays.copyOfRange(bArray, 83 * 2, 83 * 2 + 4));
+            } else if (type.equals(DataType.STRINGS)) {
+                return new StringBlock(Arrays.copyOfRange(bArray, 95 * 2, 95 * 2 + 18));
             }
             return null;
         }
