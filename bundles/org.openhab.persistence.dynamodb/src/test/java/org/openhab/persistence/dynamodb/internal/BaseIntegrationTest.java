@@ -73,8 +73,7 @@ public class BaseIntegrationTest {
         ITEMS.put("player_playpause", new PlayerItem("player_playpause"));
         ITEMS.put("player_rewindfastforward", new PlayerItem("player_rewindfastforward"));
 
-        service = new DynamoDBPersistenceService();
-        service.setItemRegistry(new ItemRegistry() {
+        service = new DynamoDBPersistenceService(new ItemRegistry() {
             @Override
             public Collection<Item> getItems(String pattern) {
                 throw new UnsupportedOperationException();

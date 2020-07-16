@@ -90,11 +90,15 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     private boolean initialized = false;
 
-    @Reference
-    protected @NonNullByDefault({}) ItemRegistry itemRegistry;
+    protected final ItemRegistry itemRegistry;
 
     private @NonNullByDefault({}) MongoClient cl;
     private @NonNullByDefault({}) DBCollection mongoCollection;
+
+    @Activate
+    public MongoDBPersistenceService(final @Reference ItemRegistry itemRegistry) {
+        this.itemRegistry = itemRegistry;
+    }
 
     @Activate
     public void activate(final BundleContext bundleContext, final Map<String, Object> config) {
@@ -334,7 +338,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     private @Nullable Item getItem(String itemName) {
         try {
-            return itemRegistry == null ? null : itemRegistry.getItem(itemName);
+            return itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
             logger.error("Unable to get item type for {}", itemName);
         }

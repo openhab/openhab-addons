@@ -42,20 +42,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Persistence service implementation
+ * This is the implementation of the JDBC {@link PersistenceService}.
  *
  * @author Helmut Lehmeyer - Initial contribution
  * @author Kai Kreuzer - Migration to 3.x
- *
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class JdbcPersistenceService extends JdbcMapper implements QueryablePersistenceService {
+
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
-    @Reference
-    protected @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private final ItemRegistry itemRegistry;
+
+    @Activate
+    public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry) {
+        this.itemRegistry = itemRegistry;
+    }
 
     /**
      * Called by the SCR to activate the component with its configuration read
@@ -137,7 +141,7 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
 
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
-        return Collections.emptySet();
+        return getItems();
     }
 
     /**
@@ -152,10 +156,6 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     public Iterable<HistoricItem> query(FilterCriteria filter) {
         if (!checkDBAccessability()) {
             logger.warn("JDBC::query: database not connected, query aborted for item '{}'", filter.getItemName());
-            return Collections.emptyList();
-        }
-        if (itemRegistry == null) {
-            logger.error("JDBC::query: itemRegistry == null. Ignore and give up!");
             return Collections.emptyList();
         }
 

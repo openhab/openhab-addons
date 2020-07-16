@@ -55,6 +55,7 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceCronStrategy;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.rrd4j.ConsolFun;
@@ -96,10 +97,14 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceService.class);
 
-    private Map<String, @Nullable ScheduledFuture<?>> scheduledJobs = new HashMap<>();
+    private final Map<String, @Nullable ScheduledFuture<?>> scheduledJobs = new HashMap<>();
 
-    @Reference
-    protected @NonNullByDefault({}) ItemRegistry itemRegistry;
+    protected final ItemRegistry itemRegistry;
+
+    @Activate
+    public RRD4jPersistenceService(final @Reference ItemRegistry itemRegistry) {
+        this.itemRegistry = itemRegistry;
+    }
 
     @Override
     public String getId() {
@@ -284,27 +289,18 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             }
         }
         if (useRdc == null) { // not defined, use defaults
-            if (itemRegistry != null) {
-                try {
-                    Item item = itemRegistry.getItem(itemName);
-                    if (item instanceof NumberItem) {
-                        NumberItem numberItem = (NumberItem) item;
-                        if (numberItem.getDimension() != null) {
-                            useRdc = rrdDefs.get(DEFAULT_QUANTIFIABLE);
-                        } else {
-                            useRdc = rrdDefs.get(DEFAULT_NUMERIC);
-                        }
-                    } else {
-                        useRdc = rrdDefs.get(DEFAULT_OTHER);
-                    }
-                } catch (ItemNotFoundException e) {
-                    logger.debug("Could not find item '{}' in registry", itemName);
+            try {
+                Item item = itemRegistry.getItem(itemName);
+                if (item instanceof NumberItem) {
+                    NumberItem numberItem = (NumberItem) item;
+                    return numberItem.getDimension() != null ? rrdDefs.get(DEFAULT_QUANTIFIABLE)
+                            : rrdDefs.get(DEFAULT_NUMERIC);
                 }
-            } else {
-                useRdc = rrdDefs.get(DEFAULT_OTHER);
+            } catch (ItemNotFoundException e) {
+                logger.debug("Could not find item '{}' in registry", itemName);
             }
         }
-        return useRdc;
+        return rrdDefs.get(DEFAULT_OTHER);
     }
 
     private RrdDef getRrdDef(String itemName, File file) {
@@ -330,20 +326,18 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private State mapToState(double value, String itemName) {
-        if (itemRegistry != null) {
-            try {
-                Item item = itemRegistry.getItem(itemName);
-                if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-                    return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
-                } else if (item instanceof ContactItem) {
-                    return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-                } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
-                    // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
-                    return new PercentType((int) Math.round(value * 100));
-                }
-            } catch (ItemNotFoundException e) {
-                logger.debug("Could not find item '{}' in registry", itemName);
+        try {
+            Item item = itemRegistry.getItem(itemName);
+            if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
+                return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
+            } else if (item instanceof ContactItem) {
+                return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
+                // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
+                return new PercentType((int) Math.round(value * 100));
             }
+        } catch (ItemNotFoundException e) {
+            logger.debug("Could not find item '{}' in registry", itemName);
         }
         // just return a DecimalType as a fallback
         return new DecimalType(value);

@@ -22,13 +22,13 @@ import org.openhab.core.types.State;
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
-public class JdbcItem implements HistoricItem {
+public class JdbcHistoricItem implements HistoricItem {
 
     private final String name;
     private final State state;
     private final Date timestamp;
 
-    public JdbcItem(String name, State state, Date timestamp) {
+    public JdbcHistoricItem(String name, State state, Date timestamp) {
         this.name = name;
         this.state = state;
         this.timestamp = timestamp;

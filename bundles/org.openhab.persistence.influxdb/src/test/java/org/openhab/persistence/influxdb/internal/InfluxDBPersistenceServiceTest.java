@@ -13,21 +13,20 @@
 package org.openhab.persistence.influxdb.internal;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.MetadataRegistry;
 import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 
 /**
@@ -46,9 +45,9 @@ public class InfluxDBPersistenceServiceTest {
     public void before() {
         MockitoAnnotations.initMocks(this);
 
-        instance = new InfluxDBPersistenceService() {
+        instance = new InfluxDBPersistenceService(mock(ItemRegistry.class), mock(MetadataRegistry.class)) {
             @Override
-            protected @NotNull InfluxDBRepository createInfluxDBRepository() {
+            protected InfluxDBRepository createInfluxDBRepository() {
                 return influxDBRepository;
             }
         };

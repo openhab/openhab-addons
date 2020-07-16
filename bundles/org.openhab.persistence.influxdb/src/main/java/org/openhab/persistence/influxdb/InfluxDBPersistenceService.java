@@ -49,8 +49,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +81,8 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     protected static final String CONFIG_URI = "persistence:influxdb";
 
     // External dependencies
-    private @Nullable ItemRegistry itemRegistry;
-    private @Nullable MetadataRegistry metadataRegistry;
+    private final ItemRegistry itemRegistry;
+    private final MetadataRegistry metadataRegistry;
 
     // Internal dependencies/state
     private InfluxDBConfiguration configuration = InfluxDBConfiguration.NO_CONFIGURATION;
@@ -92,6 +90,13 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     // Relax rules because can only be null if component is not active
     private @NonNullByDefault({}) ItemToStorePointCreator itemToStorePointCreator;
     private @NonNullByDefault({}) InfluxDBRepository influxDBRepository;
+
+    @Activate
+    public InfluxDBPersistenceService(final @Reference ItemRegistry itemRegistry,
+            final @Reference MetadataRegistry metadataRegistry) {
+        this.itemRegistry = itemRegistry;
+        this.metadataRegistry = metadataRegistry;
+    }
 
     /**
      * Connect to database when service is activated
@@ -179,7 +184,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
         if (influxDBRepository != null && influxDBRepository.isConnected()) {
             return influxDBRepository.getStoredItemsCount().entrySet().stream()
                     .map(entry -> new InfluxDBPersistentItemInfo(entry.getKey(), entry.getValue()))
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toUnmodifiableSet());
         } else {
             logger.info("getItemInfo ignored, InfluxDB is not yet connected");
             return Collections.emptySet();
@@ -230,28 +235,6 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
     private HistoricItem mapRow2HistoricItem(InfluxRow row) {
         State state = InfluxDBStateConvertUtils.objectToState(row.getValue(), row.getItemName(), itemRegistry);
         return new InfluxDBHistoricItem(row.getItemName(), state, Date.from(row.getTime()));
-    }
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    protected void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
-        logger.trace("ItemRegistry has been set");
-    }
-
-    protected void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
-        logger.trace("ItemRegistry has been unset");
-    }
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    protected void setMetadataRegistry(MetadataRegistry metadataRegistry) {
-        this.metadataRegistry = metadataRegistry;
-        logger.trace("MetadataRegistry has been set");
-    }
-
-    protected void unsetMetadataRegistry(MetadataRegistry metadataRegistry) {
-        this.metadataRegistry = null;
-        logger.trace("MetadataRegistry has been unset");
     }
 
     @Override
