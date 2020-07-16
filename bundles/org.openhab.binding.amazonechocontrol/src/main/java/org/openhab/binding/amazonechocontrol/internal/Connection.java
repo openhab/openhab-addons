@@ -199,14 +199,10 @@ public class Connection {
             this.deviceId = deviceId;
         } else {
             // generate device id
-            StringBuilder deviceIdBuilder = new StringBuilder();
             byte[] bytes = new byte[16];
             rand.nextBytes(bytes);
             String hexStr = HexUtils.bytesToHex(bytes).toUpperCase();
-            hexStr = HexUtils.bytesToHex(hexStr.getBytes());
-            deviceIdBuilder.append(hexStr);
-            deviceIdBuilder.append("23413249564c5635564d32573831");
-            this.deviceId = deviceIdBuilder.toString();
+            this.deviceId = HexUtils.bytesToHex(hexStr.getBytes()) + "23413249564c5635564d32573831";
         }
 
         // build user agent
