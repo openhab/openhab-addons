@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
@@ -172,6 +173,19 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         updateChannels(sensorConfig);
         updateChannels(sensorState, true);
 
+        // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
+        // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
+        // So to monitor a sensor is still alive, the "last seen" is necessary.
+        if (stateResponse.lastseen != null) {
+            updateState(CHANNEL_LAST_SEEN,
+                    new DateTimeType(ZonedDateTime.ofInstant(
+                            LocalDateTime.parse(stateResponse.lastseen, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            ZoneOffset.UTC, ZoneId.systemDefault())));
+            // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
+            // manually poll it time to time (every 5 minutes by default)
+            super.scheduledFuture = scheduler.schedule((Runnable) this::requestState, 5, TimeUnit.MINUTES);
+        }
+
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -198,7 +212,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
 
     /**
      * Update channel value from {@link SensorConfig} object - override to include further channels
-     * 
+     *
      * @param channelUID
      * @param newConfig
      */
@@ -222,7 +236,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
 
     /**
      * Update channel value from {@link SensorState} object - override to include further channels
-     * 
+     *
      * @param channelID
      * @param newState
      * @param initializing

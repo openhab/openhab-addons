@@ -56,7 +56,6 @@
 		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>State of the camera</description>
-		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="sd_status">

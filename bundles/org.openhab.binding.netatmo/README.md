@@ -12,7 +12,13 @@ See http://www.netatmo.com/ for details on their product.
 
 ## Binding Configuration
 
-The binding has no configuration options itself, all configuration is done at 'Things' level but before, you will have to grant openHAB to access Netatmo API.
+The binding has the following configuration options:
+
+| Parameter           | Name                 | Description                       |
+|---------------------|----------------------|-----------------------------------|
+| backgroundDiscovery | Background Discovery | If set to true, the device and its associated modules are updated in the discovery inbox at each API call run to refresh device data. Default is false. |
+
+Before setting up your 'Things', you will have to grant openHAB to access Netatmo API.
 Here is the procedure:
 
 ### 1. Application Creation
@@ -502,14 +508,16 @@ All these channels are read only.
 
 ### Welcome and Presence Camera
 
-Warning: The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding.
-So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+Warnings:
+
+- The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+- Some features like the video surveillance are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
 
 **Supported channels for the Welcome Camera thing:**
 
 | Channel ID                  | Item Type | Read/Write | Description                                                  |
 |-----------------------------|-----------|------------|--------------------------------------------------------------|
-| welcomeCameraStatus         | Switch    | Read-only  | State of the camera                                          |
+| welcomeCameraStatus         | Switch    | Read-write | State of the camera (video surveillance on/off)              |
 | welcomeCameraSdStatus       | Switch    | Read-only  | State of the SD card                                         |
 | welcomeCameraAlimStatus     | Switch    | Read-only  | State of the power connector                                 |
 | welcomeCameraIsLocal        | Switch    | Read-only  | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
@@ -520,15 +528,12 @@ So to get a refreshed picture, you need to use the refresh parameter in your sit
 **Supported channels for the Presence Camera thing:**
 
 Warnings:
-- Some features like the floodlight are accessed via the local network, so it may be helpful to set a static IP address
-for the Presence camera within your local network.
-- The floodlight auto-mode (cameraFloodlightAutoMode) isn't updated it is changed by another application. Therefore the
-binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight
-switch off behaviour.
+
+- The floodlight auto-mode (cameraFloodlightAutoMode) isn't updated it is changed by another application. Therefore the binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight switch off behaviour.
 
 | Channel ID                  | Item Type | Read/Write | Description                                                  |
 |-----------------------------|-----------|------------|--------------------------------------------------------------|
-| cameraStatus                | Switch    | Read-only  | State of the camera                                          |
+| cameraStatus                | Switch    | Read-write | State of the camera (video surveillance on/off)              |
 | cameraSdStatus              | Switch    | Read-only  | State of the SD card                                         |
 | cameraAlimStatus            | Switch    | Read-only  | State of the power connector                                 |
 | cameraIsLocal               | Switch    | Read-only  | indicates whether the camera is on the same network than the openHAB Netatmo Binding |

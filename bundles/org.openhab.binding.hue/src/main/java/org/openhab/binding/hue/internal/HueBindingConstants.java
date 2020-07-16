@@ -75,6 +75,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_DAYLIGHT = "daylight";
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_FLAG = "flag";
+    public static final String CHANNEL_SCENE = "scene";
 
     // List all triggers
     public static final String EVENT_DIMMER_SWITCH = "dimmer_switch_event";
@@ -86,7 +87,7 @@ public class HueBindingConstants {
     public static final String PROTOCOL = "protocol";
     public static final String USER_NAME = "userName";
 
-    // Light config properties
+    // Thing configuration properties
     public static final String LIGHT_ID = "lightId";
     public static final String SENSOR_ID = "sensorId";
     public static final String PRODUCT_NAME = "productName";

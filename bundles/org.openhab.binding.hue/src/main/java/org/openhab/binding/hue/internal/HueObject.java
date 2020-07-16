@@ -18,7 +18,7 @@ import java.util.Map;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * Basic light information.
+ * Basic hue object information.
  *
  * @author Q42 - Initial contribution
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding

@@ -64,6 +64,10 @@ public class Driver {
         port.addListener(listener);
     }
 
+    public void removeListener(MsgListener listener) {
+        port.removeListener(listener);
+    }
+
     public void start() {
         port.start();
     }

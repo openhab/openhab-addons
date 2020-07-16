@@ -168,8 +168,10 @@ public class LGWebOSHandler extends BaseThingHandler
     private void startReconnectJob() {
         ScheduledFuture<?> job = reconnectJob;
         if (job == null || job.isCancelled()) {
-            reconnectJob = scheduler.scheduleWithFixedDelay(() -> getSocket().connect(),
-                    RECONNECT_START_UP_DELAY_SECONDS, RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+            reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
+                getSocket().disconnect();
+                getSocket().connect();
+            }, RECONNECT_START_UP_DELAY_SECONDS, RECONNECT_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
     }
 

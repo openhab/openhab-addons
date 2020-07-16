@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.modbus.sunspec.internal.InverterStatus;
 import org.openhab.binding.modbus.sunspec.internal.dto.InverterModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.InverterModelParser;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +48,8 @@ public class InverterHandler extends AbstractSunSpecHandler {
      */
     private final Logger logger = LoggerFactory.getLogger(InverterHandler.class);
 
-    public InverterHandler(Thing thing, ModbusManager managerRef) {
-        super(thing, managerRef);
+    public InverterHandler(Thing thing) {
+        super(thing);
     }
 
     /**

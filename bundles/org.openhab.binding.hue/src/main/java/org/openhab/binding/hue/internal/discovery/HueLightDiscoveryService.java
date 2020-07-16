@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link HueBridgeServiceTracker} tracks for hue lights which are connected
+ * The {@link HueBridgeServiceTracker} tracks for hue lights, sensors and groups which are connected
  * to a paired hue bridge. The default search time for hue is 60 seconds.
  *
  * @author Kai Kreuzer - Initial contribution

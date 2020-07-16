@@ -116,7 +116,7 @@ public class CloudConnector {
     }
 
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
-        logger.info("Getting vacuum map {} from Xiaomi cloud server: {}", mapId, country);
+        logger.debug("Getting vacuum map {} from Xiaomi cloud server: '{}'", mapId, country);
         String mapCountry;
         String mapUrl = "";
         final @Nullable MiCloudConnector cl = this.cloudConnector;
