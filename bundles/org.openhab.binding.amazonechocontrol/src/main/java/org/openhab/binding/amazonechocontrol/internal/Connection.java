@@ -200,10 +200,12 @@ public class Connection {
         } else {
             // generate device id
             StringBuilder deviceIdBuilder = new StringBuilder();
-            for (int i = 0; i < 3; i++) {
-                deviceIdBuilder.append(rand.nextInt(9));
-            }
-            deviceIdBuilder.append("34c4643374c3541464b");
+            byte[] bytes = new byte[16];
+            rand.nextBytes(bytes);
+            String hexStr = HexUtils.bytesToHex(bytes).toUpperCase();
+            hexStr = HexUtils.bytesToHex(hexStr.getBytes());
+            deviceIdBuilder.append(hexStr);
+            deviceIdBuilder.append("23413249564c5635564d32573831");
             this.deviceId = deviceIdBuilder.toString();
         }
 
@@ -860,10 +862,14 @@ public class Connection {
         cookieManager.getCookieStore().add(new URI("https://www.amazon.com"), new HttpCookie("map-md", mapMdCookie));
         cookieManager.getCookieStore().add(new URI("https://www.amazon.com"), new HttpCookie("frc", frc));
 
-        String loginFormHtml = makeRequestAndReturnString("https://www.amazon.com"
+        Map<String, String> customHeaders = new HashMap<>();
+        customHeaders.put("authority", "www.amazon.com");
+        String loginFormHtml = makeRequestAndReturnString("GET",
+                "https://www.amazon.com"
                 + "/ap/signin?openid.return_to=https://www.amazon.com/ap/maplanding&openid.assoc_handle=amzn_dp_project_dee_ios&openid.identity=http://specs.openid.net/auth/2.0/identifier_select&pageId=amzn_dp_project_dee_ios&accountStatusPolicy=P1&openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select&openid.mode=checkid_setup&openid.ns.oa2=http://www.amazon.com/ap/ext/oauth/2&openid.oa2.client_id=device:"
                 + deviceId
-                + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access");
+                + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access",
+                null, false, customHeaders);
 
         logger.debug("Received login form {}", loginFormHtml);
         return loginFormHtml;
@@ -1306,7 +1312,7 @@ public class Connection {
         announcement.devices.add(device);
         announcement.ttsVolumes.add(ttsVolume);
         announcement.standardVolumes.add(standardVolume);
-        announcementTimer = scheduler.schedule(this::sendAnnouncement, 1, TimeUnit.SECONDS);
+        announcementTimer = scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS);
     }
 
     private void sendAnnouncement() {
@@ -1369,7 +1375,7 @@ public class Connection {
             } catch (IOException | URISyntaxException e) {
                 logger.warn("send textToSpeech fails with unexpected error", e);
             } finally {
-                announcementSenderUnblockFuture = scheduler.schedule(this::queuedAnnouncement, 1, TimeUnit.SECONDS);
+                announcementSenderUnblockFuture = scheduler.schedule(this::queuedAnnouncement, 1000, TimeUnit.MILLISECONDS);
             }
         } else {
             announcementQueueRunning.set(false);
@@ -1389,7 +1395,7 @@ public class Connection {
         textToSpeech.devices.add(device);
         textToSpeech.ttsVolumes.add(ttsVolume);
         textToSpeech.standardVolumes.add(standardVolume);
-        textToSpeechTimer = scheduler.schedule(this::sendTextToSpeech, 1, TimeUnit.SECONDS);
+        textToSpeechTimer = scheduler.schedule(this::sendTextToSpeech, 500, TimeUnit.MILLISECONDS);
     }
 
     private void sendTextToSpeech() {
@@ -1422,7 +1428,7 @@ public class Connection {
             } catch (IOException | URISyntaxException e) {
                 logger.warn("send textToSpeech fails with unexpected error", e);
             } finally {
-                textToSpeechSenderUnblockFuture = scheduler.schedule(this::queuedTextToSpeech, 1, TimeUnit.SECONDS);
+                textToSpeechSenderUnblockFuture = scheduler.schedule(this::queuedTextToSpeech, 1000, TimeUnit.MILLISECONDS);
             }
         } else {
             textToSpeechQueueRunning.set(false);
@@ -1495,7 +1501,7 @@ public class Connection {
     private void queuedExecuteSequenceNode() {
         JsonObject nodeToExecute = sequenceNodeQueue.poll();
         if (nodeToExecute != null) {
-            long delay = 3000;
+            long delay = 2000;
             try {
                 JsonObject sequenceJson = new JsonObject();
                 sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
