@@ -53,7 +53,6 @@ public class MQTTActions implements ThingActions, IMQTTActions {
         return this.handler;
     }
 
-    @Override
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void publishMQTT(
             @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String topic,

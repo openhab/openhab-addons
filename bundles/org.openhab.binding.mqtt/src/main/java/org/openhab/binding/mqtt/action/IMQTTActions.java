@@ -23,7 +23,5 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public interface IMQTTActions {
 
-    public void publishMQTT(@Nullable String topic, @Nullable String value);
-
     public void publishMQTT(@Nullable String topic, @Nullable String value, @Nullable Boolean retain);
 }
