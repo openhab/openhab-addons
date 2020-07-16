@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.e3dc.internal.handler.E3DCDeviceThingHandler;
 import org.openhab.binding.e3dc.internal.handler.E3DCInfoHandler;
 import org.openhab.binding.e3dc.internal.handler.E3DCPowerHandler;
+import org.openhab.binding.e3dc.internal.handler.E3DCStringHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -77,6 +78,8 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
             return new E3DCDeviceThingHandler((Bridge) thing, modbusManagerRef);
         } else if (E3DCBindingConstants.THING_TYPE_E3DC_POWER.equals(thingTypeUID)) {
             return new E3DCPowerHandler(thing);
+        } else if (E3DCBindingConstants.THING_TYPE_E3DC_STRING_DETAILS.equals(thingTypeUID)) {
+            return new E3DCStringHandler(thing);
         }
         return null;
     }

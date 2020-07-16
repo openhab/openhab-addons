@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="emergency-power-status-channel">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Emergency Power Status</label>
+	</channel-type>
+	<channel-type id="battery-loading-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Battery Loading Locked</label>
+	</channel-type>
+	<channel-type id="battery-unloading-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Battery Unloading Locked</label>
+	</channel-type>
+	<channel-type id="emergency-power-possible-channel">
+		<item-type>Switch</item-type>
+		<label>Emergency Power Possible</label>
+	</channel-type>
+	<channel-type id="weather-predicted-loading-channel">
+		<item-type>Switch</item-type>
+		<label>Loading Based On Weather Prediction Active</label>
+	</channel-type>
+	<channel-type id="regulation-status-channel">
+		<item-type>Switch</item-type>
+		<label>Regultation Status Of Max Grid Power Supply</label>
+	</channel-type>
+	<channel-type id="loading-lock-timey-channel">
+		<item-type>Switch</item-type>
+		<label>Loading Locktime Active</label>
+	</channel-type>
+	<channel-type id="unloading-lock-time-channel">
+		<item-type>Switch</item-type>
+		<label>Unloading Locktime Active</label>
+	</channel-type>
+</thing:thing-descriptions>

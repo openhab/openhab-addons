@@ -14,6 +14,8 @@ package org.openhab.binding.e3dc.internal.modbus;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 
 /**
@@ -21,6 +23,7 @@ import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public abstract class ModbusDataProvider {
     private final ArrayList<DataListener> listeners = new ArrayList<DataListener>();
 
@@ -32,7 +35,7 @@ public abstract class ModbusDataProvider {
         listeners.remove(l);
     }
 
-    public abstract Data getData(DataType dataType);
+    public abstract @Nullable Data getData(DataType dataType);
 
     protected void informAllListeners() {
         listeners.forEach(l -> {
