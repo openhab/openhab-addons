@@ -51,7 +51,7 @@ public class NuvoThingActions implements ThingActions {
         }
     }
 
-    public static void sendRawCommand(@Nullable ThingActions actions, String rawCommand)
+    public static void sendNuvoCommand(@Nullable ThingActions actions, String rawCommand)
             throws IllegalArgumentException {
         invokeMethodOf(actions).sendNuvoCommand(rawCommand);
     }

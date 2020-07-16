@@ -328,8 +328,8 @@ then
     // example: 'La Touché' becomes 'La Touche' and 'Nöel' becomes 'Noel'
     var trackName = Normalizer::normalize(Item_Containing_TrackName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 
-    nuvo_s3_display_line4.sendNuvoCommand(trackName)
-    nuvo_s3_display_line1.sendNuvoCommand("")
+    nuvo_s3_display_line4.sendCommand(trackName)
+    nuvo_s3_display_line1.sendCommand("")
     
 end
 
@@ -340,7 +340,7 @@ then
     // fix extended ASCII chars
     var albumName = Normalizer::normalize(Item_Containing_AlbumName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 
-    nuvo_s3_display_line2.sendNuvoCommand(albumName)
+    nuvo_s3_display_line2.sendCommand(albumName)
 end
 
 rule "Load artist name for Source 3"
@@ -350,7 +350,7 @@ then
     // fix extended ASCII chars
     var artistName = Normalizer::normalize(Item_Containing_ArtistName.state.toString, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")
 
-    nuvo_s3_display_line3.sendNuvoCommand(artistName)
+    nuvo_s3_display_line3.sendCommand(artistName)
 end
 
 // In this rule we have three items: Item_Containing_PlayMode, Item_Containing_TrackLength & Item_Containing_TrackPosition
