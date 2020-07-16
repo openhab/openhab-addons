@@ -14,12 +14,15 @@ package org.openhab.binding.e3dc.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.binding.e3dc.internal.handler.E3DCDeviceThingHandler;
 import org.openhab.binding.e3dc.internal.handler.E3DCInfoHandler;
+import org.openhab.binding.e3dc.internal.handler.E3DCPowerHandler;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -40,7 +43,7 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
     private ModbusManager modbusManagerRef;
 
     /**
-     * This factory needs a reference to the ModbusManager wich is provided
+     * This factory needs a reference to the ModbusManager which is provided
      * by the org.openhab.io.transport.modbus bundle. Please make
      * sure it's installed and enabled before using this bundle
      *
@@ -54,6 +57,7 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         if (thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC_INFO)
+                || thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC_DEVICE)
                 || thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC_POWER)
                 || thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC_EMERGENCY_POWER)
                 || thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC_STRING_DETAILS)
@@ -68,9 +72,12 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (E3DCBindingConstants.THING_TYPE_E3DC_INFO.equals(thingTypeUID)) {
-            return new E3DCInfoHandler(thing, modbusManagerRef);
+            return new E3DCInfoHandler(thing);
+        } else if (E3DCBindingConstants.THING_TYPE_E3DC_DEVICE.equals(thingTypeUID)) {
+            return new E3DCDeviceThingHandler((Bridge) thing, modbusManagerRef);
+        } else if (E3DCBindingConstants.THING_TYPE_E3DC_POWER.equals(thingTypeUID)) {
+            return new E3DCPowerHandler(thing);
         }
-
         return null;
     }
 }

@@ -16,9 +16,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.openhab.binding.e3dc.internal.dto.E3DCInfoBlock;
+import org.openhab.binding.e3dc.internal.dto.InfoBlock;
+import org.openhab.binding.e3dc.internal.dto.PowerBlock;
+import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
@@ -36,57 +36,59 @@ import net.wimpi.modbus.ModbusSlaveException;
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class InfoBlockCallback extends BaseCallback implements ModbusReadCallback {
-    private final Logger logger = LoggerFactory.getLogger(InfoBlockCallback.class);
+public class ModbusCallback extends ModbusDataProvider implements ModbusReadCallback {
+    public static final int REGISTER_LENGTH = 104;
 
-    private E3DCInfoBlock infoBlock = new E3DCInfoBlock();
+    private final Logger logger = LoggerFactory.getLogger(ModbusCallback.class);
+    private InfoBlock infoBlock;
+    private byte[] bArray = new byte[REGISTER_LENGTH * 2];
+    private int counter = 0;
+    private long maxDuration = Long.MIN_VALUE;
+    private long minDuration = Long.MAX_VALUE;
+    private long avgDuration = 0;
 
     @Override
     public void onRegisters(@NonNull ModbusReadRequestBlueprint request, @NonNull ModbusRegisterArray registers) {
-        byte[] bArray = new byte[68 * 2];
+        byte[] newArray = new byte[REGISTER_LENGTH * 2];
+        long startTime = System.currentTimeMillis();
         Iterator<ModbusRegister> iter = registers.iterator();
         int i = 0;
+        int registerCounter = 0;
         while (iter.hasNext()) {
             ModbusRegister reg = iter.next();
+            // if (counter % 30 == 0) {
+            // logger.info("Reg {} value {} bytes {}", registerCounter, reg.getValue(), reg.getBytes());
+            // }
             byte[] b = reg.getBytes();
             for (int j = 0; j < b.length; j++) {
-                bArray[i] = b[j];
+                newArray[i] = b[j];
                 i++;
             }
+            registerCounter++;
         }
-        // decode magic byte
-        StringBuilder magicByte = new StringBuilder();
-        magicByte.append(String.format("%02X", bArray[0]));
-        magicByte.append(String.format("%02X", bArray[1]));
-        infoBlock.modbusId = new StringType(magicByte.toString());
-        logger.info("Magic byte: {}", magicByte.toString());
 
-        // modbus firmware
-        String modbusVersion = bArray[2] + "." + bArray[3];
-        infoBlock.modbusVersion = new StringType(modbusVersion);
-        logger.info("Modbus version: {}", modbusVersion);
+        // logger.info("######################################");
+        // logger.info("Byte size {}", newArray.length);
+        // for (int j = 0; j < newArray.length; j++) {
+        // logger.info("Byte {} is {}", j, newArray[j]);
+        // }
 
-        int supportedRegisters = getIntValue(bArray, 4);
-        infoBlock.supportedRegisters = new DecimalType(supportedRegisters);
-        logger.info("Supported Regiters: {}", supportedRegisters);
-
-        String manufacturer = getString(bArray, 6);
-        infoBlock.manufacturer = new StringType(manufacturer);
-        logger.info("Manufacturer: {}", manufacturer);
-
-        String model = getString(bArray, 38);
-        infoBlock.modelName = new StringType(model);
-        logger.info("Model: {}", model);
-
-        String serialNumber = getString(bArray, 70);
-        infoBlock.serialNumber = new StringType(serialNumber);
-        logger.info("Serial Number: {}", serialNumber);
-
-        String firmware = getString(bArray, 102);
-        infoBlock.firmware = new StringType(firmware);
-        logger.info("Firmware: {}", firmware);
-
+        synchronized (bArray) {
+            bArray = newArray.clone();
+        }
         super.informAllListeners();
+
+        long duration = System.currentTimeMillis() - startTime;
+        avgDuration += duration;
+        minDuration = Math.min(minDuration, duration);
+        maxDuration = Math.max(maxDuration, duration);
+        counter++;
+        if (counter % 30 == 0) {
+            logger.info("Min {} Max {} Avg {}", minDuration, maxDuration, avgDuration / 30);
+            avgDuration = 0;
+            minDuration = Long.MAX_VALUE;
+            maxDuration = Long.MIN_VALUE;
+        }
     }
 
     @Override
@@ -101,16 +103,15 @@ public class InfoBlockCallback extends BaseCallback implements ModbusReadCallbac
         ModbusSlaveException e2;
     }
 
-    public E3DCInfoBlock getData() {
-        return infoBlock;
-    }
-
-    private int getIntValue(byte[] bytes, int start) {
-        return ((bytes[start] & 0xff) << 8) | (bytes[start + 1] & 0xff);
-    }
-
-    private String getString(byte[] bArray, int i) {
-        byte[] slice = Arrays.copyOfRange(bArray, i, i + 32);
-        return new String(slice);
+    @Override
+    public Data getData(DataType type) {
+        synchronized (bArray) {
+            if (type.equals(DataType.INFO)) {
+                return new InfoBlock(Arrays.copyOfRange(bArray, 0, 133));
+            } else if (type.equals(DataType.POWER)) {
+                return new PowerBlock(Arrays.copyOfRange(bArray, 134, 166));
+            }
+            return null;
+        }
     }
 }

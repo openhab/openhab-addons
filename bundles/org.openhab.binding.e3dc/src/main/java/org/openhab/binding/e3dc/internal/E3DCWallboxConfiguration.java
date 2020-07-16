@@ -10,18 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.e3dc.internal.modbus;
-
-import org.eclipse.jdt.annotation.NonNull;
+package org.openhab.binding.e3dc.internal;
 
 /**
- * The {@link DataListener} Listener interface will be called after successful modbus poll
+ * The {@link E3DCWallboxConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
-public interface DataListener {
+public class E3DCWallboxConfiguration {
+
     /**
-     * Informs all listeners that new data is arrived. Data needs to fetched by
+     * Wallbox Number
      */
-    public void dataAvailable(@NonNull ModbusDataProvider provider);
+    public int wallboxNumber;
 }

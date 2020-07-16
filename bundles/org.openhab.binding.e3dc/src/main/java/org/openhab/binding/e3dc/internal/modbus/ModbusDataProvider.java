@@ -14,12 +14,14 @@ package org.openhab.binding.e3dc.internal.modbus;
 
 import java.util.ArrayList;
 
+import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
+
 /**
- * The {@link BaseCallback} Base class caring for listeners
+ * The {@link ModbusDataProvider} Base class caring for listeners
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class BaseCallback {
+public abstract class ModbusDataProvider {
     private final ArrayList<DataListener> listeners = new ArrayList<DataListener>();
 
     public void addDataListener(DataListener l) {
@@ -30,9 +32,11 @@ public class BaseCallback {
         listeners.remove(l);
     }
 
+    public abstract Data getData(DataType dataType);
+
     protected void informAllListeners() {
         listeners.forEach(l -> {
-            l.newDataREceived();
+            l.dataAvailable(this);
         });
     }
 }
