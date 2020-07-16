@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.radiothermostat.internal;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -36,24 +39,23 @@ public class RadioThermostatThingActions implements ThingActions {
 
     private @Nullable RadioThermostatHandler handler;
 
-    @SuppressWarnings("null")
     @RuleAction(label = "sendRawCommand", description = "Action that sends raw command to the thermostat")
     public void sendRawCommand(@ActionInput(name = "sendRawCommand") @Nullable String rawCommand) {
-        if (handler != null && rawCommand != null) {
-            handler.handleRawCommand(rawCommand);
+        RadioThermostatHandler localHandler = handler;
+        if (rawCommand == null) {
+            logger.warn("sendRawCommand called with null command, ignoring");
+            return;
+        }
+
+        if (localHandler != null) {
+            localHandler.handleRawCommand(rawCommand);
             logger.debug("sendRawCommand called with raw command: {}", rawCommand);
-        } else {
-            logger.debug("sendRawCommand called with null command, ignoring");
         }
     }
 
     public static void sendRawCommand(@Nullable ThingActions actions, @Nullable String rawCommand)
             throws IllegalArgumentException {
-        if (actions instanceof RadioThermostatThingActions) {
-            ((RadioThermostatThingActions) actions).sendRawCommand(rawCommand);
-        } else {
-            throw new IllegalArgumentException("Instance is not an RadioThermostatThingActions class.");
-        }
+        invokeMethodOf(actions).sendRawCommand(rawCommand);
     }
 
     @Override
@@ -64,5 +66,26 @@ public class RadioThermostatThingActions implements ThingActions {
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return this.handler;
+    }
+
+    private static RadioThermostatThingActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(RadioThermostatThingActions.class.getName())) {
+            if (actions instanceof RadioThermostatThingActions) {
+                return (RadioThermostatThingActions) actions;
+            } else {
+                return (RadioThermostatThingActions) Proxy.newProxyInstance(
+                        RadioThermostatThingActions.class.getClassLoader(),
+                        new Class[] { RadioThermostatThingActions.class },
+                        (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of RadioThermostatThingActions");
     }
 }
