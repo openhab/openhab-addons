@@ -48,6 +48,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -127,6 +128,7 @@ public class LGWebOSTVSocket {
     private State state = State.DISCONNECTED;
 
     private @Nullable Session session;
+    private @Nullable Future<?> sessionFuture;
     private @Nullable WebOSTVSocketListener listener;
 
     /**
@@ -176,7 +178,7 @@ public class LGWebOSTVSocket {
 
     public void connect() {
         try {
-            this.client.connect(this, this.destUri);
+            sessionFuture = this.client.connect(this, this.destUri);
             logger.debug("Connecting to: {}", this.destUri);
         } catch (IOException e) {
             logger.debug("Unable to connect.", e);
@@ -185,6 +187,10 @@ public class LGWebOSTVSocket {
 
     public void disconnect() {
         Optional.ofNullable(this.session).ifPresent(s -> s.close());
+        Future<?> future = sessionFuture;
+        if (future != null && !future.isDone()) {
+            future.cancel(true);
+        }
         stopDisconnectingJob();
         setState(State.DISCONNECTED);
     }
