@@ -433,6 +433,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void updateState(NhcDevice2 device) {
+        if (device.properties == null) {
+            logger.debug("Cannot Update state for {} as no properties defined in device message", device.uuid);
+            return;
+        }
+
         if (actions.containsKey(device.uuid)) {
             updateActionState((NhcAction2) actions.get(device.uuid), device);
         } else if (thermostats.containsKey(device.uuid)) {
@@ -482,14 +487,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void updateRollershutterState(NhcAction2 action, NhcDevice2 device) {
-        Optional<NhcProperty> positionProperty = device.properties.stream().filter(p -> (p.position != null))
-                .findFirst();
-
-        if (positionProperty.isPresent()) {
-            action.setState(Integer.parseInt(positionProperty.get().position));
-            logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
-                    positionProperty.get().position);
-        }
+        device.properties.stream().map(p -> p.position).filter(Objects::nonNull).findFirst().ifPresent(position -> {
+            try {
+                action.setState(Integer.parseInt(position));
+                logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(), position);
+            } catch (NumberFormatException e) {
+                logger.trace("Niko Home Control: received empty rollershutter {} position info", action.getId());
+            }
+        });
     }
 
     private void updateThermostatState(NhcThermostat2 thermostat, NhcDevice2 device) {
@@ -499,53 +504,49 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
         Optional<Integer> overruleTimeProperty = device.properties.stream().map(p -> p.overruleTime)
                 .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t))).findFirst();
-        Optional<String> programProperty = device.properties.stream().map(p -> p.program).filter(Objects::nonNull)
-                .findFirst();
         Optional<Integer> setpointTemperatureProperty = device.properties.stream().map(p -> p.setpointTemperature)
                 .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
-        Optional<NhcProperty> ecoSaveProperty = device.properties.stream().filter(p -> (p.ecoSave != null)).findFirst();
+        Optional<Boolean> ecoSaveProperty = device.properties.stream().map(p -> p.ecoSave).filter(Objects::nonNull)
+                .map(t -> Boolean.parseBoolean(t)).findFirst();
         Optional<Integer> ambientTemperatureProperty = device.properties.stream().map(p -> p.ambientTemperature)
                 .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+        Optional<String> demandProperty = device.properties.stream().map(p -> p.demand).filter(Objects::nonNull)
+                .findFirst();
+        Optional<String> operationModeProperty = device.properties.stream().map(p -> p.operationMode)
+                .filter(Objects::nonNull).findFirst();
 
-        Optional<NhcProperty> demandProperty = device.properties.stream()
-                .filter(p -> ((p.demand != null) || (p.operationMode != null))).findFirst();
-
-        String modeString = programProperty.orElse("");
+        String modeString = device.properties.stream().map(p -> p.program).filter(Objects::nonNull).findFirst()
+                .orElse("");
         int mode = IntStream.range(0, THERMOSTATMODES.length).filter(i -> THERMOSTATMODES[i].equals(modeString))
                 .findFirst().orElse(thermostat.getMode());
 
         int measured = ambientTemperatureProperty.orElse(thermostat.getMeasured());
         int setpoint = setpointTemperatureProperty.orElse(thermostat.getSetpoint());
 
-        int overrule = 0;
-        int overruletime = 0;
+        int overrule = thermostat.getOverrule();
+        int overruletime = thermostat.getRemainingOverruletime();
         if (overruleActiveProperty.orElse(false)) {
             overrule = overruleSetpointProperty.orElse(0);
             overruletime = overruleTimeProperty.orElse(0);
         }
 
-        int ecosave = ecoSaveProperty.isPresent() ? ("True".equals(ecoSaveProperty.get().ecoSave) ? 1 : 0)
-                : thermostat.getEcosave();
+        int ecosave = thermostat.getEcosave();
+        if (ecoSaveProperty.orElse(false)) {
+            ecosave = 1;
+        }
 
         int demand = thermostat.getDemand();
-        if (demandProperty.isPresent()) {
-            String demandString;
-            if (demandProperty.get().demand != null) {
-                demandString = demandProperty.get().demand;
-            } else {
-                demandString = demandProperty.get().operationMode;
-            }
-            switch (demandString) {
-                case "None":
-                    demand = 0;
-                    break;
-                case "Heating":
-                    demand = 1;
-                    break;
-                case "Cooling":
-                    demand = -1;
-                    break;
-            }
+        String demandString = (demandProperty.orElse(operationModeProperty.orElse("")));
+        switch (demandString) {
+            case "None":
+                demand = 0;
+                break;
+            case "Heating":
+                demand = 1;
+                break;
+            case "Cooling":
+                demand = -1;
+                break;
         }
 
         logger.debug(
