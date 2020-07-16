@@ -16,13 +16,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.e3dc.internal.E3DCDeviceConfiguration;
 import org.openhab.binding.e3dc.internal.modbus.DataListener;
 import org.openhab.binding.e3dc.internal.modbus.ModbusCallback;
+import org.openhab.binding.e3dc.internal.modbus.ModbusDataProvider;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -41,7 +40,6 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
     private final Logger logger = LoggerFactory.getLogger(E3DCDeviceThingHandler.class);
     private ModbusManager modbusManagerRef;
     private final ModbusCallback modbusCallback = new ModbusCallback();
-    private ThingHandlerCallback thingHandlerCallback;
     private ThingStatus myStatus = ThingStatus.UNKNOWN;
     private @Nullable E3DCDeviceConfiguration config;
     BasicPollTaskImpl poller;
@@ -57,21 +55,6 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
     }
 
     @Override
-    public Bridge getBridge() {
-        ThingUID bridgeUID = thing.getBridgeUID();
-        synchronized (this) {
-            if (thingHandlerCallback != null) {
-                return bridgeUID != null ? thingHandlerCallback.getBridge(bridgeUID) : null;
-            } else {
-                logger.warn(
-                        "Handler {} of thing {} tried accessing its bridge although the handler was already disposed.",
-                        getClass().getSimpleName(), thing.getUID());
-                return null;
-            }
-        }
-    }
-
-    @Override
     public void initialize() {
         setStatus(ThingStatus.UNKNOWN);
         // Example for background initialization:
@@ -81,7 +64,7 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
                 ModbusTCPSlaveEndpoint slaveEndpoint = new ModbusTCPSlaveEndpoint(config.host, config.port);
                 EndpointPoolConfiguration epc = modbusManagerRef.getEndpointPoolConfiguration(slaveEndpoint);
                 BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(1,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, 68, 3);
+                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, ModbusCallback.REGISTER_LENGTH, 3);
                 modbusCallback.addDataListener(this);
                 poller = new BasicPollTaskImpl(slaveEndpoint, request, modbusCallback);
                 modbusManagerRef.registerRegularPoll(poller, config.refresh, 0);
@@ -89,12 +72,6 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
                 setStatus(ThingStatus.OFFLINE);
             }
         });
-    }
-
-    @Override
-    public void setCallback(@Nullable ThingHandlerCallback thingHandlerCallback) {
-        // TODO Auto-generated method stub
-        super.setCallback(thingHandlerCallback);
     }
 
     @Override
@@ -123,10 +100,13 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
     }
 
     @Override
-    public void newDataREceived() {
+    public void dataAvailable(ModbusDataProvider provider) {
         if (myStatus != ThingStatus.ONLINE) {
             setStatus(ThingStatus.ONLINE);
         }
-        logger.info("newDataREceived");
+    }
+
+    public ModbusDataProvider getDataProvider() {
+        return modbusCallback;
     }
 }

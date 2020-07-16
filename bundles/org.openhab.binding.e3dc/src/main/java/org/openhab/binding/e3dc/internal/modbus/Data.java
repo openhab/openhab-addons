@@ -10,27 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.e3dc.internal;
+package org.openhab.binding.e3dc.internal.modbus;
 
 /**
- * The {@link E3DCConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link Data} Marker Interface for delivered Modbus Data
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class E3DCConfiguration {
-
-    /**
-     * IP Address
-     */
-    public String ipAddress;
-
-    /**
-     * Port
-     */
-    public int port;
-
-    /**
-     * Refresh interval in seconds
-     */
-    public long refreshInterval_sec = 2;
+public interface Data {
+    public enum DataType {
+        INFO,
+        POWER,
+        WALLBOX,
+        EMERGENCY,
+        STRINGS
+    }
 }

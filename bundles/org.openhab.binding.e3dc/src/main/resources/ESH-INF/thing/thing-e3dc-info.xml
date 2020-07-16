@@ -9,7 +9,6 @@
 		</supported-bridge-type-refs>
 		<label>E3DC Information Block</label>
 		<description>E3DCInformation Block</description>
-		<!--
 		<channels>
 			<channel id="modbus-id" typeId="modbus-id-channel"/>
 			<channel id="modbus-firmware" typeId="modbus-firmware-channel"/>
@@ -17,8 +16,7 @@
 			<channel id="manufacturer-name" typeId="manufacturer-name-channel"/>
 			<channel id="model-name" typeId="model-name-channel"/>
 			<channel id="serial-number" typeId="serial-number-channel"/>
-			<channel id="firmware-relase" typeId="firmware-relase-channel"/>
+			<channel id="firmware-relase" typeId="firmware-release-channel"/>
 		</channels>
-		-->
 	</thing-type>
 </thing:thing-descriptions>

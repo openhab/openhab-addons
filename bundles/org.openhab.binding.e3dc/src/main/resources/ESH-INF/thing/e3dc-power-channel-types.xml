@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="pv-power-supply-channel">
+		<item-type>Number:Power</item-type>
+		<label>PV Output</label>
+	</channel-type>
+	<channel-type id="battery-power-supply-channel">
+		<item-type>Number:Power</item-type>
+		<label>Battery Discharge</label>
+	</channel-type>
+	<channel-type id="battery-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charge</label>
+	</channel-type>
+	<channel-type id="household-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Household Consumption</label>
+	</channel-type>
+	<channel-type id="grid-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power Consumption</label>
+	</channel-type>
+	<channel-type id="grid-power-supply-channel">
+		<item-type>Number:Power</item-type>
+		<label>Grid Power Supply</label>
+	</channel-type>
+	<channel-type id="external-power-supply-channel">
+		<item-type>Number:Power</item-type>
+		<label>External Power Supply</label>
+	</channel-type>
+	<channel-type id="wallbox-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Wallbox Power Consumption</label>
+	</channel-type>
+	<channel-type id="wallbox-pv-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Wallbox PV Power Consumption</label>
+	</channel-type>
+	<channel-type id="autarky-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky</label>
+	</channel-type>
+	<channel-type id="self-consumption-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumtion</label>
+	</channel-type>
+	<channel-type id="battery-soc-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State Of Charge</label>
+	</channel-type>
+</thing:thing-descriptions>

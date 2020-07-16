@@ -27,11 +27,12 @@ public class E3DCBindingConstants {
     private static final String BINDING_ID = "e3dc";
 
     // Suppoerted Thing Types
-    public static final ThingTypeUID THING_TYPE_E3DC_INFO = new ThingTypeUID(BINDING_ID, "E3DC-Info");
-    public static final ThingTypeUID THING_TYPE_E3DC_POWER = new ThingTypeUID(BINDING_ID, "E3DC-Power");
-    public static final ThingTypeUID THING_TYPE_E3DC_WALLBOX = new ThingTypeUID(BINDING_ID, "E3DC-Wallbox");
-    public static final ThingTypeUID THING_TYPE_E3DC_STRING_DETAILS = new ThingTypeUID(BINDING_ID, "E3DC-Strings");
-    public static final ThingTypeUID THING_TYPE_E3DC_EMERGENCY_POWER = new ThingTypeUID(BINDING_ID, "E3DC-Emergency");
+    public static final ThingTypeUID THING_TYPE_E3DC_DEVICE = new ThingTypeUID(BINDING_ID, "e3dc-device");
+    public static final ThingTypeUID THING_TYPE_E3DC_INFO = new ThingTypeUID(BINDING_ID, "e3dc-info");
+    public static final ThingTypeUID THING_TYPE_E3DC_POWER = new ThingTypeUID(BINDING_ID, "e3dc-power");
+    public static final ThingTypeUID THING_TYPE_E3DC_WALLBOX = new ThingTypeUID(BINDING_ID, "e3dc-wallbox");
+    public static final ThingTypeUID THING_TYPE_E3DC_STRING_DETAILS = new ThingTypeUID(BINDING_ID, "e3dc-strings");
+    public static final ThingTypeUID THING_TYPE_E3DC_EMERGENCY_POWER = new ThingTypeUID(BINDING_ID, "e3dc-emergency");
 
     // Channels for Info Block
     public static final String MODBUS_ID_CHANNEL = "modbus-id";
@@ -45,12 +46,15 @@ public class E3DCBindingConstants {
     // Channels for Power Block
     public static final String PV_POWER_SUPPLY_CHANNEL = "pv-power-supply";
     public static final String BATTERY_POWER_SUPPLY_CHANNEL = "battery-power-supply";
-    public static final String EXTERNAL_POWER_SUPPLY_CHANNEL = "grid-power-supply";
     public static final String BATTERY_POWER_CONSUMPTION = "battery-power-consumption";
     public static final String HOUSEHOLD_POWER_CONSUMPTION_CHANNEL = "household-power-consumption";
     public static final String GRID_POWER_CONSUMPTION_CHANNEL = "grid-power-consumption";
+    public static final String GRID_POWER_SUPPLY_CHANNEL = "grid-power-supply";
+    public static final String EXTERNAL_POWER_SUPPLY_CHANNEL = "external-power-supply";
     public static final String WALLBOX_POWER_CONSUMPTION_CHANNEL = "wallbox-power-consumption";
     public static final String WALLBOX_PV_POWER_CONSUMPTION_CHANNEL = "wallbox-pv-power-consumption";
+    public static final String AUTARKY = "autarky";
+    public static final String SELF_CONSUMPTION = "self-consumption";
     public static final String BATTERY_STATE_OF_CHARGE_CHANNEL = "battery-soc";
 
     // Channels for Wallbox Block
