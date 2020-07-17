@@ -11,6 +11,8 @@ import tec.uom.se.unit.Units;
 
 /**
  * State for {@link RoomClimateControlService} to get and set the desired temperature of a room.
+ * 
+ * @author Christian Oeing (christian.oeing@slashgames.org)
  */
 @NonNullByDefault
 public class RoomClimateControlServiceState extends BoschSHCServiceState {
