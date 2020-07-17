@@ -38,11 +38,20 @@ public class DataConverter {
         return value;
     }
 
-    public static long getInt32_swap(byte[] bytes, int start) {
-        // LOGGER.info("Conbert {} {} {} {}", bytes[start], bytes[start + 1], bytes[start + 2], bytes[start + 3]);
-
-        long a = getIntValue(bytes, start);
-        long b = getIntValue(bytes, start + 2);
+    /**
+     * Conversion done according to E3DC Modbus Specification V1.7
+     *
+     * @param bytes - byte array with at least 4 bytes available from start
+     * @param startIndex - start index for decoding
+     * @return decoded long value, Long.MIN_VALUE otherwise
+     */
+    public static long getInt32_swap(byte[] bytes, int startIndex) {
+        // LOGGER.info("Convert {} {} {} {}", bytes[start], bytes[start + 1], bytes[start + 2], bytes[start + 3]);
+        if (bytes.length - startIndex < 4) {
+            return Long.MIN_VALUE;
+        }
+        long a = getIntValue(bytes, startIndex);
+        long b = getIntValue(bytes, startIndex + 2);
         if (b < 32768) {
             return b * 65536 + a;
         } else {

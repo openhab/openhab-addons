@@ -27,17 +27,17 @@ import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 public abstract class ModbusDataProvider {
     private final ArrayList<DataListener> listeners = new ArrayList<DataListener>();
 
-    public void addDataListener(DataListener l) {
+    public synchronized void addDataListener(DataListener l) {
         listeners.add(l);
     }
 
-    public void removeDataListener(DataListener l) {
+    public synchronized void removeDataListener(DataListener l) {
         listeners.remove(l);
     }
 
     public abstract @Nullable Data getData(DataType dataType);
 
-    protected void informAllListeners() {
+    protected synchronized void informAllListeners() {
         listeners.forEach(l -> {
             l.dataAvailable(this);
         });
