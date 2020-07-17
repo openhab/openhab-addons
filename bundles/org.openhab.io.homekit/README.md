@@ -461,7 +461,7 @@ Group           gSecuritySystem            "Security System Group"              
 String          security_current_state     "Security Current State"             (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
 String          security_target_state      "Security Target State"              (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 
-Group  			gCooller    				"Cooler Group"       				 	                {homekit="HeaterCooler"}
+Group  			gCooler    				"Cooler Group"       				 	                {homekit="HeaterCooler"}
 Switch          cooler_active 				"Cooler Active" 				    (gCooler) 		    {homekit="ActiveStatus"}
 Number 			cooler_current_temp     	"Cooler Current Temp [%.1f C]"  	(gCooler)  	        {homekit="CurrentTemperature"}
 String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}          
