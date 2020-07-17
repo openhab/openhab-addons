@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "kaleidescape")
 @NonNullByDefault
-public class KaleidescapeThingActions implements ThingActions {
+public class KaleidescapeThingActions implements ThingActions, IKaleidescapeThingActions {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeThingActions.class);
 
     private @Nullable KaleidescapeHandler handler;
@@ -50,6 +50,7 @@ public class KaleidescapeThingActions implements ThingActions {
         }
     }
 
+    /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void sendKCommand(@Nullable ThingActions actions, String kCommand) throws IllegalArgumentException {
         invokeMethodOf(actions).sendKCommand(kCommand);
     }
@@ -64,16 +65,17 @@ public class KaleidescapeThingActions implements ThingActions {
         return this.handler;
     }
 
-    private static KaleidescapeThingActions invokeMethodOf(@Nullable ThingActions actions) {
+    private static IKaleidescapeThingActions invokeMethodOf(@Nullable ThingActions actions) {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
         if (actions.getClass().getName().equals(KaleidescapeThingActions.class.getName())) {
             if (actions instanceof KaleidescapeThingActions) {
-                return (KaleidescapeThingActions) actions;
+                return (IKaleidescapeThingActions) actions;
             } else {
-                return (KaleidescapeThingActions) Proxy.newProxyInstance(
-                        KaleidescapeThingActions.class.getClassLoader(), new Class[] { KaleidescapeThingActions.class },
+                return (IKaleidescapeThingActions) Proxy.newProxyInstance(
+                        IKaleidescapeThingActions.class.getClassLoader(),
+                        new Class[] { IKaleidescapeThingActions.class },
                         (Object proxy, Method method, Object[] args) -> {
                             Method m = actions.getClass().getDeclaredMethod(method.getName(),
                                     method.getParameterTypes());
