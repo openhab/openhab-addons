@@ -9,15 +9,26 @@ import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 
 import tec.uom.se.unit.Units;
 
+/**
+ * State for {@link RoomClimateControlService} to get and set the desired temperature of a room.
+ */
 @NonNullByDefault
 public class RoomClimateControlServiceState extends BoschSHCServiceState {
 
     private static final String Type = "climateControlState";
 
+    /**
+     * Constructor.
+     */
     public RoomClimateControlServiceState() {
         super(Type);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param setpointTemperature Desired temperature (in degree celsius).
+     */
     public RoomClimateControlServiceState(double setpointTemperature) {
         super(Type);
         this.setpointTemperature = setpointTemperature;
