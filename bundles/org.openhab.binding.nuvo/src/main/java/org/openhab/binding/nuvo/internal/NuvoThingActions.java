@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "nuvo")
 @NonNullByDefault
-public class NuvoThingActions implements ThingActions {
+public class NuvoThingActions implements ThingActions, INuvoThingActions {
 
     private final Logger logger = LoggerFactory.getLogger(NuvoThingActions.class);
 
@@ -51,6 +51,7 @@ public class NuvoThingActions implements ThingActions {
         }
     }
 
+    /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void sendNuvoCommand(@Nullable ThingActions actions, String rawCommand)
             throws IllegalArgumentException {
         invokeMethodOf(actions).sendNuvoCommand(rawCommand);
@@ -66,16 +67,16 @@ public class NuvoThingActions implements ThingActions {
         return this.handler;
     }
 
-    private static NuvoThingActions invokeMethodOf(@Nullable ThingActions actions) {
+    private static INuvoThingActions invokeMethodOf(@Nullable ThingActions actions) {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
         if (actions.getClass().getName().equals(NuvoThingActions.class.getName())) {
             if (actions instanceof NuvoThingActions) {
-                return (NuvoThingActions) actions;
+                return (INuvoThingActions) actions;
             } else {
-                return (NuvoThingActions) Proxy.newProxyInstance(NuvoThingActions.class.getClassLoader(),
-                        new Class[] { NuvoThingActions.class }, (Object proxy, Method method, Object[] args) -> {
+                return (INuvoThingActions) Proxy.newProxyInstance(INuvoThingActions.class.getClassLoader(),
+                        new Class[] { INuvoThingActions.class }, (Object proxy, Method method, Object[] args) -> {
                             Method m = actions.getClass().getDeclaredMethod(method.getName(),
                                     method.getParameterTypes());
                             return m.invoke(actions, args);
