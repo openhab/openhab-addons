@@ -22,7 +22,7 @@ import tec.uom.se.unit.Units;
  * A virtual device which controls up to six Bosch Smart Home radiator thermostats in a room.
  */
 @NonNullByDefault
-public class ClimateControlHandler extends BoschSHCHandler {
+public final class ClimateControlHandler extends BoschSHCHandler {
 
     @NonNullByDefault({})
     private RoomClimateControlService roomClimateControlService;
@@ -57,23 +57,33 @@ public class ClimateControlHandler extends BoschSHCHandler {
         }
     }
 
+    /**
+     * Updates the channels which are linked to the {@link TemperatureLevelService} of the device.
+     * 
+     * @param state Current state of {@link TemperatureLevelService}.
+     */
     private void updateChannels(TemperatureLevelServiceState state) {
         super.updateState(CHANNEL_TEMPERATURE, state.getTemperatureState());
     }
 
+    /**
+     * Updates the channels which are linked to the {@link RoomClimateControlService} of the device.
+     * 
+     * @param state Current state of {@link RoomClimateControlService}.
+     */
     private void updateChannels(RoomClimateControlServiceState state) {
         super.updateState(CHANNEL_SETPOINT_TEMPERATURE, state.getSetpointTemperatureState());
     }
 
+    /**
+     * Sets the desired temperature for the device.
+     * 
+     * @param quantityType Command which contains the new desired temperature.
+     */
     private void updateSetpointTemperature(QuantityType<?> quantityType) {
         QuantityType<?> celsiusType = quantityType.toUnit(Units.CELSIUS);
         if (celsiusType == null) {
             logger.debug("Could not convert quantity command to celsius");
-            return;
-        }
-
-        if (this.roomClimateControlService != null) {
-            logger.debug("RoomClimateControlService not initialized");
             return;
         }
 
