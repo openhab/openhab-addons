@@ -34,11 +34,12 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "radiothermostat")
 @NonNullByDefault
-public class RadioThermostatThingActions implements ThingActions {
+public class RadioThermostatThingActions implements ThingActions, IRadioThermostatThingActions {
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatThingActions.class);
 
     private @Nullable RadioThermostatHandler handler;
 
+    @Override
     @RuleAction(label = "sendRawCommand", description = "Action that sends raw command to the thermostat")
     public void sendRawCommand(@ActionInput(name = "sendRawCommand") @Nullable String rawCommand) {
         RadioThermostatHandler localHandler = handler;
@@ -53,6 +54,7 @@ public class RadioThermostatThingActions implements ThingActions {
         }
     }
 
+    /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void sendRawCommand(@Nullable ThingActions actions, @Nullable String rawCommand)
             throws IllegalArgumentException {
         invokeMethodOf(actions).sendRawCommand(rawCommand);
@@ -68,17 +70,17 @@ public class RadioThermostatThingActions implements ThingActions {
         return this.handler;
     }
 
-    private static RadioThermostatThingActions invokeMethodOf(@Nullable ThingActions actions) {
+    private static IRadioThermostatThingActions invokeMethodOf(@Nullable ThingActions actions) {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
         if (actions.getClass().getName().equals(RadioThermostatThingActions.class.getName())) {
             if (actions instanceof RadioThermostatThingActions) {
-                return (RadioThermostatThingActions) actions;
+                return (IRadioThermostatThingActions) actions;
             } else {
-                return (RadioThermostatThingActions) Proxy.newProxyInstance(
-                        RadioThermostatThingActions.class.getClassLoader(),
-                        new Class[] { RadioThermostatThingActions.class },
+                return (IRadioThermostatThingActions) Proxy.newProxyInstance(
+                        IRadioThermostatThingActions.class.getClassLoader(),
+                        new Class[] { IRadioThermostatThingActions.class },
                         (Object proxy, Method method, Object[] args) -> {
                             Method m = actions.getClass().getDeclaredMethod(method.getName(),
                                     method.getParameterTypes());
