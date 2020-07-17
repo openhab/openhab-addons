@@ -5,6 +5,7 @@ import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHA
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.BoschSHCHandler;
@@ -13,11 +14,8 @@ import org.openhab.binding.boschshc.internal.services.temperaturelevel.Temperatu
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetServiceState;
 
-public class ThermostatHandler extends BoschSHCHandler {
-
-    private TemperatureLevelService temperatureLevelService;
-
-    private ValveTappetService valveTappetService;
+@NonNullByDefault
+public final class ThermostatHandler extends BoschSHCHandler {
 
     public ThermostatHandler(Thing thing) {
         super(thing);
@@ -33,21 +31,25 @@ public class ThermostatHandler extends BoschSHCHandler {
         }
 
         // Initialize services
-        String deviceId = this.getBoschID();
-
-        this.temperatureLevelService = new TemperatureLevelService();
-        this.temperatureLevelService.initialize(bridgeHandler, deviceId, this::updateChannels);
-        this.registerService(this.temperatureLevelService, Arrays.asList(CHANNEL_TEMPERATURE));
-
-        this.valveTappetService = new ValveTappetService();
-        this.valveTappetService.initialize(bridgeHandler, deviceId, this::updateChannels);
-        this.registerService(this.valveTappetService, Arrays.asList(CHANNEL_VALVE_TAPPET_POSITION));
+        this.createService(TemperatureLevelService.class, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));
+        this.createService(ValveTappetService.class, this::updateChannels,
+                Arrays.asList(CHANNEL_VALVE_TAPPET_POSITION));
     }
 
-    protected void updateChannels(TemperatureLevelServiceState state) {
+    /**
+     * Updates the channels which are linked to the {@link TemperatureLevelService} of the device.
+     * 
+     * @param state Current state of {@link TemperatureLevelService}.
+     */
+    private void updateChannels(TemperatureLevelServiceState state) {
         super.updateState(CHANNEL_TEMPERATURE, state.getTemperatureState());
     }
 
+    /**
+     * Updates the channels which are linked to the {@link ValveTappetService} of the device.
+     * 
+     * @param state Current state of {@link ValveTappetService}.
+     */
     private void updateChannels(ValveTappetServiceState state) {
         super.updateState(CHANNEL_VALVE_TAPPET_POSITION, state.getPositionState());
     }

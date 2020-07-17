@@ -188,7 +188,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @param affectedChannels Channels which are affected by the state of this
      *            service
      */
-    protected <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
+    private <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
             Collection<String> affectedChannels) {
         this.services.add(new DeviceService<TState>(service, affectedChannels));
     }
