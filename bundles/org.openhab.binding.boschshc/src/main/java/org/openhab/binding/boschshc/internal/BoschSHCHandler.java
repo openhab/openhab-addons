@@ -139,13 +139,18 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * Returns the bridge handler for this thing handler.
      * 
      * @return Bridge handler for this thing handler. Null if no or an invalid bridge was set in the configuration.
+     * @throws Error If bridge for handler is not set or an invalid bridge is set.
      */
-    protected @Nullable BoschSHCBridgeHandler getBridgeHandler() {
+    protected BoschSHCBridgeHandler getBridgeHandler() {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            return null;
+            throw new Error(String.format("No valid bridge set for {}", this.getThing()));
         }
-        return (BoschSHCBridgeHandler) bridge.getHandler();
+        BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            throw new Error(String.format("Bridge of {} has no valid bridge handler", this.getThing()));
+        }
+        return bridgeHandler;
     }
 
     /**
@@ -164,7 +169,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             Class<TService> serviceClass, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels) {
         BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
         if (bridgeHandler == null) {
-            throw new Error(String.format("Could not initialize service for {}, no valid bridge set", this.getThing()));
+            throw new Error(String.format("Could not create service for {}, no valid bridge set", this.getThing()));
         }
 
         String deviceId = this.getBoschID();

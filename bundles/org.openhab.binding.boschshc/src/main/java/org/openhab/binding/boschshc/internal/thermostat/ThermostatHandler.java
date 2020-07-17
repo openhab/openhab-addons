@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelServiceState;
@@ -24,11 +23,6 @@ public final class ThermostatHandler extends BoschSHCHandler {
     @Override
     public void initialize() {
         super.initialize();
-
-        BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
-        if (bridgeHandler == null) {
-            throw new Error(String.format("Could not initialize {}, no valid bridge set", this.getThing()));
-        }
 
         // Initialize services
         this.createService(TemperatureLevelService.class, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));

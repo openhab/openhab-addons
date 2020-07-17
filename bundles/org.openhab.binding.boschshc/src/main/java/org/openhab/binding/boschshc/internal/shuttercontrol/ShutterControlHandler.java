@@ -92,17 +92,11 @@ public class ShutterControlHandler extends BoschSHCHandler {
 
     private @Nullable ShutterControlState getDeviceState() {
         BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
-        if (bridgeHandler == null) {
-            return null;
-        }
         return bridgeHandler.refreshState(getThing(), ShutterControlServiceName, ShutterControlState.class);
     }
 
     private void setDeviceState(ShutterControlState state) {
         BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
-        if (bridgeHandler == null) {
-            return;
-        }
         String deviceId = this.getBoschID();
         if (deviceId == null) {
             return;
