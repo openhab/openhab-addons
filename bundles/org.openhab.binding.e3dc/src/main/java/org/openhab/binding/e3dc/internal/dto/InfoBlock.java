@@ -32,6 +32,7 @@ public class InfoBlock implements Data {
     public StringType modelName;
     public StringType serialNumber;
     public StringType firmware;
+    public StringType allInfo;
 
     public InfoBlock(byte[] bArray) {
         // decode magic byte
@@ -65,5 +66,12 @@ public class InfoBlock implements Data {
         String firmware = DataConverter.getString(bArray, 102);
         this.firmware = new StringType(firmware);
         // logger.info("Firmware: {}", firmware);
+
+        // create String with
+        StringBuilder sb = new StringBuilder();
+        sb.append(manufacturer).append("\n").append(modelName).append("\n").append(serialNumber).append("\n")
+                .append(firmware);
+        sb.append("\n").append(modbusId).append("\n").append(modbusVersion);
+        allInfo = new StringType(sb.toString());
     }
 }

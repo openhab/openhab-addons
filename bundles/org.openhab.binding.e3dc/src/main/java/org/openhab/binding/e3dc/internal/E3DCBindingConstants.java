@@ -42,6 +42,7 @@ public class E3DCBindingConstants {
     public static final String MODEL_NAME_CHANNEL = "model-name";
     public static final String SERIAL_NUMBER_CHANNEL = "serial-number";
     public static final String FIRMWARE_RELEASE_CHANNEL = "firmware-relase";
+    public static final String INFO_CHANNEL = "info";
 
     // Channels for Power Block
     public static final String PV_POWER_SUPPLY_CHANNEL = "pv-power-supply";

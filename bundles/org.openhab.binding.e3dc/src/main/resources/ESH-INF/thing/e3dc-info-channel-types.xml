@@ -34,8 +34,12 @@
 		<description>Firmware installed on this particular E3DC Model</description>
 	</channel-type>
 	<channel-type id="serial-number-channel">
-		<item-type>e3dcItem</item-type>
+		<item-type>String</item-type>
 		<label>E3DC Serial Number</label>
 		<description>Serial Number</description>
+	</channel-type>
+	<channel-type id="info-channel">
+		<item-type>String</item-type>
+		<label>All Infos in one String</label>
 	</channel-type>
 </thing:thing-descriptions>

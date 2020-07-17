@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.e3dc.internal.dto;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Power;
+import java.util.Arrays;
+import java.util.BitSet;
 
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.e3dc.internal.modbus.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,48 +28,39 @@ import org.slf4j.LoggerFactory;
  */
 public class EmergencyBlock implements Data {
     private final Logger logger = LoggerFactory.getLogger(EmergencyBlock.class);
-    public QuantityType<Power> pvPowerSupply;
-    public QuantityType<Power> batteryPowerSupply;
-    public QuantityType<Power> batteryPowerConsumption;
-    public QuantityType<Power> householdPowerConsumption;
-    public QuantityType<Power> gridPowerConsumpition;
-    public QuantityType<Power> gridPowerSupply;
-    public QuantityType<Power> externalPowerSupply;
-    public QuantityType<Power> wallboxPowerConsumption;
-    public QuantityType<Power> wallboxPVPowerConsumption;
-    public QuantityType<Dimensionless> autarky;
-    public QuantityType<Dimensionless> selfConsumption;
-    public QuantityType<Dimensionless> batterySOC;
+    public static final StringType EP_NOT_SUPPORTED = new StringType("EP not supported");
+    public static final StringType EP_ACTIVE = new StringType("EP active");
+    public static final StringType EP_NOT_ACTIVE = new StringType("EP not active");
+    public static final StringType EP_POSSIBLE = new StringType("EP possible");
+    public static final StringType EP_SWITCH = new StringType("EP Switch in wrong position");
+    public static final StringType EP_UNKOWN = new StringType("EP Status unknown");
+    public static final StringType[] EP_STATUS_ARRAY = new StringType[] { EP_NOT_SUPPORTED, EP_ACTIVE, EP_NOT_ACTIVE,
+            EP_POSSIBLE, EP_SWITCH };
+
+    public StringType epStatus = EP_UNKOWN;
+    public OnOffType batteryLoadingLocked = OnOffType.OFF;
+    public OnOffType batterUnLoadingLocked = OnOffType.OFF;
+    public OnOffType epPossible = OnOffType.OFF;
+    public OnOffType weatherPredictedLoading = OnOffType.OFF;
+    public OnOffType regulationStatus = OnOffType.OFF;
+    public OnOffType loadingLockTime = OnOffType.OFF;
+    public OnOffType unloadingLockTime = OnOffType.OFF;
 
     public EmergencyBlock(byte[] bArray) {
-        long pvPowerSupplyL = DataConverter.getInt32_swap(bArray, 0);
-        pvPowerSupply = new QuantityType<Power>(pvPowerSupplyL, SmartHomeUnits.WATT);
-        long batteryPower = DataConverter.getInt32_swap(bArray, 4);
-        if (batteryPower < 0) {
-            batteryPowerSupply = new QuantityType<Power>(batteryPower * -1, SmartHomeUnits.WATT);
-            batteryPowerConsumption = new QuantityType<Power>(0, SmartHomeUnits.WATT);
+        int status = DataConverter.getIntValue(bArray, 0);
+        if (status >= 0 && status < 5) {
+            epStatus = EP_STATUS_ARRAY[status];
         } else {
-            batteryPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
-            batteryPowerConsumption = new QuantityType<Power>(batteryPower, SmartHomeUnits.WATT);
+            epStatus = EP_UNKOWN;
         }
-        long householdPowerConsumptionL = DataConverter.getInt32_swap(bArray, 8);
-        householdPowerConsumption = new QuantityType<Power>(householdPowerConsumptionL, SmartHomeUnits.WATT);
-        long gridPower = DataConverter.getInt32_swap(bArray, 12);
-        if (gridPower < 0) {
-            gridPowerConsumpition = new QuantityType<Power>(0, SmartHomeUnits.WATT);
-            gridPowerSupply = new QuantityType<Power>(gridPower * -1, SmartHomeUnits.WATT);
-        } else {
-            gridPowerConsumpition = new QuantityType<Power>(gridPower, SmartHomeUnits.WATT);
-            gridPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
-        }
-        // logger.info("PV {} Battery {} Grid {} House {}", pvPowerSupplyL, batteryPower, gridPower,
-        // householdPowerConsumptionL);
-        externalPowerSupply = new QuantityType<Power>(DataConverter.getInt32_swap(bArray, 16), SmartHomeUnits.WATT);
-        wallboxPowerConsumption = new QuantityType<Power>(DataConverter.getInt32_swap(bArray, 20), SmartHomeUnits.WATT);
-        wallboxPVPowerConsumption = new QuantityType<Power>(DataConverter.getInt32_swap(bArray, 24),
-                SmartHomeUnits.WATT);
-        autarky = new QuantityType<Dimensionless>(bArray[28], SmartHomeUnits.PERCENT);
-        selfConsumption = new QuantityType<Dimensionless>(bArray[29], SmartHomeUnits.PERCENT);
-        batterySOC = new QuantityType<Dimensionless>(DataConverter.getIntValue(bArray, 30), SmartHomeUnits.PERCENT);
+        byte[] emsStatusBytes = Arrays.copyOfRange(bArray, 2, 4);
+        BitSet bs = BitSet.valueOf(emsStatusBytes);
+        batteryLoadingLocked = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
+        batterUnLoadingLocked = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
+        epPossible = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
+        weatherPredictedLoading = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
+        regulationStatus = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
+        loadingLockTime = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
+        unloadingLockTime = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
     }
 }
