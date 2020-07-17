@@ -336,6 +336,7 @@ public class LGWebOSActions implements ThingActions, ILGWebOSActions {
     }
 
     public static List<Application> getApplications(@Nullable ThingActions actions) {
+        // The workaround might not work due to the return type
         return invokeMethodOf(actions).getApplications();
     }
 
