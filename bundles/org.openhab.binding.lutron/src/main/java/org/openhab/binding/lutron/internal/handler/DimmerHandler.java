@@ -47,8 +47,8 @@ public class DimmerHandler extends LutronHandler {
     private final Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
 
     private DimmerConfig config;
-    private LutronDuration fadeInTime = new LutronDuration(config.fadeInTime);
-    private LutronDuration fadeOutTime = new LutronDuration(config.fadeOutTime);
+    private LutronDuration fadeInTime;
+    private LutronDuration fadeOutTime;
 
     public DimmerHandler(Thing thing) {
         super(thing);
@@ -75,6 +75,8 @@ public class DimmerHandler extends LutronHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;
         }
+        fadeInTime = new LutronDuration(config.fadeInTime);
+        fadeOutTime = new LutronDuration(config.fadeOutTime);
         logger.debug("Initializing Dimmer handler for integration ID {}", getIntegrationId());
 
         initDeviceState();
