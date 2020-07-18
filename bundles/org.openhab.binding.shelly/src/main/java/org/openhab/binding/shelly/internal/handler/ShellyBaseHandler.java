@@ -639,6 +639,16 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                                 event.equalsIgnoreCase(SHELLY_EVENT_FLOOD_DETECTED) ? OnOffType.ON : OnOffType.OFF);
                         break;
 
+                    case SHELLY_EVENT_DARK: // DW 1.7
+                    case SHELLY_EVENT_TWILIGHT: // DW 1.7
+                    case SHELLY_EVENT_BRIGHT: // DW 1.7
+                        updateChannel(group, CHANNEL_SENSOR_ILLUM, getStringType(event));
+                        break;
+
+                    case SHELLY_EVENT_VIBRATION:
+                        updateChannel(group, CHANNEL_SENSOR_VIBRATION, OnOffType.ON);
+                        break;
+
                     case SHELLY_EVENT_ALARM_MILD:
                     case SHELLY_EVENT_ALARM_HEAVY: // DW 1.7+
                     case SHELLY_EVENT_ALARM_OFF: // DW 1.7+
@@ -728,10 +738,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 }
             }
             if (bindingConfig.autoCoIoT && (version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT) >= 0)) {
-                if (!config.eventsCoIoT) {
-                    logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
+                if (version.compare(getString(prf.fwVersion), SHELLY_API_FWCOIOT2) >= 0) {
+                    logger.warn("{}: Firmware version {} or newer detected, CoIoT Version 2 is not yet supported",
+                            thingName, getString(prf.fwVersion));
+                } else {
+                    if (!config.eventsCoIoT) {
+                        logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
+                    }
+                    autoCoIoT = true;
                 }
-                autoCoIoT = true;
             }
         } catch (RuntimeException e) { // could be inconsistant format of beta version
             logger.debug("{}: {}", thingName, messages.get("versioncheck.failed", prf.fwVersion));

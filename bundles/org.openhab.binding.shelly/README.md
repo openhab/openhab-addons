@@ -14,11 +14,12 @@ This Binding integrated Shelly devices.
 | shelly25-roller    | Shelly 2.5 in Roller Mode                              | SHSW-25   |
 | shelly4pro         | Shelly 4x Relay Switch                                 | SHSW-44   |
 | shellydimmer       | Shelly Dimmer                                          | SHDM-1    |
+| shellydimmer2      | Shelly Dimmer2                                         | SHDM-2    |
 | shellyix3          | Shelly ix3                                             | SHIX3-1   |
 | shellyplug         | Shelly Plug                                            | SHPLG2-1  |
 | shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
-| shellyem3          | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
+| shelly3em          | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
 | shellyrgbw2        | Shelly RGB Controller                                  | SHRGBW2   |
 | shellybulb         | Shelly Bulb in Color or White Mode                     | SHBLB-1   |
 | shellybulbduo      | Shelly Duo (White Mode)                                | SHBDUO-1  |
@@ -153,7 +154,7 @@ Every device has a channel group `device` with the following channels:
 Availability of  channels is depending on the device type.
 The binding detects many of those channels on-the-fly (during thing initialization) and adjusts the thing channel structure.
 The device must be discovered and ONLINE to successfully complete this process.
-The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and EM3.
+The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and 3EM.
 
 
 ### Events / Alarms
@@ -244,7 +245,7 @@ end
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 
-### Shelly 3EM (thing-type: shellyem3)
+### Shelly 3EM (thing-type: shelly3em)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
@@ -373,6 +374,26 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |powerLed     |Switch   |r/w      |ON: Power LED is disabled, OFF: LED enabled                                      |
 
 ### Shelly Dimmer (thing-type: shellydimmer)
+
+|Group     |Channel      |Type     |read-only|Description                                                                      |
+|----------|-------------|---------|---------|---------------------------------------------------------------------------------|
+|relay     |brightness   |Dimmer   |r/w      |Currently selected brightness.                                                   |
+|          |input1       |Switch   |yes      |State of Input 1 (S1)                                                            |
+|          |input2       |Switch   |yes      |State of Input 2 (S2)                                                            |
+|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds          |
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds          |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
+|status    |loaderror    |Switch   |yes      |Last error, "no" if none                                                         |
+|          |overload     |Switch   |yes      |Overload condition detected, switch dimmer off or reduce load!                   |
+|          |overtemperature |Switch|yes      |Internal device temperature over maximum. Switch off, check physical installation|
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
+|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+
+### Shelly Dimmer2 (thing-type: shellydimmer2)
 
 |Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|

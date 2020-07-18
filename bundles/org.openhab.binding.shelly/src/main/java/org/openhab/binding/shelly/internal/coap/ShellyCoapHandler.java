@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 import tec.uom.se.unit.Units;
 
@@ -77,6 +78,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private final Gson gson;
     private String thingName;
     private boolean discovering = false;
+    private boolean dropMessages = false;
 
     private final ShellyCoapServer coapServer;
     private @Nullable CoapClient statusClient;
@@ -150,6 +152,11 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             return;
         }
 
+        if (dropMessages) {
+            logger.debug("{}: Incompatible CoAP message received, check binding and firmware version", thingName);
+            return;
+        }
+
         String payload = "";
         String devId = "";
         String uri = "";
@@ -177,6 +184,13 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             break;
                         case COIOT_OPTION_GLOBAL_DEVID:
                             devId = opt.getStringValue();
+                            String version = StringUtils.substringAfterLast(devId, "#");
+                            thingHandler.updateProperties(PROPERTY_COAP_VERSION, version);
+                            if (Integer.parseInt(version) != 1) {
+                                logger.warn("{}: Unsupported CoAP version detected: {}", thingName, version);
+                                dropMessages = true;
+                                return;
+                            }
                             break;
                         case COIOT_OPTION_STATUS_VALIDITY:
                             // validity = o.getIntegerValue();
@@ -250,39 +264,47 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         // Device description: payload = StringUtils.substringBefore(payload, "}]}]}") + "}]}]}";
         logger.debug("{}: CoIoT Device Description for {}: {}", thingName, devId, payload);
 
-        // Decode Json
-        CoIotDevDescription descr = gson.fromJson(payload, CoIotDevDescription.class);
+        try {
+            // Save to thing properties
+            thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
 
-        int i;
-        for (i = 0; i < descr.blk.size(); i++) {
-            CoIotDescrBlk blk = descr.blk.get(i);
-            logger.debug("{}:    id={}: {}", thingName, blk.id, blk.desc);
-            if (!blockMap.containsKey(blk.id)) {
-                blockMap.put(blk.id, blk);
-            } else {
-                blockMap.replace(blk.id, blk);
-            }
-            if ((blk.type != null) && !blk.type.isEmpty()) {
-                // in fact it is a sen entry - that's vioaling the Spec
-                logger.trace("{}:    fix: auto-create sensor definition for id {}/{}!", thingName, blk.id, blk.desc);
-                CoIotDescrSen sen = new CoIotDescrSen();
-                sen.id = blk.id;
-                sen.desc = blk.desc;
-                sen.type = blk.type;
-                sen.range = blk.range;
-                sen.links = blk.links;
-                addSensor(sen);
-            }
-        }
-        logger.debug("{}: Adding {} sensor definitions", thingName, descr.sen.size());
-        if (descr.sen != null) {
-            for (i = 0; i < descr.sen.size(); i++) {
-                addSensor(descr.sen.get(i));
-            }
-        }
+            // Decode Json
+            CoIotDevDescription descr = gson.fromJson(payload, CoIotDevDescription.class);
 
-        // Save to thing properties
-        thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
+            int i;
+            for (i = 0; i < descr.blk.size(); i++) {
+                CoIotDescrBlk blk = descr.blk.get(i);
+                logger.debug("{}:    id={}: {}", thingName, blk.id, blk.desc);
+                if (!blockMap.containsKey(blk.id)) {
+                    blockMap.put(blk.id, blk);
+                } else {
+                    blockMap.replace(blk.id, blk);
+                }
+                if ((blk.type != null) && !blk.type.isEmpty()) {
+                    // in fact it is a sen entry - that's vioaling the Spec
+                    logger.trace("{}:    fix: auto-create sensor definition for id {}/{}!", thingName, blk.id,
+                            blk.desc);
+                    CoIotDescrSen sen = new CoIotDescrSen();
+                    sen.id = blk.id;
+                    sen.desc = blk.desc;
+                    sen.type = blk.type;
+                    sen.range = blk.range;
+                    sen.links = blk.links;
+                    addSensor(sen);
+                }
+            }
+            logger.debug("{}: Adding {} sensor definitions", thingName, descr.sen.size());
+            if (descr.sen != null) {
+                for (i = 0; i < descr.sen.size(); i++) {
+                    addSensor(descr.sen.get(i));
+                }
+            }
+        } catch (JsonSyntaxException e) {
+            logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload);
+            dropMessages = true;
+        } catch (RuntimeException e) {// incl JsonSyntaxException
+            logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload, e);
+        }
     }
 
     /**
@@ -461,7 +483,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN3,
                                         toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
                                 break;
-                            case "energy counter total [w-h]": // EM3 reports W/h
+                            case "energy counter total [w-h]": // 3EM reports W/h
                             case "energy counter total [w-min]":
                                 Double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
                                 updateChannel(updates, rGroup, CHANNEL_METER_TOTALKWH,

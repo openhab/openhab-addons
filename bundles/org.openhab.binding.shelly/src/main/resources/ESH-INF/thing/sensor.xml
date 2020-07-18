@@ -67,6 +67,19 @@
 		<config-description-ref uri="thing-type:shelly:battery" />
 	</thing-type>
 
+	<thing-type id="shellydw2">
+		<label>Shelly Door/Window (SHDW-2)</label>
+		<description>Shelly Door/Window 2 Sensor (battery powered)</description>
+
+		<channel-groups>
+			<channel-group id="sensors" typeId="doorWinSensors" />
+			<channel-group id="battery" typeId="batteryStatus" />
+			<channel-group id="device" typeId="deviceStatus" />
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:shelly:battery" />
+	</thing-type>
+
 	<thing-type id="shellysense">
 		<label>Shelly Sense (SHSEN-1)</label>
 		<description>Shelly Sense Remote IR Controller</description>

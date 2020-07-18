@@ -35,9 +35,11 @@ public class ShellyThingCreator {
         // mapping by thing type
         thingTypeMapping.put(SHELLYDT_1PM, THING_TYPE_SHELLY1PM_STR);
         thingTypeMapping.put(SHELLYDT_1, THING_TYPE_SHELLY1_STR);
-        thingTypeMapping.put(SHELLYDT_EM3, THING_TYPE_SHELLYEM3_STR);
+        thingTypeMapping.put(SHELLYDT_3EM, THING_TYPE_SHELLY3EM_STR);
         thingTypeMapping.put(SHELLYDT_EM, THING_TYPE_SHELLYEM_STR);
         thingTypeMapping.put(SHELLYDT_GAS, THING_TYPE_SHELLYGAS_STR);
+        thingTypeMapping.put(SHELLYDT_DW, THING_TYPE_SHELLYDOORWIN_STR);
+        thingTypeMapping.put(SHELLYDT_DW2, THING_TYPE_SHELLYDOORWIN2_STR);
         thingTypeMapping.put(SHELLYDT_DUO, THING_TYPE_SHELLYDUO_STR);
         thingTypeMapping.put(SHELLYDT_BULB, THING_TYPE_SHELLYBULB_STR);
         thingTypeMapping.put(SHELLYDT_VINTAGE, THING_TYPE_SHELLYVINTAGE_STR);
@@ -53,7 +55,7 @@ public class ShellyThingCreator {
         thingTypeMapping.put(THING_TYPE_SHELLYDIMMER2_STR, THING_TYPE_SHELLYDIMMER2_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYDIMMER_STR, THING_TYPE_SHELLYDIMMER_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYIX3_STR, THING_TYPE_SHELLYIX3_STR);
-        thingTypeMapping.put(THING_TYPE_SHELLYEM3_STR, THING_TYPE_SHELLYEM3_STR);
+        thingTypeMapping.put(THING_TYPE_SHELLY3EM_STR, THING_TYPE_SHELLY3EM_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYEM_STR, THING_TYPE_SHELLYEM_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYVINTAGE_STR, THING_TYPE_SHELLYVINTAGE_STR);
@@ -64,6 +66,7 @@ public class ShellyThingCreator {
         thingTypeMapping.put(THING_TYPE_SHELLYGAS_STR, THING_TYPE_SHELLYGAS_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYFLOOD_STR, THING_TYPE_SHELLYFLOOD_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYDOORWIN_STR, THING_TYPE_SHELLYDOORWIN_STR);
+        thingTypeMapping.put(THING_TYPE_SHELLYDOORWIN2_STR, THING_TYPE_SHELLYDOORWIN2_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYSENSE_STR, THING_TYPE_SHELLYSENSE_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYEYE_STR, THING_TYPE_SHELLYEYE_STR);
         thingTypeMapping.put(THING_TYPE_SHELLYBUTTON1_STR, THING_TYPE_SHELLYBUTTON1_STR);

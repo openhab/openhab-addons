@@ -160,7 +160,7 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
 
                             if (emeter.current != null) {
-                                // Shelly EM3
+                                // Shelly
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
                                         toQuantityType(getDouble(emeter.current), DIGITS_VOLT, SmartHomeUnits.AMPERE));
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,

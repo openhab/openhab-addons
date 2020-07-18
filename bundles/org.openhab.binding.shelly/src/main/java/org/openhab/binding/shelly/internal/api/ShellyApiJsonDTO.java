@@ -87,10 +87,13 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_EVENT_SENSORREPORT = "report";
     public static final String SHELLY_EVENT_DARK = "dark";
     public static final String SHELLY_EVENT_TWILIGHT = "twilight";
+    public static final String SHELLY_EVENT_BRIGHT = "bright";
     public static final String SHELLY_EVENT_FLOOD_DETECTED = "flood_detected";
     public static final String SHELLY_EVENT_FLOOD_GONE = "flood_gone";
     public static final String SHELLY_EVENT_VIBRATION = "vibration"; // DW 1.6.5+
     public static final String SHELLY_EVENT_CLOSE = "close"; // DW 1.6.5+
+    public static final String SHELLY_EVENT_TEMP_OVER = "temp_over"; // FW 1.7
+    public static final String SHELLY_EVENT_TEMP_UNDER = "temp_under"; // FW 1.7
 
     // Gas
     public static final String SHELLY_EVENT_ALARM_MILD = "alarm_mild"; // DW 1.7+
@@ -453,8 +456,8 @@ public class ShellyApiJsonDTO {
         @SerializedName("total_returned")
         public Double totalReturned; // Total returned energy, Wh
 
-        public Double pf; // EM3
-        public Double current; // EM3
+        public Double pf; // 3EM
+        public Double current; // 3EM
     }
 
     public static class ShellySettingsUpdate {

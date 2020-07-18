@@ -66,7 +66,7 @@ public class ShellyDeviceProfile {
     public boolean isPlugS = false; // true if it is a Shelly Plug S
 
     public int numMeters = 0;
-    public boolean isEMeter = false; // true for ShellyEM/EM3
+    public boolean isEMeter = false; // true for ShellyEM/3EM
 
     public boolean isLight = false; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb = false; // true only if it is a Bulb
@@ -189,7 +189,7 @@ public class ShellyDeviceProfile {
         boolean isFlood = thingType.equals(THING_TYPE_SHELLYFLOOD_STR);
         boolean isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
-        isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR);
+        isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
         isIX3 = thingType.equals(THING_TYPE_SHELLYIX3_STR);
         isButton = thingType.equals(THING_TYPE_SHELLYBUTTON1_STR);
