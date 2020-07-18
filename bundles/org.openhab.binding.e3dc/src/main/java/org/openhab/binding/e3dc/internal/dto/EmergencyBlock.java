@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.e3dc.internal.dto;
 
-import java.util.Arrays;
 import java.util.BitSet;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -53,14 +52,14 @@ public class EmergencyBlock implements Data {
         } else {
             epStatus = EP_UNKOWN;
         }
-        byte[] emsStatusBytes = Arrays.copyOfRange(bArray, 2, 4);
+        byte[] emsStatusBytes = new byte[] { bArray[3], bArray[2] };
         BitSet bs = BitSet.valueOf(emsStatusBytes);
         batteryLoadingLocked = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
-        batterUnLoadingLocked = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
-        epPossible = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
-        weatherPredictedLoading = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
-        regulationStatus = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
-        loadingLockTime = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
-        unloadingLockTime = bs.get(0) ? OnOffType.ON : OnOffType.OFF;
+        batterUnLoadingLocked = bs.get(1) ? OnOffType.ON : OnOffType.OFF;
+        epPossible = bs.get(2) ? OnOffType.ON : OnOffType.OFF;
+        weatherPredictedLoading = bs.get(3) ? OnOffType.ON : OnOffType.OFF;
+        regulationStatus = bs.get(4) ? OnOffType.ON : OnOffType.OFF;
+        loadingLockTime = bs.get(5) ? OnOffType.ON : OnOffType.OFF;
+        unloadingLockTime = bs.get(6) ? OnOffType.ON : OnOffType.OFF;
     }
 }

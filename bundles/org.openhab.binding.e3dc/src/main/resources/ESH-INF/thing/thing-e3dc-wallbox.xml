@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="e3dc-wallbox">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="e3dc-device"/>
+		</supported-bridge-type-refs>
+		<label>E3DC Wallbox Control</label>
+		<description>Shows Settings and provides Control on E3DC connected Wallboxes</description>
+		<channels>
+			<channel id="wb-available" typeId="wb-available-channel"/>
+			<channel id="wb-sunmode" typeId="wb-sunmode-channel"/>
+			<channel id="wb-charging" typeId="wb-charging-channel"/>
+			<channel id="wb-jack-locked" typeId="wb-jack-locked-channel"/>
+			<channel id="wb-jack-plugged" typeId="wb-jack-plugged-channel"/>
+			<channel id="wb-schuko-on" typeId="wb-schuko-on-channel"/>
+			<channel id="wb-schuko-plugged" typeId="wb-schuko-plugged-channel"/>
+			<channel id="wb-schuko-locked" typeId="wb-schuko-locked-channel"/>
+			<channel id="wb-relay-16a" typeId="wb-relay-16a-channel"/>
+			<channel id="wb-relay-32a" typeId="wb-relay-32a-channel"/>
+			<channel id="wb-3phase" typeId="wb-3phase-channel"/>
+		</channels>
+		<config-description>
+			<parameter name="wallboxId" type="integer" required="true">
+				<label>Wallbox ID</label>
+				<description>E3DC supports up to 8 Wallboxes - selected value from 0 to 7</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

@@ -61,9 +61,9 @@ public class E3DCBindingConstants {
     // Channels for Wallbox Block
     public static final String WB_AVAILABLE_CHANNEL = "wb-available";
     public static final String WB_SUNMODE_CHANNEL = "wb-sunmode";
-    public static final String WB_CHARGING_CHANNEL = "wb-cahrging";
+    public static final String WB_CHARGING_CHANNEL = "wb-charging";
     public static final String WB_JACK_LOCKED_CHANNEL = "wb-jack-locked";
-    public static final String WB_JACK_PLUGGED_CHANNEL = "wb-jack-locked";
+    public static final String WB_JACK_PLUGGED_CHANNEL = "wb-jack-plugged";
     public static final String WB_SCHUKO_ON_CHANNEL = "wb-schuko-on";
     public static final String WB_SCHUKO_PLUGGED_CHANNEL = "wb-schuko-plugged";
     public static final String WB_SCHUKO_LOCKED_CHANNEL = "wb-schuko-locked";
