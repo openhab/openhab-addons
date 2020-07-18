@@ -14,10 +14,10 @@ package org.openhab.binding.lutron.action;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -56,40 +56,53 @@ public class DimmerActions implements ThingActions, IDimmerActions {
         return handler;
     }
 
+    /**
+     * The setLevel dimmer thing action
+     */
     @Override
-    @RuleAction(label = "setLightLevel", description = "Send light level command with fade and delay times")
-    public void setLightLevel(
-            @ActionInput(name = "level", label = "level", description = "Level") @Nullable DecimalType level,
-            @ActionInput(name = "fadeTime", label = "fadeTime", description = "Fade time") @Nullable DecimalType fadeTime,
-            @ActionInput(name = "delayTime", label = "delayTime", description = "Delay time") @Nullable DecimalType delayTime) {
+    @RuleAction(label = "setLevel", description = "Send set level command with fade and delay times")
+    public void setLevel(
+            @ActionInput(name = "level", label = "Dimmer Level", description = "New dimmer level (0-100)") @Nullable Double level,
+            @ActionInput(name = "fadeTime", label = "Fade Time", description = "Time to fade to new level (seconds)") @Nullable Double fadeTime,
+            @ActionInput(name = "delayTime", label = "Delay Time", description = "Delay before starting fade (seconds)") @Nullable Double delayTime) {
         DimmerHandler dimmerHandler = handler;
         if (dimmerHandler == null) {
-            logger.warn("Handler not set for Dimmer thing actions.");
+            logger.debug("Handler not set for Dimmer thing actions.");
             return;
         }
-
-        // TODO - Allow null values for fade & delay
         if (level == null) {
-            logger.debug("Ignoring setLightLevel command due to null value.");
+            logger.debug("Ignoring setLevel command due to null level value.");
             return;
         }
         if (fadeTime == null) {
-            logger.debug("Ignoring setLightLevel command '{}' due to null value for fade time.", level);
+            logger.debug("Ignoring setLevel command due to null value for fadeTime.");
             return;
         }
         if (delayTime == null) {
-            logger.debug("Ignoring setLightLevel command '{}' due to null value for delay time.", level);
+            logger.debug("Ignoring setLevel command due to null value for delayTime.");
             return;
         }
 
-        dimmerHandler.setLightLevel(level, new LutronDuration(fadeTime.toBigDecimal()),
-                new LutronDuration(delayTime.toBigDecimal()));
+        Double lightLevel = level;
+        if (lightLevel > 100.0) {
+            lightLevel = 100.0;
+        } else if (lightLevel < 0.0) {
+            lightLevel = 0.0;
+        }
+        try {
+            dimmerHandler.setLightLevel(new BigDecimal(lightLevel).setScale(2, BigDecimal.ROUND_HALF_UP),
+                    new LutronDuration(fadeTime), new LutronDuration(delayTime));
+        } catch (IllegalArgumentException e) {
+            logger.debug("Ignoring setLevel command due to illegal argument exception: {}", e.getMessage());
+        }
     }
 
-    // Static method for Rules DSL backward compatibility
-    public static void setLightLevel(@Nullable ThingActions actions, @Nullable DecimalType level,
-            @Nullable DecimalType fadeTime, @Nullable DecimalType delayTime) {
-        invokeMethodOf(actions).setLightLevel(level, fadeTime, delayTime); // Remove when core issue #1536 is fixed
+    /**
+     * Static setLevel method for Rules DSL backward compatibility
+     */
+    public static void setLevel(@Nullable ThingActions actions, @Nullable Double level, @Nullable Double fadeTime,
+            @Nullable Double delayTime) {
+        invokeMethodOf(actions).setLevel(level, fadeTime, delayTime); // Replace when core issue #1536 is fixed
     }
 
     /**

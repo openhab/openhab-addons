@@ -14,7 +14,6 @@ package org.openhab.binding.lutron.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 
 /**
  * The {@link IDimmerActions} interface defines the interface for all thing actions supported by the dimmer thing.
@@ -27,7 +26,6 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 @NonNullByDefault
 public interface IDimmerActions {
 
-    public void setLightLevel(@Nullable DecimalType level, @Nullable DecimalType fadeTime,
-            @Nullable DecimalType delayTime);
+    public void setLevel(@Nullable Double level, @Nullable Double fadeTime, @Nullable Double delayTime);
 
 }

@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -118,7 +117,7 @@ public class DimmerHandler extends LutronHandler {
         }
     }
 
-    public void setLightLevel(DecimalType level, LutronDuration fade, LutronDuration delay) {
+    public void setLightLevel(BigDecimal level, LutronDuration fade, LutronDuration delay) {
         int intLevel = level.intValue();
         output(ACTION_ZONELEVEL, intLevel, fade, delay);
     }

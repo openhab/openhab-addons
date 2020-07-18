@@ -34,8 +34,6 @@ public class LutronDuration {
     private static final Pattern PATTERN_MMSS = Pattern.compile("^(\\d{1,2}):(\\d{2})$");
     private static final Pattern PATTERN_HHMMSS = Pattern.compile("^(\\d{1,2}):(\\d{2}):(\\d{2})$");
 
-    // private final static Logger logger = LoggerFactory.getLogger(LutronDuration.class);
-
     public final Integer seconds;
     public final Integer hundredths;
 
@@ -71,6 +69,13 @@ public class LutronDuration {
         this.seconds = seconds.intValue();
         BigDecimal fractional = seconds.subtract(new BigDecimal(seconds.intValue()));
         this.hundredths = fractional.movePointRight(2).intValue();
+    }
+
+    /**
+     * Constructor accepting duration in seconds as a Double
+     */
+    public LutronDuration(Double seconds) {
+        this(new BigDecimal(seconds).setScale(2, BigDecimal.ROUND_HALF_UP));
     }
 
     /**
