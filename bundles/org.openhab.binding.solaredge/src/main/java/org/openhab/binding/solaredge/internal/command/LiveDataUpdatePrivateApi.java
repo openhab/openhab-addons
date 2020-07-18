@@ -22,8 +22,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
-import org.openhab.binding.solaredge.internal.model.DataResponse;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponseTransformer;
 
 /**
  * command that retrieves status values for live data channels via private API
@@ -33,11 +33,13 @@ import org.openhab.binding.solaredge.internal.model.LiveDataResponse;
 public class LiveDataUpdatePrivateApi extends AbstractCommandCallback implements SolarEdgeCommand {
 
     private final SolarEdgeHandler handler;
+    private final LiveDataResponseTransformer transformer;
     private int retries = 0;
 
     public LiveDataUpdatePrivateApi(SolarEdgeHandler handler) {
         super(handler.getConfiguration());
         this.handler = handler;
+        this.transformer = new LiveDataResponseTransformer(handler);
     }
 
     @Override
@@ -68,8 +70,10 @@ public class LiveDataUpdatePrivateApi extends AbstractCommandCallback implements
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
-                DataResponse jsonObject = gson.fromJson(json, LiveDataResponse.class);
-                handler.updateChannelStatus(jsonObject.getValues());
+                LiveDataResponse jsonObject = fromJson(json, LiveDataResponse.class);
+                if (jsonObject != null) {
+                    handler.updateChannelStatus(transformer.transform(jsonObject));
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ package org.openhab.binding.solaredge.internal.callback;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
+import java.lang.reflect.Type;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.SocketTimeoutException;
@@ -23,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -37,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * base class for all commands. common logic should be implemented here
@@ -58,7 +61,7 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * JSON deserializer
      */
-    protected final Gson gson;
+    private final Gson gson;
 
     /**
      * status code of fulfilled request
@@ -180,5 +183,19 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     @Override
     public final void setListener(StatusUpdateListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * just a wrapper as fromJson could return null. This will avoid warnings as eclipse otherwise assumes unnecessary
+     * null checks which are not unnecessary
+     *
+     * @param <T>
+     * @param json
+     * @param classOfT
+     * @return
+     * @throws JsonSyntaxException
+     */
+    protected <T> @Nullable T fromJson(String json, Class<T> classOfT) throws JsonSyntaxException {
+        return gson.fromJson(json, (Type) classOfT);
     }
 }

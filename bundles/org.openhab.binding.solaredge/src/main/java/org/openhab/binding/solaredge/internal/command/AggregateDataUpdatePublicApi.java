@@ -25,8 +25,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponseTransformerPublicApi;
 import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
-import org.openhab.binding.solaredge.internal.model.DataResponse;
 
 /**
  * command that retrieves status values for aggregate data channels via public API
@@ -39,6 +39,7 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
      * the solaredge handler
      */
     private final SolarEdgeHandler handler;
+    private final AggregateDataResponseTransformerPublicApi transformer;
 
     /**
      * data aggregation level
@@ -61,6 +62,7 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
         super(handler.getConfiguration());
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         this.handler = handler;
+        this.transformer = new AggregateDataResponseTransformerPublicApi(handler);
         this.period = period;
     }
 
@@ -98,8 +100,10 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
-                DataResponse jsonObject = gson.fromJson(json, AggregateDataResponsePublicApi.class);
-                handler.updateChannelStatus(jsonObject.getValues());
+                AggregateDataResponsePublicApi jsonObject = fromJson(json, AggregateDataResponsePublicApi.class);
+                if (jsonObject != null) {
+                    handler.updateChannelStatus(transformer.transform(jsonObject, period));
+                }
             }
         }
     }
