@@ -53,7 +53,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 2;
 
-    private @Nullable NetworkAddressService network = null;
+    private @Nullable NetworkAddressService networkAS;
 
     public PlayStationDiscovery() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS * 2, true);
@@ -68,11 +68,11 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
 
     @Reference
     public void bindNetworkAddressService(NetworkAddressService network) {
-        this.network = network;
+        networkAS = network;
     }
 
     private @Nullable InetAddress getBroadcastAdress() {
-        NetworkAddressService nwService = network;
+        NetworkAddressService nwService = networkAS;
         if (nwService != null) {
             try {
                 String address = nwService.getConfiguredBroadcastAddress();
@@ -89,7 +89,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
     }
 
     private @Nullable InetAddress getIPv4Adress() {
-        NetworkAddressService nwService = network;
+        NetworkAddressService nwService = networkAS;
         if (nwService != null) {
             try {
                 String address = nwService.getPrimaryIpv4HostAddress();
@@ -106,7 +106,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
     private synchronized void discover() {
         logger.debug("Trying to discover all PS4 devices");
 
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(0, getIPv4Adress())) {
             socket.setBroadcast(true);
             socket.setSoTimeout(DISCOVERY_TIMEOUT_SECONDS * 1000);
 
@@ -144,7 +144,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
             logger.info("No IP/Broadcast address found. Make sure OpenHab is configured!");
             return;
         }
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(0, getIPv4Adress())) {
             socket.setBroadcast(true);
             socket.setSoTimeout(DISCOVERY_TIMEOUT_SECONDS * 1000);
 
@@ -195,7 +195,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
     private synchronized void discoverPS3Old() {
         logger.debug("Trying to discover all PS3 devices in Remote-Play mode.");
 
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(0, getIPv4Adress())) {
             socket.setBroadcast(true);
             socket.setSoTimeout(DISCOVERY_TIMEOUT_SECONDS * 1000);
 

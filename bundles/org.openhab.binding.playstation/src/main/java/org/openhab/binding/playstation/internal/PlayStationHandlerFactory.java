@@ -17,6 +17,7 @@ import static org.openhab.binding.playstation.internal.PlayStationBindingConstan
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -37,10 +38,12 @@ import org.osgi.service.component.annotations.Reference;
 public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
 
     private final LocaleProvider localeProvider;
+    private final NetworkAddressService networkAS;
 
     @Activate
-    public PlayStationHandlerFactory(@Reference LocaleProvider provider) {
+    public PlayStationHandlerFactory(@Reference LocaleProvider provider, @Reference NetworkAddressService network) {
         localeProvider = provider;
+        networkAS = network;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_PS4.equals(thingTypeUID) || THING_TYPE_PS5.equals(thingTypeUID)) {
-            return new PS4Handler(thing, localeProvider);
+            return new PS4Handler(thing, localeProvider, networkAS);
         }
         if (THING_TYPE_PS3.equals(thingTypeUID)) {
             return new PS3Handler(thing);

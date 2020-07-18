@@ -45,10 +45,16 @@
 			<default>320</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="outboundIP" type="text">
+			<context>network-address</context>
+			<label>Outbound IP</label>
+			<description>IP address of the network interface to use.</description>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>IP address</label>
-			<description>The local IP address of the PlayStation 4.</description>
+			<description>The IP address of the PlayStation 4.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="ipPort" type="integer">

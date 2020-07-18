@@ -19,6 +19,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
@@ -35,6 +36,7 @@ import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -66,10 +68,12 @@ public class PS4Handler extends BaseThingHandler {
 
     private PS4Configuration config = new PS4Configuration();
 
-    private @Nullable LocaleProvider localeProvider;
+    private final @Nullable LocaleProvider localeProvider;
+    private final @Nullable NetworkAddressService networkAS;
     private @Nullable ScheduledFuture<?> refreshTimer;
     private @Nullable ScheduledFuture<?> timeoutTimer;
     private @Nullable SocketChannelHandler socketChannelHandler;
+    private @Nullable InetAddress localAddress;
 
     // State of PS4
     private String currentApplication = "";
@@ -81,14 +85,16 @@ public class PS4Handler extends BaseThingHandler {
     boolean loggedIn = false;
     boolean oskOpen = false;
 
-    public PS4Handler(Thing thing, @Nullable LocaleProvider localeProvider) {
+    public PS4Handler(Thing thing, LocaleProvider locProvider, NetworkAddressService network) {
         super(thing);
-        this.localeProvider = localeProvider;
+        localeProvider = locProvider;
+        networkAS = network;
     }
 
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
+        figureOutLocalIP();
         SocketChannelHandler scHandler = socketChannelHandler;
         if (!config.pairingCode.isEmpty() && (scHandler == null || !loggedIn)) {
             // Try to log in then remove pairing code as it's one use only.
@@ -169,6 +175,7 @@ public class PS4Handler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(PS4Configuration.class);
 
+        figureOutLocalIP();
         updateStatus(ThingStatus.UNKNOWN);
         setupRefreshTimer();
     }
@@ -186,6 +193,30 @@ public class PS4Handler extends BaseThingHandler {
             timeoutTimer = null;
         }
         stopConnection();
+    }
+
+    /**
+     * Tries to figure out a local IP that can communicate with the PS4.
+     */
+    private void figureOutLocalIP() {
+        if (!config.outboundIP.trim().isEmpty()) {
+            try {
+                localAddress = InetAddress.getByName(config.outboundIP);
+                logger.debug("Outbound local IP.\"{}\"", localAddress);
+                return;
+            } catch (UnknownHostException e) {
+                // This is expected
+            }
+        }
+        NetworkAddressService network = networkAS;
+        String adr = (network != null) ? network.getPrimaryIpv4HostAddress() : null;
+        if (adr != null) {
+            try {
+                localAddress = InetAddress.getByName(adr);
+            } catch (UnknownHostException e) {
+                // Ignore, just let the socket use whatever.
+            }
+        }
     }
 
     /**
@@ -250,7 +281,7 @@ public class PS4Handler extends BaseThingHandler {
     }
 
     private void updateAllChannels() {
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(0, localAddress)) {
             socket.setBroadcast(false);
             socket.setSoTimeout(SOCKET_TIMEOUT_SECONDS * 1000);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
@@ -280,7 +311,7 @@ public class PS4Handler extends BaseThingHandler {
 
     private void wakeUpPS4() {
         logger.debug("Waking up PS4...");
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(0, localAddress)) {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
             // send wake-up
@@ -294,7 +325,7 @@ public class PS4Handler extends BaseThingHandler {
     }
 
     private boolean openComs() {
-        try (DatagramSocket socket = new DatagramSocket()) {
+        try (DatagramSocket socket = new DatagramSocket(0, localAddress)) {
             socket.setBroadcast(false);
             InetAddress inetAddress = InetAddress.getByName(config.ipAddress);
             // send launch

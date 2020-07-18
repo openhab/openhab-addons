@@ -53,6 +53,13 @@ public class PS4Configuration {
     public int artworkSize = 320;
 
     /**
+     * IP-address of OpenHABs network interface.
+     * This should only be used if the PS4 is on a sub-net
+     * different from the one configured in OpenHAB.
+     */
+    public String outboundIP = "";
+
+    /**
      * IP-address of PS4.
      */
     public String ipAddress = "";
