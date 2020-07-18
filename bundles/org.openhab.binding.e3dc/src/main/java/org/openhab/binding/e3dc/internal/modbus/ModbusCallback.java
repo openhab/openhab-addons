@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.e3dc.internal.modbus;
 
+import static org.openhab.binding.e3dc.internal.modbus.E3DCModbusConstans.*;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.e3dc.internal.dto.EmergencyBlock;
 import org.openhab.binding.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.e3dc.internal.dto.PowerBlock;
 import org.openhab.binding.e3dc.internal.dto.StringBlock;
@@ -38,15 +41,23 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ModbusCallback extends ModbusDataProvider implements ModbusReadCallback {
-    public static final int REGISTER_LENGTH = 104;
-
     private final Logger logger = LoggerFactory.getLogger(ModbusCallback.class);
     private @Nullable InfoBlock infoBlock;
-    private byte[] bArray = new byte[REGISTER_LENGTH * 2];
+    private DataType callbackType;
+    private byte[] bArray;
     private int counter = 0;
     private long maxDuration = Long.MIN_VALUE;
     private long minDuration = Long.MAX_VALUE;
     private long avgDuration = 0;
+
+    public ModbusCallback(DataType type) {
+        callbackType = type;
+        if (type.equals(DataType.INFO)) {
+            bArray = new byte[INFO_REG_SIZE * 2];
+        } else {
+            bArray = new byte[(REGISTER_LENGTH - INFO_REG_SIZE) * 2];
+        }
+    }
 
     @Override
     public void onRegisters(ModbusReadRequestBlueprint request, @NonNull ModbusRegisterArray registers) {
@@ -106,16 +117,24 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
     @Override
     public @Nullable Data getData(DataType type) {
         synchronized (bArray) {
-            if (type.equals(DataType.INFO)) {
-                return new InfoBlock(Arrays.copyOfRange(bArray, 0, 133));
-            } else if (type.equals(DataType.POWER)) {
-                return new PowerBlock(Arrays.copyOfRange(bArray, 67 * 2, 67 * 2 + 32));
-            } else if (type.equals(DataType.EMERGENCY)) {
-                return new StringBlock(Arrays.copyOfRange(bArray, 83 * 2, 83 * 2 + 4));
-            } else if (type.equals(DataType.WALLBOX)) {
-                return new WallboxArray(Arrays.copyOfRange(bArray, 87 * 2, 87 * 2 + 16));
-            } else if (type.equals(DataType.STRINGS)) {
-                return new StringBlock(Arrays.copyOfRange(bArray, 95 * 2, 95 * 2 + 18));
+            if (type.equals(DataType.INFO) && callbackType.equals(DataType.INFO)) {
+                return new InfoBlock(Arrays.copyOfRange(bArray, INFO_REG_START, INFO_REG_SIZE * 2));
+            } else if (type.equals(DataType.POWER) && callbackType.equals(DataType.DATA)) {
+                int start = (POWER_REG_START - INFO_REG_SIZE) * 2;
+                int end = start + POWER_REG_SIZE * 2;
+                return new PowerBlock(Arrays.copyOfRange(bArray, start, end));
+            } else if (type.equals(DataType.EMERGENCY) && callbackType.equals(DataType.DATA)) {
+                int start = (EMS_REG_START - INFO_REG_SIZE) * 2;
+                int end = start + EMS_REG_SIZE * 2;
+                return new EmergencyBlock(Arrays.copyOfRange(bArray, start, end));
+            } else if (type.equals(DataType.WALLBOX) && callbackType.equals(DataType.DATA)) {
+                int start = (WALLBOX_REG_START - INFO_REG_SIZE) * 2;
+                int end = start + WALLBOX_REG_SIZE * 2;
+                return new WallboxArray(Arrays.copyOfRange(bArray, start, end));
+            } else if (type.equals(DataType.STRINGS) && callbackType.equals(DataType.DATA)) {
+                int start = (STRINGS_REG_START - INFO_REG_SIZE) * 2;
+                int end = start + STRINGS_REG_SIZE * 2;
+                return new StringBlock(Arrays.copyOfRange(bArray, start, end));
             }
             return null;
         }

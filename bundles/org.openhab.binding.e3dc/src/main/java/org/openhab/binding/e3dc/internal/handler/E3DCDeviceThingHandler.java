@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.e3dc.internal.handler;
 
-import static org.openhab.binding.e3dc.internal.modbus.E3DCModbusConstans.WALLBOX_REG_START;
+import static org.openhab.binding.e3dc.internal.modbus.E3DCModbusConstans.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.e3dc.internal.E3DCDeviceConfiguration;
+import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.e3dc.internal.modbus.DataListener;
 import org.openhab.binding.e3dc.internal.modbus.ModbusCallback;
 import org.openhab.binding.e3dc.internal.modbus.ModbusDataProvider;
@@ -48,13 +49,13 @@ import org.slf4j.LoggerFactory;
 public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataListener, ModbusWriteCallback {
     private final Logger logger = LoggerFactory.getLogger(E3DCDeviceThingHandler.class);
     private ModbusManager modbusManagerRef;
-    private final ModbusCallback modbusCallback = new ModbusCallback();
+    private final ModbusCallback modbusInfoCallback = new ModbusCallback(DataType.INFO);
+    private final ModbusCallback modbusDataCallback = new ModbusCallback(DataType.DATA);
+    private BasicPollTaskImpl infoPoller;
+    private BasicPollTaskImpl dataPoller;
+    private ModbusTCPSlaveEndpoint slaveEndpoint;
     private ThingStatus myStatus = ThingStatus.UNKNOWN;
     private @Nullable E3DCDeviceConfiguration config;
-
-    // Modbus variables
-    private BasicPollTaskImpl poller;
-    private ModbusTCPSlaveEndpoint slaveEndpoint;
 
     public E3DCDeviceThingHandler(Bridge bridge, ModbusManager ref) {
         super(bridge);
@@ -73,11 +74,19 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
             config = getConfigAs(E3DCDeviceConfiguration.class);
             if (checkConfig(config)) {
                 slaveEndpoint = new ModbusTCPSlaveEndpoint(config.host, config.port);
-                BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(1,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, ModbusCallback.REGISTER_LENGTH, 3);
-                modbusCallback.addDataListener(this);
-                poller = new BasicPollTaskImpl(slaveEndpoint, request, modbusCallback);
-                modbusManagerRef.registerRegularPoll(poller, config.refresh, 0);
+                // register low speed info poller
+                BasicModbusReadRequestBlueprint infoRequest = new BasicModbusReadRequestBlueprint(1,
+                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, INFO_REG_START, INFO_REG_SIZE, 3);
+                infoPoller = new BasicPollTaskImpl(slaveEndpoint, infoRequest, modbusInfoCallback);
+                modbusManagerRef.registerRegularPoll(infoPoller, INFO_POLL_REFRESH_TIME_MS, 0);
+                // register high speed data poller
+                BasicModbusReadRequestBlueprint dataRequest = new BasicModbusReadRequestBlueprint(1,
+                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START,
+                        REGISTER_LENGTH - INFO_REG_SIZE, 3);
+                dataPoller = new BasicPollTaskImpl(slaveEndpoint, dataRequest, modbusDataCallback);
+                modbusManagerRef.registerRegularPoll(dataPoller, config.refresh, 0);
+                // listen for data to get ONLINE
+                modbusDataCallback.addDataListener(this);
             } else {
                 setStatus(ThingStatus.OFFLINE);
             }
@@ -86,9 +95,14 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
 
     @Override
     public void dispose() {
-        modbusCallback.removeDataListener(this);
-        if (poller != null && modbusManagerRef != null) {
-            modbusManagerRef.unregisterRegularPoll(poller);
+        modbusDataCallback.removeDataListener(this);
+        if (modbusManagerRef != null) {
+            if (infoPoller != null) {
+                modbusManagerRef.unregisterRegularPoll(infoPoller);
+            }
+            if (dataPoller != null) {
+                modbusManagerRef.unregisterRegularPoll(dataPoller);
+            }
         }
     }
 
@@ -123,8 +137,12 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
         }
     }
 
+    public ModbusDataProvider getInfoDataProvider() {
+        return modbusInfoCallback;
+    }
+
     public ModbusDataProvider getDataProvider() {
-        return modbusCallback;
+        return modbusDataCallback;
     }
 
     @Override

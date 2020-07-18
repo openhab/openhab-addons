@@ -41,7 +41,12 @@ public class E3DCEmergencyHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no commands possible for Info block
+        // no commands possible for EMS block
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize(DataType.EMERGENCY);
     }
 
     @Override

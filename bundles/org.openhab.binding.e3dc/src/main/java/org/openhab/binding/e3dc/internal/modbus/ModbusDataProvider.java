@@ -29,6 +29,7 @@ public abstract class ModbusDataProvider {
 
     public synchronized void addDataListener(DataListener l) {
         listeners.add(l);
+        l.dataAvailable(this);
     }
 
     public synchronized void removeDataListener(DataListener l) {
