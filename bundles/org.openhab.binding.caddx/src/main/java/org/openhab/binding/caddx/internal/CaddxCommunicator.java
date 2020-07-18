@@ -328,8 +328,11 @@ public class CaddxCommunicator implements SerialPortEventListener {
     }
 
     private int readByte(InputStream stream) throws IOException {
-        int b;
-        b = stream.read();
+        int b = -1;
+
+        if (stream.available() > 0) {
+            b = stream.read();
+        }
         if (b == -1) {
             throw new EOFException();
         }
