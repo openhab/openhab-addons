@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="emergency-power-status-channel">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type>String</item-type>
 		<label>Emergency Power Status</label>
 	</channel-type>
 	<channel-type id="battery-loading-lock-channel">

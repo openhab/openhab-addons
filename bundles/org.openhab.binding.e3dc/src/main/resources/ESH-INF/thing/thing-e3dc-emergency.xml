@@ -7,8 +7,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="e3dc-device"/>
 		</supported-bridge-type-refs>
-		<label>E3DC Emergency Settings</label>
-		<description>Settings regrading Emrgency Power</description>
+		<label>E3DC Emergency Power Settings</label>
+		<description></description>
 		<channels>
 			<channel id="emergency-power-status" typeId="emergency-power-status-channel"/>
 			<channel id="battery-loading-lock" typeId="battery-loading-lock-channel"/>

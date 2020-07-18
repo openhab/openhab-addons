@@ -13,6 +13,7 @@
 package org.openhab.binding.e3dc.internal.dto;
 
 import java.util.Arrays;
+import java.util.BitSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,5 +72,15 @@ public class DataConverter {
             s.append(bArray[i] + " : ");
         }
         LOGGER.info("PowerBlock: {}", s.toString());
+    }
+
+    public static int toInt(BitSet bitSet) {
+        int intValue = 0;
+        for (int bit = 0; bit < bitSet.length(); bit++) {
+            if (bitSet.get(bit)) {
+                intValue |= (1 << bit);
+            }
+        }
+        return intValue;
     }
 }
