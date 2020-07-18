@@ -28,10 +28,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class CaddxBindingConstants {
-
-    // List of all Thing Type UIDs
-    // public final static ThingTypeUID THING_TYPE_SECURITY = new ThingTypeUID(BINDING_ID, "security");
-
     // Binding ID
     private static final String BINDING_ID = "caddx";
 

@@ -167,7 +167,7 @@ public class CaddxCommunicator implements SerialPortEventListener {
 
         // Wait until communication thread exits
         try {
-            communicator.join();
+            communicator.join(3000);
         } catch (InterruptedException e) {
         }
 

@@ -105,21 +105,27 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     public void initialize() {
         CaddxBridgeConfiguration configuration = getConfigAs(CaddxBridgeConfiguration.class);
 
+        String portName = configuration.getSerialPort();
+        if (portName == null) {
+            logger.debug("Serial port is not defined in the configuration");
+            return;
+        }
+        serialPortName = portName;
         protocol = configuration.getProtocol();
-        serialPortName = configuration.getSerialPort();
         baudRate = configuration.getBaudrate();
         updateStatus(ThingStatus.OFFLINE);
 
         // create & start panel interface
-        logger.info("starting interface at port {} with baudrate {}", serialPortName, baudRate);
+        logger.debug("Starting interface at port {} with baudrate {} and protocol {}", serialPortName, baudRate,
+                protocol);
 
         try {
             communicator = new CaddxCommunicator(portManager, protocol, serialPortName, baudRate);
         } catch (IOException | TooManyListenersException | UnsupportedCommOperationException | PortInUseException e) {
-            logger.warn("Cannot initialize Communication.");
+            logger.debug("Cannot initialize Communication. {}", e.toString());
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication cannot be initialized");
+                    "Communication cannot be initialized. " + e.toString());
 
             return;
         }
@@ -332,7 +338,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                 switch (caddxMessage.getCaddxMessageType()) {
                     case PARTITIONS_SNAPSHOT_MESSAGE:
                         for (int i = 1; i <= 8; i++) {
-                            if (caddxMessage.getPropertyById("partition_" + Integer.toString(i) + "_valid") == "true") {
+                            if (caddxMessage.getPropertyById("partition_" + i + "_valid").equals("true")) {
                                 thing = findThing(CaddxThingType.PARTITION, i, null, null);
                                 if (thing != null) {
                                     continue;
@@ -346,8 +352,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                     case ZONES_SNAPSHOT_MESSAGE:
                         int zoneOffset = Integer.parseInt(caddxMessage.getPropertyById("zone_offset"));
                         for (int i = 1; i <= 16; i++) {
-                            if (caddxMessage.getPropertyById("zone_" + Integer.toString(i) + "_trouble")
-                                    .equals("false")) {
+                            if (caddxMessage.getPropertyById("zone_" + i + "_trouble").equals("false")) {
                                 thing = findThing(CaddxThingType.ZONE, null, zoneOffset + i, null);
                                 if (thing != null) {
                                     continue;

@@ -113,7 +113,7 @@ public class ThingHandlerZone extends CaddxBaseThingHandler {
             for (CaddxProperty p : mt.properties) {
                 logger.trace("  Checking property: {}", p.getName());
 
-                if (!("".equals(p.getId()))) {
+                if (!p.getId().isEmpty()) {
                     String value = message.getPropertyById(p.getId());
                     channelUID = new ChannelUID(getThing().getUID(), p.getId());
                     updateChannel(channelUID, value);

@@ -13,6 +13,7 @@
 package org.openhab.binding.caddx.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caddx.internal.CaddxProtocol;
 
 /**
@@ -30,14 +31,14 @@ public class CaddxBridgeConfiguration {
     public static final String BAUD = "baud";
 
     private CaddxProtocol protocol = CaddxProtocol.Binary;
-    private @NonNullByDefault({}) String serialPort;
+    private @Nullable String serialPort;
     private int baudrate = 9600;
 
     public CaddxProtocol getProtocol() {
         return protocol;
     }
 
-    public String getSerialPort() {
+    public @Nullable String getSerialPort() {
         return serialPort;
     }
 

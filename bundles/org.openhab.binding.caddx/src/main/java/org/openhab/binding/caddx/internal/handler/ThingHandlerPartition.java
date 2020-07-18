@@ -98,7 +98,7 @@ public class ThingHandlerPartition extends CaddxBaseThingHandler {
             ChannelUID channelUID = null;
 
             for (CaddxProperty p : mt.properties) {
-                if (!("".equals(p.getId()))) {
+                if (!p.getId().isEmpty()) {
                     String value = message.getPropertyById(p.getId());
                     channelUID = new ChannelUID(getThing().getUID(), p.getId());
                     updateChannel(channelUID, value);
