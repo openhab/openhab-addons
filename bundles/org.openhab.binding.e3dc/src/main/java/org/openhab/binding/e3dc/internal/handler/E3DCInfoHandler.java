@@ -45,6 +45,11 @@ public class E3DCInfoHandler extends BaseHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize(DataType.INFO);
+    }
+
+    @Override
     public void dataAvailable(ModbusDataProvider provider) {
         InfoBlock block = (InfoBlock) provider.getData(DataType.INFO);
         updateState(MODBUS_ID_CHANNEL, block.modbusId);

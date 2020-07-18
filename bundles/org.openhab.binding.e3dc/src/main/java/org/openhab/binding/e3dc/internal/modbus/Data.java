@@ -26,6 +26,7 @@ public interface Data {
         POWER,
         WALLBOX,
         EMERGENCY,
-        STRINGS
+        STRINGS,
+        DATA // marks all types besides INFO
     }
 }

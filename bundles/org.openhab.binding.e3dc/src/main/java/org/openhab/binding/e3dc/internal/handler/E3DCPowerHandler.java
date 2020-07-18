@@ -41,7 +41,12 @@ public class E3DCPowerHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // no commands possible for Info block
+        // no commands possible for Power block
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize(DataType.DATA);
     }
 
     @Override

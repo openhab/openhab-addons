@@ -45,6 +45,11 @@ public class E3DCStringHandler extends BaseHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize(DataType.DATA);
+    }
+
+    @Override
     public void dataAvailable(ModbusDataProvider provider) {
         StringBlock block = (StringBlock) provider.getData(DataType.STRINGS);
         updateState(STRING1_DC_VOLTAGE_CHANNEL, block.string1Volt);
