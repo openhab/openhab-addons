@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.e3dc.internal.modbus.DataListener;
 import org.openhab.binding.e3dc.internal.modbus.ModbusDataProvider;
 import org.slf4j.Logger;
@@ -42,8 +43,7 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
         super(thing);
     }
 
-    @Override
-    public void initialize() {
+    public void initialize(DataType t) {
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             Bridge b = getBridge();
@@ -51,12 +51,22 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
             BridgeHandler bridgeHandler = b.getHandler();
             // logger.info("Got BridgeHandler {}, Is Provider? {}", bridgeHandler,
             // bridgeHandler instanceof E3DCDeviceThingHandler);
-            modbusDataProvider = ((E3DCDeviceThingHandler) bridgeHandler).getDataProvider();
-            if (modbusDataProvider != null) {
-                modbusDataProvider.addDataListener(this);
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
+            if (t.equals(DataType.INFO)) {
+                modbusDataProvider = ((E3DCDeviceThingHandler) bridgeHandler).getInfoDataProvider();
+                if (modbusDataProvider != null) {
+                    modbusDataProvider.addDataListener(this);
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
+                }
+            } else if (t.equals(DataType.DATA)) {
+                modbusDataProvider = ((E3DCDeviceThingHandler) bridgeHandler).getDataProvider();
+                if (modbusDataProvider != null) {
+                    modbusDataProvider.addDataListener(this);
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
+                }
             }
         });
     }

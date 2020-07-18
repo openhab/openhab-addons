@@ -30,4 +30,6 @@ public class E3DCModbusConstans {
     public static final int WALLBOX_REG_SIZE = 8;
     public static final int STRINGS_REG_START = 95;
     public static final int STRINGS_REG_SIZE = 9;
+    public static final int REGISTER_LENGTH = 104;
+    public static final int INFO_POLL_REFRESH_TIME_MS = 60 * 60 * 1000;
 }

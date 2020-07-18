@@ -52,7 +52,7 @@ public class E3DCWallboxHandler extends BaseHandler {
     @Override
     public void initialize() {
         config = getConfigAs(E3DCWallboxConfiguration.class);
-        super.initialize();
+        super.initialize(DataType.DATA);
     }
 
     @Override
