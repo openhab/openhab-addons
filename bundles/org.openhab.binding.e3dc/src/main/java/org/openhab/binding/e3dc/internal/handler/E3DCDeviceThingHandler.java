@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.e3dc.internal.handler;
 
+import static org.openhab.binding.e3dc.internal.modbus.E3DCModbusConstans.WALLBOX_REG_START;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -23,10 +26,16 @@ import org.openhab.binding.e3dc.internal.modbus.DataListener;
 import org.openhab.binding.e3dc.internal.modbus.ModbusCallback;
 import org.openhab.binding.e3dc.internal.modbus.ModbusDataProvider;
 import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
+import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.BasicPollTaskImpl;
+import org.openhab.io.transport.modbus.BasicWriteTask;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
-import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.io.transport.modbus.ModbusResponse;
+import org.openhab.io.transport.modbus.ModbusWriteCallback;
+import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +45,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataListener {
+public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataListener, ModbusWriteCallback {
     private final Logger logger = LoggerFactory.getLogger(E3DCDeviceThingHandler.class);
     private ModbusManager modbusManagerRef;
     private final ModbusCallback modbusCallback = new ModbusCallback();
     private ThingStatus myStatus = ThingStatus.UNKNOWN;
     private @Nullable E3DCDeviceConfiguration config;
-    BasicPollTaskImpl poller;
+
+    // Modbus variables
+    private BasicPollTaskImpl poller;
+    private ModbusTCPSlaveEndpoint slaveEndpoint;
 
     public E3DCDeviceThingHandler(Bridge bridge, ModbusManager ref) {
         super(bridge);
@@ -51,7 +63,6 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // [todo]
     }
 
     @Override
@@ -61,8 +72,7 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
         scheduler.execute(() -> {
             config = getConfigAs(E3DCDeviceConfiguration.class);
             if (checkConfig(config)) {
-                ModbusTCPSlaveEndpoint slaveEndpoint = new ModbusTCPSlaveEndpoint(config.host, config.port);
-                EndpointPoolConfiguration epc = modbusManagerRef.getEndpointPoolConfiguration(slaveEndpoint);
+                slaveEndpoint = new ModbusTCPSlaveEndpoint(config.host, config.port);
                 BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(1,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 0, ModbusCallback.REGISTER_LENGTH, 3);
                 modbusCallback.addDataListener(this);
@@ -99,6 +109,13 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
         updateStatus(myStatus);
     }
 
+    public void wallboxSet(int wallboxId, int writeValue) {
+        ModbusRegisterArray regArray = new BasicModbusRegisterArray(writeValue);
+        BasicModbusWriteRegisterRequestBlueprint writeBluePrint = new BasicModbusWriteRegisterRequestBlueprint(1,
+                WALLBOX_REG_START + wallboxId, regArray, false, 3);
+        modbusManagerRef.submitOneTimeWrite(new BasicWriteTask(slaveEndpoint, writeBluePrint, this));
+    }
+
     @Override
     public void dataAvailable(ModbusDataProvider provider) {
         if (myStatus != ThingStatus.ONLINE) {
@@ -109,4 +126,15 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
     public ModbusDataProvider getDataProvider() {
         return modbusCallback;
     }
+
+    @Override
+    public void onError(@NonNull ModbusWriteRequestBlueprint request, @NonNull Exception error) {
+        logger.info("Modbus write error");
+    }
+
+    @Override
+    public void onWriteResponse(@NonNull ModbusWriteRequestBlueprint request, @NonNull ModbusResponse response) {
+        logger.info("Modbus write response = {}", response.getFunctionCode());
+    }
+
 }

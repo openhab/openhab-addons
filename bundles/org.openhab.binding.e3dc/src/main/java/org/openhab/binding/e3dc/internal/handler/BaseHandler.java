@@ -47,10 +47,10 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             Bridge b = getBridge();
-            logger.info("Bridge? {}", b);
+            // logger.info("Bridge? {}", b);
             BridgeHandler bridgeHandler = b.getHandler();
-            logger.info("Got BridgeHandler {}, Is Provider? {}", bridgeHandler,
-                    bridgeHandler instanceof E3DCDeviceThingHandler);
+            // logger.info("Got BridgeHandler {}, Is Provider? {}", bridgeHandler,
+            // bridgeHandler instanceof E3DCDeviceThingHandler);
             modbusDataProvider = ((E3DCDeviceThingHandler) bridgeHandler).getDataProvider();
             if (modbusDataProvider != null) {
                 modbusDataProvider.addDataListener(this);

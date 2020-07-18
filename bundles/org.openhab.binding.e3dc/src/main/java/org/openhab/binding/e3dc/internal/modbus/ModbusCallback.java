@@ -21,18 +21,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.e3dc.internal.dto.PowerBlock;
 import org.openhab.binding.e3dc.internal.dto.StringBlock;
+import org.openhab.binding.e3dc.internal.dto.WallboxArray;
 import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusTransportException;
-import org.openhab.io.transport.modbus.ModbusUnexpectedTransactionIdException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.wimpi.modbus.ModbusSlaveException;
 
 /**
  * The {@link InfoBlockCallback} class receives callbacks from modbus poller
@@ -104,9 +101,6 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
 
     @Override
     public void onError(ModbusReadRequestBlueprint request, Exception error) {
-        ModbusUnexpectedTransactionIdException e;
-        ModbusTransportException e1;
-        ModbusSlaveException e2;
     }
 
     @Override
@@ -118,6 +112,8 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
                 return new PowerBlock(Arrays.copyOfRange(bArray, 67 * 2, 67 * 2 + 32));
             } else if (type.equals(DataType.EMERGENCY)) {
                 return new StringBlock(Arrays.copyOfRange(bArray, 83 * 2, 83 * 2 + 4));
+            } else if (type.equals(DataType.WALLBOX)) {
+                return new WallboxArray(Arrays.copyOfRange(bArray, 87 * 2, 87 * 2 + 16));
             } else if (type.equals(DataType.STRINGS)) {
                 return new StringBlock(Arrays.copyOfRange(bArray, 95 * 2, 95 * 2 + 18));
             }

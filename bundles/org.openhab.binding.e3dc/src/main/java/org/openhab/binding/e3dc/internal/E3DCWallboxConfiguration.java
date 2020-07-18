@@ -20,7 +20,7 @@ package org.openhab.binding.e3dc.internal;
 public class E3DCWallboxConfiguration {
 
     /**
-     * Wallbox Number
+     * Wallbox ID
      */
-    public int wallboxNumber;
+    public int wallboxId;
 }

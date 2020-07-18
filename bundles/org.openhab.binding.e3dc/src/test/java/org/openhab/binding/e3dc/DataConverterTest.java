@@ -14,6 +14,8 @@ package org.openhab.binding.e3dc;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.BitSet;
+
 import org.junit.Test;
 import org.openhab.binding.e3dc.internal.dto.DataConverter;
 
@@ -53,5 +55,16 @@ public class DataConverterTest {
         assertEquals("Long value", 65536, l);
         l = DataConverter.getLongValue(b, 0);
         System.out.println(l);
+    }
+
+    @Test
+    public void testBitset() {
+        byte[] b = new byte[] { 3, 16 };
+        BitSet s = BitSet.valueOf(b);
+        for (int i = 0; i < 16; i++) {
+            System.out.println("b" + i + ": " + s.get(i));
+
+        }
+
     }
 }
