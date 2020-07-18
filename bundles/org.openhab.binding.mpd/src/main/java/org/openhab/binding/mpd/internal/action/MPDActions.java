@@ -27,13 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link @MPDActions} defines rule actions for the Music Player Daemon binding. *
+ * The {@link @MPDActions} defines rule actions for the Music Player Daemon binding.
  *
  * @author Stefan Röllin - Initial contribution
  */
 @ThingActionsScope(name = "mpd")
 @NonNullByDefault
-public class MPDActions implements ThingActions {
+public class MPDActions implements ThingActions, IMPDActions {
 
     private final Logger logger = LoggerFactory.getLogger(MPDActions.class);
 
@@ -51,6 +51,7 @@ public class MPDActions implements ThingActions {
         return handler;
     }
 
+    @Override
     @RuleAction(label = "MPD : Send command", description = "Send a command to the Music Player Daemon.")
     public void sendCommand(@ActionInput(name = "command") @Nullable String command,
             @ActionInput(name = "parameter") @Nullable String parameter) {
@@ -64,6 +65,7 @@ public class MPDActions implements ThingActions {
         }
     }
 
+    @Override
     @RuleAction(label = "MPD : Send command", description = "Send a command to the Music Player Daemon.")
     public void sendCommand(@ActionInput(name = "command") @Nullable String command) {
         logger.debug("sendCommand called with {}", command);
@@ -76,23 +78,23 @@ public class MPDActions implements ThingActions {
         }
     }
 
-    private static MPDActions invokeMethodOf(@Nullable ThingActions actions) {
+    private static IMPDActions invokeMethodOf(@Nullable ThingActions actions) {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
         if (actions.getClass().getName().equals(MPDActions.class.getName())) {
-            if (actions instanceof MPDActions) {
-                return (MPDActions) actions;
+            if (actions instanceof IMPDActions) {
+                return (IMPDActions) actions;
             } else {
-                return (MPDActions) Proxy.newProxyInstance(MPDActions.class.getClassLoader(),
-                        new Class[] { MPDActions.class }, (Object proxy, Method method, Object[] args) -> {
+                return (IMPDActions) Proxy.newProxyInstance(IMPDActions.class.getClassLoader(),
+                        new Class[] { IMPDActions.class }, (Object proxy, Method method, Object[] args) -> {
                             Method m = actions.getClass().getDeclaredMethod(method.getName(),
                                     method.getParameterTypes());
                             return m.invoke(actions, args);
                         });
             }
         }
-        throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
+        throw new IllegalArgumentException("Actions is not an instance of MPDActions");
     }
 
     public static void sendCommand(@Nullable ThingActions actions, @Nullable String command,

@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MPDConnection implements MPDResponseListener {
 
+    private static final int DISPOSE_TIMEOUT_MS = 1000;
+
     private final Logger logger = LoggerFactory.getLogger(MPDConnection.class);
 
     private @Nullable MPDConnectionThread connectionThread = null;
@@ -67,7 +69,7 @@ public class MPDConnection implements MPDResponseListener {
             connectionThread.dispose();
             connectionThread.interrupt();
             try {
-                connectionThread.join();
+                connectionThread.join(DISPOSE_TIMEOUT_MS);
             } catch (InterruptedException e) {
             }
             this.connectionThread = null;

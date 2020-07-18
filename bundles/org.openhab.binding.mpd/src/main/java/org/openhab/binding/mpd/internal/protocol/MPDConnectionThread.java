@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MPDConnectionThread extends Thread {
 
-    private static final int RECONNECTION_TIMEOUT = 60000; // 60 seconds
+    private static final int RECONNECTION_TIMEOUT_SEC = 60;
 
     private final Logger logger = LoggerFactory.getLogger(MPDConnectionThread.class);
 
@@ -58,6 +58,8 @@ public class MPDConnectionThread extends Thread {
     private AtomicBoolean disposed = new AtomicBoolean(false);
 
     public MPDConnectionThread(MPDResponseListener listener, String address, Integer port, String password) {
+        super(MPDConnectionThread.class.getSimpleName() + " " + address + ":" + port);
+
         this.listener = listener;
 
         this.address = address;
@@ -91,7 +93,7 @@ public class MPDConnectionThread extends Thread {
                 closeSocket();
 
                 if (!disposed.get()) {
-                    sleep(RECONNECTION_TIMEOUT);
+                    sleep(RECONNECTION_TIMEOUT_SEC * 1000);
                 }
             }
         } catch (InterruptedException e) {

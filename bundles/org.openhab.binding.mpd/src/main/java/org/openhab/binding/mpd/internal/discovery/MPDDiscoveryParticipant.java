@@ -69,7 +69,7 @@ public class MPDDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         String uniquePropVal = String.format("%s-%d", host, port);
 
-        final Map<String, Object> properties = new HashMap<>(2);
+        final Map<String, Object> properties = new HashMap<>(3);
         properties.put(MPDBindingConstants.PARAMETER_IPADDRESS, host);
         properties.put(MPDBindingConstants.PARAMETER_PORT, port);
         properties.put(MPDBindingConstants.UNIQUE_ID, uniquePropVal);
