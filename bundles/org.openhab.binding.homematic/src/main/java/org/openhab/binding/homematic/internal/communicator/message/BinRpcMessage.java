@@ -204,6 +204,13 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         return (new BigInteger(bi)).intValue();
     }
 
+    private long readInt64() {
+        byte bi[] = new byte[8];
+        System.arraycopy(binRpcData, offset, bi, 0, 8);
+        offset += 8;
+        return (new BigInteger(bi)).longValue();
+    }
+
     private String readString() throws UnsupportedEncodingException {
         int len = readInt();
         offset += len;
@@ -226,6 +233,9 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
                 return bd.setScale(6, RoundingMode.HALF_DOWN).doubleValue();
             case 5:
                 return new Date(readInt() * 1000);
+            case 0xD1:
+                // Int64
+                return new Long(readInt64());
             case 0x100:
                 // Array
                 int numElements = readInt();
