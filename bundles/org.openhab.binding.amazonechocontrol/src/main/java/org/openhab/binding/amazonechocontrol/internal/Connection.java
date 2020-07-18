@@ -179,19 +179,16 @@ public class Connection {
             this.deviceId = deviceId;
         } else {
             // generate device id
-            StringBuilder deviceIdBuilder = new StringBuilder();
-            for (int i = 0; i < 64; i++) {
-                deviceIdBuilder.append(rand.nextInt(9));
-            }
-            deviceIdBuilder.append("23413249564c5635564d32573831");
-            this.deviceId = deviceIdBuilder.toString();
+            byte[] bytes = new byte[16];
+            rand.nextBytes(bytes);
+            String hexStr = HexUtils.bytesToHex(bytes).toUpperCase();
+            this.deviceId = HexUtils.bytesToHex(hexStr.getBytes()) + "23413249564c5635564d32573831";
         }
 
         // build user agent
         this.userAgent = "AmazonWebView/Amazon Alexa/2.2.223830.0/iOS/11.4.1/iPhone";
 
         // setAmazonSite(amazonSite);
-
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonWithNullSerialization = gsonBuilder.create();
     }
@@ -836,10 +833,14 @@ public class Connection {
         cookieManager.getCookieStore().add(new URI("https://www.amazon.com"), new HttpCookie("map-md", mapMdCookie));
         cookieManager.getCookieStore().add(new URI("https://www.amazon.com"), new HttpCookie("frc", frc));
 
-        String loginFormHtml = makeRequestAndReturnString("https://www.amazon.com"
+        Map<String, String> customHeaders = new HashMap<>();
+        customHeaders.put("authority", "www.amazon.com");
+        String loginFormHtml = makeRequestAndReturnString("GET",
+                "https://www.amazon.com"
                 + "/ap/signin?openid.return_to=https://www.amazon.com/ap/maplanding&openid.assoc_handle=amzn_dp_project_dee_ios&openid.identity=http://specs.openid.net/auth/2.0/identifier_select&pageId=amzn_dp_project_dee_ios&accountStatusPolicy=P1&openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select&openid.mode=checkid_setup&openid.ns.oa2=http://www.amazon.com/ap/ext/oauth/2&openid.oa2.client_id=device:"
                 + deviceId
-                + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access");
+                + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access",
+                null, false, customHeaders);
 
         logger.debug("Received login form {}", loginFormHtml);
         return loginFormHtml;
