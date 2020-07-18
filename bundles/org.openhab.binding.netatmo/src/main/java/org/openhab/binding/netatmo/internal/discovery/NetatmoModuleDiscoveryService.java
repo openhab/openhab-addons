@@ -22,16 +22,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDataListener;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
-import io.swagger.client.model.NAHealthyHomeCoach;
-import io.swagger.client.model.NAMain;
-import io.swagger.client.model.NAPlug;
-import io.swagger.client.model.NAWelcomeHome;
+import io.swagger.client.model.*;
 
 /**
  * The {@link NetatmoModuleDiscoveryService} searches for available Netatmo
@@ -46,9 +47,12 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     private static final int SEARCH_TIME = 5;
     private final NetatmoBridgeHandler netatmoBridgeHandler;
 
-    public NetatmoModuleDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
+    public NetatmoModuleDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler, LocaleProvider localeProvider,
+            TranslationProvider translationProvider) {
         super(SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME);
         this.netatmoBridgeHandler = netatmoBridgeHandler;
+        this.localeProvider = localeProvider;
+        this.i18nProvider = translationProvider;
     }
 
     @Override
@@ -131,11 +135,13 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
     }
 
     private void discoverWeatherStation(NAMain station) {
-        onDeviceAddedInternal(station.getId(), null, station.getType(), station.getStationName(),
-                station.getFirmware());
+        final boolean isFavorite = station.getFavorite() != null && station.getFavorite();
+        final String weatherStationName = createWeatherStationName(station, isFavorite);
+
+        onDeviceAddedInternal(station.getId(), null, station.getType(), weatherStationName, station.getFirmware());
         station.getModules().forEach(module -> {
-            onDeviceAddedInternal(module.getId(), station.getId(), module.getType(), module.getModuleName(),
-                    module.getFirmware());
+            onDeviceAddedInternal(module.getId(), station.getId(), module.getType(),
+                    createWeatherModuleName(station, module, isFavorite), module.getFirmware());
         });
     }
 
@@ -194,5 +200,46 @@ public class NetatmoModuleDiscoveryService extends AbstractDiscoveryService impl
         }
 
         throw new IllegalArgumentException("Unsupported device type discovered : " + thingType);
+    }
+
+    private String createWeatherStationName(NAMain station, boolean isFavorite) {
+        StringBuilder nameBuilder = new StringBuilder();
+        nameBuilder.append(localizeType(station.getType()));
+        if (station.getStationName() != null) {
+            nameBuilder.append(' ');
+            nameBuilder.append(station.getStationName());
+        }
+        if (isFavorite) {
+            nameBuilder.append(" (favorite)");
+        }
+        return nameBuilder.toString();
+    }
+
+    private String createWeatherModuleName(NAMain station, NAStationModule module, boolean isFavorite) {
+        StringBuilder nameBuilder = new StringBuilder();
+        if (module.getModuleName() != null) {
+            nameBuilder.append(module.getModuleName());
+        } else {
+            nameBuilder.append(localizeType(module.getType()));
+        }
+        if (station.getStationName() != null) {
+            nameBuilder.append(' ');
+            nameBuilder.append(station.getStationName());
+        }
+        if (isFavorite) {
+            nameBuilder.append(" (favorite)");
+        }
+        return nameBuilder.toString();
+    }
+
+    private String localizeType(String typeName) {
+        Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+        @Nullable
+        String localizedType = i18nProvider.getText(bundle, "thing-type.netatmo." + typeName + ".label", typeName,
+                localeProvider.getLocale());
+        if (localizedType != null) {
+            return localizedType;
+        }
+        return typeName;
     }
 }
