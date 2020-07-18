@@ -40,7 +40,7 @@ public class ConditionHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
@@ -63,7 +63,7 @@ public class ConditionHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
@@ -86,7 +86,7 @@ public class ConditionHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
@@ -105,7 +105,7 @@ public class ConditionHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
@@ -119,7 +119,7 @@ public class ConditionHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);

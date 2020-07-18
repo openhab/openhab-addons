@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LuftdatenInfoConfiguration {
 
-    public String sensorid = "undefined";
+    public int sensorid = -1;
 }

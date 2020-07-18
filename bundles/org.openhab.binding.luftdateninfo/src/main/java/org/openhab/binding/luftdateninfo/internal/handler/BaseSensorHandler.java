@@ -50,7 +50,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         OK,
         IS_NULL,
         SENSOR_IS_NULL,
-        SENSOR_NOT_A_NUMBER,
+        SENSOR_ID_NEGATIVE,
         UNKNOWN
     };
 
@@ -160,11 +160,10 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
      */
     private ConfigStatus checkConfig(@Nullable LuftdatenInfoConfiguration c) {
         if (c != null) {
-            try {
-                Integer.parseInt(c.sensorid);
+            if (c.sensorid >= 0) {
                 return ConfigStatus.OK;
-            } catch (NumberFormatException t) {
-                return ConfigStatus.SENSOR_NOT_A_NUMBER;
+            } else {
+                return ConfigStatus.SENSOR_ID_NEGATIVE;
             }
         } else {
             return ConfigStatus.IS_NULL;

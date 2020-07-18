@@ -44,7 +44,7 @@ public class PMHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
@@ -73,7 +73,7 @@ public class PMHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "abcdefg");
+        properties.put("sensorid", -1);
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
@@ -93,7 +93,7 @@ public class PMHandlerTest {
          * Test if config status is 3 = CONFIG_SENSOR_NUMBER for invalid configuration with non-number sensorid. Take
          * real int for comparison instead of BaseHandler constants - in case of change test needs to be adapted
          */
-        assertEquals("Handler Configuration status", ConfigStatus.SENSOR_NOT_A_NUMBER, pmHandler.getConfigStatus());
+        assertEquals("Handler Configuration status", ConfigStatus.SENSOR_ID_NEGATIVE, pmHandler.getConfigStatus());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class PMHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
@@ -126,7 +126,7 @@ public class PMHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
@@ -149,7 +149,7 @@ public class PMHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
@@ -163,7 +163,7 @@ public class PMHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", "12345");
+        properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);

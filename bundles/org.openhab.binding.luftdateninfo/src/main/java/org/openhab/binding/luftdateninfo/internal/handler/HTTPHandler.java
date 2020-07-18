@@ -65,7 +65,7 @@ public class HTTPHandler {
         return HTTP_HANDLER;
     }
 
-    public @Nullable String getResponse(String sensorId) {
+    public @Nullable String getResponse(int sensorId) {
         HttpClient localClient = commonHttpClient;
         if (localClient == null) {
             logger.warn("HTTP Client not initialized");
