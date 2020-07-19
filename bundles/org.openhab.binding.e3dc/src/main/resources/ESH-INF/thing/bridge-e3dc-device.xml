@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="e3dc-device">
 		<label>E3DC Home Power Plant</label>
-		<description>Connection to the E3DC device</description>
+		<description>Establishes Modbus Connection to your Device. Add your desired Blocks to this Bridge afterwards.</description>
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>IP Address or Hostname</label>

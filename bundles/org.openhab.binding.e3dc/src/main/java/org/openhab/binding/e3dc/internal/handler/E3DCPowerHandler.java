@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class E3DCPowerHandler extends BaseHandler {
-
     private final Logger logger = LoggerFactory.getLogger(E3DCPowerHandler.class);
 
     public E3DCPowerHandler(Thing thing) {
@@ -52,17 +51,21 @@ public class E3DCPowerHandler extends BaseHandler {
     @Override
     public void dataAvailable(ModbusDataProvider provider) {
         PowerBlock block = (PowerBlock) provider.getData(DataType.POWER);
-        updateState(PV_POWER_SUPPLY_CHANNEL, block.pvPowerSupply);
-        updateState(BATTERY_POWER_SUPPLY_CHANNEL, block.batteryPowerSupply);
-        updateState(BATTERY_POWER_CONSUMPTION, block.batteryPowerConsumption);
-        updateState(HOUSEHOLD_POWER_CONSUMPTION_CHANNEL, block.householdPowerConsumption);
-        updateState(GRID_POWER_CONSUMPTION_CHANNEL, block.gridPowerConsumpition);
-        updateState(GRID_POWER_SUPPLY_CHANNEL, block.gridPowerSupply);
-        updateState(EXTERNAL_POWER_SUPPLY_CHANNEL, block.externalPowerSupply);
-        updateState(WALLBOX_POWER_CONSUMPTION_CHANNEL, block.wallboxPowerConsumption);
-        updateState(WALLBOX_PV_POWER_CONSUMPTION_CHANNEL, block.wallboxPVPowerConsumption);
-        updateState(AUTARKY, block.autarky);
-        updateState(SELF_CONSUMPTION, block.selfConsumption);
-        updateState(BATTERY_STATE_OF_CHARGE_CHANNEL, block.batterySOC);
+        if (block != null) {
+            updateState(PV_POWER_SUPPLY_CHANNEL, block.pvPowerSupply);
+            updateState(BATTERY_POWER_SUPPLY_CHANNEL, block.batteryPowerSupply);
+            updateState(BATTERY_POWER_CONSUMPTION, block.batteryPowerConsumption);
+            updateState(HOUSEHOLD_POWER_CONSUMPTION_CHANNEL, block.householdPowerConsumption);
+            updateState(GRID_POWER_CONSUMPTION_CHANNEL, block.gridPowerConsumpition);
+            updateState(GRID_POWER_SUPPLY_CHANNEL, block.gridPowerSupply);
+            updateState(EXTERNAL_POWER_SUPPLY_CHANNEL, block.externalPowerSupply);
+            updateState(WALLBOX_POWER_CONSUMPTION_CHANNEL, block.wallboxPowerConsumption);
+            updateState(WALLBOX_PV_POWER_CONSUMPTION_CHANNEL, block.wallboxPVPowerConsumption);
+            updateState(AUTARKY, block.autarky);
+            updateState(SELF_CONSUMPTION, block.selfConsumption);
+            updateState(BATTERY_STATE_OF_CHARGE_CHANNEL, block.batterySOC);
+        } else {
+            logger.debug("Unable to get {} from provider {}", DataType.POWER, provider.toString());
+        }
     }
 }

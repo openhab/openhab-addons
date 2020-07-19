@@ -19,6 +19,7 @@ import java.util.BitSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -39,10 +40,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class E3DCWallboxHandler extends BaseHandler {
-
     private final Logger logger = LoggerFactory.getLogger(E3DCWallboxHandler.class);
+    private BitSet currentBitSet = new BitSet(16);
     private @Nullable E3DCWallboxConfiguration config;
-    private @Nullable BitSet currentBitSet;
     private @Nullable E3DCDeviceThingHandler bridgeHandler;
 
     public E3DCWallboxHandler(Thing thing) {
@@ -63,19 +63,25 @@ public class E3DCWallboxHandler extends BaseHandler {
             logger.info("getIdWithoutGroup {}", channelUID.getIdWithoutGroup());
             int writeValue = 0;
             synchronized (this) {
-                if (currentBitSet != null) {
-                    if (channelUID.getIdWithoutGroup().equals(WB_SUNMODE_CHANNEL)) {
-                        currentBitSet.set(1, command.equals(OnOffType.ON));
-                    }
+                if (channelUID.getIdWithoutGroup().equals(WB_SUNMODE_CHANNEL)) {
+                    currentBitSet.set(1, command.equals(OnOffType.ON));
                 }
                 writeValue = DataConverter.toInt(currentBitSet);
                 logger.info("Send {}", writeValue);
             }
-            if (bridgeHandler == null) {
-                bridgeHandler = (E3DCDeviceThingHandler) getBridge().getHandler();
+            E3DCDeviceThingHandler localBridgeHandler = bridgeHandler;
+            if (localBridgeHandler == null) {
+                Bridge b = getBridge();
+                if (b != null) {
+                    localBridgeHandler = (E3DCDeviceThingHandler) b.getHandler();
+                    bridgeHandler = localBridgeHandler;
+                }
             }
-            if (bridgeHandler != null) {
-                bridgeHandler.wallboxSet(config.wallboxId, writeValue);
+            if (localBridgeHandler != null) {
+                int wallboxId = getWallboxId(config);
+                if (wallboxId != -1) {
+                    localBridgeHandler.wallboxSet(wallboxId, writeValue);
+                }
             }
         }
     }
@@ -83,20 +89,41 @@ public class E3DCWallboxHandler extends BaseHandler {
     @Override
     public void dataAvailable(ModbusDataProvider provider) {
         WallboxArray blockArray = (WallboxArray) provider.getData(DataType.WALLBOX);
-        WallboxBlock block = blockArray.getWallboxBlock(config.wallboxId);
-        synchronized (this) {
-            currentBitSet = block.getBitSet();
+        if (blockArray != null) {
+            int wallboxId = getWallboxId(config);
+            if (wallboxId != -1) {
+                WallboxBlock block = blockArray.getWallboxBlock(wallboxId);
+                if (block != null) {
+                    synchronized (this) {
+                        currentBitSet = block.getBitSet();
+                    }
+                    updateState(WB_AVAILABLE_CHANNEL, block.wbAvailable);
+                    updateState(WB_SUNMODE_CHANNEL, block.wbSunmode);
+                    updateState(WB_CHARGING_CHANNEL, block.wbCharging);
+                    updateState(WB_JACK_LOCKED_CHANNEL, block.wbJackLocked);
+                    updateState(WB_JACK_PLUGGED_CHANNEL, block.wbJackPlugged);
+                    updateState(WB_SCHUKO_ON_CHANNEL, block.wbSchukoOn);
+                    updateState(WB_SCHUKO_PLUGGED_CHANNEL, block.wbSchukoPlugged);
+                    updateState(WB_SCHUKO_LOCKED_CHANNEL, block.wbSchukoLocked);
+                    updateState(WB_REALY_16A_CHANNEL, block.wbRealy16);
+                    updateState(WB_RELAY_32A_CHANNEL, block.wbRelay32);
+                    updateState(WB_3PHASE_CHANNEL, block.wb3phase);
+                } else {
+                    logger.debug("Unable to get ID {} from WallboxArray", wallboxId);
+                }
+            } else {
+                logger.debug("Wallbox ID {} not valid", wallboxId);
+            }
+        } else {
+            logger.debug("Unable to get {} from provider {}", DataType.WALLBOX, provider.toString());
         }
-        updateState(WB_AVAILABLE_CHANNEL, block.wbAvailable);
-        updateState(WB_SUNMODE_CHANNEL, block.wbSunmode);
-        updateState(WB_CHARGING_CHANNEL, block.wbCharging);
-        updateState(WB_JACK_LOCKED_CHANNEL, block.wbJackLocked);
-        updateState(WB_JACK_PLUGGED_CHANNEL, block.wbJackPlugged);
-        updateState(WB_SCHUKO_ON_CHANNEL, block.wbSchukoOn);
-        updateState(WB_SCHUKO_PLUGGED_CHANNEL, block.wbSchukoPlugged);
-        updateState(WB_SCHUKO_LOCKED_CHANNEL, block.wbSchukoLocked);
-        updateState(WB_REALY_16A_CHANNEL, block.wbRealy16);
-        updateState(WB_RELAY_32A_CHANNEL, block.wbRelay32);
-        updateState(WB_3PHASE_CHANNEL, block.wb3phase);
+    }
+
+    private int getWallboxId(@Nullable E3DCWallboxConfiguration c) {
+        if (c != null) {
+            return c.wallboxId;
+        } else {
+            return -1;
+        }
     }
 }

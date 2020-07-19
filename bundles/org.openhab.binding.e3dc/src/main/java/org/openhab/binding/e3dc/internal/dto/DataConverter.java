@@ -15,16 +15,12 @@ package org.openhab.binding.e3dc.internal.dto;
 import java.util.Arrays;
 import java.util.BitSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * The {@link DataConverter} Helper class to convert bytes from modbus into desired data format
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class DataConverter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataConverter.class);
     private static final long MAX_INT32 = new Long("4294967296");
 
     public static int getIntValue(byte[] bytes, int start) {
@@ -46,7 +42,7 @@ public class DataConverter {
      * @param startIndex - start index for decoding
      * @return decoded long value, Long.MIN_VALUE otherwise
      */
-    public static long getInt32_swap(byte[] bytes, int startIndex) {
+    public static long getInt32Swap(byte[] bytes, int startIndex) {
         // LOGGER.info("Convert {} {} {} {}", bytes[start], bytes[start + 1], bytes[start + 2], bytes[start + 3]);
         if (bytes.length - startIndex < 4) {
             return Long.MIN_VALUE;
@@ -62,16 +58,20 @@ public class DataConverter {
 
     public static String getString(byte[] bArray, int i) {
         byte[] slice = Arrays.copyOfRange(bArray, i, i + 32);
-        return new String(slice);
+        return new String(slice).trim();
     }
 
     public static void logArray(byte[] bArray) {
         StringBuilder s = new StringBuilder();
+        s.append("[");
         for (int i = 0; i < bArray.length; i++) {
+            if (i != 0) {
+                s.append(",");
+            }
             // logger.info("Byte {} is {}", i, bArray[i]);
-            s.append(bArray[i] + " : ");
+            s.append(bArray[i]);
         }
-        LOGGER.info("PowerBlock: {}", s.toString());
+        s.append("]");
     }
 
     public static int toInt(BitSet bitSet) {

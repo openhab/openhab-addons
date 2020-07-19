@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class E3DCInfoHandler extends BaseHandler {
-
     private final Logger logger = LoggerFactory.getLogger(E3DCInfoHandler.class);
 
     public E3DCInfoHandler(Thing thing) {
@@ -52,13 +51,17 @@ public class E3DCInfoHandler extends BaseHandler {
     @Override
     public void dataAvailable(ModbusDataProvider provider) {
         InfoBlock block = (InfoBlock) provider.getData(DataType.INFO);
-        updateState(MODBUS_ID_CHANNEL, block.modbusId);
-        updateState(MODBUS_FIRMWARE_CHANNEL, block.modbusVersion);
-        updateState(SUPPORTED_REGSITERS_CHANNEL, block.supportedRegisters);
-        updateState(MANUFACTURER_NAME_CHANNEL, block.manufacturer);
-        updateState(MODEL_NAME_CHANNEL, block.modelName);
-        updateState(SERIAL_NUMBER_CHANNEL, block.serialNumber);
-        updateState(FIRMWARE_RELEASE_CHANNEL, block.firmware);
-        updateState(INFO_CHANNEL, block.allInfo);
+        if (block != null) {
+            updateState(MODBUS_ID_CHANNEL, block.modbusId);
+            updateState(MODBUS_FIRMWARE_CHANNEL, block.modbusVersion);
+            updateState(SUPPORTED_REGSITERS_CHANNEL, block.supportedRegisters);
+            updateState(MANUFACTURER_NAME_CHANNEL, block.manufacturer);
+            updateState(MODEL_NAME_CHANNEL, block.modelName);
+            updateState(SERIAL_NUMBER_CHANNEL, block.serialNumber);
+            updateState(FIRMWARE_RELEASE_CHANNEL, block.firmware);
+            updateState(INFO_CHANNEL, block.allInfo);
+        } else {
+            logger.debug("Unable to get {} from provider {}", DataType.INFO, provider.toString());
+        }
     }
 }

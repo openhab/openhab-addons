@@ -30,8 +30,6 @@ import org.openhab.io.transport.modbus.ModbusManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link E3DCHandlerFactory} is responsible for creating things and thing
@@ -42,7 +40,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.e3dc", service = ThingHandlerFactory.class)
 public class E3DCHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(E3DCHandlerFactory.class);
     private ModbusManager modbusManagerRef;
 
     /**

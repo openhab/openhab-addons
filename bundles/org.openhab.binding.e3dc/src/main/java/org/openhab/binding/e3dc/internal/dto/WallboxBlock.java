@@ -16,8 +16,6 @@ import java.util.BitSet;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.e3dc.internal.modbus.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link WallboxBlock} Data object for E3DC Info Block
@@ -25,8 +23,6 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 public class WallboxBlock implements Data {
-    private final Logger logger = LoggerFactory.getLogger(WallboxBlock.class);
-
     private BitSet bitSet;
     public OnOffType wbAvailable = OnOffType.OFF;
     public OnOffType wbSunmode = OnOffType.OFF;
