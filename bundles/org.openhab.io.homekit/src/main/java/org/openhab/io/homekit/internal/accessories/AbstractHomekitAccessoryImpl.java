@@ -29,10 +29,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -297,37 +295,5 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
                 getItem(characteristicType, GenericItem.class)
                         .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),
                 trueOnOffValue, trueOpenClosedValue);
-    }
-
-    /**
-     * convert/invert position of door/window/blinds.
-     * openHAB Rollershutter is:
-     * - completely open if position is 0%,
-     * - completely closed if position is 100%.
-     * HomeKit mapping has inverted mapping
-     * From Specification: "For blinds/shades/awnings, a value of 0 indicates a position that permits the least light
-     * and a value
-     * of 100 indicates a position that allows most light.", i.e.
-     * HomeKit Blinds is
-     * - completely open if position is 100%,
-     * - completely closed if position is 0%.
-     *
-     * As openHAB rollershutter item is typically used for window covering, the binding has by default inverting
-     * mapping.
-     * One can override this default behaviour with inverted="false/no" flag. in this cases, openHAB item value will be
-     * sent to HomeKit with no changes.
-     *
-     * @param value source value
-     * @return target value
-     */
-    @NonNullByDefault
-    protected int convertPosition(int value, int openPosition) {
-        return Math.abs(openPosition - value);
-    }
-
-    @NonNullByDefault
-    protected int convertPositionState(HomekitCharacteristicType type, int openPosition, int closedPosition) {
-        final @Nullable DecimalType value = getStateAs(type, PercentType.class);
-        return value != null ? convertPosition(value.intValue(), openPosition) : closedPosition;
     }
 }

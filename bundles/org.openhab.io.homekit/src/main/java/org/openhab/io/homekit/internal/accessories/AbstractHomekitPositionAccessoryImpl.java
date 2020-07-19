@@ -22,9 +22,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.items.RollershutterItem;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -99,5 +102,35 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
 
     public void unsubscribeTargetPosition() {
         unsubscribe(TARGET_POSITION);
+    }
+
+    /**
+     * convert/invert position of door/window/blinds.
+     * openHAB Rollershutter is:
+     * - completely open if position is 0%,
+     * - completely closed if position is 100%.
+     * HomeKit mapping has inverted mapping
+     * From Specification: "For blinds/shades/awnings, a value of 0 indicates a position that permits the least light
+     * and a value
+     * of 100 indicates a position that allows most light.", i.e.
+     * HomeKit Blinds is
+     * - completely open if position is 100%,
+     * - completely closed if position is 0%.
+     *
+     * As openHAB rollershutter item is typically used for window covering, the binding has by default inverting
+     * mapping.
+     * One can override this default behaviour with inverted="false/no" flag. in this cases, openHAB item value will be
+     * sent to HomeKit with no changes.
+     *
+     * @param value source value
+     * @return target value
+     */
+    protected int convertPosition(int value, int openPosition) {
+        return Math.abs(openPosition - value);
+    }
+
+    protected int convertPositionState(HomekitCharacteristicType type, int openPosition, int closedPosition) {
+        final @Nullable DecimalType value = getStateAs(type, PercentType.class);
+        return value != null ? convertPosition(value.intValue(), openPosition) : closedPosition;
     }
 }
