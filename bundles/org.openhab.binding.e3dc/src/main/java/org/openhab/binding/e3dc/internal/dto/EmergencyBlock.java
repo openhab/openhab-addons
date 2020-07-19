@@ -17,8 +17,6 @@ import java.util.BitSet;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.e3dc.internal.modbus.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EmergencyBlock} Data object for E3DC Info Block
@@ -26,7 +24,6 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 public class EmergencyBlock implements Data {
-    private final Logger logger = LoggerFactory.getLogger(EmergencyBlock.class);
     public static final StringType EP_NOT_SUPPORTED = new StringType("EP not supported");
     public static final StringType EP_ACTIVE = new StringType("EP active");
     public static final StringType EP_NOT_ACTIVE = new StringType("EP not active");

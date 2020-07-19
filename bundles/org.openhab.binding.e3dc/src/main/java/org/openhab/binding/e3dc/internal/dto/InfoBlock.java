@@ -15,8 +15,6 @@ package org.openhab.binding.e3dc.internal.dto;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.e3dc.internal.modbus.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link InfoBlock} Data object for E3DC Info Block
@@ -24,15 +22,15 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 public class InfoBlock implements Data {
-    private final Logger logger = LoggerFactory.getLogger(InfoBlock.class);
-    public StringType modbusId;
-    public StringType modbusVersion;
-    public DecimalType supportedRegisters;
-    public StringType manufacturer;
-    public StringType modelName;
-    public StringType serialNumber;
-    public StringType firmware;
-    public StringType allInfo;
+    private static final StringType EMPTY = new StringType("NULL");
+    public StringType modbusId = EMPTY;
+    public StringType modbusVersion = EMPTY;
+    public DecimalType supportedRegisters = new DecimalType(-1);
+    public StringType manufacturer = EMPTY;
+    public StringType modelName = EMPTY;
+    public StringType serialNumber = EMPTY;
+    public StringType firmware = EMPTY;
+    public StringType allInfo = EMPTY;
 
     public InfoBlock(byte[] bArray) {
         // decode magic byte

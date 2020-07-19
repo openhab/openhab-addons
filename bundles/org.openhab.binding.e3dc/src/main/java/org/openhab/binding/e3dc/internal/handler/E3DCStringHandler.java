@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class E3DCStringHandler extends BaseHandler {
-
     private final Logger logger = LoggerFactory.getLogger(E3DCStringHandler.class);
 
     public E3DCStringHandler(Thing thing) {
@@ -52,14 +51,18 @@ public class E3DCStringHandler extends BaseHandler {
     @Override
     public void dataAvailable(ModbusDataProvider provider) {
         StringBlock block = (StringBlock) provider.getData(DataType.STRINGS);
-        updateState(STRING1_DC_VOLTAGE_CHANNEL, block.string1Volt);
-        updateState(STRING2_DC_VOLTAGE_CHANNEL, block.string2Volt);
-        updateState(STRING3_DC_VOLTAGE_CHANNEL, block.string3Volt);
-        updateState(STRING1_DC_CURRENT_CHANNEL, block.string1Ampere);
-        updateState(STRING2_DC_CURRENT_CHANNEL, block.string2Ampere);
-        updateState(STRING3_DC_CURRENT_CHANNEL, block.string3Ampere);
-        updateState(STRING1_DC_OUTPUT_CHANNEL, block.string1Watt);
-        updateState(STRING2_DC_OUTPUT_CHANNEL, block.string2Watt);
-        updateState(STRING3_DC_OUTPUT_CHANNEL, block.string3Watt);
+        if (block != null) {
+            updateState(STRING1_DC_VOLTAGE_CHANNEL, block.string1Volt);
+            updateState(STRING2_DC_VOLTAGE_CHANNEL, block.string2Volt);
+            updateState(STRING3_DC_VOLTAGE_CHANNEL, block.string3Volt);
+            updateState(STRING1_DC_CURRENT_CHANNEL, block.string1Ampere);
+            updateState(STRING2_DC_CURRENT_CHANNEL, block.string2Ampere);
+            updateState(STRING3_DC_CURRENT_CHANNEL, block.string3Ampere);
+            updateState(STRING1_DC_OUTPUT_CHANNEL, block.string1Watt);
+            updateState(STRING2_DC_OUTPUT_CHANNEL, block.string2Watt);
+            updateState(STRING3_DC_OUTPUT_CHANNEL, block.string3Watt);
+        } else {
+            logger.debug("Unable to get {} from provider {}", DataType.STRINGS, provider.toString());
+        }
     }
 }

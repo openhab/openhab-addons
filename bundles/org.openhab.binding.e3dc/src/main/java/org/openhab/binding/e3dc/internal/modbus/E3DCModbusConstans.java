@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.e3dc.internal.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link E3DCModbusConstans} Variables for register handling.
  * The numbers are taken from E3DC Modbus Spec Chapter 3.1 page 14 ff
@@ -19,6 +21,7 @@ package org.openhab.binding.e3dc.internal.modbus;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class E3DCModbusConstans {
     public static final int INFO_REG_START = 0;
     public static final int INFO_REG_SIZE = 67;

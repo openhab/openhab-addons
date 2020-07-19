@@ -1,18 +1,38 @@
 # E3DC Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+<img style="float: right;" src="doc/E3DC_logo.png">
+Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaik Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.
+The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the official Modbus documentation for more details.
+The binding is designed the following way
+1) Create Bridge "E3DC Home Power Plant" and provide IP-Address and Port Number for the general Device Conncetion
+2) Add your wanted Blocks 
+* if you have a Wallbox connected - add Wallbox Control Block 
+* if you want Details of your attched Strings - add String Details Block
+With this design it's possible for you to install only the parts you are interested in.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+First you need a Bridge which establishes the basic connection towards your E3DC device
+
+| Name               | Bridge Type ID | Description                                                                                            |
+|--------------------|----------------|--------------------------------------------------------------------------------------------------------|
+| E3DC Home Power Plant | e3dc-device    | Establishes Modbus Connection to your Device. Add your desired Blocks to this Bridge afterwards.     |
+
+After establishing the Bridge add certain Blocks to gather Informations and Settings
+
+| Name               | Thing Type ID | Description                                                                                            |
+|--------------------|----------------|--------------------------------------------------------------------------------------------------------|
+| E3DC Information Block | e3dc-info    | Basic Information of your E3DC Device like Model Name, Serial Number and Software Versions             |
+| E3DC Power Block | e3dc-power    | Provides values of your attached eletrical Producers (Photovoltaik, Battery, ... and Consumers (Household, Wallbox, ...) |
+| E3DC Wallbox Control Block | e3dc-wallbox    | Provides your Wallbox Settings. Switches like "Sunmode" or "3Phase Charging" can be changed! |
+| E3DC String Details Block | e3dc-strings    | Provides detailed values of your attached Photovoltaik Strings. Evaluate how much Power each String provides |
+| E3DC EMS Block | e3dc-emergency    | Provides values of Emergency Power Status (EMS) and regulations like Battery loading / unloading restrictions |
+
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+There's no discovery. Modbus registers are available for all devices. Just install the blocks you are interested in.
 
 ## Binding Configuration
 

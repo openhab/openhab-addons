@@ -17,7 +17,6 @@ import static org.openhab.binding.e3dc.internal.modbus.E3DCModbusConstans.*;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.dto.EmergencyBlock;
@@ -42,9 +41,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ModbusCallback extends ModbusDataProvider implements ModbusReadCallback {
     private final Logger logger = LoggerFactory.getLogger(ModbusCallback.class);
-    private @Nullable InfoBlock infoBlock;
     private DataType callbackType;
     private byte[] bArray;
+    private int size;
     private int counter = 0;
     private long maxDuration = Long.MIN_VALUE;
     private long minDuration = Long.MAX_VALUE;
@@ -53,44 +52,27 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
     public ModbusCallback(DataType type) {
         callbackType = type;
         if (type.equals(DataType.INFO)) {
-            bArray = new byte[INFO_REG_SIZE * 2];
+            size = INFO_REG_SIZE * 2;
+            bArray = new byte[size];
         } else {
-            bArray = new byte[(REGISTER_LENGTH - INFO_REG_SIZE) * 2];
+            size = (REGISTER_LENGTH - INFO_REG_SIZE) * 2;
+            bArray = new byte[size];
         }
     }
 
     @Override
-    public void onRegisters(ModbusReadRequestBlueprint request, @NonNull ModbusRegisterArray registers) {
-        byte[] newArray = new byte[REGISTER_LENGTH * 2];
+    @NonNullByDefault({})
+    public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
+        byte[] newArray = new byte[size];
         long startTime = System.currentTimeMillis();
         Iterator<ModbusRegister> iter = registers.iterator();
         int i = 0;
-        int registerCounter = 0;
         while (iter.hasNext()) {
             ModbusRegister reg = iter.next();
-            // if (counter % 30 == 0) {
-            // logger.info("Reg {} value {} bytes {}", registerCounter, reg.getValue(), reg.getBytes());
-            // }
             System.arraycopy(reg.getBytes(), 0, newArray, i, 2);
             i += 2;
-            // byte[] b = reg.getBytes();
-            // for (int j = 0; j < b.length; j++) {
-            // newArray[i] = b[j];
-            // i++;
-            // }
-            registerCounter++;
         }
-
-        // logger.info("######################################");
-        // logger.info("Byte size {}", newArray.length);
-        // for (int j = 0; j < newArray.length; j++) {
-        // logger.info("Byte {} is {}", j, newArray[j]);
-        // }
-
-        synchronized (bArray) {
-            bArray = newArray.clone();
-        }
-        super.informAllListeners();
+        setArray(newArray);
 
         long duration = System.currentTimeMillis() - startTime;
         avgDuration += duration;
@@ -103,15 +85,25 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
             minDuration = Long.MAX_VALUE;
             maxDuration = Long.MIN_VALUE;
         }
+        // DataConverter.logArray(newArray);
+    }
+
+    public synchronized void setArray(byte[] b) {
+        if (b.length != size) {
+            logger.warn("Wrong byte size received. Should be {} but is {}. Data maybe corrupted!", size, b.length);
+        }
+        bArray = b.clone();
+        super.informAllListeners();
     }
 
     @Override
     public void onBits(ModbusReadRequestBlueprint request, BitArray bits) {
-        // TODO Auto-generated method stub
+        logger.warn("E3DC Modbus Callback onBits shall not happen! Request {}", request.toString());
     }
 
     @Override
     public void onError(ModbusReadRequestBlueprint request, Exception error) {
+        logger.warn("E3DC Modbus Callback error! Request {}", request.toString());
     }
 
     @Override
@@ -136,7 +128,15 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
                 int end = start + STRINGS_REG_SIZE * 2;
                 return new StringBlock(Arrays.copyOfRange(bArray, start, end));
             }
-            return null;
         }
+        logger.warn("Wrong Block requested. Request is {} but type is {}", type, callbackType);
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.getClass().getName()).append(":").append(callbackType);
+        return sb.toString();
     }
 }
