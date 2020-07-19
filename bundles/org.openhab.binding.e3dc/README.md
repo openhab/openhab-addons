@@ -1,15 +1,15 @@
 # E3DC Binding
 
 <img style="float: right;" src="doc/E3DC_logo.png">
-Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.\
-The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the official Modbus documentation for more details.\
-The binding is designed the following way\
+Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.  
+The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the official Modbus documentation for more details.  
+The binding is designed the following way  
 
-1. Create Bridge "E3DC Home Power Plant" and provide IP-Address and Port Number for the general Device Conncetion
+1. Create Bridge **E3DC Home Power Plant** and provide IP-Address and Port Number for the general Device Conncetion
 2. Add your wanted Blocks 
 
 * if you have a Wallbox connected - add Wallbox Control Block 
-* if you want Details of your attched Strings - add String Details Block
+* if you want Details of your attached Strings - add String Details Block
 
 With this design it's possible for you to install only the parts you are interested in.
 
@@ -55,7 +55,7 @@ The Binding Design requires two steps
 
 ### E3DC Home Power Plant 
 
-| Parameter        | Type   | Description                                                          
+| Parameter        | Type   | Description                                               |           
 |-----------------|----------------------------------------------------------------------|
 | host            | text    | IP Address of your device   |
 | port            | integer | Modbus Port of your device. Default is 502   |
@@ -89,11 +89,11 @@ The E3DC device offers a huge amount of channels. Due to the Block design you ca
 | Channel Label         | Channel ID      | Type           | Description                  |
 |-----------------------|-----------------|----------------|------------------------------|
 | PV Output             | pv-power-supply |  Number:Power  | Photovoltaic Power Production    |
-| Battery Discharge     | battery-power-supply |  Number:Power  | Photovoltaic Power Production    |
+| Battery Discharge     | battery-power-supply |  Number:Power  | Battery discharges and provides Power    |
 | Battery Charge        | battery-power-consumption |  Number:Power  | Battery charges and consumes Power    |
 | Household Consumption | household-power-consumption |  Number:Power  | Household consuming Power    |
 | Grid Power Consumption| grid-power-consumption |  Number:Power  | Grid Power is needed in order to satisfy your overall Power consumption    |
-| Grid Power Supply     | grid-power-supply |  Number:Power  | More Photovoltaic Power is produced than needed. Additional Power is provided towards to Grid    |
+| Grid Power Supply     | grid-power-supply |  Number:Power  | More Photovoltaic Power is produced than needed. Additional Power is provided towards the Grid    |
 | External Power Supply | external-power-supply |  Number:Power  | Power produced by an external device which is attached to your E3DC device    |
 | Wallbox Power Consumption | wallbox-power-consumption |  Number:Power  | Power consumption of attached Wallboxes    |
 | Wallbox PV Power Consumption  | wallbox-pv-power-consumption |  Number:Power  | Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes    |
@@ -105,17 +105,17 @@ The E3DC device offers a huge amount of channels. Due to the Block design you ca
 
 | Channel Label         | Channel ID      | Type           | Description                  |
 |-----------------------|-----------------|----------------|------------------------------|
-| Wallbox Available     | wb-available |  Switch  | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case.\ **read-only**  |
-| Sun Mode              | wb-sunmode-channel |  Switch  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.\  **read-write**  |
-| Wallbox Charging      | wb-charging-channel |  Switch  | Indicates your Wallbox is charging.\ **read-write**    |
-| Jack Locked           | wb-jack-locked |  Switch  | Indicates your Jack is locked.\ **read-only**    |
-| Jack Plugged          | wb-jack-plugged |  Switch  | Indicates your Jack is plugged. **read-only**    |
-| Schuko Socket On      | wb-schuko-on |  Switch  | If your Wallbox has an additional Schuko Socket it provides state ON or OFF.\ **read-write**    |
-| Schuko Socket Plugged | wb-schuko-plugged |  Switch  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF.\ **read-only**     |
-| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF.\ **read-only** |
-| 16A Relay On          | wb-relay-16a |  Switch  | Indicates if 16A Relay is ON\ **read-only**    |
-| 32A Relay On          | wb-relay-32a |  Switch  | Indicates if 32A Relay is ON\  **read-only**    |
-| 3-Phase Charging      | 3-Phase Active |  Switch  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated\ **read-write**   |
+| Wallbox Available     | wb-available |  Switch  | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case.  **read-only**  |
+| Sun Mode              | wb-sunmode-channel |  Switch  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.  **read-write**  |
+| Wallbox Charging      | wb-charging-channel |  Switch  | Indicates your Wallbox is charging.  **read-write**    |
+| Jack Locked           | wb-jack-locked |  Switch  | Indicates your Jack is locked.  **read-only**    |
+| Jack Plugged          | wb-jack-plugged |  Switch  | Indicates your Jack is plugged.  **read-only**    |
+| Schuko Socket On      | wb-schuko-on |  Switch  | If your Wallbox has an additional Schuko Socket it provides state ON or OFF.  **read-write**    |
+| Schuko Socket Plugged | wb-schuko-plugged |  Switch  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF.  **read-only**     |
+| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF.  **read-only** |
+| 16A Relay On          | wb-relay-16a |  Switch  | Indicates if 16A Relay is ON  **read-only**    |
+| 32A Relay On          | wb-relay-32a |  Switch  | Indicates if 32A Relay is ON  **read-only**    |
+| 3-Phase Charging      | 3-Phase Active |  Switch  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated  **read-write**   |
 
 ### E3DC String Details Block
 
