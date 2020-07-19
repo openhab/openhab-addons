@@ -12,66 +12,26 @@
  */
 package org.openhab.binding.lcn.internal.converter;
 
-import java.util.function.Function;
-
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.lcn.internal.common.LcnException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Base class for all LCN variable value converters.
+ * Base class for all converters.
  *
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-public class Converter {
-    private final Logger logger = LoggerFactory.getLogger(Converter.class);
-    private @Nullable final Unit<?> unit;
-    private final Function<Long, Double> toHuman;
-    private final Function<Double, Long> toNative;
-
-    public Converter(@Nullable Unit<?> unit, Function<Long, Double> toHuman, Function<Double, Long> toNative) {
-        this.unit = unit;
-        this.toHuman = toHuman;
-        this.toNative = toNative;
-    }
-
-    /**
-     * Converts the given human readable value into the native LCN value.
-     *
-     * @param humanReadableValue the value to convert
-     * @return the native value
-     */
-    protected long toNative(double humanReadableValue) {
-        return toNative.apply(humanReadableValue);
-    }
-
-    /**
-     * Converts the given native LCN value into a human readable value.
-     *
-     * @param nativeValue the value to convert
-     * @return the human readable value
-     */
-    protected double toHumanReadable(long nativeValue) {
-        return toHuman.apply(nativeValue);
-    }
-
+public interface Converter {
     /**
      * Converts a human readable value into LCN native value.
      *
      * @param humanReadable value to convert
      * @return the native LCN value
      */
-    public DecimalType onCommandFromItem(double humanReadable) {
-        return new DecimalType(toNative(humanReadable));
-    }
+    public DecimalType onCommandFromItem(double humanReadable);
 
     /**
      * Converts a human readable value into LCN native value.
@@ -80,20 +40,7 @@ public class Converter {
      * @return the native LCN value
      * @throws LcnException when the value could not be converted to the base unit
      */
-    public DecimalType onCommandFromItem(QuantityType<?> quantityType) throws LcnException {
-        Unit<?> localUnit = unit;
-        if (localUnit == null) {
-            return onCommandFromItem(quantityType.doubleValue());
-        }
-
-        QuantityType<?> quantityInBaseUnit = quantityType.toUnit(localUnit);
-
-        if (quantityInBaseUnit != null) {
-            return onCommandFromItem(quantityInBaseUnit.doubleValue());
-        } else {
-            throw new LcnException(quantityType + ": Incompatible Channel unit configured: " + localUnit);
-        }
-    }
+    public DecimalType onCommandFromItem(QuantityType<?> quantityType) throws LcnException;
 
     /**
      * Converts a state update from the Thing into a human readable unit.
@@ -101,18 +48,5 @@ public class Converter {
      * @param state from the Thing
      * @return human readable State
      */
-    public State onStateUpdateFromHandler(State state) {
-        State result = state;
-
-        if (state instanceof DecimalType) {
-            Unit<?> localUnit = unit;
-            if (localUnit != null) {
-                result = QuantityType.valueOf(toHumanReadable(((DecimalType) state).longValue()), localUnit);
-            }
-        } else {
-            logger.warn("Unexpected state type: {}", state.getClass().getSimpleName());
-        }
-
-        return result;
-    }
+    public State onStateUpdateFromHandler(State state);
 }

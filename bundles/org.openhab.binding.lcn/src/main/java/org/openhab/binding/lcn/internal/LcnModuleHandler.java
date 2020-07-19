@@ -67,20 +67,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
-    private static final Map<String, Converter> CONVERTERS = new HashMap<>();
+    private static final Map<String, Converter> VALUE_CONVERTERS = new HashMap<>();
     private @Nullable LcnAddrMod moduleAddress;
     private final Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
     private final List<AbstractLcnModuleSubHandler> metadataSubHandlers = new ArrayList<>();
     private final Map<ChannelUID, @Nullable Converter> converters = new HashMap<>();
 
     static {
-        CONVERTERS.put("temperature", Converters.TEMPERATURE);
-        CONVERTERS.put("light", Converters.LIGHT);
-        CONVERTERS.put("co2", Converters.CO2);
-        CONVERTERS.put("current", Converters.CURRENT);
-        CONVERTERS.put("voltage", Converters.VOLTAGE);
-        CONVERTERS.put("angle", Converters.ANGLE);
-        CONVERTERS.put("windspeed", Converters.WINDSPEED);
+        VALUE_CONVERTERS.put("temperature", Converters.TEMPERATURE);
+        VALUE_CONVERTERS.put("light", Converters.LIGHT);
+        VALUE_CONVERTERS.put("co2", Converters.CO2);
+        VALUE_CONVERTERS.put("current", Converters.CURRENT);
+        VALUE_CONVERTERS.put("voltage", Converters.VOLTAGE);
+        VALUE_CONVERTERS.put("angle", Converters.ANGLE);
+        VALUE_CONVERTERS.put("windspeed", Converters.WINDSPEED);
     }
 
     public LcnModuleHandler(Thing thing) {
@@ -115,8 +115,8 @@ public class LcnModuleHandler extends BaseThingHandler {
                             converters.put(channel.getUID(), new S0Converter(parameterObject));
                             break;
                         default:
-                            if (CONVERTERS.containsKey(unitObject)) {
-                                converters.put(channel.getUID(), CONVERTERS.get(unitObject));
+                            if (VALUE_CONVERTERS.containsKey(unitObject)) {
+                                converters.put(channel.getUID(), VALUE_CONVERTERS.get(unitObject));
                             }
                             break;
                     }
