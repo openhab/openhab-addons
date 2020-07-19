@@ -575,7 +575,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
 
             socket.startResponseTimeout();
             logger.debug("[{}] Connecting to server : {} ", debugId, target);
-            wsClient.connect(socket, target, request);
+            wsClient.connect(socket, target, request).get();
             return true;
         } catch (Exception e) {
             logger.debug("[{}] Error starting websocket client: {}", debugId, e.getMessage());
