@@ -56,6 +56,8 @@ public class ShellyChannelDefinitionsDTO {
 
     public static final String ITEM_TYPE_NUMBER = "Number";
     public static final String ITEM_TYPE_STRING = "String";
+    public static final String ITEM_TYPE_SWITCH = "Switch";
+    public static final String ITEM_TYPE_CONTACT = "Contact";
     public static final String ITEM_TYPE_DATETIME = "DateTime";
     public static final String ITEM_TYPE_TEMP = "Number:Temperature";
     public static final String ITEM_TYPE_LUX = "Number:Illuminance";
@@ -64,8 +66,7 @@ public class ShellyChannelDefinitionsDTO {
     public static final String ITEM_TYPE_VOLT = "Number:ElectricPotential";
     public static final String ITEM_TYPE_AMP = "Number:ElectricPotential";
     public static final String ITEM_TYPE_PERCENT = "Number:Dimensionless";
-    public static final String ITEM_TYPE_SWITCH = "Switch";
-    public static final String ITEM_TYPE_CONTACT = "Contact";
+    public static final String ITEM_TYPE_ANGLE = "Number:Angle";
 
     public static final String PREFIX_GROUP = "definitions.shelly.group.";
     public static final String PREFIX_CHANNEL = "channel-type.shelly.";
@@ -104,19 +105,19 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_PFACTOR, "meterPowerFactor", ITEM_TYPE_NUMBER))
 
                 // Sensors
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE_STR, "sensorStateStr", ITEM_TYPE_STRING))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "sensorTemp", ITEM_TYPE_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_HUM, "sensorHumidity", ITEM_TYPE_PERCENT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_LUX, "sensorLux", ITEM_TYPE_LUX))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ILLUM, "sensorIllumination", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_CONTACT, "sensorContact", ITEM_TYPE_CONTACT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SSTATE, "sensorState", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VIBRATION, "sensorVibration", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEM_TYPE_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEM_TYPE_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_FLOOD, "sensorFlood", ITEM_TYPE_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SMOKE, "sensorSmoke", ITEM_TYPE_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PPM, "sensorPPM", ITEM_TYPE_NUMBER))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE, "sensorState", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_LAST_UPDATE, "lastUpdate", ITEM_TYPE_DATETIME))
 
@@ -125,6 +126,7 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "eventType", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEM_TYPE_NUMBER))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_BUTTON_TRIGGER, "system.button", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_LAST_UPDATE, "lastUpdate", ITEM_TYPE_DATETIME))
 
                 // Addon with external sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1, "sensorExtTemp", ITEM_TYPE_TEMP))
@@ -196,9 +198,8 @@ public class ShellyChannelDefinitionsDTO {
             addChannel(thing, add, relays.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2);
             addChannel(thing, add, relays.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3);
         }
-        if (relays.extHumidity != null) {
-            addChannel(thing, add, relays.extHumidity.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY);
-        }
+        addChannel(thing, add, relays.extHumidity != null, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY);
+
         return add;
     }
 
@@ -239,6 +240,8 @@ public class ShellyChannelDefinitionsDTO {
 
     public static Map<String, Channel> createSensorChannels(final Thing thing, final ShellyStatusSensor sdata) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
+        ShellyDeviceProfile profile = ((ShellyBaseHandler) thing.getHandler()).getProfile();
+
         // Sensor data
         addChannel(thing, newChannels, sdata.tmp != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP);
         addChannel(thing, newChannels, sdata.hum != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM);
@@ -253,7 +256,7 @@ public class ShellyChannelDefinitionsDTO {
         addChannel(thing, newChannels, sdata.lux != null && sdata.lux.illumination != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.contact != null && sdata.contact.state != null, CHANNEL_GROUP_SENSOR,
-                CHANNEL_SENSOR_STATE);
+                CHANNEL_SENSOR_CONTACT);
         addChannel(thing, newChannels, sdata.motion != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION);
         addChannel(thing, newChannels, sdata.charger != null, CHGR_DEVST, CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.sensorError != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
@@ -263,7 +266,7 @@ public class ShellyChannelDefinitionsDTO {
         if (sdata.gasSensor != null) {
             addChannel(thing, newChannels, sdata.gasSensor.selfTestState != null, CHGR_DEVST, CHANNEL_DEVST_SELFTTEST);
             addChannel(thing, newChannels, sdata.gasSensor.sensorState != null, CHANNEL_GROUP_SENSOR,
-                    CHANNEL_SENSOR_STATE_STR);
+                    CHANNEL_SENSOR_SSTATE);
             addChannel(thing, newChannels, sdata.concentration != null && sdata.concentration.ppm != null,
                     CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM);
             addChannel(thing, newChannels, sdata.gasSensor.sensorState != null, CHANNEL_GROUP_SENSOR,
@@ -277,7 +280,7 @@ public class ShellyChannelDefinitionsDTO {
             addChannel(thing, newChannels, sdata.bat.voltage != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT);
         }
 
-        addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE);
+        addChannel(thing, newChannels, true, ShellyComponents.getControlGroup(profile, null, 0), CHANNEL_LAST_UPDATE);
         return newChannels;
     }
 

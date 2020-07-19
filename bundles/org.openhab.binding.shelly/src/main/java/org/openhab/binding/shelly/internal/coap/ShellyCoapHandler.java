@@ -46,6 +46,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRe
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDevDescrTypeAdapter;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDevDescription;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotGenericSensorList;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
@@ -95,6 +96,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         this.coapServer = coapServer;
         this.thingName = thingHandler.thingName;
 
+        gsonBuilder.registerTypeAdapter(CoIotDevDescription.class, new CoIotDevDescrTypeAdapter());
         gsonBuilder.registerTypeAdapter(CoIotGenericSensorList.class, new CoIotSensorTypeAdapter());
         gsonBuilder.setPrettyPrinting();
         gson = gsonBuilder.create();
@@ -225,8 +227,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 thingHandler.setThingOnline();
 
                 // fixed malformed JSON :-(
-                payload = payload.replace("}{", "},{");
-                payload = payload.replace("][", "],[");
+                payload = fixJSON(payload);
 
                 if (uri.equalsIgnoreCase(COLOIT_URI_DEVDESC) || (uri.isEmpty() && payload.contains(COIOT_TAG_BLK))) {
                     handleDeviceDescription(devId, payload);
@@ -270,9 +271,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
             // Decode Json
             CoIotDevDescription descr = gson.fromJson(payload, CoIotDevDescription.class);
-
-            int i;
-            for (i = 0; i < descr.blk.size(); i++) {
+            for (int i = 0; i < descr.blk.size(); i++) {
                 CoIotDescrBlk blk = descr.blk.get(i);
                 logger.debug("{}:    id={}: {}", thingName, blk.id, blk.desc);
                 if (!blockMap.containsKey(blk.id)) {
@@ -295,7 +294,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
             logger.debug("{}: Adding {} sensor definitions", thingName, descr.sen.size());
             if (descr.sen != null) {
-                for (i = 0; i < descr.sen.size(); i++) {
+                for (int i = 0; i < descr.sen.size(); i++) {
                     addSensor(descr.sen.get(i));
                 }
             }
@@ -357,6 +356,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         }
 
         // Parse Json,
+        payload = fixJSON(payload); // fix malformed JSON
         CoIotGenericSensorList list = gson.fromJson(payload, CoIotGenericSensorList.class);
         if (list.generic == null) {
             logger.debug("{}: Sensor list has invalid format! Payload: {}", devId, payload);
@@ -562,7 +562,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                         ShellyColorUtils.toPercent((int) s.value, profile.minTemp, profile.maxTemp));
                                 break;
                             case "sensor state": // Shelly Gas
-                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE_STR,
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE,
                                         getStringType(s.valueStr));
                                 break;
                             case "alarm state": // Shelly Gas
@@ -742,10 +742,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         } else if (profile.isSensor) {
             // Sensor state
             if (profile.isDW) { // Door Window has item type Contact
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         s.value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
             } else {
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
             }
         }
@@ -896,6 +896,20 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
         }
         return sen;
+    }
+
+    /**
+     * Fix malformed JSON - stupid, but the devices sometimes return malformed JSON with then causes a
+     * JsonSyntaxException
+     *
+     * @param json to be checked/fixed
+     */
+    private static String fixJSON(String payload) {
+        String json = payload;
+        json = json.replace("}{", "},{");
+        json = json.replace("][", "],[");
+        json = json.replace("],,[", "],[");
+        return json;
     }
 
     /**

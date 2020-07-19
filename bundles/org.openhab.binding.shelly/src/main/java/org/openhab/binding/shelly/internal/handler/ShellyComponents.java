@@ -19,6 +19,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -278,7 +279,7 @@ public class ShellyComponents {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},
                 thingHandler.logger.debug("{}: Updating DW state with {}", thingHandler.thingName,
                         getString(sdata.contact.state));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         getString(sdata.contact.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
@@ -334,7 +335,7 @@ public class ShellyComponents {
                         getStringType(sdata.gasSensor.selfTestState));
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE,
                         getStringType(sdata.gasSensor.alarmState));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE_STR,
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE,
                         getStringType(sdata.gasSensor.sensorState));
             }
             if ((sdata.concentration != null) && sdata.concentration.isValid) {
@@ -367,9 +368,33 @@ public class ShellyComponents {
             updated |= thingHandler.updateInputs(status);
 
             if (updated) {
-                thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+                thingHandler.updateChannel(getControlGroup(profile, status, 0), CHANNEL_LAST_UPDATE, getTimestamp());
             }
         }
         return updated;
+    }
+
+    public static String getControlGroup(ShellyDeviceProfile profile, @Nullable ShellySettingsStatus status, int idx) {
+        if (profile.isDimmer) {
+            return CHANNEL_GROUP_DIMMER_CONTROL;
+        }
+
+        if (status != null) {
+            if (profile.isRoller && (status.rollers != null)) {
+                return profile.numRollers == 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
+            } else if (profile.hasBattery && (status.relays != null)) {
+                return profile.numRelays == 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
+            } else if (profile.isLight && (status.lights != null)) {
+                return profile.numRelays == 1 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_CONTROL + idx;
+            }
+        }
+        if (profile.isButton) {
+            return CHANNEL_GROUP_STATUS;
+        } else if (profile.isSensor) {
+            return CHANNEL_GROUP_SENSOR;
+        }
+
+        // e.g. ix3
+        return profile.numRelays == 1 ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
     }
 }

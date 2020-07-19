@@ -91,6 +91,7 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_EVENT_FLOOD_DETECTED = "flood_detected";
     public static final String SHELLY_EVENT_FLOOD_GONE = "flood_gone";
     public static final String SHELLY_EVENT_VIBRATION = "vibration"; // DW 1.6.5+
+    public static final String SHELLY_EVENT_OPEN = "open"; // DW 1.6.5+
     public static final String SHELLY_EVENT_CLOSE = "close"; // DW 1.6.5+
     public static final String SHELLY_EVENT_TEMP_OVER = "temp_over"; // FW 1.7
     public static final String SHELLY_EVENT_TEMP_UNDER = "temp_under"; // FW 1.7

@@ -414,19 +414,21 @@ public class ShellyHttpApi {
     private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
-                // Sensors add the type=xx to report_url themself, so we need to ommit here
-                String urlParm = !eventType.equalsIgnoreCase(SHELLY_EVENT_SENSORREPORT) ? "?type=" + eventType : "";
+                // H&T adds the type=xx to report_url itself, so we need to ommit here
+                String eclass = profile.isSensor ? EVENT_TYPE_SENSORDATA : eventType;
+                String urlParm = eventType.contains("temp") || profile.isHT ? "" : "?type=" + eventType;
                 String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
-                        + profile.thingName + "/" + eventType + urlParm;
+                        + profile.thingName + "/" + eclass + urlParm;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
-                String test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
-                if (!enabled && !profile.settingsJson.contains(test)) {
+                String testUrl = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
+                if (!enabled && !profile.settingsJson.contains(testUrl)) {
                     // Don't set URL to null when the current one doesn't point to this OH
                     // Don't interfere with a 3rd party App
                     continue;
                 }
-                if (!profile.settingsJson.contains(test)) {
+                if (!profile.settingsJson.contains(testUrl)) {
                     // Current Action URL is != new URL
+                    logger.debug("{}: Set new url for event type {}: {}", thingName, eventType, newUrl);
                     request(SHELLY_URL_SETTINGS + "?" + mkEventUrl(eventType) + "=" + urlEncode(newUrl));
                 }
             }

@@ -155,7 +155,7 @@
 	</channel-group-type>
 
 
-	<channel-type id="sensorState">
+	<channel-type id="sensorContact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>State of the contact: open/close</description>
@@ -167,16 +167,16 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="sensorStateStr">
+	<channel-type id="sensorState">
 		<item-type>String</item-type>
 		<label>Sensor State</label>
 		<description>Sensor State: normal</description>
 		<state pattern="%s" readOnly="true">
 			<options>
-				<option value="unknown">Unknown</option>
 				<option value="warmup">Warm-Up</option>
 				<option value="normal">Normal</option>
 				<option value="fault">Fault</option>
+				<option value="unknown">unknown</option>
 			</options>
 		</state>
 	</channel-type>
@@ -298,7 +298,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="sensorTilt">
-		<item-type>Switch</item-type>
+		<item-type>Number:Angle</item-type>
 		<label>Tilt</label>
 		<description>Tilt in degrees (requires calibration)</description>
 		<state readOnly="true">

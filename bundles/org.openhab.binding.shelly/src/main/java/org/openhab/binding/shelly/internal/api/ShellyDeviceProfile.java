@@ -78,7 +78,8 @@ public class ShellyDeviceProfile {
     public boolean isSensor = false; // true for HT & Smoke
     public boolean hasBattery = false; // true if battery device
     public boolean isSense = false; // true if thing is a Shelly Sense
-    public boolean isDW = false; // true of Door Window sensor
+    public boolean isHT = false; // true for H&T
+    public boolean isDW = false; // true for Door Window sensor
     public boolean isButton = false; // true for a Shelly Button 1
     public boolean isIX3 = false; // true for a Shelly IX
 
@@ -185,10 +186,10 @@ public class ShellyDeviceProfile {
             maxTemp = isBulb ? MAX_COLOR_TEMP_BULB : MAX_COLOR_TEMP_DUO;
         }
 
-        boolean isHT = thingType.equals(THING_TYPE_SHELLYHT_STR);
         boolean isFlood = thingType.equals(THING_TYPE_SHELLYFLOOD_STR);
         boolean isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
+        isHT = thingType.equals(THING_TYPE_SHELLYHT_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR);
         isSense = thingType.equals(THING_TYPE_SHELLYSENSE_STR);
         isIX3 = thingType.equals(THING_TYPE_SHELLYIX3_STR);

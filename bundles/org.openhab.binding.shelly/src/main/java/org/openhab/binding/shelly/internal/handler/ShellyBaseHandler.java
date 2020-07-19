@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.handler;
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.handler.ShellyComponents.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.net.InetAddress;
@@ -31,6 +32,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
@@ -370,10 +372,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 setThingOnline();
 
                 // map status to channels
-                updated |= updateDeviceStatus(status);
+                updated |= this.updateDeviceStatus(status);
                 updated |= ShellyComponents.updateDeviceStatus(this, status);
-                updated |= ShellyComponents.updateMeters(this, status);
-                updated |= ShellyComponents.updateSensors(this, status);
+                updated |= updateMeters(this, status);
+                updated |= updateSensors(this, status);
                 // updated |= updateInputs(status);
 
                 // All channels must be created after the first cycle
@@ -556,7 +558,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 requestUpdates(1, true);
             } else {
                 String group = "";
-                boolean isButton = false;
+                boolean isButton = profile.isButton || profile.isIX3;
                 if (profile.hasRelays) {
                     group = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + rindex;
                     int i = Integer.parseInt(deviceIndex);
@@ -633,10 +635,20 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     case SHELLY_EVENT_SENSORREPORT:
                         // process sensor with next refresh
                         break;
+                    case SHELLY_EVENT_TEMP_OVER: // DW2
+                    case SHELLY_EVENT_TEMP_UNDER:
+                        break;
                     case SHELLY_EVENT_FLOOD_DETECTED:
                     case SHELLY_EVENT_FLOOD_GONE:
                         updateChannel(group, CHANNEL_SENSOR_FLOOD,
                                 event.equalsIgnoreCase(SHELLY_EVENT_FLOOD_DETECTED) ? OnOffType.ON : OnOffType.OFF);
+                        break;
+
+                    case SHELLY_EVENT_CLOSE: // DW 1.7
+                    case SHELLY_EVENT_OPEN: // DW 1.7
+                        updateChannel(group, CHANNEL_SENSOR_CONTACT,
+                                event.equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
+                                        : OpenClosedType.CLOSED);
                         break;
 
                     case SHELLY_EVENT_DARK: // DW 1.7
@@ -889,40 +901,17 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (status.inputs != null) {
             int idx = 1;
             for (ShellyInputState input : status.inputs) {
-                String group = getControlGroup(status, idx);
+                String group = getControlGroup(profile, status, idx);
                 updated |= updateChannel(group, CHANNEL_INPUT, getOnOff(input.input));
                 if (input.event != null) {
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTTYPE, getStringType(input.event));
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(input.eventCount));
+                    updated |= updateChannel(group, CHANNEL_LAST_UPDATE, getTimestamp());
                 }
                 idx++;
             }
         }
         return updated;
-    }
-
-    public String getControlGroup(ShellySettingsStatus status, int idx) {
-        if (profile.isDimmer) {
-            return CHANNEL_GROUP_DIMMER_CONTROL;
-        }
-        if (profile.isRoller && (status.rollers != null)) {
-            return profile.numRollers == 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
-        }
-        if (profile.hasBattery && (status.relays != null)) {
-            return profile.numRelays == 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
-        }
-        if (profile.isLight && (status.lights != null)) {
-            return profile.numRelays == 1 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_CONTROL + idx;
-        }
-        if (profile.isButton) {
-            return CHANNEL_GROUP_STATUS;
-        }
-        if (profile.isSensor) {
-            return CHANNEL_GROUP_SENSOR;
-        }
-
-        // e.g. ix3
-        return profile.numRelays == 1 ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
     }
 
     public void triggerButton(String iGroup, String value) {
@@ -936,6 +925,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 if ((job != null) && !job.isCancelled()) {
                     job.cancel(true);
                 }
+                updateChannel(iGroup, CHANNEL_LAST_UPDATE, getTimestamp());
                 asyncButtonRelease = scheduler.schedule(() -> {
                     logger.debug("{}: Simulating Button RELEASED", thingName);
                     triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, CommonTriggerEvents.RELEASED);

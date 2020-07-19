@@ -231,8 +231,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_TILT = "tilt";
     public static final String CHANNEL_SENSOR_FLOOD = "flood";
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
-    public static final String CHANNEL_SENSOR_STATE = "state";
-    public static final String CHANNEL_SENSOR_STATE_STR = "sensorState";
+    public static final String CHANNEL_SENSOR_CONTACT = "state";
+    public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
     public static final String CHANNEL_SENSOR_ALARM_STATE = "alarmState";
     public static final String CHANNEL_SENSOR_MOTION = "motion";
     public static final String CHANNEL_SENSOR_ERROR = "lastError";

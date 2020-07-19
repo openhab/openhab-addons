@@ -594,6 +594,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |          |eventCount   |Number   |yes      |Number of button events                                                |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels             |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any value changed)                       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |
 |          |lowBattery   |Switch   |yes      |Low battery alert (< 20%)                                              |
