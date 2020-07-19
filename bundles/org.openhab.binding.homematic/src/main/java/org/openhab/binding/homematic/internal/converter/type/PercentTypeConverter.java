@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.Type;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.type.MetadataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,11 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
         }
     }
 
+    private double getCorrectedMaxValue(HmDatapoint dp) {
+        double max = dp.getMaxValue().doubleValue();
+        return (max == 1.01 && dp.getChannel().getDevice().getHmInterface().equals(HmInterface.HMIP) ? 1.0d : max);
+    }
+
     @Override
     protected boolean toBindingValidation(HmDatapoint dp, Class<? extends Type> typeClass) {
         return dp.isNumberType() && dp.getMaxValue() != null && dp.getMinValue() != null
@@ -61,15 +67,16 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
 
     @Override
     protected Object toBinding(PercentType type, HmDatapoint dp) throws ConverterException {
-        Double number = (type.doubleValue() / 100) * dp.getMaxValue().doubleValue();
+        double maxValue = getCorrectedMaxValue(dp);
+        Double number = (type.doubleValue() / 100) * maxValue;
 
         if (MetadataUtils.isRollerShutter(dp)) {
             if (type == PercentType.HUNDRED) { // means DOWN
                 return dp.getMinValue().doubleValue();
             } else if (type == PercentType.ZERO) { // means UP
-                return 1.0d;
+                return maxValue;
             }
-            return dp.getMaxValue().doubleValue() - number;
+            return maxValue - number;
         }
         if (number < 0.0 || number > 100.0) {
             logger.warn("Percent value '{}' out of range, truncating value for {}", number, dp);
@@ -90,8 +97,11 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
     @Override
     protected PercentType fromBinding(HmDatapoint dp) throws ConverterException {
         Double number = ((Number) dp.getValue()).doubleValue();
-        int percent = (int) ((100 / dp.getMaxValue().doubleValue()) * number);
-
+        int percent = (int) (100 / getCorrectedMaxValue(dp) * number);
+        if (percent > 100) {
+            logger.warn("Percent value '{}' out of range, truncating value for {}", number, dp);
+            percent = 100;
+        }
         if (MetadataUtils.isRollerShutter(dp)) {
             percent = 100 - percent;
         }
