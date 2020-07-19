@@ -2,7 +2,7 @@
 
 <img style="float: right;" src="doc/E3DC_logo.png">
 Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.  
-The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the <a href=doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18>official Modbus documentation</a> for more details.  
+The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the <a href="./doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18">official Modbus documentation</a> for more details.  
 The binding is designed the following way  
 
 1. Create Bridge **E3DC Home Power Plant** and provide IP-Address and Port Number for the general Device Conncetion
@@ -55,7 +55,7 @@ The Binding Design requires two steps
 
 ### E3DC Home Power Plant 
 
-See <a href=doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18>official Modbus documentation</a> for more details
+See <a href="./doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18">official Modbus documentation</a> for more details
 
 | Parameter        | Type   | Description                                               |           
 |-----------------|----------------------------------------------------------------------|
