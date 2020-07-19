@@ -16,7 +16,7 @@
 	<channel-type id="supported-registers-channel">
 		<item-type>Number</item-type>
 		<label>Supported Registers</label>
-		<description>Count of the supported registers</description>
+		<description>Number of registers supported by Modbus</description>
 	</channel-type>
 	<channel-type id="manufacturer-name-channel">
 		<item-type>String</item-type>
@@ -37,9 +37,5 @@
 		<item-type>String</item-type>
 		<label>E3DC Serial Number</label>
 		<description>Serial Number</description>
-	</channel-type>
-	<channel-type id="info-channel">
-		<item-type>String</item-type>
-		<label>All Infos in one String</label>
 	</channel-type>
 </thing:thing-descriptions>

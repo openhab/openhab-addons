@@ -1,11 +1,11 @@
 # E3DC Binding
 
 <img style="float: right;" src="doc/E3DC_logo.png">
-Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaik Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.
+![Alt](/doc/E3DC_logo.png "Title")Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.
 The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the official Modbus documentation for more details.
 The binding is designed the following way
-1) Create Bridge "E3DC Home Power Plant" and provide IP-Address and Port Number for the general Device Conncetion
-2) Add your wanted Blocks 
+1. Create Bridge "E3DC Home Power Plant" and provide IP-Address and Port Number for the general Device Conncetion
+2. Add your wanted Blocks 
 * if you have a Wallbox connected - add Wallbox Control Block 
 * if you want Details of your attched Strings - add String Details Block
 With this design it's possible for you to install only the parts you are interested in.
@@ -24,9 +24,9 @@ After establishing the Bridge add certain Blocks to gather Informations and Sett
 | Name               | Thing Type ID | Description                                                                                            |
 |--------------------|----------------|--------------------------------------------------------------------------------------------------------|
 | E3DC Information Block | e3dc-info    | Basic Information of your E3DC Device like Model Name, Serial Number and Software Versions             |
-| E3DC Power Block | e3dc-power    | Provides values of your attached eletrical Producers (Photovoltaik, Battery, ... and Consumers (Household, Wallbox, ...) |
+| E3DC Power Block | e3dc-power    | Provides values of your attached eletrical Producers (Photovoltaic, Battery, ... and Consumers (Household, Wallbox, ...) |
 | E3DC Wallbox Control Block | e3dc-wallbox    | Provides your Wallbox Settings. Switches like "Sunmode" or "3Phase Charging" can be changed! |
-| E3DC String Details Block | e3dc-strings    | Provides detailed values of your attached Photovoltaik Strings. Evaluate how much Power each String provides |
+| E3DC String Details Block | e3dc-strings    | Provides detailed values of your attached Photovoltaic Strings. Evaluate how much Power each String provides |
 | E3DC EMS Block | e3dc-emergency    | Provides values of Emergency Power Status (EMS) and regulations like Battery loading / unloading restrictions |
 
 
@@ -34,36 +34,91 @@ After establishing the Bridge add certain Blocks to gather Informations and Sett
 
 There's no discovery. Modbus registers are available for all devices. Just install the blocks you are interested in.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The Binding Design requires two steps
+1. Create the E3DC Home Power Plant Bridge (e3dc-device) which requires
+* IP Address of your device
+* Port Number of your device
+* optional refresh time in ms, default is set to 2000 = 2 seconds
+2. Add your desired Blocks
+* each Block requires the created Bridge from point 1
+* only the Wallbox Control Block requires an additional Wallbox ID. The E3DC device can handle up to 8 Wallboxes so select a value from 0 to 7
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+### E3DC Home Power Plant 
+
+| Parameter        | Type   | Description                                                          |
+|-----------------|----------------------------------------------------------------------|
+| host            | text    | IP Address of your device   |
+| port            | integer | Modbus Port of your device. Default is 502   |
+| refresh         | integer | data refresh rate in milliseconds. Default is 2000   |
+
+### E3DC Wallbox Control Block
+
+| Parameter        | type   | Description                                                          |
+|-----------------|----------------------------------------------------------------------|
+| wallboxId        | integer    | The E3DC device can handle up to 8 Wallboxes so select a value from 0 to 7  |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The E3DC device offers a huge amount of channels. Due to the Block design you can allocate only your wanted blocks with a restricted amount of Channels. See each Block which Channels are offered
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+### E3DC Info Block
 
-| channel  | type   | description                  |
+| Channel Label         | Channel ID | Type   | Description                  |
+|-----------------------|------------|--------|------------------------------|
+| Modbus-ID             |modbus-id   |  String | Modbus ID / Magic Byte of E3DC  |
+| Modbus Firmware       |modbus-firmware| String | Version of Modbus Firmware  |
+| Supported Registers   |supported-registers| Number | Number of registers supported by Modbus  |
+| Manufacturer Name     | manufacturer-name  | String | Name of the Device Manufacturer  |
+| E3DC Model Name       | model-name | String | Name of the E3DC Model  |
+| E3DC Firmware Release | firmware-release | String | Firmware installed on this particular E3DC Model  |
+| E3DC Serial Number    | serial-number| String | Serial Number of this particular E3DC Model  |
+
+
+### E3DC Power Block
+
+| Channel Label         | Channel ID      | Type           | Description                  |
+|-----------------------|-----------------|----------------|------------------------------|
+| PV Output             | pv-power-supply |  Number:Power  | Photovoltaic Power Production    |
+| Battery Discharge     | battery-power-supply |  Number:Power  | Photovoltaic Power Production    |
+| Battery Charge        | battery-power-consumption |  Number:Power  | Battery charges and consumes Power    |
+| Household Consumption | household-power-consumption |  Number:Power  | Household consuming Power    |
+| Grid Power Consumption| grid-power-consumption |  Number:Power  | Grid Power is needed in order to satisfy your overall Power consumption    |
+| Grid Power Supply     | grid-power-supply |  Number:Power  | More Photovoltaic Power is produced than needed. Additional Power is provided towards to Grid    |
+| External Power Supply | external-power-supply |  Number:Power  | Power produced by an external device which is attached to your E3DC device    |
+| Wallbox Power Consumption | wallbox-power-consumption |  Number:Power  | Power consumption of attached Wallboxes    |
+| Wallbox PV Power Consumption  | wallbox-pv-power-consumption |  Number:Power  | Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes    |
+| Autarky               |autarky-channel |  Number:Percent  | Your current Autarky Level    |
+| Self Consumtion       | self-consumption |  Number:Percent  | Your current Photovoltaic Self Consumption Level    |
+| Battery State Of Charge | battery-soc |  Number:Percent  | Charge Level of your attached Battery    |
+
+### E3DC Wallbox Control Block
+
+| Channel Label         | Channel ID      | Type           | Description                  |
+|-----------------------|-----------------|----------------|------------------------------|
+| Wallbox Available     | wb-available |  Switch  | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case. **read-only**  |
+| Sun Mode              | wb-sunmode-channel |  Switch  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.  **read-write**  |
+| Wallbox Charging      | wb-charging-channel |  Switch  | Indicates your Wallbox is charging. **read-write**    |
+| Jack Locked           | wb-jack-locked |  Switch  | Indicates your Jack is locked. **read-only**    |
+| Jack Plugged          | wb-jack-plugged |  Switch  | Indicates your Jack is plugged. **read-only**    |
+| Schuko Socket On      | wb-schuko-on |  Switch  | If your Wallbox has an additional Schuko Socket it provides state ON or OFF. **read-write**    |
+| Schuko Socket Plugged | wb-schuko-plugged |  Switch  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF. **read-only**     |
+| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF. **read-only** |
+| 16A Relay On          | wb-relay-16a |  Switch  | Indicates if 16A Relay is ON **read-only**    |
+| 32A Relay On          | wb-relay-32a |  Switch  | Indicates if 32A Relay is ON  **read-only**    |
+| 3-Phase Charging      | 3-Phase Active |  Switch  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated **read-write**   |
+
+### E3DC String Details Block
+
+| Channel  | Type   | Description                  |
+|----------|--------|------------------------------|
+| control  | Switch | This is the control channel  |
+
+### E3DC EMS Block
+
+| Channel  | Type   | Description                  |
 |----------|--------|------------------------------|
 | control  | Switch | This is the control channel  |
 
