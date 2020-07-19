@@ -58,7 +58,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
     private final MessageListener listener;
     // Single-threaded executor for writes that serves to serialize writes.
     private final ExecutorService writeExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH), new NamedThreadFactory("upb-serial", true));
+            new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH), new NamedThreadFactory("upb-serial-writer", true));
     private final SerialPort serialPort;
 
     private int bufferLength = 0;
@@ -68,6 +68,8 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
     public SerialIoThread(final SerialPort serialPort, final MessageListener listener) {
         this.serialPort = serialPort;
         this.listener = listener;
+        setName("upb-serial-reader");
+        setDaemon(true);
     }
 
     @Override

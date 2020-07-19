@@ -102,7 +102,6 @@ public class SerialPIMHandler extends PIMHandler {
             }
             logger.debug("Starting receive thread");
             final SerialIoThread receiveThread = new SerialIoThread(serialPort, this);
-            receiveThread.setName("upb-serial-reader");
             this.receiveThread = receiveThread;
             // Once the receiver starts, it may set the PIM status to ONLINE
             // so we must ensure all initialization is finished at that point.
