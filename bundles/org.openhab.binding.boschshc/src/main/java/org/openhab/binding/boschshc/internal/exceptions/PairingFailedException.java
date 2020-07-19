@@ -15,7 +15,7 @@ package org.openhab.binding.boschshc.internal.exceptions;
 /**
  * Thrown if the pairing failed multiple times
  * 
- * @author Gerd Zanker
+ * @author Gerd Zanker - Initial contribution
  */
 @SuppressWarnings("serial")
 public class PairingFailedException extends BoschSHCException {

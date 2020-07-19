@@ -14,6 +14,11 @@ package org.openhab.binding.boschshc.internal;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Represents the state of a device as reported from the Smart Home Controller
+ *
+ * @author Stefan Kästle - Initial contribution
+ */
 public class PowerSwitchStateUpdate {
     /*
      * "body": {

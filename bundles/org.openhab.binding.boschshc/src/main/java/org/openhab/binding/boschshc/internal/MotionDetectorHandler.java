@@ -31,6 +31,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * MotionDetectorHandler
+ *
+ * @author Stefan Kästle - Initial contribution
+ */
 @NonNullByDefault
 public class MotionDetectorHandler extends BoschSHCHandler {
     private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);

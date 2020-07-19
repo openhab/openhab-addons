@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -34,6 +35,13 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * HTTP client using own context with private & Bosch Certs
+ * to pair and connect to the Bosch Smart Home Controller.
+ *
+ * @author Gerd Zanker - Initial contribution
+ */
+@NonNullByDefault
 public class BoschHttpClient extends HttpClient {
 
     private static final int MAX_PAIR_TRIES = 12;

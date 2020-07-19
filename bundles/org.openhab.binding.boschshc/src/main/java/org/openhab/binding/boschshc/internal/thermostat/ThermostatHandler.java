@@ -25,6 +25,11 @@ import org.openhab.binding.boschshc.internal.services.temperaturelevel.Temperatu
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetServiceState;
 
+/**
+ * Handler for a thermostat device.
+ * 
+ * @author Christian Oeing - Initial contribution
+ */
 @NonNullByDefault
 public final class ThermostatHandler extends BoschSHCHandler {
 

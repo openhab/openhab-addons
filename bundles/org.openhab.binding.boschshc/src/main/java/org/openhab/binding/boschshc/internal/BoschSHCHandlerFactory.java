@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * TODO Most of the things in here should actually be a Bridge?
  *
  * @author Stefan Kästle - Initial contribution
+ * @author Christian Oeing - added Shutter Control and ThermostatHandler
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.boschshc", service = ThingHandlerFactory.class)

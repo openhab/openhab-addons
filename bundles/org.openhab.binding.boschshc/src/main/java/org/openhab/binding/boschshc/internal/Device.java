@@ -36,9 +36,7 @@ import com.google.gson.annotations.SerializedName;
  * "childDeviceIds":[]
  * }
  *
- * @author Stefan Kästle
- *
- *
+ * @author Stefan Kästle - Initial contribution
  */
 public class Device {
 

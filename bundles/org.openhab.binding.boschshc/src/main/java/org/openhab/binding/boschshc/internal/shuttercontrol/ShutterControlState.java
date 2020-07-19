@@ -14,6 +14,11 @@ package org.openhab.binding.boschshc.internal.shuttercontrol;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * State for a shutter control device
+ * 
+ * @author Christian Oeing - Initial contribution
+ */
 public class ShutterControlState {
     @SerializedName("@type")
     public String type = "shutterControlState";

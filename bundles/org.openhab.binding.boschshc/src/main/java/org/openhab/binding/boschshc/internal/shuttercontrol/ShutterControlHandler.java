@@ -35,6 +35,8 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * Utility functions to convert data between Bosch things and openHAB items
+ * 
+ * @author Christian Oeing - Initial contribution
  */
 final class DataConversion {
     public static int levelToOpenPercentage(double level) {
@@ -48,6 +50,8 @@ final class DataConversion {
 
 /**
  * Handler for a shutter control device
+ * 
+ * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
 public class ShutterControlHandler extends BoschSHCHandler {

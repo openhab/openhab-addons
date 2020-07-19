@@ -17,8 +17,7 @@ import java.util.ArrayList;
 /**
  * Response of the Controller for a Long Poll API call.
  *
- * @author Stefan Kästle
- *
+ * @author Stefan Kästle - Initial contribution
  */
 public class LongPollResult {
 

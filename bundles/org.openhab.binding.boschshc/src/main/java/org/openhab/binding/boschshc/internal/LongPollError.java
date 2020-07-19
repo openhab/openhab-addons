@@ -15,8 +15,7 @@ package org.openhab.binding.boschshc.internal;
 /**
  * Error response of the Controller for a Long Poll API call.
  *
- * @author Stefan Kästle
- *
+ * @author Stefan Kästle - Initial contribution
  */
 public class LongPollError {
 

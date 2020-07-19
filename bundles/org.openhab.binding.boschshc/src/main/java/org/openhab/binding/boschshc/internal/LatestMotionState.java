@@ -31,6 +31,7 @@ import com.google.gson.annotations.SerializedName;
  * "jsonrpc": "2.0"
  * }
  *
+ * @author Stefan Kästle - Initial contribution
  */
 public class LatestMotionState {
 

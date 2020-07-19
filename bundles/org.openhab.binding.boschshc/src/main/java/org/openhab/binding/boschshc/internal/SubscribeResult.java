@@ -19,8 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * The result field will contain the subscription ID needed for further API calls (e.g. the long polling call)
  *
- * @author Stefan Kästle
- *
+ * @author Stefan Kästle - Initial contribution
  */
 public class SubscribeResult {
     private @Nullable String result;

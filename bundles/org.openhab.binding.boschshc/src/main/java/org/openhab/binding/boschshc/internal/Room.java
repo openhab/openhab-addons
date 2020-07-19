@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
  * Json example:
  * {"@type":"room","id":"hz_1","iconId":"icon_room_bedroom","name":"Bedroom"}
  *
- * @author Stefan Kästle
+ * @author Stefan Kästle - Initial contribution
  */
 public class Room {
 

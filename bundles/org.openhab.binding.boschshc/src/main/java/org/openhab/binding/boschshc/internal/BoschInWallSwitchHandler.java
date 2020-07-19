@@ -35,7 +35,7 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Represents Bosch in-wall switches.
  *
- * @author Stefan Kästle
+ * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
 public class BoschInWallSwitchHandler extends BoschSHCHandler {

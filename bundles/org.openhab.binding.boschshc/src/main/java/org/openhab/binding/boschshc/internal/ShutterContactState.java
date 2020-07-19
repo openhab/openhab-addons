@@ -14,6 +14,11 @@ package org.openhab.binding.boschshc.internal;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * ShutterContactState
+ *
+ * @author Stefan Kästle - Initial contribution
+ */
 public class ShutterContactState {
 
     /*
