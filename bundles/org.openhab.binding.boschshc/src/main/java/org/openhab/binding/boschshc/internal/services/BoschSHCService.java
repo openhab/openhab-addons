@@ -24,6 +24,8 @@ import com.google.gson.JsonElement;
 /**
  * Base class of a service of a Bosch Smart Home device.
  * The services of the devices and their official APIs can be found here: https://apidocs.bosch-smarthome.com/local/
+ * 
+ * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
 public abstract class BoschSHCService<TState extends BoschSHCServiceState> {

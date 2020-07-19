@@ -19,8 +19,8 @@ import com.google.gson.annotations.SerializedName;
  * Represents a device status update as represented by the Smart Home
  * Controller.
  *
- * @author Stefan Kästle
- *
+ * @author Stefan Kästle - Initial contribution
+ * @author Christian Oeing - refactorings of e.g. server registration 
  */
 public class DeviceStatusUpdate {
     /**

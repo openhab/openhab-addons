@@ -15,7 +15,7 @@ package org.openhab.binding.boschshc.internal;
 /**
  * Payload as POST data for triggering a RPC call on the Bosch Smart Home Controller.
  *
- * @author Stefan Kästle
+ * @author Stefan Kästle - Initial contribution
  */
 class JsonRpcRequest {
 

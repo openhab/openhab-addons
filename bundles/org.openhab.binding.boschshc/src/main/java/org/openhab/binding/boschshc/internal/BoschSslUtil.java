@@ -40,12 +40,19 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.id.InstanceUUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * SSL context utility.
+ *
+ * @author Gerd Zanker - Initial contribution
+ */
+@NonNullByDefault
 public class BoschSslUtil {
 
     private static final String OSS_OPENHAB_BINDING = "oss_openhab_binding";
