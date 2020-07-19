@@ -17,7 +17,7 @@
 			<channel id="emergency-power-possible" typeId="emergency-power-possible-channel"/>
 			<channel id="weather-predicted-loading" typeId="weather-predicted-loading-channel"/>
 			<channel id="regulation-status" typeId="regulation-status-channel"/>
-			<channel id="loading-lock-timey" typeId="loading-lock-timey-channel"/>
+			<channel id="loading-lock-timey" typeId="loading-lock-time-channel"/>
 			<channel id="unloading-lock-time" typeId="unloading-lock-time-channel"/>
 		</channels>
 	</thing-type>
