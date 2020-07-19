@@ -1052,20 +1052,22 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             // handle volume
             Integer volume = null;
-            if (mediaState != null) {
-                volume = mediaState.volume;
-            }
-            if (playerInfo != null && volume == null) {
-                Volume volumnInfo = playerInfo.volume;
-                if (volumnInfo != null) {
-                    volume = volumnInfo.volume;
+            if (!connection.isSequenceNodeQueueRunning()) {
+                if (mediaState != null) {
+                    volume = mediaState.volume;
                 }
-            }
-            if (volume != null && volume > 0) {
-                lastKnownVolume = volume;
-            }
-            if (volume == null) {
-                volume = lastKnownVolume;
+                if (playerInfo != null && volume == null) {
+                    Volume volumnInfo = playerInfo.volume;
+                    if (volumnInfo != null) {
+                        volume = volumnInfo.volume;
+                    }
+                }
+                if (volume != null && volume > 0) {
+                    lastKnownVolume = volume;
+                }
+                if (volume == null) {
+                    volume = lastKnownVolume;
+                }
             }
             // Update states
             if (updateRemind && currentNotifcationUpdateTimer == null) {
@@ -1224,7 +1226,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             }
 
-            if (lastSpokenText.equals(spokenText)) {
+            if (lastSpokenText.isEmpty() || lastSpokenText.equals(spokenText)) {
                 updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(""));
             }
             lastSpokenText = spokenText;
@@ -1238,13 +1240,14 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             case "PUSH_VOLUME_CHANGE":
                 JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
                         JsonCommandPayloadPushVolumeChange.class);
+                Connection connection = this.findConnection();
                 @Nullable
                 Integer volumeSetting = volumeChange.volumeSetting;
                 @Nullable
                 Boolean muted = volumeChange.isMuted;
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
-                } else if (volumeSetting != null) {
+                } if (volumeSetting != null && connection != null && !connection.isSequenceNodeQueueRunning()) {
                     lastKnownVolume = volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                 }

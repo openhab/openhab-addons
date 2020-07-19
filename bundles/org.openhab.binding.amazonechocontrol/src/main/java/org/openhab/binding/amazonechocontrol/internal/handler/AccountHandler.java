@@ -125,10 +125,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     private AccountHandlerConfig handlerConfig = new AccountHandlerConfig();
 
-    private LinkedBlockingQueue<@Nullable String> pushActivityQueue = new LinkedBlockingQueue<>();
-    private AtomicBoolean pushActivityQueueRunning = new AtomicBoolean();
-    private @Nullable ScheduledFuture<?> pushActivitySenderUnblockFuture;
-
     public AccountHandler(Bridge bridge, HttpService httpService, Storage<String> stateStorage, Gson gson) {
         super(bridge);
         this.gson = gson;
@@ -346,12 +342,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         if (refreshSmartHomeAfterCommandJob != null) {
             refreshSmartHomeAfterCommandJob.cancel(true);
             this.refreshSmartHomeAfterCommandJob = null;
-        }
-        @Nullable
-        ScheduledFuture<?> pushActivitySenderUnblockFuture = this.pushActivitySenderUnblockFuture;
-        if (pushActivitySenderUnblockFuture != null) {
-            pushActivitySenderUnblockFuture.cancel(true);
-            this.pushActivitySenderUnblockFuture = null;
         }
         Connection connection = this.connection;
         if (connection != null) {
@@ -812,51 +802,32 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         }
     }
 
-    // NEED TO RUN IN A DELAYED QUEUE, ELSE TOO MANY REQUESTS
     private void handlePushActivity(@Nullable String payload) {
-        pushActivityQueue.add(payload);
-        if (pushActivityQueueRunning.compareAndSet(false, true)) {
-            queuedPushActivity();
+        JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload,
+                JsonCommandPayloadPushActivity.class);
+
+        Key key = pushActivity.key;
+        if (key == null) {
+            return;
         }
-    }
 
-    private void queuedPushActivity() {
-        @Nullable
-        String payload = pushActivityQueue.poll();
-        if (payload != null) {
-            try {
-                JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload,
-                        JsonCommandPayloadPushActivity.class);
-
-                Key key = pushActivity.key;
-                if (key == null) {
-                    return;
-                }
-
-                Connection connection = this.connection;
-                if (connection == null || !connection.getIsLoggedIn()) {
-                    return;
-                }
-
-                String search = key.registeredUserId + "#" + key.entryId;
-                Arrays.stream(connection.getActivities(10, pushActivity.timestamp))
-                        .filter(activity -> activity != null && search.equals(activity.id)).findFirst()
-                        .ifPresent(currentActivity -> {
-                            SourceDeviceId[] sourceDeviceIds = currentActivity.sourceDeviceIds;
-                            if (sourceDeviceIds != null) {
-                                Arrays.stream(sourceDeviceIds).filter(Objects::nonNull).map(
-                                        sourceDeviceId -> findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber))
-                                        .filter(Objects::nonNull)
-                                        .forEach(echoHandler -> echoHandler.handlePushActivity(currentActivity));
-                            }
-                        });
-            } finally {
-                pushActivitySenderUnblockFuture = scheduler.schedule(this::queuedPushActivity, 5, TimeUnit.SECONDS);
-            }
-        } else {
-            pushActivityQueueRunning.set(false);
-            pushActivitySenderUnblockFuture = null;
+        Connection connection = this.connection;
+        if (connection == null || !connection.getIsLoggedIn()) {
+            return;
         }
+
+        String search = key.registeredUserId + "#" + key.entryId;
+        Arrays.stream(connection.getActivities(10, pushActivity.timestamp))
+                .filter(activity -> activity != null && search.equals(activity.id)).findFirst()
+                .ifPresent(currentActivity -> {
+                    SourceDeviceId[] sourceDeviceIds = currentActivity.sourceDeviceIds;
+                    if (sourceDeviceIds != null) {
+                        Arrays.stream(sourceDeviceIds).filter(Objects::nonNull).map(
+                                sourceDeviceId -> findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber))
+                                .filter(Objects::nonNull)
+                                .forEach(echoHandler -> echoHandler.handlePushActivity(currentActivity));
+                    }
+                });
     }
 
     void refreshAfterCommand() {
