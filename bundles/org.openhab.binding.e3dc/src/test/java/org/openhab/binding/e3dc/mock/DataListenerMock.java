@@ -14,11 +14,11 @@ package org.openhab.binding.e3dc.mock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.e3dc.DataConverterTest;
 import org.openhab.binding.e3dc.internal.modbus.Data;
 import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.e3dc.internal.modbus.DataListener;
 import org.openhab.binding.e3dc.internal.modbus.ModbusDataProvider;
+import org.openhab.binding.e3dc.util.DataConverterTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

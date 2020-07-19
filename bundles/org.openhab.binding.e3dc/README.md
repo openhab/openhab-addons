@@ -1,13 +1,16 @@
 # E3DC Binding
 
 <img style="float: right;" src="doc/E3DC_logo.png">
-![Alt](/doc/E3DC_logo.png "Title")Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.
-The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the official Modbus documentation for more details.
-The binding is designed the following way
+Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.\
+The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the official Modbus documentation for more details.\
+The binding is designed the following way\
+
 1. Create Bridge "E3DC Home Power Plant" and provide IP-Address and Port Number for the general Device Conncetion
 2. Add your wanted Blocks 
+
 * if you have a Wallbox connected - add Wallbox Control Block 
 * if you want Details of your attched Strings - add String Details Block
+
 With this design it's possible for you to install only the parts you are interested in.
 
 
@@ -38,17 +41,21 @@ There's no discovery. Modbus registers are available for all devices. Just insta
 ## Thing Configuration
 
 The Binding Design requires two steps
+
 1. Create the E3DC Home Power Plant Bridge (e3dc-device) which requires
+
 * IP Address of your device
 * Port Number of your device
 * optional refresh time in ms, default is set to 2000 = 2 seconds
+
 2. Add your desired Blocks
+
 * each Block requires the created Bridge from point 1
 * only the Wallbox Control Block requires an additional Wallbox ID. The E3DC device can handle up to 8 Wallboxes so select a value from 0 to 7
 
 ### E3DC Home Power Plant 
 
-| Parameter        | Type   | Description                                                          |
+| Parameter        | Type   | Description                                                          
 |-----------------|----------------------------------------------------------------------|
 | host            | text    | IP Address of your device   |
 | port            | integer | Modbus Port of your device. Default is 502   |
@@ -56,7 +63,7 @@ The Binding Design requires two steps
 
 ### E3DC Wallbox Control Block
 
-| Parameter        | type   | Description                                                          |
+| Parameter        | type   | Description                                                |
 |-----------------|----------------------------------------------------------------------|
 | wallboxId        | integer    | The E3DC device can handle up to 8 Wallboxes so select a value from 0 to 7  |
 
@@ -98,29 +105,45 @@ The E3DC device offers a huge amount of channels. Due to the Block design you ca
 
 | Channel Label         | Channel ID      | Type           | Description                  |
 |-----------------------|-----------------|----------------|------------------------------|
-| Wallbox Available     | wb-available |  Switch  | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case. **read-only**  |
-| Sun Mode              | wb-sunmode-channel |  Switch  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.  **read-write**  |
-| Wallbox Charging      | wb-charging-channel |  Switch  | Indicates your Wallbox is charging. **read-write**    |
-| Jack Locked           | wb-jack-locked |  Switch  | Indicates your Jack is locked. **read-only**    |
+| Wallbox Available     | wb-available |  Switch  | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case.\ **read-only**  |
+| Sun Mode              | wb-sunmode-channel |  Switch  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.\  **read-write**  |
+| Wallbox Charging      | wb-charging-channel |  Switch  | Indicates your Wallbox is charging.\ **read-write**    |
+| Jack Locked           | wb-jack-locked |  Switch  | Indicates your Jack is locked.\ **read-only**    |
 | Jack Plugged          | wb-jack-plugged |  Switch  | Indicates your Jack is plugged. **read-only**    |
-| Schuko Socket On      | wb-schuko-on |  Switch  | If your Wallbox has an additional Schuko Socket it provides state ON or OFF. **read-write**    |
-| Schuko Socket Plugged | wb-schuko-plugged |  Switch  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF. **read-only**     |
-| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF. **read-only** |
-| 16A Relay On          | wb-relay-16a |  Switch  | Indicates if 16A Relay is ON **read-only**    |
-| 32A Relay On          | wb-relay-32a |  Switch  | Indicates if 32A Relay is ON  **read-only**    |
-| 3-Phase Charging      | 3-Phase Active |  Switch  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated **read-write**   |
+| Schuko Socket On      | wb-schuko-on |  Switch  | If your Wallbox has an additional Schuko Socket it provides state ON or OFF.\ **read-write**    |
+| Schuko Socket Plugged | wb-schuko-plugged |  Switch  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF.\ **read-only**     |
+| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF.\ **read-only** |
+| 16A Relay On          | wb-relay-16a |  Switch  | Indicates if 16A Relay is ON\ **read-only**    |
+| 32A Relay On          | wb-relay-32a |  Switch  | Indicates if 32A Relay is ON\  **read-only**    |
+| 3-Phase Charging      | 3-Phase Active |  Switch  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated\ **read-write**   |
 
 ### E3DC String Details Block
 
-| Channel  | Type   | Description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| Channel Label         | Channel ID      | Type           | Description                  |
+|-----------------------|-----------------|----------------|------------------------------|
+| String 1 Potential    | string1-dc-voltage |  Number:Volt  | Volt on String 1           |
+| String 2 Potential    | string2-dc-voltage |  Number:Volt  | Volt on String 2           |
+| String 3 Potential    | string3-dc-voltage |  Number:Volt  | Volt on String 3           |
+| String 1 Current      | string1-dc-current |  Number:Ampere  | Ampere on String 1       |
+| String 2 Current      | string2-dc-current |  Number:Ampere  | Ampere on String 2       |
+| String 3 Current      | string3-dc-current |  Number:Ampere  | Ampere on String 3       |
+| String 1 Power        | string1-dc-output  |  Number:Power   | Watt produced by String 1 |
+| String 2 Power        | string2-dc-output  |  Number:Power   | Watt produced by String 2 |
+| String 3 Power        | string3-dc-output  |  Number:Power   | Watt produced by String 3 |
+
 
 ### E3DC EMS Block
 
-| Channel  | Type   | Description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| Channel Label         | Channel ID      | Type           | Description                  |
+|-----------------------|-----------------|----------------|------------------------------|
+| Emergency Power Status| emergency-power-status |  String  | Indicates if Emergency Power Supply is possible or not, active or inactive |
+| Battery Loading Locked | battery-loading-lock |  Switch  | Indictes if Battery Loading is locked           |
+| Battery Unloading Locked | battery-unloading-lock |  Switch  | Indictes if Battery Unloading is locked |
+| Emergency Power Possible| emergency-power-possible |  Switch  | Indicates if Emergency Power Supply is possible          |
+| Loading Based On Weather Prediction Active| weather-predicted-loading |  Switch  | Indicates if Weather Predicted Battery Loading is actived |
+| Regultation Status Of Max Grid Power Supply| regulation-status |  Switch  | Indicates if Grid Power Supply is regulated or not |
+| Loading Locktime Active| loading-lock-time |  Switch  | Indicates if Loading Lock Times are set or not |
+| Unloading Locktime Active| unloading-lock-time |  Switch  |Indicates if Unloading Lock Times are set or not |
 
 ## Full Example
 
