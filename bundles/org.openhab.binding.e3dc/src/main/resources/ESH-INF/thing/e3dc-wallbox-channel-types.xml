@@ -6,56 +6,57 @@
 	<channel-type id="wb-available-channel">
 		<item-type>Switch</item-type>
 		<label>Wallbox Available</label>
-		<description>Indicates if the Wallbox is attached. Check your Wallbox ID in offline case</description>
+		<description>Indicates if the Wallbox is attached. Check your Wallbox ID in offline case. **read-only**</description>
 	</channel-type>
 	<channel-type id="wb-sunmode-channel">
 		<item-type>Switch</item-type>
 		<label>Sun Mode</label>
-		<description>Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging</description>
+		<description>Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.
+			**read-write**</description>
 	</channel-type>
 	<channel-type id="wb-charging-channel">
 		<item-type>Switch</item-type>
 		<label>Wallbox Charging</label>
-		<description></description>
+		<description>Indicates your Wallbox is charging. **read-write**</description>
 	</channel-type>
 	<channel-type id="wb-jack-locked-channel">
 		<item-type>Switch</item-type>
 		<label>Jack Locked</label>
-		<description></description>
+		<description>Indicates your Jack is locked. **read-only**</description>
 	</channel-type>
 	<channel-type id="wb-jack-plugged-channel">
 		<item-type>Switch</item-type>
 		<label>Jack Plugged</label>
-		<description></description>
+		<description>Indicates your Jack is plugged. **read-only**</description>
 	</channel-type>
 	<channel-type id="wb-schuko-on-channel">
 		<item-type>Switch</item-type>
 		<label>Schuko Socket On</label>
-		<description></description>
+		<description>If your Wallbox has an additional Schuko Socket it provides state ON or OFF. **read-write**</description>
 	</channel-type>
 	<channel-type id="wb-schuko-plugged-channel">
 		<item-type>Switch</item-type>
 		<label>Schuko Socket Plugged</label>
-		<description></description>
+		<description>If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF. **read-only** </description>
 	</channel-type>
 	<channel-type id="wb-schuko-locked-channel">
 		<item-type>Switch</item-type>
 		<label>Schuko Socket Locked</label>
-		<description></description>
+		<description>If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF. **read-only**</description>
 	</channel-type>
 	<channel-type id="wb-relay-16a-channel">
 		<item-type>Switch</item-type>
 		<label>16A Relay On</label>
-		<description></description>
+		<description>Indicates if 16A Relay is ON **read-only**</description>
 	</channel-type>
 	<channel-type id="wb-relay-32a-channel">
 		<item-type>Switch</item-type>
 		<label>32A Relay On</label>
-		<description></description>
+		<description>Indicates if 32A Relay is ON **read-only**</description>
 	</channel-type>
 	<channel-type id="wb-3phase-channel">
 		<item-type>Switch</item-type>
-		<label>3-Phase Active</label>
-		<description></description>
+		<label>3-Phase Charging</label>
+		<description>Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated **read-write**</description>
 	</channel-type>
 </thing:thing-descriptions>
