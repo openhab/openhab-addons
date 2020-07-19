@@ -31,7 +31,7 @@
 	<channel-type id="grid-power-supply-channel">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power Supply</label>
-		<description>More Photovoltaic Power is produced than needed. Additional Power is provided towards to Grid</description>
+		<description>More Photovoltaic Power is produced than needed. Additional Power is provided towards the Grid</description>
 	</channel-type>
 	<channel-type id="external-power-supply-channel">
 		<item-type>Number:Power</item-type>
