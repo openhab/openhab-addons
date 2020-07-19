@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.BitSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.e3dc.internal.dto.DataConverter;
 
@@ -24,26 +25,21 @@ import org.openhab.binding.e3dc.internal.dto.DataConverter;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class DataConverterTest {
 
     @Test
-    public void testE3DCSwapValues() {
+    public void testE3DCSwapValueNegative() {
         // Reg 69 value 65098 bytes [-2, 74]
         // Reg 70 value 65535 bytes [-1, -1]
-        byte[] b1 = new byte[] { -2, -128 };
-        byte[] b2 = new byte[] { -1, -1 };
-        System.out.println("b1: " + DataConverter.getIntValue(b1, 0));
-        System.out.println("b2: " + DataConverter.getIntValue(b2, 0));
-        b1 = new byte[] { -2, -128, -1, -1 };
-        System.out.println(b1.toString());
-        System.out.println("b2: " + DataConverter.getInt32_swap(b1, 0));
+        byte[] b = new byte[] { -2, -74, -1, -1 };
+        assertEquals("Negative Value", -330, DataConverter.getInt32Swap(b, 0));
     }
 
     @Test
     public void testInt() {
         byte[] b = new byte[] { 0, -128 };
         int i = DataConverter.getIntValue(b, 0);
-        System.out.println(i);
         assertEquals("Int value", 128, i);
     }
 
@@ -51,20 +47,28 @@ public class DataConverterTest {
     public void testLong() {
         byte[] b = new byte[] { 0, 1, 0, 0 };
         long l = DataConverter.getLongValue(b, 0);
-        System.out.println(l);
         assertEquals("Long value", 65536, l);
-        l = DataConverter.getLongValue(b, 0);
-        System.out.println(l);
     }
 
     @Test
     public void testBitset() {
         byte[] b = new byte[] { 3, 16 };
         BitSet s = BitSet.valueOf(b);
-        for (int i = 0; i < 16; i++) {
-            System.out.println("b" + i + ": " + s.get(i));
-
-        }
-
+        assertEquals("Bit0", true, s.get(0));
+        assertEquals("Bit1", true, s.get(1));
+        assertEquals("Bit2", false, s.get(2));
+        assertEquals("Bit3", false, s.get(3));
+        assertEquals("Bit4", false, s.get(4));
+        assertEquals("Bit5", false, s.get(5));
+        assertEquals("Bit6", false, s.get(6));
+        assertEquals("Bit7", false, s.get(7));
+        assertEquals("Bit8", false, s.get(8));
+        assertEquals("Bit9", false, s.get(9));
+        assertEquals("Bit10", false, s.get(10));
+        assertEquals("Bit11", false, s.get(11));
+        assertEquals("Bit12", true, s.get(12));
+        assertEquals("Bit13", false, s.get(13));
+        assertEquals("Bit14", false, s.get(14));
+        assertEquals("Bit15", false, s.get(15));
     }
 }

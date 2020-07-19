@@ -7,8 +7,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="e3dc-device"/>
 		</supported-bridge-type-refs>
-		<label>E3DC Wallbox Control</label>
-		<description>Shows Settings and provides Control on E3DC connected Wallboxes</description>
+		<label>E3DC Wallbox Control Block</label>
+		<description>Provides your Wallbox Settings. Switches like "Sunmode" or "3Phase Charging" can be changed!</description>
 		<channels>
 			<channel id="wb-available" typeId="wb-available-channel"/>
 			<channel id="wb-sunmode" typeId="wb-sunmode-channel"/>

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.e3dc.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -34,10 +34,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public abstract class BaseHandler extends BaseThingHandler implements DataListener {
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
-    private ThingHandlerCallback thingHandlerCallback;
-    private ModbusDataProvider modbusDataProvider;
+    private @Nullable ThingHandlerCallback thingHandlerCallback;
+    private @Nullable ModbusDataProvider modbusDataProvider;
 
     public BaseHandler(Thing thing) {
         super(thing);
@@ -47,55 +48,56 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             Bridge b = getBridge();
-            // logger.info("Bridge? {}", b);
-            BridgeHandler bridgeHandler = b.getHandler();
-            // logger.info("Got BridgeHandler {}, Is Provider? {}", bridgeHandler,
-            // bridgeHandler instanceof E3DCDeviceThingHandler);
-            if (t.equals(DataType.INFO)) {
-                modbusDataProvider = ((E3DCDeviceThingHandler) bridgeHandler).getInfoDataProvider();
-                if (modbusDataProvider != null) {
-                    modbusDataProvider.addDataListener(this);
-                    updateStatus(ThingStatus.ONLINE);
+            if (b != null) {
+                BridgeHandler bridgeHandler = b.getHandler();
+                if (bridgeHandler != null) {
+                    if (t.equals(DataType.INFO)) {
+                        ModbusDataProvider localModbusDataProvider = ((E3DCDeviceThingHandler) bridgeHandler)
+                                .getInfoDataProvider();
+                        modbusDataProvider = localModbusDataProvider;
+                        localModbusDataProvider.addDataListener(this);
+                        updateStatus(ThingStatus.ONLINE);
+                    } else if (t.equals(DataType.DATA)) {
+                        ModbusDataProvider localModbusDataProvider = ((E3DCDeviceThingHandler) bridgeHandler)
+                                .getDataProvider();
+                        modbusDataProvider = localModbusDataProvider;
+                        localModbusDataProvider.addDataListener(this);
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE);
+                    logger.warn("BridgeHandler not found");
                 }
-            } else if (t.equals(DataType.DATA)) {
-                modbusDataProvider = ((E3DCDeviceThingHandler) bridgeHandler).getDataProvider();
-                if (modbusDataProvider != null) {
-                    modbusDataProvider.addDataListener(this);
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE);
-                }
+            } else {
+                logger.warn("Bridge not found");
             }
         });
     }
 
     @Override
     public void dispose() {
-        if (modbusDataProvider != null) {
-            modbusDataProvider.removeDataListener(this);
+        ModbusDataProvider localModbusDataProvider = modbusDataProvider;
+        if (localModbusDataProvider != null) {
+            localModbusDataProvider.removeDataListener(this);
         }
     }
 
     @Override
     public void setCallback(@Nullable ThingHandlerCallback thingHandlerCallback) {
-        // TODO Auto-generated method stub
         super.setCallback(thingHandlerCallback);
         this.thingHandlerCallback = thingHandlerCallback;
         logger.info("ThingCallbackHandler received {}", thingHandlerCallback);
     }
 
     @Override
-    public Bridge getBridge() {
+    public @Nullable Bridge getBridge() {
         ThingUID bridgeUID = thing.getBridgeUID();
         synchronized (this) {
-            if (thingHandlerCallback != null) {
-                return bridgeUID != null ? thingHandlerCallback.getBridge(bridgeUID) : null;
+            ThingHandlerCallback localThinghandlerCallback = thingHandlerCallback;
+            if (localThinghandlerCallback != null) {
+                return bridgeUID != null ? localThinghandlerCallback.getBridge(bridgeUID) : null;
             } else {
-                logger.warn(
-                        "Handler {} of thing {} tried accessing its bridge although the handler was already disposed.",
-                        getClass().getSimpleName(), thing.getUID());
+                logger.warn("Handler {} of thing {} isn't able to resolve bridger", getClass().getSimpleName(),
+                        thing.getUID());
                 return null;
             }
         }
@@ -105,5 +107,5 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
     public abstract void handleCommand(ChannelUID channelUID, Command command);
 
     @Override
-    public abstract void dataAvailable(@NonNull ModbusDataProvider provider);
+    public abstract void dataAvailable(ModbusDataProvider provider);
 }

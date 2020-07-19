@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class E3DCEmergencyHandler extends BaseHandler {
-
     private final Logger logger = LoggerFactory.getLogger(E3DCEmergencyHandler.class);
 
     public E3DCEmergencyHandler(Thing thing) {
@@ -52,13 +51,17 @@ public class E3DCEmergencyHandler extends BaseHandler {
     @Override
     public void dataAvailable(ModbusDataProvider provider) {
         EmergencyBlock block = (EmergencyBlock) provider.getData(DataType.EMERGENCY);
-        updateState(EMERGENCY_POWER_STATUS, block.epStatus);
-        updateState(BATTERY_LOADING_LOCKED, block.batteryLoadingLocked);
-        updateState(BATTERY_UNLOADING_LOCKED, block.batterUnLoadingLocked);
-        updateState(EMERGENCY_POWER_POSSIBLE, block.epPossible);
-        updateState(WEATHER_PREDICTION_LOADING, block.weatherPredictedLoading);
-        updateState(REGULATION_STATUS, block.regulationStatus);
-        updateState(LOADING_LOCK_TIME, block.loadingLockTime);
-        updateState(UNLOADING_LOCKTIME, block.unloadingLockTime);
+        if (block != null) {
+            updateState(EMERGENCY_POWER_STATUS, block.epStatus);
+            updateState(BATTERY_LOADING_LOCKED, block.batteryLoadingLocked);
+            updateState(BATTERY_UNLOADING_LOCKED, block.batterUnLoadingLocked);
+            updateState(EMERGENCY_POWER_POSSIBLE, block.epPossible);
+            updateState(WEATHER_PREDICTION_LOADING, block.weatherPredictedLoading);
+            updateState(REGULATION_STATUS, block.regulationStatus);
+            updateState(LOADING_LOCK_TIME, block.loadingLockTime);
+            updateState(UNLOADING_LOCKTIME, block.unloadingLockTime);
+        } else {
+            logger.debug("Unable to get {} from provider {}", DataType.EMERGENCY, provider.toString());
+        }
     }
 }
