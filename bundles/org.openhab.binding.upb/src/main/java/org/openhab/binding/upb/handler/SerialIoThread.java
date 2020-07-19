@@ -15,11 +15,11 @@ package org.openhab.binding.upb.handler;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.TooManyListenersException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
@@ -32,11 +32,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.NamedThreadFactory;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.openhab.binding.upb.handler.UPBIoHandler.CmdStatus;
 import org.openhab.binding.upb.internal.message.MessageBuilder;
+import org.openhab.binding.upb.internal.message.MessageParseException;
 import org.openhab.binding.upb.internal.message.UPBMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,17 +53,18 @@ import org.slf4j.LoggerFactory;
 public class SerialIoThread extends Thread implements SerialPortEventListener {
     private static final int WRITE_QUEUE_LENGTH = 128;
     private static final int ACK_TIMEOUT_MS = 500;
-    private static final byte[] ENABLE_MESSAGE_MODE_CMD = { 0x17, 0x70, 0x02, (byte) 0x8e, 0x0d };
+    private static final byte[] ENABLE_MESSAGE_MODE_CMD = "\u001770028E\n".getBytes(StandardCharsets.US_ASCII);
+
+    private static final int MAX_READ_SIZE = 128;
+    private static final int CR = 13;
 
     private final Logger logger = LoggerFactory.getLogger(SerialIoThread.class);
-    private final byte[] buffer = new byte[512];
     private final MessageListener listener;
     // Single-threaded executor for writes that serves to serialize writes.
     private final ExecutorService writeExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH), new NamedThreadFactory("upb-serial-writer", true));
     private final SerialPort serialPort;
 
-    private int bufferLength = 0;
     private volatile @Nullable WriteRunnable currentWrite;
     private volatile boolean done;
 
@@ -84,26 +87,32 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
 
     @Override
     public void run() {
-        // RXTX serial port library causes high CPU load
-        // Start event listener, which will just sleep and slow down event loop
-        try {
-            serialPort.addEventListener(this);
-        } catch (final TooManyListenersException e) {
-            logger.warn("serial port setup failed", e);
-            return;
-        }
-        serialPort.notifyOnDataAvailable(true);
-
-        final byte[] buffer = new byte[256];
+        serialPort.disableReceiveTimeout();
+        enterMessageMode();
         try (final InputStream in = serialPort.getInputStream()) {
             if (in == null) {
                 // should never happen
                 throw new IllegalStateException("serial port is not readable");
             }
-            enterMessageMode();
-            int len;
-            while (!done && (len = in.read(buffer)) >= 0) {
-                addData(buffer, len);
+            try (final InputStream bufIn = new BufferedInputStream(in)) {
+                bufIn.mark(MAX_READ_SIZE);
+                int b;
+                int len = 0;
+                while (!done && (b = bufIn.read()) >= 0) {
+                    len++;
+                    if (b == CR) {
+                        // message terminator read, rewind the stream and parse the buffered message
+                        try {
+                            bufIn.reset();
+                            processBuffer(bufIn, len);
+                        } catch (final IOException e) {
+                            logger.warn("buffer overrun, dropped long message", e);
+                        } finally {
+                            bufIn.mark(MAX_READ_SIZE);
+                            len = 0;
+                        }
+                    }
+                }
             }
         } catch (final Exception e) {
             logger.warn("Exception in UPB read thread", e);
@@ -120,43 +129,37 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
         logger.debug("UPB read thread stopped");
     }
 
-    private void addData(final byte[] data, final int length) {
-        if (bufferLength + length > buffer.length) {
-            // buffer overflow, discard entire buffer
-            bufferLength = 0;
-        }
-        System.arraycopy(data, 0, buffer, bufferLength, length);
-        bufferLength += length;
-        interpretBuffer();
-    }
-
-    private int findMessageLength(final byte[] buffer) {
-        for (int i = 0; i < bufferLength; i++) {
-            if (buffer[i] == 13) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     /**
-     * Attempts to interpret any messages that may be contained in the buffer.
+     * Attempts to parse a message from the input stream.
+     *
+     * @param in the stream to read from
+     * @param len the number of bytes in the message
      */
-    private void interpretBuffer() {
-        int messageLength = findMessageLength(buffer);
-
-        while (messageLength != -1) {
-            final String message = new String(Arrays.copyOfRange(buffer, 0, messageLength), US_ASCII);
-            logger.debug("UPB Message: {}", message);
-
-            final int remainingBuffer = bufferLength - messageLength - 1;
-            if (remainingBuffer > 0) {
-                System.arraycopy(buffer, messageLength + 1, buffer, 0, remainingBuffer);
-            }
-            bufferLength = remainingBuffer;
-            handleMessage(UPBMessage.fromString(message));
-            messageLength = findMessageLength(buffer);
+    private void processBuffer(final InputStream in, final int len) {
+        final byte[] buf = new byte[len];
+        final int n;
+        try {
+            n = in.read(buf);
+        } catch (final IOException e) {
+            logger.warn("error reading message", e);
+            return;
         }
+        if (n < len) {
+            // should not happen when replaying the buffered input
+            logger.warn("truncated read, expected={} read={}", len, n);
+            return;
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("UPB Message: {}", HexUtils.bytesToHex(buf));
+        }
+        final UPBMessage msg;
+        try {
+            msg = UPBMessage.parse(buf);
+        } catch (final MessageParseException e) {
+            logger.warn("failed to parse message: {}", HexUtils.bytesToHex(buf), e);
+            return;
+        }
+        handleMessage(msg);
     }
 
     private void handleMessage(final UPBMessage msg) {

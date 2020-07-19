@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.upb.internal.message;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.util.HexUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Model for a message sent or received from a UPB modem.
@@ -42,36 +42,29 @@ public class UPBMessage {
         MESSAGE_REPORT("PU"),
         NONE("");
 
-        private final String prefix;
+        private final byte[] prefix;
 
         Type(final String prefix) {
-            this.prefix = prefix;
+            this.prefix = prefix.getBytes(US_ASCII);
         }
 
         /**
-         * @return the message prefix string for this type
-         */
-        public String prefix() {
-            return prefix;
-        }
-
-        /**
-         * Returns the message type for a protocol string prefix.
+         * Returns the message type for a message buffer.
          *
-         * @param value the prefix string
-         * @return the message type for the given string
+         * @param prefix the byte array to check for a matching type prefix
+         * @return the matching message type, or {@code NONE}
          */
-        public static Type forPrefix(final String value) {
-            for (final Type t : values()) {
-                if (t.prefix().equals(value)) {
-                    return t;
+        public static Type forPrefix(final byte[] buf) {
+            if (buf.length >= 2) {
+                for (final Type t : values()) {
+                    if (t.prefix.length >= 2 && buf[0] == t.prefix[0] && buf[1] == t.prefix[1]) {
+                        return t;
+                    }
                 }
             }
             return NONE;
         }
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(UPBMessage.class);
 
     private final Type type;
 
@@ -94,13 +87,15 @@ public class UPBMessage {
      *            the string as returned by the modem.
      * @return a new UPBMessage.
      */
-    public static UPBMessage fromString(String commandString) {
-        final String prefix = commandString.substring(0, 2);
-        final UPBMessage msg = new UPBMessage(Type.forPrefix(prefix));
+    public static UPBMessage parse(final byte[] buf) {
+        if (buf.length < 2) {
+            throw new MessageParseException("message too short");
+        }
+        final UPBMessage msg = new UPBMessage(Type.forPrefix(buf));
 
         try {
-            if (commandString.length() > 2) {
-                byte[] data = HexUtils.hexToBytes(commandString.substring(2));
+            if (buf.length >= 15) {
+                byte[] data = unhex(buf, 2, buf.length - 1);
                 msg.getControlWord().setBytes(data[0], data[1]);
                 int index = 2;
                 msg.setNetwork(data[index++]);
@@ -115,10 +110,20 @@ public class UPBMessage {
                 }
             }
         } catch (Exception e) {
-            logger.warn("Attempted to parse invalid message: {}", commandString, e);
+            throw new MessageParseException("failed to parse message", e);
         }
 
         return msg;
+    }
+
+    private static byte[] unhex(final byte[] buf, final int start, final int end) {
+        final byte[] res = new byte[(end - start) / 2];
+        int i = start;
+        int j = 0;
+        while (i < end - 1) {
+            res[j++] = HexUtils.hexToByte(buf[i++], buf[i++]);
+        }
+        return res;
     }
 
     /**
