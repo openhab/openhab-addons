@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="panel">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Caddx Alarm Panel</label>
+		<description>The basic representation of the Caddx Alarm System.</description>
+
+		<channels>
+			<channel id="panel_firmware_version" typeId="panel_text">
+				<label>Firmware Version</label>
+				<description>Firmware version</description>
+			</channel>
+
+			<channel id="panel_log_message_n_0" typeId="panel_text">
+				<label>Log Message 10</label>
+				<description>Log message 10</description>
+			</channel>
+			<channel id="panel_log_message_n_1" typeId="panel_text">
+				<label>Log Message 9</label>
+				<description>Log message 9</description>
+			</channel>
+			<channel id="panel_log_message_n_2" typeId="panel_text">
+				<label>Log Message 8</label>
+				<description>Log message 8</description>
+			</channel>
+			<channel id="panel_log_message_n_3" typeId="panel_text">
+				<label>Log Message 7</label>
+				<description>Log message 7</description>
+			</channel>
+			<channel id="panel_log_message_n_4" typeId="panel_text">
+				<label>Log Message 6</label>
+				<description>Log message 6</description>
+			</channel>
+			<channel id="panel_log_message_n_5" typeId="panel_text">
+				<label>Log Message 5</label>
+				<description>Log message 5</description>
+			</channel>
+			<channel id="panel_log_message_n_6" typeId="panel_text">
+				<label>Log Message 4</label>
+				<description>Log message 4</description>
+			</channel>
+			<channel id="panel_log_message_n_7" typeId="panel_text">
+				<label>Log Message 3</label>
+				<description>Log message 3</description>
+			</channel>
+			<channel id="panel_log_message_n_8" typeId="panel_text">
+				<label>Log Message 2</label>
+				<description>Log message 2</description>
+			</channel>
+			<channel id="panel_log_message_n_9" typeId="panel_text">
+				<label>Log Message 1</label>
+				<description>Log message 1</description>
+			</channel>
+
+			<channel id="panel_interface_configuration_message" typeId="panel_flag">
+				<label>Interface Configuration Message</label>
+				<description>Interface Configuration Message</description>
+			</channel>
+			<channel id="panel_zone_status_message" typeId="panel_flag">
+				<label>Zone Status Message</label>
+				<description>Zone Status Message</description>
+			</channel>
+			<channel id="panel_zones_snapshot_message" typeId="panel_flag">
+				<label>Zones Snapshot Message</label>
+				<description>Zones Snapshot Message</description>
+			</channel>
+			<channel id="panel_partition_status_message" typeId="panel_flag">
+				<label>Partition Status Message</label>
+				<description>Partition Status Message</description>
+			</channel>
+			<channel id="panel_partitions_snapshot_message" typeId="panel_flag">
+				<label>Partitions Snapshot Message</label>
+				<description>Partitions Snapshot Message</description>
+			</channel>
+
+			<channel id="panel_system_status_message" typeId="panel_flag">
+				<label>System Status Message</label>
+				<description>System Status Message</description>
+			</channel>
+			<channel id="panel_x10_message_received" typeId="panel_flag">
+				<label>X-10 Message Received</label>
+				<description>X-10 Message Received</description>
+			</channel>
+			<channel id="panel_log_event_message" typeId="panel_flag">
+				<label>Log Event Message</label>
+				<description>Log Event Message</description>
+			</channel>
+			<channel id="panel_keypad_message_received" typeId="panel_flag">
+				<label>Keypad Message Received</label>
+				<description>Keypad Message Received</description>
+			</channel>
+
+			<channel id="panel_interface_configuration_request" typeId="panel_flag">
+				<label>Interface Configuration Request</label>
+				<description>Interface Configuration Request</description>
+			</channel>
+			<channel id="panel_zone_name_request" typeId="panel_flag">
+				<label>Zone Name Request</label>
+				<description>Zone Name Request</description>
+			</channel>
+			<channel id="panel_zone_status_request" typeId="panel_flag">
+				<label>Zone Status Request</label>
+				<description>Zone Status Request</description>
+			</channel>
+			<channel id="panel_zones_snapshot_request" typeId="panel_flag">
+				<label>Zones Snapshot Request</label>
+				<description>Zones Snapshot Request</description>
+			</channel>
+			<channel id="panel_partition_status_request" typeId="panel_flag">
+				<label>Partition Status Request</label>
+				<description>Partition Status Request</description>
+			</channel>
+			<channel id="panel_partitions_snapshot_request" typeId="panel_flag">
+				<label>Partitions Snapshot Request</label>
+				<description>Partitions Snapshot Request</description>
+			</channel>
+
+			<channel id="panel_system_status_request" typeId="panel_flag">
+				<label>System Status Request</label>
+				<description>System Status Request</description>
+			</channel>
+			<channel id="panel_send_x10_message" typeId="panel_flag">
+				<label>Send X-10 Message</label>
+				<description>Send X-10 Message</description>
+			</channel>
+			<channel id="panel_log_event_request" typeId="panel_flag">
+				<label>Log Event Request</label>
+				<description>Log Event Request</description>
+			</channel>
+			<channel id="panel_send_keypad_text_message" typeId="panel_flag">
+				<label>Send Keypad Text Message</label>
+				<description>Send Keypad Text Message</description>
+			</channel>
+			<channel id="panel_keypad_terminal_mode_request" typeId="panel_flag">
+				<label>Keypad Terminal Mode Request</label>
+				<description>Keypad Terminal Mode Request</description>
+			</channel>
+
+			<channel id="panel_program_data_request" typeId="panel_flag">
+				<label>Program Data Request</label>
+				<description>Program Data Request</description>
+			</channel>
+			<channel id="panel_program_data_command" typeId="panel_flag">
+				<label>Program Data Command</label>
+				<description>Program Data Command</description>
+			</channel>
+			<channel id="panel_user_information_request_with_pin" typeId="panel_flag">
+				<label>User Information Request with PIN</label>
+				<description>User Information Request with PIN</description>
+			</channel>
+			<channel id="panel_user_information_request_without_pin" typeId="panel_flag">
+				<label>User Information Request without PIN</label>
+				<description>User Information Request without PIN</description>
+			</channel>
+			<channel id="panel_set_user_code_command_with_pin" typeId="panel_flag">
+				<label>Set User Code Command with PIN</label>
+				<description>Set User Code Command with PIN</description>
+			</channel>
+			<channel id="panel_set_user_code_command_without_pin" typeId="panel_flag">
+				<label>Set User Code Command without PIN</label>
+				<description>Set User Code Command without PIN</description>
+			</channel>
+			<channel id="panel_set_user_authorization_command_with_pin" typeId="panel_flag">
+				<label>Set User Authorization Command with PIN</label>
+				<description>Set User Authorization Command with PIN</description>
+			</channel>
+			<channel id="panel_set_user_authorization_command_without_pin" typeId="panel_flag">
+				<label>Set User Authorization Command without PIN</label>
+				<description>Set User Authorization Command without PIN</description>
+			</channel>
+
+			<channel id="panel_store_communication_event_command" typeId="panel_flag">
+				<label>Store Communication Event Command</label>
+				<description>Store Communication Event Command</description>
+			</channel>
+			<channel id="panel_set_clock_calendar_command" typeId="panel_flag">
+				<label>Set Clock / Calendar Command</label>
+				<description>Set Clock / Calendar Command</description>
+			</channel>
+			<channel id="panel_primary_keypad_function_with_pin" typeId="panel_flag">
+				<label>Primary Keypad Function with PIN</label>
+				<description>Primary Keypad Function with PIN</description>
+			</channel>
+			<channel id="panel_primary_keypad_function_without_pin" typeId="panel_flag">
+				<label>Primary Keypad Function without PIN</label>
+				<description>Primary Keypad Function without PIN</description>
+			</channel>
+			<channel id="panel_secondary_keypad_function" typeId="panel_flag">
+				<label>Secondary Keypad Function</label>
+				<description>Secondary Keypad Function</description>
+			</channel>
+			<channel id="panel_zone_bypass_toggle" typeId="panel_flag">
+				<label>Zone Bypass Toggle</label>
+				<description>Zone Bypass Toggle</description>
+			</channel>
+		</channels>
+	</thing-type>
+
+</thing:thing-descriptions>
