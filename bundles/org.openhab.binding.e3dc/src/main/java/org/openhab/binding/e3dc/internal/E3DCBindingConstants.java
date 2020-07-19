@@ -89,6 +89,6 @@ public class E3DCBindingConstants {
     public static final String EMERGENCY_POWER_POSSIBLE = "emergency-power-possible";
     public static final String WEATHER_PREDICTION_LOADING = "weather-predicted-loading";
     public static final String REGULATION_STATUS = "regulation-status";
-    public static final String LOADING_LOCK_TIME = "loading-lock-timey";
+    public static final String LOADING_LOCK_TIME = "loading-lock-time";
     public static final String UNLOADING_LOCKTIME = "unloading-lock-time";
 }
