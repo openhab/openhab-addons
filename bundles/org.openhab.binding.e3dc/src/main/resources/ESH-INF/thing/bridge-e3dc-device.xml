@@ -13,9 +13,14 @@
 				<default>localhost</default>
 				<context>network-address</context>
 			</parameter>
+			<parameter name="deviceid" type="integer">
+				<label>Device ID</label>
+				<description>Device ID from your E3DC Modbus Settings</description>
+				<default>1</default>
+			</parameter>
 			<parameter name="port" type="integer">
 				<label>Port</label>
-				<description>Port of the slave</description>
+				<description>Modbus Port from your E3DC Modbus Settings</description>
 				<default>502</default>
 			</parameter>
 
