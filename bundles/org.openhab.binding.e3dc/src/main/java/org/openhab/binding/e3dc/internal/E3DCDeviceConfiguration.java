@@ -30,6 +30,11 @@ public class E3DCDeviceConfiguration {
     /**
      * Port
      */
+    public int deviceid = 1;
+
+    /**
+     * Port
+     */
     public int port = -1;
 
     /**

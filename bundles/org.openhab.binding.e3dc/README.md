@@ -60,7 +60,8 @@ See <a href="./doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18.pdf">official Mo
 | Parameter       | Type    | Description                                                 |           
 |-----------------|---------|-------------------------------------------------------------|
 | host            | text    | IP Address of your device                                   |
-| port            | integer | Modbus Port of your device. Default is 502                  |
+| deviceid        | integer | Modbus Port of your E3DC device Modbus Settings. Default is 1 |
+| port            | integer | Modbus Port of your E3DC device device Modbus Settings.. Default is 502 |
 | refresh         | integer | data refresh rate in milliseconds. Default is 2000          |
 
 ### E3DC Wallbox Control Block
@@ -300,6 +301,8 @@ sitemap E3DCBinding label="E3DC Binding Sitemap" {
   }
 }
 ```
+
+
 ## Going further
 
 Setup and configured everything the right way? Congratulations, you've now the actual E3DC values on your table. Don't stop and go ahead!

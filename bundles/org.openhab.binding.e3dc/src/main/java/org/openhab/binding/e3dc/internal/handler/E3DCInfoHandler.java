@@ -52,6 +52,7 @@ public class E3DCInfoHandler extends BaseHandler {
     public void dataAvailable(ModbusDataProvider provider) {
         InfoBlock block = (InfoBlock) provider.getData(DataType.INFO);
         if (block != null) {
+            isUpdated = true;
             updateState(MODBUS_ID_CHANNEL, block.modbusId);
             updateState(MODBUS_FIRMWARE_CHANNEL, block.modbusVersion);
             updateState(SUPPORTED_REGSITERS_CHANNEL, block.supportedRegisters);
