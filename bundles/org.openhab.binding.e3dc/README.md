@@ -163,7 +163,7 @@ Bridge e3dc:e3dc-device:plant "E3DC Power Plant" [ host="192.168.178.56", port=5
      e3dc-strings      stringblock         "E3DC String Details Block"   
      e3dc-emergency    emsblock            "E3DC EMS Block"
 }     
-'''
+```
 
 ### Items
 
