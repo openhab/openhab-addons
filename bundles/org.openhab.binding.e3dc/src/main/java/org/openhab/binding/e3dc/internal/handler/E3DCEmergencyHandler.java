@@ -45,7 +45,7 @@ public class E3DCEmergencyHandler extends BaseHandler {
 
     @Override
     public void initialize() {
-        super.initialize(DataType.EMERGENCY);
+        super.initialize(DataType.DATA);
     }
 
     @Override

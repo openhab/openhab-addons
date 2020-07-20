@@ -79,8 +79,8 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
         minDuration = Math.min(minDuration, duration);
         maxDuration = Math.max(maxDuration, duration);
         counter++;
-        if (counter % 30 == 0) {
-            logger.info("Min {} Max {} Avg {}", minDuration, maxDuration, avgDuration / 30);
+        if (counter % 100 == 0) {
+            logger.debug("Min {} Max {} Avg {}", minDuration, maxDuration, avgDuration / 30);
             avgDuration = 0;
             minDuration = Long.MAX_VALUE;
             maxDuration = Long.MIN_VALUE;
