@@ -109,17 +109,17 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 
 | Channel Label         | Channel ID      | Type      | Access | Description                  |
 |-----------------------|-----------------|-----------|--------|------------------------------|
-| Wallbox Available     | wb-available    |  Switch | R | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case.  **read-only**  |
-| Sun Mode              | wb-sunmode-channel |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.  **read-write**  |
-| Wallbox Charging      | wb-charging-channel |  Switch | RW  | Indicates your Wallbox is charging.  **read-write**    |
-| Jack Locked           | wb-jack-locked  |  Switch | R  | Indicates your Jack is locked.  **read-only**    |
-| Jack Plugged          | wb-jack-plugged |  Switch | R  | Indicates your Jack is plugged.  **read-only**    |
-| Schuko Socket On      | wb-schuko-on    |  Switch  | RW | If your Wallbox has an additional Schuko Socket it provides state ON or OFF.  **read-write**    |
-| Schuko Socket Plugged | wb-schuko-plugged |  Switch | R  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF.  **read-only**     |
-| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch | R  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF.  **read-only** |
-| 16A Relay On          | wb-relay-16a    |  Switch | R  | Indicates if 16A Relay is ON  **read-only**    |
-| 32A Relay On          | wb-relay-32a    |  Switch | R  | Indicates if 32A Relay is ON  **read-only**    |
-| 3-Phase Charging      | 3-Phase Active  |  Switch | RW  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated  **read-write**   |
+| Wallbox Available     | wb-available    |  Switch | R | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case  |
+| Sun Mode              | wb-sunmode-channel |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging  |
+| Wallbox Charging      | wb-charging-channel |  Switch | RW  | Indicates your Wallbox is charging    |
+| Jack Locked           | wb-jack-locked  |  Switch | R  | Indicates your Jack is locked   |
+| Jack Plugged          | wb-jack-plugged |  Switch | R  | Indicates your Jack is plugged   |
+| Schuko Socket On      | wb-schuko-on    |  Switch  | RW | If your Wallbox has an additional Schuko Socket it provides state ON or OFF   |
+| Schuko Socket Plugged | wb-schuko-plugged |  Switch | R  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF     |
+| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch | R  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF |
+| 16A Relay On          | wb-relay-16a    |  Switch | R  | Indicates if 16A Relay is ON     |
+| 32A Relay On          | wb-relay-32a    |  Switch | R  | Indicates if 32A Relay is ON      |
+| 3-Phase Charging      | 3-Phase Active  |  Switch | RW  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated    |
 
 ### E3DC String Details Block
 
@@ -155,7 +155,7 @@ Following example provides the full configuration. If you enter the correct Conn
 
 ### Things
 
-'''
+```
 Bridge e3dc:e3dc-device:plant "E3DC Power Plant" [ host="192.168.178.56", port=502, refresh=2000 ] {      
      e3dc-info         infoblock           "E3DC Info Block"
      e3dc-power        powerblock          "E3DC Power Block"
@@ -167,7 +167,7 @@ Bridge e3dc:e3dc-device:plant "E3DC Power Plant" [ host="192.168.178.56", port=5
 
 ### Items
 
-'''
+```
 String    E3DC_ModbusId                 "E3DC Modbus ID"            (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:modbus-id" }
 String    E3DC_ModbusFirmware           "E3DC Modbus Firmware"      (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:modbus-firmware" }
 Number    E3DC_SupportedRegisters       "E3DC Supported Registers"  (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:supported-registers" }
@@ -219,11 +219,11 @@ Switch    E3DC_EMS_WeatherPredictedLoading      "E3DC EMS Weather Predicted Load
 Switch    E3DC_EMS_RegulationStatus             "E3DC EMS Regulation Status"        (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:regulation-status" }
 Switch    E3DC_EMS_LoadingLockTime              "E3DC EMS Loading Lock Time"        (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:loading-lock-time" }
 Switch    E3DC_EMS_UnloadingLockTime            "E3DC EMS Unloading Lock TIme"      (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:unloading-lock-time" }
-'''
+```
 
 ### Sitemap
 
-'''
+```
 sitemap E3DCBinding label="E3DC Binding Sitemap" {
   Frame label="Info" {
     Text    item=E3DC_ModbusId                  label="Modbus-ID [%s]"
@@ -299,7 +299,7 @@ sitemap E3DCBinding label="E3DC Binding Sitemap" {
     Switch    item=E3DC_EMS_UnloadingLockTime       label="Unloading Lock Times [%s]"
   }
 }
-'''
+```
 ## Going further
 
 Setup and configured everything the right way? Congratulations, you've now the actual E3DC values on your table. Don't sto and go ahead!
@@ -309,7 +309,7 @@ Setup and configured everything the right way? Congratulations, you've now the a
 You can see in the example item configuration, that I added some items to the "persist". Feel free to choose your own Groupname but this opens the possibility 
 to store the items in a database. See following *.persist file configuration how this can be established.
 
-'''
+```
 Strategies {
     everyMinute : "0 * * * * ?"
     everyHour : "0 0 * * * ?"
@@ -321,7 +321,7 @@ Items {
     // persist items on every change and every minute - used for E3DC
     persist : strategy = everyChange, everyMinute
 }
-'''
+```
 
 ### Visualization 
 
@@ -331,21 +331,21 @@ I prepared my machine and I'm quite pleased with the results.
 <img style="float: right;" src="doc/GrafanaPV.png">
 In the above picture there are two graphs
 
-* The top one shows the Photovoltaic Production of my 2 attahced Strings. You can clearly see when the sky wasn't bright the production goes down
+* The top one shows the Photovoltaic Production of my 2 attached Strings. You can clearly see when the sky wasn't bright the production goes down
 * The bottom graph show th producers & consumers. 
-** Battery in blue charging during the day, discharging at night
-** Household consumption in green
-** Wallbox consumption in orange
-** Grid consumption / supply in yellow
+    * Battery in blue charging during the day, discharging at night
+    *Household consumption in green 
+    * Wallbox consumption in orange
+    * Grid consumption / supply in yellow
 
 ### Cross Connections 
 
-With the baove setup you have now a great visualization and overview regarding your eletric production and consumption. Now use the Power of openHAB and cross
+With the above setup you have now a great visualization and overview regarding your electric production and consumption. Now use the Power of openHAB and cross
 connect your data. For example you can use the 
 [OpenweatherMap API Binding](https://www.openhab.org/addons/bindings/openweathermap/)
 the cloudiness in Percent. With a modified *.persist file I store the cloudiness forecast also in the database
 
-'''
+```
 Strategies {
     everyMinute : "0 * * * * ?"
     everyHour : "0 0 * * * ?"
@@ -358,7 +358,7 @@ Items {
     persist : strategy = everyChange, everyMinute
     LocalWeatherAndForecast_Current_BewLkung : strategy = everyChange,everyHour
 }
-'''
+```
 
 Having these values in the timeline you're able to cross check how the forecast influences the Photovoltaic Production. 
 
