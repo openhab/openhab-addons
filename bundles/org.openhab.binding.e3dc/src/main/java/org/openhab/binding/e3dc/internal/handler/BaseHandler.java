@@ -85,7 +85,7 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
     public void setCallback(@Nullable ThingHandlerCallback thingHandlerCallback) {
         super.setCallback(thingHandlerCallback);
         this.thingHandlerCallback = thingHandlerCallback;
-        logger.info("ThingCallbackHandler received {}", thingHandlerCallback);
+        // logger.info("ThingCallbackHandler received {}", thingHandlerCallback);
     }
 
     @Override

@@ -22,7 +22,7 @@
 			<!-- connection handling -->
 			<parameter name="refresh" type="integer" min="0" unit="ms">
 				<label>Poll Interval</label>
-				<description>Poll interval in milliseconds. Use zero to disable automatic polling.</description>
+				<description>Poll interval in milliseconds.</description>
 				<default>2000
 				</default>
 			</parameter>
