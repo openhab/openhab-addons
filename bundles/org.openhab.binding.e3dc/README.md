@@ -5,7 +5,7 @@ Integrates the Home Power Plants from E3/DC GmbH into openHAB. The Power Plant h
 The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the <a href="./doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18.pdf">official Modbus documentation</a> for more details.  
 The binding is designed the following way  
 
-1. Create Bridge **E3DC Home Power Plant** and provide IP-Address and Port Number for the general Device Conncetion
+1. Create Bridge **E3DC Home Power Plant** and provide IP-Address and Port Number for the general Device connection
 2. Add your wanted Blocks 
 
 * if you have a Wallbox connected - add Wallbox Control Block 
@@ -22,12 +22,12 @@ First you need a Bridge which establishes the basic connection towards your E3DC
 |--------------------|----------------|--------------------------------------------------------------------------------------------------------|
 | E3DC Home Power Plant | e3dc-device    | Establishes Modbus Connection to your Device. Add your desired Blocks to this Bridge afterwards.     |
 
-After establishing the Bridge add certain Blocks to gather Informations and Settings
+After establishing the Bridge add certain Blocks to gather Information and Settings
 
 | Name               | Thing Type ID | Description                                                                                            |
 |--------------------|----------------|--------------------------------------------------------------------------------------------------------|
 | E3DC Information Block | e3dc-info    | Basic Information of your E3DC Device like Model Name, Serial Number and Software Versions             |
-| E3DC Power Block | e3dc-power    | Provides values of your attached eletrical Producers (Photovoltaic, Battery, ... and Consumers (Household, Wallbox, ...) |
+| E3DC Power Block | e3dc-power    | Provides values of your attached electrical Producers (Photovoltaic, Battery, ... and Consumers (Household, Wallbox, ...) |
 | E3DC Wallbox Control Block | e3dc-wallbox    | Provides your Wallbox Settings. Switches like "Sunmode" or "3Phase Charging" can be changed! |
 | E3DC String Details Block | e3dc-strings    | Provides detailed values of your attached Photovoltaic Strings. Evaluate how much Power each String provides |
 | E3DC EMS Block | e3dc-emergency    | Provides values of Emergency Power Status (EMS) and regulations like Battery loading / unloading restrictions |
@@ -100,25 +100,25 @@ The E3DC device offers quite an amount of channels. Due to the Block design you 
 | Wallbox Power Consumption | wallbox-power-consumption |  Number:Power  | Power consumption of attached Wallboxes    |
 | Wallbox PV Power Consumption  | wallbox-pv-power-consumption |  Number:Power  | Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes    |
 | Autarky               |autarky-channel |  Number:Percent  | Your current Autarky Level    |
-| Self Consumtion       | self-consumption |  Number:Percent  | Your current Photovoltaic Self Consumption Level    |
+| Self Consumption       | self-consumption |  Number:Percent  | Your current Photovoltaic Self Consumption Level    |
 | Battery State Of Charge | battery-soc |  Number:Percent  | Charge Level of your attached Battery    |
 
 ### E3DC Wallbox Control Block
 
-Some of the Wallbox Settings can be changed. See the Access column if the actual valuw is Read/Write (RW) or only Read (R)
+Some of the Wallbox Settings can be changed. See the Access column if the actual value is Read/Write (RW) or only Read (R)
 
 | Channel Label         | Channel ID      | Type      | Access | Description                  |
 |-----------------------|-----------------|-----------|--------|------------------------------|
 | Wallbox Available     | wb-available    |  Switch | R | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case  |
-| Sun Mode              | wb-sunmode-channel |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging  |
-| Wallbox Charging      | wb-charging-channel |  Switch | RW  | Indicates your Wallbox is charging    |
+| Sun Mode              | wb-sunmode-channel |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.   |
+| Wallbox Charging      | wb-charging-channel |  Switch | RW  | Indicates your Wallbox is charging   |
 | Jack Locked           | wb-jack-locked  |  Switch | R  | Indicates your Jack is locked   |
-| Jack Plugged          | wb-jack-plugged |  Switch | R  | Indicates your Jack is plugged   |
-| Schuko Socket On      | wb-schuko-on    |  Switch  | RW | If your Wallbox has an additional Schuko Socket it provides state ON or OFF   |
-| Schuko Socket Plugged | wb-schuko-plugged |  Switch | R  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF     |
+| Jack Plugged          | wb-jack-plugged |  Switch | R  | Indicates your Jack is plugged    |
+| Schuko Socket On      | wb-schuko-on    |  Switch  | RW | If your Wallbox has an additional Schuko Socket it provides state ON or OFF    |
+| Schuko Socket Plugged | wb-schuko-plugged |  Switch | R  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF    |
 | Schuko Socket Locked  | wb-schuko-locked-channel |  Switch | R  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF |
 | 16A Relay On          | wb-relay-16a    |  Switch | R  | Indicates if 16A Relay is ON     |
-| 32A Relay On          | wb-relay-32a    |  Switch | R  | Indicates if 32A Relay is ON      |
+| 32A Relay On          | wb-relay-32a    |  Switch | R  | Indicates if 32A Relay is ON    |
 | 3-Phase Charging      | 3-Phase Active  |  Switch | RW  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated    |
 
 ### E3DC String Details Block
@@ -141,13 +141,13 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 | Channel Label         | Channel ID      | Type           | Description                  |
 |-----------------------|-----------------|----------------|------------------------------|
 | Emergency Power Status| emergency-power-status |  String  | Indicates if Emergency Power Supply is possible or not, active or inactive |
-| Battery Loading Locked | battery-loading-lock |  Switch  | Indictes if Battery Loading is locked           |
-| Battery Unloading Locked | battery-unloading-lock |  Switch  | Indictes if Battery Unloading is locked |
+| Battery Loading Locked | battery-loading-lock |  Switch  | Indicates if Battery Loading is locked           |
+| Battery Unloading Locked | battery-unloading-lock |  Switch  | Indicates if Battery Unloading is locked |
 | Emergency Power Possible| emergency-power-possible |  Switch  | Indicates if Emergency Power Supply is possible          |
-| Loading Based On Weather Prediction Active| weather-predicted-loading |  Switch  | Indicates if Weather Predicted Battery Loading is actived |
-| Regultation Status Of Max Grid Power Supply| regulation-status |  Switch  | Indicates if Grid Power Supply is regulated or not |
-| Loading Locktime Active| loading-lock-time |  Switch  | Indicates if Loading Lock Times are set or not |
-| Unloading Locktime Active| unloading-lock-time |  Switch  |Indicates if Unloading Lock Times are set or not |
+| Loading Based On Weather Prediction Active| weather-predicted-loading |  Switch  | Indicates if Weather Predicted Battery Loading is activated |
+| Regulation Status Of Max Grid Power Supply| regulation-status |  Switch  | Indicates if Grid Power Supply is regulated or not |
+| Loading Lock time Active| loading-lock-time |  Switch  | Indicates if Loading Lock Times are set or not |
+| Unloading Lock time Active| unloading-lock-time |  Switch  |Indicates if Unloading Lock Times are set or not |
 
 ## Full Example
 
@@ -163,7 +163,7 @@ Bridge e3dc:e3dc-device:plant "E3DC Power Plant" [ host="192.168.178.56", port=5
      e3dc-strings      stringblock         "E3DC String Details Block"   
      e3dc-emergency    emsblock            "E3DC EMS Block"
 }     
-```
+'''
 
 ### Items
 
@@ -302,11 +302,11 @@ sitemap E3DCBinding label="E3DC Binding Sitemap" {
 ```
 ## Going further
 
-Setup and configured everything the right way? Congratulations, you've now the actual E3DC values on your table. Don't sto and go ahead!
+Setup and configured everything the right way? Congratulations, you've now the actual E3DC values on your table. Don't stop and go ahead!
 
 ### Persistence
 
-You can see in the example item configuration, that I added some items to the "persist". Feel free to choose your own Groupname but this opens the possibility 
+You can see in the example item configuration, that I added some items to the "persist". Feel free to choose your own group name but this opens the possibility 
 to store the items in a database. See following *.persist file configuration how this can be established.
 
 ```
@@ -332,9 +332,9 @@ I prepared my machine and I'm quite pleased with the results.
 In the above picture there are two graphs
 
 * The top one shows the Photovoltaic Production of my 2 attached Strings. You can clearly see when the sky wasn't bright the production goes down
-* The bottom graph show th producers & consumers. 
+* The bottom graph show the producers & consumers. 
     * Battery in blue charging during the day, discharging at night
-    *Household consumption in green 
+    * Household consumption in green 
     * Wallbox consumption in orange
     * Grid consumption / supply in yellow
 
