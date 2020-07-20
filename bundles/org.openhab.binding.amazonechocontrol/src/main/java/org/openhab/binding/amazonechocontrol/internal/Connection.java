@@ -32,6 +32,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import java.util.Iterator;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -158,7 +158,7 @@ public class Connection {
 
     private final Gson gson;
     private final Gson gsonWithNullSerialization;
-    
+
     private LinkedBlockingQueue<JsonObject> sequenceNodeQueue = new LinkedBlockingQueue<>();
     private AtomicBoolean sequenceNodeQueueRunning = new AtomicBoolean();
     private @Nullable ScheduledFuture<?> sequenceNodeSenderUnblockFuture;
@@ -277,7 +277,7 @@ public class Connection {
         }
         return customerName;
     }
-    
+
     public boolean isSequenceNodeQueueRunning() {
         return sequenceNodeQueueRunning.get();
     }
@@ -659,7 +659,8 @@ public class Connection {
                     logger.debug("Retry call to {}", url);
                     retryCounter++;
                     if (retryCounter > badRequestRepeats) {
-                        throw new HttpException(code, verb + " url '" + url + "' failed: " + connection.getResponseMessage());
+                        throw new HttpException(code,
+                                verb + " url '" + url + "' failed: " + connection.getResponseMessage());
                     }
                     try {
                         Thread.sleep(2000);
@@ -858,8 +859,7 @@ public class Connection {
 
         Map<String, String> customHeaders = new HashMap<>();
         customHeaders.put("authority", "www.amazon.com");
-        String loginFormHtml = makeRequestAndReturnString("GET",
-                "https://www.amazon.com"
+        String loginFormHtml = makeRequestAndReturnString("GET", "https://www.amazon.com"
                 + "/ap/signin?openid.return_to=https://www.amazon.com/ap/maplanding&openid.assoc_handle=amzn_dp_project_dee_ios&openid.identity=http://specs.openid.net/auth/2.0/identifier_select&pageId=amzn_dp_project_dee_ios&accountStatusPolicy=P1&openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select&openid.mode=checkid_setup&openid.ns.oa2=http://www.amazon.com/ap/ext/oauth/2&openid.oa2.client_id=device:"
                 + deviceId
                 + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access",
@@ -1331,8 +1331,8 @@ public class Connection {
 
                         JsonAnnouncementTarget target = new JsonAnnouncementTarget();
                         target.customerId = devices.get(0).deviceOwnerCustomerId;
-                        TargetDevice[] targetDevices = devices.stream().map(TargetDevice::new).collect(Collectors.toList())
-                                .toArray(new TargetDevice[0]);
+                        TargetDevice[] targetDevices = devices.stream().map(TargetDevice::new)
+                                .collect(Collectors.toList()).toArray(new TargetDevice[0]);
                         target.devices = targetDevices;
                         parameters.put("target", target);
 
@@ -1344,8 +1344,9 @@ public class Connection {
                         if (customerId != null) {
                             parameters.put("customerId", customerId);
                         }
-                        executeSequenceCommandWithVolume(devices.toArray(new Device[0]), "AlexaAnnouncement", parameters,
-                                ttsVolumes.toArray(new Integer[0]), standardVolumes.toArray(new Integer[0]));
+                        executeSequenceCommandWithVolume(devices.toArray(new Device[0]), "AlexaAnnouncement",
+                                parameters, ttsVolumes.toArray(new Integer[0]),
+                                standardVolumes.toArray(new Integer[0]));
                     }
                 } catch (IOException | URISyntaxException e) {
                     logger.warn("send textToSpeech fails with unexpected error", e);
@@ -1369,7 +1370,7 @@ public class Connection {
         textToSpeech.standardVolumes.add(standardVolume);
         textToSpeechTimer = scheduler.schedule(this::sendTextToSpeech, 500, TimeUnit.MILLISECONDS);
     }
-    
+
     private void sendTextToSpeech() {
         Iterator<TextToSpeech> iterator = textToSpeeches.values().iterator();
         while (iterator.hasNext()) {
@@ -1394,7 +1395,7 @@ public class Connection {
             iterator.remove();
         }
     }
-    
+
     private void executeSequenceCommandWithVolume(@Nullable Device[] devices, String command,
             @Nullable Map<String, Object> parameters, @NonNull Integer[] ttsVolumes, @NonNull Integer[] standardVolumes)
             throws IOException, URISyntaxException {
@@ -1458,7 +1459,7 @@ public class Connection {
         if (nodeToExecute != null) {
             String type = getTypeFromExecutionNode(nodeToExecute);
             long delay = "Announcement".equals(type) ? 3000 : 2000;
-            try {                
+            try {
                 JsonObject sequenceJson = new JsonObject();
                 sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
                 sequenceJson.add("startNode", nodeToExecute);
@@ -1567,7 +1568,7 @@ public class Connection {
 
         return null;
     }
-    
+
     @Nullable
     private String getTypeFromExecutionNode(JsonObject nodeToExecute) {
         if (nodeToExecute.has("nodesToExecute")) {

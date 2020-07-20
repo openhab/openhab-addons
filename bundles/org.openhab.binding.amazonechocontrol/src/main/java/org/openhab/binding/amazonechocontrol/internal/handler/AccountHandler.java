@@ -31,7 +31,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -803,8 +802,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     private void handlePushActivity(@Nullable String payload) {
-        JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload,
-                JsonCommandPayloadPushActivity.class);
+        JsonCommandPayloadPushActivity pushActivity = gson.fromJson(payload, JsonCommandPayloadPushActivity.class);
 
         Key key = pushActivity.key;
         if (key == null) {
@@ -822,8 +820,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 .ifPresent(currentActivity -> {
                     SourceDeviceId[] sourceDeviceIds = currentActivity.sourceDeviceIds;
                     if (sourceDeviceIds != null) {
-                        Arrays.stream(sourceDeviceIds).filter(Objects::nonNull).map(
-                                sourceDeviceId -> findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber))
+                        Arrays.stream(sourceDeviceIds).filter(Objects::nonNull)
+                                .map(sourceDeviceId -> findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber))
                                 .filter(Objects::nonNull)
                                 .forEach(echoHandler -> echoHandler.handlePushActivity(currentActivity));
                     }

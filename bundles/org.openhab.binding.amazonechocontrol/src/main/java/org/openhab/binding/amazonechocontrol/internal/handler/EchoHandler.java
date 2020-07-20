@@ -1247,7 +1247,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 Boolean muted = volumeChange.isMuted;
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
-                } if (volumeSetting != null && connection != null && !connection.isSequenceNodeQueueRunning()) {
+                }
+                if (volumeSetting != null && connection != null && !connection.isSequenceNodeQueueRunning()) {
                     lastKnownVolume = volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                 }
