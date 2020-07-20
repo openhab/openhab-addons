@@ -127,7 +127,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
                 while (true) {
                     mySocket.receive(datagram);
                     InetAddress address = datagram.getAddress();
-                    String sentence = new String(dgram.getData(), 0, dgram.getLength());
+                    String sentence = new String(dgram.getData(), 0, dgram.getLength(), "US-ASCII");
                     addDeviceDiscoveryResult(sentence, address.getHostAddress().toString());
                     logger.debug("Received Datagram from {}:{} on Port {} message {}", address.getHostAddress(),
                             dgram.getPort(), mySocket.getLocalPort(), sentence);

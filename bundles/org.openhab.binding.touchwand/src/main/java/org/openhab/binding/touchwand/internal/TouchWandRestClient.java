@@ -179,7 +179,7 @@ public class TouchWandRestClient {
         }
 
         request = httpClient.newRequest(url.toString()).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS).method(method);
-        if (method.equals(METHOD_POST) && (content != null)) {
+        if (method.equals(METHOD_POST) && (content != "")) {
             ContentProvider contentProvider = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, content,
                     StandardCharsets.UTF_8);
             request = request.content(contentProvider);
