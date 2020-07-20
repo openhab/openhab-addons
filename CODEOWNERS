@@ -51,6 +51,7 @@
 /bundles/org.openhab.binding.ecobee/ @mhilbush
 /bundles/org.openhab.binding.dwdpollenflug/ @DerOetzi
 /bundles/org.openhab.binding.dwdunwetter/ @limdul79
+/bundles/org.openhab.binding.e3dc/ @weymann
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.enigma2/ @gdolfen
