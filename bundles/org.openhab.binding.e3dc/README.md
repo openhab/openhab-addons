@@ -157,7 +157,7 @@ Following example provides the full configuration. If you enter the correct Conn
 ### Things
 
 ```
-Bridge e3dc:e3dc-device:plant "E3DC Power Plant" [ host="192.168.178.56", port=502, refresh=2000 ] {      
+Bridge e3dc:e3dc-device:plant "E3DC Power Plant" [ host="192.168.178.56", deviceid=1, port=502, refresh=2000 ] {      
      e3dc-info         infoblock           "E3DC Info Block"
      e3dc-power        powerblock          "E3DC Power Block"
      e3dc-wallbox      wallboxblock        "E3DC Wallbox Control Block"        [wallboxId=0]
