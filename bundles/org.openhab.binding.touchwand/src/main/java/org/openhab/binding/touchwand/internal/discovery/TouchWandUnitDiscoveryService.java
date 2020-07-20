@@ -178,7 +178,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (scanningJob != null && !scanningJob.isCancelled()) {
+        if (scanningJob != null) {
             scanningJob.cancel(true);
             scanningJob = null;
         }
