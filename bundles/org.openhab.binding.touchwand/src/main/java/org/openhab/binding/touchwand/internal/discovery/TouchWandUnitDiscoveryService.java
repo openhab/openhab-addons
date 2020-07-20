@@ -87,7 +87,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
         logger.debug("Starting TouchWand discovery on bridge {}", touchWandBridgeHandler.getThing().getUID());
         String response = touchWandBridgeHandler.touchWandClient.cmdListUnits();
-        if (response == null) {
+        if (response == "") {
             return;
         }
 

@@ -111,7 +111,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         scheduler.execute(() -> {
             boolean thingReachable = false;
             String response = bridgeHandler.touchWandClient.cmdGetUnitById(unitId);
-            thingReachable = !(response == null);
+            thingReachable = !(response == "");
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -128,7 +128,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         }
 
         String response = bridgeHandler.touchWandClient.cmdGetUnitById(unitId);
-        if (response == null) {
+        if (response == "") {
             return status;
         }
 
