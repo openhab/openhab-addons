@@ -55,40 +55,40 @@
 
 	<!-- Sample Channel Type -->
 	<channel-type id="voltage_a">
-		<item-type>Number</item-type>
+		<item-type>Number:V</item-type>
 		<label>Voltage A</label>
 		<description>voltage for phase A</description>
-		<state pattern="%.2f V" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="current_a">
-		<item-type>Number</item-type>
+		<item-type>Number:A</item-type>
 		<label>Current A</label>
 		<description>current for phase A</description>
-		<state pattern="%.2f A" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power_a">
-		<item-type>Number</item-type>
+		<item-type>Number:W</item-type>
 		<label>Power A</label>
 		<description>power for phase A</description>
-		<state pattern="%.2f W" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="importenergy_a">
-		<item-type>Number</item-type>
+		<item-type>Number:kWh</item-type>
 		<label>ImportEnergy A</label>
 		<description>importenergy for phase A</description>
-		<state pattern="%.2f kWh" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="exportgrid_a">
-		<item-type>Number</item-type>
+		<item-type>Number:kWh</item-type>
 		<label>Exportgrid A</label>
 		<description>exportgrid for phase A</description>
-		<state pattern="%.2f kWh" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="frequency_a">
-		<item-type>Number</item-type>
+		<item-type>Number:Hz</item-type>
 		<label>Frequency A</label>
 		<description>frequency for phase A</description>
-		<state pattern="%.2f Hz" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pf_a">
 		<item-type>Number</item-type>
@@ -97,40 +97,40 @@
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="voltage_b">
-		<item-type>Number</item-type>
+		<item-type>Number:V</item-type>
 		<label>Voltage B</label>
 		<description>voltage for phase B</description>
-		<state pattern="%.2f V" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="current_b">
-		<item-type>Number</item-type>
+		<item-type>Number:A</item-type>
 		<label>Current B</label>
 		<description>current for phase B</description>
-		<state pattern="%.2f A" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power_b">
-		<item-type>Number</item-type>
+		<item-type>Number:W</item-type>
 		<label>Power B</label>
 		<description>power for phase B</description>
-		<state pattern="%.2f W" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="importenergy_b">
-		<item-type>Number</item-type>
+		<item-type>Number:kWh</item-type>
 		<label>ImportEnergy B</label>
 		<description>importenergy for phase B</description>
-		<state pattern="%.2f kWh" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="exportgrid_b">
-		<item-type>Number</item-type>
+		<item-type>Number:kWh</item-type>
 		<label>Exportgrid B</label>
 		<description>exportgrid for phase B</description>
-		<state pattern="%.2f kWh"></state>
+		<state pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="frequency_b">
-		<item-type>Number</item-type>
+		<item-type>Number:Hz</item-type>
 		<label>Frequency B</label>
 		<description>frequency for phase B</description>
-		<state pattern="%.2f Hz" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pf_b">
 		<item-type>Number</item-type>
@@ -139,40 +139,40 @@
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="voltage_c">
-		<item-type>Number</item-type>
+		<item-type>Number:V</item-type>
 		<label>Voltage C</label>
 		<description>voltage for phase C</description>
-		<state pattern="%.2f V" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="current_c">
-		<item-type>Number</item-type>
+		<item-type>Number:A</item-type>
 		<label>Current C</label>
 		<description>current for phase C</description>
-		<state pattern="%.2f A" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power_c">
-		<item-type>Number</item-type>
+		<item-type>Number:W</item-type>
 		<label>Power C</label>
 		<description>power for phase C</description>
-		<state pattern="%.2f W" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="importenergy_c">
-		<item-type>Number</item-type>
+		<item-type>Number:kWh</item-type>
 		<label>ImportEnergy C</label>
 		<description>importenergy for phase C</description>
-		<state pattern="%.2f kWh" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="exportgrid_c">
-		<item-type>Number</item-type>
+		<item-type>Number:kWh</item-type>
 		<label>Exportgrid C</label>
 		<description>exportgrid for phase C</description>
-		<state pattern="%.2f kWh" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="frequency_c">
-		<item-type>Number</item-type>
+		<item-type>Number:Hz</item-type>
 		<label>Frequency C</label>
 		<description>frequency for phase C</description>
-		<state pattern="%.2f Hz" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pf_c">
 		<item-type>Number</item-type>
