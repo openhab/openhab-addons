@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.automower.internal.rest.api.automowerconnect;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.apache.commons.httpclient.HttpStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -57,7 +60,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         ContentResponse response;
         try {
             response = request.send();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AutomowerCommunicationException(e);
         }
 
@@ -76,7 +79,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         ContentResponse response;
         try {
             response = request.send();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AutomowerCommunicationException(e);
         }
 
@@ -98,7 +101,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         ContentResponse response;
         try {
             response = request.send();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AutomowerCommunicationException(e);
         }
 
