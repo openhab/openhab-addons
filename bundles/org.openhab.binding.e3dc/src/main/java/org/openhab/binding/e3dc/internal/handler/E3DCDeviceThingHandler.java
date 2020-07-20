@@ -78,7 +78,7 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
                 ModbusTCPSlaveEndpoint slaveEndpoint = new ModbusTCPSlaveEndpoint(localConfig.host, localConfig.port);
                 this.slaveEndpoint = slaveEndpoint;
                 // register low speed info poller
-                BasicModbusReadRequestBlueprint infoRequest = new BasicModbusReadRequestBlueprint(1,
+                BasicModbusReadRequestBlueprint infoRequest = new BasicModbusReadRequestBlueprint(localConfig.deviceid,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, INFO_REG_START, INFO_REG_SIZE, 3);
 
                 BasicPollTaskImpl localInfoPoller = new BasicPollTaskImpl(slaveEndpoint, infoRequest,
@@ -86,7 +86,7 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
                 infoPoller = localInfoPoller;
                 modbusManagerRef.registerRegularPoll(localInfoPoller, INFO_POLL_REFRESH_TIME_MS, 0);
                 // register high speed data poller
-                BasicModbusReadRequestBlueprint dataRequest = new BasicModbusReadRequestBlueprint(1,
+                BasicModbusReadRequestBlueprint dataRequest = new BasicModbusReadRequestBlueprint(localConfig.deviceid,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START,
                         REGISTER_LENGTH - INFO_REG_SIZE, 3);
                 BasicPollTaskImpl localDataPoller = new BasicPollTaskImpl(slaveEndpoint, dataRequest,
@@ -138,12 +138,15 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
      * @param writeValue integer to be written
      */
     public void wallboxSet(int wallboxId, int writeValue) {
-        ModbusRegisterArray regArray = new BasicModbusRegisterArray(writeValue);
-        BasicModbusWriteRegisterRequestBlueprint writeBluePrint = new BasicModbusWriteRegisterRequestBlueprint(1,
-                WALLBOX_REG_START + wallboxId, regArray, false, 3);
-        ModbusTCPSlaveEndpoint localSlaveEndpoint = slaveEndpoint;
-        if (localSlaveEndpoint != null) {
-            modbusManagerRef.submitOneTimeWrite(new BasicWriteTask(localSlaveEndpoint, writeBluePrint, this));
+        E3DCDeviceConfiguration localConfig = config;
+        if (localConfig != null) {
+            ModbusRegisterArray regArray = new BasicModbusRegisterArray(writeValue);
+            BasicModbusWriteRegisterRequestBlueprint writeBluePrint = new BasicModbusWriteRegisterRequestBlueprint(
+                    localConfig.deviceid, WALLBOX_REG_START + wallboxId, regArray, false, 3);
+            ModbusTCPSlaveEndpoint localSlaveEndpoint = slaveEndpoint;
+            if (localSlaveEndpoint != null) {
+                modbusManagerRef.submitOneTimeWrite(new BasicWriteTask(localSlaveEndpoint, writeBluePrint, this));
+            }
         }
     }
 

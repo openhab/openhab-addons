@@ -40,6 +40,10 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
     private @Nullable ThingHandlerCallback thingHandlerCallback;
     private @Nullable ModbusDataProvider modbusDataProvider;
 
+    // Unit test purposes - check if dataAvailable callback was successful
+    public boolean isUpdated = false;
+    public boolean isInitialized = false;
+
     public BaseHandler(Thing thing) {
         super(thing);
     }
@@ -70,6 +74,7 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
             } else {
                 logger.warn("Bridge not found");
             }
+            isInitialized = true;
         });
     }
 
@@ -96,7 +101,7 @@ public abstract class BaseHandler extends BaseThingHandler implements DataListen
             if (localThinghandlerCallback != null) {
                 return bridgeUID != null ? localThinghandlerCallback.getBridge(bridgeUID) : null;
             } else {
-                logger.warn("Handler {} of thing {} isn't able to resolve bridger", getClass().getSimpleName(),
+                logger.warn("Handler {} of thing {} isn't able to resolve bridge", getClass().getSimpleName(),
                         thing.getUID());
                 return null;
             }
