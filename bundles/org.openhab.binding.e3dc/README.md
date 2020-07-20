@@ -1,7 +1,7 @@
 # E3DC Binding
 
 <img style="float: right;" src="doc/E3DC_logo.png">
-Integrates the Home Power Plants from E3/DC GmbH into openhab. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.  
+Integrates the Home Power Plants from E3/DC GmbH into openHAB. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.  
 The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the <a href="./doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18.pdf">official Modbus documentation</a> for more details.  
 The binding is designed the following way  
 
@@ -57,21 +57,21 @@ The Binding Design requires two steps
 
 See <a href="./doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18.pdf">official Modbus documentation</a> for more details
 
-| Parameter        | Type   | Description                                               |           
-|-----------------|----------------------------------------------------------------------|
-| host            | text    | IP Address of your device   |
-| port            | integer | Modbus Port of your device. Default is 502   |
-| refresh         | integer | data refresh rate in milliseconds. Default is 2000   |
+| Parameter       | Type    | Description                                                 |           
+|-----------------|---------|-------------------------------------------------------------|
+| host            | text    | IP Address of your device                                   |
+| port            | integer | Modbus Port of your device. Default is 502                  |
+| refresh         | integer | data refresh rate in milliseconds. Default is 2000          |
 
 ### E3DC Wallbox Control Block
 
-| Parameter        | type   | Description                                                |
-|-----------------|----------------------------------------------------------------------|
-| wallboxId        | integer    | The E3DC device can handle up to 8 Wallboxes so select a value from 0 to 7  |
+| Parameter       | Type    | Description                                                 |           
+|-----------------|---------|-------------------------------------------------------------|
+| wallboxId       | integer | The E3DC device can handle up to 8 Wallboxes so select a value from 0 to 7  |
 
 ## Channels
 
-The E3DC device offers a huge amount of channels. Due to the Block design you can allocate only your wanted blocks with a restricted amount of Channels. See each Block which Channels are offered
+The E3DC device offers quite an amount of channels. Due to the Block design you can allocate only your wanted blocks with a restricted amount of Channels. See each Block which Channels are offered
 
 ### E3DC Info Block
 
@@ -105,19 +105,21 @@ The E3DC device offers a huge amount of channels. Due to the Block design you ca
 
 ### E3DC Wallbox Control Block
 
-| Channel Label         | Channel ID      | Type           | Description                  |
-|-----------------------|-----------------|----------------|------------------------------|
-| Wallbox Available     | wb-available |  Switch  | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case.  **read-only**  |
-| Sun Mode              | wb-sunmode-channel |  Switch  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.  **read-write**  |
-| Wallbox Charging      | wb-charging-channel |  Switch  | Indicates your Wallbox is charging.  **read-write**    |
-| Jack Locked           | wb-jack-locked |  Switch  | Indicates your Jack is locked.  **read-only**    |
-| Jack Plugged          | wb-jack-plugged |  Switch  | Indicates your Jack is plugged.  **read-only**    |
-| Schuko Socket On      | wb-schuko-on |  Switch  | If your Wallbox has an additional Schuko Socket it provides state ON or OFF.  **read-write**    |
-| Schuko Socket Plugged | wb-schuko-plugged |  Switch  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF.  **read-only**     |
-| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF.  **read-only** |
-| 16A Relay On          | wb-relay-16a |  Switch  | Indicates if 16A Relay is ON  **read-only**    |
-| 32A Relay On          | wb-relay-32a |  Switch  | Indicates if 32A Relay is ON  **read-only**    |
-| 3-Phase Charging      | 3-Phase Active |  Switch  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated  **read-write**   |
+Some of the Wallbox Settings can be changed. See the Access column if the actual valuw is Read/Write (RW) or only Read (R)
+
+| Channel Label         | Channel ID      | Type      | Access | Description                  |
+|-----------------------|-----------------|-----------|--------|------------------------------|
+| Wallbox Available     | wb-available    |  Switch | R | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case.  **read-only**  |
+| Sun Mode              | wb-sunmode-channel |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.  **read-write**  |
+| Wallbox Charging      | wb-charging-channel |  Switch | RW  | Indicates your Wallbox is charging.  **read-write**    |
+| Jack Locked           | wb-jack-locked  |  Switch | R  | Indicates your Jack is locked.  **read-only**    |
+| Jack Plugged          | wb-jack-plugged |  Switch | R  | Indicates your Jack is plugged.  **read-only**    |
+| Schuko Socket On      | wb-schuko-on    |  Switch  | RW | If your Wallbox has an additional Schuko Socket it provides state ON or OFF.  **read-write**    |
+| Schuko Socket Plugged | wb-schuko-plugged |  Switch | R  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF.  **read-only**     |
+| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch | R  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF.  **read-only** |
+| 16A Relay On          | wb-relay-16a    |  Switch | R  | Indicates if 16A Relay is ON  **read-only**    |
+| 32A Relay On          | wb-relay-32a    |  Switch | R  | Indicates if 32A Relay is ON  **read-only**    |
+| 3-Phase Charging      | 3-Phase Active  |  Switch | RW  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated  **read-write**   |
 
 ### E3DC String Details Block
 
@@ -149,8 +151,218 @@ The E3DC device offers a huge amount of channels. Due to the Block design you ca
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+Following example provides the full configuration. If you enter the correct Connection Data, IP Address, Device ID and Port number in the thing configuration you should be fine.
 
-## Any custom content here!
+### Things
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+'''
+Bridge e3dc:e3dc-device:plant "E3DC Power Plant" [ host="192.168.178.56", port=502, refresh=2000 ] {      
+     e3dc-info         infoblock           "E3DC Info Block"
+     e3dc-power        powerblock          "E3DC Power Block"
+     e3dc-wallbox      wallboxblock        "E3DC Wallbox Control Block"        [wallboxId=0]
+     e3dc-strings      stringblock         "E3DC String Details Block"   
+     e3dc-emergency    emsblock            "E3DC EMS Block"
+}     
+'''
+
+### Items
+
+'''
+String    E3DC_ModbusId                 "E3DC Modbus ID"            (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:modbus-id" }
+String    E3DC_ModbusFirmware           "E3DC Modbus Firmware"      (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:modbus-firmware" }
+Number    E3DC_SupportedRegisters       "E3DC Supported Registers"  (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:supported-registers" }
+String    E3DC_Manufacturer             "E3DC Manufacturer"         (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:manufacturer-name" }
+String    E3DC_ModelName                "E3DC Model"                (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:model-name" }
+String    E3DC_Firmware                 "E3DC Modbus ID"            (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:firmware-release" }
+String    E3DC_SerialNumber             "E3DC Modbus ID"            (e3dc)      { channel="e3dc:e3dc-info:plant:infoblock:serial-number" }
+
+Number    E3DC_PVPower                  "E3DC PV Power"             (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:pv-power-supply" }
+Number    E3DC_BatteryDischarge         "E3DC Battery Discharge"    (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:battery-power-supply" }
+Number    E3DC_BatteryCharge            "E3DC Battery Charge"       (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:battery-power-consumption" }
+Number    E3DC_Household                "E3DC Household Consumption"    (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:household-power-consumption" }
+Number    E3DC_GridConsumption          "E3DC Grid Consumption"     (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:grid-power-consumption" }
+Number    E3DC_GridSupply               "E3DC Grid Supply "         (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:grid-power-supply" }
+Number    E3DC_ExternalSupply           "E3DC External Supply"      (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:external-power-supply" }
+Number    E3DC_WallboxConsumption       "E3DC Wallbox Consumption"  (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:wallbox-power-consumption" }
+Number    E3DC_WallboxPVConsumption     "E3DC Wallbox PV Consumption"   (e3dc)  { channel="e3dc:e3dc-power:plant:powerblock:wallbox-pv-power-consumption" }
+Number    E3DC_AutarkyLevel             "E3DC Autarky Level"        (e3dc)  { channel="e3dc:e3dc-power:plant:powerblock:autarky" }
+Number    E3DC_SelfConsumptionLevel     "E3DC Self Consumption Level"   (e3dc)  { channel="e3dc:e3dc-power:plant:powerblock:self-consumption" }
+Number    E3DC_BatterySOC               "E3DC Battery SOC"          (e3dc,persist)  { channel="e3dc:e3dc-power:plant:powerblock:battery-soc" }
+
+Switch    E3DC_WB_Available             "E3DC WB available"     (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-available" }
+Switch    E3DC_WB_Sunmode               "E3DC WB Sunmode"       (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-sunmode" }
+Switch    E3DC_WB_Charging              "E3DC WB Charging"      (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-charging" }
+Switch    E3DC_WB_JackLocked            "E3DC WB Jack Locked"   (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-jack-locked" }
+Switch    E3DC_WB_JackPlugged           "E3DC WB Jack Plugged"  (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-jack-plugged" }
+Switch    E3DC_WB_SchukoOn              "E3DC WB Schuko On"     (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-schuko-on" }
+Switch    E3DC_WB_SchukoPlugged         "E3DC WB Schuko Plugged"    (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-schuko-plugged" }
+Switch    E3DC_WB_SchukoLocked          "E3DC WB Schuko Locked" (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-schuko-locked" }
+Switch    E3DC_WB_Relay16A              "E3DC WB 16A Relay"      (e3dc) { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-relay-16a" }
+Switch    E3DC_WB_Relay32A              "E3DC WB 32A Relay"      (e3dc) { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-relay-32a" }
+Switch    E3DC_WB_3PhaseLoading         "E3DC WB 3-Phase Loading"   (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-3phase" }
+
+Number    E3DC_String1V                 "E3DC String 1 Volt"    (e3dc)  { channel="e3dc:e3dc-strings:plant:stringblock:string1-dc-voltage" }
+Number    E3DC_String2V                 "E3DC String 2 Volt"    (e3dc)  { channel="e3dc:e3dc-strings:plant:stringblock:string2-dc-voltage" }
+Number    E3DC_String3V                 "E3DC String 3 Volt"    (e3dc)  { channel="e3dc:e3dc-strings:plant:stringblock:string3-dc-voltage" }
+Number    E3DC_String1A                 "E3DC String 1 Ampere"  (e3dc)  { channel="e3dc:e3dc-strings:plant:stringblock:string1-dc-current" }
+Number    E3DC_String2A                 "E3DC String 2 Ampere"  (e3dc)  { channel="e3dc:e3dc-strings:plant:stringblock:string2-dc-current" }
+Number    E3DC_String3A                 "E3DC String 3 Ampere"  (e3dc)  { channel="e3dc:e3dc-strings:plant:stringblock:string3-dc-current" }
+Number    E3DC_String1W                 "E3DC String 1 Watt"    (e3dc,persist)  { channel="e3dc:e3dc-strings:plant:stringblock:string1-dc-output" }
+Number    E3DC_String2W                 "E3DC String 2 Watt"    (e3dc,persist)  { channel="e3dc:e3dc-strings:plant:stringblock:string2-dc-output" }
+Number    E3DC_String3W                 "E3DC String 3 Watt"    (e3dc,persist)  { channel="e3dc:e3dc-strings:plant:stringblock:string3-dc-output" }
+
+String    E3DC_EMS_Status                       "E3DC EMS Status"                   (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:emergency-power-status" }
+Switch    E3DC_EMS_BatteryLoadingLock           "E3DC EMS Battery Loading Lock"     (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:battery-loading-lock" }
+Switch    E3DC_EMS_BatteryUnloadingLock         "E3DC EMS Battery Unloading Lock"   (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:battery-unloading-lock" }
+Switch    E3DC_EMS_EmergencyPowerPossible       "E3DC EMS Emergency Power possible" (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:emergency-power-possible" }
+Switch    E3DC_EMS_WeatherPredictedLoading      "E3DC EMS Weather Predicted Loading" (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:weather-predicted-loading" }
+Switch    E3DC_EMS_RegulationStatus             "E3DC EMS Regulation Status"        (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:regulation-status" }
+Switch    E3DC_EMS_LoadingLockTime              "E3DC EMS Loading Lock Time"        (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:loading-lock-time" }
+Switch    E3DC_EMS_UnloadingLockTime            "E3DC EMS Unloading Lock TIme"      (e3dc)  { channel="e3dc:e3dc-emergency:plant:emsblock:unloading-lock-time" }
+'''
+
+### Sitemap
+
+'''
+sitemap E3DCBinding label="E3DC Binding Sitemap" {
+  Frame label="Info" {
+    Text    item=E3DC_ModbusId                  label="Modbus-ID [%s]"
+    Text    item=E3DC_ModbusFirmware            label="Modbus Firmware [%s]"
+    Text    item=E3DC_SupportedRegisters        label="Registers [%s]"
+    Text    item=E3DC_Manufacturer              label="Manufacturer [%s]"
+    Text    item=E3DC_ModelName                 label="Model Name [%s]"
+    Text    item=E3DC_Firmware                  label="Firmware [%s]"
+    Text    item=E3DC_SerialNumber              label="Serial Number[%s]"
+  }
+  
+  Frame label="Power" {
+    Frame label="Producer" {
+      Text    item=E3DC_PVPower                 label="PV Power[%s]"
+      Text    item=E3DC_BatteryDischarge        label="Battery Discharge [%s]"
+      Text    item=E3DC_GridSupply              label="Grid Supply [%s]"
+      Text    item=E3DC_ExternalSupply          label="External Supply [%s]"
+    }
+    Frame label="Consumer" {
+      Text    item=E3DC_Household               label="Household [%s]"
+      Text    item=E3DC_BatteryCharge           label="Battery Charge [%s]"
+      Text    item=E3DC_GridConsumption         label="Grid Consumption [%s]"
+      Text    item=E3DC_WallboxConsumption      label="Wallbox [%s]"
+      Text    item=E3DC_WallboxPVConsumption    label="Wallbox PV[%s]"
+    }
+    Frame label="Measures" {
+      Text    item=E3DC_AutarkyLevel            label="Autarky [%s %%]"
+      Text    item=E3DC_SelfConsumptionLevel    label="Self Consumption [%s %%]"
+      Text    item=E3DC_BatterySOC              label="SOC [%s %%]"
+    }
+  }
+  
+  Frame label="Wallbox" {
+    Switch    item=E3DC_WB_Available            label="Available [%s]"
+    Switch    item=E3DC_WB_Sunmode              label="Sunmode [%s]"
+    Switch    item=E3DC_WB_Charging             label="Charging [%s]"
+    Switch    item=E3DC_WB_JackLocked           label="Jack locked [%s]"
+    Switch    item=E3DC_WB_JackPlugged          label="Jack plugged [%s]"
+    Switch    item=E3DC_WB_SchukoOn             label="Schuko On [%s]"
+    Switch    item=E3DC_WB_SchukoPlugged        label="Schuko plugged [%s]"
+    Switch    item=E3DC_WB_SchukoLocked         label="Schuko locked [%s]"
+    Switch    item=E3DC_WB_Relay16A             label="Relay 16A [%s]"
+    Switch    item=E3DC_WB_Relay32A             label="Relay 32A [%s]"
+    Switch    item=E3DC_WB_3PhaseLoading        label="3-Phase loading [%s]"
+  }
+  
+  Frame label="String Details" {
+    Frame label="String 1" {
+      Text    item=E3DC_String1V                label="Volt [%s]"
+      Text    item=E3DC_String1A                label="Ampere [%s]"
+      Text    item=E3DC_String1W                label="Watt [%s]"
+    }
+    Frame label="String 2" {
+      Text    item=E3DC_String2V                label="Volt [%s]"
+      Text    item=E3DC_String2A                label="Ampere [%s]"
+      Text    item=E3DC_String2W                label="Watt [%s]"
+    }
+    Frame label="String 3" {
+      Text    item=E3DC_String3V                label="Volt [%s]"
+      Text    item=E3DC_String3A                label="Ampere [%s]"
+      Text    item=E3DC_String3W                label="Watt [%s]"
+    }
+  }
+  
+  Frame label="EMS" {
+    Text      item=E3DC_EMS_Status                  label="Status [%s]"
+    Switch    item=E3DC_EMS_BatteryLoadingLock      label="Batter Loading Lock [%s]"
+    Switch    item=E3DC_EMS_BatteryUnloadingLock    label="Batter Unloading Lock [%s]"
+    Switch    item=E3DC_EMS_EmergencyPowerPossible  label="Emergency Power Possible [%s]"
+    Switch    item=E3DC_EMS_WeatherPredictedLoading label="Weather Predicted Loading [%s]"
+    Switch    item=E3DC_EMS_RegulationStatus        label="Regulation [%s]"
+    Switch    item=E3DC_EMS_LoadingLockTime         label="Loading Lock Times [%s]"
+    Switch    item=E3DC_EMS_UnloadingLockTime       label="Unloading Lock Times [%s]"
+  }
+}
+'''
+## Going further
+
+Setup and configured everything the right way? Congratulations, you've now the actual E3DC values on your table. Don't sto and go ahead!
+
+### Persistence
+
+You can see in the example item configuration, that I added some items to the "persist". Feel free to choose your own Groupname but this opens the possibility 
+to store the items in a database. See following *.persist file configuration how this can be established.
+
+'''
+Strategies {
+    everyMinute : "0 * * * * ?"
+    everyHour : "0 0 * * * ?"
+    everyDay  : "0 0 0 * * ?"
+    default = everyChange
+}
+
+Items {
+    // persist items on every change and every minute - used for E3DC
+    persist : strategy = everyChange, everyMinute
+}
+'''
+
+### Visualization 
+
+After the timeline is available in your database you can continue with Visualization. I like the Grafana approach and I used 
+<a href="https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761">the InfluxDB & Grafana Tutorial</a> from the Community to set this up.
+I prepared my machine and I'm quite pleased with the results.
+<img style="float: right;" src="doc/GrafanaPV.png">
+In the above picture there are two graphs
+
+* The top one shows the Photovoltaic Production of my 2 attahced Strings. You can clearly see when the sky wasn't bright the production goes down
+* The bottom graph show th producers & consumers. 
+** Battery in blue charging during the day, discharging at night
+** Household consumption in green
+** Wallbox consumption in orange
+** Grid consumption / supply in yellow
+
+### Cross Connections 
+
+With the baove setup you have now a great visualization and overview regarding your eletric production and consumption. Now use the Power of openHAB and cross
+connect your data. For example you can use the 
+[OpenweatherMap API Binding](https://www.openhab.org/addons/bindings/openweathermap/)
+the cloudiness in Percent. With a modified *.persist file I store the cloudiness forecast also in the database
+
+'''
+Strategies {
+    everyMinute : "0 * * * * ?"
+    everyHour : "0 0 * * * ?"
+    everyDay  : "0 0 0 * * ?"
+    default = everyChange
+}
+
+Items {
+    // persist items on every change and every minute - used for E3DC
+    persist : strategy = everyChange, everyMinute
+    LocalWeatherAndForecast_Current_BewLkung : strategy = everyChange,everyHour
+}
+'''
+
+Having these values in the timeline you're able to cross check how the forecast influences the Photovoltaic Production. 
+
+<img style="float: right;" src="doc/GrafanaCloudiness.png">
+
+I personally would like to have
+more steering control of the E3DC to react on such forecast e.g. "stop charging the car if it gets too cloudy"
