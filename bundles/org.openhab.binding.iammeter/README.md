@@ -8,10 +8,7 @@ The Iammeter is exposed as one thing with a number of channels that can be used 
 
 ## Setup of the binding
 
-You can configure the Thing via the openHAB UI:
-1.install "Iammeter binding" in "configuration" section
-2.add "Iammeter binding" in "Things" section
-3.config Iammeter device's IP
+You can add the Iammeter device via the openHAB UI manually.
 
 
 ## Available channels
@@ -19,36 +16,38 @@ You can configure the Thing via the openHAB UI:
 The following table is taken from the official manual and contains all available channels.
 
 Single-phase energy meter (WEM3080/WEM3162)
-name	Unit	Description
-voltage_a	V	Voltage.
-current_a	A	current.
-power_a	W	active power.
-importenergy_a	kWh	Energy consumption from gird
-exportgrid_a	kWh	Energy export to grid
+|Name|Unit|Description|Type|
+|----|----|----|----|
+|voltage_a|V|Voltage|Number|
+|current_a|A|Current|Number|
+|power_a|W|Active power|Number|
+|importenergy_a|kWh|Energy consumption from gird|Number|
+|exportgrid_a|kWh|Energy export to grid|Number|
 
 Three-phase energy meter (WEM3080T)
-name	Unit	Description
-voltage_a	V	A phase voltage
-current_a	A	A phase current
-power_a	W	A phase active power
-importenergy_a	kWh	A phase import energy
-exportgrid_a	kWh	A phase export energy
-frequency_a	kWh	A phase frequency
-pf_a	kWh	A phase power factor
-voltage_b	V	B phase voltage
-current_b	A	B phase current
-power_b	W	B phase active power
-importenergy_b	kWh	B phase import energy
-exportgrid_b	kWh	B phase export energy
-frequency_b	kWh	B phase frequency
-pf_b	kWh	B phase power factor
-voltage_c	V	C phase voltage
-current_c	A	C phase current
-power_c	W	C phase active power
-importenergy_c	kWh	C phase import energy
-exportgrid_c	kWh	C phase export energy
-frequency_c	kWh	C phase frequency
-pf_c	kWh	C phase power factor
+|Name|Unit|Description|Type|
+|----|----|----|----|
+|voltage_a|V|A phase voltage|Number|
+|current_a|A|A phase current|Number|
+|power_a|W|A phase active power|Number|
+|importenergy_a|kWh|A phase import energy|Number|
+|exportgrid_a|kWh|A phase export energy|Number|
+|frequency_a|kWh|A phase frequency|Number|
+|pf_a|kWh|A phase power factor|Number|
+|voltage_b|V|B phase voltage|Number|
+|current_b|A|B phase current|Number|
+|power_b|W|B phase active power|Number|
+|importenergy_b|kWh|B phase import energy|Number|
+|exportgrid_b|kWh|B phase export energy|Number|
+|frequency_b|kWh|B phase frequency|Number|
+|pf_b|kWh|B phase power factor|Number|
+|voltage_c|V|C phase voltage|Number|
+|current_c|A|C phase current|Number|
+|power_c|W|C phase active power|Number|
+|importenergy_c|kWh|C phase import energy|Number|
+|exportgrid_c|kWh|C phase export energy|Number|
+|frequency_c|kWh|C phase frequency|Number|
+|pf_c|kWh|C phase power factor|Number|
 
 ## More information
 
