@@ -118,11 +118,11 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                                 break;
                             case TYPE_SWITCH:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SWITCH);
-                                norifyListeners(touchWandUnit);
+                                notifyListeners(touchWandUnit);
                                 break;
                             case TYPE_DIMMER:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_DIMMER);
-                                norifyListeners(touchWandUnit);
+                                notifyListeners(touchWandUnit);
                                 break;
                             case TYPE_SHUTTER:
                                 addDeviceDiscoveryResult(touchWandUnit, THING_TYPE_SHUTTER);
@@ -140,7 +140,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void norifyListeners(TouchWandUnitData touchWandUnit) {
+    private void notifyListeners(TouchWandUnitData touchWandUnit) {
         /* sometimes current status received null , no point update listeners */
         if (touchWandUnit.getCurrStatus() == null) {
             return;
