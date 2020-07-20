@@ -13,7 +13,6 @@
 package org.openhab.binding.lgwebos.action;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -30,8 +29,6 @@ public interface ILGWebOSActions {
     public void showToast(String icon, String text) throws IOException;
 
     public void launchBrowser(String url);
-
-    public List<Application> getApplications();
 
     public void launchApplication(String appId);
 

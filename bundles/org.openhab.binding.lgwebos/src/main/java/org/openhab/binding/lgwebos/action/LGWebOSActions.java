@@ -147,12 +147,6 @@ public class LGWebOSActions implements ThingActions, ILGWebOSActions {
     }
 
     @Override
-    public List<Application> getApplications() {
-        return getAppInfos().stream().map(appInfo -> new Application(appInfo.getId(), appInfo.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     @RuleAction(label = "@text/actionLaunchApplicationLabel", description = "@text/actionLaunchApplicationDesc")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId) {
@@ -333,11 +327,6 @@ public class LGWebOSActions implements ThingActions, ILGWebOSActions {
 
     public static void launchBrowser(@Nullable ThingActions actions, String url) {
         invokeMethodOf(actions).launchBrowser(url);
-    }
-
-    public static List<Application> getApplications(@Nullable ThingActions actions) {
-        // The workaround might not work due to the return type
-        return invokeMethodOf(actions).getApplications();
     }
 
     public static void launchApplication(@Nullable ThingActions actions, String appId) {
