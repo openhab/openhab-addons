@@ -162,7 +162,6 @@
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
-    <module>org.openhab.binding.modbus.studer</module>    
     <module>org.openhab.binding.modbus.sunspec</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
