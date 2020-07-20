@@ -637,6 +637,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                         break;
                     case SHELLY_EVENT_TEMP_OVER: // DW2
                     case SHELLY_EVENT_TEMP_UNDER:
+                        channel = CHANNEL_EVENT_TRIGGER;
+                        payload = event;
                         break;
                     case SHELLY_EVENT_FLOOD_DETECTED:
                     case SHELLY_EVENT_FLOOD_GONE:

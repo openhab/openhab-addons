@@ -191,7 +191,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             if (Integer.parseInt(version) != 1) {
                                 logger.warn("{}: Unsupported CoAP version detected: {}", thingName, version);
                                 dropMessages = true;
-                                return;
+                                // return;
                             }
                             break;
                         case COIOT_OPTION_STATUS_VALIDITY:
@@ -451,10 +451,53 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 toQuantityType(s.value, DIGITS_LUX, SmartHomeUnits.LUX));
                         break;
                     case "p" /* Power/Watt */:
-                        String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER : CHANNEL_GROUP_METER + rIndex;
+                        // 3EM uses 1-based meter IDs, other 0-based
+                        String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER
+                                : CHANNEL_GROUP_METER + (profile.isEMeter ? sen.links : rIndex);
                         updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
                                 toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
                         updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
+                        break;
+                    case "a": // CoAP v2: Tilt Angle
+                        switch (sen.desc.toLowerCase()) {
+                            case "vibration": // DW with FW1.6.5+
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
+                                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                break;
+                        }
+                        break;
+
+                    // TODO: Needs processing
+                    // case "e": // CoIoT v2: Energy
+                    // break;
+                    // case "i": // CoIoT v2: Current
+                    // break;
+
+                    case "v":
+                        if (profile.isEMeter) {
+                            updateChannel(updates, rGroup, CHANNEL_EMETER_VOLTAGE,
+                                    toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                        }
+                        break;
+                    case "c": // CoAP v2: Concentration
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, getDecimal(s.value));
+                        break;
+                    case "ev": // CoAP v2: Event
+                        String descr = sen.desc.toLowerCase();
+                        switch (descr.toLowerCase()) {
+                            case "wakeupevent":
+                                // nothing to do
+                                break;
+                            case "cfgchanged":
+                                // refresh config
+                                thingHandler.requestUpdates(1, false);
+                                break;
+                            default:
+                                handleInputEvent(sen, getString(s.valueStr), 0, updates);
+                        }
+                        break;
+                    case "evc": // CoIoT v2: Event count
+                        handleInputEvent(sen, "", getInteger((int) s.value), updates);
                         break;
                     case "s" /* CatchAll */:
                         String senValue = sen.desc.toLowerCase();
@@ -529,6 +572,14 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
                                 break;
+                            case "luminositylevel":
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ILLUM,
+                                        getStringType(s.valueStr));
+                                break;
+                            case "dwisopened":
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
+                                        s.value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                                break;
                             case "charger": // Sense
                                 updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
                                         s.value == 1 ? OnOffType.ON : OnOffType.OFF);
@@ -576,12 +627,17 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             case "concentration":// Shelly Gas
                                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, getDecimal(s.value));
                                 break;
+                            case "sensorerror":
+                                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
+                                        getStringType(s.valueStr));
+                                break;
                             default:
                                 logger.debug(
-                                        "{}: Update for unknown sensor with id {}, type {}/{} received, value={}, payload={}",
+                                        "{}: Update for unknown sensor with id {}, type {}/{} received, value={},  payload={}",
                                         thingName, sen.id, sen.type, sen.desc, s.value, payload);
                         }
                         break;
+
                     default:
                         logger.debug("{}: Sensor data for id {}, type {}/{} not processed, value={}; payload={}",
                                 thingName, sen.id, sen.type, sen.desc, s.value, payload);
@@ -906,6 +962,9 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      */
     private static String fixJSON(String payload) {
         String json = payload;
+        if (json.contains("}{")) {
+            json = json.replace("}{", "},{");
+        }
         json = json.replace("}{", "},{");
         json = json.replace("][", "],[");
         json = json.replace("],,[", "],[");
