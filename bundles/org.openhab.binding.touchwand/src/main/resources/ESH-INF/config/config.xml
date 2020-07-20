@@ -6,29 +6,24 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="bridge-type:touchwand:bridge">
-
 		<parameter name="username" type="text">
-			<context>login-details</context>
 			<label>Username</label>
 			<description>Username for TouchWand Wanderfull Hub </description>
 			<required>true</required>
 		</parameter>
 		<parameter name="password" type="text">
-			<context>login-details</context>
+			<context>password</context>
 			<label>Password</label>
 			<description>Password for TouchWand Wanderfull Hub </description>
 			<required>true</required>
 		</parameter>
-
-
 		<parameter name="ipAddress" type="text">
 			<context>network-address</context>
 			<label>Network Address</label>
 			<description>Network address of this TouchWand Wanderfull Hub </description>
 			<required>true</required>
 		</parameter>
-
-		<parameter name="port" type="integer">
+		<parameter name="port" type="integer" min="80" max="65535">
 			<context>network-address</context>
 			<label>Port</label>
 			<description>Port of the TouchWand Wanderfull Hub communication channel</description>
@@ -36,20 +31,19 @@
 			<default>80</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="statusrefresh" type="integer">
+		<parameter name="statusrefresh" type="integer" unit="s">
 			<required>false</required>
 			<default>120</default>
-			<description>unit status refresh interval (seconds)</description>
+			<description>Unit status refresh interval (seconds)</description>
 			<label>Refresh</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="addSecondaryUnits" type="boolean">
 			<required>false</required>
 			<default>false</default>
-			<description>if the controller is primary , add seconaries unit as well</description>
+			<description>If the controller is primary, add secondaries controllers units as well</description>
 			<label>secondary</label>
 			<advanced>true</advanced>
 		</parameter>
-
 	</config-description>
 </config-description:config-descriptions>
