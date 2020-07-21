@@ -38,35 +38,77 @@ public class PowerBlock implements Data {
     public QuantityType<Dimensionless> selfConsumption;
     public QuantityType<Dimensionless> batterySOC;
 
+    /**
+     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 14
+     *
+     * @param bArray - Modbus Registers as bytes from 40067 to 40083
+     */
     public PowerBlock(byte[] bArray) {
-        long pvPowerSupplyL = DataConverter.getInt32Swap(bArray, 0);
+        // index handling to calculate the correct start index
+        int byteIndex = 0;
+
+        // int32_swap value = 4 byte
+        long pvPowerSupplyL = DataConverter.getInt32Swap(bArray, byteIndex);
+        byteIndex += 4;
+
+        /*
+         * int32_swap value don't provide negative values!
+         * Positive value - Battery is charging = Power consumer
+         * Negative value - Battery is discharging = Power supplier
+         */
         pvPowerSupply = new QuantityType<Power>(pvPowerSupplyL, SmartHomeUnits.WATT);
-        long batteryPower = DataConverter.getInt32Swap(bArray, 4);
-        if (batteryPower < 0) {
-            batteryPowerSupply = new QuantityType<Power>(batteryPower * -1, SmartHomeUnits.WATT);
-            batteryPowerConsumption = new QuantityType<Power>(0, SmartHomeUnits.WATT);
-        } else {
+        long batteryPower = DataConverter.getInt32Swap(bArray, byteIndex);
+        if (batteryPower > 0) {
             batteryPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
             batteryPowerConsumption = new QuantityType<Power>(batteryPower, SmartHomeUnits.WATT);
-        }
-        long householdPowerConsumptionL = DataConverter.getInt32Swap(bArray, 8);
-        householdPowerConsumption = new QuantityType<Power>(householdPowerConsumptionL, SmartHomeUnits.WATT);
-        long gridPower = DataConverter.getInt32Swap(bArray, 12);
-        if (gridPower < 0) {
-            gridPowerConsumpition = new QuantityType<Power>(0, SmartHomeUnits.WATT);
-            gridPowerSupply = new QuantityType<Power>(gridPower * -1, SmartHomeUnits.WATT);
         } else {
+            batteryPowerSupply = new QuantityType<Power>(batteryPower * -1, SmartHomeUnits.WATT);
+            batteryPowerConsumption = new QuantityType<Power>(0, SmartHomeUnits.WATT);
+        }
+        byteIndex += 4;
+
+        // int32_swap value = 4 byte
+        long householdPowerConsumptionL = DataConverter.getInt32Swap(bArray, byteIndex);
+        householdPowerConsumption = new QuantityType<Power>(householdPowerConsumptionL, SmartHomeUnits.WATT);
+        byteIndex += 4;
+
+        /*
+         * int32_swap value don't provide negative values!
+         * Positive value - Power provided towards Grid = Power consumer
+         * Negative value - Power requested from Grid = Power supplier
+         */
+        long gridPower = DataConverter.getInt32Swap(bArray, byteIndex);
+        if (gridPower > 0) {
             gridPowerConsumpition = new QuantityType<Power>(gridPower, SmartHomeUnits.WATT);
             gridPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
+        } else {
+            gridPowerConsumpition = new QuantityType<Power>(0, SmartHomeUnits.WATT);
+            gridPowerSupply = new QuantityType<Power>(gridPower * -1, SmartHomeUnits.WATT);
         }
-        // logger.info("PV {} Battery {} Grid {} House {}", pvPowerSupplyL, batteryPower, gridPower,
-        // householdPowerConsumptionL);
-        externalPowerSupply = new QuantityType<Power>(DataConverter.getInt32Swap(bArray, 16), SmartHomeUnits.WATT);
-        wallboxPowerConsumption = new QuantityType<Power>(DataConverter.getInt32Swap(bArray, 20), SmartHomeUnits.WATT);
-        wallboxPVPowerConsumption = new QuantityType<Power>(DataConverter.getInt32Swap(bArray, 24),
+        byteIndex += 4;
+
+        // int32_swap value = 4 byte
+        externalPowerSupply = new QuantityType<Power>(DataConverter.getInt32Swap(bArray, byteIndex),
                 SmartHomeUnits.WATT);
-        autarky = new QuantityType<Dimensionless>(bArray[28], SmartHomeUnits.PERCENT);
-        selfConsumption = new QuantityType<Dimensionless>(bArray[29], SmartHomeUnits.PERCENT);
-        batterySOC = new QuantityType<Dimensionless>(DataConverter.getIntValue(bArray, 30), SmartHomeUnits.PERCENT);
+        byteIndex += 4;
+
+        // int32_swap value = 4 byte
+        wallboxPowerConsumption = new QuantityType<Power>(DataConverter.getInt32Swap(bArray, byteIndex),
+                SmartHomeUnits.WATT);
+        byteIndex += 4;
+
+        // int32_swap value = 4 byte
+        wallboxPVPowerConsumption = new QuantityType<Power>(DataConverter.getInt32Swap(bArray, byteIndex),
+                SmartHomeUnits.WATT);
+        byteIndex += 4;
+
+        // unit8 + uint8 - one register with split value for Autarky & Self Consumption
+        autarky = new QuantityType<Dimensionless>(bArray[byteIndex], SmartHomeUnits.PERCENT);
+        selfConsumption = new QuantityType<Dimensionless>(bArray[byteIndex], SmartHomeUnits.PERCENT);
+        byteIndex += 2;
+
+        // uint16 for Battery State of Charge
+        batterySOC = new QuantityType<Dimensionless>(DataConverter.getIntValue(bArray, byteIndex),
+                SmartHomeUnits.PERCENT);
     }
 }
