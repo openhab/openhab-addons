@@ -12,12 +12,14 @@
 		<channels>
 			<channel id="wb-available" typeId="wb-available-channel"/>
 			<channel id="wb-sunmode" typeId="wb-sunmode-channel"/>
+			<channel id="wb-charging-aborted" typeId="wb-charging-aborted-channel"/>
 			<channel id="wb-charging" typeId="wb-charging-channel"/>
 			<channel id="wb-jack-locked" typeId="wb-jack-locked-channel"/>
 			<channel id="wb-jack-plugged" typeId="wb-jack-plugged-channel"/>
 			<channel id="wb-schuko-on" typeId="wb-schuko-on-channel"/>
 			<channel id="wb-schuko-plugged" typeId="wb-schuko-plugged-channel"/>
 			<channel id="wb-schuko-locked" typeId="wb-schuko-locked-channel"/>
+			<channel id="wb-schuko-relay-16a" typeId="wb-schuko-relay-16a-channel"/>
 			<channel id="wb-relay-16a" typeId="wb-relay-16a-channel"/>
 			<channel id="wb-relay-32a" typeId="wb-relay-32a-channel"/>
 			<channel id="wb-3phase" typeId="wb-3phase-channel"/>

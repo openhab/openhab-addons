@@ -55,8 +55,8 @@ public class E3DCModbusConstans {
     public static final int WB_SCHUKO_PLUGGED_BIT = 7;
     public static final int WB_SCHUKO_LOCKED_BIT = 8;
     public static final int WB_SCHUKO_RELAY16A_BIT = 9;
-    public static final int WB_RELAY_16A = 10;
-    public static final int WB_RELAY_32A = 11;
+    public static final int WB_RELAY_16A_BIT = 10;
+    public static final int WB_RELAY_32A_BIT = 11;
     public static final int WB_3PHASE_BIT = 12;
 
     // EMS Bit Definitions according to chapter 3.1.3 page 17

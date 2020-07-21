@@ -111,13 +111,15 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 | Channel Label         | Channel ID      | Type      | Access | Description                  |
 |-----------------------|-----------------|-----------|--------|------------------------------|
 | Wallbox Available     | wb-available    |  Switch | R | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case  |
-| Sun Mode              | wb-sunmode-channel |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.   |
-| Wallbox Charging      | wb-charging-channel |  Switch | RW  | Indicates your Wallbox is charging   |
+| Sun Mode              | wb-sunmode |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.   |
+| Wallbox Charging Aborted | wb-charging-aborted |  Switch | RW  | Indicates if Wallbox charging is aborted  |
+| Wallbox Charging      | wb-charging |  Switch | RW  | Indicates your Wallbox is charging   |
 | Jack Locked           | wb-jack-locked  |  Switch | R  | Indicates your Jack is locked   |
 | Jack Plugged          | wb-jack-plugged |  Switch | R  | Indicates your Jack is plugged    |
 | Schuko Socket On      | wb-schuko-on    |  Switch  | RW | If your Wallbox has an additional Schuko Socket it provides state ON or OFF    |
 | Schuko Socket Plugged | wb-schuko-plugged |  Switch | R  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF    |
-| Schuko Socket Locked  | wb-schuko-locked-channel |  Switch | R  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF |
+| Schuko Socket Locked  | wb-schuko-locked |  Switch | R  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF |
+| Schuko 16A Relay On   | wb-schuko-relay-16a |  Switch | R  | Indicates if Schuko 16A Relay is ON     |
 | 16A Relay On          | wb-relay-16a    |  Switch | R  | Indicates if 16A Relay is ON     |
 | 32A Relay On          | wb-relay-32a    |  Switch | R  | Indicates if 32A Relay is ON    |
 | 3-Phase Charging      | 3-Phase Active  |  Switch | RW  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated    |
@@ -192,12 +194,14 @@ Number    E3DC_BatterySOC               "E3DC Battery SOC"          (e3dc,persis
 
 Switch    E3DC_WB_Available             "E3DC WB available"     (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-available" }
 Switch    E3DC_WB_Sunmode               "E3DC WB Sunmode"       (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-sunmode" }
+Switch    E3DC_WB_ChargingAborted       "E3DC WB Charging Aborted"  (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-charging-aborted" }
 Switch    E3DC_WB_Charging              "E3DC WB Charging"      (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-charging" }
 Switch    E3DC_WB_JackLocked            "E3DC WB Jack Locked"   (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-jack-locked" }
 Switch    E3DC_WB_JackPlugged           "E3DC WB Jack Plugged"  (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-jack-plugged" }
 Switch    E3DC_WB_SchukoOn              "E3DC WB Schuko On"     (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-schuko-on" }
 Switch    E3DC_WB_SchukoPlugged         "E3DC WB Schuko Plugged"    (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-schuko-plugged" }
 Switch    E3DC_WB_SchukoLocked          "E3DC WB Schuko Locked" (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-schuko-locked" }
+Switch    E3DC_WB_Schuko_Relay16A       "E3DC WB Schuko 16A Relay"  (e3dc) { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-schuko-relay-16a" }
 Switch    E3DC_WB_Relay16A              "E3DC WB 16A Relay"      (e3dc) { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-relay-16a" }
 Switch    E3DC_WB_Relay32A              "E3DC WB 32A Relay"      (e3dc) { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-relay-32a" }
 Switch    E3DC_WB_3PhaseLoading         "E3DC WB 3-Phase Loading"   (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-3phase" }

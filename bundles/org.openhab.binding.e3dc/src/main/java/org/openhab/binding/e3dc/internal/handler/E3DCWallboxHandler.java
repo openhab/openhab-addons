@@ -106,12 +106,14 @@ public class E3DCWallboxHandler extends BaseHandler {
                     }
                     updateState(WB_AVAILABLE_CHANNEL, block.wbAvailable);
                     updateState(WB_SUNMODE_CHANNEL, block.wbSunmode);
+                    updateState(WB_CHARGING_ABORTED_CHANNEL, block.wbChargingAborted);
                     updateState(WB_CHARGING_CHANNEL, block.wbCharging);
                     updateState(WB_JACK_LOCKED_CHANNEL, block.wbJackLocked);
                     updateState(WB_JACK_PLUGGED_CHANNEL, block.wbJackPlugged);
                     updateState(WB_SCHUKO_ON_CHANNEL, block.wbSchukoOn);
                     updateState(WB_SCHUKO_PLUGGED_CHANNEL, block.wbSchukoPlugged);
                     updateState(WB_SCHUKO_LOCKED_CHANNEL, block.wbSchukoLocked);
+                    updateState(WB_SCHUKO_REALY_16A_CHANNEL, block.wbSchukoRealy16);
                     updateState(WB_REALY_16A_CHANNEL, block.wbRealy16);
                     updateState(WB_RELAY_32A_CHANNEL, block.wbRelay32);
                     updateState(WB_3PHASE_CHANNEL, block.wb3phase);
