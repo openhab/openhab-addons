@@ -197,7 +197,6 @@ public class IammeterHandler extends BaseThingHandler {
         pollingJob.cancel(true);
     }
     
-    @Override
     public IammeterConfiguration getConfiguration() {
         return this.getConfigAs(IammeterConfiguration.class);
     }
