@@ -60,7 +60,10 @@ public class MoonHandler extends AstroThingHandler {
     @Override
     public void publishPositionalInfo() {
         moon = getMoonAt(ZonedDateTime.now());
-        moonCalc.setPositionalInfo(Calendar.getInstance(), thingConfig.getLatitude(), thingConfig.getLongitude(), moon);
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        moonCalc.setPositionalInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, moon);
         publishPlanet();
     }
 
@@ -86,15 +89,19 @@ public class MoonHandler extends AstroThingHandler {
     }
 
     private Moon getMoonAt(ZonedDateTime date) {
-        return moonCalc.getMoonInfo(GregorianCalendar.from(date), thingConfig.getLatitude(),
-                thingConfig.getLongitude());
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0);
     }
 
     @Override
     protected @Nullable Position getPositionAt(ZonedDateTime date) {
         Moon localMoon = getMoonAt(date);
-        moonCalc.setPositionalInfo(GregorianCalendar.from(date), thingConfig.getLatitude(), thingConfig.getLongitude(),
-                localMoon);
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        moonCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, localMoon);
         return localMoon.getPosition();
     }
 

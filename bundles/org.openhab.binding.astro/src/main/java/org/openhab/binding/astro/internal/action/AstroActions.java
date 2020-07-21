@@ -68,7 +68,7 @@ public class AstroActions implements ThingActions, IAstroActions {
     }
 
     @Override
-    @RuleAction(label = "Astro : Get Azimuth", description = "Get the sun Azimuth at a given moment")
+    @RuleAction(label = "Astro : Get Azimuth", description = "Get the azimuth of the sun for a given time")
     public @Nullable @ActionOutput(name = "getAzimuth", label = "Azimuth", type = "org.eclipse.smarthome.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getAzimuth(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getAzimuth' called");
@@ -82,7 +82,7 @@ public class AstroActions implements ThingActions, IAstroActions {
     }
 
     @Override
-    @RuleAction(label = "Astro : Get Elevation", description = "Get the sun Elevation at a given moment")
+    @RuleAction(label = "Astro : Get Elevation", description = "Get the Elevation of the sun for a given time")
     public @Nullable @ActionOutput(name = "getElevation", label = "Elevation", type = "org.eclipse.smarthome.core.library.types.QuantityType<javax.measure.quantity.Angle>") QuantityType<Angle> getElevation(
             @ActionInput(name = "date", label = "Date", required = false, description = "Considered date") @Nullable ZonedDateTime date) {
         logger.debug("Astro action 'getElevation' called");

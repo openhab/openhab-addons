@@ -110,8 +110,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
             thingConfig.parseGeoLocation();
         }
 
-        if (thingConfig.getLatitude() == AstroThingConfig.UNDEFINED
-                || thingConfig.getLongitude() == AstroThingConfig.UNDEFINED) {
+        if (thingConfig.latitude == null || thingConfig.longitude == null) {
             logger.error(
                     "Astro parameters geolocation could not be split into latitude and longitude, disabling thing '{}'",
                     thingUid);

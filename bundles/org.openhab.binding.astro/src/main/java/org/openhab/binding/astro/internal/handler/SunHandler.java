@@ -62,8 +62,11 @@ public class SunHandler extends AstroThingHandler {
     @Override
     public void publishPositionalInfo() {
         sun = getSunAt(ZonedDateTime.now());
-        sunCalc.setPositionalInfo(Calendar.getInstance(), thingConfig.getLatitude(), thingConfig.getLongitude(),
-                thingConfig.getAltitude(), sun);
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        Double altitude = thingConfig.altitude;
+        sunCalc.setPositionalInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, altitude != null ? altitude : 0, sun);
         publishPlanet();
     }
 
@@ -89,8 +92,12 @@ public class SunHandler extends AstroThingHandler {
     }
 
     private Sun getSunAt(ZonedDateTime date) {
-        return sunCalc.getSunInfo(GregorianCalendar.from(date), thingConfig.getLatitude(), thingConfig.getLongitude(),
-                thingConfig.getAltitude(), thingConfig.useMeteorologicalSeason);
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        Double altitude = thingConfig.altitude;
+        return sunCalc.getSunInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, altitude != null ? altitude : 0,
+                thingConfig.useMeteorologicalSeason);
     }
 
     public @Nullable ZonedDateTime getEventTime(SunPhaseName sunPhase, ZonedDateTime date, boolean begin) {
@@ -102,8 +109,11 @@ public class SunHandler extends AstroThingHandler {
     @Override
     protected @Nullable Position getPositionAt(ZonedDateTime date) {
         Sun localSun = getSunAt(date);
-        sunCalc.setPositionalInfo(GregorianCalendar.from(date), thingConfig.getLatitude(), thingConfig.getLongitude(),
-                thingConfig.getAltitude(), localSun);
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        Double altitude = thingConfig.altitude;
+        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, altitude != null ? altitude : 0, localSun);
         return localSun.getPosition();
     }
 

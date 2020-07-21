@@ -25,11 +25,10 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class AstroThingConfig {
-    public static double UNDEFINED = Double.NaN;
     public @Nullable String geolocation;
-    private double altitude = UNDEFINED;
-    private double latitude = UNDEFINED;
-    private double longitude = UNDEFINED;
+    public @Nullable Double altitude;
+    public @Nullable Double latitude;
+    public @Nullable Double longitude;
     public boolean useMeteorologicalSeason;
     public int interval = 300;
     private @Nullable String thingUid;
@@ -49,24 +48,12 @@ public class AstroThingConfig {
         }
     }
 
-    private double toDouble(String value) {
+    private @Nullable Double toDouble(String value) {
         try {
             return Double.parseDouble(StringUtils.trimToNull(value));
         } catch (NumberFormatException ex) {
-            return UNDEFINED;
+            return null;
         }
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public double getAltitude() {
-        return altitude != UNDEFINED ? altitude : 0;
     }
 
     /**
