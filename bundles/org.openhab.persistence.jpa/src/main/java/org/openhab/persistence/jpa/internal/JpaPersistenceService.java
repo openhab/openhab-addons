@@ -59,12 +59,16 @@ import org.slf4j.LoggerFactory;
 public class JpaPersistenceService implements QueryablePersistenceService {
     private final Logger logger = LoggerFactory.getLogger(JpaPersistenceService.class);
 
-    @Reference
-    protected @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private final ItemRegistry itemRegistry;
 
     private @Nullable EntityManagerFactory emf = null;
 
     private @NonNullByDefault({}) JpaConfiguration config;
+
+    @Activate
+    public JpaPersistenceService(final @Reference ItemRegistry itemRegistry) {
+        this.itemRegistry = itemRegistry;
+    }
 
     /**
      * lazy loading because update() is called after activate()
@@ -304,7 +308,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
      */
     private @Nullable Item getItemFromRegistry(String itemName) {
         try {
-            return itemRegistry == null ? null : itemRegistry.getItem(itemName);
+            return itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e1) {
             logger.error("Unable to get item type for {}", itemName);
         }

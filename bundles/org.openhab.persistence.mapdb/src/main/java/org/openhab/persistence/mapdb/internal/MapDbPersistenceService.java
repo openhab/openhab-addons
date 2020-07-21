@@ -39,7 +39,9 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +49,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * This is the implementation of the MapDB {@link PersistenceService}. To learn
- * more about MapDB please visit their <a
- * href="http://www.mapdb.org/">website</a>.
+ * This is the implementation of the MapDB {@link PersistenceService}. To learn more about MapDB please visit their
+ * <a href="http://www.mapdb.org/">website</a>.
  *
  * @author Jens Viebig - Initial contribution
  * @author Martin Kühl - Port to 3.x
@@ -66,22 +67,19 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceService.class);
 
-    @NonNullByDefault({})
-    private ExecutorService threadPool;
+    private final ExecutorService threadPool = ThreadPoolManager.getPool(getClass().getSimpleName());
 
     /** holds the local instance of the MapDB database */
-    @NonNullByDefault({})
-    private DB db;
-    @NonNullByDefault({})
-    private Map<String, String> map;
+
+    private @NonNullByDefault({}) DB db;
+    private @NonNullByDefault({}) Map<String, String> map;
 
     private transient Gson mapper = new GsonBuilder().registerTypeHierarchyAdapter(State.class, new StateTypeAdapter())
             .create();
 
+    @Activate
     public void activate() {
         logger.debug("MapDB persistence service is being activated");
-
-        threadPool = ThreadPoolManager.getPool(getClass().getSimpleName());
 
         File folder = new File(DB_FOLDER_NAME);
         if (!folder.exists()) {
@@ -98,6 +96,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         logger.debug("MapDB persistence service is now activated");
     }
 
+    @Deactivate
     public void deactivate() {
         logger.debug("MapDB persistence service deactivated");
         if (db != null) {
@@ -119,7 +118,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         return map.values().stream().map(this::deserialize).flatMap(MapDbPersistenceService::streamOptional)
-                .collect(Collectors.<PersistenceItemInfo> toSet());
+                .collect(Collectors.<PersistenceItemInfo> toUnmodifiableSet());
     }
 
     @Override
@@ -134,20 +133,18 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         }
 
         // PersistenceManager passes SimpleItemConfiguration.alias which can be null
-        if (alias == null) {
-            alias = item.getName();
-        }
-        logger.debug("store called for {}", alias);
+        String localAlias = alias == null ? item.getName() : alias;
+        logger.debug("store called for {}", localAlias);
 
         State state = item.getState();
         MapDbItem mItem = new MapDbItem();
-        mItem.setName(alias);
+        mItem.setName(localAlias);
         mItem.setState(state);
         mItem.setTimestamp(new Date());
         String json = serialize(mItem);
-        map.put(alias, json);
+        map.put(localAlias, json);
         commit();
-        logger.debug("Stored '{}' with state '{}' in MapDB database", alias, state.toString());
+        logger.debug("Stored '{}' with state '{}' in MapDB database", localAlias, state.toString());
     }
 
     @Override
@@ -167,6 +164,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         return mapper.toJson(item);
     }
 
+    @SuppressWarnings("null")
     private Optional<MapDbItem> deserialize(String json) {
         MapDbItem item = mapper.<MapDbItem> fromJson(json, MapDbItem.class);
         if (item == null || !item.isValid()) {

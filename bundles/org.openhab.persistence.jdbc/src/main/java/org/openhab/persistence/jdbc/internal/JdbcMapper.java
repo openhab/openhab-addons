@@ -16,13 +16,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.persistence.jdbc.model.ItemVO;
 import org.openhab.persistence.jdbc.model.ItemsVO;
+import org.openhab.persistence.jdbc.model.JdbcPersistenceItemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +42,7 @@ public class JdbcMapper {
     protected int errCnt;
     protected boolean initialized = false;
     protected JdbcConfiguration conf = null;
-    protected Map<String, String> sqlTables = new HashMap<>();
+    protected final Map<String, String> sqlTables = new HashMap<>();
     private long afterAccessMin = 10000;
     private long afterAccessMax = 0;
     private static final String ITEM_NAME_PATTERN = "[^a-zA-Z_0-9\\-]";
@@ -358,6 +362,13 @@ public class JdbcMapper {
             name = (itemName.replaceAll(ITEM_NAME_PATTERN, "") + "_").toLowerCase();
         }
         return name;
+    }
+
+    public Set<PersistenceItemInfo> getItems() {
+        // TODO: in general it would be possible to query the count, earliest and latest values for each item too but it
+        // would be a very costly operation
+        return sqlTables.keySet().stream().map(itemName -> new JdbcPersistenceItemInfo(itemName))
+                .collect(Collectors.<PersistenceItemInfo> toUnmodifiableSet());
     }
 
     private static String formatRight(final Object value, final int len) {

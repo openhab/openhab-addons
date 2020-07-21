@@ -23,7 +23,7 @@ import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.persistence.jdbc.model.ItemVO;
 import org.openhab.persistence.jdbc.model.ItemsVO;
-import org.openhab.persistence.jdbc.model.JdbcItem;
+import org.openhab.persistence.jdbc.model.JdbcHistoricItem;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +151,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
 
         List<HistoricItem> items = new ArrayList<>();
         for (int i = 0; i < m.size(); i++) {
-            items.add(new JdbcItem(item.getName(), getState(item, m.get(i)[1]), objectAsDate(m.get(i)[0])));
+            items.add(new JdbcHistoricItem(item.getName(), getState(item, m.get(i)[1]), objectAsDate(m.get(i)[0])));
         }
         return items;
     }

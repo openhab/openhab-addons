@@ -164,7 +164,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     private static final int[] WAIT_MILLIS_IN_RETRIES = new int[] { 100, 100, 200, 300, 500 };
     private static final String DYNAMODB_THREADPOOL_NAME = "dynamodbPersistenceService";
 
-    private @NonNullByDefault({}) ItemRegistry itemRegistry;
+    private final ItemRegistry itemRegistry;
     private @Nullable DynamoDBClient db;
     private final Logger logger = LoggerFactory.getLogger(DynamoDBPersistenceService.class);
     private boolean isProperlyConfigured;
@@ -174,6 +174,11 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
             new NamedThreadFactory(DYNAMODB_THREADPOOL_NAME));
     private @Nullable ScheduledFuture<?> writeBufferedDataFuture;
 
+    @Activate
+    public DynamoDBPersistenceService(final @Reference ItemRegistry itemRegistry) {
+        this.itemRegistry = itemRegistry;
+    }
+
     /**
      * For testing. Allows access to underlying DynamoDBClient.
      *
@@ -182,15 +187,6 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     @Nullable
     DynamoDBClient getDb() {
         return db;
-    }
-
-    @Reference
-    public void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
-    }
-
-    public void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
     }
 
     @Activate

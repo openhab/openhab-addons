@@ -32,9 +32,7 @@ import org.openhab.core.types.UnDefType;
 public class MapDbItem implements HistoricItem, PersistenceItemInfo {
 
     private String name = "";
-
     private State state = UnDefType.NULL;
-
     private Date timestamp = new Date(0);
 
     @Override
@@ -71,7 +69,7 @@ public class MapDbItem implements HistoricItem, PersistenceItemInfo {
 
     @Override
     public @Nullable Integer getCount() {
-        return null;
+        return Integer.valueOf(1);
     }
 
     @Override
