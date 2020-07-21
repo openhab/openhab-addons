@@ -2,6 +2,9 @@ package org.openhab.binding.boschshc.internal.services;
 
 import java.util.function.Consumer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.BoschSHCBridgeHandler;
