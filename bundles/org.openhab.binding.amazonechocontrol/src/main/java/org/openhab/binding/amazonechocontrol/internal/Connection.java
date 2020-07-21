@@ -1299,7 +1299,7 @@ public class Connection {
         announcementTimer = scheduler.schedule(this::sendAnnouncement, 500, TimeUnit.MILLISECONDS);
     }
 
-    private void sendAnnouncement() {
+    private synchronized void sendAnnouncement() {
         if (announcementTimer != null) {
             announcementTimer.cancel(true);
         }
@@ -1374,7 +1374,7 @@ public class Connection {
         textToSpeechTimer = scheduler.schedule(this::sendTextToSpeech, 500, TimeUnit.MILLISECONDS);
     }
 
-    private void sendTextToSpeech() {
+    private synchronized void sendTextToSpeech() {
         if (textToSpeechTimer != null) {
             textToSpeechTimer.cancel(true);
         }
