@@ -66,8 +66,8 @@ public class E3DCWallboxHandler extends BaseHandler {
             synchronized (this) {
                 if (channelUID.getIdWithoutGroup().equals(WB_SUNMODE_CHANNEL)) {
                     currentBitSet.set(WB_SUNMODE_BIT, command.equals(OnOffType.ON));
-                } else if (channelUID.getIdWithoutGroup().equals(WB_CHARGING_CHANNEL)) {
-                    currentBitSet.set(2, command.equals(OnOffType.ON)); /// fixme WRONG!!!
+                } else if (channelUID.getIdWithoutGroup().equals(WB_CHARGING_ABORTED_CHANNEL)) {
+                    currentBitSet.set(WB_CHARGING_ABORTED_BIT, command.equals(OnOffType.ON));
                 } else if (channelUID.getIdWithoutGroup().equals(WB_SCHUKO_ON_CHANNEL)) {
                     currentBitSet.set(WB_SCHUKO_ON_BIT, command.equals(OnOffType.ON));
                 } else if (channelUID.getIdWithoutGroup().equals(WB_3PHASE_CHANNEL)) {
@@ -113,8 +113,8 @@ public class E3DCWallboxHandler extends BaseHandler {
                     updateState(WB_SCHUKO_ON_CHANNEL, block.wbSchukoOn);
                     updateState(WB_SCHUKO_PLUGGED_CHANNEL, block.wbSchukoPlugged);
                     updateState(WB_SCHUKO_LOCKED_CHANNEL, block.wbSchukoLocked);
-                    updateState(WB_SCHUKO_REALY_16A_CHANNEL, block.wbSchukoRealy16);
-                    updateState(WB_REALY_16A_CHANNEL, block.wbRealy16);
+                    updateState(WB_SCHUKO_REALY_16A_CHANNEL, block.wbSchukoRelay16);
+                    updateState(WB_REALY_16A_CHANNEL, block.wbRelay16);
                     updateState(WB_RELAY_32A_CHANNEL, block.wbRelay32);
                     updateState(WB_3PHASE_CHANNEL, block.wb3phase);
                 } else {

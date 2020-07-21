@@ -16,7 +16,7 @@
 			<channel id="manufacturer-name" typeId="manufacturer-name-channel"/>
 			<channel id="model-name" typeId="model-name-channel"/>
 			<channel id="serial-number" typeId="serial-number-channel"/>
-			<channel id="firmware-relase" typeId="firmware-release-channel"/>
+			<channel id="firmware-release" typeId="firmware-release-channel"/>
 		</channels>
 	</thing-type>
 </thing:thing-descriptions>
