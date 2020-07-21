@@ -282,7 +282,7 @@ Parameters:
 
 | Name    | Description                                                                   |
 |---------|-------------------------------------------------------------------------------|
-| appId   | The Application ID. Console command smarthome:lgwebos <thingUID> applications provides available apps and their appIds. |
+| appId   | The Application ID. Console command lgwebos <thingUID> applications provides available apps and their appIds. |
 | params  | The parameters to hand over to the application in JSON format                 |
 
 Examples:
