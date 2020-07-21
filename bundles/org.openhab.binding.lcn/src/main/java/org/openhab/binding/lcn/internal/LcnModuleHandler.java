@@ -51,7 +51,9 @@ import org.openhab.binding.lcn.internal.connection.Connection;
 import org.openhab.binding.lcn.internal.connection.ModInfo;
 import org.openhab.binding.lcn.internal.converter.Converter;
 import org.openhab.binding.lcn.internal.converter.Converters;
+import org.openhab.binding.lcn.internal.converter.InversionConverter;
 import org.openhab.binding.lcn.internal.converter.S0Converter;
+import org.openhab.binding.lcn.internal.converter.ValueConverter;
 import org.openhab.binding.lcn.internal.subhandler.AbstractLcnModuleSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaAckSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaFirmwareSubHandler;
@@ -68,6 +70,7 @@ import org.slf4j.LoggerFactory;
 public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
     private static final Map<String, Converter> VALUE_CONVERTERS = new HashMap<>();
+    private static final InversionConverter INVERSION_CONVERTER = new InversionConverter();
     private @Nullable LcnAddrMod moduleAddress;
     private final Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
     private final List<AbstractLcnModuleSubHandler> metadataSubHandlers = new ArrayList<>();
@@ -103,11 +106,13 @@ public class LcnModuleHandler extends BaseThingHandler {
             metadataSubHandlers.add(new LcnModuleMetaAckSubHandler(this, info));
             metadataSubHandlers.add(new LcnModuleMetaFirmwareSubHandler(this, info));
 
-            // initialize variable value converters
+            // initialize converters
             for (Channel channel : thing.getChannels()) {
                 Object unitObject = channel.getConfiguration().get("unit");
                 Object parameterObject = channel.getConfiguration().get("parameter");
+                Object invertConfig = channel.getConfiguration().get("invertState");
 
+                // Initialize value converters
                 if (unitObject instanceof String) {
                     switch ((String) unitObject) {
                         case "power":
@@ -121,6 +126,12 @@ public class LcnModuleHandler extends BaseThingHandler {
                             break;
                     }
                 }
+
+                // Initialize inversion converter
+                if (invertConfig instanceof Boolean && invertConfig.equals(true)) {
+                    converters.put(channel.getUID(), INVERSION_CONVERTER);
+                }
+
             }
 
             // module is assumed as online, when the corresponding Bridge (PckGatewayHandler) is online.
@@ -169,12 +180,23 @@ public class LcnModuleHandler extends BaseThingHandler {
                 subHandler.handleCommandString((StringType) command, number.get());
             } else if (command instanceof DecimalType) {
                 DecimalType decimalType = (DecimalType) command;
-                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
-                subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
+                Converter valueConverter = getConverter(channelUid);
+                if (valueConverter instanceof ValueConverter) {
+                    DecimalType nativeValue = ((ValueConverter) valueConverter)
+                            .onCommandFromItem(decimalType.doubleValue());
+                    subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
+                } else {
+                    logger.warn("No ValueConverter defined.");
+                }
             } else if (command instanceof QuantityType) {
                 QuantityType<?> quantityType = (QuantityType<?>) command;
-                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
-                subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
+                Converter valueConverter = getConverter(channelUid);
+                if (valueConverter instanceof ValueConverter) {
+                    DecimalType nativeValue = ((ValueConverter) valueConverter).onCommandFromItem(quantityType);
+                    subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
+                } else {
+                    logger.warn("No ValueConverter defined.");
+                }
             } else if (command instanceof UpDownType) {
                 Channel channel = thing.getChannel(channelUid);
                 if (channel != null) {
@@ -290,6 +312,7 @@ public class LcnModuleHandler extends BaseThingHandler {
         if (converter != null) {
             convertedState = converter.onStateUpdateFromHandler(state);
         }
+
         updateState(channelUid, convertedState);
     }
 

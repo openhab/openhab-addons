@@ -69,7 +69,6 @@ public class ValueConverter implements Converter {
      * @param humanReadable value to convert
      * @return the native LCN value
      */
-    @Override
     public DecimalType onCommandFromItem(double humanReadable) {
         return new DecimalType(toNative(humanReadable));
     }
@@ -81,7 +80,6 @@ public class ValueConverter implements Converter {
      * @return the native LCN value
      * @throws LcnException when the value could not be converted to the base unit
      */
-    @Override
     public DecimalType onCommandFromItem(QuantityType<?> quantityType) throws LcnException {
         Unit<?> localUnit = unit;
         if (localUnit == null) {
