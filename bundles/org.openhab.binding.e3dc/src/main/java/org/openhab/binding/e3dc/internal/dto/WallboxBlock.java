@@ -28,12 +28,14 @@ public class WallboxBlock implements Data {
     private BitSet bitSet;
     public OnOffType wbAvailable = OnOffType.OFF;
     public OnOffType wbSunmode = OnOffType.OFF;
+    public OnOffType wbChargingAborted = OnOffType.OFF;
     public OnOffType wbCharging = OnOffType.OFF;
     public OnOffType wbJackLocked = OnOffType.OFF;
     public OnOffType wbJackPlugged = OnOffType.OFF;
     public OnOffType wbSchukoOn = OnOffType.OFF;
     public OnOffType wbSchukoPlugged = OnOffType.OFF;
     public OnOffType wbSchukoLocked = OnOffType.OFF;
+    public OnOffType wbSchukoRealy16 = OnOffType.OFF;
     public OnOffType wbRealy16 = OnOffType.OFF;
     public OnOffType wbRelay32 = OnOffType.OFF;
     public OnOffType wb3phase = OnOffType.OFF;
@@ -50,16 +52,16 @@ public class WallboxBlock implements Data {
         // logger.info("BitSet String {}", bs.toString());
         wbAvailable = bitSet.get(WB_AVAILABLE_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbSunmode = bitSet.get(WB_SUNMODE_BIT) ? OnOffType.ON : OnOffType.OFF;
-        // fixme charging aborted missing!!! WB_CHARGING_ABORTED_BIT
+        wbChargingAborted = bitSet.get(WB_CHARGING_ABORTED_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbCharging = bitSet.get(WB_CHARGING_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbJackLocked = bitSet.get(WB_JACK_LOCKED_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbJackPlugged = bitSet.get(WB_JACK_PLUGGED_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbSchukoOn = bitSet.get(WB_SCHUKO_ON_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbSchukoPlugged = bitSet.get(WB_SCHUKO_PLUGGED_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbSchukoLocked = bitSet.get(WB_SCHUKO_LOCKED_BIT) ? OnOffType.ON : OnOffType.OFF;
-        // fixme schuko relay missing WB_SCHUKO_RELAY16A_BIT
-        wbRealy16 = bitSet.get(WB_RELAY_16A) ? OnOffType.ON : OnOffType.OFF;
-        wbRelay32 = bitSet.get(WB_RELAY_32A) ? OnOffType.ON : OnOffType.OFF;
+        wbSchukoRealy16 = bitSet.get(WB_SCHUKO_RELAY16A_BIT) ? OnOffType.ON : OnOffType.OFF;
+        wbRealy16 = bitSet.get(WB_RELAY_16A_BIT) ? OnOffType.ON : OnOffType.OFF;
+        wbRelay32 = bitSet.get(WB_RELAY_32A_BIT) ? OnOffType.ON : OnOffType.OFF;
         wb3phase = bitSet.get(WB_3PHASE_BIT) ? OnOffType.ON : OnOffType.OFF;
     }
 
