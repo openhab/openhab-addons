@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ism8.server;
 
 import java.nio.ByteBuffer;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,34 +22,33 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
-@NonNullByDefault
 public class DataPointLongValue extends DataPointBase<Double> {
     private final Logger logger = LoggerFactory.getLogger(DataPointLongValue.class);
-    private float pFactor;
-    private String pOutputFormat = new String();
+    private float factor;
+    private String outputFormat = "";
 
-    public DataPointLongValue(int id, String knxDataType, String description) throws Exception {
+    public DataPointLongValue(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
-        this.pFactor = 0.0f;
+        this.factor = 0.0f;
 
         this.setUnit("");
-        this.pFactor = 1.0f;
-        this.pOutputFormat = "%.1f";
+        this.factor = 1.0f;
+        this.outputFormat = "%.1f";
 
         if (knxDataType.equals("13.002")) {
             this.setUnit("m³/h");
-            this.pFactor = 0.0001f;
-            this.pOutputFormat = "%.1f";
+            this.factor = 0.0001f;
+            this.outputFormat = "%.1f";
         }
     }
 
     @Override
-    public String getValueText() throws Exception {
-        return String.format(this.pOutputFormat, this.getValue());
+    public String getValueText() {
+        return String.format(this.outputFormat, this.getValue());
     }
 
     @Override
-    public void processData(byte[] data) throws Exception {
+    public void processData(byte[] data) {
         if (this.checkProcessData(data)) {
             if (data[3] != 4 && data.length < 7) {
                 logger.error("DataPoint-ProcessData: Data size wrong for this type({}/4).", data[3]);
@@ -59,14 +57,14 @@ public class DataPointLongValue extends DataPointBase<Double> {
 
             int rawValue = Byte.toUnsignedInt(data[4]) * 0x1000000 + Byte.toUnsignedInt(data[5]) * 0x10000
                     + Byte.toUnsignedInt(data[6]) * 0x100 + Byte.toUnsignedInt(data[7]);
-            this.setValue((double) rawValue * this.pFactor);
+            this.setValue((double) rawValue * this.factor);
         }
     }
 
     @Override
     protected byte[] convertWriteValue(Object value) throws Exception {
         ByteBuffer data = ByteBuffer.allocate(4);
-        int val = (int) (Double.parseDouble(value.toString()) / this.pFactor);
+        int val = (int) (Double.parseDouble(value.toString()) / this.factor);
         data.put((byte) (val & 0xFF));
         val = (val & 0xFF) / 256;
         data.put((byte) (val & 0xFF));
@@ -76,5 +74,4 @@ public class DataPointLongValue extends DataPointBase<Double> {
         data.put((byte) (val & 0xFF));
         return data.array();
     }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,12 +24,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SetDatapointValueMessage {
-    private int __Id;
-    private byte __Command;
-    private byte[] __Data = new byte[0];
-    private byte __Length;
+    private int id;
+    private byte command;
+    private byte[] data = new byte[0];
+    private byte length;
 
-    public SetDatapointValueMessage() throws Exception {
+    public SetDatapointValueMessage() {
     }
 
     public SetDatapointValueMessage(byte[] data) throws Exception {
@@ -52,35 +52,67 @@ public class SetDatapointValueMessage {
         this.setData(list.array());
     }
 
+    /**
+     * Gets the ID of the data-point message
+     *
+     */
     public int getId() {
-        return __Id;
+        return this.id;
     }
 
+    /**
+     * Sets the ID of the data-point message
+     *
+     */
     public void setId(int value) {
-        __Id = value;
+        this.id = value;
     }
 
+    /**
+     * Gets the command of the data-point message
+     *
+     */
     public byte getCommand() {
-        return __Command;
+        return this.command;
     }
 
+    /**
+     * Sets the command of the data-point message
+     *
+     */
     public void setCommand(byte value) {
-        __Command = value;
+        this.command = value;
     }
 
+    /**
+     * Gets the length of the data-point message
+     *
+     */
     public byte getLength() {
-        return __Length;
+        return this.length;
     }
 
+    /**
+     * Sets the length of the data-point message
+     *
+     */
     public void setLength(byte value) {
-        __Length = value;
+        this.length = value;
     }
 
+    /**
+     * Gets the data array of the data-point message
+     *
+     */
     public byte[] getData() {
-        return __Data;
+        return this.data;
     }
 
+    /**
+     * Sets the data array of the data-point message
+     *
+     */
     public void setData(byte[] value) {
-        __Data = value;
+        this.data = value;
     }
 }

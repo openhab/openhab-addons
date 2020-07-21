@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ism8.server;
 
 import java.nio.ByteBuffer;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,37 +22,36 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
-@NonNullByDefault
 public class DataPointValue extends DataPointBase<Double> {
     private final Logger logger = LoggerFactory.getLogger(DataPointValue.class);
-    private float pFactor;
-    private String pOutputFormat = new String();
+    private float factor;
+    private String outputFormat = "";
 
-    public DataPointValue(int id, String knxDataType, String description) throws Exception {
+    public DataPointValue(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
-        this.pFactor = 0.0f;
+        this.factor = 0.0f;
         if (knxDataType.equals("9.001")) {
             this.setUnit("°C");
-            this.pFactor = 0.01f;
-            this.pOutputFormat = "%.1f";
+            this.factor = 0.01f;
+            this.outputFormat = "%.1f";
         } else if (knxDataType.equals("9.002")) {
             this.setUnit("°K");
-            this.pFactor = 0.01f;
-            this.pOutputFormat = "%.1f";
+            this.factor = 0.01f;
+            this.outputFormat = "%.1f";
         } else if (knxDataType.equals("9.006")) {
             this.setUnit("Bar");
-            this.pFactor = 0.0000001f;
-            this.pOutputFormat = "%.2f";
+            this.factor = 0.0000001f;
+            this.outputFormat = "%.2f";
         }
     }
 
     @Override
-    public String getValueText() throws Exception {
-        return String.format(this.pOutputFormat, this.getValue());
+    public String getValueText() {
+        return String.format(this.outputFormat, this.getValue());
     }
 
     @Override
-    public void processData(byte[] data) throws Exception {
+    public void processData(byte[] data) {
         if (this.checkProcessData(data)) {
             if (data[3] != 2 && data.length < 5) {
                 logger.error("DataPoint-ProcessData: Data size wrong for this type({}/2).", data[3]);
@@ -68,9 +66,9 @@ public class DataPointValue extends DataPointBase<Double> {
             if (inverted) {
                 rawValue = rawValue - 1;
                 rawValue = rawValue ^ 0x7FF;
-                this.setValue(rawValue * exp * this.pFactor * (-1.0));
+                this.setValue(rawValue * exp * this.factor * (-1.0));
             } else {
-                this.setValue(rawValue * exp * this.pFactor);
+                this.setValue(rawValue * exp * this.factor);
             }
         }
     }
@@ -79,9 +77,7 @@ public class DataPointValue extends DataPointBase<Double> {
     protected byte[] convertWriteValue(Object value) throws Exception {
         ByteBuffer data = ByteBuffer.allocate(2);
         this.setValue(Double.parseDouble(value.toString()));
-
-        double dblValue = this.getValue() / this.pFactor;
-
+        double dblValue = this.getValue() / this.factor;
         boolean inverted = dblValue < 0.0;
         int exp = 0;
         dblValue = Math.abs(dblValue);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ism8.server;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,24 +20,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
-@NonNullByDefault
 public class DataPointScaling extends DataPointBase<Double> {
     private final Logger logger = LoggerFactory.getLogger(DataPointScaling.class);
-    private String pOutputFormat = new String();
+    private String outputFormat = "";
 
-    public DataPointScaling(int id, String knxDataType, String description) throws Exception {
+    public DataPointScaling(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
         this.setUnit("%");
-        this.pOutputFormat = "%.1f";
+        this.outputFormat = "%.1f";
     }
 
     @Override
-    public String getValueText() throws Exception {
-        return String.format(this.pOutputFormat, this.getValue());
+    public String getValueText() {
+        return String.format(this.outputFormat, this.getValue());
     }
 
     @Override
-    public void processData(byte[] data) throws Exception {
+    public void processData(byte[] data) {
         if (this.checkProcessData(data)) {
             if (data[3] != 1 && data.length < 4) {
                 logger.error("DataPoint-ProcessData: Data size wrong for this type({}/1).", data[3]);
@@ -55,5 +53,4 @@ public class DataPointScaling extends DataPointBase<Double> {
         byte val = (byte) (this.getValue() / 100.0 * 255.0);
         return new byte[] { val };
     }
-
 }

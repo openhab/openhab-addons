@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,17 +23,45 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface IDataPoint {
     int getId();
 
-    String getUnit() throws Exception;
+    /**
+     * Gets the unit of the data-point.
+     *
+     */
+    String getUnit();
 
-    String getKnxDataType() throws Exception;
+    /**
+     * Gets the type of the data-point.
+     *
+     */
+    String getKnxDataType();
 
-    String getDescription() throws Exception;
+    /**
+     * Gets the description of the data-point.
+     *
+     */
+    String getDescription();
 
-    String getValueText() throws Exception;
+    /**
+     * Gets the value as formated text.
+     *
+     */
+    String getValueText();
 
-    Object getValueObject() throws Exception;
+    /**
+     * Gets the value object.
+     *
+     */
+    Object getValueObject();
 
-    void processData(byte[] data) throws Exception;
+    /**
+     * Processes the data received
+     *
+     */
+    void processData(byte[] data);
 
-    byte[] createWriteData(Object value) throws Exception;
+    /**
+     * Creates the data to be written
+     *
+     */
+    byte[] createWriteData(Object value);
 }

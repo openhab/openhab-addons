@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SubServiceType {
-    public static final byte SetDatapointValueReq = (byte) 0x06;
-    public static final byte SetDatapointValueRes = (byte) 0x86;
-    public static final byte DatapointValueWrite = (byte) 0xC1;
-    public static final byte RequestAllDatapoints = (byte) 0xD0;
+    /**
+     * Sub-Service: Set data-point value request.
+     *
+     */
+    public static final byte SET_DATAPOINT_VALUE_REQUEST = (byte) 0x06;
+
+    /**
+     * Sub-Service: Set data-point value result.
+     *
+     */
+    public static final byte SET_DATAPOINT_VALUE_RESULT = (byte) 0x86;
+
+    /**
+     * Sub-Service: Write data-point value.
+     *
+     */
+    public static final byte DATAPOINT_VALUE_WRITE = (byte) 0xC1;
+
+    /**
+     * Sub-Service: Request all data-points.
+     *
+     */
+    public static final byte REQUEST_ALL_DATAPOINTS = (byte) 0xD0;
 }

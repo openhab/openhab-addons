@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.ism8.server;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +20,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
-@NonNullByDefault
 public class DataPointBool extends DataPointBase<Boolean> {
     private final Logger logger = LoggerFactory.getLogger(DataPointBool.class);
 
-    public DataPointBool(int id, String knxDataType, String description) throws Exception {
+    public DataPointBool(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
     }
 
     @Override
-    public String getValueText() throws Exception {
+    public String getValueText() {
         return this.getValue() ? "True" : "False";
     }
 
@@ -40,27 +38,24 @@ public class DataPointBool extends DataPointBase<Boolean> {
     }
 
     @Override
-    public void processData(byte[] data) throws Exception {
+    public void processData(byte[] data) {
         if (this.checkProcessData(data)) {
             if (data[3] != 1 && data.length < 4) {
                 logger.error("DataPoint-ProcessData: Data size wrong for this type({}/1).", data[3]);
                 return;
             }
-
             this.setValue((data[4] & 0x1) > 0);
         }
     }
 
     @Override
-    protected byte[] convertWriteValue(Object value) throws Exception {
+    protected byte[] convertWriteValue(Object value) {
         String valueText = value.toString().toLowerCase();
         if (valueText.equalsIgnoreCase("true") || valueText.equalsIgnoreCase("1")) {
             this.setValue(true);
             return new byte[] { 0x01 };
         }
-
         this.setValue(false);
         return new byte[] { 0x00 };
     }
-
 }

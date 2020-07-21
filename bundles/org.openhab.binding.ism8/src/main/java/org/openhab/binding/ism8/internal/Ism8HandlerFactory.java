@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,6 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.ism8")
 public class Ism8HandlerFactory extends BaseThingHandlerFactory {
-
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_DEVICE);
 
     @Override
@@ -51,7 +50,6 @@ public class Ism8HandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
-
         throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the KNX binding.");
     }
 
@@ -61,7 +59,6 @@ public class Ism8HandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return new Ism8Handler(thing);
         }
-
         return null;
     }
 }

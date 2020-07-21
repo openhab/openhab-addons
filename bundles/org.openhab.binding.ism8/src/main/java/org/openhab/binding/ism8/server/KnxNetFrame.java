@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,75 +24,102 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
 public class KnxNetFrame {
-    public static byte[] KnxHeader = new byte[6];
-    public static byte[] ConnectionHeader = new byte[4];
+    public static byte[] knxHeader = new byte[6];
+    public static byte[] connectionHeader = new byte[4];
 
     private final static Logger logger = LoggerFactory.getLogger(KnxNetFrame.class);
-    private ArrayList<SetDatapointValueMessage> pValueMessages = new ArrayList<SetDatapointValueMessage>();
-    private byte __MainService;
-    private byte __SubService = SubServiceType.SetDatapointValueReq;
-    private int __StartDataPoint;
+    private ArrayList<SetDatapointValueMessage> valueMessages = new ArrayList<SetDatapointValueMessage>();
+    private byte mainService;
+    private byte subService = SubServiceType.SET_DATAPOINT_VALUE_REQUEST;
+    private int startDataPoint;
 
     static {
-        try {
-            KnxHeader[0] = (byte) 0x06; // Header size
-            KnxHeader[1] = (byte) 0x20; // Version (2.0)
-            KnxHeader[2] = (byte) 0xF0; // Object server request
-            KnxHeader[3] = (byte) 0x80; // Object server request
-            KnxHeader[4] = (byte) 0x00; // Frame size
-            KnxHeader[5] = (byte) 0x00; // Frame size
+        knxHeader[0] = (byte) 0x06; // Header size
+        knxHeader[1] = (byte) 0x20; // Version (2.0)
+        knxHeader[2] = (byte) 0xF0; // Object server request
+        knxHeader[3] = (byte) 0x80; // Object server request
+        knxHeader[4] = (byte) 0x00; // Frame size
+        knxHeader[5] = (byte) 0x00; // Frame size
 
-            ConnectionHeader[0] = (byte) 0x04; // Structure length
-            ConnectionHeader[1] = (byte) 0x00; // Reserved
-            ConnectionHeader[2] = (byte) 0x00; // Reserved
-            ConnectionHeader[3] = (byte) 0x00; // Reserved
-        } catch (Exception __err) {
-            throw new ExceptionInInitializerError(__err);
-        }
-
+        connectionHeader[0] = (byte) 0x04; // Structure length
+        connectionHeader[1] = (byte) 0x00; // Reserved
+        connectionHeader[2] = (byte) 0x00; // Reserved
+        connectionHeader[3] = (byte) 0x00; // Reserved
     }
 
-    public KnxNetFrame() throws Exception {
-        this.pValueMessages = new ArrayList<SetDatapointValueMessage>();
+    public KnxNetFrame() {
+        this.valueMessages = new ArrayList<SetDatapointValueMessage>();
     }
 
+    /**
+     * Gets the main service of the KNX frame
+     *
+     */
     public byte getMainService() {
-        return __MainService;
+        return this.mainService;
     }
 
+    /**
+     * Sets the main service of the KNX frame
+     *
+     */
     public void setMainService(byte value) {
-        __MainService = value;
+        this.mainService = value;
     }
 
+    /**
+     * Gets the sub service of the KNX frame
+     *
+     */
     public byte getSubService() {
-        return __SubService;
+        return this.subService;
     }
 
+    /**
+     * Sets the sub service of the KNX frame
+     *
+     */
     public void setSubService(byte value) {
-        __SubService = value;
+        this.subService = value;
     }
 
+    /**
+     * Gets the start data-point of the KNX frame
+     *
+     */
     public int getStartDataPoint() {
-        return __StartDataPoint;
+        return this.startDataPoint;
     }
 
+    /**
+     * Sets the start data-point of the KNX frame
+     *
+     */
     public void setStartDataPoint(int value) {
-        __StartDataPoint = value;
+        this.startDataPoint = value;
     }
 
-    public SetDatapointValueMessage[] getValueMessages() throws Exception {
-        SetDatapointValueMessage[] result = new SetDatapointValueMessage[this.pValueMessages.size()];
-        this.pValueMessages.toArray(result);
+    /**
+     * Sets the value messages of the KNX frame
+     *
+     */
+    public SetDatapointValueMessage[] getValueMessages() {
+        SetDatapointValueMessage[] result = new SetDatapointValueMessage[this.valueMessages.size()];
+        this.valueMessages.toArray(result);
         return result;
     }
 
+    /**
+     * Creates a KNX frame based on the data-array
+     *
+     */
     public static KnxNetFrame createKnxNetPackage(byte[] data, int amount) throws Exception {
         if (data.length < 16 || amount < 16 || data.length < amount) {
             logger.error("Length of the data too short for a KNXnet/IP package ({}).", data.length);
             return null;
         }
 
-        if (data[0] != KnxHeader[0] || data[1] != KnxHeader[1] || data[2] != KnxHeader[2] || data[3] != KnxHeader[3]) {
+        if (data[0] != knxHeader[0] || data[1] != knxHeader[1] || data[2] != knxHeader[2] || data[3] != knxHeader[3]) {
             logger.error("Incorrect KNXnet/IP header.");
             return null;
         }
@@ -112,19 +139,19 @@ public class KnxNetFrame {
         }
 
         if (data[11] == (byte) 0x06) {
-            frame.setSubService(SubServiceType.SetDatapointValueReq);
+            frame.setSubService(SubServiceType.SET_DATAPOINT_VALUE_REQUEST);
         } else if (data[11] == (byte) 0x86) {
-            frame.setSubService(SubServiceType.SetDatapointValueRes);
+            frame.setSubService(SubServiceType.SET_DATAPOINT_VALUE_RESULT);
         } else if (data[11] == (byte) 0xC1) {
-            frame.setSubService(SubServiceType.DatapointValueWrite);
+            frame.setSubService(SubServiceType.DATAPOINT_VALUE_WRITE);
         } else if (data[11] == (byte) 0xD0) {
-            frame.setSubService(SubServiceType.RequestAllDatapoints);
+            frame.setSubService(SubServiceType.REQUEST_ALL_DATAPOINTS);
         } else {
             logger.error("CreateKnxNetPackage: Sub-Service not supported. ({})", frame.getSubService());
             return null;
         }
 
-        if (frame.getSubService() == SubServiceType.SetDatapointValueReq) {
+        if (frame.getSubService() == SubServiceType.SET_DATAPOINT_VALUE_REQUEST) {
             frame.setStartDataPoint(Byte.toUnsignedInt(data[12]) * 256 + Byte.toUnsignedInt(data[13]));
             int numberOfDatapoints = Byte.toUnsignedInt(data[14]) * 256 + Byte.toUnsignedInt(data[15]);
             int offset = 16;
@@ -139,7 +166,7 @@ public class KnxNetFrame {
                 }
                 SetDatapointValueMessage msg = new SetDatapointValueMessage(msgData);
                 offset = offset + msg.getLength() + 4;
-                frame.pValueMessages.add(msg);
+                frame.valueMessages.add(msg);
             }
             return frame;
         }
@@ -147,15 +174,19 @@ public class KnxNetFrame {
         return null;
     }
 
-    public byte[] createFrameAnswer() throws Exception {
+    /**
+     * Creates the answer of the KNX frame
+     *
+     */
+    public byte[] createFrameAnswer() {
         ByteBuffer answer = ByteBuffer.allocate(17);
-        if (this.getSubService() == SubServiceType.SetDatapointValueReq) {
-            answer.put(KnxHeader);
+        if (this.getSubService() == SubServiceType.SET_DATAPOINT_VALUE_REQUEST) {
+            answer.put(knxHeader);
             answer.put(5, (byte) 0x11); // static size (17 bytes)
-            answer.put(ConnectionHeader);
+            answer.put(connectionHeader);
 
             answer.put(this.getMainService());
-            answer.put(SubServiceType.SetDatapointValueRes);
+            answer.put(SubServiceType.SET_DATAPOINT_VALUE_RESULT);
             byte low = (byte) (this.getStartDataPoint() & (byte) 0xFF);
             byte high = (byte) ((this.getStartDataPoint() & (byte) 0xFF) / 256);
             answer.put(high);
@@ -164,7 +195,6 @@ public class KnxNetFrame {
             answer.put((byte) 0);
             answer.put((byte) 0);
         }
-
         return answer.array();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ism8.server;
 
 import java.nio.ByteBuffer;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,77 +22,87 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
-@NonNullByDefault
 public abstract class DataPointBase<T> implements IDataPoint {
-
     private final Logger logger = LoggerFactory.getLogger(DataPointBase.class);
 
-    private int __Id;
-    private String __KnxDataType = new String();
-    private String __Description = new String();
-    private T __Value;
-    private String __Unit = new String();
+    private int id;
+    private String knxDataType = "";
+    private String description = "";
+    private T value;
+    private String unit = "";
 
-    protected DataPointBase(int id, String knxDataType, String description) throws Exception {
-        this.__Id = id;
-        this.__KnxDataType = knxDataType;
-        this.__Description = description;
+    protected DataPointBase(int id, String knxDataType, String description) {
+        this.id = id;
+        this.knxDataType = knxDataType;
+        this.description = description;
     }
 
     @Override
     public int getId() {
-        return __Id;
+        return this.id;
     }
 
     @Override
     public String getKnxDataType() {
-        return __KnxDataType;
+        return this.knxDataType;
     }
 
     @Override
     public String getDescription() {
-        return __Description;
+        return this.description;
     }
 
+    /**
+     * Gets the value of the data-point
+     *
+     */
     public T getValue() {
-        return __Value;
+        return this.value;
+    }
+
+    /**
+     * Sets the value of the data-point
+     *
+     */
+    public void setValue(T value) {
+        this.value = value;
     }
 
     @Override
     public Object getValueObject() {
-        return __Value;
-    }
-
-    public void setValue(T value) {
-        __Value = value;
+        return this.value;
     }
 
     @Override
-    public abstract String getValueText() throws Exception;
+    public abstract String getValueText();
 
     @Override
     public String getUnit() {
-        return __Unit;
+        return this.unit;
     }
 
+    /**
+     * Sets the unit of the data-point.
+     *
+     */
     public void setUnit(String value) {
-        __Unit = value;
+        this.unit = value;
     }
 
     @Override
-    public abstract void processData(byte[] data) throws Exception;
+    public abstract void processData(byte[] data);
 
     @Override
-    public byte[] createWriteData(Object value) throws Exception {
+    public byte[] createWriteData(Object value) {
         logger.debug("Convert into byte array '{}'", value);
-        byte[] val = this.convertWriteValue(value);
-        byte length = (byte) (val.length + 20);
-        ByteBuffer list = ByteBuffer.allocate(length);
         try {
-            list.put(KnxNetFrame.KnxHeader);
-            list.put(KnxNetFrame.ConnectionHeader);
+            byte[] val = this.convertWriteValue(value);
+            byte length = (byte) (val.length + 20);
+            ByteBuffer list = ByteBuffer.allocate(length);
+            list.put(KnxNetFrame.knxHeader);
+            list.put(KnxNetFrame.connectionHeader);
             list.put((byte) 0xF0); // Main Service
-            list.put(SubServiceType.DatapointValueWrite); // Sub Service
+            list.put(SubServiceType.DATAPOINT_VALUE_WRITE); // Sub Service
             byte low = (byte) (this.getId() & 0xFF);
             byte high = (byte) ((this.getId() & 0xFF) / 256);
             list.put(high);
@@ -106,13 +115,13 @@ public abstract class DataPointBase<T> implements IDataPoint {
             list.put((byte) val.length); // Length of Data
             list.put(val); // Data Value
             list.put(5, length);
-        } catch (Exception err) {
+            return list.array();
+        } catch (Exception e) {
             logger.error("DataPoint-CreateWriteData: Error converting value ({}) of ID {}. {}", value, this.getId(),
-                    err.getMessage());
-            list.clear();
+                    e.getMessage(), e);
         }
 
-        return list.array();
+        return new byte[0];
     }
 
     @Override
@@ -120,9 +129,17 @@ public abstract class DataPointBase<T> implements IDataPoint {
         return String.format("DataPoint {}={}", this.getId(), this.getValue());
     }
 
+    /**
+     * Converts the value to be written into a data array of bytes.
+     *
+     */
     protected abstract byte[] convertWriteValue(Object value) throws Exception;
 
-    protected boolean checkProcessData(byte[] data) throws Exception {
+    /**
+     * Checks the data to be processed.
+     *
+     */
+    protected boolean checkProcessData(byte[] data) {
         if (data.length < 4) {
             logger.error("DataPoint-ProcessData: Data size too small ({}).", data.length);
             return false;
@@ -140,7 +157,6 @@ public abstract class DataPointBase<T> implements IDataPoint {
             logger.error("DataPoint-ProcessData: Data size wrong ({}/{}).", data.length, expectedLength);
             return false;
         }
-
         return true;
     }
 }

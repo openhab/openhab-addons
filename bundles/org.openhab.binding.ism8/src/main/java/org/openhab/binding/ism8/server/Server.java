@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,146 +29,174 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
 public class Server {
+    private final Logger logger = LoggerFactory.getLogger(Server.class);
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
-    private final Logger logger = LoggerFactory.getLogger(Server.class);
-
-    private int __Port;
-    private boolean __StopServer;
-    private int __StartRetries;
-    private boolean __Connected;
-    private ArrayList<IDataPoint> __DataPoints = new ArrayList<>();
+    private int port;
+    private boolean stopServer;
+    private int startRetries;
+    private boolean connected;
+    private ArrayList<IDataPoint> dataPoints = new ArrayList<>();
     private java.net.ServerSocket serverSocket = null;
-    private java.net.Socket pClient;
-    private IDataPointChangeListener __ChangeListener;
+    private java.net.Socket client;
+    private IDataPointChangeListener changeListener;
 
-    public Server(int port) throws Exception {
-        this.__Port = port;
+    public Server(int port) {
+        this.port = port;
     }
 
+    /**
+     * Gets the port of the server
+     *
+     */
     public int getPort() {
-        return __Port;
+        return this.port;
     }
 
+    /**
+     * Gets the connection state of the server
+     *
+     */
     public boolean getConnected() {
-        return __Connected;
+        return this.connected;
     }
 
+    /**
+     * Gets the data points of the server
+     *
+     */
     public ArrayList<IDataPoint> getDataPoints() {
-        return __DataPoints;
+        return this.dataPoints;
     }
 
-    public void start() throws Exception {
-        this.__StopServer = false;
-        this.__StartRetries = 0;
-        while (!this.__StopServer) {
+    /**
+     * Starts the server
+     *
+     */
+    public void start() {
+        this.stopServer = false;
+        this.startRetries = 0;
+        while (!this.stopServer) {
             try {
                 this.handleCommunication();
-                if (this.__StartRetries > 10) {
+                if (this.startRetries > 10) {
                     Thread.sleep(6000);
                 }
-            } catch (Exception err) {
-                logger.error("Error Handle Communication - restart communication. {}", err.getMessage());
-                this.__StartRetries++;
+            } catch (Exception e) {
+                logger.error("Error Handle Communication - restart communication. {}", e.getMessage(), e);
+                this.startRetries++;
             }
         }
     }
 
-    public void stop() throws Exception {
-        this.__StopServer = true;
+    /**
+     * Stops the server
+     *
+     */
+    public void stop() {
+        this.stopServer = true;
         this.stopServer();
     }
 
+    /**
+     * Adds a data-point change listener to the server
+     *
+     */
     public void addDataPointChangeListener(IDataPointChangeListener listener) {
-        if (this.__ChangeListener == null) {
-            this.__ChangeListener = listener;
+        if (this.changeListener == null) {
+            this.changeListener = listener;
         }
     }
 
-    public void addDataPoint(int id, String knxType, String description) throws Exception {
+    /**
+     * Adds a data-point to the server
+     *
+     */
+    public void addDataPoint(int id, String knxType, String description) {
         IDataPoint dp = DataPointFactory.createDataPoint(id, knxType, description);
         if (dp != null) {
-            for (IDataPoint dataPoint : this.__DataPoints) {
+            for (IDataPoint dataPoint : this.dataPoints) {
                 if (dataPoint.getId() == dp.getId()) {
                     return;
                 }
             }
-
-            this.__DataPoints.add(dp);
+            this.dataPoints.add(dp);
         }
     }
 
+    /**
+     * Sends the data to the ISM8 partner
+     *
+     */
     public void sendData(byte[] data) throws Exception {
-        if (this.pClient != null && this.pClient.isConnected() && data.length > 0) {
-            OutputStream stream = this.pClient.getOutputStream();
+        if (this.client != null && this.client.isConnected() && data.length > 0) {
+            OutputStream stream = this.client.getOutputStream();
             stream.write(data);
-            logger.debug("Data sent: {}", this.PrintBytes(data));
+            logger.debug("Data sent: {}", this.printBytes(data));
         }
     }
 
-    private void stopServer() throws Exception {
+    private void stopServer() {
         logger.info("Stop Ism8 server.");
         try {
             if (serverSocket != null) {
                 serverSocket.close();
             }
 
-            if (this.pClient != null) {
-                if (this.pClient.isConnected()) {
-                    this.pClient.getInputStream().close();
+            if (this.client != null) {
+                if (this.client.isConnected()) {
+                    this.client.getInputStream().close();
                 }
-
-                this.pClient.close();
-                this.pClient = null;
+                this.client.close();
+                this.client = null;
             }
 
-            if (__ChangeListener != null) {
-                __ChangeListener.connectionStatusChanged(ThingStatus.OFFLINE);
+            if (this.changeListener != null) {
+                this.changeListener.connectionStatusChanged(ThingStatus.OFFLINE);
             }
-        } catch (Exception err) {
-            logger.error("Error stopping Communication. {}", err.getMessage());
+        } catch (Exception e) {
+            logger.error("Error stopping Communication. {}", e.getMessage(), e);
         }
     }
 
-    private void handleCommunication() throws Exception {
+    private void handleCommunication() {
         try {
             logger.info("Waiting for connection in port {}.", this.getPort());
-            if (__ChangeListener != null) {
-                __ChangeListener.connectionStatusChanged(ThingStatus.OFFLINE);
+            if (this.changeListener != null) {
+                this.changeListener.connectionStatusChanged(ThingStatus.OFFLINE);
             }
             serverSocket = new java.net.ServerSocket(this.getPort());
-            this.pClient = serverSocket.accept();
-            logger.info("Connection from Partner established {}", this.pClient.getRemoteSocketAddress());
-            if (__ChangeListener != null) {
-                __ChangeListener.connectionStatusChanged(ThingStatus.ONLINE);
+            this.client = serverSocket.accept();
+            logger.info("Connection from Partner established {}", this.client.getRemoteSocketAddress());
+            if (this.changeListener != null) {
+                this.changeListener.connectionStatusChanged(ThingStatus.ONLINE);
             }
 
-            this.__StartRetries = 0;
+            this.startRetries = 0;
             this.sendUpdateCommand();
             while (true) {
-                byte[] bytes = getBytesFromInputStream(this.pClient.getInputStream());
+                byte[] bytes = getBytesFromInputStream(this.client.getInputStream());
                 int amount = bytes.length;
                 ArrayList<byte[]> packages = this.getPackages(bytes, amount);
 
                 for (int i = 0; i < packages.size(); i++) {
                     byte[] pack = packages.get(i);
-                    logger.debug("Data received: {}", this.PrintBytes(pack));
+                    logger.debug("Data received: {}", this.printBytes(pack));
                     KnxNetFrame frame = KnxNetFrame.createKnxNetPackage(pack, pack.length);
                     if (frame != null) {
                         byte[] answer = frame.createFrameAnswer();
                         if (answer.length > 0) {
                             this.sendData(answer);
                         }
-
                         SetDatapointValueMessage[] messages = frame.getValueMessages();
                         for (int j = 0; j < messages.length; j++) {
                             logger.debug("Message received: {} {}", messages[j].getId(),
-                                    this.PrintBytes(messages[j].getData()));
+                                    this.printBytes(messages[j].getData()));
 
                             IDataPoint dataPoint = null;
-                            for (int k = 0; k < this.__DataPoints.size(); k++) {
-                                if (this.__DataPoints.get(k).getId() == messages[j].getId()) {
-                                    dataPoint = this.__DataPoints.get(k);
+                            for (int k = 0; k < this.dataPoints.size(); k++) {
+                                if (this.dataPoints.get(k).getId() == messages[j].getId()) {
+                                    dataPoint = this.dataPoints.get(k);
                                     break;
                                 }
                             }
@@ -176,18 +204,17 @@ public class Server {
                             if (dataPoint != null) {
                                 dataPoint.processData(messages[j].getData());
                                 logger.debug("{} {}", dataPoint.getDescription(), dataPoint.getValueText());
-                                if (__ChangeListener != null) {
-                                    __ChangeListener.dataPointChanged(new DataPointChangedEvent(this, dataPoint));
+                                if (this.changeListener != null) {
+                                    this.changeListener.dataPointChanged(new DataPointChangedEvent(this, dataPoint));
                                 }
-
                                 break;
                             }
                         }
                     }
                 }
             }
-        } catch (Exception err) {
-            logger.error("Error handle client data stream. {}", err.getMessage());
+        } catch (Exception e) {
+            logger.error("Error handle client data stream. {}", e.getMessage(), e);
             this.stopServer();
         }
     }
@@ -206,7 +233,7 @@ public class Server {
         return os.toByteArray();
     }
 
-    private ArrayList<byte[]> getPackages(byte[] data, int amount) throws Exception {
+    private ArrayList<byte[]> getPackages(byte[] data, int amount) {
         ArrayList<byte[]> result = new ArrayList<byte[]>();
         if (data.length >= amount) {
             ByteBuffer list = ByteBuffer.allocate(amount);
@@ -225,7 +252,6 @@ public class Server {
                         }
                         result.add(pkgData);
                     }
-
                     start = i;
                 }
             }
@@ -237,18 +263,16 @@ public class Server {
                 result.add(pkgData);
             }
         }
-
         return result;
     }
 
-    private String PrintBytes(byte[] bytes) {
+    private String printBytes(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
             hexChars[j * 2] = HEX_ARRAY[v >>> 4];
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
-
         return new String(hexChars);
     }
 }

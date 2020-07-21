@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,9 +24,13 @@ import org.slf4j.LoggerFactory;
  */
 public class DataPointFactory {
     private final static Logger logger = LoggerFactory.getLogger(DataPointFactory.class);
-    private static ArrayList<IDataPoint> pDataPoints = new ArrayList<>();
+    private static ArrayList<IDataPoint> dataPoints = new ArrayList<>();
 
-    public static IDataPoint createDataPoint(int id, String knxType, String description) throws Exception {
+    /**
+     * Creates the concrete data-point based on the type.
+     *
+     */
+    public static IDataPoint createDataPoint(int id, String knxType, String description) {
         IDataPoint dataPoint = null;
         try {
             switch (knxType) {
@@ -53,21 +57,20 @@ public class DataPointFactory {
                     dataPoint = new DataPointByteValue(id, knxType, description);
                     break;
             }
-        } catch (Exception err) {
-            logger.error("Error creating data point {}. {}", id, err.getMessage());
+        } catch (Exception e) {
+            logger.error("Error creating data point {}. {}", id, e.getMessage(), e);
         }
 
         if (dataPoint != null) {
-            for (IDataPoint dp : pDataPoints) {
+            for (IDataPoint dp : dataPoints) {
                 if (dp.getId() == dataPoint.getId()) {
                     logger.info("Data point already exists ({}).", id);
                     return null;
                 }
             }
-            pDataPoints.add(dataPoint);
+            dataPoints.add(dataPoint);
             return dataPoint;
         }
-
         return null;
     }
 }
