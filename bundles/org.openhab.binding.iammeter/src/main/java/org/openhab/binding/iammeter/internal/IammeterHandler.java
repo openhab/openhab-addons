@@ -149,19 +149,23 @@ public class IammeterHandler extends BaseThingHandler {
             }
             for (IammeterWEM3080Channel channelConfig : IammeterWEM3080Channel.values()) {
                 Channel channel = getThing().getChannel(channelConfig.getId());
-                channelProfix = IammeterBindingConstants.THING_TYPE_POWERMETER + ":"
-                        + channel.getUID().getThingUID().getId();
-                State state = getDecimal(
-                        iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getIndex()).toString());
-                updateState(channel.getUID(), state);
+                if (channel != null){
+                    channelProfix = IammeterBindingConstants.THING_TYPE_POWERMETER + ":"
+                            + channel.getUID().getThingUID().getId();
+                    State state = getDecimal(
+                            iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getIndex()).toString());
+                    updateState(channel.getUID(), state);
+                }
             }
         } else if (iammeterData.has("Datas") && iammeterData.has("SN")) {
             keyWord = "Datas";
             for (IammeterWEM3080TChannel channelConfig : IammeterWEM3080TChannel.values()) {
                 Channel channel = getThing().getChannel(channelConfig.getId());
-                State state = getDecimal(iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getRow())
-                        .getAsJsonArray().get(channelConfig.getCol()).toString());
-                updateState(channel.getUID(), state);
+                if (channel != null){
+                    State state = getDecimal(iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getRow())
+                            .getAsJsonArray().get(channelConfig.getCol()).toString());
+                    updateState(channel.getUID(), state);
+                }
             }
         }
         if (bRemoveChannels) {
