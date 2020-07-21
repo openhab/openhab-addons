@@ -35,8 +35,8 @@ public class WallboxBlock implements Data {
     public OnOffType wbSchukoOn = OnOffType.OFF;
     public OnOffType wbSchukoPlugged = OnOffType.OFF;
     public OnOffType wbSchukoLocked = OnOffType.OFF;
-    public OnOffType wbSchukoRealy16 = OnOffType.OFF;
-    public OnOffType wbRealy16 = OnOffType.OFF;
+    public OnOffType wbSchukoRelay16 = OnOffType.OFF;
+    public OnOffType wbRelay16 = OnOffType.OFF;
     public OnOffType wbRelay32 = OnOffType.OFF;
     public OnOffType wb3phase = OnOffType.OFF;
 
@@ -59,8 +59,8 @@ public class WallboxBlock implements Data {
         wbSchukoOn = bitSet.get(WB_SCHUKO_ON_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbSchukoPlugged = bitSet.get(WB_SCHUKO_PLUGGED_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbSchukoLocked = bitSet.get(WB_SCHUKO_LOCKED_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbSchukoRealy16 = bitSet.get(WB_SCHUKO_RELAY16A_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbRealy16 = bitSet.get(WB_RELAY_16A_BIT) ? OnOffType.ON : OnOffType.OFF;
+        wbSchukoRelay16 = bitSet.get(WB_SCHUKO_RELAY16A_BIT) ? OnOffType.ON : OnOffType.OFF;
+        wbRelay16 = bitSet.get(WB_RELAY_16A_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbRelay32 = bitSet.get(WB_RELAY_32A_BIT) ? OnOffType.ON : OnOffType.OFF;
         wb3phase = bitSet.get(WB_3PHASE_BIT) ? OnOffType.ON : OnOffType.OFF;
     }

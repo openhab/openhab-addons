@@ -41,8 +41,7 @@ public class E3DCBindingConstants {
     public static final String MANUFACTURER_NAME_CHANNEL = "manufacturer-name";
     public static final String MODEL_NAME_CHANNEL = "model-name";
     public static final String SERIAL_NUMBER_CHANNEL = "serial-number";
-    public static final String FIRMWARE_RELEASE_CHANNEL = "firmware-relase";
-    public static final String INFO_CHANNEL = "info";
+    public static final String FIRMWARE_RELEASE_CHANNEL = "firmware-release";
 
     // Channels for Power Block
     public static final String PV_POWER_SUPPLY_CHANNEL = "pv-power-supply";
@@ -68,7 +67,7 @@ public class E3DCBindingConstants {
     public static final String WB_SCHUKO_ON_CHANNEL = "wb-schuko-on";
     public static final String WB_SCHUKO_PLUGGED_CHANNEL = "wb-schuko-plugged";
     public static final String WB_SCHUKO_LOCKED_CHANNEL = "wb-schuko-locked";
-    public static final String WB_SCHUKO_REALY_16A_CHANNEL = "wb-relay-16a";
+    public static final String WB_SCHUKO_REALY_16A_CHANNEL = "wb-schuko-relay-16a";
     public static final String WB_REALY_16A_CHANNEL = "wb-relay-16a";
     public static final String WB_RELAY_32A_CHANNEL = "wb-relay-32a";
     public static final String WB_3PHASE_CHANNEL = "wb-3phase";

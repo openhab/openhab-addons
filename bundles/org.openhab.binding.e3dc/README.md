@@ -13,6 +13,7 @@ The binding is designed the following way
 
 With this design it's possible for you to install only the parts you are interested in.
 
+See [E3DC Website](https://www.e3dc.com/) to find more infos about the device.
 
 ## Supported Things
 
@@ -165,7 +166,7 @@ Bridge e3dc:e3dc-device:plant "E3DC Power Plant" [ host="192.168.178.56", device
      e3dc-wallbox      wallboxblock        "E3DC Wallbox Control Block"        [wallboxId=0]
      e3dc-strings      stringblock         "E3DC String Details Block"   
      e3dc-emergency    emsblock            "E3DC EMS Block"
-}     
+}
 ```
 
 ### Items
@@ -264,12 +265,14 @@ sitemap E3DCBinding label="E3DC Binding Sitemap" {
   Frame label="Wallbox" {
     Switch    item=E3DC_WB_Available            label="Available [%s]"
     Switch    item=E3DC_WB_Sunmode              label="Sunmode [%s]"
+    Switch    item=E3DC_WB_ChargingAborted      label="Charging Aborted[%s]"
     Switch    item=E3DC_WB_Charging             label="Charging [%s]"
     Switch    item=E3DC_WB_JackLocked           label="Jack locked [%s]"
     Switch    item=E3DC_WB_JackPlugged          label="Jack plugged [%s]"
     Switch    item=E3DC_WB_SchukoOn             label="Schuko On [%s]"
     Switch    item=E3DC_WB_SchukoPlugged        label="Schuko plugged [%s]"
     Switch    item=E3DC_WB_SchukoLocked         label="Schuko locked [%s]"
+    Switch    item=E3DC_WB_Schuko_Relay16A      label="Schuko Relay 16A [%s]"
     Switch    item=E3DC_WB_Relay16A             label="Relay 16A [%s]"
     Switch    item=E3DC_WB_Relay32A             label="Relay 32A [%s]"
     Switch    item=E3DC_WB_3PhaseLoading        label="3-Phase loading [%s]"
@@ -332,8 +335,9 @@ Items {
 
 ### Visualization 
 
-After the timeline is available in your database you can continue with Visualization. I like the Grafana approach and I used 
-<a href="https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761">the InfluxDB & Grafana Tutorial</a> from the Community to set this up.
+After the timeline is available in your database you can continue with Visualization. I like the Grafana approach and I used the
+[InfluxDB & Grafana Tutorial](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
+from the Community to set this up.
 I prepared my machine and I'm quite pleased with the results.
 <img style="float: right;" src="doc/GrafanaPV.png">
 In the above picture there are two graphs
