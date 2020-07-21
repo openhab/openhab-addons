@@ -1484,7 +1484,7 @@ public class Connection {
                     delay += text.length() * 100;
                 }
             } catch (IOException | URISyntaxException e) {
-                logger.warn("send textToSpeech fails with unexpected error", e);
+                logger.warn("execute sequence node fails with unexpected error", e);
             } finally {
                 sequenceNodeSenderUnblockFuture = scheduler.schedule(this::queuedExecuteSequenceNode, delay,
                         TimeUnit.MILLISECONDS);
