@@ -15,13 +15,10 @@ package org.openhab.binding.iammeter.internal;
 /**
  * The {@link IammeterConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author yangbo - Initial contribution
+ * @author yang bo - Initial contribution
  */
+@NonNullByDefault
 public class IammeterConfiguration {
-
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
     public String host;
     public int port;
     public int refreshInterval;
