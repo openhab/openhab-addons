@@ -91,8 +91,10 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile ArrayList<UpnpEntry> currentQueue = new ArrayList<>();
     private volatile UpnpIterator<UpnpEntry> queueIterator = new UpnpIterator<>(currentQueue.listIterator());
     private volatile @Nullable UpnpEntry currentEntry = null;
+    private volatile @Nullable UpnpEntry nextEntry = null;
     private volatile boolean playerStopped;
     private volatile boolean playing;
+    private volatile boolean isSettingURI;
     private volatile int trackDuration = 0;
     private volatile int trackPosition = 0;
     private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
@@ -244,11 +246,23 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Play on UPnP AV Transport.
      */
     public void play() {
-        Map<String, String> inputs = new HashMap<>();
-        inputs.put("InstanceID", Integer.toString(avTransportId));
-        inputs.put("Speed", "1");
+        // wait for maximum 1s until the media URI is set before playing
+        for (int i = 0; isSettingURI && (i < 4); i++) {
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                continue;
+            }
+        }
+        if (!isSettingURI) {
+            Map<String, String> inputs = new HashMap<>();
+            inputs.put("InstanceID", Integer.toString(avTransportId));
+            inputs.put("Speed", "1");
 
-        invokeAction("AVTransport", "Play", inputs);
+            invokeAction("AVTransport", "Play", inputs);
+        } else {
+            logger.debug("Cannot play, media URI not set yet in the renderer");
+        }
     }
 
     /**
@@ -285,6 +299,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * @param URIMetaData
      */
     public void setCurrentURI(String URI, String URIMetaData) {
+        isSettingURI = true; // set this so we don't start playing when not finished setting URI
         Map<String, String> inputs = new HashMap<>();
         try {
             inputs.put("InstanceID", Integer.toString(avTransportId));
@@ -527,7 +542,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             case "LastChange":
                 // pre-process some variables, eg XML processing
                 if (!((value == null) || value.isEmpty())) {
-                    if ("AVTransport".equals(service) && "LastChange".equals(variable)) {
+                    if ("AVTransport".equals(service)) {
                         Map<String, String> parsedValues = UpnpXMLParser.getAVTransportFromXML(value);
                         for (Map.Entry<String, String> entrySet : parsedValues.entrySet()) {
                             // Update the transport state after the update of the media information
@@ -550,18 +565,19 @@ public class UpnpRendererHandler extends UpnpHandler {
             case "TransportState":
                 transportState = (value == null) ? "" : value;
                 if ("STOPPED".equals(value)) {
-                    // This allows us to identify if we played to the end of an entry. We should then move to the next
-                    // entry if the queue is not at the end already.
-                    if (playerStopped) {
-                        playing = false;
-                        // Stop command came from openHAB, so don't move to next
-                        updateState(CONTROL, PlayPauseType.PAUSE);
-                        cancelTrackPositionRefresh();
-                    } else if (playing) {
+                    cancelTrackPositionRefresh();
+                    // playerStopped is true if stop came from openHAB. This allows us to identify if we played to the
+                    // end of an entry. We should then move to the next entry if the queue is not at the end already.
+                    if (playing && !playerStopped) {
                         // Only go to next for first STOP command, then wait until we received PLAYING before moving
                         // to next (avoids issues with renderers sending multiple stop states)
-                        playing = false;
                         serveNext();
+                        playing = false;
+                    } else {
+                        updateState(CONTROL, PlayPauseType.PAUSE);
+                        playing = false;
+                        currentEntry = nextEntry; // Try to get the metadata for the next entry if controlled by an
+                                                  // external control point
                     }
                 } else if ("PLAYING".equals(value)) {
                     playerStopped = false;
@@ -571,6 +587,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                 }
                 break;
             case "CurrentTrackURI":
+                isSettingURI = false;
                 UpnpEntry current = currentEntry;
                 if (queueIterator.hasNext() && (current != null) && !current.getRes().equals(value)
                         && currentQueue.get(queueIterator.nextIndex()).getRes().equals(value)) {
@@ -586,12 +603,21 @@ public class UpnpRendererHandler extends UpnpHandler {
                         setNextURI(next.getRes(), UpnpXMLParser.compileMetadataString(next));
                     }
                 }
+                isSettingURI = false; // We have received current URI, so can allow play to start
                 break;
             case "CurrentTrackMetaData":
                 if (!((value == null) || (value.isEmpty()))) {
                     List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
                     if (!list.isEmpty()) {
                         updateMetaDataState(list.get(0));
+                    }
+                }
+                break;
+            case "NextAVTransportURIMetaData":
+                if (!((value == null) || (value.isEmpty() || "NOT_IMPLEMENTED".equals(value)))) {
+                    List<UpnpEntry> list = UpnpXMLParser.getEntriesFromXML(value);
+                    if (!list.isEmpty()) {
+                        nextEntry = list.get(0);
                     }
                 }
                 break;
@@ -733,7 +759,9 @@ public class UpnpRendererHandler extends UpnpHandler {
                 clearCurrentEntry();
             } else {
                 updateMetaDataState(currentQueue.get(queueIterator.nextIndex()));
-                currentEntry = queueIterator.next();
+                UpnpEntry entry = queueIterator.next();
+                setCurrentURI(entry.getRes(), UpnpXMLParser.compileMetadataString(entry));
+                currentEntry = entry;
             }
         }
     }
@@ -755,7 +783,9 @@ public class UpnpRendererHandler extends UpnpHandler {
                 clearCurrentEntry();
             } else {
                 updateMetaDataState(currentQueue.get(queueIterator.nextIndex()));
-                currentEntry = queueIterator.next();
+                UpnpEntry entry = queueIterator.next();
+                setCurrentURI(entry.getRes(), UpnpXMLParser.compileMetadataString(entry));
+                currentEntry = entry;
             }
         }
     }
@@ -775,7 +805,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                 logger.debug("Cannot serve media '{}', no URI", currentEntry);
                 return;
             }
-            setCurrentURI(entry.getRes(), UpnpXMLParser.compileMetadataString(entry));
+            setCurrentURI(res, UpnpXMLParser.compileMetadataString(entry));
             play();
 
             // make the next entry available to renderers that support it
