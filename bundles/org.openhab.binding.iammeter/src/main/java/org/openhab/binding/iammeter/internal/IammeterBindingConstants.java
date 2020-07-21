@@ -19,7 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * The {@link IammeterBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author yangbo - Initial contribution
+ * @author yang bo - Initial contribution
  */
 @NonNullByDefault
 public class IammeterBindingConstants {
