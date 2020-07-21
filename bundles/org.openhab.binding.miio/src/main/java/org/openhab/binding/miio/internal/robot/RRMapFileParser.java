@@ -283,6 +283,7 @@ public class RRMapFileParser {
         for (Integer area : areas.keySet()) {
             pw.print(area == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t");
             pw.printf("%d\r\n", areas.get(area).size());
+            printAreaDetails(areas.get(area), pw);
         }
         pw.printf("Walls:\t%d\r\n", walls.size());
         pw.printf("Obstacles:\t%d\r\n", obstacles.size());
@@ -297,6 +298,16 @@ public class RRMapFileParser {
         pw.println();
         pw.close();
         return sw.toString();
+    }
+
+    private void printAreaDetails(ArrayList<float[]> areas, PrintWriter pw) {
+        areas.forEach(area -> {
+            pw.printf("\tArea details:");
+            for (int i = 0; i < area.length; i++) {
+                pw.printf("\t%.1f", area[i]);
+            }
+            pw.print("\r\n");
+        });
     }
 
     /**

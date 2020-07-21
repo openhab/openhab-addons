@@ -125,6 +125,10 @@ public class RoboMapViewer extends JFrame {
             public void mousePressed(@Nullable MouseEvent e) {
                 if (e != null) {
                     logger.info("Click @ {}", e.getPoint());
+                    double xLoc = (rrDrawPanel.getWidth() - e.getPoint().getX()) / scale;
+                    double yLoc = (rrDrawPanel.getHeight() - e.getPoint().getY()) / scale;
+                    textArea.append(String.format("Click @ point (%.1f,%.1f) => Coordinates: [X=%.1f, Y=%.1f]\r\n",
+                            e.getPoint().getX(), e.getPoint().getY(), xLoc, yLoc));
                 }
             }
 
