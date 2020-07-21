@@ -55,8 +55,6 @@ public class IammeterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IammeterHandler.class);
 
-    private @Nullable IammeterConfiguration config;
-
     private @Nullable ScheduledFuture<?> pollingJob;
 
     public IammeterHandler(Thing thing) {
@@ -74,7 +72,7 @@ public class IammeterHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(IammeterConfiguration.class);
+        IammeterConfiguration config = getConfiguration();
 
         Runnable runnable = new Runnable() {
             @Override
@@ -118,6 +116,7 @@ public class IammeterHandler extends BaseThingHandler {
 
     private void refresh() throws Exception {
         // Get the JSON - somehow
+        IammeterConfiguration config = getConfiguration();
         logger.trace("Starting refresh handler");
         String httpMethod = "GET";
         String url = "http://admin:admin@" + config.host + ":" + config.port + "/monitorjson";
@@ -196,6 +195,11 @@ public class IammeterHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         pollingJob.cancel(true);
+    }
+    
+    @Override
+    public IammeterConfiguration getConfiguration() {
+        return this.getConfigAs(IammeterConfiguration.class);
     }
 
 }
