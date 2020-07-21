@@ -40,7 +40,6 @@ public class WallboxArray implements Data {
      * @return WallboxBlock initialized with the Modbus registers from the given ID
      */
     public WallboxBlock getWallboxBlock(int id) {
-
         if (id >= 0 && id < 8) {
             int byteIndex = id * 2;
             return new WallboxBlock(new byte[] { wbArray[byteIndex + 1], wbArray[byteIndex * 2] });
