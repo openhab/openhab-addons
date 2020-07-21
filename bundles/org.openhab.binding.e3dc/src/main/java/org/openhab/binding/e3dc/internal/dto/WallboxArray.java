@@ -22,13 +22,28 @@ import org.openhab.binding.e3dc.internal.modbus.Data;
 public class WallboxArray implements Data {
     private byte[] wbArray;
 
+    /**
+     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 15
+     * The Registers for Wallbox Control are declared as uint16 but shall be handled as Bit registers => see chapter
+     * 3.1.5 page 19
+     *
+     * @param bArray - Modbus Registers as bytes from 40088 to 40095
+     */
     public WallboxArray(byte[] bArray) {
         wbArray = bArray;
     }
 
+    /**
+     * Return the 2 bytes according to the Wallbox ID.
+     *
+     * @param id Wallbox ID valid from 0 - 7
+     * @return WallboxBlock initialized with the Modbus registers from the given ID
+     */
     public WallboxBlock getWallboxBlock(int id) {
+
         if (id >= 0 && id < 8) {
-            return new WallboxBlock(new byte[] { wbArray[id + 1], wbArray[id] });
+            int byteIndex = id * 2;
+            return new WallboxBlock(new byte[] { wbArray[byteIndex + 1], wbArray[byteIndex * 2] });
         } else {
             return null;
         }

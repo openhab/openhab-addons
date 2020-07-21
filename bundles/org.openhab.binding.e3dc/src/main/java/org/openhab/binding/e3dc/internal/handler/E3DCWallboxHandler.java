@@ -13,6 +13,7 @@
 package org.openhab.binding.e3dc.internal.handler;
 
 import static org.openhab.binding.e3dc.internal.E3DCBindingConstants.*;
+import static org.openhab.binding.e3dc.internal.modbus.E3DCModbusConstans.*;
 
 import java.util.BitSet;
 
@@ -64,13 +65,13 @@ public class E3DCWallboxHandler extends BaseHandler {
             int writeValue = 0;
             synchronized (this) {
                 if (channelUID.getIdWithoutGroup().equals(WB_SUNMODE_CHANNEL)) {
-                    currentBitSet.set(1, command.equals(OnOffType.ON));
+                    currentBitSet.set(WB_SUNMODE_BIT, command.equals(OnOffType.ON));
                 } else if (channelUID.getIdWithoutGroup().equals(WB_CHARGING_CHANNEL)) {
-                    currentBitSet.set(2, command.equals(OnOffType.ON));
+                    currentBitSet.set(2, command.equals(OnOffType.ON)); /// fixme WRONG!!!
                 } else if (channelUID.getIdWithoutGroup().equals(WB_SCHUKO_ON_CHANNEL)) {
-                    currentBitSet.set(6, command.equals(OnOffType.ON));
+                    currentBitSet.set(WB_SCHUKO_ON_BIT, command.equals(OnOffType.ON));
                 } else if (channelUID.getIdWithoutGroup().equals(WB_3PHASE_CHANNEL)) {
-                    currentBitSet.set(12, command.equals(OnOffType.ON));
+                    currentBitSet.set(WB_3PHASE_BIT, command.equals(OnOffType.ON));
                 }
                 writeValue = DataConverter.toInt(currentBitSet);
                 logger.info("Send {}", writeValue);
