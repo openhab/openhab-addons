@@ -85,7 +85,7 @@ public class IammeterHandler extends BaseThingHandler {
                     // Very rudimentary Exception differentiation
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Communication error with the device. Please retry later.");
+                            "Communication error with the device: " + e.getMessage());
                 } catch (JsonSyntaxException je) {
                     logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
                 } catch (Exception e) {
