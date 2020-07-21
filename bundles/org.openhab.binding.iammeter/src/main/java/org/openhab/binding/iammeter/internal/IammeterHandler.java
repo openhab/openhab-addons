@@ -65,7 +65,19 @@ public class IammeterHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // read only
+        if (command instanceof RefreshType) {
+            try {
+                refresh();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication error with the device: " + e.getMessage());
+            } catch (JsonSyntaxException je) {
+                logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
+            } catch (Exception e) {
+                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
+            }
+        }
     }
 
     private boolean bExtraChannelRemoved = false;
