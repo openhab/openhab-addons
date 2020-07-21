@@ -2,8 +2,7 @@
 
 <img style="float: right;" src="doc/E3DC_logo.png">
 Integrates the Home Power Plants from E3/DC GmbH into openHAB. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.  
-The binding operates via Modbus to read and write values towards the E3DC device. Please refer to the <a href="./doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18.pdf">official Modbus documentation</a> for more details.  
-The binding is designed the following way  
+The binding operates via Modbus to read and write values towards the E3DC device. The binding is designed the following way  
 
 1. Create Bridge **E3DC Home Power Plant** and provide IP-Address and Port Number for the general Device connection
 2. Add your wanted Blocks 
@@ -56,8 +55,6 @@ The Binding Design requires two steps
 
 ### E3DC Home Power Plant 
 
-See <a href="./doc/ModBus_E3DC_Speichersysteme_V1.70_2020-06-18.pdf">official Modbus documentation</a> for more details
-
 | Parameter       | Type    | Description                                                 |           
 |-----------------|---------|-------------------------------------------------------------|
 | host            | text    | IP Address of your device                                   |
@@ -107,22 +104,22 @@ The E3DC device offers quite an amount of channels. Due to the Block design you 
 
 ### E3DC Wallbox Control Block
 
-Some of the Wallbox Settings can be changed. See the Access column if the actual value is Read/Write (RW) or only Read (R)
+Some of the Wallbox Settings can be changed. See the Access column if the actual value is Read/Write (RW) or Read Only (RO)
 
 | Channel Label         | Channel ID      | Type      | Access | Description                  |
 |-----------------------|-----------------|-----------|--------|------------------------------|
-| Wallbox Available     | wb-available    |  Switch | R | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case  |
+| Wallbox Available     | wb-available    |  Switch | RO | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case  |
 | Sun Mode              | wb-sunmode |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.   |
 | Wallbox Charging Aborted | wb-charging-aborted |  Switch | RW  | Indicates if Wallbox charging is aborted  |
 | Wallbox Charging      | wb-charging |  Switch | RW  | Indicates your Wallbox is charging   |
-| Jack Locked           | wb-jack-locked  |  Switch | R  | Indicates your Jack is locked   |
-| Jack Plugged          | wb-jack-plugged |  Switch | R  | Indicates your Jack is plugged    |
+| Jack Locked           | wb-jack-locked  |  Switch | RO  | Indicates your Jack is locked   |
+| Jack Plugged          | wb-jack-plugged |  Switch | RO  | Indicates your Jack is plugged    |
 | Schuko Socket On      | wb-schuko-on    |  Switch  | RW | If your Wallbox has an additional Schuko Socket it provides state ON or OFF    |
-| Schuko Socket Plugged | wb-schuko-plugged |  Switch | R  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF    |
-| Schuko Socket Locked  | wb-schuko-locked |  Switch | R  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF |
-| Schuko 16A Relay On   | wb-schuko-relay-16a |  Switch | R  | Indicates if Schuko 16A Relay is ON     |
-| 16A Relay On          | wb-relay-16a    |  Switch | R  | Indicates if 16A Relay is ON     |
-| 32A Relay On          | wb-relay-32a    |  Switch | R  | Indicates if 32A Relay is ON    |
+| Schuko Socket Plugged | wb-schuko-plugged |  Switch | RO  |If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF    |
+| Schuko Socket Locked  | wb-schuko-locked |  Switch | RO  | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF |
+| Schuko 16A Relay On   | wb-schuko-relay-16a |  Switch | RO  | Indicates if Schuko 16A Relay is ON     |
+| 16A Relay On          | wb-relay-16a    |  Switch | RO  | Indicates if 16A Relay is ON     |
+| 32A Relay On          | wb-relay-32a    |  Switch | RO  | Indicates if 32A Relay is ON    |
 | 3-Phase Charging      | 3-Phase Active  |  Switch | RW  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated    |
 
 ### E3DC String Details Block
