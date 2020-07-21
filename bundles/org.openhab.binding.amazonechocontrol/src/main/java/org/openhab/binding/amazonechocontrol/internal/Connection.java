@@ -1300,6 +1300,9 @@ public class Connection {
     }
 
     private void sendAnnouncement() {
+        if (announcementTimer != null) {
+            announcementTimer.cancel(true);
+        }
         Iterator<Announcement> iterator = announcements.values().iterator();
         while (iterator.hasNext()) {
             Announcement announcement = iterator.next();
@@ -1372,6 +1375,9 @@ public class Connection {
     }
 
     private void sendTextToSpeech() {
+        if (textToSpeechTimer != null) {
+            textToSpeechTimer.cancel(true);
+        }
         Iterator<TextToSpeech> iterator = textToSpeeches.values().iterator();
         while (iterator.hasNext()) {
             TextToSpeech textToSpeech = iterator.next();
