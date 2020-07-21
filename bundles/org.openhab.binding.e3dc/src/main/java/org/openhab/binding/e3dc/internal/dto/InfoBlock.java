@@ -30,46 +30,52 @@ public class InfoBlock implements Data {
     public StringType modelName = EMPTY;
     public StringType serialNumber = EMPTY;
     public StringType firmware = EMPTY;
-    public StringType allInfo = EMPTY;
 
+    /**
+     * For decoding see Modbus Register Mapping Chapter 3.1.1 page 14
+     *
+     * @param bArray - Modbus Registers as bytes from 40001 to 40067
+     */
     public InfoBlock(byte[] bArray) {
-        // decode magic byte
+        // index handling to calculate the correct start index
+        int byteIndex = 0;
+
+        // first uint16 = 2 bytes - decode magic byte
         StringBuilder magicByte = new StringBuilder();
-        magicByte.append(String.format("%02X", bArray[0]));
-        magicByte.append(String.format("%02X", bArray[1]));
-        modbusId = new StringType(magicByte.toString());
-        // logger.info("Magic byte: {}", magicByte.toString());
+        magicByte.append(String.format("%02X", bArray[byteIndex]));
+        magicByte.append(String.format("%02X", bArray[byteIndex + 1]));
+        this.modbusId = new StringType(magicByte.toString());
+        // first uint16 = 2 bytes - decode magic byte
+        byteIndex += 2;
 
-        // modbus firmware
-        String modbusVersion = bArray[2] + "." + bArray[3];
+        // unit8 (Modbus Major Version) + uint8 Modbus minor Version
+        String modbusVersion = bArray[byteIndex] + "." + bArray[byteIndex + 1];
         this.modbusVersion = new StringType(modbusVersion);
-        // logger.info("Modbus version: {}", modbusVersion);
+        byteIndex += 2;
 
-        int supportedRegisters = DataConverter.getIntValue(bArray, 4);
+        // unit16 - supported registers
+        int supportedRegisters = DataConverter.getIntValue(bArray, byteIndex);
         this.supportedRegisters = new DecimalType(supportedRegisters);
-        // logger.info("Supported Regiters: {}", supportedRegisters);
+        byteIndex += 2;
 
-        String manufacturer = DataConverter.getString(bArray, 6);
+        // 16 registers with uint16 = 32 bytes to decode a proper String
+        String manufacturer = DataConverter.getString(bArray, byteIndex);
         this.manufacturer = new StringType(manufacturer);
-        // logger.info("Manufacturer: {}", manufacturer);
+        byteIndex += 32;
 
-        String model = DataConverter.getString(bArray, 38);
+        // 16 registers with uint16 = 32 bytes to decode a proper String
+        String model = DataConverter.getString(bArray, byteIndex);
         this.modelName = new StringType(model);
-        // logger.info("Model: {}", model);
+        byteIndex += 32;
 
-        String serialNumber = DataConverter.getString(bArray, 70);
+        // 16 registers with uint16 = 32 bytes to decode a proper String
+        String serialNumber = DataConverter.getString(bArray, byteIndex);
         this.serialNumber = new StringType(serialNumber);
-        // logger.info("Serial Number: {}", serialNumber);
+        byteIndex += 32;
 
-        String firmware = DataConverter.getString(bArray, 102);
+        // 16 registers with uint16 = 32 bytes to decode a proper String
+        String firmware = DataConverter.getString(bArray, byteIndex);
         this.firmware = new StringType(firmware);
-        // logger.info("Firmware: {}", firmware);
-
-        // create String with
-        StringBuilder sb = new StringBuilder();
-        sb.append(manufacturer).append("\n").append(modelName).append("\n").append(serialNumber).append("\n")
-                .append(firmware);
-        sb.append("\n").append(modbusId).append("\n").append(modbusVersion);
-        allInfo = new StringType(sb.toString());
+        byteIndex += 32;
     }
 }

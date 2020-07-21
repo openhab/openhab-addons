@@ -60,7 +60,6 @@ public class E3DCInfoHandler extends BaseHandler {
             updateState(MODEL_NAME_CHANNEL, block.modelName);
             updateState(SERIAL_NUMBER_CHANNEL, block.serialNumber);
             updateState(FIRMWARE_RELEASE_CHANNEL, block.firmware);
-            updateState(INFO_CHANNEL, block.allInfo);
         } else {
             logger.debug("Unable to get {} from provider {}", DataType.INFO, provider.toString());
         }

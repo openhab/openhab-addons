@@ -36,7 +36,13 @@ public class StringBlock implements Data {
     public QuantityType<Power> string2Watt;
     public QuantityType<Power> string3Watt;
 
+    /**
+     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 14-16
+     *
+     * @param bArray - Modbus Registers as bytes from 40096 to 40104
+     */
     public StringBlock(byte[] bArray) {
+        // straight forward - for each String the values Volt, Ampere and then Watt. All unt16 = 2 bytes values
         string1Volt = new QuantityType<ElectricPotential>(DataConverter.getIntValue(bArray, 0), SmartHomeUnits.VOLT);
         string2Volt = new QuantityType<ElectricPotential>(DataConverter.getIntValue(bArray, 2), SmartHomeUnits.VOLT);
         string3Volt = new QuantityType<ElectricPotential>(DataConverter.getIntValue(bArray, 4), SmartHomeUnits.VOLT);

@@ -23,6 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class E3DCModbusConstans {
+    // "String" registers at the beginning shall be read with very low frequency - 1 hour
+    public static final int INFO_POLL_REFRESH_TIME_MS = 60 * 60 * 1000;
+
+    // Constants where a certain Block starts and block size. Note: General offset is -1 so INFO_REG from E3DC Modbus
+    // Spec starts at 1 but it's Register 0!
     public static final int INFO_REG_START = 0;
     public static final int INFO_REG_SIZE = 67;
     public static final int POWER_REG_START = 67;
@@ -34,5 +39,32 @@ public class E3DCModbusConstans {
     public static final int STRINGS_REG_START = 95;
     public static final int STRINGS_REG_SIZE = 9;
     public static final int REGISTER_LENGTH = 104;
-    public static final int INFO_POLL_REFRESH_TIME_MS = 60 * 60 * 1000;
+
+    /*
+     * Some Registers are numbers but needs to be decoded into Bits
+     */
+
+    // Wallbox Bit Definitions according to chapter 3.1.5 page 15
+    public static final int WB_AVAILABLE_BIT = 0;
+    public static final int WB_SUNMODE_BIT = 1;
+    public static final int WB_CHARGING_ABORTED_BIT = 2;
+    public static final int WB_CHARGING_BIT = 3;
+    public static final int WB_JACK_LOCKED_BIT = 4;
+    public static final int WB_JACK_PLUGGED_BIT = 5;
+    public static final int WB_SCHUKO_ON_BIT = 6;
+    public static final int WB_SCHUKO_PLUGGED_BIT = 7;
+    public static final int WB_SCHUKO_LOCKED_BIT = 8;
+    public static final int WB_SCHUKO_RELAY16A_BIT = 9;
+    public static final int WB_RELAY_16A = 10;
+    public static final int WB_RELAY_32A = 11;
+    public static final int WB_3PHASE_BIT = 12;
+
+    // EMS Bit Definitions according to chapter 3.1.3 page 17
+    public static final int EMS_LOADING_LOCK_BIT = 0;
+    public static final int EMS_UNLOADING_LOCK_BIT = 1;
+    public static final int EMS_AVAILABLE_BIT = 2;
+    public static final int EMS_WEATHER_LOADING_BIT = 3;
+    public static final int EMS_REGULATION_BIT = 4;
+    public static final int EMS_LOADING_LOCKTIME_BIT = 5;
+    public static final int EMS_UNLOADING_LOCKTIME_BIT = 6;
 }
