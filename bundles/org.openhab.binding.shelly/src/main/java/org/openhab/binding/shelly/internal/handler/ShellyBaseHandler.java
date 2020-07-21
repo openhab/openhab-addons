@@ -797,7 +797,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @param mode Device mode (e.g. relay, roller)
      */
     private void changeThingType(String thingType, String mode) {
-        ThingTypeUID thingTypeUID = ShellyThingCreator.getThingTypeUID(thingType, mode);
+        ThingTypeUID thingTypeUID = ShellyThingCreator.getThingTypeUID(thingType, "", mode);
         if (!thingTypeUID.equals(THING_TYPE_SHELLYUNKNOWN)) {
             logger.debug("{}: Changing thing type to {}", getThing().getLabel(), thingTypeUID);
             Map<String, String> properties = editProperties();

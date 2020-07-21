@@ -74,21 +74,21 @@ public class ShellyThingCreator {
         thingTypeMapping.put(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED_STR);
     }
 
-    public static ThingUID getThingUID(String serviceName, String mode, boolean unknown) {
+    public static ThingUID getThingUID(String serviceName, String deviceType, String mode, boolean unknown) {
         String devid = StringUtils.substringAfterLast(serviceName, "-");
-        return new ThingUID(!unknown ? getThingTypeUID(serviceName, mode)
-                : getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + devid, mode), devid);
+        return new ThingUID(!unknown ? getThingTypeUID(serviceName, deviceType, deviceType)
+                : getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + devid, deviceType, mode), devid);
     }
 
-    public static ThingTypeUID getThingTypeUID(String serviceName, String mode) {
-        return new ThingTypeUID(BINDING_ID, getThingType(serviceName, mode));
+    public static ThingTypeUID getThingTypeUID(String serviceName, String deviceType, String mode) {
+        return new ThingTypeUID(BINDING_ID, getThingType(serviceName, deviceType, mode));
     }
 
     public static ThingTypeUID getUnknownTTUID() {
         return new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR);
     }
 
-    public static String getThingType(String hostname, String mode) {
+    public static String getThingType(String hostname, String deviceType, String mode) {
         String name = hostname.toLowerCase();
         String type = StringUtils.substringBefore(name, "-").toLowerCase();
         String devid = StringUtils.substringAfterLast(name, "-");
@@ -116,6 +116,9 @@ public class ShellyThingCreator {
         }
 
         // Check general mapping
+        if (!deviceType.isEmpty() && thingTypeMapping.containsKey(deviceType)) {
+            return thingTypeMapping.get(deviceType);
+        }
         if (thingTypeMapping.containsKey(type)) {
             return thingTypeMapping.get(type);
         }

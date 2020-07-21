@@ -19,7 +19,7 @@ This Binding integrated Shelly devices.
 | shellyplug         | Shelly Plug                                            | SHPLG2-1  |
 | shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
-| shelly3em          | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
+| shellyem3          | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
 | shellyrgbw2        | Shelly RGB Controller                                  | SHRGBW2   |
 | shellybulb         | Shelly Bulb in Color or White Mode                     | SHBLB-1   |
 | shellybulbduo      | Shelly Duo (White Mode)                                | SHBDUO-1  |
@@ -245,7 +245,10 @@ end
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 
-### Shelly 3EM (thing-type: shelly3em)
+### Shelly 3EM (thing-type: shellyem3)
+
+Please note: The product is called Shelly 3EM whereas the device propagates the service under shellyem3. 
+The thing id is derived from the service name, so that's the reason why the thing is named shelly**em3** and not shelly3em.
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|

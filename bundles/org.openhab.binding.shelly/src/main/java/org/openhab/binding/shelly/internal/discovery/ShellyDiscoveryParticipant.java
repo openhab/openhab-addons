@@ -157,14 +157,14 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                         mode.isEmpty() ? "<standard>" : mode);
 
                 // get thing type from device name
-                thingUID = ShellyThingCreator.getThingUID(name, mode, false);
+                thingUID = ShellyThingCreator.getThingUID(name, model, mode, false);
             } catch (ShellyApiException e) {
                 ShellyApiResult result = e.getApiResult();
                 if (result.isHttpAccessUnauthorized()) {
                     logger.info("{}: {}", name, messages.get("discovery.protected", address));
 
                     // create shellyunknown thing - will be changed during thing initialization with valid credentials
-                    thingUID = ShellyThingCreator.getThingUID(name, mode, true);
+                    thingUID = ShellyThingCreator.getThingUID(name, model, mode, true);
                 } else {
                     logger.info("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
                     logger.debug("{}: Discovery failed", name, e);
@@ -202,6 +202,6 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
         if (service == null) {
             throw new IllegalArgumentException("service must not be null!");
         }
-        return ShellyThingCreator.getThingUID(service.getName().toLowerCase(), "", false);
+        return ShellyThingCreator.getThingUID(service.getName().toLowerCase(), "", "", false);
     }
 }

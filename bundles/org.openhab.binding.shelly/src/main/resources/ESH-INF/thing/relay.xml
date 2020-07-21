@@ -45,9 +45,11 @@
 
 		<config-description-ref uri="thing-type:shelly:relay" />
 	</thing-type>
-	<thing-type id="shelly3em">
+
+	<!-- Shelly 3EM - device reports wrong service name: shellyem3, see README -->
+	<thing-type id="shellyem3">
 		<label>Shelly 3EM (SHEM-3)</label>
-		<description>Shelly 3EM device with 3 power meters and a relay</description>
+		<description>Shelly 3EM device with 3 power meters and a relay (thing name is shellyem3, see README)</description>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
 				<label>Power Meter 1</label>

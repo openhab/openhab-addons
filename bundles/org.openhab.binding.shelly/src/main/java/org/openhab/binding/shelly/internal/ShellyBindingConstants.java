@@ -37,7 +37,7 @@ public class ShellyBindingConstants {
     public static final String THING_TYPE_SHELLY1_STR = "shelly1";
     public static final String THING_TYPE_SHELLY1PM_STR = "shelly1pm";
     public static final String THING_TYPE_SHELLYEM_STR = "shellyem";
-    public static final String THING_TYPE_SHELLY3EM_STR = "shelly3em";
+    public static final String THING_TYPE_SHELLY3EM_STR = "shellyem3"; // bad: misspelled product name, it's 3EM
     public static final String THING_TYPE_SHELLY2_PREFIX = "shellyswitch";
     public static final String THING_TYPE_SHELLY2_RELAY_STR = "shelly2-relay";
     public static final String THING_TYPE_SHELLY2_ROLLER_STR = "shelly2-roller";
