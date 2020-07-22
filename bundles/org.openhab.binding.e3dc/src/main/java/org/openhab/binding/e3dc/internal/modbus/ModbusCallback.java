@@ -16,6 +16,7 @@ import static org.openhab.binding.e3dc.internal.modbus.E3DCModbusConstans.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +26,9 @@ import org.openhab.binding.e3dc.internal.dto.PowerBlock;
 import org.openhab.binding.e3dc.internal.dto.StringBlock;
 import org.openhab.binding.e3dc.internal.dto.WallboxArray;
 import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
-import org.openhab.io.transport.modbus.BitArray;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegister;
@@ -39,7 +42,8 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ModbusCallback extends ModbusDataProvider implements ModbusReadCallback {
+public class ModbusCallback extends ModbusDataProvider
+        implements ModbusReadCallback, ModbusFailureCallback<ModbusReadRequestBlueprint> {
     private final Logger logger = LoggerFactory.getLogger(ModbusCallback.class);
     private DataType callbackType;
     private byte[] bArray;
@@ -61,10 +65,11 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
     }
 
     @Override
-    @NonNullByDefault({})
-    public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
+    public void handle(AsyncModbusReadResult result) {
         byte[] newArray = new byte[size];
         long startTime = System.currentTimeMillis();
+        Optional<ModbusRegisterArray> opt = result.getRegisters();
+        ModbusRegisterArray registers = opt.get();
         Iterator<ModbusRegister> iter = registers.iterator();
         int i = 0;
         while (iter.hasNext()) {
@@ -88,22 +93,17 @@ public class ModbusCallback extends ModbusDataProvider implements ModbusReadCall
         // DataConverter.logArray(newArray);
     }
 
+    @Override
+    public void handle(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+        logger.warn("E3DC Modbus {} Callback error! {}", callbackType, failure.getRequest().toString());
+    }
+
     public synchronized void setArray(byte[] b) {
         if (b.length != size) {
             logger.warn("Wrong byte size received. Should be {} but is {}. Data maybe corrupted!", size, b.length);
         }
         bArray = b.clone();
         super.informAllListeners();
-    }
-
-    @Override
-    public void onBits(ModbusReadRequestBlueprint request, BitArray bits) {
-        logger.warn("E3DC Modbus Callback onBits shall not happen! Request {}", request.toString());
-    }
-
-    @Override
-    public void onError(ModbusReadRequestBlueprint request, Exception error) {
-        logger.warn("E3DC Modbus Callback error! Request {}", request.toString());
     }
 
     @Override

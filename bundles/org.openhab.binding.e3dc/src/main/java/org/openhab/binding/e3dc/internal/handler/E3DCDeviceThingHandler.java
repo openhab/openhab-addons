@@ -26,17 +26,18 @@ import org.openhab.binding.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.e3dc.internal.modbus.DataListener;
 import org.openhab.binding.e3dc.internal.modbus.ModbusCallback;
 import org.openhab.binding.e3dc.internal.modbus.ModbusDataProvider;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
-import org.openhab.io.transport.modbus.BasicWriteTask;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
+import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusResponse;
 import org.openhab.io.transport.modbus.ModbusWriteCallback;
+import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
+import org.openhab.io.transport.modbus.PollTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,15 +48,16 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataListener, ModbusWriteCallback {
+public class E3DCDeviceThingHandler extends BaseBridgeHandler
+        implements DataListener, ModbusWriteCallback, ModbusFailureCallback<ModbusWriteRequestBlueprint> {
     private final Logger logger = LoggerFactory.getLogger(E3DCDeviceThingHandler.class);
     private ModbusManager modbusManagerRef;
     private final ModbusCallback modbusInfoCallback = new ModbusCallback(DataType.INFO);
     private final ModbusCallback modbusDataCallback = new ModbusCallback(DataType.DATA);
     private ThingStatus myStatus = ThingStatus.UNKNOWN;
-    private @Nullable BasicPollTaskImpl infoPoller;
-    private @Nullable BasicPollTaskImpl dataPoller;
-    private @Nullable ModbusTCPSlaveEndpoint slaveEndpoint;
+    private @Nullable ModbusCommunicationInterface modbusCom;
+    private @Nullable PollTask infoPoller;
+    private @Nullable PollTask dataPoller;
     private @Nullable E3DCDeviceConfiguration config;
 
     public E3DCDeviceThingHandler(Bridge bridge, ModbusManager ref) {
@@ -76,23 +78,21 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
             E3DCDeviceConfiguration localConfig = config;
             if (localConfig != null && checkConfig(localConfig)) {
                 ModbusTCPSlaveEndpoint slaveEndpoint = new ModbusTCPSlaveEndpoint(localConfig.host, localConfig.port);
-                this.slaveEndpoint = slaveEndpoint;
-                // register low speed info poller
-                BasicModbusReadRequestBlueprint infoRequest = new BasicModbusReadRequestBlueprint(localConfig.deviceid,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, INFO_REG_START, INFO_REG_SIZE, 3);
 
-                BasicPollTaskImpl localInfoPoller = new BasicPollTaskImpl(slaveEndpoint, infoRequest,
-                        modbusInfoCallback);
-                infoPoller = localInfoPoller;
-                modbusManagerRef.registerRegularPoll(localInfoPoller, INFO_POLL_REFRESH_TIME_MS, 0);
-                // register high speed data poller
-                BasicModbusReadRequestBlueprint dataRequest = new BasicModbusReadRequestBlueprint(localConfig.deviceid,
+                ModbusCommunicationInterface localModbusCom = modbusManagerRef.newModbusCommunicationInterface(
+                        slaveEndpoint, modbusManagerRef.getEndpointPoolConfiguration(slaveEndpoint));
+                // register low speed info poller
+                ModbusReadRequestBlueprint infoRequest = new ModbusReadRequestBlueprint(localConfig.deviceid,
+                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, INFO_REG_START, INFO_REG_SIZE, 3);
+                infoPoller = localModbusCom.registerRegularPoll(infoRequest, INFO_POLL_REFRESH_TIME_MS, 0,
+                        modbusInfoCallback, modbusInfoCallback);
+
+                ModbusReadRequestBlueprint dataRequest = new ModbusReadRequestBlueprint(localConfig.deviceid,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START,
                         REGISTER_LENGTH - INFO_REG_SIZE, 3);
-                BasicPollTaskImpl localDataPoller = new BasicPollTaskImpl(slaveEndpoint, dataRequest,
+                dataPoller = localModbusCom.registerRegularPoll(dataRequest, localConfig.refresh, 0, modbusDataCallback,
                         modbusDataCallback);
-                dataPoller = localDataPoller;
-                modbusManagerRef.registerRegularPoll(localDataPoller, localConfig.refresh, 0);
+                modbusCom = localModbusCom;
                 // listen for data to get ONLINE
                 modbusDataCallback.addDataListener(this);
             } else {
@@ -104,13 +104,16 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
     @Override
     public void dispose() {
         modbusDataCallback.removeDataListener(this);
-        BasicPollTaskImpl localInfoPoller = infoPoller;
-        if (localInfoPoller != null) {
-            modbusManagerRef.unregisterRegularPoll(localInfoPoller);
-        }
-        BasicPollTaskImpl localDataPoller = dataPoller;
-        if (localDataPoller != null) {
-            modbusManagerRef.unregisterRegularPoll(localDataPoller);
+        ModbusCommunicationInterface localCom = modbusCom;
+        if (localCom != null) {
+            PollTask localInfoPoller = infoPoller;
+            if (localInfoPoller != null) {
+                localCom.unregisterRegularPoll(localInfoPoller);
+            }
+            PollTask localDataPoller = dataPoller;
+            if (localDataPoller != null) {
+                localCom.unregisterRegularPoll(localDataPoller);
+            }
         }
     }
 
@@ -139,14 +142,12 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
      */
     public void wallboxSet(int wallboxId, int writeValue) {
         E3DCDeviceConfiguration localConfig = config;
-        if (localConfig != null) {
-            ModbusRegisterArray regArray = new BasicModbusRegisterArray(writeValue);
-            BasicModbusWriteRegisterRequestBlueprint writeBluePrint = new BasicModbusWriteRegisterRequestBlueprint(
+        ModbusCommunicationInterface localCom = modbusCom;
+        if (localConfig != null && localCom != null) {
+            ModbusRegisterArray regArray = new ModbusRegisterArray(writeValue);
+            ModbusWriteRegisterRequestBlueprint writeBluePrint = new ModbusWriteRegisterRequestBlueprint(
                     localConfig.deviceid, WALLBOX_REG_START + wallboxId, regArray, false, 3);
-            ModbusTCPSlaveEndpoint localSlaveEndpoint = slaveEndpoint;
-            if (localSlaveEndpoint != null) {
-                modbusManagerRef.submitOneTimeWrite(new BasicWriteTask(localSlaveEndpoint, writeBluePrint, this));
-            }
+            localCom.submitOneTimeWrite(writeBluePrint, this, this);
         }
     }
 
@@ -166,12 +167,12 @@ public class E3DCDeviceThingHandler extends BaseBridgeHandler implements DataLis
     }
 
     @Override
-    public void onError(ModbusWriteRequestBlueprint request, Exception error) {
-        logger.info("Modbus write error. Request {} Message {}", request.toString(), error.getMessage());
+    public void handle(AsyncModbusWriteResult result) {
+        logger.debug("E3DC Modbus write response! {}", result.getResponse().toString());
     }
 
     @Override
-    public void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response) {
-        logger.debug("Modbus write response = {}", response.getFunctionCode());
+    public void handle(AsyncModbusFailure<ModbusWriteRequestBlueprint> failure) {
+        logger.warn("E3DC Modbus write error! {}", failure.getRequest().toString());
     }
 }
