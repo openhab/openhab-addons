@@ -565,19 +565,19 @@ public class UpnpRendererHandler extends UpnpHandler {
             case "TransportState":
                 transportState = (value == null) ? "" : value;
                 if ("STOPPED".equals(value)) {
+                    updateState(CONTROL, PlayPauseType.PAUSE);
                     cancelTrackPositionRefresh();
                     // playerStopped is true if stop came from openHAB. This allows us to identify if we played to the
                     // end of an entry. We should then move to the next entry if the queue is not at the end already.
                     if (playing && !playerStopped) {
                         // Only go to next for first STOP command, then wait until we received PLAYING before moving
                         // to next (avoids issues with renderers sending multiple stop states)
+                        playing = false;
                         serveNext();
-                        playing = false;
                     } else {
-                        updateState(CONTROL, PlayPauseType.PAUSE);
-                        playing = false;
                         currentEntry = nextEntry; // Try to get the metadata for the next entry if controlled by an
                                                   // external control point
+                        playing = false;
                     }
                 } else if ("PLAYING".equals(value)) {
                     playerStopped = false;
