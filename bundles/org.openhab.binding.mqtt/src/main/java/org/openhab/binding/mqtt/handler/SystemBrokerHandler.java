@@ -137,7 +137,7 @@ public class SystemBrokerHandler extends AbstractBrokerHandler implements MqttSe
     }
 
     @Override
-    public boolean discoveryDisabled() {
+    public boolean discoveryEnabled() {
         return discoveryDisabled;
     }
 }

@@ -124,8 +124,8 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     }
 
     @Override
-    public boolean discoveryDisabled() {
-        return config.disableDiscovery;
+    public boolean discoveryEnabled() {
+        return config.enableDiscovery;
     }
 
     /**

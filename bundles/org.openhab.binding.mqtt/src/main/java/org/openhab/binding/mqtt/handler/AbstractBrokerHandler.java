@@ -123,7 +123,7 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
                 }
 
                 TopicSubscribe topicSubscribe = new TopicSubscribe(connection, topic, listener, thing.getUID());
-                if (!discoveryDisabled()) {
+                if (discoveryEnabled()) {
                     topicSubscribe.start().handle((result, ex) -> {
                         if (ex != null) {
                             logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
@@ -203,7 +203,7 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
             }
 
             TopicSubscribe topicSubscribe = new TopicSubscribe(connection, topic, listener, thing.getUID());
-            if (!discoveryDisabled()) {
+            if (discoveryEnabled()) {
                 topicSubscribe.start().handle((result, ex) -> {
                     if (ex != null) {
                         logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
@@ -255,5 +255,5 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
      *
      * @return true if discovery disabled
      */
-    public abstract boolean discoveryDisabled();
+    public abstract boolean discoveryEnabled();
 }

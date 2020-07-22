@@ -54,6 +54,11 @@ For more security, the following optional parameters can be altered:
 * __certificate__: The certificate hash. If **certificatepin** is set this hash is used to verify the connection. Clear to allow a new certificate pinning on the next connection attempt. If empty will be filled automatically by the next successful connection. An example input would be `SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`.
 * __publickey__: The public key hash. If **publickeypin** is set this hash is used to verify the connection. Clear to allow a new public key pinning on the next connection attempt. If empty will be filled automatically by the next successful connection. An example input would be `SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`.
 
+By default discovery services (like homie or homeassistant) are enabled on a broker.
+This behaviour can be controlled with a configuration parameter.
+
+* __enableDiscovery__:If set to true, enables discovery on this broker, if set to false, disables discovery services om this broker.
+
 ## Supported Channels
 
 You can extend your broker connection bridges with a channel:
