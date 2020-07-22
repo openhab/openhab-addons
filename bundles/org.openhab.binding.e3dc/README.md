@@ -1,6 +1,6 @@
 # E3DC Binding
 
-<img style="float: right;" src="doc/E3DC_logo.png">
+<img align="right" src="./doc/E3DC_logo.png" />
 Integrates the Home Power Plants from E3/DC GmbH into openHAB. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.  
 The binding operates via Modbus to read and write values towards the E3DC device. The binding is designed the following way  
 
