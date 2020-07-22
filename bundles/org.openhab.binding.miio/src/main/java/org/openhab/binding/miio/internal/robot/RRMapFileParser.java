@@ -286,6 +286,9 @@ public class RRMapFileParser {
             printAreaDetails(areas.get(area), pw);
         }
         pw.printf("Walls:\t%d\r\n", walls.size());
+        printAreaDetails(walls, pw);
+        pw.printf("Zones:\t%d\r\n", zones.size());
+        printAreaDetails(zones, pw);
         pw.printf("Obstacles:\t%d\r\n", obstacles.size());
         pw.printf("Blocks:\t%d\r\n", blocks.length);
         pw.print("Paths:");
@@ -302,11 +305,11 @@ public class RRMapFileParser {
 
     private void printAreaDetails(ArrayList<float[]> areas, PrintWriter pw) {
         areas.forEach(area -> {
-            pw.printf("\tArea details:");
+            pw.printf("\tArea coordinates:");
             for (int i = 0; i < area.length; i++) {
                 pw.printf("\t%.1f", area[i]);
             }
-            pw.print("\r\n");
+            pw.println();
         });
     }
 
