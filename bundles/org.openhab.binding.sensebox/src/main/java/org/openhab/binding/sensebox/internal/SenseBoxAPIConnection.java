@@ -18,14 +18,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.sensebox.internal.model.SenseBoxData;
-import org.openhab.binding.sensebox.internal.model.SenseBoxDescriptor;
-import org.openhab.binding.sensebox.internal.model.SenseBoxLoc;
-import org.openhab.binding.sensebox.internal.model.SenseBoxLocation;
-import org.openhab.binding.sensebox.internal.model.SenseBoxSensor;
+import org.openhab.binding.sensebox.internal.dto.SenseBoxData;
+import org.openhab.binding.sensebox.internal.dto.SenseBoxDescriptor;
+import org.openhab.binding.sensebox.internal.dto.SenseBoxLoc;
+import org.openhab.binding.sensebox.internal.dto.SenseBoxLocation;
+import org.openhab.binding.sensebox.internal.dto.SenseBoxSensor;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -38,10 +38,12 @@ import com.google.gson.Gson;
  *
  * @author Hakan Tandogan - Initial contribution
  */
+@NonNullByDefault
 public class SenseBoxAPIConnection {
-    private Logger logger = LoggerFactory.getLogger(SenseBoxAPIConnection.class);
 
-    private Gson gson = new Gson();
+    private final Logger logger = LoggerFactory.getLogger(SenseBoxAPIConnection.class);
+
+    private final Gson gson = new Gson();
 
     private static final Properties HEADERS = new Properties();
 
@@ -136,7 +138,7 @@ public class SenseBoxAPIConnection {
 
             SenseBoxDescriptor descriptor = new SenseBoxDescriptor();
             descriptor.setApiUrl(query);
-            if (StringUtils.isNotEmpty(parsedData.getImage())) {
+            if (!parsedData.getImage().isEmpty()) {
                 descriptor.setImageUrl(SENSEMAP_IMAGE_URL_BASE + "/" + parsedData.getImage());
             }
             descriptor.setMapUrl(SENSEMAP_MAP_URL_BASE + "/explore/" + senseBoxId);
