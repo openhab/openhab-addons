@@ -111,7 +111,7 @@ Number  Watering_Duration   "Duration [%d min]" { channel="gardena:watering_comp
 String Power_Timer          "Power Timer [%s]"  { channel="gardena:power:home:myPowerplug:power#power_timer" }
 
 // smart Irrigation Control
-Number Watering_Timer_1     "Watering Timer 1 [%d min]  { channel="gardena:ic24:home:myIrrigationController:watering#watering_timer_1" }
+Number Watering_Timer_1     "Watering Timer 1 [%s s]  { channel="gardena:ic24:home:myIrrigationController:watering#watering_timer_1" }
 
 // smart Pressure Pump
 Number Pump_Timer           "Pump Timer [%d min]        { channel="gardena:electronic_pressure_pump:home:myPressurePump:manual_watering#manual_watering_timer" }
@@ -126,7 +126,7 @@ Power_Timer.sendCommand("off")
 Power_Timer.sendCommand("180") // on for 180 seconds
 
 Watering_Timer_1.sendCommand(0) // turn off watering
-Watering_Timer_1.sendCommand(30) // turn on for 30 minutes
+Watering_Timer_1.sendCommand(300) // turn on for 300 seconds (5 minutes)
 
 Pump_Timer.sendCommand(0) // turn the pump off
 Pump_Timer.sendCommand(30) // turn the pump on for 30 minutes
