@@ -4,22 +4,22 @@ Touchwand Wanderfull™ Hub basic is a plug & play Z-Wave based controller that 
 TouchWand products are compatible with most major Z-Wave products, IP controlled devices and KNX devices, providing the ideal solution for building all-inclusive full-featured smart homes.
 [TouchWand.com](http://www.touchwand.com)
 
-|Touchwand Wanderfull™ Hub |![](http://www.touchwand.com/wp-content/uploads/2017/12/hub-toch-1.png)|
+![Touchwand Wanderfull™ Hub](http://www.touchwand.com/wp-content/uploads/2017/12/hub-toch-1.png)
 
 ## Supported Things
 
-TouchWandhWand Hub supports switches, shutters dimmers and wallcontrollers configured in TouchWand hub controller
+This binding supports switches, shutters dimmers and wallcontrollers configured in Touchwand Wanderfull™ Hub Controller.
 
 ## Control 
 
-1. **Switch**  - control - ON/OFF
-2. **Shutter** - control - UP/DOWN/STOP
-3. **Dimmer**  - control - ON/OFF/BRIGHTNESS
+1. **switch**  - control - ON/OFF
+2. **shutter** - control - UP/DOWN/STOP
+3. **dimmer**  - control - ON/OFF/BRIGHTNESS
 4. **wallcontroller** - control - LONG/SHORT
 
 ## Discovery
 
-After adding TouchWand Hub the auto discovery will add all switches dimmers and shutters to the inbox
+After adding TouchWand Hub the auto discovery will add all switches dimmers and shutters to the inbox.
 
 ## Binding Configuration
 
