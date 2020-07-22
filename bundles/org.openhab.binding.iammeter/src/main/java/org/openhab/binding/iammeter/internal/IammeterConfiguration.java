@@ -17,7 +17,7 @@ package org.openhab.binding.iammeter.internal;
  *
  * @author yang bo - Initial contribution
  */
-@NonNullByDefault
+
 public class IammeterConfiguration {
     public String host;
     public int port;
