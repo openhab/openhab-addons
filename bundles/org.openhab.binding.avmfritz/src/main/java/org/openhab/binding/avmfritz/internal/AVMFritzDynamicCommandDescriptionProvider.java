@@ -13,29 +13,25 @@
 package org.openhab.binding.avmfritz.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.binding.BaseDynamicStateDescriptionProvider;
+import org.eclipse.smarthome.core.thing.binding.BaseDynamicCommandDescriptionProvider;
 import org.eclipse.smarthome.core.thing.i18n.ChannelTypeI18nLocalizationService;
-import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
+import org.eclipse.smarthome.core.thing.type.DynamicCommandDescriptionProvider;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Dynamic provider of state options while leaving other state description fields as original.
+ * Dynamic provider of command options.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class, AVMFritzDynamicStateDescriptionProvider.class })
+@Component(service = { DynamicCommandDescriptionProvider.class, AVMFritzDynamicCommandDescriptionProvider.class })
 @NonNullByDefault
-public class AVMFritzDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+public class AVMFritzDynamicCommandDescriptionProvider extends BaseDynamicCommandDescriptionProvider {
 
-    @Reference
-    protected void setChannelTypeI18nLocalizationService(
-            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+    @Activate
+    public AVMFritzDynamicCommandDescriptionProvider(
+            final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
-    }
-
-    protected void unsetChannelTypeI18nLocalizationService(
-            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
-        this.channelTypeI18nLocalizationService = null;
     }
 }

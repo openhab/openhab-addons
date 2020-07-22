@@ -45,7 +45,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
-import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzDeviceConfiguration;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
@@ -80,8 +80,8 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
      * @param bridge Bridge object representing a FRITZ!Powerline 546E
      */
     public Powerline546EHandler(Bridge bridge, HttpClient httpClient,
-            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(bridge, httpClient, stateDescriptionProvider);
+            AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider) {
+        super(bridge, httpClient, commandDescriptionProvider);
     }
 
     @Override
@@ -287,7 +287,9 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
                 logger.debug("Channel {} is a read-only channel and cannot handle command '{}'", channelId, command);
                 break;
             case CHANNEL_APPLY_TEMPLATE:
-                applyTemplate(command, fritzBox);
+                if (command instanceof StringType) {
+                    fritzBox.applyTemplate(command.toString());
+                }
                 break;
             case CHANNEL_OUTLET:
                 fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
