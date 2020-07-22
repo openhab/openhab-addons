@@ -1,10 +1,10 @@
 # E3DC Binding
 
 <img align="right" src="./doc/E3DC_logo.png" />
-Integrates the Home Power Plants from E3/DC GmbH into openHAB. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household consumption and even more.  
+Integrates the Home Power Plants from E3/DC GmbH into openHAB. The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
 The binding operates via Modbus to read and write values towards the E3DC device. The binding is designed the following way  
 
-1. Create Bridge **E3DC Home Power Plant** and provide IP-Address and Port Number for the general Device connection
+1. Create Bridge **E3DC Home Power Plant** and provide IP-Address, Device and Port Number for the general Device connection
 2. Add your wanted Blocks 
 
 * if you have a Wallbox connected - add Wallbox Control Block 
@@ -18,8 +18,8 @@ See [E3DC Website](https://www.e3dc.com/) to find more infos about the device.
 
 First you need a Bridge which establishes the basic connection towards your E3DC device
 
-| Name               | Bridge Type ID | Description                                                                                            |
-|--------------------|----------------|--------------------------------------------------------------------------------------------------------|
+| Name                  | Bridge Type ID | Description                                                                                          |
+|-----------------------|----------------|------------------------------------------------------------------------------------------------------|
 | E3DC Home Power Plant | e3dc-device    | Establishes Modbus Connection to your Device. Add your desired Blocks to this Bridge afterwards.     |
 
 After establishing the Bridge add certain Blocks to gather Information and Settings
@@ -44,8 +44,7 @@ The Binding Design requires two steps
 
 1. Create the E3DC Home Power Plant Bridge (e3dc-device) which requires
 
-* IP Address of your device
-* Port Number of your device
+* IP Address, Device ID and Port Number of your device
 * optional refresh time in ms, default is set to 2000 = 2 seconds
 
 2. Add your desired Blocks
@@ -111,7 +110,7 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 | Wallbox Available     | wb-available    |  Switch | RO | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case  |
 | Sun Mode              | wb-sunmode |  Switch | RW  | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.   |
 | Wallbox Charging Aborted | wb-charging-aborted |  Switch | RW  | Indicates if Wallbox charging is aborted  |
-| Wallbox Charging      | wb-charging |  Switch | RW  | Indicates your Wallbox is charging   |
+| Wallbox Charging      | wb-charging |  Switch | RO  | Indicates your Wallbox is charging   |
 | Jack Locked           | wb-jack-locked  |  Switch | RO  | Indicates your Jack is locked   |
 | Jack Plugged          | wb-jack-plugged |  Switch | RO  | Indicates your Jack is plugged    |
 | Schuko Socket On      | wb-schuko-on    |  Switch  | RW | If your Wallbox has an additional Schuko Socket it provides state ON or OFF    |
