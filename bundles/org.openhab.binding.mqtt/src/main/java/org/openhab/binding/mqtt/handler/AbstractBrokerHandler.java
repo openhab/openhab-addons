@@ -118,17 +118,23 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
 
         discoveryTopics.forEach((topic, listenerMap) -> {
             listenerMap.replaceAll((listener, oldTopicSubscribe) -> {
+                if (oldTopicSubscribe.isStarted()) {
+                    oldTopicSubscribe.stop();
+                }
+
                 TopicSubscribe topicSubscribe = new TopicSubscribe(connection, topic, listener, thing.getUID());
-                topicSubscribe.start().handle((result, ex) -> {
-                    if (ex != null) {
-                        logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
-                                thing.getUID());
-                    } else {
-                        logger.trace("Subscribed {} to discovery topic {} on broker {}", listener, topic,
-                                thing.getUID());
-                    }
-                    return null;
-                });
+                if (discoveryEnabled()) {
+                    topicSubscribe.start().handle((result, ex) -> {
+                        if (ex != null) {
+                            logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
+                                    thing.getUID());
+                        } else {
+                            logger.trace("Subscribed {} to discovery topic {} on broker {}", listener, topic,
+                                    thing.getUID());
+                        }
+                        return null;
+                    });
+                }
                 return topicSubscribe;
             });
         });
@@ -197,15 +203,18 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
             }
 
             TopicSubscribe topicSubscribe = new TopicSubscribe(connection, topic, listener, thing.getUID());
-            topicSubscribe.start().handle((result, ex) -> {
-                if (ex != null) {
-                    logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
-                            thing.getUID());
-                } else {
-                    logger.trace("Subscribed {} to discovery topic {} on broker {}", listener, topic, thing.getUID());
-                }
-                return null;
-            });
+            if (discoveryEnabled()) {
+                topicSubscribe.start().handle((result, ex) -> {
+                    if (ex != null) {
+                        logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
+                                thing.getUID());
+                    } else {
+                        logger.trace("Subscribed {} to discovery topic {} on broker {}", listener, topic,
+                                thing.getUID());
+                    }
+                    return null;
+                });
+            }
             return topicSubscribe;
         });
     }
@@ -240,4 +249,11 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
                     return v.isEmpty() ? null : v;
                 });
     }
+
+    /**
+     * check whether discovery is disabled on this broker
+     *
+     * @return true if discovery disabled
+     */
+    public abstract boolean discoveryEnabled();
 }
