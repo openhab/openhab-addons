@@ -88,12 +88,12 @@ sitemap demo label="Main Menu"
 This binding includes rule actions for sending email.
 Six different actions available:
 
-* `boolean succes = sendMail(String recipient, String subject, String text)`
-* `boolean succes = sendMail(String recipient, String subject, String text, String URL)`
-* `boolean succes = sendMail(String recipient, String subject, String text, List<String> URL)`
-* `boolean succes = sendHtmlMail(String recipient, String subject, String htmlContent)`
-* `boolean succes = sendHtmlMail(String recipient, String subject, String htmlContent, String URL)`
-* `boolean succes = sendHtmlMail(String recipient, String subject, String htmlContent, List<String> URL)`
+* `boolean success = sendMail(String recipient, String subject, String text)`
+* `boolean success = sendMail(String recipient, String subject, String text, String URL)`
+* `boolean success = sendMail(String recipient, String subject, String text, List<String> URL)`
+* `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent)`
+* `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent, String URL)`
+* `boolean success = sendHtmlMail(String recipient, String subject, String htmlContent, List<String> URL)`
 
 The `sendMail(...)` send a plain text mail (with attachments if supplied).
 The `sendHtmlMail(...)` send a HTML mail (with attachments if supplied).
