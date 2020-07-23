@@ -48,6 +48,10 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * The {@link FreeboxHandlerFactory} is responsible for creating things and thing
  * handlers.
@@ -59,6 +63,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.freebox")
 public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(FreeboxHandlerFactory.class);
+    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
 
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
@@ -92,9 +98,9 @@ public class FreeboxHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_REVOLUTION)) {
-            return new RevolutionHandler((Bridge) thing);
+            return new RevolutionHandler((Bridge) thing, gson);
         } else if (thingTypeUID.equals(FREEBOX_BRIDGE_TYPE_DELTA)) {
-            return new DeltaHandler((Bridge) thing);
+            return new DeltaHandler((Bridge) thing, gson);
         } else if (thingTypeUID.equals(FREEBOX_THING_TYPE_PLAYER)) {
             PlayerHandler handler = new PlayerHandler(thing, zoneId, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")

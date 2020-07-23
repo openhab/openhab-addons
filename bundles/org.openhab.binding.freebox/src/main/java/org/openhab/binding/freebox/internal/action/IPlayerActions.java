@@ -10,24 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freebox.internal.handler;
+package org.openhab.binding.freebox.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.Bridge;
-
-import com.google.gson.Gson;
 
 /**
- * The {@link DeltaHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link IPlayerActions} defines the interface for all player actions supported by the binding.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class DeltaHandler extends ServerHandler {
+public interface IPlayerActions {
 
-    public DeltaHandler(Bridge bridge, Gson gson) {
-        super(bridge, gson);
-    }
+    void sendKeyRepeat(String key, int count);
+
+    void sendMultipleKeys(String keys);
+
+    void sendLongKey(String key);
+
+    void sendKey(String key);
 
 }

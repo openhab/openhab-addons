@@ -19,11 +19,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus;
 import org.openhab.binding.freebox.internal.api.model.AuthorizationStatus.Status;
@@ -36,9 +35,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -51,20 +48,20 @@ import com.google.gson.JsonSyntaxException;
 public class ApiManager {
     private final Logger logger = LoggerFactory.getLogger(ApiManager.class);
     private static final int HTTP_CALL_DEFAULT_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(10);
-    private static final String THREADPOOL_NAME = "freeboxApiManager";
+    // private static final String THREADPOOL_NAME = "freeboxApiManager";
     private static final String APP_ID = FrameworkUtil.getBundle(ApiManager.class).getSymbolicName();
     private static final String AUTH_HEADER = "X-Fbx-App-Auth";
     private static final String HTTP_CALL_CONTENT_TYPE = "application/json; charset=utf-8";
 
     private final Properties headers = new Properties();
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THREADPOOL_NAME);
-    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create();
+    // private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THREADPOOL_NAME);
 
     private @NonNullByDefault({}) String baseAddress;
-    private @NonNullByDefault({}) String appToken;
+    private @Nullable String appToken;
+    private final Gson gson;
 
-    public ApiManager(ServerConfiguration configuration) throws FreeboxException {
+    public ApiManager(ServerConfiguration configuration, Gson gson) throws FreeboxException {
+        this.gson = gson;
         logger.debug("Discover how to access the server...");
         baseAddress = String.format("%s://%s/", "http", configuration.hostAddress);
         DiscoveryResponse discovery = null;
@@ -106,17 +103,10 @@ public class ApiManager {
                     majorVersion);
 
             try {
-                if (appToken.isEmpty()) {
+                if (appToken == null || appToken.isEmpty()) {
                     AuthorizeResult response = execute(
                             new APIRequests.Authorize(APP_ID, FrameworkUtil.getBundle(getClass())));
                     appToken = response.getAppToken();
-
-                    logger.info("####################################################################");
-                    logger.info("# Please accept activation request directly on your freebox        #");
-                    logger.info("# Once done, record Apptoken in the Freebox thing configuration    #");
-                    logger.info("# {} #", appToken);
-                    logger.info("####################################################################");
-
                     AuthorizationStatus authorization;
                     do {
                         Thread.sleep(2000);
@@ -201,5 +191,9 @@ public class ApiManager {
             throw new FreeboxException(action.getMethod() + " request " + action.getUrl() + ": failed:" + e.getMessage()
                     + "||url :" + url + "||response : " + jsonResponse, e);
         }
+    }
+
+    public @Nullable String getAppToken() {
+        return this.appToken;
     }
 }

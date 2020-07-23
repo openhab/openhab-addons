@@ -31,6 +31,8 @@ import org.openhab.binding.freebox.internal.api.model.LcdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link RevolutionHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -43,8 +45,8 @@ import org.slf4j.LoggerFactory;
 public class RevolutionHandler extends ServerHandler {
     private final Logger logger = LoggerFactory.getLogger(RevolutionHandler.class);
 
-    public RevolutionHandler(Bridge bridge) {
-        super(bridge);
+    public RevolutionHandler(Bridge bridge, Gson gson) {
+        super(bridge, gson);
     }
 
     @Override

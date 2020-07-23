@@ -31,6 +31,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.dimension.DataTransferRate;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -75,6 +76,8 @@ import org.openhab.binding.freebox.internal.discovery.PlayerDiscoveryParticipant
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link ServerHandler} handle common parts of Freebox bridges.
  *
@@ -94,9 +97,11 @@ public abstract class ServerHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) QuantityType<DataTransferRate> bandwidthDown;
 
     private long uptime = -1;
+    private final Gson gson;
 
-    public ServerHandler(Bridge thing) {
+    public ServerHandler(Bridge thing, Gson gson) {
         super(thing);
+        this.gson = gson;
     }
 
     @Override
@@ -104,13 +109,26 @@ public abstract class ServerHandler extends BaseBridgeHandler {
         logger.debug("Initializing Freebox Server handler for thing {}.", getThing().getUID());
         ServerConfiguration configuration = getConfigAs(ServerConfiguration.class);
 
-        updateStatus(ThingStatus.UNKNOWN);
+        if (configuration.appToken == null || configuration.appToken.isEmpty()) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Please accept pairing request directly on your freebox");
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
 
         logger.debug("Binding will schedule a job to establish a connection...");
 
         scheduler.submit(() -> {
             try {
-                apiManager = new ApiManager(configuration);
+                apiManager = new ApiManager(configuration, gson);
+                String appToken = apiManager.getAppToken();
+                if ((configuration.appToken == null || configuration.appToken.isEmpty()) && appToken != null) {
+                    logger.debug("Store new app token in the thing configuration");
+                    configuration.appToken = appToken;
+                    Configuration thingConfig = editConfiguration();
+                    thingConfig.put(ServerConfiguration.APP_TOKEN, appToken);
+                    updateConfiguration(thingConfig);
+                }
                 if (thing.getProperties().isEmpty()) {
                     discoverAttributes();
                 }
@@ -450,5 +468,9 @@ public abstract class ServerHandler extends BaseBridgeHandler {
         fetchFtpConfig();
         fetchUPnPAVConfig();
         fetchSambaConfig();
+    }
+
+    public @Nullable String getAppToken() {
+        return apiManager.getAppToken();
     }
 }

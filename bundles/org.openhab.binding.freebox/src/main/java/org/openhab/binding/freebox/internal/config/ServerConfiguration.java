@@ -13,6 +13,7 @@
 package org.openhab.binding.freebox.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ServerConfiguration} is responsible for holding
@@ -25,9 +26,10 @@ public class ServerConfiguration {
     public static final String HOST_ADDRESS = "hostAddress";
     public static final String HTTPS_AVAILABLE = "httpsAvailable";
     public static final String REMOTE_HTTPS_PORT = "remoteHttpsPort";
+    public static final String APP_TOKEN = "appToken";
 
     public String hostAddress = "mafreebox.freebox.fr";
-    public String appToken = "";
+    public @Nullable String appToken;
     public boolean httpsAvailable = false;
     public long remoteHttpsPort = -1L;
     public Boolean discoverPhone = true;

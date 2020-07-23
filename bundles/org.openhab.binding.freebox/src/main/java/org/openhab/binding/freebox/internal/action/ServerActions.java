@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.freebox.internal.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -30,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "freebox")
 @NonNullByDefault
-public class ServerActions implements ThingActions {
+public class ServerActions implements ThingActions, IServerActions {
     private final static Logger logger = LoggerFactory.getLogger(ServerActions.class);
     private @Nullable ServerHandler handler;
 
@@ -50,6 +53,7 @@ public class ServerActions implements ThingActions {
         return this.handler;
     }
 
+    @Override
     @RuleAction(label = "Freebox : Reboot", description = "Reboots the Freebox Server")
     public void reboot() {
         logger.debug("Server reboot called");
@@ -61,10 +65,25 @@ public class ServerActions implements ThingActions {
     }
 
     public static void reboot(@Nullable ThingActions actions) {
-        if (actions instanceof ServerActions) {
-            ((ServerActions) actions).reboot();
-        } else {
-            throw new IllegalArgumentException("Instance is not an ServerActions class.");
+        invokeMethodOf(actions).reboot();
+    }
+
+    private static IServerActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(ServerActions.class.getName())) {
+            if (actions instanceof IServerActions) {
+                return (IServerActions) actions;
+            } else {
+                return (IServerActions) Proxy.newProxyInstance(IServerActions.class.getClassLoader(),
+                        new Class[] { IServerActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of AstroActions");
     }
 }
