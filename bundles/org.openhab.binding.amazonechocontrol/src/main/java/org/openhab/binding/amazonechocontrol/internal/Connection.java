@@ -118,6 +118,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import org.apache.commons.lang.SerializationUtils;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -159,9 +160,7 @@ public class Connection {
     private final Gson gson;
     private final Gson gsonWithNullSerialization;
 
-    private LinkedBlockingQueue<JsonObject> sequenceNodeQueue = new LinkedBlockingQueue<>();
-    private AtomicBoolean sequenceNodeQueueRunning = new AtomicBoolean();
-    private @Nullable ScheduledFuture<?> sequenceNodeSenderUnblockFuture;
+    private Map<Device, QueueObject> queueObjects = Collections.synchronizedMap(new LinkedHashMap<>());
 
     public Connection(@Nullable Connection oldConnection, Gson gson) {
         this.gson = gson;
@@ -279,7 +278,7 @@ public class Connection {
     }
 
     public boolean isSequenceNodeQueueRunning() {
-        return sequenceNodeQueueRunning.get();
+        return queueObjects.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get());
     }
 
     public String serializeLoginData() {
@@ -916,11 +915,7 @@ public class Connection {
             textToSpeeches.clear();
             textToSpeechTimer.cancel(true);
         }
-        if (sequenceNodeSenderUnblockFuture != null) {
-            sequenceNodeQueue.clear();
-            sequenceNodeQueueRunning.set(false);
-            sequenceNodeSenderUnblockFuture.cancel(true);
-        }
+        queueObjects.values().forEach(queueObject -> queueObject.dispose());
     }
 
     // parser
@@ -1285,7 +1280,7 @@ public class Connection {
 
     public synchronized void announcement(Device device, String speak, String bodyText, @Nullable String title,
             @Nullable Integer ttsVolume, @Nullable Integer standardVolume) {
-        if (speak == null || speak.replaceAll("<.+?>", "").trim().isEmpty()) {
+        if (speak == null || speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim().isEmpty()) {
             return;
         }
         if (announcementTimer != null) {
@@ -1322,7 +1317,7 @@ public class Connection {
                         JsonAnnouncementContent content = new JsonAnnouncementContent();
                         content.display.title = title == null || title.isEmpty() ? "openHAB" : title;
                         content.display.body = bodyText;
-                        content.display.body = speak.replaceAll("<.+?>", "");
+                        content.display.body = speak.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
                         if (speak.startsWith("<speak>") && speak.endsWith("</speak>")) {
                             content.speak.type = "ssml";
                         }
@@ -1361,7 +1356,7 @@ public class Connection {
 
     public synchronized void textToSpeech(Device device, String text, @Nullable Integer ttsVolume,
             @Nullable Integer standardVolume) {
-        if (text == null || text.replaceAll("<.+?>", "").trim().isEmpty()) {
+        if (text == null || text.replaceAll("<.+?>", "").replaceAll("\\s+", " ").trim().isEmpty()) {
             return;
         }
         if (textToSpeechTimer != null) {
@@ -1415,7 +1410,7 @@ public class Connection {
             }
         }
         if (ttsVolumeNodesToExecute.size() > 0) {
-            executeSequenceNodes(ttsVolumeNodesToExecute, true);
+            executeSequenceNodes(devices, ttsVolumeNodesToExecute, true);
         }
 
         JsonArray nodesToExecute = new JsonArray();
@@ -1427,7 +1422,7 @@ public class Connection {
             nodesToExecute.add(createExecutionNode(devices[0], command, parameters));
         }
         if (nodesToExecute.size() > 0) {
-            executeSequenceNodes(nodesToExecute, true);
+            executeSequenceNodes(devices, nodesToExecute, true);
         }
 
         JsonArray standardVolumeNodesToExecute = new JsonArray();
@@ -1440,7 +1435,7 @@ public class Connection {
             }
         }
         if (standardVolumeNodesToExecute.size() > 0) {
-            executeSequenceNodes(standardVolumeNodesToExecute, true);
+            executeSequenceNodes(devices, standardVolumeNodesToExecute, true);
         }
     }
 
@@ -1450,52 +1445,79 @@ public class Connection {
     public void executeSequenceCommand(@Nullable Device device, String command,
             @Nullable Map<String, Object> parameters) throws IOException, URISyntaxException {
         JsonObject nodeToExecute = createExecutionNode(device, command, parameters);
-        executeSequenceNode(nodeToExecute);
+        executeSequenceNode(new Device[] { device }, nodeToExecute);
     }
 
-    private void executeSequenceNode(JsonObject nodeToExecute) {
-        sequenceNodeQueue.add(nodeToExecute);
-        if (sequenceNodeQueueRunning.compareAndSet(false, true)) {
-            queuedExecuteSequenceNode();
+    private synchronized void executeSequenceNode(Device[] devices, JsonObject nodeToExecute) {
+        for (int i = 0; i < devices.length; i++) {
+            if (!queueObjects.containsKey(devices[i])) {
+                queueObjects.put(devices[i], new QueueObject());
+            }
+            // DEVICES WAIT FOR RUNNING GROUPED DEVICE
+            JsonObject nodeToExecuteClone = nodeToExecute.deepCopy();
+            if (i > 0) {
+                nodeToExecuteClone.addProperty("ignore", true);
+            }
+            queueObjects.get(devices[i]).queue.add(nodeToExecuteClone);
+            if (queueObjects.get(devices[i]).queueRunning.compareAndSet(false, true)) {
+                final int deviceNumber = i;
+                new Thread(() -> queuedExecuteSequenceNode(devices, deviceNumber)).start();
+            }
         }
     }
 
-    private void queuedExecuteSequenceNode() {
-        JsonObject nodeToExecute = sequenceNodeQueue.poll();
+    private void queuedExecuteSequenceNode(Device[] devices, int deviceNumber) {
+        JsonObject nodeToExecute = queueObjects.get(devices[deviceNumber]).queue.poll();
         if (nodeToExecute != null) {
             String type = getTypeFromExecutionNode(nodeToExecute);
             long delay = "Announcement".equals(type) ? 3000 : 2000;
             try {
-                JsonObject sequenceJson = new JsonObject();
-                sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
-                sequenceJson.add("startNode", nodeToExecute);
+                boolean running = false;
+                // GROUPED DEVICES WAIT FOR RUNNING DEVICE
+                if (!nodeToExecute.has("ignore")) {
+                    for (int i = 1; i < devices.length; i++) {
+                        if (queueObjects.containsKey(devices[i]) && queueObjects.get(devices[i]).queueRunning.get()) {
+                            running = true;
 
-                JsonStartRoutineRequest request = new JsonStartRoutineRequest();
-                request.sequenceJson = gson.toJson(sequenceJson);
-                String json = gson.toJson(request);
+                            break;
+                        }
+                    }
+                }
+                if (!running) {
+                    if (!nodeToExecute.has("ignore")) {
+                        JsonObject sequenceJson = new JsonObject();
+                        sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
+                        sequenceJson.add("startNode", nodeToExecute);
 
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Routines-Version", "1.1.218665");
+                        JsonStartRoutineRequest request = new JsonStartRoutineRequest();
+                        request.sequenceJson = gson.toJson(sequenceJson);
+                        String json = gson.toJson(request);
 
-                makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("Routines-Version", "1.1.218665");
 
-                String text = getTextFromExecutionNode(nodeToExecute);
-                if (text != null && !text.isEmpty()) {
-                    delay += text.length() * 100;
+                        makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
+                    }
+                    
+                    String text = getTextFromExecutionNode(nodeToExecute);
+                    if (text != null && !text.isEmpty()) {
+                        text = text.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
+                        delay += text.length() * 100;
+                    }
+                } else {
+                    queueObjects.get(devices[0]).queue.add(nodeToExecute);
                 }
             } catch (IOException | URISyntaxException e) {
                 logger.warn("execute sequence node fails with unexpected error", e);
             } finally {
-                sequenceNodeSenderUnblockFuture = scheduler.schedule(this::queuedExecuteSequenceNode, delay,
-                        TimeUnit.MILLISECONDS);
+                queueObjects.get(devices[deviceNumber]).senderUnblockFuture = scheduler.schedule(() -> queuedExecuteSequenceNode(devices, deviceNumber), delay, TimeUnit.MILLISECONDS);
             }
         } else {
-            sequenceNodeQueueRunning.set(false);
-            sequenceNodeSenderUnblockFuture = null;
+            queueObjects.get(devices[deviceNumber]).dispose();
         }
     }
 
-    private void executeSequenceNodes(JsonArray nodesToExecute, boolean parallel)
+    private void executeSequenceNodes(Device[] devices, JsonArray nodesToExecute, boolean parallel)
             throws IOException, URISyntaxException {
         JsonObject serialNode = new JsonObject();
         if (parallel) {
@@ -1506,7 +1528,7 @@ public class Connection {
 
         serialNode.add("nodesToExecute", nodesToExecute);
 
-        executeSequenceNode(serialNode);
+        executeSequenceNode(devices, serialNode);
     }
 
     private JsonObject createExecutionNode(@Nullable Device device, String command,
@@ -1864,6 +1886,21 @@ public class Connection {
 
         public TextToSpeech(String text) {
             this.text = text;
+        }
+    }
+    
+    @NonNullByDefault
+    private static class QueueObject {
+        public LinkedBlockingQueue<JsonObject> queue = new LinkedBlockingQueue<>();
+        public AtomicBoolean queueRunning = new AtomicBoolean();
+        public @Nullable ScheduledFuture<?> senderUnblockFuture;
+        
+        public void dispose() {
+            queue.clear();
+            queueRunning.set(false);
+            if (senderUnblockFuture != null) {
+                senderUnblockFuture.cancel(true);
+            }
         }
     }
 }
