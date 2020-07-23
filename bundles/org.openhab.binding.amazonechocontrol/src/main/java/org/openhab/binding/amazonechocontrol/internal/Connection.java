@@ -118,7 +118,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import org.apache.commons.lang.SerializationUtils;
 
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
@@ -1498,7 +1497,7 @@ public class Connection {
 
                         makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
                     }
-                    
+
                     String text = getTextFromExecutionNode(nodeToExecute);
                     if (text != null && !text.isEmpty()) {
                         text = text.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
@@ -1510,7 +1509,8 @@ public class Connection {
             } catch (IOException | URISyntaxException e) {
                 logger.warn("execute sequence node fails with unexpected error", e);
             } finally {
-                queueObjects.get(devices[deviceNumber]).senderUnblockFuture = scheduler.schedule(() -> queuedExecuteSequenceNode(devices, deviceNumber), delay, TimeUnit.MILLISECONDS);
+                queueObjects.get(devices[deviceNumber]).senderUnblockFuture = scheduler
+                        .schedule(() -> queuedExecuteSequenceNode(devices, deviceNumber), delay, TimeUnit.MILLISECONDS);
             }
         } else {
             queueObjects.get(devices[deviceNumber]).dispose();
@@ -1888,13 +1888,13 @@ public class Connection {
             this.text = text;
         }
     }
-    
+
     @NonNullByDefault
     private static class QueueObject {
         public LinkedBlockingQueue<JsonObject> queue = new LinkedBlockingQueue<>();
         public AtomicBoolean queueRunning = new AtomicBoolean();
         public @Nullable ScheduledFuture<?> senderUnblockFuture;
-        
+
         public void dispose() {
             queue.clear();
             queueRunning.set(false);
