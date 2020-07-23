@@ -138,8 +138,9 @@ public class SenseBoxAPIConnection {
 
             SenseBoxDescriptor descriptor = new SenseBoxDescriptor();
             descriptor.setApiUrl(query);
-            if (!parsedData.getImage().isEmpty()) {
-                descriptor.setImageUrl(SENSEMAP_IMAGE_URL_BASE + "/" + parsedData.getImage());
+            String image = parsedData.getImage();
+            if (image != null && !image.isEmpty()) {
+                descriptor.setImageUrl(SENSEMAP_IMAGE_URL_BASE + "/" + image);
             }
             descriptor.setMapUrl(SENSEMAP_MAP_URL_BASE + "/explore/" + senseBoxId);
             parsedData.setDescriptor(descriptor);
