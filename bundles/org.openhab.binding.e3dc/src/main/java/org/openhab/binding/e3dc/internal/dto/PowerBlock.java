@@ -59,9 +59,11 @@ public class PowerBlock implements Data {
         pvPowerSupply = new QuantityType<Power>(pvPowerSupplyL, SmartHomeUnits.WATT);
         long batteryPower = DataConverter.getInt32Swap(bArray, byteIndex);
         if (batteryPower > 0) {
+            // Battery is charging so Power is consumed by Battery
             batteryPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
             batteryPowerConsumption = new QuantityType<Power>(batteryPower, SmartHomeUnits.WATT);
         } else {
+            // Battery is discharging so Power is provided by Battery
             batteryPowerSupply = new QuantityType<Power>(batteryPower * -1, SmartHomeUnits.WATT);
             batteryPowerConsumption = new QuantityType<Power>(0, SmartHomeUnits.WATT);
         }
@@ -79,11 +81,13 @@ public class PowerBlock implements Data {
          */
         long gridPower = DataConverter.getInt32Swap(bArray, byteIndex);
         if (gridPower > 0) {
-            gridPowerConsumpition = new QuantityType<Power>(gridPower, SmartHomeUnits.WATT);
-            gridPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
-        } else {
+            // Power is provided by Grid
+            gridPowerSupply = new QuantityType<Power>(gridPower, SmartHomeUnits.WATT);
             gridPowerConsumpition = new QuantityType<Power>(0, SmartHomeUnits.WATT);
-            gridPowerSupply = new QuantityType<Power>(gridPower * -1, SmartHomeUnits.WATT);
+        } else {
+            // Power is consumed by Grid
+            gridPowerConsumpition = new QuantityType<Power>(gridPower * -1, SmartHomeUnits.WATT);
+            gridPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
         }
         byteIndex += 4;
 

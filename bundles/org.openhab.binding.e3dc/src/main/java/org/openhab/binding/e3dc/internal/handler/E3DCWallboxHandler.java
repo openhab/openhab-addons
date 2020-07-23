@@ -70,8 +70,8 @@ public class E3DCWallboxHandler extends BaseHandler {
                     currentBitSet.set(WB_CHARGING_ABORTED_BIT, command.equals(OnOffType.ON));
                 } else if (channelUID.getIdWithoutGroup().equals(WB_SCHUKO_ON_CHANNEL)) {
                     currentBitSet.set(WB_SCHUKO_ON_BIT, command.equals(OnOffType.ON));
-                } else if (channelUID.getIdWithoutGroup().equals(WB_3PHASE_CHANNEL)) {
-                    currentBitSet.set(WB_3PHASE_BIT, command.equals(OnOffType.ON));
+                } else if (channelUID.getIdWithoutGroup().equals(WB_1PHASE_CHANNEL)) {
+                    currentBitSet.set(WB_1PHASE_BIT, command.equals(OnOffType.ON));
                 }
                 writeValue = DataConverter.toInt(currentBitSet);
                 logger.info("Send {}", writeValue);
@@ -116,7 +116,7 @@ public class E3DCWallboxHandler extends BaseHandler {
                     updateState(WB_SCHUKO_REALY_16A_CHANNEL, block.wbSchukoRelay16);
                     updateState(WB_REALY_16A_CHANNEL, block.wbRelay16);
                     updateState(WB_RELAY_32A_CHANNEL, block.wbRelay32);
-                    updateState(WB_3PHASE_CHANNEL, block.wb3phase);
+                    updateState(WB_1PHASE_CHANNEL, block.wb1phase);
                 } else {
                     logger.debug("Unable to get ID {} from WallboxArray", wallboxId);
                 }

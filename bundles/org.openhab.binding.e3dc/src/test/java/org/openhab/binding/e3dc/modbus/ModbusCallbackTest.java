@@ -75,6 +75,6 @@ public class ModbusCallbackTest {
         WallboxBlock wb = wa.getWallboxBlock(0);
         assertNotNull(wb);
         assertEquals("Wallbox Sunmode", OnOffType.ON, wb.wbSunmode);
-        assertEquals("Wallbox 3phase", OnOffType.OFF, wb.wb3phase);
+        assertEquals("Wallbox 1phase", OnOffType.OFF, wb.wb1phase);
     }
 }

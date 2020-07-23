@@ -70,7 +70,7 @@ public class E3DCBindingConstants {
     public static final String WB_SCHUKO_REALY_16A_CHANNEL = "wb-schuko-relay-16a";
     public static final String WB_REALY_16A_CHANNEL = "wb-relay-16a";
     public static final String WB_RELAY_32A_CHANNEL = "wb-relay-32a";
-    public static final String WB_3PHASE_CHANNEL = "wb-3phase";
+    public static final String WB_1PHASE_CHANNEL = "wb-1phase";
 
     // Channels for String details
     public static final String STRING1_DC_VOLTAGE_CHANNEL = "string1-dc-voltage";

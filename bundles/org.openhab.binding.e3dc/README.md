@@ -119,7 +119,7 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 | Schuko 16A Relay On   | wb-schuko-relay-16a |  Switch | RO  | Indicates if Schuko 16A Relay is ON     |
 | 16A Relay On          | wb-relay-16a    |  Switch | RO  | Indicates if 16A Relay is ON     |
 | 32A Relay On          | wb-relay-32a    |  Switch | RO  | Indicates if 32A Relay is ON    |
-| 3-Phase Charging      | 3-Phase Active  |  Switch | RW  | Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated    |
+| 1-Phase Charging      | 1-Phase Active  |  Switch | RW  | Indicates if 1-phase charging is activated. If OFF 3-phase charging is activated    |
 
 ### E3DC String Details Block
 
@@ -271,7 +271,7 @@ sitemap E3DCBinding label="E3DC Binding Sitemap" {
     Switch    item=E3DC_WB_Schuko_Relay16A      label="Schuko Relay 16A [%s]"
     Switch    item=E3DC_WB_Relay16A             label="Relay 16A [%s]"
     Switch    item=E3DC_WB_Relay32A             label="Relay 32A [%s]"
-    Switch    item=E3DC_WB_3PhaseLoading        label="3-Phase loading [%s]"
+    Switch    item=E3DC_WB_1PhaseLoading        label="1-Phase loading [%s]"
   }
   
   Frame label="String Details" {

@@ -61,7 +61,7 @@ public class DataBlockTest {
         assertNotNull(b);
         assertEquals("Wallbox available", OnOffType.ON, b.wbAvailable);
         assertEquals("Wallbox Sunmode", OnOffType.ON, b.wbSunmode);
-        assertEquals("Wallbox 3phase", OnOffType.OFF, b.wb3phase);
+        assertEquals("Wallbox 1phase", OnOffType.OFF, b.wb1phase);
         assertEquals("Wallbox charging", OnOffType.OFF, b.wbCharging);
     }
 

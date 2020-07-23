@@ -63,9 +63,9 @@
 		<label>32A Relay On</label>
 		<description>Indicates if 32A Relay is ON</description>
 	</channel-type>
-	<channel-type id="wb-3phase-channel">
+	<channel-type id="wb-1phase-channel">
 		<item-type>Switch</item-type>
-		<label>3-Phase Charging</label>
-		<description>Indicates if 3-phase charging is activated. If OFF 1-phase charging is activated</description>
+		<label>1-Phase Charging</label>
+		<description>Indicates if 1-phase charging is activated. If OFF 3-phase charging is activated</description>
 	</channel-type>
 </thing:thing-descriptions>

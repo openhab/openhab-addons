@@ -38,7 +38,7 @@ public class WallboxBlock implements Data {
     public OnOffType wbSchukoRelay16 = OnOffType.OFF;
     public OnOffType wbRelay16 = OnOffType.OFF;
     public OnOffType wbRelay32 = OnOffType.OFF;
-    public OnOffType wb3phase = OnOffType.OFF;
+    public OnOffType wb1phase = OnOffType.OFF;
 
     /**
      * For decoding see Modbus Register Mapping Chapter 3.1.2 page 15
@@ -62,7 +62,7 @@ public class WallboxBlock implements Data {
         wbSchukoRelay16 = bitSet.get(WB_SCHUKO_RELAY16A_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbRelay16 = bitSet.get(WB_RELAY_16A_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbRelay32 = bitSet.get(WB_RELAY_32A_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wb3phase = bitSet.get(WB_3PHASE_BIT) ? OnOffType.ON : OnOffType.OFF;
+        wb1phase = bitSet.get(WB_1PHASE_BIT) ? OnOffType.ON : OnOffType.OFF;
     }
 
     public BitSet getBitSet() {
