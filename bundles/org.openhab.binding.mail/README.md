@@ -88,15 +88,17 @@ sitemap demo label="Main Menu"
 This binding includes rule actions for sending email.
 Six different actions available:
 
-* `sendMail(String recipient, String subject, String text)`
-* `sendMail(String recipient, String subject, String text, String URL)`
-* `sendMail(String recipient, String subject, String text, List<String> URL)`
-* `sendHtmlMail(String recipient, String subject, String htmlContent)`
-* `sendHtmlMail(String recipient, String subject, String htmlContent, String URL)`
-* `sendHtmlMail(String recipient, String subject, String htmlContent, List<String> URL)`
+* `boolean succes = sendMail(String recipient, String subject, String text)`
+* `boolean succes = sendMail(String recipient, String subject, String text, String URL)`
+* `boolean succes = sendMail(String recipient, String subject, String text, List<String> URL)`
+* `boolean succes = sendHtmlMail(String recipient, String subject, String htmlContent)`
+* `boolean succes = sendHtmlMail(String recipient, String subject, String htmlContent, String URL)`
+* `boolean succes = sendHtmlMail(String recipient, String subject, String htmlContent, List<String> URL)`
 
 The `sendMail(...)` send a plain text mail (with attachments if supplied).
 The `sendHtmlMail(...)` send a HTML mail (with attachments if supplied).
+
+Both functions returns as a boolean the result of the operation.
 
 `recipient` can be a single address (`mail@example.com`) or a list of addresses, concatenated by a comma (`mail@example.com, mail2@example.com`).
 
@@ -111,8 +113,8 @@ Examples:
 
 ```
 val mailActions = getActions("mail","mail:smtp:samplesmtp")
-mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
-mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
+val success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
+success = mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
 
 ```
 
