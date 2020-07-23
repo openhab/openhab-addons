@@ -13,20 +13,46 @@
 package org.openhab.binding.lcn.internal.converter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.lcn.internal.common.LcnException;
 
 /**
- * Interface for all converters.
+ * Base class for all converters.
  *
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-public interface Converter {
+public class Converter {
     /**
      * Converts a state update from the Thing into a human readable representational State.
      *
      * @param state from the Thing
      * @return human readable representational State
      */
-    public State onStateUpdateFromHandler(State state);
+    public State onStateUpdateFromHandler(State state) {
+        return state;
+    }
+
+    /**
+     * Converts a human readable value into LCN native value.
+     *
+     * @param humanReadable value to convert
+     * @return the native LCN value
+     */
+    public DecimalType onCommandFromItem(double humanReadable) {
+        return new DecimalType(humanReadable);
+    }
+
+    /**
+     * Converts a human readable value into LCN native value.
+     *
+     * @param humanReadable value to convert
+     * @return the native LCN value
+     * @throws LcnException when the value could not be converted to the base unit
+     */
+    public DecimalType onCommandFromItem(QuantityType<?> quantityType) throws LcnException {
+        return onCommandFromItem(quantityType.doubleValue());
+    }
 }

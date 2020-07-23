@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.types.State;
  * @author Thomas Weiler - Initial Contribution
  */
 @NonNullByDefault
-public class InversionConverter implements Converter {
+public class InversionConverter extends Converter {
     /**
      * Converts a state into its antonym where applicable.
      *

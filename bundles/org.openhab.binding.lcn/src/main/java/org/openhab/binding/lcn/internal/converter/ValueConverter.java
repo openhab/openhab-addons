@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-public class ValueConverter implements Converter {
+public class ValueConverter extends Converter {
     private final Logger logger = LoggerFactory.getLogger(ValueConverter.class);
     private @Nullable final Unit<?> unit;
     private final Function<Long, Double> toHuman;
@@ -69,6 +69,7 @@ public class ValueConverter implements Converter {
      * @param humanReadable value to convert
      * @return the native LCN value
      */
+    @Override
     public DecimalType onCommandFromItem(double humanReadable) {
         return new DecimalType(toNative(humanReadable));
     }
@@ -80,6 +81,7 @@ public class ValueConverter implements Converter {
      * @return the native LCN value
      * @throws LcnException when the value could not be converted to the base unit
      */
+    @Override
     public DecimalType onCommandFromItem(QuantityType<?> quantityType) throws LcnException {
         Unit<?> localUnit = unit;
         if (localUnit == null) {

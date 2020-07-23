@@ -53,7 +53,6 @@ import org.openhab.binding.lcn.internal.converter.Converter;
 import org.openhab.binding.lcn.internal.converter.Converters;
 import org.openhab.binding.lcn.internal.converter.InversionConverter;
 import org.openhab.binding.lcn.internal.converter.S0Converter;
-import org.openhab.binding.lcn.internal.converter.ValueConverter;
 import org.openhab.binding.lcn.internal.subhandler.AbstractLcnModuleSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaAckSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaFirmwareSubHandler;
@@ -180,23 +179,12 @@ public class LcnModuleHandler extends BaseThingHandler {
                 subHandler.handleCommandString((StringType) command, number.get());
             } else if (command instanceof DecimalType) {
                 DecimalType decimalType = (DecimalType) command;
-                Converter valueConverter = getConverter(channelUid);
-                if (valueConverter instanceof ValueConverter) {
-                    DecimalType nativeValue = ((ValueConverter) valueConverter)
-                            .onCommandFromItem(decimalType.doubleValue());
-                    subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-                } else {
-                    logger.warn("No ValueConverter defined.");
-                }
+                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(decimalType.doubleValue());
+                subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
             } else if (command instanceof QuantityType) {
                 QuantityType<?> quantityType = (QuantityType<?>) command;
-                Converter valueConverter = getConverter(channelUid);
-                if (valueConverter instanceof ValueConverter) {
-                    DecimalType nativeValue = ((ValueConverter) valueConverter).onCommandFromItem(quantityType);
-                    subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
-                } else {
-                    logger.warn("No ValueConverter defined.");
-                }
+                DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
+                subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
             } else if (command instanceof UpDownType) {
                 Channel channel = thing.getChannel(channelUid);
                 if (channel != null) {
