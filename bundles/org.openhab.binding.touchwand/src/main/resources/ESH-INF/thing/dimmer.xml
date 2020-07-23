@@ -20,6 +20,5 @@
 		<label>Dimmer</label>
 		<description>The dimmer channel allows to switch the light on and off and set brightness.
 		</description>
-		<category>Device control (ON / OFF , brightess 0-100%)</category>
 	</channel-type>
 </thing:thing-descriptions>
