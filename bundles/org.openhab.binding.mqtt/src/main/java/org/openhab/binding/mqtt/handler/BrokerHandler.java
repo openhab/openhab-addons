@@ -123,6 +123,11 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         super.dispose();
     }
 
+    @Override
+    public boolean discoveryEnabled() {
+        return config.enableDiscovery;
+    }
+
     /**
      * Reads the thing configuration related to public key or certificate pinning, creates an appropriate a
      * {@link PinningSSLContextProvider} and assigns it to the {@link MqttBrokerConnection} instance.
