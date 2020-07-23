@@ -57,7 +57,7 @@ For more security, the following optional parameters can be altered:
 By default discovery services (like homie or homeassistant) are enabled on a broker.
 This behaviour can be controlled with a configuration parameter.
 
-* __enableDiscovery__:If set to true, enables discovery on this broker, if set to false, disables discovery services om this broker.
+* __enableDiscovery__:If set to true, enables discovery on this broker, if set to false, disables discovery services on this broker.
 
 ## Supported Channels
 

@@ -50,7 +50,7 @@ public class SystemBrokerHandler extends AbstractBrokerHandler implements MqttSe
     protected final MqttService service;
 
     protected String brokerID = "";
-    protected boolean discoveryDisabled = false;
+    protected boolean discoveryEnabled = true;
 
     public SystemBrokerHandler(Bridge thing, MqttService service) {
         super(thing);
@@ -117,7 +117,7 @@ public class SystemBrokerHandler extends AbstractBrokerHandler implements MqttSe
     @Override
     public void initialize() {
         this.brokerID = getThing().getConfiguration().get("brokerid").toString();
-        this.discoveryDisabled = (Boolean) getThing().getConfiguration().get("disableDiscovery");
+        this.discoveryEnabled = (Boolean) getThing().getConfiguration().get("enableDiscovery");
 
         service.addBrokersListener(this);
 
@@ -138,6 +138,6 @@ public class SystemBrokerHandler extends AbstractBrokerHandler implements MqttSe
 
     @Override
     public boolean discoveryEnabled() {
-        return discoveryDisabled;
+        return discoveryEnabled;
     }
 }

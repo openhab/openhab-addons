@@ -187,11 +187,11 @@
 				<label>Broker ID</label>
 				<description>Each system wide configured MQTT broker has a unique broker ID.</description>
 			</parameter>
-			<parameter name="disableDiscovery" type="boolean">
-				<label>Disable Discovery</label>
-				<description>If set to true disables this broker for all discovery services</description>
+			<parameter name="enableDiscovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>If set to true enables this broker for all discovery services.</description>
 				<advanced>true</advanced>
-				<default>false</default>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
