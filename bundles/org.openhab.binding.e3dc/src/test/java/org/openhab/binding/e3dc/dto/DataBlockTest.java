@@ -48,8 +48,8 @@ public class DataBlockTest {
         PowerBlock b = (PowerBlock) mc.getData(DataType.POWER);
         assertNotNull(b);
         assertEquals("PV Supply", "242 W", b.pvPowerSupply.toString());
-        assertEquals("Grid Supply", "0 W", b.gridPowerSupply.toString());
-        assertEquals("Grid Consumption", "14 W", b.gridPowerConsumpition.toString());
+        assertEquals("Grid Supply", "14 W", b.gridPowerSupply.toString());
+        assertEquals("Grid Consumption", "0 W", b.gridPowerConsumpition.toString());
         assertEquals("Battery Supply", "303 W", b.batteryPowerSupply.toString());
     }
 
