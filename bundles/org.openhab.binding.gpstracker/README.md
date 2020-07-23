@@ -54,6 +54,10 @@ Right after enabling, the app takes you to the *Log to custom URL* settings:
 * **Basic Authentication** - Set username and password to be able to reach your openHAB server (myopenhab.org credential, if choosen as URL)
 * Check if everything is ok by clicking on **Validate SSL Certificate**.
 
+### Track Multiple Devices Through myopenhab.org
+
+To do this you need each device/person to have their own account in myopenhab.org. Login to [myopenHAB.org](https://www.myopenhab.org/) and click Users under the account tab, add an account for each user. Still in myopenhab.org select Devices under the Account tab. Now download the openHAB App onto the devices you wish to track and log in with the 'master' account. **Its important you log on with the master account first as this enables the device to show up in myopenhab.org.** Confirm that the device has connected by returning to the Devices tab and checking you see the device identity. (You can send a message from there to be sure the correct device has connected) Now log in your tracking App (one from above) using the newly created account. Don't forget (but not mandatory) to move the openHAB App over to this new account also. You should be able to see the locations of all the devices you track this way in OwnTracks.
+
 ### Things
 
 It is possible to define things manually or to use the discovery feature of the openHAB.
