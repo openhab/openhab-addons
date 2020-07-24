@@ -62,5 +62,5 @@ Fragment-Host: org.openhab.binding.feed
 	org.ops4j.pax.web.pax-web-spi;version='[7.2.11,7.2.12)',\
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
 	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
-	org.openhab.binding.feed;version='[2.5.7,2.5.8)',\
-	org.openhab.binding.feed.tests;version='[2.5.7,2.5.8)'
+	org.openhab.binding.feed;version='[2.5.8,2.5.9)',\
+	org.openhab.binding.feed.tests;version='[2.5.8,2.5.9)',\
