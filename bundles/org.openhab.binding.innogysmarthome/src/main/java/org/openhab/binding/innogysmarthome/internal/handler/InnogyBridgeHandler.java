@@ -952,6 +952,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    /**
+     * Checks if the job is already (re-)scheduled.
+     * @param job job to check
+     * @return true, when the job is already (re-)scheduled, otherwise false
+     */
     private static boolean isAlreadyScheduled(ScheduledFuture<?> job) {
         return job.getDelay(TimeUnit.SECONDS) > 0;
     }
