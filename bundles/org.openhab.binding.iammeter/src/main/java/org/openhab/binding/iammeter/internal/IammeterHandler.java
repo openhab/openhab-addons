@@ -67,17 +67,7 @@ public class IammeterHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try {
-                refresh();
-                updateStatus(ThingStatus.ONLINE);
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication error with the device: " + e.getMessage());
-            } catch (JsonSyntaxException je) {
-                logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
-            } catch (Exception e) {
-                logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
-            }
+            refresh();
         }
     }
 
@@ -90,88 +80,72 @@ public class IammeterHandler extends BaseThingHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    refresh();
-                    updateStatus(ThingStatus.ONLINE);
-                    // Very rudimentary Exception differentiation
-                } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Communication error with the device: " + e.getMessage());
-                } catch (JsonSyntaxException je) {
-                    logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
-                } catch (Exception e) {
-                    logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
-                }
+                refresh();
             }
         };
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
-            boolean thingReachable = true;
-            if (thingReachable) {
-                try {
-                    refresh();
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Communication error with the device: " + e.getMessage());
-                } catch (JsonSyntaxException je) {
-                    logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
-                } catch (Exception e) {
-                    logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+            refresh();
         });
     }
 
     private void refresh() throws Exception {
-        // Get the JSON - somehow
-        IammeterConfiguration config = getConfiguration();
-        logger.trace("Starting refresh handler");
-        String httpMethod = "GET";
-        String url = "http://admin:admin@" + config.host + ":" + config.port + "/monitorjson";
-        String content = "";
-        InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+        try {
+            IammeterConfiguration config = getConfiguration();
+            logger.trace("Starting refresh handler");
+            String httpMethod = "GET";
+            String url = "http://admin:admin@" + config.host + ":" + config.port + "/monitorjson";
+            String content = "";
+            InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-        String response = HttpUtil.executeUrl(httpMethod, url, stream, null, timeout);
-        JsonElement iammeterDataElement = new JsonParser().parse(response);
-        JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
-        String keyWord = "Data";
-        boolean bRemoveChannels = false;
-        String channelProfix = "";
-        if (iammeterData.has("data") || (iammeterData.has("Data") && iammeterData.has("SN"))) {
-            bRemoveChannels = true;
-            if (iammeterData.has("data")) {
-                keyWord = "data";
-            }
-            for (IammeterWEM3080Channel channelConfig : IammeterWEM3080Channel.values()) {
-                Channel channel = getThing().getChannel(channelConfig.getId());
-                if (channel != null){
-                    channelProfix = IammeterBindingConstants.THING_TYPE_POWERMETER + ":"
-                            + channel.getUID().getThingUID().getId();
-                    State state = getDecimal(
-                            iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getIndex()).toString());
-                    updateState(channel.getUID(), state);
+            String response = HttpUtil.executeUrl(httpMethod, url, stream, null, timeout);
+            JsonElement iammeterDataElement = new JsonParser().parse(response);
+            JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
+            String keyWord = "Data";
+            boolean bRemoveChannels = false;
+            String channelProfix = "";
+            if (iammeterData.has("data") || (iammeterData.has("Data") && iammeterData.has("SN"))) {
+                bRemoveChannels = true;
+                if (iammeterData.has("data")) {
+                    keyWord = "data";
+                }
+                for (IammeterWEM3080Channel channelConfig : IammeterWEM3080Channel.values()) {
+                    Channel channel = getThing().getChannel(channelConfig.getId());
+                    if (channel != null){
+                        channelProfix = IammeterBindingConstants.THING_TYPE_POWERMETER + ":"
+                                + channel.getUID().getThingUID().getId();
+                        State state = getDecimal(
+                                iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getIndex()).toString());
+                        updateState(channel.getUID(), state);
+                    }
+                }
+            } else if (iammeterData.has("Datas") && iammeterData.has("SN")) {
+                keyWord = "Datas";
+                for (IammeterWEM3080TChannel channelConfig : IammeterWEM3080TChannel.values()) {
+                    Channel channel = getThing().getChannel(channelConfig.getId());
+                    if (channel != null){
+                        State state = getDecimal(iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getRow())
+                                .getAsJsonArray().get(channelConfig.getCol()).toString());
+                        updateState(channel.getUID(), state);
+                    }
                 }
             }
-        } else if (iammeterData.has("Datas") && iammeterData.has("SN")) {
-            keyWord = "Datas";
-            for (IammeterWEM3080TChannel channelConfig : IammeterWEM3080TChannel.values()) {
-                Channel channel = getThing().getChannel(channelConfig.getId());
-                if (channel != null){
-                    State state = getDecimal(iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getRow())
-                            .getAsJsonArray().get(channelConfig.getCol()).toString());
-                    updateState(channel.getUID(), state);
+            if (bRemoveChannels) {
+                if (!bExtraChannelRemoved) {
+                    thingStructureChanged(channelProfix);
                 }
             }
-        }
-        if (bRemoveChannels) {
-            if (!bExtraChannelRemoved) {
-                thingStructureChanged(channelProfix);
-            }
+            updateStatus(ThingStatus.ONLINE);
+        // Very rudimentary Exception differentiation
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Communication error with the device: " + e.getMessage());
+        } catch (JsonSyntaxException je) {
+            logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
+        } catch (Exception e) {
+            logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
         }
     }
 
