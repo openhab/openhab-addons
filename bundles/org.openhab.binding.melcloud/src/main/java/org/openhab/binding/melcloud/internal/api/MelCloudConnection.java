@@ -106,6 +106,11 @@ public class MelCloudConnection {
                 if (building.getStructure().getDevices() != null) {
                     devices.addAll(building.getStructure().getDevices());
                 }
+                building.getStructure().getAreas().forEach(area -> {
+                    if (area.getDevices() != null) {
+                        devices.addAll(area.getDevices());
+                    }
+                });
                 building.getStructure().getFloors().forEach(floor -> {
                     if (floor.getDevices() != null) {
                         devices.addAll(floor.getDevices());

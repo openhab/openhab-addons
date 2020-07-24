@@ -213,4 +213,10 @@
 		<description>Flag of CLIP sensor.</description>
 	</channel-type>
 
+	<!-- Scene Channel -->
+	<channel-type id="scene">
+		<item-type>String</item-type>
+		<label>Scene</label>
+		<description>The scene channel allows recalling a scene to all lights that belong to the scene.</description>
+	</channel-type>
 </thing:thing-descriptions>

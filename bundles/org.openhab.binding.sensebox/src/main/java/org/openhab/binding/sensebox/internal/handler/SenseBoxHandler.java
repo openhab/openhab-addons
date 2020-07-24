@@ -15,10 +15,10 @@ package org.openhab.binding.sensebox.internal.handler;
 import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCacheMap;
@@ -40,9 +40,9 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.sensebox.internal.SenseBoxAPIConnection;
 import org.openhab.binding.sensebox.internal.config.SenseBoxConfiguration;
-import org.openhab.binding.sensebox.internal.model.SenseBoxData;
-import org.openhab.binding.sensebox.internal.model.SenseBoxLocation;
-import org.openhab.binding.sensebox.internal.model.SenseBoxSensor;
+import org.openhab.binding.sensebox.internal.dto.SenseBoxData;
+import org.openhab.binding.sensebox.internal.dto.SenseBoxLocation;
+import org.openhab.binding.sensebox.internal.dto.SenseBoxSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SenseBoxHandler extends BaseThingHandler {
-    private Logger logger = LoggerFactory.getLogger(SenseBoxHandler.class);
+
+    private final Logger logger = LoggerFactory.getLogger(SenseBoxHandler.class);
 
     protected @NonNullByDefault({}) SenseBoxConfiguration thingConfiguration;
 
@@ -84,33 +85,31 @@ public class SenseBoxHandler extends BaseThingHandler {
         thingConfiguration = getConfigAs(SenseBoxConfiguration.class);
 
         String senseBoxId = thingConfiguration.getSenseBoxId();
-        logger.debug("Thing Configuration {} initialized {}", getThing().getUID().toString(), senseBoxId);
+        logger.debug("Thing Configuration {} initialized {}", getThing().getUID(), senseBoxId);
 
         String offlineReason = "";
         boolean validConfig = true;
 
-        if (StringUtils.trimToNull(senseBoxId) == null) {
+        if (senseBoxId == null || senseBoxId.trim().isEmpty()) {
             offlineReason = "senseBox ID is mandatory and must be configured";
             validConfig = false;
         }
 
         if (thingConfiguration.getRefreshInterval() < MINIMUM_UPDATE_INTERVAL) {
-            logger.info("Refresh interval is much too small, setting to default of {} seconds",
+            logger.warn("Refresh interval is much too small, setting to default of {} seconds",
                     MINIMUM_UPDATE_INTERVAL);
             thingConfiguration.setRefreshInterval(MINIMUM_UPDATE_INTERVAL);
         }
 
-        cache.put(CACHE_KEY_DATA, () -> {
-            return connection.reallyFetchDataFromServer(senseBoxId);
-        });
-
-        if (validConfig) {
+        if (senseBoxId != null && validConfig) {
+            cache.put(CACHE_KEY_DATA, () -> {
+                return connection.reallyFetchDataFromServer(senseBoxId);
+            });
             updateStatus(ThingStatus.UNKNOWN);
             startAutomaticRefresh();
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, offlineReason);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, offlineReason);
         }
-
         logger.debug("Thing {} initialized {}", getThing().getUID(), getThing().getStatus());
     }
 
@@ -119,7 +118,7 @@ public class SenseBoxHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             data = fetchData();
             if (data != null && ThingStatus.ONLINE == data.getStatus()) {
-                publishDataForChannel(channelUID.getId());
+                publishDataForChannel(channelUID);
 
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -144,29 +143,10 @@ public class SenseBoxHandler extends BaseThingHandler {
     private void publishData() {
         logger.debug("Refreshing data for box {}, scheduled after {} seconds...", thingConfiguration.getSenseBoxId(),
                 thingConfiguration.getRefreshInterval());
-
         data = fetchData();
         if (data != null && ThingStatus.ONLINE == data.getStatus()) {
             publishProperties();
-
-            publishDataForChannel(CHANNEL_LOCATION);
-
-            publishDataForChannel(CHANNEL_UV_INTENSITY);
-            publishDataForChannel(CHANNEL_ILLUMINANCE);
-            publishDataForChannel(CHANNEL_PRESSURE);
-            publishDataForChannel(CHANNEL_HUMIDITY);
-            publishDataForChannel(CHANNEL_TEMPERATURE);
-            publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5);
-            publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10);
-
-            publishDataForChannel(CHANNEL_UV_INTENSITY_LR);
-            publishDataForChannel(CHANNEL_ILLUMINANCE_LR);
-            publishDataForChannel(CHANNEL_PRESSURE_LR);
-            publishDataForChannel(CHANNEL_HUMIDITY_LR);
-            publishDataForChannel(CHANNEL_TEMPERATURE_LR);
-            publishDataForChannel(CHANNEL_PARTICULATE_MATTER_2_5_LR);
-            publishDataForChannel(CHANNEL_PARTICULATE_MATTER_10_LR);
-
+            publishChannels();
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -186,67 +166,70 @@ public class SenseBoxHandler extends BaseThingHandler {
     private void publishProperties() {
         SenseBoxData localData = data;
         if (localData != null) {
-            thing.setProperty(PROPERTY_NAME, localData.getName());
-            thing.setProperty(PROPERTY_EXPOSURE, localData.getExposure());
-            thing.setProperty(PROPERTY_IMAGE_URL, localData.getDescriptor().getImageUrl());
-            thing.setProperty(PROPERTY_MAP_URL, localData.getDescriptor().getMapUrl());
+            Map<String, String> properties = editProperties();
+            properties.put(PROPERTY_NAME, localData.getName());
+            properties.put(PROPERTY_EXPOSURE, localData.getExposure());
+            properties.put(PROPERTY_IMAGE_URL, localData.getDescriptor().getImageUrl());
+            properties.put(PROPERTY_MAP_URL, localData.getDescriptor().getMapUrl());
+            updateProperties(properties);
         }
     }
 
-    private void publishDataForChannel(String channelID) {
+    private void publishChannels() {
+        thing.getChannels().forEach(channel -> publishDataForChannel(channel.getUID()));
+    }
+
+    private void publishDataForChannel(ChannelUID channelUID) {
         SenseBoxData localData = data;
-        if (localData != null && isLinked(channelID)) {
-            switch (channelID) {
+        if (localData != null && isLinked(channelUID)) {
+            switch (channelUID.getId()) {
                 case CHANNEL_LOCATION:
-                    updateState(CHANNEL_LOCATION, locationFromData(localData.getLocation()));
+                    updateState(channelUID, locationFromData(localData.getLocation()));
                     break;
                 case CHANNEL_UV_INTENSITY:
-                    updateState(CHANNEL_UV_INTENSITY, decimalFromSensor(localData.getUvIntensity()));
+                    updateState(channelUID, decimalFromSensor(localData.getUvIntensity()));
                     break;
                 case CHANNEL_ILLUMINANCE:
-                    updateState(CHANNEL_ILLUMINANCE, decimalFromSensor(localData.getLuminance()));
+                    updateState(channelUID, decimalFromSensor(localData.getLuminance()));
                     break;
                 case CHANNEL_PRESSURE:
-                    updateState(CHANNEL_PRESSURE, decimalFromSensor(localData.getPressure()));
+                    updateState(channelUID, decimalFromSensor(localData.getPressure()));
                     break;
                 case CHANNEL_HUMIDITY:
-                    updateState(CHANNEL_HUMIDITY, decimalFromSensor(localData.getHumidity()));
+                    updateState(channelUID, decimalFromSensor(localData.getHumidity()));
                     break;
                 case CHANNEL_TEMPERATURE:
-                    updateState(CHANNEL_TEMPERATURE, decimalFromSensor(localData.getTemperature()));
+                    updateState(channelUID, decimalFromSensor(localData.getTemperature()));
                     break;
                 case CHANNEL_PARTICULATE_MATTER_2_5:
-                    updateState(CHANNEL_PARTICULATE_MATTER_2_5,
-                            decimalFromSensor(localData.getParticulateMatter2dot5()));
+                    updateState(channelUID, decimalFromSensor(localData.getParticulateMatter2dot5()));
                     break;
                 case CHANNEL_PARTICULATE_MATTER_10:
-                    updateState(CHANNEL_PARTICULATE_MATTER_10, decimalFromSensor(localData.getParticulateMatter10()));
+                    updateState(channelUID, decimalFromSensor(localData.getParticulateMatter10()));
                     break;
                 case CHANNEL_UV_INTENSITY_LR:
-                    updateState(CHANNEL_UV_INTENSITY_LR, dateTimeFromSensor(localData.getUvIntensity()));
+                    updateState(channelUID, dateTimeFromSensor(localData.getUvIntensity()));
                     break;
                 case CHANNEL_ILLUMINANCE_LR:
-                    updateState(CHANNEL_ILLUMINANCE_LR, dateTimeFromSensor(localData.getLuminance()));
+                    updateState(channelUID, dateTimeFromSensor(localData.getLuminance()));
                     break;
                 case CHANNEL_PRESSURE_LR:
-                    updateState(CHANNEL_PRESSURE_LR, dateTimeFromSensor(localData.getPressure()));
+                    updateState(channelUID, dateTimeFromSensor(localData.getPressure()));
                     break;
                 case CHANNEL_HUMIDITY_LR:
-                    updateState(CHANNEL_HUMIDITY_LR, dateTimeFromSensor(localData.getHumidity()));
+                    updateState(channelUID, dateTimeFromSensor(localData.getHumidity()));
                     break;
                 case CHANNEL_TEMPERATURE_LR:
-                    updateState(CHANNEL_TEMPERATURE_LR, dateTimeFromSensor(localData.getTemperature()));
+                    updateState(channelUID, dateTimeFromSensor(localData.getTemperature()));
                     break;
                 case CHANNEL_PARTICULATE_MATTER_2_5_LR:
-                    updateState(CHANNEL_PARTICULATE_MATTER_2_5_LR,
-                            dateTimeFromSensor(localData.getParticulateMatter2dot5()));
+                    updateState(channelUID, dateTimeFromSensor(localData.getParticulateMatter2dot5()));
                     break;
                 case CHANNEL_PARTICULATE_MATTER_10_LR:
-                    updateState(CHANNEL_PARTICULATE_MATTER_10_LR,
-                            dateTimeFromSensor(localData.getParticulateMatter10()));
+                    updateState(channelUID, dateTimeFromSensor(localData.getParticulateMatter10()));
                     break;
                 default:
-                    logger.debug("Command received for an unknown channel: {}", channelID);
+                    logger.debug("Command received for an unknown channel: {}", channelUID.getId());
                     break;
             }
         }
@@ -254,24 +237,22 @@ public class SenseBoxHandler extends BaseThingHandler {
 
     private State dateTimeFromSensor(@Nullable SenseBoxSensor sensorData) {
         State result = UnDefType.UNDEF;
-
         if (sensorData != null && sensorData.getLastMeasurement() != null
-                && StringUtils.isNotEmpty(sensorData.getLastMeasurement().getCreatedAt())) {
+                && sensorData.getLastMeasurement().getCreatedAt() != null
+                && !sensorData.getLastMeasurement().getCreatedAt().isEmpty()) {
             result = new DateTimeType(sensorData.getLastMeasurement().getCreatedAt());
         }
-
         return result;
     }
 
     private State decimalFromSensor(@Nullable SenseBoxSensor sensorData) {
         State result = UnDefType.UNDEF;
-
         if (sensorData != null && sensorData.getLastMeasurement() != null
-                && StringUtils.isNotEmpty(sensorData.getLastMeasurement().getValue())) {
+                && sensorData.getLastMeasurement().getValue() != null
+                && !sensorData.getLastMeasurement().getValue().isEmpty()) {
             logger.debug("About to determine quantity for {} / {}", sensorData.getLastMeasurement().getValue(),
                     sensorData.getUnit());
             BigDecimal bd = new BigDecimal(sensorData.getLastMeasurement().getValue());
-
             switch (sensorData.getUnit()) {
                 case "%":
                     result = new QuantityType<>(bd, SmartHomeUnits.PERCENT);
@@ -304,21 +285,17 @@ public class SenseBoxHandler extends BaseThingHandler {
                     logger.debug("Could not determine unit for '{}', using default", sensorData.getUnit());
                     result = new QuantityType<>(bd, SmartHomeUnits.ONE);
             }
-
             logger.debug("State: '{}'", result);
         }
-
         return result;
     }
 
     private State locationFromData(@Nullable SenseBoxLocation locationData) {
         State result = UnDefType.UNDEF;
-
         if (locationData != null) {
             result = new PointType(new DecimalType(locationData.getLatitude()),
                     new DecimalType(locationData.getLongitude()), new DecimalType(locationData.getHeight()));
         }
-
         return result;
     }
 }

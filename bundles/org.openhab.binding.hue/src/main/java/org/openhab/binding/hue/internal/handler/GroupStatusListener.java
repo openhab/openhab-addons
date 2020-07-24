@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.hue.internal.FullGroup;
+import org.openhab.binding.hue.internal.Scene;
 
 /**
  * The {@link GroupStatusListener} is notified when a group status has changed or a group has been removed or added.
@@ -25,7 +28,7 @@ public interface GroupStatusListener {
 
     /**
      * This method returns the group id of listener
-     * 
+     *
      * @return groupId String
      */
     String getGroupId();
@@ -55,4 +58,11 @@ public interface GroupStatusListener {
      * @param group The added group
      */
     void onGroupAdded(FullGroup group);
+
+    /**
+     * This method is called whenever the list of available scenes is updated.
+     *
+     * @param updatedScenes available scenes
+     */
+    void onScenesUpdated(List<Scene> scenes);
 }

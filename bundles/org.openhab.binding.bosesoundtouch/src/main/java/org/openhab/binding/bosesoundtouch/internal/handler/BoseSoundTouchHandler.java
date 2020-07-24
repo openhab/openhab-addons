@@ -445,7 +445,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
         if (sessionFuture != null && !sessionFuture.isDone()) {
             sessionFuture.cancel(true);
         }
-        if (client != null && client.isStarted()) {
+        if (client != null) {
             try {
                 client.stop();
                 client.destroy();

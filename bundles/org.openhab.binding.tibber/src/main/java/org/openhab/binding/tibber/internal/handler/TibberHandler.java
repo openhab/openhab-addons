@@ -356,10 +356,12 @@ public class TibberHandler extends BaseThingHandler {
             this.session = null;
             this.socket = null;
         }
+        Future<?> sessionFuture = this.sessionFuture;
         if (sessionFuture != null && !sessionFuture.isDone()) {
             sessionFuture.cancel(true);
         }
-        if (client != null && client.isStarted()) {
+        WebSocketClient client = this.client;
+        if (client != null) {
             try {
                 client.stop();
             } catch (Exception e) {

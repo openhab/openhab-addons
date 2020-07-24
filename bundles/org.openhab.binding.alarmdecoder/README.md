@@ -39,7 +39,7 @@ Before working on the main panel, it is advisable to put the alarm system in tes
 Don't forget to plug it back in when you are finished!
 
 Understanding exactly what expansion boards are connected to the main panel is crucial for a successful setup of the AlarmDecoder and also helpful in interpreting the messages from the alarmdecoder.
-While many of the expansion devices don't have labels on the outside, inserting a flat screwdriver into the right slot and prying gently will usually uncover a circuit board with numbers on it that can be web searched.
+While many of the expansion devices don't have labels on the outside, inserting a flat screwdriver into the right slot and prying gently will usually uncover a circuit board with numbers on it that can be looked up via web search.
 
 Although not mentioned in the Quick Start guide, configuring virtual relay boards is absolutely necessary on panels like the Honeywell Vista 20p and similar, or else all of the eight on-board zones will not be visible!
 

@@ -146,4 +146,12 @@ public class ScaleTransformServiceTest {
         String transformedResponse = processor.transform(existingscale, source);
         Assert.assertEquals("Correcte (992) !", transformedResponse);
     }
+
+    @Test
+    public void testValueExceedsRange() throws TransformationException {
+        String existingscale = "scale/humidex.scale";
+        String source = "200";
+        String transformedResponse = processor.transform(existingscale, source);
+        Assert.assertEquals("", transformedResponse);
+    }
 }
