@@ -53,8 +53,8 @@ public class TeleinfoReceiveThread extends Thread {
     @Override
     public void run() {
         try (TeleinfoInputStream teleinfoStream = new TeleinfoInputStream(serialPort.getInputStream(),
-                TeleinfoInputStream.DEFAULT_TIMEOUT_NEXT_HEADER_FRAME * 100,
-                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME * 100, autoRepairInvalidADPSgroupLine,
+                TeleinfoInputStream.DEFAULT_TIMEOUT_NEXT_HEADER_FRAME_US * 100,
+                TeleinfoInputStream.DEFAULT_TIMEOUT_READING_FRAME_US * 100, autoRepairInvalidADPSgroupLine,
                 executorService)) {
             while (!interrupted()) {
                 TeleinfoReceiveThreadListener listener = this.listener;
