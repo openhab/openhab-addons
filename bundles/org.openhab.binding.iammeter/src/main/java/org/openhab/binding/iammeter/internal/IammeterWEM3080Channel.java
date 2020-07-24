@@ -10,14 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-@org.eclipse.jdt.annotation.NonNullByDefault
 package org.openhab.binding.iammeter.internal;
 
 /**
  * The {@link IammeterWEM3080Channel} Enum defines common constants, which are
  * used across the whole binding.
  *
- * @author yangbo - Initial contribution
+ * @author yang bo - Initial contribution
  */
 public enum IammeterWEM3080Channel {
 
