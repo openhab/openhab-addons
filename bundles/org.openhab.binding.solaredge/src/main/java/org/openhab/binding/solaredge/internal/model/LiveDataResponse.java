@@ -14,6 +14,9 @@ package org.openhab.binding.solaredge.internal.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,50 +24,55 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class LiveDataResponse {
     public static final String GRID = "GRID";
     public static final String LOAD = "LOAD";
     public static final String PV = "PV";
     public static final String STORAGE = "STORAGE";
 
+    @NonNullByDefault
     public static class Value {
-        public String status;
-        public Double currentPower;
+        public @Nullable String status;
+        public @Nullable Double currentPower;
     }
 
+    @NonNullByDefault
     public static class BatteryValue {
-        public String status;
-        public Double currentPower;
-        public Double chargeLevel;
-        public String critical;
+        public @Nullable String status;
+        public @Nullable Double currentPower;
+        public @Nullable Double chargeLevel;
+        public @Nullable String critical;
     }
 
+    @NonNullByDefault
     public static class Connection {
-        public String from;
-        public String to;
+        public @Nullable String from;
+        public @Nullable String to;
     }
 
+    @NonNullByDefault
     public static class SiteCurrentPowerFlow {
-        public String unit;
+        public @Nullable String unit;
 
         @SerializedName(GRID)
-        public Value grid;
+        public @Nullable Value grid;
 
         @SerializedName(LOAD)
-        public Value load;
+        public @Nullable Value load;
 
         @SerializedName(PV)
-        public Value pv;
+        public @Nullable Value pv;
 
         @SerializedName(STORAGE)
-        public BatteryValue storage;
+        public @Nullable BatteryValue storage;
 
-        public List<Connection> connections;
+        public @Nullable List<Connection> connections;
     }
 
-    private SiteCurrentPowerFlow siteCurrentPowerFlow;
+    private @Nullable SiteCurrentPowerFlow siteCurrentPowerFlow;
 
-    public final SiteCurrentPowerFlow getSiteCurrentPowerFlow() {
+    public final @Nullable SiteCurrentPowerFlow getSiteCurrentPowerFlow() {
         return siteCurrentPowerFlow;
     }
 

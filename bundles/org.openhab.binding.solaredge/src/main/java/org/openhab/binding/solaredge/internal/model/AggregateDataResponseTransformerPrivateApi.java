@@ -22,6 +22,8 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.solaredge.internal.handler.ChannelProvider;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.UtilizationMeasures;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.Value;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi.ValueAndPercent;
 
 /**
  * transforms the http response into the openhab datamodel (instances of State)
@@ -43,35 +45,38 @@ public class AggregateDataResponseTransformerPrivateApi extends AbstractDataResp
         String group = convertPeriodToGroup(period);
 
         if (utilizationMeasures != null) {
-            if (utilizationMeasures.production != null) {
-                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_PRODUCTION),
-                        utilizationMeasures.production);
+            Value production = utilizationMeasures.production;
+            if (production != null) {
+                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_PRODUCTION), production);
             }
 
-            if (utilizationMeasures.consumption != null) {
-                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_CONSUMPTION),
-                        utilizationMeasures.consumption);
+            Value consumption = utilizationMeasures.consumption;
+            if (consumption != null) {
+                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_CONSUMPTION), consumption);
             }
 
-            if (utilizationMeasures.selfConsumptionForConsumption != null) {
+            ValueAndPercent selfConsumptionForConsumption = utilizationMeasures.selfConsumptionForConsumption;
+            if (selfConsumptionForConsumption != null) {
                 putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_SELF_CONSUMPTION_FOR_CONSUMPTION),
-                        utilizationMeasures.selfConsumptionForConsumption);
+                        selfConsumptionForConsumption);
                 putPercentType(result, channelProvider.getChannel(group, CHANNEL_ID_SELF_CONSUMPTION_COVERAGE),
-                        utilizationMeasures.selfConsumptionForConsumption);
+                        selfConsumptionForConsumption);
             }
 
-            if (utilizationMeasures.batterySelfConsumption != null) {
+            Value batterySelfConsumption = utilizationMeasures.batterySelfConsumption;
+            if (batterySelfConsumption != null) {
                 putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_BATTERY_SELF_CONSUMPTION),
-                        utilizationMeasures.batterySelfConsumption);
+                        batterySelfConsumption);
             }
 
-            if (utilizationMeasures.imported != null) {
-                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_IMPORT),
-                        utilizationMeasures.imported);
+            Value imported = utilizationMeasures.imported;
+            if (imported != null) {
+                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_IMPORT), imported);
             }
 
-            if (utilizationMeasures.export != null) {
-                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_EXPORT), utilizationMeasures.export);
+            Value export = utilizationMeasures.export;
+            if (export != null) {
+                putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_EXPORT), export);
             }
         }
         return result;

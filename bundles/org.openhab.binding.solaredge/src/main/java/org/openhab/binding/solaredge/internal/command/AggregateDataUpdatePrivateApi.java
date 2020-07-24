@@ -16,6 +16,8 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
@@ -31,6 +33,7 @@ import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class AggregateDataUpdatePrivateApi extends AbstractCommandCallback implements SolarEdgeCommand {
 
     /**
@@ -75,7 +78,7 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommandCallback imple
                 this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX;
                 break;
             default:
-                this.urlSuffix = null;
+                this.urlSuffix = "";
         }
     }
 
@@ -94,13 +97,11 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommandCallback imple
     }
 
     @Override
-    public void onComplete(Result result) {
+    public void onComplete(@Nullable Result result) {
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            if (getListener() != null) {
-                getListener().update(getCommunicationStatus());
-            }
+            updateListenerStatus();
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
             }

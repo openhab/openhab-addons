@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
@@ -46,6 +47,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractCommandCallback extends BufferingResponseListener implements SolarEdgeCommand {
 
     /**
@@ -71,7 +73,7 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * listener to provide updates to the WebInterface class
      */
-    private StatusUpdateListener listener;
+    private @Nullable StatusUpdateListener listener;
 
     /**
      * the constructor
@@ -98,32 +100,38 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
      * Log request success
      */
     @Override
-    public final void onSuccess(Response response) {
+    public final void onSuccess(@Nullable Response response) {
         super.onSuccess(response);
-        communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
-        logger.debug("HTTP response {}", response.getStatus());
+        if (response != null) {
+            communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
+            logger.debug("HTTP response {}", response.getStatus());
+        }
     }
 
     /**
      * Log request failure
      */
     @Override
-    public final void onFailure(Response response, Throwable failure) {
+    public final void onFailure(@Nullable Response response, @Nullable Throwable failure) {
         super.onFailure(response, failure);
-        logger.debug("Request failed: {}", failure.toString());
-        communicationStatus.setError((Exception) failure);
+        if (failure != null) {
+            logger.debug("Request failed: {}", failure.toString());
+            communicationStatus.setError((Exception) failure);
 
-        if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
-            communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
-        } else if (failure instanceof UnknownHostException) {
-            communicationStatus.setHttpCode(Code.BAD_GATEWAY);
+            if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
+                communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
+            } else if (failure instanceof UnknownHostException) {
+                communicationStatus.setHttpCode(Code.BAD_GATEWAY);
+            } else {
+                communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
+            logger.debug("Request failed");
         }
     }
 
     @Override
-    public void onContent(Response response, ByteBuffer content) {
+    public void onContent(@Nullable Response response, @Nullable ByteBuffer content) {
         super.onContent(response, content);
         logger.debug("received content, length: {}", getContentAsString().length());
     }
@@ -160,6 +168,13 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
         return communicationStatus;
     }
 
+    @Override
+    public void updateListenerStatus() {
+        if (listener != null) {
+            listener.update(communicationStatus);
+        }
+    }
+
     /**
      * concrete implementation has to prepare the requests with additional parameters, etc
      *
@@ -174,11 +189,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
      * @return Url
      */
     protected abstract String getURL();
-
-    @Override
-    public final StatusUpdateListener getListener() {
-        return listener;
-    }
 
     @Override
     public final void setListener(StatusUpdateListener listener) {

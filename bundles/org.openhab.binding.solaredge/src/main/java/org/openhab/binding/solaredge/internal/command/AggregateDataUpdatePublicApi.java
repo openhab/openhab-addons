@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
@@ -33,6 +35,7 @@ import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implements SolarEdgeCommand {
 
     /**
@@ -86,13 +89,11 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
     }
 
     @Override
-    public void onComplete(Result result) {
+    public void onComplete(@Nullable Result result) {
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            if (getListener() != null) {
-                getListener().update(getCommunicationStatus());
-            }
+            updateListenerStatus();
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
             }

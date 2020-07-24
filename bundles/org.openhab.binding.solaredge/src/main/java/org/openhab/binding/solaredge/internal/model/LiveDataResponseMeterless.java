@@ -12,30 +12,38 @@
  */
 package org.openhab.binding.solaredge.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * this class is used to map the live data json response
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class LiveDataResponseMeterless {
+    @NonNullByDefault
     public static class Power {
-        public Double power;
+        public @Nullable Double power;
     }
 
+    @NonNullByDefault
     public static class Energy {
-        public Double energy;
+        public @Nullable Double energy;
     }
 
+    @NonNullByDefault
     public static class Overview {
-        public Power currentPower;
-        public Energy lastDayData;
-        public Energy lastMonthData;
-        public Energy lastYearData;
+        public @Nullable Power currentPower;
+        public @Nullable Energy lastDayData;
+        public @Nullable Energy lastMonthData;
+        public @Nullable Energy lastYearData;
     }
 
+    @Nullable
     private Overview overview;
 
-    public final Overview getOverview() {
+    public final @Nullable Overview getOverview() {
         return overview;
     }
 

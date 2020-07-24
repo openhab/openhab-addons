@@ -15,6 +15,7 @@ package org.openhab.binding.solaredge.internal.model;
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +24,7 @@ import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.solaredge.internal.handler.ChannelProvider;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi.EnergyDetails;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi.MeterTelemetries;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi.MeterTelemetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,29 +51,31 @@ public class AggregateDataResponseTransformerPublicApi extends AbstractDataRespo
 
     public Map<Channel, State> transform(AggregateDataResponsePublicApi response, AggregatePeriod period) {
         Map<Channel, State> result = new HashMap<>(20);
-
         EnergyDetails energyDetails = response.getEnergyDetails();
 
-        if (energyDetails != null && energyDetails.timeUnit != null) {
-            for (MeterTelemetries meter : energyDetails.meters) {
-                if (meter.type != null) {
-                    if (meter.type.equals(METER_TYPE_PRODUCTION)) {
-                        fillAggregateData(energyDetails.timeUnit, energyDetails.unit, meter, CHANNEL_ID_PRODUCTION,
-                                result);
-                    } else if (meter.type.equals(METER_TYPE_CONSUMPTION)) {
-                        fillAggregateData(energyDetails.timeUnit, energyDetails.unit, meter, CHANNEL_ID_CONSUMPTION,
-                                result);
-                    } else if (meter.type.equals(METER_TYPE_SELFCONSUMPTION)) {
-                        fillAggregateData(energyDetails.timeUnit, energyDetails.unit, meter,
-                                CHANNEL_ID_SELF_CONSUMPTION_FOR_CONSUMPTION, result);
-                    } else if (meter.type.equals(METER_TYPE_IMPORT)) {
-                        fillAggregateData(energyDetails.timeUnit, energyDetails.unit, meter, CHANNEL_ID_IMPORT, result);
-                    } else if (meter.type.equals(METER_TYPE_EXPORT)) {
-                        fillAggregateData(energyDetails.timeUnit, energyDetails.unit, meter, CHANNEL_ID_EXPORT, result);
+        if (energyDetails != null) {
+            AggregatePeriod timeUnit = energyDetails.timeUnit;
+            String unit = energyDetails.unit;
+            if (timeUnit != null && unit != null && energyDetails.meters != null) {
+                for (MeterTelemetries meter : energyDetails.meters) {
+                    String type = meter.type;
+                    if (type != null) {
+                        if (type.equals(METER_TYPE_PRODUCTION)) {
+                            fillAggregateData(timeUnit, unit, meter, CHANNEL_ID_PRODUCTION, result);
+                        } else if (type.equals(METER_TYPE_CONSUMPTION)) {
+                            fillAggregateData(timeUnit, unit, meter, CHANNEL_ID_CONSUMPTION, result);
+                        } else if (type.equals(METER_TYPE_SELFCONSUMPTION)) {
+                            fillAggregateData(timeUnit, unit, meter, CHANNEL_ID_SELF_CONSUMPTION_FOR_CONSUMPTION,
+                                    result);
+                        } else if (type.equals(METER_TYPE_IMPORT)) {
+                            fillAggregateData(timeUnit, unit, meter, CHANNEL_ID_IMPORT, result);
+                        } else if (type.equals(METER_TYPE_EXPORT)) {
+                            fillAggregateData(timeUnit, unit, meter, CHANNEL_ID_EXPORT, result);
+                        }
                     }
                 }
+                fillSelfConsumptionCoverage(timeUnit, result);
             }
-            fillSelfConsumptionCoverage(energyDetails.timeUnit, result);
         }
         return result;
     }
@@ -86,24 +90,27 @@ public class AggregateDataResponseTransformerPublicApi extends AbstractDataRespo
             Map<Channel, State> valueMap) {
 
         String group = convertPeriodToGroup(period);
+        List<MeterTelemetry> values = meter.values;
 
-        switch (period) {
-            case WEEK:
-                if (meter.values.size() == 1) {
-                    putEnergyType(valueMap, channelProvider.getChannel(group, channelId), unit, meter.values.get(0));
-                } else if (meter.values.size() == 2) {
-                    putEnergyType(valueMap, channelProvider.getChannel(group, channelId), unit, meter.values.get(0),
-                            meter.values.get(1));
-                } else {
-                    logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
-                            meter.values.size());
-                }
-                break;
-            case DAY:
-            case MONTH:
-            case YEAR:
-                putEnergyType(valueMap, channelProvider.getChannel(group, channelId), unit, meter.values.get(0));
-                break;
+        if (values != null) {
+            switch (period) {
+                case WEEK:
+                    if (values.size() == 1) {
+                        putEnergyType(valueMap, channelProvider.getChannel(group, channelId), unit, values.get(0));
+                    } else if (values.size() == 2) {
+                        putEnergyType(valueMap, channelProvider.getChannel(group, channelId), unit, values.get(0),
+                                values.get(1));
+                    } else {
+                        logger.warn("Response for weekly data has unexpected format, expected 2 entries got {}",
+                                values.size());
+                    }
+                    break;
+                case DAY:
+                case MONTH:
+                case YEAR:
+                    putEnergyType(valueMap, channelProvider.getChannel(group, channelId), unit, values.get(0));
+                    break;
+            }
         }
     }
 

@@ -14,32 +14,39 @@ package org.openhab.binding.solaredge.internal.model;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * this class is used to map the aggregate data response of the public API
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class AggregateDataResponsePublicApi {
 
+    @NonNullByDefault
     public static class MeterTelemetry {
-        public String date;
-        public Double value;
+        public @Nullable String date;
+        public @Nullable Double value;
     }
 
+    @NonNullByDefault
     public static class MeterTelemetries {
-        public String type;
-        public List<MeterTelemetry> values;
+        public @Nullable String type;
+        public @Nullable List<MeterTelemetry> values;
     }
 
+    @NonNullByDefault
     public static class EnergyDetails {
-        public AggregatePeriod timeUnit;
-        public String unit;
-        public List<MeterTelemetries> meters;
+        public @Nullable AggregatePeriod timeUnit;
+        public @Nullable String unit;
+        public @Nullable List<MeterTelemetries> meters;
     }
 
-    private EnergyDetails energyDetails;
+    private @Nullable EnergyDetails energyDetails;
 
-    public EnergyDetails getEnergyDetails() {
+    public @Nullable EnergyDetails getEnergyDetails() {
         return energyDetails;
     }
 

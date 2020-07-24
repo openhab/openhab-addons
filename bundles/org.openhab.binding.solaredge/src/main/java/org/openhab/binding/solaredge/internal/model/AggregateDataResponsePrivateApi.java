@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.solaredge.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,30 +22,34 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class AggregateDataResponsePrivateApi {
 
+    @NonNullByDefault
     public static class Value {
-        public Double value;
-        public String unit;
+        public @Nullable Double value;
+        public @Nullable String unit;
     }
 
+    @NonNullByDefault
     public static class ValueAndPercent extends Value {
-        public Double percentage;
+        public @Nullable Double percentage;
     }
 
+    @NonNullByDefault
     public static class UtilizationMeasures {
-        public Value production;
-        public Value consumption;
-        public ValueAndPercent selfConsumptionForConsumption;
-        public ValueAndPercent batterySelfConsumption;
+        public @Nullable Value production;
+        public @Nullable Value consumption;
+        public @Nullable ValueAndPercent selfConsumptionForConsumption;
+        public @Nullable ValueAndPercent batterySelfConsumption;
         @SerializedName("import")
-        public ValueAndPercent imported;
-        public ValueAndPercent export;
+        public @Nullable ValueAndPercent imported;
+        public @Nullable ValueAndPercent export;
     }
 
-    private UtilizationMeasures utilizationMeasures;
+    private @Nullable UtilizationMeasures utilizationMeasures;
 
-    public final UtilizationMeasures getUtilizationMeasures() {
+    public final @Nullable UtilizationMeasures getUtilizationMeasures() {
         return utilizationMeasures;
     }
 
