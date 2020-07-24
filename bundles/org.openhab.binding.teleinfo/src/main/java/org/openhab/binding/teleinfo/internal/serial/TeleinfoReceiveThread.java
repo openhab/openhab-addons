@@ -71,7 +71,6 @@ public class TeleinfoReceiveThread extends Thread {
                         if (!listener.continueOnReadNextFrameTimeoutException(this, e)) {
                             break;
                         }
-                        // skipInputStreamBuffer();
                     } catch (IOException e) {
                         logger.warn("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
                         listener.onSerialPortInputStreamIOException(this, e);
