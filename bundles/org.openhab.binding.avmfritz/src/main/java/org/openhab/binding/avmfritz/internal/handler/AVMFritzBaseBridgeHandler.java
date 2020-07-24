@@ -15,7 +15,6 @@ package org.openhab.binding.avmfritz.internal.handler;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.dto.DeviceModel.ETSUnitInfoModel.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,10 +43,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.StateOption;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
-import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
@@ -95,7 +92,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      */
     private final HttpClient httpClient;
 
-    private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     protected final List<FritzAhaStatusListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -110,10 +107,10 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param bridge Bridge object representing a FRITZ!Box
      */
     public AVMFritzBaseBridgeHandler(Bridge bridge, HttpClient httpClient,
-            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+            AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(bridge);
         this.httpClient = httpClient;
-        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
 
         applyTemplateChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_APPLY_TEMPLATE);
     }
@@ -241,12 +238,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param templateList list of template models
      */
     public void addTemplateList(List<TemplateModel> templateList) {
-        List<StateOption> options = new ArrayList<>();
-        for (TemplateModel template : templateList) {
-            logger.debug("Process template model: {}", template);
-            options.add(new StateOption(template.getIdentifier(), template.getName()));
-        }
-        stateDescriptionProvider.setStateOptions(applyTemplateChannelUID, options);
+        commandDescriptionProvider.setCommandOptions(applyTemplateChannelUID,
+                templateList.stream().map(TemplateModel::toCommandOption).collect(Collectors.toList()));
     }
 
     /**
@@ -350,21 +343,13 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
             return;
         }
-        switch (channelId) {
-            case CHANNEL_APPLY_TEMPLATE:
-                applyTemplate(command, fritzBox);
-                break;
-            default:
-                logger.debug("Received unknown channel {}", channelId);
-                break;
+        if (CHANNEL_APPLY_TEMPLATE.equals(channelId)) {
+            if (command instanceof StringType) {
+                fritzBox.applyTemplate(command.toString());
+            }
+        } else {
+            logger.debug("Received unknown channel {}", channelId);
         }
-    }
-
-    protected void applyTemplate(Command command, FritzAhaWebInterface fritzBox) {
-        if (command instanceof StringType) {
-            fritzBox.applyTemplate(command.toString());
-        }
-        updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
     }
 
     /**
