@@ -201,8 +201,8 @@ public class MiIoAsyncCommunication {
         if (senderThread == null || !senderThread.isAlive()) {
             senderThread = new MessageSenderThread();
             senderThread.start();
+            this.senderThread = senderThread;
         }
-        this.senderThread = senderThread;
     }
 
     /**
