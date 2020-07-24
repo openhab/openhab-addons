@@ -51,6 +51,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
     private static final int SERIAL_RECEIVE_TIMEOUT_MS = 250;
     private static final int SERIAL_PORT_DELAY_RETRY_IN_SECONDS = 60;
+    private static final int RECEIVER_THREAD_JOIN_DELAY_MS = 500;
 
     private SerialPortManager serialPortManager;
     private @Nullable SerialPort serialPort;
@@ -180,7 +181,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
         if (receiveThreadRef != null) {
             receiveThreadRef.interrupt();
             try {
-                receiveThreadRef.join();
+                receiveThreadRef.join(RECEIVER_THREAD_JOIN_DELAY_MS);
             } catch (InterruptedException e) {
             }
             receiveThreadRef.setListener(null);
