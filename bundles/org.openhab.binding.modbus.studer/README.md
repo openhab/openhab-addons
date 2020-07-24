@@ -11,12 +11,12 @@ For a list of certified products see this page: https://www.studer-innotec.com/
 This bundle adds the following thing type to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
-| Thing Type | Description |Picture |
+| Thing Type IDs | Description |Picture |
 | --- | --- | --- |
-| BSP | For BSP that offer a highly precise measuring for Xtender, VarioTrack and VarioString systems | ![BSP](doc/bsp.png) |
-| Xtender | For the Xtender models for system capacities from 0.5kVA to 72kVA that allow for the optimal use of available energy | ![Xtender](doc/xtender.png) |
-| VarioTrack | For the VarioTrack models of MPPT solar charge controllers for systems with solar PV capacity from 1 - 75kWp | ![VarioTrack](doc/variotrack.png) |
-| VarioString | For the VarioString models of MPPT solar charge controllers for systems with solar PV capacity from 4  | ![VarioString](doc/variostring.png) |
+| bsp | For BSP that offer a highly precise measuring for Xtender, VarioTrack and VarioString systems | ![BSP](doc/bsp.png) |
+| xtender | For the Xtender models for system capacities from 0.5kVA to 72kVA that allow for the optimal use of available energy | ![Xtender](doc/xtender.png) |
+| variotrack | For the VarioTrack models of MPPT solar charge controllers for systems with solar PV capacity from 1 - 75kWp | ![VarioTrack](doc/variotrack.png) |
+| variostring | For the VarioString models of MPPT solar charge controllers for systems with solar PV capacity from 4  | ![VarioString](doc/variostring.png) |
 
 
 ## Thing Configuration
@@ -41,7 +41,7 @@ The following Channels, and their associated channel types are shown below divid
 
 #### BSP 
 
-All channels readed for a BSP device
+All channels read for a BSP device
 
 | Channel            | Type                     | Description           |
 | ------------------ | ------------------------ | --------------------- |
@@ -53,7 +53,7 @@ All channels readed for a BSP device
 
 #### Xtender 
 
-All channels readed for a Xtender device
+All channels read for a Xtender device
 
 | Channel           | Type                     | Description             |
 | ----------------- | ------------------------ | ----------------------- |
@@ -70,7 +70,7 @@ All channels readed for a Xtender device
 
 #### VarioTrack 
 
-All channels readed for a VarioTrack device
+All channels read for a VarioTrack device
 
 | Channel              | Type                     | Description                               |
 | -------------------- | ------------------------ | ----------------------------------------- |
@@ -85,7 +85,7 @@ All channels readed for a VarioTrack device
 
 #### VarioString 
 
-All channels readed for a VarioString device
+All channels read for a VarioString device
 
 | Channel                 | Type                     | Description                                   |
 | ----------------------- | ------------------------ | --------------------------------------------- |
@@ -122,10 +122,10 @@ Note: Make sure that refresh and slave address are numerical, without quotes.
 ### Item Configuration
 
 ```
-Number XtenderStuderThing_InputVoltage "Input Voltage [%.2f V]"  
+Number XtenderStuderThing_InputVoltage "Input Voltage [%.2f %unit%]"  
 {channel="modbus:xtender:bridge:xtenderdevice:inputVoltage"}
 
-Number XtenderStuderThing_InputCurrent "Input Current [%.2f A]"  {channel="modbus:xtender:bridge:xtenderdevice:inputCurrent"}
+Number XtenderStuderThing_InputCurrent "Input Current [%.2f %unit%]"  {channel="modbus:xtender:bridge:xtenderdevice:inputCurrent"}
 
 String XtenderStuderThing_StateInverter "State: [%s]" {channel="modbus:xtender:bridge:xtenderdevice:stateInverter"}
 ```

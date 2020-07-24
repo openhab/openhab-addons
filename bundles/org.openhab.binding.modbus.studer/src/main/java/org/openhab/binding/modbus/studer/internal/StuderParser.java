@@ -223,15 +223,11 @@ public class StuderParser {
      */
     public @Nullable Object hexToFloat(String hex) {
         String t = hex.replaceAll(" ", "");
-        try {
-            float f = Float.intBitsToFloat((int) Long.parseLong(t, 16));
-            if (Float.isNaN(f)) {
-                return null;
-            } else {
-                return f;
-            }
-        } catch (Exception e) {
+        float f = Float.intBitsToFloat((int) Long.parseLong(t, 16));
+        if (Float.isNaN(f)) {
             return null;
+        } else {
+            return f;
         }
     }
 }

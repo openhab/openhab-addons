@@ -32,8 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.studer.internal.StuderParser.ModeXtender;
 import org.openhab.binding.modbus.studer.internal.StuderParser.State;
@@ -77,26 +75,15 @@ public class StuderHandler extends BaseThingHandler {
      * Importing parser methods and enums
      */
     final StuderParser parser = new StuderParser();
-
-    /**
-     * Support variable for slave address
-     */
-    protected int slaveAddress;
-
-    /**
-     * Support variable for refresh
-     */
-    protected final int refresh;
-
     /**
      * Support variable for type of thing
      */
-    protected final ThingTypeUID type;
+    protected ThingTypeUID type;
 
     /**
      * Array of registers of Studer slave to read, we store this once initialization is complete
      */
-    private Integer @Nullable [] registers;
+    private Integer[] registers = new Integer[0];
 
     /**
      * Instances of this handler
@@ -104,13 +91,11 @@ public class StuderHandler extends BaseThingHandler {
      * @param thing the thing to handle
      * @param type the type of thing to handle
      * @param slaveAddress the address of thing
-     * @param refresh the address of thing
+     * @param refreshSec the address of thing
      */
-    public StuderHandler(Thing thing, ThingTypeUID type, int slaveAddress, int refresh) {
+    public StuderHandler(Thing thing) {
         super(thing);
-        this.type = type;
-        this.slaveAddress = slaveAddress;
-        this.refresh = refresh;
+        this.type = thing.getThingTypeUID();
     }
 
     @Override
@@ -126,9 +111,12 @@ public class StuderHandler extends BaseThingHandler {
      * Get registers to poll
      * Start the periodic polling
      */
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         config = getConfigAs(StuderConfiguration.class);
+        logger.debug("Initializing thing whit configuration: {}", thing.getConfiguration());
+
         startUp();
     }
 
@@ -167,7 +155,7 @@ public class StuderHandler extends BaseThingHandler {
         }
 
         for (int r : registers) {
-            registerPollTask(slaveAddress, r);
+            registerPollTask(r);
 
         }
     }
@@ -237,11 +225,7 @@ public class StuderHandler extends BaseThingHandler {
             logger.debug("No bridge handler available -- aborting init for {}", label);
             return;
         }
-        try {
-            int ciao = slaveEndpointThingHandler.getSlaveId();
-            comms = slaveEndpointThingHandler.getCommunicationInterface();
-        } catch (EndpointNotInitializedException e) {
-        }
+        comms = slaveEndpointThingHandler.getCommunicationInterface();
         if (comms == null) {
             @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
@@ -270,8 +254,8 @@ public class StuderHandler extends BaseThingHandler {
         if (mycomms != null) {
             for (PollTask t : pollTasks) {
                 mycomms.unregisterRegularPoll(t);
-                pollTasks.remove(t);
             }
+            pollTasks.clear();
         }
     }
 
@@ -280,7 +264,7 @@ public class StuderHandler extends BaseThingHandler {
      * This is where we set up our regular poller
      */
     @SuppressWarnings("null")
-    private synchronized void registerPollTask(int slaveAddress, int n) {
+    private synchronized void registerPollTask(int registerNumber) {
         if (pollTasks.size() >= registers.length) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             throw new IllegalStateException("New pollTask invalid");
@@ -289,19 +273,19 @@ public class StuderHandler extends BaseThingHandler {
         ModbusCommunicationInterface mycomms = comms;
         @Nullable
         StuderConfiguration studerConfig = config;
-        if (studerConfig == null || comms == null) {
+        if (studerConfig == null || mycomms == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
         }
 
         logger.debug("Setting up regular polling");
 
-        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveAddress,
-                ModbusReadFunctionCode.READ_INPUT_REGISTERS, n, 2, studerConfig.maxTries);
-        long refreshMillis = 3 * 1000;
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(studerConfig.slaveAddress,
+                ModbusReadFunctionCode.READ_INPUT_REGISTERS, registerNumber, 2, studerConfig.maxTries);
+        long refreshMillis = studerConfig.refreshSec * 1000;
         PollTask pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
             if (result.getRegisters().isPresent()) {
                 ModbusRegisterArray reg = result.getRegisters().get();
-                handlePolledData(n, reg);
+                handlePolledData(registerNumber, reg);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -321,23 +305,19 @@ public class StuderHandler extends BaseThingHandler {
      * @param n register readed
      * @param registers byte array read from the modbus slave
      */
-    protected void handlePolledData(int n, ModbusRegisterArray registers) {
-        // TODO Auto-generated method stub
+    protected void handlePolledData(int registerNumber, ModbusRegisterArray registers) {
         String hexString = registers.toHexString().toString();
         Object quantity = parser.hexToFloat(hexString);
         if (quantity != null) {
-            try {
-                if (type.equals(THING_TYPE_BSP)) {
-                    updateState(CHANNELS_BSP.get(n), new QuantityType<>((float) quantity, UNIT_CHANNELS_BSP.get(n)));
-                } else if (type.equals(THING_TYPE_XTENDER)) {
-                    handlePolledDataXtender(n, quantity);
-                } else if (type.equals(THING_TYPE_VARIOTRACK)) {
-                    handlePolledDataVarioTrack(n, quantity);
-                } else if (type.equals(THING_TYPE_VARIOSTRING)) {
-                    handlePolledDataVarioString(n, quantity);
-                }
-            } catch (NumberFormatException e) {
-                // Do nothing
+            if (type.equals(THING_TYPE_BSP)) {
+                updateState(CHANNELS_BSP.get(registerNumber),
+                        new QuantityType<>((float) quantity, UNIT_CHANNELS_BSP.get(registerNumber)));
+            } else if (type.equals(THING_TYPE_XTENDER)) {
+                handlePolledDataXtender(registerNumber, quantity);
+            } else if (type.equals(THING_TYPE_VARIOTRACK)) {
+                handlePolledDataVarioTrack(registerNumber, quantity);
+            } else if (type.equals(THING_TYPE_VARIOSTRING)) {
+                handlePolledDataVarioString(registerNumber, quantity);
             }
         }
         resetCommunicationError();
@@ -348,24 +328,21 @@ public class StuderHandler extends BaseThingHandler {
      * The register array is first parsed, then each of the channels are updated
      * to the new values
      */
-    @SuppressWarnings("null")
-    protected void handlePolledDataVarioString(int n, Object quantity) {
-        switch (CHANNELS_VARIOSTRING.get(n)) {
+    protected void handlePolledDataVarioString(int registerNumber, Object quantity) {
+        switch (CHANNELS_VARIOSTRING.get(registerNumber)) {
             case CHANNEL_PV_OPERATING_MODE:
             case CHANNEL_PV1_OPERATING_MODE:
             case CHANNEL_PV2_OPERATING_MODE:
                 VSMode vsmode = StuderParser.getVSModeByCode((int) (float) quantity);
-                updateState(CHANNELS_VARIOSTRING.get(n),
-                        vsmode == null ? UnDefType.UNDEF : new StringType(vsmode.name()));
+                updateState(CHANNELS_VARIOSTRING.get(registerNumber), new StringType(vsmode.name()));
                 break;
             case CHANNEL_STATE_VARIOSTRING:
                 State vsstate = StuderParser.getStateByCode((int) (float) quantity);
-                updateState(CHANNELS_VARIOSTRING.get(n),
-                        vsstate == null ? UnDefType.UNDEF : new StringType(vsstate.name()));
+                updateState(CHANNELS_VARIOSTRING.get(registerNumber), new StringType(vsstate.name()));
                 break;
             default:
-                updateState(CHANNELS_VARIOSTRING.get(n),
-                        new QuantityType<>((float) quantity, UNIT_CHANNELS_VARIOSTRING.get(n)));
+                updateState(CHANNELS_VARIOSTRING.get(registerNumber),
+                        new QuantityType<>((float) quantity, UNIT_CHANNELS_VARIOSTRING.get(registerNumber)));
         }
     }
 
@@ -374,28 +351,25 @@ public class StuderHandler extends BaseThingHandler {
      * The register array is first parsed, then each of the channels are updated
      * to the new values
      */
-    @SuppressWarnings("null")
-    protected void handlePolledDataVarioTrack(int n, Object quantity) {
-        switch (CHANNELS_VARIOTRACK.get(n)) {
+    protected void handlePolledDataVarioTrack(int registerNumber, Object quantity) {
+        switch (CHANNELS_VARIOTRACK.get(registerNumber)) {
             case CHANNEL_MODEL_VARIOTRACK:
                 VTType type = StuderParser.getVTTypeByCode((int) (float) quantity);
-                updateState(CHANNELS_VARIOTRACK.get(n), type == null ? UnDefType.UNDEF : new StringType(type.name()));
+                updateState(CHANNELS_VARIOTRACK.get(registerNumber), new StringType(type.name()));
                 break;
 
             case CHANNEL_OPERATING_MODE:
                 VTMode vtmode = StuderParser.getVTModeByCode((int) (float) quantity);
-                updateState(CHANNELS_VARIOTRACK.get(n),
-                        vtmode == null ? UnDefType.UNDEF : new StringType(vtmode.name()));
+                updateState(CHANNELS_VARIOTRACK.get(registerNumber), new StringType(vtmode.name()));
                 break;
 
             case CHANNEL_STATE_VARIOTRACK:
                 State vtstate = StuderParser.getStateByCode((int) (float) quantity);
-                updateState(CHANNELS_VARIOTRACK.get(n),
-                        vtstate == null ? UnDefType.UNDEF : new StringType(vtstate.name()));
+                updateState(CHANNELS_VARIOTRACK.get(registerNumber), new StringType(vtstate.name()));
                 break;
             default:
-                updateState(CHANNELS_VARIOTRACK.get(n),
-                        new QuantityType<>((float) quantity, UNIT_CHANNELS_VARIOTRACK.get(n)));
+                updateState(CHANNELS_VARIOTRACK.get(registerNumber),
+                        new QuantityType<>((float) quantity, UNIT_CHANNELS_VARIOTRACK.get(registerNumber)));
         }
     }
 
@@ -404,21 +378,19 @@ public class StuderHandler extends BaseThingHandler {
      * The register array is first parsed, then each of the channels are updated
      * to the new values
      */
-    @SuppressWarnings("null")
-    protected void handlePolledDataXtender(int n, Object quantity) {
-        switch (CHANNELS_XTENDER.get(n)) {
+    protected void handlePolledDataXtender(int registerNumber, Object quantity) {
+        switch (CHANNELS_XTENDER.get(registerNumber)) {
             case CHANNEL_OPERATING_STATE:
                 ModeXtender mode = StuderParser.getModeXtenderByCode((int) (float) quantity);
-                updateState(CHANNELS_XTENDER.get(n), mode == null ? UnDefType.UNDEF : new StringType(mode.name()));
+                updateState(CHANNELS_XTENDER.get(registerNumber), new StringType(mode.name()));
                 break;
             case CHANNEL_STATE_INVERTER:
                 State xtstate = StuderParser.getStateByCode((int) (float) quantity);
-                updateState(CHANNELS_XTENDER.get(n),
-                        xtstate == null ? UnDefType.UNDEF : new StringType(xtstate.name()));
+                updateState(CHANNELS_XTENDER.get(registerNumber), new StringType(xtstate.name()));
                 break;
             default:
-                updateState(CHANNELS_XTENDER.get(n),
-                        new QuantityType<>((float) quantity, UNIT_CHANNELS_XTENDER.get(n)));
+                updateState(CHANNELS_XTENDER.get(registerNumber),
+                        new QuantityType<>((float) quantity, UNIT_CHANNELS_XTENDER.get(registerNumber)));
         }
     }
 

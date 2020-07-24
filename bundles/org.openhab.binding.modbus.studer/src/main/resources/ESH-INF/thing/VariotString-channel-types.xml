@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- PV voltage Channel Type -->
 	<channel-type id="Upv0">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>PV voltage</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>PV Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV current Channel Type -->
 	<channel-type id="Ipv0">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PV current</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>PV Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV Power Channel Type -->
 	<channel-type id="Ppv0">
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Production PV in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed0">
 		<item-type>Number:Energy</item-type>
-		<label>Production PV in (kWh) for the current day</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>Production PV in (kWh) for the Current Day</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV operating mode Channel Type -->
 	<channel-type id="Mod0">
 		<item-type>String</item-type>
-		<label>PV Operating state</label>
+		<label>PV Operating State</label>
 		<state readOnly="true">
 			<options>
 				<option value="NIGHT">Night</option>
@@ -47,31 +50,31 @@
 	<!-- PV1 voltage Channel Type -->
 	<channel-type id="Upv1">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>PV1 voltage</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>PV1 Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV1 current Channel Type -->
 	<channel-type id="Ipv1">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PV1 current</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>PV1 Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV1 Power Channel Type -->
 	<channel-type id="Ppv1">
 		<item-type>Number:Power</item-type>
 		<label>PV1 Power</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Production PV1 in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed1">
 		<item-type>Number:Energy</item-type>
-		<label>Production PV1 in (kWh) for the current day</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>Production PV1 in (kWh) for the Current Day</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV1 operating mode Channel Type -->
 	<channel-type id="Mod1">
 		<item-type>String</item-type>
-		<label>PV1 Operating state</label>
+		<label>PV1 Operating State</label>
 		<state readOnly="true">
 			<options>
 				<option value="NIGHT">Night</option>
@@ -91,31 +94,31 @@
 	<!-- PV2 voltage Channel Type -->
 	<channel-type id="Upv2">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>PV2 voltage</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>PV2 Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV2 current Channel Type -->
 	<channel-type id="Ipv2">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>PV2 current</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>PV2 Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV2 Power Channel Type -->
 	<channel-type id="Ppv2">
 		<item-type>Number:Power</item-type>
 		<label>PV2 Power</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Production PV2 in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed2">
 		<item-type>Number:Energy</item-type>
-		<label>Production PV2 in (kWh) for the current day</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>Production PV2 in (kWh) for the Current Day</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV operating mode Channel Type -->
 	<channel-type id="Mod2">
 		<item-type>String</item-type>
-		<label>PV2 Operating state</label>
+		<label>PV2 Operating State</label>
 		<state readOnly="true">
 			<options>
 				<option value="NIGHT">Night</option>

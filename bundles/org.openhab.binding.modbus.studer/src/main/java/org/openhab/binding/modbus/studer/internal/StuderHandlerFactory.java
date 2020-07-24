@@ -12,21 +12,16 @@
  */
 package org.openhab.binding.modbus.studer.internal;
 
-import static org.openhab.binding.modbus.studer.internal.StuderBindingConstants.*;
-
-import java.math.BigDecimal;
+import static org.openhab.binding.modbus.studer.internal.StuderBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link StuderHandlerFactory} is responsible for creating things and thing
@@ -37,10 +32,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.studer", service = ThingHandlerFactory.class)
 public class StuderHandlerFactory extends BaseThingHandlerFactory {
-    /**
-     * Logger instance
-     */
-    private final Logger logger = LoggerFactory.getLogger(StuderHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,16 +40,6 @@ public class StuderHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        Configuration config = thing.getConfiguration();
-        int slaveAddress = 0;
-        try {
-            slaveAddress = ((BigDecimal) config.get(SLAVE_ADDRESS)).intValue();
-        } catch (Exception e) {
-            // Do nothing
-        }
-        int refresh = ((config.get(REFRESH) == null) ? ((BigDecimal) config.get(REFRESH)).intValue()
-                : StuderConfiguration.getRefresh());
-        return new StuderHandler(thing, thingTypeUID, slaveAddress, refresh);
+        return new StuderHandler(thing);
     }
 }

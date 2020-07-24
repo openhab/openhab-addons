@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- Model of VarioTrack Channel Type -->
 	<channel-type id="Type">
 		<item-type>String</item-type>
@@ -14,25 +17,25 @@
 	<!-- Voltage of the PV generator Channel Type -->
 	<channel-type id="Upv">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Voltage of the PV generator</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>Voltage of the PV Generator</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Power of the PV generator Channel Type -->
 	<channel-type id="Psol">
 		<item-type>Number:Power</item-type>
-		<label>Power of the PV generator</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>Power of the PV Generator</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-	<!-- Production in (kWh) for the current day  Channel Type -->
+	<!-- Production in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed">
 		<item-type>Number:Energy</item-type>
-		<label>Production in (kWh) for the current day</label>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<label>Production in (kWh) for the Current Day</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Operating state Channel Type -->
 	<channel-type id="Mode">
 		<item-type>String</item-type>
-		<label>Operating mode</label>
+		<label>Operating Mode</label>
 		<state readOnly="true">
 			<options>
 				<option value="NIGHT">Night</option>

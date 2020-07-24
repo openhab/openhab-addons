@@ -21,29 +21,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class StuderConfiguration {
-
+    /**
+     * Address of slave device
+     */
+    public int slaveAddress = 0;
     /**
      * Refresh interval in seconds
      */
-    private static int refresh = 5;
-
+    public int refreshSec = 5;
     /**
      * Max tries for one register
      */
     public int maxTries = 3;
-
-    /**
-     * Get refresh period
-     */
-    public static int getRefresh() {
-        return refresh;
-    }
-
-    /**
-     * Set refresh period
-     */
-    public void setRefresh(int refresh) {
-        StuderConfiguration.refresh = refresh;
-    }
-
 }
