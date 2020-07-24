@@ -49,7 +49,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
     private final Logger logger = LoggerFactory.getLogger(TeleinfoSerialControllerHandler.class);
 
-    private static final int SERIAL_RECEIVE_TIMEOUT = 250;
+    private static final int SERIAL_RECEIVE_TIMEOUT_MS = 250;
     private static final int SERIAL_PORT_DELAY_RETRY_IN_SECONDS = 60;
 
     private SerialPortManager serialPortManager;
@@ -158,7 +158,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
             commPort.setSerialPortParams(1200, SerialPort.DATABITS_7, SerialPort.STOPBITS_1, SerialPort.PARITY_EVEN);
             commPort.enableReceiveThreshold(1);
-            commPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT);
+            commPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT_MS);
             logger.debug("Starting receive thread");
             TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this,
                     config.autoRepairInvalidADPSgroupLine, scheduler);
