@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="powermeter">
 		<label>Iammeter Power Meter</label>
 		<description>PowerMeter thing for Iammeter Binding</description>
@@ -53,7 +52,6 @@
 
 	</thing-type>
 
-	<!-- Sample Channel Type -->
 	<channel-type id="voltage_a">
 		<item-type>Number:V</item-type>
 		<label>Voltage A</label>
