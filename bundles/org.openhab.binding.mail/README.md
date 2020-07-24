@@ -98,7 +98,7 @@ Six different actions available:
 The `sendMail(...)` send a plain text mail (with attachments if supplied).
 The `sendHtmlMail(...)` send a HTML mail (with attachments if supplied).
 
-Both functions returns as a boolean the result of the operation.
+Both functions return a boolean as the result of the operation.
 
 `recipient` can be a single address (`mail@example.com`) or a list of addresses, concatenated by a comma (`mail@example.com, mail2@example.com`).
 
