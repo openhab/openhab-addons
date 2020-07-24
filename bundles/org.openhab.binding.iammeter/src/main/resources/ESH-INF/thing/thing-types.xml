@@ -35,13 +35,13 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Device's IP Address</label>
-				<description>This is a sample text configuration parameter</description>
+				<description>IP address for your device</description>
 				<context>network-address</context>
 				<default>127.0.0.1</default>
 			</parameter>
 			<parameter name="port" type="text" required="false">
 				<label>Device's Port</label>
-				<description>This is a sample text configuration parameter</description>
+				<description>Port</description>
 				<default>80</default>
 			</parameter>
 			<parameter name="refreshInterval" type="text" required="false">
