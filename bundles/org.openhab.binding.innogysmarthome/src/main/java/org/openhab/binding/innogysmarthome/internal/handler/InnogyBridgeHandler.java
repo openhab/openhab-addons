@@ -288,9 +288,9 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      * @param seconds
      */
     private synchronized void scheduleRestartClient(final long seconds) {
-        final ScheduledFuture<?> localReinitJob = reinitJob;
+        @Nullable final ScheduledFuture<?> localReinitJob = reinitJob;
 
-        if (localReinitJob != null && !localReinitJob.isDone()) {
+        if (localReinitJob != null && isAlreadyScheduled(localReinitJob)) {
             logger.debug("Scheduling reinitialize in {} seconds - ignored: already triggered in {} seconds.", seconds,
                     localReinitJob.getDelay(TimeUnit.SECONDS));
             return;
@@ -950,5 +950,9 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         } catch (IOException | OAuthResponseException | OAuthException e) {
             logger.debug("Could not refresh tokens", e);
         }
+    }
+
+    private static boolean isAlreadyScheduled(ScheduledFuture<?> job) {
+        return job.getDelay(TimeUnit.SECONDS) > 0;
     }
 }
