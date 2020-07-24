@@ -39,7 +39,7 @@
 				<context>network-address</context>
 				<default>127.0.0.1</default>
 			</parameter>
-			<parameter name="port" type="text" required="false" min="1" max="65535">
+			<parameter name="port" type="text" required="true" min="1" max="65535">
 				<label>Device's Port</label>
 				<description>Port</description>
 				<default>80</default>
