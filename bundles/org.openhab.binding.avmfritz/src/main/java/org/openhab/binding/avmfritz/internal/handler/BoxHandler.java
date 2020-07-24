@@ -15,7 +15,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 
 /**
  * Handler for a FRITZ!Box device. Handles polling of values from AHA devices.
@@ -32,7 +32,7 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
      * @param bridge Bridge object representing a FRITZ!Box
      */
     public BoxHandler(Bridge bridge, HttpClient httpClient,
-            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
-        super(bridge, httpClient, stateDescriptionProvider);
+            AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider) {
+        super(bridge, httpClient, commandDescriptionProvider);
     }
 }
