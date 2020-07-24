@@ -41,14 +41,26 @@ public class LcnModuleRollershutterOutputSubHandlerTest extends AbstractTestLcnM
 
     @Test
     public void testUp() throws LcnException {
-        l.handleCommandUpDown(UpDownType.UP, LcnChannelGroup.ROLLERSHUTTEROUTPUT, 0);
+        l.handleCommandUpDown(UpDownType.UP, LcnChannelGroup.ROLLERSHUTTEROUTPUT, 0, false);
         verify(handler).sendPck("A1DI100008");
     }
 
     @Test
-    public void testDown() throws LcnException {
-        l.handleCommandUpDown(UpDownType.DOWN, LcnChannelGroup.ROLLERSHUTTEROUTPUT, 0);
+    public void testUpInverted() throws LcnException {
+        l.handleCommandUpDown(UpDownType.UP, LcnChannelGroup.ROLLERSHUTTEROUTPUT, 0, true);
         verify(handler).sendPck("A2DI100008");
+    }
+
+    @Test
+    public void testDown() throws LcnException {
+        l.handleCommandUpDown(UpDownType.DOWN, LcnChannelGroup.ROLLERSHUTTEROUTPUT, 0, false);
+        verify(handler).sendPck("A2DI100008");
+    }
+
+    @Test
+    public void testDownInverted() throws LcnException {
+        l.handleCommandUpDown(UpDownType.DOWN, LcnChannelGroup.ROLLERSHUTTEROUTPUT, 0, true);
+        verify(handler).sendPck("A1DI100008");
     }
 
     @Test

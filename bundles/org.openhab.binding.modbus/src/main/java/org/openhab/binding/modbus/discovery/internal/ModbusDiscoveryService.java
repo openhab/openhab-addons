@@ -15,7 +15,6 @@ package org.openhab.binding.modbus.discovery.internal;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -116,7 +115,7 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
      * instances. They call back this method when a thing has been discovered
      */
     @Override
-    protected void thingDiscovered(@NonNull DiscoveryResult discoveryResult) {
+    protected void thingDiscovered(DiscoveryResult discoveryResult) {
         super.thingDiscovered(discoveryResult);
     }
 

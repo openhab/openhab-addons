@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -47,6 +48,7 @@ import org.openhab.binding.netatmo.internal.welcome.NAWelcomeCameraHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomePersonHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -64,11 +66,12 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private final Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private final HttpService httpService;
     private final NATherm1StateDescriptionProvider stateDescriptionProvider;
     private final TimeZoneProvider timeZoneProvider;
+    private boolean backgroundDiscovery;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference HttpService httpService,
@@ -77,6 +80,19 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         this.httpService = httpService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.timeZoneProvider = timeZoneProvider;
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        Dictionary<String, Object> properties = componentContext.getProperties();
+        Object property = properties.get("backgroundDiscovery");
+        if (property instanceof Boolean) {
+            backgroundDiscovery = ((Boolean) property).booleanValue();
+        } else {
+            backgroundDiscovery = false;
+        }
+        logger.debug("backgroundDiscovery {}", backgroundDiscovery);
     }
 
     @Override
@@ -134,7 +150,10 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDeviceDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
         if (bundleContext != null) {
             NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
-            discoveryService.activate(null);
+            Map<String, @Nullable Object> configProperties = new HashMap<>();
+            configProperties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                    Boolean.valueOf(backgroundDiscovery));
+            discoveryService.activate(configProperties);
             discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
         }

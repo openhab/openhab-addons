@@ -73,12 +73,9 @@ public class Transformation {
         toStringStyle.setUseShortClassName(true);
     }
 
-    @Nullable
-    private final String transformation;
-    @Nullable
-    private final String transformationServiceName;
-    @Nullable
-    private final String transformationServiceParam;
+    private final @Nullable String transformation;
+    private final @Nullable String transformationServiceName;
+    private final @Nullable String transformationServiceParam;
 
     /**
      *

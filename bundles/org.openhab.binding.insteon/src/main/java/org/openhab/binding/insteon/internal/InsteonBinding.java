@@ -158,6 +158,10 @@ public class InsteonBinding {
         logger.debug("dead device timeout set to {} seconds", deadDeviceTimeout / 1000);
     }
 
+    public Driver getDriver() {
+        return driver;
+    }
+
     public boolean startPolling() {
         logger.debug("starting to poll {}", driver.getPortName());
         driver.start();
@@ -248,6 +252,7 @@ public class InsteonBinding {
         DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
         InsteonDevice dev = InsteonDevice.makeDevice(dt);
         dev.setAddress(addr);
+        dev.setProductKey(productKey);
         dev.setDriver(driver);
         if (!dev.hasValidPollingInterval()) {
             dev.setPollInterval(devicePollIntervalMilliseconds);

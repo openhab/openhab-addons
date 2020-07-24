@@ -381,7 +381,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                             logger.debug("Error sending command {} to MAX! Cube at IP: {}", sendCommand, ipAddress);
                         }
                     }
-                    Thread.sleep(50);
+                    Thread.sleep(5000);
                 }
             } catch (InterruptedException e) {
                 logger.debug("Stopping queueConsumer");

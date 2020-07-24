@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceFeatureListener.StateChangeType;
+import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -688,23 +689,25 @@ public abstract class CommandHandler {
 
         @Override
         public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
-            String cmdParam = conf.getParameters().get("cmd");
+            String cmdParam = conf.getParameters().get(InsteonDeviceHandler.CMD);
             if (cmdParam == null) {
                 logger.warn("{} ignoring cmd {} because no cmd= is configured!", nm(), cmd);
                 return;
             }
             try {
                 if (cmd == OnOffType.ON) {
-                    if (cmdParam.equals("reset")) {
+                    if (cmdParam.equals(InsteonDeviceHandler.CMD_RESET)) {
                         Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x80, (byte) 0x00);
                         dev.enqueueMessage(m, feature);
                         logger.debug("{}: sent reset msg to power meter {}", nm(), dev.getAddress());
-                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, "cmd", "reset");
-                    } else if (cmdParam.equals("update")) {
+                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonDeviceHandler.CMD,
+                                InsteonDeviceHandler.CMD_RESET);
+                    } else if (cmdParam.equals(InsteonDeviceHandler.CMD_UPDATE)) {
                         Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x82, (byte) 0x00);
                         dev.enqueueMessage(m, feature);
                         logger.debug("{}: sent update msg to power meter {}", nm(), dev.getAddress());
-                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, "cmd", "update");
+                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonDeviceHandler.CMD,
+                                InsteonDeviceHandler.CMD_UPDATE);
                     } else {
                         logger.warn("{}: ignoring unknown cmd {} for power meter {}", nm(), cmdParam, dev.getAddress());
                     }
