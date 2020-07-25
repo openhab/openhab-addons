@@ -345,6 +345,7 @@ public class MetadataUtils {
     public static boolean isRollerShutter(HmDatapoint dp) {
         String channelType = dp.getChannel().getType();
         return channelType.equals(CHANNEL_TYPE_BLIND) || channelType.equals(CHANNEL_TYPE_JALOUSIE)
+                || channelType.equals(CHANNEL_TYPE_BLIND_TRANSMITTER)
                 || channelType.equals(CHANNEL_TYPE_SHUTTER_TRANSMITTER)
                 || channelType.equals(CHANNEL_TYPE_SHUTTER_VIRTUAL_RECEIVER)
                 || channelType.contentEquals(CHANNEL_TYPE_BLIND_VIRTUAL_RECEIVER);
