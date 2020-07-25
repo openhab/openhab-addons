@@ -141,6 +141,10 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
     }
 
     protected void updateChannels() {
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            return;
+        }
+
         updateDataChannels();
 
         triggerEventChannels();
@@ -277,5 +281,9 @@ public abstract class AbstractNetatmoThingHandler extends BaseThingHandler {
             channels.add(channel);
             types.add(type);
         }
+    }
+
+    protected boolean isReachable() {
+        return true;
     }
 }

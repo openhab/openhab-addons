@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.camera;
 
-import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.toOnOffType;
+import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.io.IOException;
@@ -123,7 +123,7 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
 
     protected State getLivePictureState() {
         Optional<String> livePictureURL = getLivePictureURL();
-        return livePictureURL.isPresent() ? HttpUtil.downloadImage(livePictureURL.get()) : UnDefType.UNDEF;
+        return livePictureURL.isPresent() ? toRawType(livePictureURL.get()) : UnDefType.UNDEF;
     }
 
     protected State getLiveStreamState() {
@@ -236,5 +236,11 @@ public abstract class CameraHandler extends NetatmoModuleHandler<NAWelcomeCamera
             logger.warn("Error on accessing local camera url!", e);
         }
         return Optional.empty();
+    }
+
+    @Override
+    protected boolean isReachable() {
+        Optional<NAWelcomeCamera> module = getModule();
+        return module.isPresent() ? !"disconnected".equalsIgnoreCase(module.get().getStatus()) : false;
     }
 }

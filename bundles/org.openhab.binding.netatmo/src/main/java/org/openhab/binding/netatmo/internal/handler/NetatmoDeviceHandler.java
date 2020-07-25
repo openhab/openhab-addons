@@ -136,10 +136,10 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                                 "Unable to connect Netatmo API : " + e.getLocalizedMessage());
                     }
                     if (newDeviceReading.isPresent()) {
-                        updateStatus(ThingStatus.ONLINE);
                         logger.debug("Successfully updated device {} readings! Now updating channels", getId());
                         DEVICE theDevice = newDeviceReading.get();
                         this.device = theDevice;
+                        updateStatus(isReachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
                         updateProperties(theDevice);
                         getDataTimestamp().ifPresent(dataTimeStamp -> {
                             strategy.setDataTimeStamp(dataTimeStamp, timeZoneProvider.getTimeZone());

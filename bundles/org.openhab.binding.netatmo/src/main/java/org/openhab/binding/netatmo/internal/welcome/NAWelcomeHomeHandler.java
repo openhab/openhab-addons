@@ -30,7 +30,6 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.binding.netatmo.internal.camera.CameraHandler;
 import org.openhab.binding.netatmo.internal.handler.AbstractNetatmoThingHandler;
@@ -132,7 +131,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
                     return UnDefType.UNDEF;
                 }
             case CHANNEL_WELCOME_EVENT_SNAPSHOT:
-                return findSnapshotURL().map(url -> (State) HttpUtil.downloadImage(url)).orElse(UnDefType.UNDEF);
+                return findSnapshotURL().map(url -> toRawType(url)).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_SNAPSHOT_URL:
                 return findSnapshotURL().map(ChannelTypeUtils::toStringType).orElse(UnDefType.UNDEF);
             case CHANNEL_WELCOME_EVENT_VIDEO_URL:

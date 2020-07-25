@@ -18,6 +18,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -88,5 +89,16 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
         }
 
         return super.getNAThingProperty(channelId);
+    }
+
+    @Override
+    protected boolean isReachable() {
+        boolean result = false;
+        Optional<NAStationModule> module = getModule();
+        if (module.isPresent()) {
+            Boolean reachable = module.get().getReachable();
+            result = reachable != null ? reachable.booleanValue() : false;
+        }
+        return result;
     }
 }

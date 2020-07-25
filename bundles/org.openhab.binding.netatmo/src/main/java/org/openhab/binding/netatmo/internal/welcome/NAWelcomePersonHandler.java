@@ -27,7 +27,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
@@ -76,6 +75,7 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
     @Override
     protected State getNAThingProperty(String channelId) {
         Optional<NAWelcomeEvent> lastEvt = getLastEvent();
+        String url;
         switch (channelId) {
             case CHANNEL_WELCOME_PERSON_LASTSEEN:
                 return getModule().map(m -> toDateTimeType(m.getLastSeen(), timeZoneProvider.getTimeZone()))
@@ -87,7 +87,8 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
             case CHANNEL_WELCOME_PERSON_AVATAR_URL:
                 return toStringType(getAvatarURL());
             case CHANNEL_WELCOME_PERSON_AVATAR:
-                return getAvatarURL() != null ? HttpUtil.downloadImage(getAvatarURL()) : UnDefType.UNDEF;
+                url = getAvatarURL();
+                return url != null ? toRawType(url) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTMESSAGE:
                 return (lastEvt.isPresent() && lastEvt.get().getMessage() != null)
                         ? toStringType(lastEvt.get().getMessage().replace("<b>", "").replace("</b>", ""))
@@ -96,7 +97,8 @@ public class NAWelcomePersonHandler extends NetatmoModuleHandler<NAWelcomePerson
                 return lastEvt.isPresent() ? toDateTimeType(lastEvt.get().getTime(), timeZoneProvider.getTimeZone())
                         : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTEVENT:
-                return getLastEventURL() != null ? HttpUtil.downloadImage(getLastEventURL()) : UnDefType.UNDEF;
+                url = getLastEventURL();
+                return url != null ? toRawType(url) : UnDefType.UNDEF;
             case CHANNEL_WELCOME_PERSON_LASTEVENT_URL:
                 return getLastEventURL() != null ? toStringType(getLastEventURL()) : UnDefType.UNDEF;
         }
