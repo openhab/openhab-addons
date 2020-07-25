@@ -15,7 +15,6 @@ package org.openhab.binding.oppo.internal.communication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -101,9 +100,6 @@ public class OppoSerialConnector extends OppoConnector {
         } catch (UnsupportedCommOperationException e) {
             setConnected(false);
             throw new OppoException("Opening serial connection failed: Unsupported Comm Operation Exception", e);
-        } catch (UnsupportedEncodingException e) {
-            setConnected(false);
-            throw new OppoException("Opening serial connection failed: Unsupported Encoding Exception", e);
         } catch (IOException e) {
             setConnected(false);
             throw new OppoException("Opening serial connection failed: IO Exception", e);

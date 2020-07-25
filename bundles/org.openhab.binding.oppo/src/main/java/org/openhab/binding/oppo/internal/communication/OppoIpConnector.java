@@ -61,7 +61,7 @@ public class OppoIpConnector extends OppoConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new OppoReaderThread(this, this.address + "." + this.port);
+            Thread thread = new OppoReaderThread(this, this.address + ":" + this.port);
             setReaderThread(thread);
             thread.start();
 

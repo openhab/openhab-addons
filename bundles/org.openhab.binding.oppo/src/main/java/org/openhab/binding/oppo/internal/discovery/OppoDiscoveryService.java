@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
     /**
      * Socket read timeout (in ms) - allows us to shutdown the listening every TIMEOUT
      */
-    private static final int TIMEOUT = 1000;
+    private static final int TIMEOUT_MS = 1000;
 
     /**
      * Whether we are currently scanning or not
@@ -138,7 +139,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                 service.execute(() -> {
                     try {
                         MulticastSocket multiSocket = new MulticastSocket(SDDP_PORT);
-                        multiSocket.setSoTimeout(TIMEOUT);
+                        multiSocket.setSoTimeout(TIMEOUT_MS);
                         multiSocket.setNetworkInterface(netint);
                         multiSocket.joinGroup(addr);
 
@@ -147,7 +148,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                             try {
                                 multiSocket.receive(receivePacket);
 
-                                String message = new String(receivePacket.getData()).trim();
+                                String message = new String(receivePacket.getData(), StandardCharsets.US_ASCII).trim();
                                 if (message != null && message.length() > 0) {
                                     messageReceive(message);
                                 }
@@ -157,15 +158,15 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                         }
 
                         multiSocket.close();
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         if (!e.getMessage().contains("No IP addresses bound to interface")) {
-                            logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
+                            logger.debug("OppoDiscoveryService IOException: {}", e.getMessage(), e);
                         }
                     }
                 });
             }
         } catch (IOException e) {
-            logger.debug("Error getting ip addresses: {}", e.getMessage(), e);
+            logger.debug("OppoDiscoveryService IOException: {}", e.getMessage(), e);
         }
     }
 
@@ -189,27 +190,25 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
 
         String host = null;
         String port = null;
-        String model = null;
+        Integer model = null;
         String displayName = null;
 
         for (String msg : message.split("\n")) {
             String[] line = msg.split(":");
 
             if (line.length == 2) {
-                if (line[0] != null && line[1] != null) {
-                    if (line[0].contains("Server IP")) {
-                        host = line[1].trim();
-                    }
+                if (line[0].contains("Server IP")) {
+                    host = line[1].trim();
+                }
 
-                    if (line[0].contains("Server Port")) {
-                        port = line[1].trim();
-                    }
+                if (line[0].contains("Server Port")) {
+                    port = line[1].trim();
+                }
 
-                    if (line[0].contains("Server Name")) {
-                        // example: "OPPO UDP-203"
-                        // note: Server Name only provided on UDP models, not present on BDP models
-                        displayName = line[1].trim();
-                    }
+                if (line[0].contains("Server Name")) {
+                    // example: "OPPO UDP-203"
+                    // note: Server Name only provided on UDP models, not present on BDP models
+                    displayName = line[1].trim();
                 }
             } else {
                 logger.debug("messageReceive() - Unable to process line: {}", msg);
@@ -245,9 +244,9 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
                     displayName = DISPLAY_NAME_103;
                 }
             } else if (BDP20X_PORT.toString().equals(port)) {
-                if (displayName != null && displayName.contains(MODEL203)) {
+                if (displayName != null && displayName.contains(Integer.toString(MODEL203))) {
                     model = MODEL203;
-                } else if (displayName != null && displayName.contains(MODEL205)) {
+                } else if (displayName != null && displayName.contains(Integer.toString(MODEL205))) {
                     model = MODEL205;
                 } else {
                     model = MODEL203;
@@ -286,7 +285,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
         scanning = false;
 
         try {
-            service.awaitTermination(TIMEOUT * 5, TimeUnit.MILLISECONDS);
+            service.awaitTermination(TIMEOUT_MS * 5, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
         }
         service.shutdown();

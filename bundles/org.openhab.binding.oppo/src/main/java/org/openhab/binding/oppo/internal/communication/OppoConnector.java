@@ -255,8 +255,6 @@ public abstract class OppoConnector {
             // pull out the inquiry type and the remainder of the message
             dispatchKeyValue(matcher.group(1), matcher.group(2));
             return;
-        } else {
-            logger.debug("no match on message: {}", message);
         }
 
         // Player sent a status update ie: @UTC 000 000 T 00:00:01
@@ -265,8 +263,6 @@ public abstract class OppoConnector {
             // pull out the update type and the remainder of the message
             dispatchKeyValue(matcher.group(1), matcher.group(2));
             return;
-        } else {
-            logger.debug("no match on message: {}", message);
         }
 
         logger.debug("unhandled message: {}", message);

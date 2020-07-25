@@ -28,11 +28,11 @@ public class OppoBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
 
-    public static final String MODEL83 = "83";
-    public static final String MODEL103 = "103";
-    public static final String MODEL105 = "105";
-    public static final String MODEL203 = "203";
-    public static final String MODEL205 = "205";
+    public static final int MODEL83 = 83;
+    public static final int MODEL103 = 103;
+    public static final int MODEL105 = 105;
+    public static final int MODEL203 = 203;
+    public static final int MODEL205 = 205;
 
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
@@ -47,6 +47,7 @@ public class OppoBindingConstants {
     public static final String CHANNEL_CONTROL = "control";
     public static final String CHANNEL_TIME_MODE = "time_mode";
     public static final String CHANNEL_TIME_DISPLAY = "time_display";
+    public static final String CHANNEL_TIME_DISPLAY_RAW = "time_display_raw";
     public static final String CHANNEL_CURRENT_TITLE = "current_title";
     public static final String CHANNEL_TOTAL_TITLE = "total_title";
     public static final String CHANNEL_CURRENT_CHAPTER = "current_chapter";
@@ -71,6 +72,7 @@ public class OppoBindingConstants {
     public static final String SPACE = " ";
     public static final String SLASH = "/";
     public static final String UNDERSCORE = "_";
+    public static final String COLON = ":";
     public static final String ON = "ON";
     public static final String OFF = "OFF";
     public static final String ONE = "1";
@@ -81,6 +83,7 @@ public class OppoBindingConstants {
     public static final String MUTE = "MUTE";
     public static final String MUT = "MUT";
     public static final String UMT = "UMT";
+    public static final String CDDA = "CDDA";
 
     public static final String NOP = "NOP";
     public static final String UTC = "UTC";
