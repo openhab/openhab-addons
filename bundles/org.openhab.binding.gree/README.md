@@ -70,7 +70,7 @@ Thing gree:airconditioner:a1234561 [ ipAddress="192.168.1.111", refresh=2 ]
 
 ```
 Switch AirconPower                  { channel="gree:airconditioner:a1234561:power" }
-Number AirconMode                   { channel="gree:airconditioner:a1234561:mode" }
+String AirconMode                   { channel="gree:airconditioner:a1234561:mode" }
 Switch AirconTurbo                  { channel="gree:airconditioner:a1234561:turbo" }
 Switch AirconLight                  { channel="gree:airconditioner:a1234561:light" }
 Number AirconTemp "Temperature [%.1f °C]" {channel="gree:airconditioner:a1234561:temperature" }
@@ -122,7 +122,7 @@ This example shows how to make a GREE Air Conditioner controllable by Google HA 
 ```
 Group Gree_Modechannel              "Gree"                { ga="Thermostat" } // allows mapping for Google Home Assistent
 Switch   GreeAirConditioner_Power   "Aircon"              {channel="gree:airconditioner:a1234561:power", ga="Switch"}
-Number   GreeAirConditioner_Mode    "Aircon Mode"         {channel="gree:airconditioner:a1234561:mode", ga="thermostatMode"}
+String   GreeAirConditioner_Mode    "Aircon Mode"         {channel="gree:airconditioner:a1234561:mode", ga="thermostatMode"}
 Number   GreeAirConditioner_Temp    "Aircon Temperature"  {channel="gree:airconditioner:a1234561:temperature}
 Switch   GreeAirConditioner_Lightl  "Light"               {channel="gree:airconditioner:a1234561:light"}
 ```
