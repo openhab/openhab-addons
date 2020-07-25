@@ -73,6 +73,12 @@ For this process the deCONZ bridge must be unlocked in the deCONZ software so th
 All non-bridge things share the mandatory `id` parameter, an integer assigned to the device while pairing to deconz.
 Auto-discovered things do not need to be configured. 
 
+All sensor-things have an additional `lastSeenPolling` parameter.
+Due to limitations in the API of deCONZ, the `lastSeen` channel (available some sensors) is only available when using polling.
+Allowed values are all positive integers, the unit is minutes.
+The default-value is `0`, which means "no polling at all".
+
+
 `dimmablelight`, `extendedcolorlight`, `colorlight` and `colortemperaturelight` have an additional optional parameter `transitiontime`.
 The transition time is the time to move between two states and is configured in seconds.
 The resolution provided is 1/10s.
@@ -193,7 +199,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
     waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
-    alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8" ]
+    alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8", lastSeenPolling=5 ]
     dimmablelight       livingroom-ceiling      "Livingroom Ceiling"        [ id="1" ]
 }
 ```
