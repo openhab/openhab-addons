@@ -70,10 +70,10 @@ public class HueAuthorizedConfig extends HueUnauthorizedConfig {
     }
 
     public void makeV2bridge() {
-        apiversion = "1.22.0";
+        apiversion = "1.38.0";
         datastoreversion = "60";
         modelid = "BSB002";
-        swversion = "1901181309";
+        swversion = "1939070020";
         fwversion = "0x262e0500";
     }
 
