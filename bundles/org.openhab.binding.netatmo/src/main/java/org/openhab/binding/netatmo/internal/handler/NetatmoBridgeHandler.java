@@ -168,6 +168,10 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                             return;
                     }
                 }
+            } catch (RuntimeException e) {
+                logger.warn("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Netatmo Access Failed, will retry in " + configuration.reconnectInterval + " seconds.");
             }
             // We'll do this every x seconds to guaranty token refresh
         }, 2, configuration.reconnectInterval, TimeUnit.SECONDS);
@@ -272,8 +276,7 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
     }
 
     public Optional<NAStationDataBody> getStationsDataBody(@Nullable String equipmentId) {
-        Optional<NAStationDataBody> data = getStationApi()
-                .map(api -> api.getstationsdata(equipmentId, false).getBody());
+        Optional<NAStationDataBody> data = getStationApi().map(api -> api.getstationsdata(equipmentId, true).getBody());
         updateStatus(ThingStatus.ONLINE);
         return data;
     }

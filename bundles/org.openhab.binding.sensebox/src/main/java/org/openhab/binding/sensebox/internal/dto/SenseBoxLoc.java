@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sensebox.internal.model;
+package org.openhab.binding.sensebox.internal.dto;
 
 import com.google.gson.annotations.SerializedName;
 
