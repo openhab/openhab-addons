@@ -648,7 +648,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                         connector.sendCommand(cmd);
                                         Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                     } catch (OppoException | InterruptedException e) {
-                                        logger.debug("Exception sending initial commands: {}", e.getMessage());
+                                        logger.debug("Exception sending polling commands: {}", e.getMessage());
                                     }
                                 });
                             }
