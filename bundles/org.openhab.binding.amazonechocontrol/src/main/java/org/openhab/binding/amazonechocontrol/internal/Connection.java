@@ -281,8 +281,8 @@ public class Connection {
     }
 
     public boolean isSequenceNodeQueueRunning() {
-        return singles.values().stream().anyMatch(queueObject -> queueObject.dequeRunning.get())
-                || groups.values().stream().anyMatch(queueObject -> queueObject.dequeRunning.get());
+        return singles.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get())
+                || groups.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get());
     }
 
     public String serializeLoginData() {
@@ -1443,15 +1443,15 @@ public class Connection {
         }
     }
 
-    private void executeSequenceCommandWithVolume(@Nullable Device[] devices, String command,
-            @Nullable Map<String, Object> parameters, @NonNull Integer[] ttsVolumes, @NonNull Integer[] standardVolumes)
-            throws IOException, URISyntaxException {
+    private void executeSequenceCommandWithVolume(@Nullable Device[] devices, @Nullable String command,
+            @Nullable Map<String, Object> parameters, @NonNull Integer[] ttsVolumes,
+            @Nullable Integer @Nullable [] standardVolumes) throws IOException, URISyntaxException {
         JsonArray serialNodesToExecute = new JsonArray();
         if (ttsVolumes != null) {
             JsonArray ttsVolumeNodesToExecute = new JsonArray();
             for (int i = 0; i < devices.length; i++) {
                 if (ttsVolumes[i] != null && (standardVolumes == null || !ttsVolumes[i].equals(standardVolumes[i]))) {
-                    Map<String, Object> volumeParameters = new HashMap<>();
+                    Map<String, @Nullable Object> volumeParameters = new HashMap<>();
                     volumeParameters.put("value", ttsVolumes[i]);
                     ttsVolumeNodesToExecute
                             .add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
@@ -1492,7 +1492,7 @@ public class Connection {
             JsonArray standardVolumeNodesToExecute = new JsonArray();
             for (int i = 0; i < devices.length; i++) {
                 if (ttsVolumes[i] != null && standardVolumes[i] != null && !ttsVolumes[i].equals(standardVolumes[i])) {
-                    Map<String, Object> volumeParameters = new HashMap<>();
+                    Map<String, @Nullable Object> volumeParameters = new HashMap<>();
                     volumeParameters.put("value", standardVolumes[i]);
                     standardVolumeNodesToExecute
                             .add(createExecutionNode(devices[i], "Alexa.DeviceControls.Volume", volumeParameters));
@@ -1514,9 +1514,9 @@ public class Connection {
     }
 
     private void executeSequenceNode(Device[] devices, JsonObject nodeToExecute) {
-        if (devices.length == 1 && groups.values().stream().anyMatch(queueObject -> queueObject.dequeRunning.get())
+        if (devices.length == 1 && groups.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get())
                 || devices.length > 1
-                        && singles.values().stream().anyMatch(queueObject -> queueObject.dequeRunning.get())) {
+                        && singles.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get())) {
             if (singleGroupTimer != null) {
                 singleGroupTimer.cancel(true);
             }
@@ -1538,9 +1538,9 @@ public class Connection {
             groups.get(devices[0]).queue.add(nodeToExecute);
         }
 
-        if (devices.length == 1 && singles.get(devices[0]).dequeRunning.compareAndSet(false, true)) {
+        if (devices.length == 1 && singles.get(devices[0]).queueRunning.compareAndSet(false, true)) {
             queuedExecuteSequenceNode(devices[0], true);
-        } else if (devices.length > 1 && groups.get(devices[0]).dequeRunning.compareAndSet(false, true)) {
+        } else if (devices.length > 1 && groups.get(devices[0]).queueRunning.compareAndSet(false, true)) {
             queuedExecuteSequenceNode(devices[0], false);
         }
     }
@@ -2008,12 +2008,12 @@ public class Connection {
     @NonNullByDefault
     private static class QueueObject {
         public LinkedBlockingQueue<JsonObject> queue = new LinkedBlockingQueue<>();
-        public AtomicBoolean dequeRunning = new AtomicBoolean();
+        public AtomicBoolean queueRunning = new AtomicBoolean();
         public @Nullable ScheduledFuture<?> senderUnblockFuture;
 
         public void dispose() {
             queue.clear();
-            dequeRunning.set(false);
+            queueRunning.set(false);
             if (senderUnblockFuture != null) {
                 senderUnblockFuture.cancel(true);
             }
@@ -2023,6 +2023,7 @@ public class Connection {
     @NonNullByDefault
     private static class ExecutionNodeObject {
         public List<String> types = new ArrayList<>();
+        @Nullable
         public String text;
     }
 }
