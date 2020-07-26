@@ -16,9 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
@@ -170,6 +168,7 @@ public class NAWelcomeHomeHandlerTest {
         assertEquals(1, handler.getTriggerChannelCount());
         assertEquals(new StringType("outdoor"),
                 handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals("HUMAN", handler.getLastDetectedObject());
 
         home.setEvents(Arrays.asList(event1, event2));
 
@@ -180,6 +179,7 @@ public class NAWelcomeHomeHandlerTest {
         assertEquals(1, handler.getTriggerChannelCount());
         assertEquals(new StringType("outdoor"),
                 handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals("HUMAN", handler.getLastDetectedObject());
 
         home.setEvents(Arrays.asList(event1, event2, event3));
 
@@ -191,6 +191,62 @@ public class NAWelcomeHomeHandlerTest {
         assertEquals(2, handler.getTriggerChannelCount());
         assertEquals(new StringType("movement"),
                 handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals("MOVEMENT", handler.getLastDetectedObject());
+    }
+
+    @Test
+    public void testTriggerChannelIfRequiredNoEventAvailable() {
+        NAWelcomeHome home = new NAWelcomeHome();
+        home.setId(DUMMY_HOME_ID);
+
+        NAWelcomeHomeData homeData = new NAWelcomeHomeData();
+        homeData.setHomes(Collections.singletonList(home));
+
+        when(bridgeHandlerMock.getWelcomeDataBody(DUMMY_HOME_ID)).thenReturn(Optional.of(homeData));
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        // No triggered event is expected, because there aren't any events (the collection is NULL)
+        assertEquals(0, handler.getTriggerChannelCount());
+
+        home.setEvents(Collections.emptyList());
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        // No triggered event is expected, because there aren't any events (the collection is empty)
+        assertEquals(0, handler.getTriggerChannelCount());
+    }
+
+    @Test
+    public void testTriggerChannelIfRequiredPersonMovement() {
+        NAWelcomeEvent event1 = createEvent(1592661881, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
+
+        NAWelcomeEvent event2 = createEvent(1592661882, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
+        event2.setPersonId("1");
+
+        NAWelcomeHome home = new NAWelcomeHome();
+        home.setId(DUMMY_HOME_ID);
+        home.setEvents(Collections.singletonList(event1));
+
+        NAWelcomeHomeData homeData = new NAWelcomeHomeData();
+        homeData.setHomes(Collections.singletonList(home));
+
+        when(bridgeHandlerMock.getWelcomeDataBody(DUMMY_HOME_ID)).thenReturn(Optional.of(homeData));
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        home.setEvents(Arrays.asList(event1, event2));
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        assertEquals(2, handler.getTriggerChannelCount());
+        assertEquals(new StringType("movement"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals("MOVEMENT", handler.getLastDetectedObject());
     }
 
     private static NAWelcomeEvent createPresenceEvent(int eventTime, NAWelcomeSubEvent.TypeEnum detectedObjectType) {
@@ -213,6 +269,7 @@ public class NAWelcomeHomeHandlerTest {
     private class NAWelcomeHomeHandlerAccessible extends NAWelcomeHomeHandler {
 
         private int triggerChannelCount;
+        private String lastDetectedObject;
 
         private NAWelcomeHomeHandlerAccessible(Thing thing) {
             super(thing, timeZoneProviderMock);
@@ -231,11 +288,16 @@ public class NAWelcomeHomeHandlerTest {
         @Override
         protected void triggerChannel(@NonNull String channelID, @NonNull String event) {
             triggerChannelCount++;
+            lastDetectedObject = event;
             super.triggerChannel(channelID, event);
         }
 
         private int getTriggerChannelCount() {
             return triggerChannelCount;
+        }
+
+        public String getLastDetectedObject() {
+            return lastDetectedObject;
         }
     }
 }
