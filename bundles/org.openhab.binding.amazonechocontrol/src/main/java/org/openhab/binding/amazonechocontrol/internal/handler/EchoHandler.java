@@ -21,10 +21,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -382,9 +380,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                         connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + volume
                                 + ",\"contentFocusClientId\":\"Default\"}");
                     } else {
-                        Map<String, Object> parameters = new HashMap<>();
-                        parameters.put("value", volume);
-                        connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
+                        connection.volume(device, volume);
                     }
                     lastKnownVolume = volume;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
