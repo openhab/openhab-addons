@@ -668,7 +668,16 @@ public class BridgeHandler extends BaseBridgeHandler
                 case INVALID_URL:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid URL is set.");
                     break;
+                case CONNECTION_LOST:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "IOException / Connection lost.");
+                    break;
+                case SSL_HANDSHAKE_ERROR:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "SSL Handshake error / Connection lost.");
+                    break;
                 default:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
             }
             // reset connection timeout counter
             connectionTimeoutCounter = 0;
