@@ -185,7 +185,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             if (event.getPersonId() != null) {
                 detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
             } else {
-                Optional<NAWelcomeSubEvent.TypeEnum> detectedCategory = translateEventCategory(event);
+                Optional<NAWelcomeSubEvent.TypeEnum> detectedCategory = findDetectedCategory(event);
                 if (detectedCategory.isPresent()) {
                     detectedObjectTypes.add(detectedCategory.get().name());
                 } else {
@@ -201,7 +201,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         return detectedObjectTypes;
     }
 
-    private static Optional<NAWelcomeSubEvent.TypeEnum> translateEventCategory(NAWelcomeEvent event) {
+    private static Optional<NAWelcomeSubEvent.TypeEnum> findDetectedCategory(NAWelcomeEvent event) {
         String category = event.getCategory();
         if (category != null) {
             switch (category) {
