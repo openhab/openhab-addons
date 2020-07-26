@@ -41,6 +41,7 @@ public class HomekitTaggedItem {
     public final static String STEP = "step";
     public final static String DIMMER_MODE = "dimmerMode";
     public final static String DELAY = "commandDelay";
+    public final static String INVERTED = "inverted";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 

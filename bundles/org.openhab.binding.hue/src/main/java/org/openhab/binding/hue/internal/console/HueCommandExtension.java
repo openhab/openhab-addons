@@ -24,6 +24,7 @@ import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
+import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -39,6 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 public class HueCommandExtension extends AbstractConsoleCommandExtension {
 
     private static final String USER_NAME = "username";
+    private static final String SCENES = "scenes";
 
     private final ThingRegistry thingRegistry;
 
@@ -60,10 +62,13 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
             }
             ThingHandler thingHandler = null;
             HueBridgeHandler bridgeHandler = null;
+            HueGroupHandler groupHandler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
                 if (thingHandler instanceof HueBridgeHandler) {
                     bridgeHandler = (HueBridgeHandler) thingHandler;
+                } else if (thingHandler instanceof HueGroupHandler) {
+                    groupHandler = (HueGroupHandler) thingHandler;
                 }
             }
             if (thing == null) {
@@ -72,14 +77,26 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
             } else if (thingHandler == null) {
                 console.println("No handler initialized for the thing id '" + args[0] + "'");
                 printUsage(console);
-            } else if (bridgeHandler == null) {
-                console.println("'" + args[0] + "' is not a hue bridge id");
+            } else if (bridgeHandler == null && groupHandler == null) {
+                console.println("'" + args[0] + "' is neither a hue bridge id nor a hue group thing id");
                 printUsage(console);
             } else {
                 switch (args[1]) {
                     case USER_NAME:
-                        String userName = bridgeHandler.getUserName();
-                        console.println("Your user name is " + (userName != null ? userName : "undefined"));
+                        if (bridgeHandler != null) {
+                            String userName = bridgeHandler.getUserName();
+                            console.println("Your user name is " + (userName != null ? userName : "undefined"));
+                        } else {
+                            console.println("'" + args[0] + "' is not a hue bridge id");
+                            printUsage(console);
+                        }
+                        break;
+                    case SCENES:
+                        if (bridgeHandler != null) {
+                            bridgeHandler.listScenesForConsole().forEach(console::println);
+                        } else if (groupHandler != null) {
+                            groupHandler.listScenesForConsole().forEach(console::println);
+                        }
                         break;
                     default:
                         printUsage(console);
@@ -93,6 +110,9 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage("<bridgeUID> " + USER_NAME, "show the user name"));
+        return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + USER_NAME, "show the user name"),
+                buildCommandUsage("<bridgeUID> " + SCENES, "list all the scenes with their id"),
+                buildCommandUsage("<groupThingUID> " + SCENES, "list all the scenes from this group with their id") });
+
     }
 }

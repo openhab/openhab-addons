@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.presence;
 
-import io.swagger.client.model.NAWelcomeCamera;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -31,10 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.openhab.binding.netatmo.internal.NetatmoBindingConstants;
 
-import java.util.Optional;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import io.swagger.client.model.NAWelcomeCamera;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -63,74 +65,81 @@ public class NAPresenceCameraHandlerTest {
         presenceCameraThing = new ThingImpl(new ThingTypeUID("netatmo", "NOC"), "1");
         presenceCamera = new NAWelcomeCamera();
 
-        cameraStatusChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_STATUS);
-        floodlightChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT);
-        floodlightAutoModeChannelUID = new ChannelUID(presenceCameraThing.getUID(), NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE);
+        cameraStatusChannelUID = new ChannelUID(presenceCameraThing.getUID(),
+                NetatmoBindingConstants.CHANNEL_CAMERA_STATUS);
+        floodlightChannelUID = new ChannelUID(presenceCameraThing.getUID(),
+                NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT);
+        floodlightAutoModeChannelUID = new ChannelUID(presenceCameraThing.getUID(),
+                NetatmoBindingConstants.CHANNEL_CAMERA_FLOODLIGHT_AUTO_MODE);
 
         handler = new NAPresenceCameraHandlerAccessible(presenceCameraThing, presenceCamera);
     }
 
     @Test
-    public void testHandleCommand_Switch_Surveillance_on() {
+    public void testHandleCommandSwitchSurveillanceOn() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(cameraStatusChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch on
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); // 1.) execute ping + 2.) execute switch on
         verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/changestatus?status=on");
     }
 
     @Test
-    public void testHandleCommand_Switch_Surveillance_off() {
+    public void testHandleCommandSwitchSurveillanceOff() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(cameraStatusChannelUID, OnOffType.OFF);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); // 1.) execute ping + 2.) execute switch off
         verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/changestatus?status=off");
     }
 
     @Test
-    public void testHandleCommand_Switch_Surveillance_unknown_command() {
+    public void testHandleCommandSwitchSurveillanceUnknownCommand() {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(cameraStatusChannelUID, RefreshType.REFRESH);
 
-        verify(requestExecutorMock, never()).executeGETRequest(any()); //nothing should get executed on a refresh command
+        verify(requestExecutorMock, never()).executeGETRequest(any()); // nothing should get executed on a refresh
+                                                                       // command
     }
 
     @Test
-    public void testHandleCommand_Switch_Surveillance_without_VPN() {
+    public void testHandleCommandSwitchSurveillanceWithoutVPN() {
         handler.handleCommand(cameraStatusChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, never()).executeGETRequest(any()); //nothing should get executed when no VPN address is set
+        verify(requestExecutorMock, never()).executeGETRequest(any()); // nothing should get executed when no VPN
+                                                                       // address is set
     }
 
     @Test
-    public void testHandleCommand_Switch_Floodlight_on() {
+    public void testHandleCommandSwitchFloodlightOn() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch on
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); // 1.) execute ping + 2.) execute switch on
+        verify(requestExecutorMock)
+                .executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
     }
 
     @Test
-    public void testHandleCommand_Switch_Floodlight_off() {
+    public void testHandleCommandSwitchFloodlightOff() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, OnOffType.OFF);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); // 1.) execute ping + 2.) execute switch off
+        verify(requestExecutorMock).executeGETRequest(
+                DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
     }
 
     @Test
-    public void testHandleCommand_Switch_Floodlight_off_with_AutoMode_on() {
+    public void testHandleCommandSwitchFloodlightOffWithAutoModeOn() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
@@ -139,25 +148,29 @@ public class NAPresenceCameraHandlerTest {
 
         handler.handleCommand(floodlightChannelUID, OnOffType.OFF);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22auto%22%7D");
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); // 1.) execute ping + 2.) execute switch off
+        verify(requestExecutorMock).executeGETRequest(
+                DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22auto%22%7D");
     }
 
     @Test
-    public void testHandleCommand_Switch_Floodlight_on_address_changed() {
+    public void testHandleCommandSwitchFloodlightOnAddressChanged() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
-        //1.) execute ping + 2.) execute switch on
+        // 1.) execute ping + 2.) execute switch on
         verify(requestExecutorMock, times(2)).executeGETRequest(any());
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+        verify(requestExecutorMock)
+                .executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
 
         handler.handleCommand(floodlightChannelUID, OnOffType.OFF);
-        //1.) execute ping + 2.) execute switch on + 3.) execute switch off
+        // 1.) execute ping + 2.) execute switch on + 3.) execute switch off
         verify(requestExecutorMock, times(3)).executeGETRequest(any());
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
+        verify(requestExecutorMock)
+                .executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+        verify(requestExecutorMock).executeGETRequest(
+                DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
 
         final String newDummyVPNURL = DUMMY_VPN_URL + "2";
         final String newDummyLocalURL = DUMMY_LOCAL_URL + "2";
@@ -167,178 +180,191 @@ public class NAPresenceCameraHandlerTest {
 
         presenceCamera.setVpnUrl(newDummyVPNURL);
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
-        //1.) execute ping + 2.) execute switch on + 3.) execute switch off + 4.) execute ping + 5.) execute switch on
+        // 1.) execute ping + 2.) execute switch on + 3.) execute switch off + 4.) execute ping + 5.) execute switch on
         verify(requestExecutorMock, times(5)).executeGETRequest(any());
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
-        verify(requestExecutorMock).executeGETRequest(newDummyLocalURL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+        verify(requestExecutorMock)
+                .executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
+        verify(requestExecutorMock).executeGETRequest(
+                DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
+        verify(requestExecutorMock).executeGETRequest(
+                newDummyLocalURL + "/command/floodlight_set_config?config=%7B%22mode%22:%22on%22%7D");
     }
 
     @Test
-    public void testHandleCommand_Switch_Floodlight_unknown_command() {
+    public void testHandleCommandSwitchFloodlightUnknownCommand() {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, RefreshType.REFRESH);
 
-        verify(requestExecutorMock, never()).executeGETRequest(any()); //nothing should get executed on a refresh command
+        verify(requestExecutorMock, never()).executeGETRequest(any()); // nothing should get executed on a refresh
+                                                                       // command
     }
 
     @Test
-    public void testHandleCommand_Switch_FloodlightAutoMode_on() {
+    public void testHandleCommandSwitchFloodlightAutoModeOn() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
 
         handler.handleCommand(floodlightAutoModeChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch auto-mode on
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22auto%22%7D");
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); // 1.) execute ping + 2.) execute switch
+                                                                        // auto-mode on
+        verify(requestExecutorMock).executeGETRequest(
+                DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22auto%22%7D");
     }
 
     @Test
-    public void testHandleCommand_Switch_FloodlightAutoMode_off() {
+    public void testHandleCommandSwitchFloodlightAutoModeOff() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(DUMMY_PING_RESPONSE);
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
 
         handler.handleCommand(floodlightAutoModeChannelUID, OnOffType.OFF);
 
-        verify(requestExecutorMock, times(2)).executeGETRequest(any()); //1.) execute ping + 2.) execute switch off
-        verify(requestExecutorMock).executeGETRequest(DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
+        verify(requestExecutorMock, times(2)).executeGETRequest(any()); // 1.) execute ping + 2.) execute switch off
+        verify(requestExecutorMock).executeGETRequest(
+                DUMMY_LOCAL_URL + "/command/floodlight_set_config?config=%7B%22mode%22:%22off%22%7D");
     }
 
     @Test
-    public void testHandleCommand_Switch_FloodlightAutoMode_unknown_command() {
+    public void testHandleCommandSwitchFloodlightAutoModeUnknownCommand() {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightAutoModeChannelUID, RefreshType.REFRESH);
 
-        verify(requestExecutorMock, never()).executeGETRequest(any()); //nothing should get executed on a refresh command
+        verify(requestExecutorMock, never()).executeGETRequest(any()); // nothing should get executed on a refresh
+                                                                       // command
     }
 
     /**
      * The request "fails" because there is no response content of the ping command.
      */
     @Test
-    public void testHandleCommand_Request_failed() {
+    public void testHandleCommandRequestFailed() {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, times(1)).executeGETRequest(any()); //1.) execute ping
+        verify(requestExecutorMock, times(1)).executeGETRequest(any()); // 1.) execute ping
     }
 
     @Test
-    public void testHandleCommand_without_VPN() {
+    public void testHandleCommandWithoutVPN() {
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, never()).executeGETRequest(any()); //no executions because the VPN URL is still unknown
+        verify(requestExecutorMock, never()).executeGETRequest(any()); // no executions because the VPN URL is still
+                                                                       // unknown
     }
 
     @Test
-    public void testHandleCommand_Ping_failed_NULL_Response() {
+    public void testHandleCommandPingFailedNULLResponse() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(Optional.of(""));
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, times(1)).executeGETRequest(any()); //1.) execute ping
+        verify(requestExecutorMock, times(1)).executeGETRequest(any()); // 1.) execute ping
     }
 
     @Test
-    public void testHandleCommand_Ping_failed_empty_Response() {
+    public void testHandleCommandPingFailedEmptyResponse() {
         when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(Optional.of(""));
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, times(1)).executeGETRequest(any()); //1.) execute ping
+        verify(requestExecutorMock, times(1)).executeGETRequest(any()); // 1.) execute ping
     }
 
     @Test
-    public void testHandleCommand_Ping_failed_wrong_Response() {
-        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping")).thenReturn(Optional.of("{ \"message\":  \"error\" }"));
+    public void testHandleCommandPingFailedWrongResponse() {
+        when(requestExecutorMock.executeGETRequest(DUMMY_VPN_URL + "/command/ping"))
+                .thenReturn(Optional.of("{ \"message\":  \"error\" }"));
 
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         handler.handleCommand(floodlightChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, times(1)).executeGETRequest(any()); //1.) execute ping
+        verify(requestExecutorMock, times(1)).executeGETRequest(any()); // 1.) execute ping
     }
 
     @Test
-    public void testHandleCommand_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
+    public void testHandleCommandModuleNULL() {
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing,
+                timeZoneProviderMock);
         handlerWithoutModule.handleCommand(floodlightChannelUID, OnOffType.ON);
 
-        verify(requestExecutorMock, never()).executeGETRequest(any()); //no executions because the thing isn't initialized
+        verify(requestExecutorMock, never()).executeGETRequest(any()); // no executions because the thing isn't
+                                                                       // initialized
     }
 
     @Test
-    public void testGetNAThingProperty_Common_Channel() {
+    public void testGetNAThingPropertyCommonChannel() {
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_CAMERA_STATUS));
     }
 
     @Test
-    public void testGetNAThingProperty_Floodlight_On() {
+    public void testGetNAThingPropertyFloodlightOn() {
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.ON);
         assertEquals(OnOffType.ON, handler.getNAThingProperty(floodlightChannelUID.getId()));
     }
 
     @Test
-    public void testGetNAThingProperty_Floodlight_Off() {
+    public void testGetNAThingPropertyFloodlightOff() {
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.OFF);
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightChannelUID.getId()));
     }
 
     @Test
-    public void testGetNAThingProperty_Floodlight_Auto() {
+    public void testGetNAThingPropertyFloodlightAuto() {
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.AUTO);
-        //When the floodlight is set to auto-mode it is currently off.
+        // When the floodlight is set to auto-mode it is currently off.
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightChannelUID.getId()));
     }
 
     @Test
-    public void testGetNAThingProperty_Floodlight_without_LightModeState() {
+    public void testGetNAThingPropertyFloodlightWithoutLightModeState() {
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightChannelUID.getId()));
     }
 
     @Test
-    public void testGetNAThingProperty_Floodlight_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
+    public void testGetNAThingPropertyFloodlightModuleNULL() {
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing,
+                timeZoneProviderMock);
         assertEquals(UnDefType.UNDEF, handlerWithoutModule.getNAThingProperty(floodlightChannelUID.getId()));
     }
 
     @Test
-    public void testGetNAThingProperty_FloodlightAutoMode_Floodlight_Auto() {
+    public void testGetNAThingPropertyFloodlightAutoModeFloodlightAuto() {
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.AUTO);
         assertEquals(OnOffType.ON, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
     }
 
     @Test
-    public void testGetNAThingProperty_FloodlightAutoMode_Floodlight_On() {
+    public void testGetNAThingPropertyFloodlightAutoModeFloodlightOn() {
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.ON);
-        //When the floodlight is initially on (on starting the binding), there is no information about if the auto-mode
+        // When the floodlight is initially on (on starting the binding), there is no information about if the auto-mode
         // was set before. Therefore the auto-mode is detected as deactivated / off.
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
     }
 
     @Test
-    public void testGetNAThingProperty_FloodlightAutoMode_Floodlight_Off() {
+    public void testGetNAThingPropertyFloodlightAutoModeFloodlightOff() {
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.ON);
-        //When the floodlight is initially off (on starting the binding), the auto-mode isn't set.
+        // When the floodlight is initially off (on starting the binding), the auto-mode isn't set.
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
     }
 
     @Test
-    public void testGetNAThingProperty_Floodlight_Scenario_with_AutoMode() {
+    public void testGetNAThingPropertyFloodlightScenarioWithAutoMode() {
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.AUTO);
         assertEquals(OnOffType.ON, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightChannelUID.getId()));
 
-        //The auto-mode was initially set, after that the floodlight was switched on by the user.
+        // The auto-mode was initially set, after that the floodlight was switched on by the user.
         // In this case the binding should still know that the auto-mode is/was set.
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.ON);
         assertEquals(OnOffType.ON, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
         assertEquals(OnOffType.ON, handler.getNAThingProperty(floodlightChannelUID.getId()));
 
-        //After that the user switched off the floodlight.
+        // After that the user switched off the floodlight.
         // In this case the binding should still know that the auto-mode is/was set.
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.OFF);
         assertEquals(OnOffType.ON, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
@@ -346,18 +372,18 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testGetNAThingProperty_Floodlight_Scenario_without_AutoMode() {
+    public void testGetNAThingPropertyFloodlightScenarioWithoutAutoMode() {
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.OFF);
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightChannelUID.getId()));
 
-        //The auto-mode wasn't set, after that the floodlight was switched on by the user.
+        // The auto-mode wasn't set, after that the floodlight was switched on by the user.
         // In this case the binding should still know that the auto-mode isn't/wasn't set.
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.ON);
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
         assertEquals(OnOffType.ON, handler.getNAThingProperty(floodlightChannelUID.getId()));
 
-        //After that the user switched off the floodlight.
+        // After that the user switched off the floodlight.
         // In this case the binding should still know that the auto-mode isn't/wasn't set.
         presenceCamera.setLightModeStatus(NAWelcomeCamera.LightModeStatusEnum.OFF);
         assertEquals(OnOffType.OFF, handler.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
@@ -365,8 +391,9 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testGetNAThingProperty_FloodlightAutoMode_Module_NULL() {
-        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing, timeZoneProviderMock);
+    public void testGetNAThingPropertyFloodlightAutoModeModuleNULL() {
+        NAPresenceCameraHandler handlerWithoutModule = new NAPresenceCameraHandler(presenceCameraThing,
+                timeZoneProviderMock);
         assertEquals(UnDefType.UNDEF, handlerWithoutModule.getNAThingProperty(floodlightAutoModeChannelUID.getId()));
     }
 
@@ -379,7 +406,7 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testGetStreamURL_local() {
+    public void testGetStreamURLLocal() {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         presenceCamera.setIsLocal(true);
 
@@ -389,7 +416,7 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testGetStreamURL_not_local() {
+    public void testGetStreamURLNotLocal() {
         presenceCamera.setVpnUrl(DUMMY_VPN_URL);
         presenceCamera.setIsLocal(false);
 
@@ -399,7 +426,7 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testGetStreamURL_without_VPN() {
+    public void testGetStreamURLWithoutVPN() {
         Optional<String> streamURL = handler.getStreamURL("dummyVideoId");
         assertFalse(streamURL.isPresent());
     }
@@ -413,7 +440,7 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testGetLivePictureURLState_without_VPN() {
+    public void testGetLivePictureURLStateWithoutVPN() {
         State livePictureURLState = handler.getLivePictureURLState();
         assertEquals(UnDefType.UNDEF, livePictureURLState);
     }
@@ -427,7 +454,7 @@ public class NAPresenceCameraHandlerTest {
     }
 
     @Test
-    public void testGetLiveStreamState_without_VPN() {
+    public void testGetLiveStreamStateWithoutVPN() {
         State liveStreamState = handler.getLiveStreamState();
         assertEquals(UnDefType.UNDEF, liveStreamState);
     }
@@ -445,7 +472,7 @@ public class NAPresenceCameraHandlerTest {
 
         private NAPresenceCameraHandlerAccessible(Thing thing, NAWelcomeCamera presenceCamera) {
             super(thing, timeZoneProviderMock);
-            module = presenceCamera;
+            setModule(presenceCamera);
         }
 
         @Override

@@ -71,25 +71,25 @@ public class HueLightHandlerTest {
     }
 
     @Test
-    public void assertCommandForOsramPar16_50ForColorTemperatureChannelOn() {
+    public void assertCommandForOsramPar1650ForColorTemperatureChannelOn() {
         String expectedReply = "{\"on\" : true, \"bri\" : 254}";
         assertSendCommandForColorTempForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
     }
 
     @Test
-    public void assertCommandForOsramPar16_50ForColorTemperatureChannelOff() {
+    public void assertCommandForOsramPar1650ForColorTemperatureChannelOff() {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
         assertSendCommandForColorTempForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
     }
 
     @Test
-    public void assertCommandForOsramPar16_50ForBrightnessChannelOn() {
+    public void assertCommandForOsramPar1650ForBrightnessChannelOn() {
         String expectedReply = "{\"on\" : true, \"bri\" : 254}";
         assertSendCommandForBrightnessForPar16(OnOffType.ON, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
     }
 
     @Test
-    public void assertCommandForOsramPar16_50ForBrightnessChannelOff() {
+    public void assertCommandForOsramPar1650ForBrightnessChannelOff() {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
         assertSendCommandForBrightnessForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE), expectedReply);
     }

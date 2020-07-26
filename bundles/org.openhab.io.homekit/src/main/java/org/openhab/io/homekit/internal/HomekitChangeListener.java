@@ -215,17 +215,36 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
 
     /**
      * creates one or more HomeKit items for given openhab item.
-     * one openhab item can linked to several HomeKit accessories or characteristics.
-     * 
-     * @param item openhab item
+     * one OpenHAB item can linked to several HomeKit accessories or characteristics.
+     * OpenHAB Item is a good candidate for homeKit accessory IF
+     * - it has HomeKit accessory types, i.e. HomeKit accessory tag AND
+     * - has no group with HomeKit tag, i.e. single line accessory ODER
+     * - has groups with HomeKit tag, but all groups are with baseItem, e.g. Group:Switch,
+     * so that the groups already complete accessory and group members can be a standalone HomeKit accessory.
+     * In contrast, items which are part of groups without BaseItem are additional HomeKit characteristics of the
+     * accessory defined by that group and dont need to be created as RootAccessory here.
+     *
+     * Examples:
+     * // Single Line HomeKit Accessory
+     * Switch light "Light" {homekit="Lighting"}
+     *
+     * // One HomeKit accessory defined using group
+     * Group gLight "Light Group" {homekit="Lighting"}
+     * Switch light "Light" (gLight) {homekit="Lighting.OnState"}
+     *
+     * // 2 HomeKit accessories: one is switch attached to group, another one a single switch
+     * Group:Switch:OR(ON,OFF) gLight "Light Group " {homekit="Lighting"}
+     * Switch light "Light" (gLight) {homekit="Lighting.OnState"}
+     *
+     * @param item openHAB item
      */
     private void createRootAccessories(Item item) {
         final List<Entry<HomekitAccessoryType, HomekitCharacteristicType>> accessoryTypes = HomekitAccessoryFactory
                 .getAccessoryTypes(item, metadataRegistry);
         final List<GroupItem> groups = HomekitAccessoryFactory.getAccessoryGroups(item, itemRegistry, metadataRegistry);
-        if (!accessoryTypes.isEmpty() && groups.stream().noneMatch(g -> g.getBaseItem() != null)) {
-            // it has homekit accessory type and is not part of bigger homekit group item without baseItem, i.e. not
-            // Group:Switch
+        if (!accessoryTypes.isEmpty()
+                && (groups.isEmpty() || groups.stream().noneMatch(g -> g.getBaseItem() == null))) {
+            logger.trace("Item {} is a HomeKit accessory of types {}", item.getName(), accessoryTypes);
             final HomekitOHItemProxy itemProxy = new HomekitOHItemProxy(item);
             accessoryTypes.forEach(rootAccessory -> createRootAccessory(new HomekitTaggedItem(itemProxy,
                     rootAccessory.getKey(), HomekitAccessoryFactory.getItemConfiguration(item, metadataRegistry))));

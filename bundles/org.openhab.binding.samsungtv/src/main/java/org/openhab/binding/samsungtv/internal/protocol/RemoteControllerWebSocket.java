@@ -198,9 +198,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
             webSocketRemote.close();
             webSocketArt.close();
             webSocketV2.close();
-            if (client.isStarted()) {
-                client.stop();
-            }
+            client.stop();
         } catch (Exception e) {
             throw new RemoteControllerException(e);
         }

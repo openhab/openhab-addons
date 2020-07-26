@@ -129,7 +129,7 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
 
     private String getScaleResult(Map<Range, String> data, String source, final BigDecimal value)
             throws TransformationException {
-        return data.entrySet().stream().filter(entry -> entry.getKey().contains(value)).findFirst()
+        return data.entrySet().stream().filter(entry -> entry.getKey() != null && entry.getKey().contains(value)).findFirst()
                 .map(Map.Entry::getValue)
                 .orElseThrow(() -> new TransformationException("No matching range for '" + source + "'"));
     }

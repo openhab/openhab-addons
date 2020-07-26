@@ -158,6 +158,10 @@ public class InsteonBinding {
         logger.debug("dead device timeout set to {} seconds", deadDeviceTimeout / 1000);
     }
 
+    public Driver getDriver() {
+        return driver;
+    }
+
     public boolean startPolling() {
         logger.debug("starting to poll {}", driver.getPortName());
         driver.start();

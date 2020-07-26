@@ -116,46 +116,43 @@ public class NAModule4Handler extends NetatmoModuleHandler<NAStationModule> {
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        NAStationModule stationModule = module;
-        if (stationModule != null) {
-            NADashboardData dashboardData = stationModule.getDashboardData();
-            if (dashboardData != null) {
-                switch (channelId) {
-                    case CHANNEL_TEMP_TREND:
-                        return toStringType(dashboardData.getTempTrend());
-                    case CHANNEL_CO2:
-                        return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
-                    case CHANNEL_TEMPERATURE:
-                        return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
-                    case CHANNEL_DATE_MIN_TEMP:
-                        return toDateTimeType(dashboardData.getDateMinTemp(), timeZoneProvider.getTimeZone());
-                    case CHANNEL_DATE_MAX_TEMP:
-                        return toDateTimeType(dashboardData.getDateMaxTemp(), timeZoneProvider.getTimeZone());
-                    case CHANNEL_MIN_TEMP:
-                        return toQuantityType(dashboardData.getMinTemp(), API_TEMPERATURE_UNIT);
-                    case CHANNEL_MAX_TEMP:
-                        return toQuantityType(dashboardData.getMaxTemp(), API_TEMPERATURE_UNIT);
-                    case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
-                    case CHANNEL_HUMIDITY:
-                        return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
-                    case CHANNEL_HUMIDEX:
-                        return toDecimalType(
-                                WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-                    case CHANNEL_HEATINDEX:
-                        return toQuantityType(
-                                WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()),
-                                API_TEMPERATURE_UNIT);
-                    case CHANNEL_DEWPOINT:
-                        return toQuantityType(
-                                WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()),
-                                API_TEMPERATURE_UNIT);
-                    case CHANNEL_DEWPOINTDEP:
-                        Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
-                                dashboardData.getHumidity());
-                        return toQuantityType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint),
-                                API_TEMPERATURE_UNIT);
-                }
+        NADashboardData dashboardData = getModule().map(m -> m.getDashboardData()).orElse(null);
+        if (dashboardData != null) {
+            switch (channelId) {
+                case CHANNEL_TEMP_TREND:
+                    return toStringType(dashboardData.getTempTrend());
+                case CHANNEL_CO2:
+                    return toQuantityType(dashboardData.getCO2(), API_CO2_UNIT);
+                case CHANNEL_TEMPERATURE:
+                    return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
+                case CHANNEL_DATE_MIN_TEMP:
+                    return toDateTimeType(dashboardData.getDateMinTemp(), timeZoneProvider.getTimeZone());
+                case CHANNEL_DATE_MAX_TEMP:
+                    return toDateTimeType(dashboardData.getDateMaxTemp(), timeZoneProvider.getTimeZone());
+                case CHANNEL_MIN_TEMP:
+                    return toQuantityType(dashboardData.getMinTemp(), API_TEMPERATURE_UNIT);
+                case CHANNEL_MAX_TEMP:
+                    return toQuantityType(dashboardData.getMaxTemp(), API_TEMPERATURE_UNIT);
+                case CHANNEL_TIMEUTC:
+                    return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
+                case CHANNEL_HUMIDITY:
+                    return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
+                case CHANNEL_HUMIDEX:
+                    return toDecimalType(
+                            WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                case CHANNEL_HEATINDEX:
+                    return toQuantityType(
+                            WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()),
+                            API_TEMPERATURE_UNIT);
+                case CHANNEL_DEWPOINT:
+                    return toQuantityType(
+                            WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()),
+                            API_TEMPERATURE_UNIT);
+                case CHANNEL_DEWPOINTDEP:
+                    Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
+                            dashboardData.getHumidity());
+                    return toQuantityType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint),
+                            API_TEMPERATURE_UNIT);
             }
         }
 

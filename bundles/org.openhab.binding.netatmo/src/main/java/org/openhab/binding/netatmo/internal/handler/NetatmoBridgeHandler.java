@@ -118,11 +118,12 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
         WelcomeWebHookServlet servlet = webHookServlet;
         String webHookURI = getWebHookURI();
-        WelcomeApi welcomeApi = getWelcomeApi();
-        if (welcomeApi != null && servlet != null && webHookURI != null) {
-            servlet.activate(this);
-            logger.debug("Setting up Netatmo Welcome WebHook");
-            welcomeApi.addwebhook(webHookURI, WEBHOOK_APP);
+        if (servlet != null && webHookURI != null) {
+            getWelcomeApi().ifPresent(api -> {
+                servlet.activate(this);
+                logger.debug("Setting up Netatmo Welcome WebHook");
+                api.addwebhook(webHookURI, WEBHOOK_APP);
+            });
         }
     }
 
@@ -167,6 +168,10 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
                             return;
                     }
                 }
+            } catch (RuntimeException e) {
+                logger.warn("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Netatmo Access Failed, will retry in " + configuration.reconnectInterval + " seconds.");
             }
             // We'll do this every x seconds to guaranty token refresh
         }, 2, configuration.reconnectInterval, TimeUnit.SECONDS);
@@ -230,24 +235,24 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         return map != null ? (PartnerApi) map.get(PartnerApi.class) : null;
     }
 
-    private @Nullable StationApi getStationApi() {
+    public Optional<StationApi> getStationApi() {
         APIMap map = apiMap;
-        return map != null ? (StationApi) map.get(StationApi.class) : null;
+        return map != null ? Optional.of((StationApi) map.get(StationApi.class)) : Optional.empty();
     }
 
-    private @Nullable HealthyhomecoachApi getHomeCoachApi() {
+    public Optional<HealthyhomecoachApi> getHomeCoachApi() {
         APIMap map = apiMap;
-        return map != null ? (HealthyhomecoachApi) map.get(HealthyhomecoachApi.class) : null;
+        return map != null ? Optional.of((HealthyhomecoachApi) map.get(HealthyhomecoachApi.class)) : Optional.empty();
     }
 
-    public @Nullable ThermostatApi getThermostatApi() {
+    public Optional<ThermostatApi> getThermostatApi() {
         APIMap map = apiMap;
-        return map != null ? (ThermostatApi) map.get(ThermostatApi.class) : null;
+        return map != null ? Optional.of((ThermostatApi) map.get(ThermostatApi.class)) : Optional.empty();
     }
 
-    public @Nullable WelcomeApi getWelcomeApi() {
+    public Optional<WelcomeApi> getWelcomeApi() {
         APIMap map = apiMap;
-        return map != null ? (WelcomeApi) map.get(WelcomeApi.class) : null;
+        return map != null ? Optional.of((WelcomeApi) map.get(WelcomeApi.class)) : Optional.empty();
     }
 
     @Override
@@ -255,11 +260,12 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         logger.debug("Running dispose()");
 
         WelcomeWebHookServlet servlet = webHookServlet;
-        WelcomeApi welcomeApi = getWelcomeApi();
-        if (welcomeApi != null && servlet != null && getWebHookURI() != null) {
-            logger.debug("Releasing Netatmo Welcome WebHook");
-            servlet.deactivate();
-            welcomeApi.dropwebhook(WEBHOOK_APP);
+        if (servlet != null && getWebHookURI() != null) {
+            getWelcomeApi().ifPresent(api -> {
+                logger.debug("Releasing Netatmo Welcome WebHook");
+                servlet.deactivate();
+                api.dropwebhook(WEBHOOK_APP);
+            });
         }
 
         ScheduledFuture<?> job = refreshJob;
@@ -269,44 +275,38 @@ public class NetatmoBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public @Nullable NAStationDataBody getStationsDataBody(@Nullable String equipmentId) {
-        StationApi stationApi = getStationApi();
-        NAStationDataBody data = stationApi == null ? null : stationApi.getstationsdata(equipmentId, false).getBody();
+    public Optional<NAStationDataBody> getStationsDataBody(@Nullable String equipmentId) {
+        Optional<NAStationDataBody> data = getStationApi().map(api -> api.getstationsdata(equipmentId, true).getBody());
         updateStatus(ThingStatus.ONLINE);
         return data;
     }
 
     public List<Float> getStationMeasureResponses(String equipmentId, @Nullable String moduleId, String scale,
             List<String> types) {
-        StationApi stationApi = getStationApi();
-        List<NAMeasureBodyElem> data = stationApi == null ? null
-                : stationApi
-                        .getmeasure(equipmentId, scale, new CSVParams(types), moduleId, null, "last", 1, true, false)
-                        .getBody();
+        List<NAMeasureBodyElem> data = getStationApi().map(api -> api
+                .getmeasure(equipmentId, scale, new CSVParams(types), moduleId, null, "last", 1, true, false).getBody())
+                .orElse(null);
         updateStatus(ThingStatus.ONLINE);
         NAMeasureBodyElem element = (data != null && data.size() > 0) ? data.get(0) : null;
         return element != null ? element.getValue().get(0) : Collections.emptyList();
     }
 
-    public @Nullable NAHealthyHomeCoachDataBody getHomecoachDataBody(@Nullable String equipmentId) {
-        HealthyhomecoachApi healthyhomecoachApi = getHomeCoachApi();
-        NAHealthyHomeCoachDataBody data = healthyhomecoachApi == null ? null
-                : healthyhomecoachApi.gethomecoachsdata(equipmentId).getBody();
+    public Optional<NAHealthyHomeCoachDataBody> getHomecoachDataBody(@Nullable String equipmentId) {
+        Optional<NAHealthyHomeCoachDataBody> data = getHomeCoachApi()
+                .map(api -> api.gethomecoachsdata(equipmentId).getBody());
         updateStatus(ThingStatus.ONLINE);
         return data;
     }
 
-    public @Nullable NAThermostatDataBody getThermostatsDataBody(@Nullable String equipmentId) {
-        ThermostatApi thermostatApi = getThermostatApi();
-        NAThermostatDataBody data = thermostatApi == null ? null
-                : thermostatApi.getthermostatsdata(equipmentId).getBody();
+    public Optional<NAThermostatDataBody> getThermostatsDataBody(@Nullable String equipmentId) {
+        Optional<NAThermostatDataBody> data = getThermostatApi()
+                .map(api -> api.getthermostatsdata(equipmentId).getBody());
         updateStatus(ThingStatus.ONLINE);
         return data;
     }
 
-    public @Nullable NAWelcomeHomeData getWelcomeDataBody(@Nullable String homeId) {
-        WelcomeApi welcomeApi = getWelcomeApi();
-        NAWelcomeHomeData data = welcomeApi == null ? null : welcomeApi.gethomedata(homeId, null).getBody();
+    public Optional<NAWelcomeHomeData> getWelcomeDataBody(@Nullable String homeId) {
+        Optional<NAWelcomeHomeData> data = getWelcomeApi().map(api -> api.gethomedata(homeId, null).getBody());
         updateStatus(ThingStatus.ONLINE);
         return data;
     }

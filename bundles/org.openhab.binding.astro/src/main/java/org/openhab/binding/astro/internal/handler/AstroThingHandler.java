@@ -17,7 +17,10 @@ import static org.eclipse.smarthome.core.thing.type.ChannelKind.TRIGGER;
 import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -27,12 +30,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.measure.quantity.Angle;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.scheduler.ScheduledCompletableFuture;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -40,12 +46,15 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.astro.internal.action.AstroActions;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.config.AstroThingConfig;
 import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.job.PositionalJob;
 import org.openhab.binding.astro.internal.model.Planet;
+import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -318,7 +327,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /**
      * Calculates and publishes the daily Astro data.
      */
-    public abstract void publishDailyInfo();
+    public void publishDailyInfo() {
+        publishPositionalInfo();
+    }
 
     /**
      * Calculates and publishes the interval Astro data.
@@ -339,4 +350,22 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Returns the daily calculation {@link Job} (cannot be {@code null})
      */
     protected abstract Job getDailyJob();
+
+    protected abstract @Nullable Position getPositionAt(ZonedDateTime date);
+
+    public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
+        Position position = getPositionAt(date);
+        return position != null ? position.getAzimuth() : null;
+    }
+
+    public @Nullable QuantityType<Angle> getElevation(ZonedDateTime date) {
+        Position position = getPositionAt(date);
+        return position != null ? position.getElevation() : null;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(AstroActions.class);
+    }
+
 }
