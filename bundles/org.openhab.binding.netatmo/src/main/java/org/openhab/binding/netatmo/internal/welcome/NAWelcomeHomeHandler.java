@@ -185,16 +185,9 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             if (event.getPersonId() != null) {
                 detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
             } else {
-                String category = event.getCategory();
-                if (category != null) {
-                    switch (category) {
-                        case "human": detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
-                            break;
-                        case "animal": detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.ANIMAL.name());
-                            break;
-                        default:
-                            detectedObjectTypes.add(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.name());
-                    }
+                Optional<NAWelcomeSubEvent.TypeEnum> detectedCategory = translateEventCategory(event);
+                if (detectedCategory.isPresent()) {
+                    detectedObjectTypes.add(detectedCategory.get().name());
                 } else {
                     detectedObjectTypes.add(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.name());
                 }
@@ -206,6 +199,19 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             detectedObjectTypes.add(detectedObjectType);
         });
         return detectedObjectTypes;
+    }
+
+    private static Optional<NAWelcomeSubEvent.TypeEnum> translateEventCategory(NAWelcomeEvent event) {
+        String category = event.getCategory();
+        if (category != null) {
+            switch (category) {
+                case "human":
+                    return Optional.of(NAWelcomeSubEvent.TypeEnum.HUMAN);
+                case "animal":
+                    return Optional.of(NAWelcomeSubEvent.TypeEnum.ANIMAL);
+            }
+        }
+        return Optional.empty();
     }
 
     private Optional<String> findEventMessage() {
