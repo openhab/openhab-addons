@@ -181,12 +181,12 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
         NAWelcomeEvent event = eventOptional.get();
 
-        if (event.getPersonId() != null) {
-            detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
-        }
-
         if (NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.toString().equals(event.getType())) {
-            detectedObjectTypes.add(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.name());
+            if (event.getPersonId() != null) {
+                detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
+            } else {
+                detectedObjectTypes.add(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.name());
+            }
         }
 
         event.getEventList().forEach(subEvent -> {

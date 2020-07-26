@@ -243,10 +243,10 @@ public class NAWelcomeHomeHandlerTest {
         handler.updateReadings();
         handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
 
-        assertEquals(2, handler.getTriggerChannelCount());
+        assertEquals(1, handler.getTriggerChannelCount());
         assertEquals(new StringType("movement"),
                 handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
-        assertEquals("MOVEMENT", handler.getLastDetectedObject());
+        assertEquals("HUMAN", handler.getLastDetectedObject());
     }
 
     private static NAWelcomeEvent createPresenceEvent(int eventTime, NAWelcomeSubEvent.TypeEnum detectedObjectType) {
