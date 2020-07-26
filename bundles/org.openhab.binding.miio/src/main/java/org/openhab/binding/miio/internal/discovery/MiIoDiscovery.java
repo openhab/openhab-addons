@@ -239,9 +239,10 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
      */
     private synchronized void stopReceiverThreat() {
         if (socketReceiveThread != null) {
-            closeSocket();
+            socketReceiveThread.interrupt();
             socketReceiveThread = null;
         }
+        closeSocket();
     }
 
     /**
@@ -266,7 +267,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         private void receiveData(DatagramSocket socket) {
             DatagramPacket receivePacket = new DatagramPacket(new byte[BUFFER_LENGTH], BUFFER_LENGTH);
             try {
-                while (true) {
+                while (!interrupted()) {
                     logger.trace("Thread {} waiting for data on port {}", this, socket.getLocalPort());
                     socket.receive(receivePacket);
                     String hostAddress = receivePacket.getAddress().getHostAddress();
