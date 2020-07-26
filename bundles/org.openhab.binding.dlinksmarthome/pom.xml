@@ -12,8 +12,4 @@
 
   <name>openHAB Add-ons :: Bundles :: D-Link Smart Home Binding</name>
 
-  <properties>
-    <bnd.importpackage>!javax.xml.soap, com.sun.xml.messaging.saaj.soap</bnd.importpackage>
-  </properties>
-
 </project>
