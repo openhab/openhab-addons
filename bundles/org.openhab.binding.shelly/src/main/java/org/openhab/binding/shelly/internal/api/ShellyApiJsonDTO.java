@@ -146,6 +146,7 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_API_STOPR_NORMAL = "normal";
     public static final String SHELLY_API_STOPR_SAFETYSW = "safety_switch";
     public static final String SHELLY_API_STOPR_OBSTACLE = "obstacle";
+    public static final String SHELLY_API_STOPR_OVERPOWER = "overpower";
 
     public static final String SHELLY_TIMER_AUTOON = "auto_on";
     public static final String SHELLY_TIMER_AUTOOFF = "auto_off";
@@ -496,6 +497,11 @@ public class ShellyApiJsonDTO {
         ShellyStatusCloud cloud;
         @SerializedName("sleep_mode")
         public ShellySensorSleepMode sleepMode; // FW 1.6
+
+        // @SerializedName("ext_temperature")
+        // public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
+        // @SerializedName("ext_humidity")
+        // public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
 
         public String timezone;
         public Double lat;

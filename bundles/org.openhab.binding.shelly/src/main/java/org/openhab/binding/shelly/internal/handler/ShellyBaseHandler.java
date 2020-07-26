@@ -56,6 +56,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapHandler;
+import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
@@ -374,9 +375,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 // map status to channels
                 updated |= this.updateDeviceStatus(status);
                 updated |= ShellyComponents.updateDeviceStatus(this, status);
-                updated |= updateMeters(this, status);
-                updated |= updateSensors(this, status);
-                // updated |= updateInputs(status);
+                if (!channelsCreated || !cache.isEnabled() || (coap.getVersion() < ShellyCoapJSonDTO.COIOT_VERSION_2)) {
+                    updated |= updateMeters(this, status);
+                    updated |= updateSensors(this, status);
+                    updated |= updateInputs(status);
+                } else {
+                    logger.debug("Skipping Meter/Sensor/Input updates, because device is running CoIoT version 2");
+                }
 
                 // All channels must be created after the first cycle
                 channelsCreated = true;
@@ -453,7 +458,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (!isThingOffline()) {
             logger.info("{}: Thing goes OFFLINE: {}", thingName, messages.get(messageKey));
             updateStatus(ThingStatus.OFFLINE, detail, "@text/" + messageKey);
-            watchdog.stop();
+            watchdog.reset();
+            cache.disable();
             channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
     }
@@ -752,15 +758,10 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 }
             }
             if (bindingConfig.autoCoIoT && (version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT) >= 0)) {
-                if (version.compare(getString(prf.fwVersion), SHELLY_API_FWCOIOT2) >= 0) {
-                    logger.warn("{}: Firmware version {} or newer detected, CoIoT Version 2 is not yet supported",
-                            thingName, getString(prf.fwVersion));
-                } else {
-                    if (!config.eventsCoIoT) {
-                        logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
-                    }
-                    autoCoIoT = true;
+                if (!config.eventsCoIoT) {
+                    logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
                 }
+                autoCoIoT = true;
             }
         } catch (RuntimeException e) { // could be inconsistant format of beta version
             logger.debug("{}: {}", thingName, messages.get("versioncheck.failed", prf.fwVersion));

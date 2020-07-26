@@ -76,7 +76,7 @@ public class ShellyThingCreator {
 
     public static ThingUID getThingUID(String serviceName, String deviceType, String mode, boolean unknown) {
         String devid = StringUtils.substringAfterLast(serviceName, "-");
-        return new ThingUID(!unknown ? getThingTypeUID(serviceName, deviceType, deviceType)
+        return new ThingUID(!unknown ? getThingTypeUID(serviceName, deviceType, mode)
                 : getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + devid, deviceType, mode), devid);
     }
 

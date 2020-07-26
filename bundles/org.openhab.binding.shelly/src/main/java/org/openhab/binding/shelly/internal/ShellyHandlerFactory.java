@@ -82,7 +82,10 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
 
         messages = new ShellyTranslationProvider(bundleContext.getBundle(), i18nProvider, localeProvider);
-        localIP = ShellyUtils.getString(networkAddressService.getPrimaryIpv4HostAddress().toString());
+        localIP = ShellyUtils.getString(networkAddressService.getPrimaryIpv4HostAddress());
+        if (localIP.isEmpty()) {
+            logger.warn("{}", messages.get("message.init.noipaddress"));
+        }
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
         httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());

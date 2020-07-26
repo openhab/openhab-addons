@@ -29,6 +29,9 @@ import com.google.gson.stream.JsonWriter;
  */
 public class ShellyCoapJSonDTO {
     // Coap
+    public static final int COIOT_VERSION_1 = 1;
+    public static final int COIOT_VERSION_2 = 2;
+
     public static final int COIOT_PORT = 5683;
     public static final String COAP_MULTICAST_ADDRESS = "224.0.1.187";
 

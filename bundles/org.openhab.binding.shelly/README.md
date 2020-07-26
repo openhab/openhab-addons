@@ -1,6 +1,13 @@
+
 # Shelly Binding
 
-This Binding integrated Shelly devices.
+This Binding integrates [Alterco Shelly devices](https://shelly.cloud).
+
+Alterco provides a rich set of smart home devices. All of them are WiFi enabled (2,4GHz, IPv4 only) and provide a documented API. The binding is officially acknowledged by Alterco and openHAB is listed as a reference. Alterco directly supports this project.
+
+The binding controls the devices independent from the Alterco Shelly Cloud (in fact it can be disabled). The binding co-exists with Shelly App for Smartphones, Shelly Web App, Shelly Cloud, mqqt and other 3rd party Apps.
+
+The binding focus on reporting the device status and device control. Initial setup and device configuration has to be performed using the Shelly Apps. The binding gets in sync with the next status refresh.
 
 ## Supported Devices
 
@@ -28,72 +35,10 @@ This Binding integrated Shelly devices.
 | shellyflood        | Shelly Flood Sensor                                    | SHWT-1    |
 | shellysmoke        | Shelly Smoke Sensor                                    |           |
 | shellygas          | Shelly Gas Sensor                                      | SHGS-1    |
-| shellydw           | Shelly Door/Window                                     | SHDW-1    |
-| shellybutton1      | Shelly Button 1                                        | SHBTN-1   |
+| shellydw           | Shelly Door/Window                                     | SHDW-1    |
+| shellybutton1      | Shelly Button 1                                        | SHBTN-1   |
 | shellysense        | Shelly Motion and IR Controller                        | SHSEN-1   |
 | shellydevice       | A password protected Shelly device or an unknown type  |           |
-
-## Firmware
-
-To utilize all features the binding requires firmware version 1.5.7 or newer, version 1.6 is strongly recommended.
-This should be available for all devices.
-Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices).
-
-The binding displays a WARNING in the log if the firmware is older.
-It also informs you when an update is available.
-Use the device' web ui or the Shelly App to perform the update.
-
-## Other resources
-
-Check the following resources for additional information
-
-
-## Discovery
-
-The binding uses mDNS to discover the Shelly devices.
-They periodically announce their presence, which is used by the binding to find them on the local network.
-
-Sometimes you need to run the manual discovery multiple times until you see all your devices.
-
-### Dynamic creation of channels
-
-The Shelly series of devices has many combinations of relays, meters (different versions), sensors etc. For this the binding creates various channels dynamically based on the status information provided by the device at initialization time. 
-If a channel is missing make sure the thing was discovered correctly and is ONLINE. If a channel is missing delete the thing and re-discover it.
-
-### Important for battery power devices
-
-Make sure to wake up battery powered devices (press the button inside the device), so that they show up on the network.
-The device has a push button inside, open the case, press that button and the LED starts blinking.
-The device should show up in the Inbox and can be added.
-
-`
-Important: If device is in sleep mode and can't be reached by the binding, the Thing will change into UNKNOWN state.
-Once the device wakes up, the thing will perform initialization and the state will change to ONLINE.
-`
-
-The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted. 
-Waking up the device triggers the event URL and/or CoIoT packet, which is processed by the binding and triggers initialization.
-Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart.
-
-Devices that have no battery are expected to be ON/reachable on the network at all times.
-Otherwise the thing will go OFFLINE with COMMUNICATION_ERROR as status.
-
-### Re-discover when IP address has changed
- 
-Important: The IP address should not be changed after the device is added to openHAB.
-
-This can be achieved by
-
-- assigning a static IP address or
-- using DHCP and setup the router to always assign the same IP address to the device
-
-When the IP address changes for a device you need to delete the Thing and then re-discover the device.
-In this case channel linkage gets lost and you need to re-link the channels/items.
-
-### Password Protected Devices
-
-The Shelly devices can be configured to require authentication through a user id and password.
-In this case you need to set these values in the Thing configuration after approving the Inbox entry.
 
 ## Binding Configuration
 
@@ -103,14 +48,115 @@ The binding has the following configuration options:
 |----------------|------------------------------------------------------------------|---------|------------------------------------------------|
 | defaultUserId  |Default user id for HTTP authentication when not set in the Thing |    no   |admin                                           |
 | defaultPassword|Default password for HTTP authentication when not set in the Thing|    no   |admin                                           |
-| autoCoIoT      |Auto-enable CoIoT events when firmware 1.6+ü is enabled           |    no   |true                                            |
+| autoCoIoT      |Auto-enable CoIoT events when firmware 1.6+ is enabled.           |    no   |true                                            |
 
-The binding defaults to CoIoT events when firmware 1.6 or newer is detected.
-This provides near-realtime updates when status values have changed.
-This mode also overrules event settings in the thing configuration.
-Disabling this feature allows granular control, which event types will be used.
-This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
-In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
+The binding defaults to CoIoT events when firmware 1.6 or newer is detected. CoIoT provides near-realtime updates on device status changes. This mode also overrules event settings in the thing configuration. 
+
+Disabling this feature allows granular control, which event types will be used. This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN). In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
+
+## Discovery
+
+In general devices need to be powered to be discovered by the binding.
+The binding uses mDNS to discover the Shelly devices. 
+They periodically announce their presence, which is used by the binding to find them on the local network.
+
+Sometimes you need to run the manual discovery multiple times until you see all your devices.
+
+## Firmware
+
+To utilize all features the binding requires firmware version 1.5.7 or newer, version 1.6+ is strongly recommended.
+Support for CoIoT/CoAP requires version 1.6 or newer. Version 1.7 is recommended for all devices.
+
+Older versions work in general, but have impacts to functionality (e.g. no events for battery powered devices).
+The Web UI of the Shelly device displays the current firmware version under Settings:Firmware and shows an update option when a newer version is available. The binding displays a WARNING in the log if the firmware is older.
+
+The current firmware version is reported in the thing properties and a dedicated channel (device#updateAvailable) indicates the availability of a newer firmware. Use the device's Web UI or the Shelly App to perform the update.
+
+### Password Protected Devices
+
+The Shelly devices can be configured to require authorization through a user id and password.
+In this case you need to set these values in the Thing configuration after approving the Inbox entry.
+
+If you have multiple devices protected by the same credentials it's recommended to set the default user id and password in the binding configuration (PaperUI:Configuration:Binding:Shelly) BEFORE running the discovery.
+In this case the binding could directly access the device to retrieve the required information using those credentials.
+Otherwise a thing of type shellyprotected is created in the Inbox and you could set the credentials while adding the thing. In this case the credentials are persisted as part of the thing configuration. 
+
+### Important for battery powered devices
+
+Make sure to wake up battery powered devices, so that they show up on the network.
+The device has a push button inside. Open the case, press that button and the LED starts flashing.
+Wait a moment and then start the discovery. The device should show up in the Inbox and can be added.
+Sometimes you need to run the discovery multiple times.
+
+### Dynamic creation of channels
+
+The Shelly series of devices has many combinations of relays, meters (different versions), sensors etc. For this the binding creates various channels dynamically based on the status information provided by the device at initialization time. 
+If a channel is missing make sure the thing was discovered correctly and is ONLINE. If a channel is missing delete the thing and re-discover it.
+
+### Thing Status
+
+The binding sets the following thing status depending on the device status:
+
+| Status       |Description                                                       |
+|--------------|------------------------------------------------------------------|
+| INITIALIZING | This is the default status while initializing the thing. Once the initialization is triggered the thing switches to Status UNKNOWN. |
+| UNKNOWN      | Indicates that the status is currently unknown, which must not show a problem. Usually the thing stays in this status when the device is in sleep mode. Once the device is reachable and was initialized the thing switches to status ONLINE.|
+| ONLINE       | ONLINE indicates that the device can be accessed and is responding properly. Battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The thing switches to status OFFLINE when some type of communication error occurs. | 
+| OFFLINE      | Communication with the device failed. Check the thing status in PaperUI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the thing. You could also post to the community thread if the problem stays. |
+
+`Battery powered devices:` 
+If the device is in sleep mode and can't be reached by the binding, the thing will change into UNKNOWN state.
+Once the device wakes up, the thing will perform initialization and the state will change to ONLINE.
+
+The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted.  Waking up the device triggers the event URL and/or CoIoT packet, which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
+
+### Device watchdog
+
+The binding supervises availability of the device once it becomes ONLINE by sending periodic status requests to the device. The watchdog is restarted when the device is responding properly.
+
+Communication errors are handled depending on the device type:
+
+- regular power devices change to OFFLINE, because this status indicates an error
+- battery powered devices stay ONLINE, because usually the device is in sleep mode
+
+The binding also monitors that the device is responding at least once within a given time period.
+The period is computed depending on the device type and configuration:
+
+- battery  powered devices: &lt;sleepPeriod from device config&gt; + 10min, usually 12h+10min=730min
+- else, if CoIoT is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
+- else 2*60+10sec = 130sec
+
+Once the timer expires the device switches to OFFFLINE and the bindings starts to re-initialize the device periodically. 
+
+You could also create a rule to catch those status changes or device alarms (see rule examples).
+
+## Trouble Shooting
+
+### Network settings
+
+Shelly devices do only support IPv4. 
+This implies that the openHAB host system has IPv4 bound to the network interface.
+The binding is only able to discover devices on the local subnet. 
+Add things manually with the given IP if you have a routed network in between or using a VPN connection.
+
+The binding enables CoIoT protocol by default if the device is running firmware 1.6 or newer.
+CoIoT is based on CoAP and uses a UDP based signaling using IP Multicast (224.0.1.187, port 5683).
+Again if the device is not on the same local IP subnet you need special router/switch configurations to utilized CoAP via IP Multicast.
+Otherwise disable the Auto-CoIoT feature in the binding config (not the thing config), disable CoIoT events in the thing configuration and enable sensors events (http callback).
+Nevertheless in this setup the binding can communicate the device, but you are loosing the benefits of CoIoT. 
+
+### Re-discover when IP address has changed
+ 
+Important: The IP address should not be changed after the device is added to openHAB.
+
+This can be achieved by
+
+- assigning a static IP address (recommended for battery powered devices) or
+- using DHCP and setup the router to always assign the same IP address to the device
+
+When the IP address changes for a device you need to delete the Thing and then re-discover the device.
+In this case channel linkage gets lost and you need to re-link the channels/items.
+
 
 ## Thing Configuration
 
@@ -144,31 +190,30 @@ Every device has a channel group `device` with the following channels:
 |device    |uptime             |Number  |yes      |Number of seconds since the device was powered up                                |
 |          |wifiSignal         |Number  |yes      |WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none)   |
 |          |innerTemp          |Number  |yes      |Internal device temperature (when provided by the device)                        |
-|          |selfTest           |String  |yes      |ON: A firmwareupdate is available (use Shelly App to perform update)             |
+|          |selfTest           |String  |yes      |Result from device self-test (pending/not_completed/running/completed/unknown)   |
 |          |alarm              |Trigger |yes      |Self-Test result not_completed/completed/running/pending                         |
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kw/h of the device (including all meters)             |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kw/h of the device (including all meters)          |
-|          |updateAvailable    |Switch  |yes      |ON: A firmwareupdate is available (use Shelly App to perform update)             |
+|          |updateAvailable    |Switch  |yes      |ON: A firmware update is available (use Shelly App to perform update)            |
 
 Availability of  channels is depending on the device type.
 The binding detects many of those channels on-the-fly (during thing initialization) and adjusts the thing channel structure.
 The device must be discovered and ONLINE to successfully complete this process.
 The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and 3EM.
 
-
 ### Events / Alarms
 
 The binding provides health monitoring functions for the device.
 When an alarm condition is detected the channel alarm gets triggered and provides one of the following alarm types:
 
-### Non-battery powerd devices
+### Non-battery powered devices
 
 |Event Type|Description|
 |------------|-----------------------------------------------------------------------------------------------------------------|
 |RESTARTED   |The device has been restarted. This could be an indicator for a firmware problem.                                |
 |WEAK_SIGNAL |An alarm is triggered when RSSI is < -80, which indicates an unstable connection.                                |
-|OVER_TEMP   |The device is over heating, check installation and housing.                                                      |
+|OVER_TEMP   |The device is overheating, check installation and housing.                                                      |
 |OVER_LOAD   |An over load condition has been detected, e.g. from the roller motor.                                            |
 |OVER_POWER  |Maximum allowed power was exceeded. The relay was turned off.                                                    |
 |LOAD_ERROR  |Device reported a load problem, so far Dimmer only.                                                              |
@@ -179,7 +224,7 @@ When an alarm condition is detected the channel alarm gets triggered and provide
 |------------|-----------------------------------------------------------------------------------------------------------------|
 |POWERON     |Device was powered on.                                                                                           |
 |PERIODIC    |Periodic wakeup.                                                                                                 |
-|BUTTON      |Button was pressed, e.g. to wakeup the device.                                                                   |
+|BUTTON      |Button was pressed, e.g. to wake up the device.                                                                   |
 |SENSOR      |Wake-up due to updated sensor data.                                                                              |
 |ALARM       |Alarm condition was detected, check status, could be OPENED for the DW, flood alarm, smoke alarm                 |
 |BATTERY     |Device reported an update to the battery status.                                                                 |
@@ -426,7 +471,7 @@ The Dimmer should be calibrated using the Shelly App.
 |          |input2       |Switch   |yes      |State of Input 2                                                       |
 |          |input3       |Switch   |yes      |State of Input 3                                                       |
 |          |button       |Trigger  |yes      |Event trigger: SHORT_PRESSED, DOUBLE_PRESSED, PRESSED or LONG_PRESSED  |
-|          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpushc                       |
+|          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Number of button events                                                |
 
 ### Shelly Bulb (thing-type: shellybulb)
@@ -593,7 +638,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
-|status    |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpushc                       |
+|status    |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Number of button events                                                |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels             |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
@@ -759,5 +804,4 @@ sitemap demo label="Home"
             Number   item=Shelly_Power
         }
 }
-
 ```

@@ -64,6 +64,8 @@ public class ShellyDeviceProfile {
     public boolean isRoller = false; // true for Shelly2 in roller mode
     public boolean isDimmer = false; // true for a Shelly Dimmer (SHDM-1)
     public boolean isPlugS = false; // true if it is a Shelly Plug S
+    public int numTempSensors = 0; // number of external temp sensors
+    public int numHumSensors = 0; // number of external humidity sensors
 
     public int numMeters = 0;
     public boolean isEMeter = false; // true for ShellyEM/3EM
@@ -86,7 +88,7 @@ public class ShellyDeviceProfile {
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
-    public int updatePeriod = -1;
+    public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;;
 
     public Map<String, String> irCodes = new HashMap<>(); // Sense: list of stored IR codes
 
@@ -138,6 +140,16 @@ public class ShellyDeviceProfile {
             numMeters = inColor ? 1 : getInteger(settings.device.numOutputs);
         }
         isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
+
+        /*
+         * if (settings.extTemperature != null) {
+         * numTempSensors = settings.extTemperature.sensor3 != null ? 3
+         * : settings.extTemperature.sensor2 != null ? 2 : settings.extTemperature.sensor1 != null ? 1 : 0;
+         * }
+         * if (settings.extTemperature != null) {
+         * numHumSensors = settings.extHumidity.sensor1 != null ? 1 : 0;
+         * }
+         */
 
         if (settings.sleepMode != null) {
             // Sensor, usally 12h

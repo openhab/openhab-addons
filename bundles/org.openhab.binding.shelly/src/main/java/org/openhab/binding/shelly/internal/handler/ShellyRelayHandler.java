@@ -378,8 +378,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
                     createRollerChannels(control);
                     if (getString(control.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
-                        Integer pos = Math.max(SHELLY_MIN_ROLLER_POS,
-                                Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
+                        int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
                                 toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), SmartHomeUnits.PERCENT));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
