@@ -177,7 +177,7 @@ public class AccountServlet extends HttpServlet {
         // handle post of login page
         connection = this.connectionToInitialize;
         if (connection == null) {
-            returnError(resp, "Connection not in intialize mode.");
+            returnError(resp, "Connection not in initialize mode.");
             return;
         }
 

@@ -154,9 +154,13 @@ public class Connection {
         String serial = null;
         String deviceId = null;
         if (oldConnection != null) {
-            frc = oldConnection.getFrc();
-            serial = oldConnection.getSerial();
             deviceId = oldConnection.getDeviceId();
+            if (checkDeviceIdIsValid(deviceId)) {
+            frc = oldConnection.getFrc();
+            serial = oldConnection.getSerial();} else {
+                // reset connection if device-id is not valid
+                deviceId = null;
+            }
         }
         Random rand = new Random();
         if (frc != null) {
@@ -191,6 +195,26 @@ public class Connection {
         // setAmazonSite(amazonSite);
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonWithNullSerialization = gsonBuilder.create();
+    }
+
+    /**
+     * Check if deviceId is valid (consisting of hex(hex(16 random bytes)) + correct ending)
+     *
+     * @param deviceId the deviceId
+     * @return true if valid, false if invalid
+     */
+    private boolean checkDeviceIdIsValid(@Nullable String deviceId) {
+        if (deviceId != null && deviceId.length() == 92 && deviceId.endsWith("23413249564c5635564d32573831")) {
+            try {
+                String randomPart = deviceId.substring(0, 64);
+                String randomPartHex = new String(HexUtils.hexToBytes(randomPart));
+                byte[] randomBytes = HexUtils.hexToBytes(randomPartHex);
+                return true;
+            } catch (IllegalArgumentException e) {
+                logger.debug("Failed to decode deviceId: {}", e.getMessage());
+            }
+        }
+        return false;
     }
 
     private void setAmazonSite(@Nullable String amazonSite) {
@@ -359,6 +383,12 @@ public class Connection {
         frc = scanner.nextLine();
         serial = scanner.nextLine();
         deviceId = scanner.nextLine();
+
+        if (!checkDeviceIdIsValid(deviceId)) {
+            logger.debug("Device id is invalid. Cannot restore login.");
+            scanner.close();
+            return null;
+        }
 
         // Recreate session and cookies
         refreshToken = scanner.nextLine();
@@ -802,14 +832,14 @@ public class Connection {
         this.renewTime = (long) (System.currentTimeMillis() + Connection.EXPIRES_IN * 1000d / 0.8d); // start renew at
     }
 
-    public boolean checkRenewSession() throws UnknownHostException, URISyntaxException, IOException {
+    public boolean checkRenewSession() throws URISyntaxException, IOException {
         if (System.currentTimeMillis() >= this.renewTime) {
             String renewTokenPostData = "app_name=Amazon%20Alexa&app_version=2.2.223830.0&di.sdk.version=6.10.0&source_token="
                     + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8.name())
                     + "&package_name=com.amazon.echo&di.hw.version=iPhone&platform=iOS&requested_token_type=access_token&source_token_type=refresh_token&di.os.name=iOS&di.os.version=11.4.1&current_version=6.10.0";
-            String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/token",
+            String renewTokenResponseJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/token",
                     renewTokenPostData, false, null);
-            parseJson(renewTokenRepsonseJson, JsonRenewTokenResponse.class);
+            parseJson(renewTokenResponseJson, JsonRenewTokenResponse.class);
 
             exchangeToken();
             return true;
@@ -835,8 +865,7 @@ public class Connection {
 
         Map<String, String> customHeaders = new HashMap<>();
         customHeaders.put("authority", "www.amazon.com");
-        String loginFormHtml = makeRequestAndReturnString("GET",
-                "https://www.amazon.com"
+        String loginFormHtml = makeRequestAndReturnString("GET", "https://www.amazon.com"
                 + "/ap/signin?openid.return_to=https://www.amazon.com/ap/maplanding&openid.assoc_handle=amzn_dp_project_dee_ios&openid.identity=http://specs.openid.net/auth/2.0/identifier_select&pageId=amzn_dp_project_dee_ios&accountStatusPolicy=P1&openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select&openid.mode=checkid_setup&openid.ns.oa2=http://www.amazon.com/ap/ext/oauth/2&openid.oa2.client_id=device:"
                 + deviceId
                 + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access",

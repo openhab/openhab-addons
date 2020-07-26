@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
-public class AmazonEchoDiscovery extends AbstractDiscoveryService  {
+public class AmazonEchoDiscovery extends AbstractDiscoveryService {
 
     AccountHandler accountHandler;
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoDiscovery.class);
@@ -185,7 +185,8 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService  {
 
         if (!discoveredFlashBriefings.contains(currentFlashBriefingJson)) {
             ThingUID brigdeThingUID = this.accountHandler.getThing().getUID();
-            ThingUID freeThingUID =  new ThingUID(THING_TYPE_FLASH_BRIEFING_PROFILE, brigdeThingUID, Integer.toString(currentFlashBriefingJson.hashCode()));
+            ThingUID freeThingUID = new ThingUID(THING_TYPE_FLASH_BRIEFING_PROFILE, brigdeThingUID,
+                    Integer.toString(currentFlashBriefingJson.hashCode()));
             DiscoveryResult result = DiscoveryResultBuilder.create(freeThingUID).withLabel("FlashBriefing")
                     .withProperty(DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE, currentFlashBriefingJson)
                     .withBridge(accountHandler.getThing().getUID()).build();
