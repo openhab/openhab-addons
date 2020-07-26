@@ -12,91 +12,66 @@
  */
 package org.openhab.binding.wlanthermo.internal.api.mini.builtin;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * The {@link UntilMini} class provides conversion functions for the WlanThermo Mini
+ * The {@link UtilMini} class provides conversion functions for the WlanThermo Mini
  *
  * @author Christian Schlipp - Initial contribution
  */
 public class UtilMini {
+    private static final Map<String, String> colorMappings= createColorMap();
+    private static final String DEFAULT_HEX = "#ffffff";
+
     private UtilMini() {
         //hidden
+    }
+
+    private static Map<String, String> createColorMap() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("green", "#008000");
+        map.put("red", "#FF0000");
+        map.put("blue", "#0000FF");
+        map.put("olive", "#808000");
+        map.put("magenta", "#FF00FF");
+        map.put("yellow", "#FFFF00");
+        map.put("violet", "#EE82EE");
+        map.put("orange", "#FFA500");
+        map.put("mediumpurple3", "#9370DB");
+        map.put("aquamarine", "#7FFFD4");
+        map.put("brown", "#A52A2A");
+        map.put("plum", "#DDA0DD");
+        map.put("skyblue", "#87CEEB");
+        map.put("orange-red", "#FF4500");
+        map.put("salmon", "#FA8072");
+        map.put("black", "#000000");
+        map.put("dark-grey", "#A9A9A9");
+        map.put("purple", "800080");
+        map.put("turquoise", "#40E0D0");
+        map.put("khaki", "#F0E68C");
+        map.put("dark-violet", "#9400D3");
+        map.put("seagreen", "#2E8B57");
+        map.put("web-blue", "#0080ff");
+        map.put("steelblue", "#4682B4");
+        map.put("gold", "#FFD700");
+        map.put("dark-green", "#006400");
+        map.put("midnight-blue", "#191970");
+        map.put("dark-khaki", "#BDB76B");
+        map.put("dark-olivegreen", "#556B2F");
+        map.put("pink", "#FFC0CB");
+        map.put("chartreuse", "#7FFF00");
+        map.put("gray", "#808080");
+        map.put("slategrey", "#708090");
+        return map;
     }
     
     /**
      * Convert WlanThermo Color Name to Hex
      * @param colorName the WlanThermo color name
-     * @return The color as Hey String
+     * @return The color as Hex String
      */
     public static String toHex(String colorName) {
-        switch (colorName) {
-            case "green":
-                return "#008000";
-            case "red":
-                return "#FF0000";
-            case "blue":
-                return "#0000FF";
-            case "olive":
-                return "#808000";
-            case "magenta":
-                return "#FF00FF";
-            case "yellow":
-                return "#FFFF00";
-            case "violet":
-                return "#EE82EE";
-            case "orange":
-                return "#FFA500";
-            case "mediumpurple3":
-                return "#9370DB";
-            case "aquamarine":
-                return "#7FFFD4";
-            case "brown":
-                return "#A52A2A";
-            case "plum":
-                return "#DDA0DD";
-            case "skyblue":
-                return "#87CEEB";
-            case "orange-red":
-                return "#FF4500";
-            case "salmon":
-                return "#FA8072";
-            case "black":
-                return "#000000";
-            case "dark-grey":
-                return "#A9A9A9";
-            case "purple":
-                return "800080";
-            case "turquoise":
-                return "#40E0D0";
-            case "khaki":
-                return "#F0E68C";
-            case "dark-violet":
-                return "#9400D3";
-            case "seagreen":
-                return "#2E8B57";
-            case "web-blue":
-                return "#0080ff";
-            case "steelblue":
-                return "#4682B4";
-            case "gold":
-                return "#FFD700";
-            case "dark-green":
-                return "#006400";
-            case "midnight-blue":
-                return "#191970";
-            case "dark-khaki":
-                return "#BDB76B";
-            case "dark-olivegreen":
-                return "#556B2F";
-            case "pink":
-                return "#FFC0CB";
-            case "chartreuse":
-                return "#7FFF00";
-            case "gray":
-                return "#808080";
-            case "slategrey":
-                return "#708090";
-            default:
-                return "#ffffff";
-        }
+        return colorMappings.getOrDefault(colorName, DEFAULT_HEX);
     }
 }

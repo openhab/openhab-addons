@@ -13,23 +13,6 @@
 
 package org.openhab.binding.wlanthermo.internal.api.nano.data;
 
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_DEVICE;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_HIGH;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_OPENHAB_LOW;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_PUSH;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_COLOR;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_MAX;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_MIN;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_NAME;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_TEMP;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_TYP;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_CHARGE;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_RSSI;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_RSSI_SIGNALSTRENGTH;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_SOC;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_ALARM_MAX;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_ALARM_MIN;
-
 import java.awt.Color;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -48,7 +31,12 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.wlanthermo.internal.WlanThermoNanoHandler;
+import org.openhab.binding.wlanthermo.internal.api.nano.UtilNano;
 import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
+
+import javax.measure.Quantity;
+
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 
 /**
  * This DTO is used to parse the JSON
@@ -62,7 +50,7 @@ public class Data {
     private System system;
     @SerializedName("channel")
     @Expose
-    private List<Channel> channel = new ArrayList<Channel>();
+    private List<Channel> channel = new ArrayList<>();
     @SerializedName("pitmaster")
     @Expose
     private Pitmaster pitmaster;
@@ -74,12 +62,6 @@ public class Data {
     public Data() {
     }
 
-    /**
-     * 
-     * @param system
-     * @param pitmaster
-     * @param channel
-     */
     public Data(System system, List<Channel> channel, Pitmaster pitmaster) {
         super();
         this.system = system;
@@ -198,10 +180,41 @@ public class Data {
                         }
                         break;
                     case CHANNEL_COLOR:
-                        Color c = Color.decode(channel.get(channelId).getColor());
-                        state = HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
+                        String color = channel.get(channelId).getColor();
+                        if (color != null && !color.isEmpty()) {
+                            Color c = Color.decode(color);
+                            state = HSBType.fromRGB(c.getRed(), c.getGreen(), c.getBlue());
+                        }
+                        break;
+                    case CHANNEL_COLOR_NAME:
+                        String colorHex = channel.get(channelId).getColor();
+                        if (colorHex != null && !colorHex.isEmpty()) {
+                            state = new StringType(UtilNano.toColorName(colorHex));
+                        }
                         break;
                 }
+            }
+        } else if (channelUID.getId().startsWith("pit1")) {
+            if (getPitmaster() != null && getPitmaster().getPm() != null && getPitmaster().getPm().size() > 0) {
+                Pm pm = getPitmaster().getPm().get(0);
+                switch (channelUID.getIdWithoutGroup()) {
+                    case CHANNEL_PITMASTER_CHANNEL_ID:
+                        state = new DecimalType(pm.getChannel());
+                        break;
+                    case CHANNEL_PITMASTER_PIDPROFILE:
+                        state = new DecimalType(pm.getPid());
+                        break;
+                    case CHANNEL_PITMASTER_DUTY_CYCLE:
+                        state = new DecimalType(pm.getValue());
+                        break;
+                    case CHANNEL_PITMASTER_SETPOINT:
+                        state = new DecimalType(pm.getSet());
+                        break;
+                    case CHANNEL_PITMASTER_STATE:
+                        state = new StringType(pm.getTyp());
+                }
+            } else {
+                return UnDefType.UNDEF;
             }
         }
         return state;
@@ -215,7 +228,7 @@ public class Data {
                 switch (channelUID.getIdWithoutGroup()) {
                     case CHANNEL_NAME:
                         if (command instanceof StringType) {
-                            channel.get(channelId).setName(((StringType) command).toFullString());
+                            channel.get(channelId).setName(command.toFullString());
                             success = true;
                         }
                         break;
@@ -234,7 +247,7 @@ public class Data {
                     case CHANNEL_ALARM_DEVICE:
                         if (command instanceof OnOffType) {
                             BigInteger value;
-                            if ((OnOffType) command == OnOffType.ON) {
+                            if (command == OnOffType.ON) {
                                 value = BigInteger.valueOf(channel.get(channelId).getAlarm()).setBit(1);
                             } else {
                                 value = BigInteger.valueOf(channel.get(channelId).getAlarm()).clearBit(1);
@@ -246,7 +259,7 @@ public class Data {
                     case CHANNEL_ALARM_PUSH:
                         if (command instanceof OnOffType) {
                             BigInteger value;
-                            if ((OnOffType) command == OnOffType.ON) {
+                            if (command == OnOffType.ON) {
                                 value = BigInteger.valueOf(channel.get(channelId).getAlarm()).setBit(0);
                             } else {
                                 value = BigInteger.valueOf(channel.get(channelId).getAlarm()).clearBit(0);
@@ -255,13 +268,39 @@ public class Data {
                             success = true;
                         }
                         break;
-                    case CHANNEL_COLOR:
-                        if (command instanceof HSBType) {
+                    case CHANNEL_COLOR_NAME:
+                        if (command instanceof StringType) {
                             channel.get(channelId)
-                                    .setColor("#" + String.format("%02x", ((HSBType) command).getRGB()).substring(2));
+                                    .setColor(UtilNano.toHex(((StringType)command).toString()));
                             success = true;
                         }
                         break;
+                }
+            }
+        } else if (channelUID.getId().equals("pit1")) {
+            if (getPitmaster() != null && getPitmaster().getPm() != null && getPitmaster().getPm().size() > 0) {
+                Pm pm = getPitmaster().getPm().get(0);
+                switch (channelUID.getIdWithoutGroup()) {
+                    case CHANNEL_PITMASTER_CHANNEL_ID:
+                        pm.setChannel(((QuantityType) command).intValue());
+                        success = true;
+                        break;
+                    case CHANNEL_PITMASTER_PIDPROFILE:
+                        pm.setPid(((QuantityType) command).intValue());
+                        success = true;
+                        break;
+                    case CHANNEL_PITMASTER_SETPOINT:
+                        pm.setSet(((QuantityType) command).doubleValue());
+                        success = true;
+                        break;
+                    case CHANNEL_PITMASTER_STATE:
+                        String state = ((StringType) command).toString();
+                        if (state.equalsIgnoreCase("off") ||
+                                state.equalsIgnoreCase("manual") ||
+                                state.equalsIgnoreCase("auto")) {
+                            pm.setTyp(state);
+                            success = true;
+                        }
                 }
             }
         }
@@ -273,15 +312,14 @@ public class Data {
         if (channelUID.getId().startsWith("channel")) {
             int channelId = Integer.parseInt(channelUID.getGroupId().substring("channel".length())) - 1;
             if (channel.size() > 0 && channelId <= channel.size()) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case "alarm_openhab":
-                        if (channel.get(channelId).getTemp() != 999) {
-                            if (channel.get(channelId).getTemp() > channel.get(channelId).getMax()) {
-                                trigger = TRIGGER_ALARM_MAX;
-                            } else if (channel.get(channelId).getTemp() < channel.get(channelId).getMin()) {
-                                trigger = TRIGGER_ALARM_MIN;
-                            }
+                if (CHANNEL_ALARM_OPENHAB.equals(channelUID.getIdWithoutGroup())) {
+                    if (channel.get(channelId).getTemp() != 999) {
+                        if (channel.get(channelId).getTemp() > channel.get(channelId).getMax()) {
+                            trigger = TRIGGER_ALARM_MAX;
+                        } else if (channel.get(channelId).getTemp() < channel.get(channelId).getMin()) {
+                            trigger = TRIGGER_ALARM_MIN;
                         }
+                    }
                 }
             }
         }

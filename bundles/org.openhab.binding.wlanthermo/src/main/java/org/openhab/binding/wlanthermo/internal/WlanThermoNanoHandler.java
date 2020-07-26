@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link WlanThermoHandler} is responsible for handling commands, which are
+ * The {@link WlanThermoNanoHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Christian Schlipp - Initial contribution
@@ -60,7 +60,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WlanThermoNanoHandler.class);
 
-    private @Nullable WlanThermoNanoConfiguration config;
+    private WlanThermoNanoConfiguration config = new WlanThermoNanoConfiguration();
     private HttpClient httpClient = new HttpClient();
     private @Nullable ScheduledFuture<?> pollingScheduler;
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
@@ -87,9 +87,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             }
             httpClient.start();
 
-            scheduler.schedule(() -> {
-                checkConnection();
-            }, config.getPollingInterval(), TimeUnit.SECONDS);
+            scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
 
             logger.debug("Finished initializing WlanThermo Nano!");
         } catch (Exception e) {
@@ -105,9 +103,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 if (pollingScheduler != null) {
                     pollingScheduler.cancel(true);
                 }
-                pollingScheduler = scheduler.scheduleWithFixedDelay(() -> {
-                    update();
-                }, 0, config.getPollingInterval(), TimeUnit.SECONDS);
+                pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(), TimeUnit.SECONDS);
                 updateState(SYSTEM + "#" + SYSTEM_ONLINE, OnOffType.ON);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -119,9 +115,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             if (pollingScheduler != null) {
                 pollingScheduler.cancel(true);
             }
-            pollingScheduler = scheduler.schedule(() -> {
-                checkConnection();
-            }, config.getPollingInterval(), TimeUnit.SECONDS);
+            pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
         }
     }
     
@@ -158,6 +152,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 if (state != null) {
                     updateState(channel.getUID(), state);
                 } else {
+                    //if we could not obtain a state, try trigger instead
                     String trigger = data.getTrigger(channel.getUID());
                     if (trigger != null) {
                         triggerChannel(channel.getUID(), trigger);
@@ -241,7 +236,6 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 updateState(channel.getUID(), UnDefType.UNDEF);
             }
         }
-        scheduler.shutdown();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
     }
 

@@ -8,6 +8,7 @@ This binding add support for the WlanThermo BBQ Thermometer.
 ## Supported Things
 
 This binding supports the following version of WlanThermo:
+
  - Nano V1 (untested, but should be working)
  - Nano V1+
  - Mini V1 (untested, but should be working)
@@ -41,7 +42,8 @@ If username/password is given in the thing, most channels are writeable.
 | online | Switch | Indicates if device is online |
 | soc | Number:Dimensionless | Battery Level in % |
 | charging | Switch | On, if device is charging, off otherwise | 
-| rssi | Number | Signal Strength in range [0 ... 4] |
+| rssi_signalstrength | Number | Signal Strength in range [0 ... 4] |
+| rssi | Number | Signal Strength in dBm |
 
 
 #### The following channels apply for all 8 probes of the WlanThermo Nano:  
@@ -57,12 +59,24 @@ If username/password is given in the thing, most channels are writeable.
 | alarm_push | Switch | Turn on/off the push alarm for this probe |
 | alarm_openhab_low | Switch | Will turn on if current temp is below minimum temperature threshold |
 | alarm_openhab_high | Switch | Will turn on if current temp is above maximum temperature threshold |
-| color | Color | The color of this probe
+| color | Color | The color of this probe. Read only.
+| color_name | String | The color name of the probe.
+
+
+#### The following channels are available for the Pitmaster
+
+| channel  | type   | description                  |
+|----------|--------|------------------------------|
+| state | String | Indicates type of the Pitmaster channel. Value can be "off", "manual", "auto" or "autotune"
+| setpoint | Number:Temperature | the target temperature of the probe assigned to the pitmaster channel
+| duty_cycle | Number:Dimensionless | The current duty cycle of the pitmaster channel
+| channel_id | Number | The channel id of the probe assigned to the pitmaster channel
+| pid_id | Number | The number of the PID profile to be used. Check the WlanThermo WebUI for available IDs!
 
 
 ### WlanThermo Mini
 
-All channels are read only.
+All channels are read only!
 #### The device itself provides the following channels:
 
 | channel  | type   | description                  |
@@ -131,6 +145,7 @@ Switch                  nano_alarm_push_1       "Enable Push Alarm"     (gProbeN
 Switch                  nano_alarm_low_1        "Low Temp. Alarm"       (gProbeNano1)       {channel="wlanthermo:nano:<nano_thing_id>:channel1#alarm_openhab_low"}
 Switch                  nano_alarm_high_1       "High Temp. Alarm"      (gProbeNano1)       {channel="wlanthermo:nano:<nano_thing_id>:channel1#alarm_openhab_high"}
 Color                   nano_color_1            "Color"                 (gProbeNano1)       {channel="wlanthermo:nano:<nano_thing_id>:channel1#color"}
+String                  nano_color_name_1       "Color Name"            (gProbeNano1)       {channel="wlanthermo:nano:<nano_thing_id>:channel1#color_name"}
 
 Group                   gProbeNano2             "Probe 2"               (gWlanThermoNano)
 String                  nano_name_2             "Name"                  (gProbeNano2)       {channel="wlanthermo:nano:<nano_thing_id>:channel2#name"}
@@ -143,6 +158,7 @@ Switch                  nano_alarm_push_2       "Enable Push Alarm"     (gProbeN
 Switch                  nano_alarm_low_2        "Low Temp. Alarm"       (gProbeNano2)       {channel="wlanthermo:nano:<nano_thing_id>:channel2#alarm_openhab_low"}
 Switch                  nano_alarm_high_2       "High Temp. Alarm"      (gProbeNano2)       {channel="wlanthermo:nano:<nano_thing_id>:channel2#alarm_openhab_high"}
 Color                   nano_color_2            "Color"                 (gProbeNano2)       {channel="wlanthermo:nano:<nano_thing_id>:channel2#color"}
+String                  nano_color_name_2       "Color Name"            (gProbeNano2)       {channel="wlanthermo:nano:<nano_thing_id>:channel2#color_name"}
 
 Group                   gProbeNano3             "Probe 3"               (gWlanThermoNano)
 String                  nano_name_3             "Name"                  (gProbeNano3)       {channel="wlanthermo:nano:<nano_thing_id>:channel3#name"}
@@ -155,6 +171,7 @@ Switch                  nano_alarm_push_3       "Enable Push Alarm"     (gProbeN
 Switch                  nano_alarm_low_3        "Low Temp. Alarm"       (gProbeNano3)       {channel="wlanthermo:nano:<nano_thing_id>:channel3#alarm_openhab_low"}
 Switch                  nano_alarm_high_3       "High Temp. Alarm"      (gProbeNano3)       {channel="wlanthermo:nano:<nano_thing_id>:channel3#alarm_openhab_high"}
 Color                   nano_color_3            "Color"                 (gProbeNano3)       {channel="wlanthermo:nano:<nano_thing_id>:channel3#color"}
+String                  nano_color_name_3       "Color Name"            (gProbeNano3)       {channel="wlanthermo:nano:<nano_thing_id>:channel3#color_name"}
 
 Group                   gProbeNano4             "Probe 4"               (gWlanThermoNano)
 String                  nano_name_4             "Name"                  (gProbeNano4)       {channel="wlanthermo:nano:<nano_thing_id>:channel4#name"}
@@ -167,6 +184,7 @@ Switch                  nano_alarm_push_4       "Enable Push Alarm"     (gProbeN
 Switch                  nano_alarm_low_4        "Low Temp. Alarm"       (gProbeNano4)       {channel="wlanthermo:nano:<nano_thing_id>:channel4#alarm_openhab_low"}
 Switch                  nano_alarm_high_4       "High Temp. Alarm"      (gProbeNano4)       {channel="wlanthermo:nano:<nano_thing_id>:channel4#alarm_openhab_high"}
 Color                   nano_color_4            "Color"                 (gProbeNano4)       {channel="wlanthermo:nano:<nano_thing_id>:channel4#color"}
+String                  nano_color_name_4       "Color Name"            (gProbeNano4)       {channel="wlanthermo:nano:<nano_thing_id>:channel4#color_name"}
 
 Group                   gProbeNano5             "Probe 5"               (gWlanThermoNano)
 String                  nano_name_5             "Name"                  (gProbeNano5)       {channel="wlanthermo:nano:<nano_thing_id>:channel5#name"}
@@ -179,6 +197,7 @@ Switch                  nano_alarm_push_5       "Enable Push Alarm"     (gProbeN
 Switch                  nano_alarm_low_5        "Low Temp. Alarm"       (gProbeNano5)       {channel="wlanthermo:nano:<nano_thing_id>:channel5#alarm_openhab_low"}
 Switch                  nano_alarm_high_5       "High Temp. Alarm"      (gProbeNano5)       {channel="wlanthermo:nano:<nano_thing_id>:channel5#alarm_openhab_high"}
 Color                   nano_color_5            "Color"                 (gProbeNano5)       {channel="wlanthermo:nano:<nano_thing_id>:channel5#color"}
+String                  nano_color_name_5       "Color Name"            (gProbeNano5)       {channel="wlanthermo:nano:<nano_thing_id>:channel5#color_name"}
 
 Group                   gProbeNano6             "Probe 6"               (gWlanThermoNano)
 String                  nano_name_6             "Name"                  (gProbeNano6)       {channel="wlanthermo:nano:<nano_thing_id>:channel6#name"}
@@ -191,6 +210,7 @@ Switch                  nano_alarm_push_6       "Enable Push Alarm"     (gProbeN
 Switch                  nano_alarm_low_6        "Low Temp. Alarm"       (gProbeNano6)       {channel="wlanthermo:nano:<nano_thing_id>:channel6#alarm_openhab_low"}
 Switch                  nano_alarm_high_6       "High Temp. Alarm"      (gProbeNano6)       {channel="wlanthermo:nano:<nano_thing_id>:channel6#alarm_openhab_high"}
 Color                   nano_color_6            "Color"                 (gProbeNano6)       {channel="wlanthermo:nano:<nano_thing_id>:channel6#color"}
+String                  nano_color_name_6       "Color Name"            (gProbeNano6)       {channel="wlanthermo:nano:<nano_thing_id>:channel6#color_name"}
 
 Group                   gProbeNano7             "Probe 7"               (gWlanThermoNano)
 String                  nano_name_7             "Name"                  (gProbeNano7)       {channel="wlanthermo:nano:<nano_thing_id>:channel7#name"}
@@ -203,6 +223,7 @@ Switch                  nano_alarm_push_7       "Enable Push Alarm"     (gProbeN
 Switch                  nano_alarm_low_7        "Low Temp. Alarm"       (gProbeNano7)       {channel="wlanthermo:nano:<nano_thing_id>:channel7#alarm_openhab_low"}
 Switch                  nano_alarm_high_7       "High Temp. Alarm"      (gProbeNano7)       {channel="wlanthermo:nano:<nano_thing_id>:channel7#alarm_openhab_high"}
 Color                   nano_color_7            "Color"                 (gProbeNano7)       {channel="wlanthermo:nano:<nano_thing_id>:channel7#color"}
+String                  nano_color_name_7       "Color Name"            (gProbeNano7)       {channel="wlanthermo:nano:<nano_thing_id>:channel7#color_name"}
 
 Group                   gProbeNanoNano8         "Probe 8"               (gWlanThermoNano)
 String                  nano_name_8             "Name"                  (gProbeNano8)       {channel="wlanthermo:nano:<nano_thing_id>:channel8#name"}
@@ -215,7 +236,14 @@ Switch                  nano_alarm_push_8       "Enable Push Alarm"     (gProbeN
 Switch                  nano_alarm_low_8        "Low Temp. Alarm"       (gProbeNano8)       {channel="wlanthermo:nano:<nano_thing_id>:channel8#alarm_openhab_low"}
 Switch                  nano_alarm_high_8       "High Temp. Alarm"      (gProbeNano8)       {channel="wlanthermo:nano:<nano_thing_id>:channel8#alarm_openhab_high"}
 Color                   nano_color_8            "Color"                 (gProbeNano8)       {channel="wlanthermo:nano:<nano_thing_id>:channel8#color"}
+String                  nano_color_name_8       "Color Name"            (gProbeNano8)       {channel="wlanthermo:nano:<nano_thing_id>:channel8#color_name"}
 
+Group                   gPitmasterNano1         "Pitmaster Nano"        (gWlanThermoNano)
+String                  nano_pit_state          "State"                 (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#state"}
+Number:Temperature      nano_pit_setpoint       "Setpoint"              (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#setpoint"}
+Number                  nano_pit_cycle          "Duty Cycle"            (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#duty_cycle"}
+Number                  nano_pit_pidprofile     "PID Profile"           (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#pid_id"}
+Number                  nano_pit_channel        "Input Channel ID"      (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#channel_id"}
 
 
 
