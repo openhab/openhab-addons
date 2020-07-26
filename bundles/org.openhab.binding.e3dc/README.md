@@ -201,7 +201,7 @@ Switch    E3DC_WB_SchukoLocked          "E3DC WB Schuko Locked" (e3dc)  { channe
 Switch    E3DC_WB_Schuko_Relay16A       "E3DC WB Schuko 16A Relay"  (e3dc) { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-schuko-relay-16a" }
 Switch    E3DC_WB_Relay16A              "E3DC WB 16A Relay"      (e3dc) { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-relay-16a" }
 Switch    E3DC_WB_Relay32A              "E3DC WB 32A Relay"      (e3dc) { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-relay-32a" }
-Switch    E3DC_WB_3PhaseLoading         "E3DC WB 3-Phase Loading"   (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-3phase" }
+Switch    E3DC_WB_1PhaseLoading         "E3DC WB 1-Phase Loading"   (e3dc)  { channel="e3dc:e3dc-wallbox:plant:wallboxblock:wb-1phase" }
 
 Number    E3DC_String1V                 "E3DC String 1 Volt"    (e3dc)  { channel="e3dc:e3dc-strings:plant:stringblock:string1-dc-voltage" }
 Number    E3DC_String2V                 "E3DC String 2 Volt"    (e3dc)  { channel="e3dc:e3dc-strings:plant:stringblock:string2-dc-voltage" }
@@ -237,26 +237,24 @@ sitemap E3DCBinding label="E3DC Binding Sitemap" {
     Text    item=E3DC_SerialNumber              label="Serial Number[%s]"
   }
   
-  Frame label="Power" {
-    Frame label="Producer" {
+    Frame label="Power Producer" {
       Text    item=E3DC_PVPower                 label="PV Power[%s]"
       Text    item=E3DC_BatteryDischarge        label="Battery Discharge [%s]"
-      Text    item=E3DC_GridSupply              label="Grid Supply [%s]"
+      Text    item=E3DC_GridSupply              label="Power from Grid [%s]"
       Text    item=E3DC_ExternalSupply          label="External Supply [%s]"
     }
-    Frame label="Consumer" {
+    Frame label="Power Consumer" {
       Text    item=E3DC_Household               label="Household [%s]"
       Text    item=E3DC_BatteryCharge           label="Battery Charge [%s]"
-      Text    item=E3DC_GridConsumption         label="Grid Consumption [%s]"
+      Text    item=E3DC_GridConsumption         label="Power to Grid [%s]"
       Text    item=E3DC_WallboxConsumption      label="Wallbox [%s]"
       Text    item=E3DC_WallboxPVConsumption    label="Wallbox PV[%s]"
     }
-    Frame label="Measures" {
+    Frame label="Power Measures" {
       Text    item=E3DC_AutarkyLevel            label="Autarky [%s %%]"
       Text    item=E3DC_SelfConsumptionLevel    label="Self Consumption [%s %%]"
       Text    item=E3DC_BatterySOC              label="SOC [%s %%]"
     }
-  }
   
   Frame label="Wallbox" {
     Switch    item=E3DC_WB_Available            label="Available [%s]"
@@ -274,23 +272,21 @@ sitemap E3DCBinding label="E3DC Binding Sitemap" {
     Switch    item=E3DC_WB_1PhaseLoading        label="1-Phase loading [%s]"
   }
   
-  Frame label="String Details" {
-    Frame label="String 1" {
+    Frame label="String 1 Details" {
       Text    item=E3DC_String1V                label="Volt [%s]"
       Text    item=E3DC_String1A                label="Ampere [%s]"
       Text    item=E3DC_String1W                label="Watt [%s]"
     }
-    Frame label="String 2" {
+    Frame label="String 2 Details" {
       Text    item=E3DC_String2V                label="Volt [%s]"
       Text    item=E3DC_String2A                label="Ampere [%s]"
       Text    item=E3DC_String2W                label="Watt [%s]"
     }
-    Frame label="String 3" {
+    Frame label="String 3 Details" {
       Text    item=E3DC_String3V                label="Volt [%s]"
       Text    item=E3DC_String3A                label="Ampere [%s]"
       Text    item=E3DC_String3W                label="Watt [%s]"
     }
-  }
   
   Frame label="EMS" {
     Text      item=E3DC_EMS_Status                  label="Status [%s]"
