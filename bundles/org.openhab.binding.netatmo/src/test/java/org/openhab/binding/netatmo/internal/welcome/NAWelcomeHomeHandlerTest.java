@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.internal.ThingImpl;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -333,7 +332,7 @@ public class NAWelcomeHomeHandlerTest {
         }
 
         @Override
-        protected @NotNull Optional<NetatmoBridgeHandler> getBridgeHandler() {
+        protected Optional<NetatmoBridgeHandler> getBridgeHandler() {
             return Optional.of(bridgeHandlerMock);
         }
 
