@@ -31,13 +31,19 @@ import org.openhab.binding.insteon.internal.utils.Utils;
 @NonNullByDefault
 public class ModemDBEntry {
     private @Nullable InsteonAddress address = null;
+    private boolean isModem;
     private @Nullable Port port = null;
     private ArrayList<Msg> linkRecords = new ArrayList<>();
     private ArrayList<Byte> controls = new ArrayList<>();
     private ArrayList<Byte> respondsTo = new ArrayList<>();
 
-    public ModemDBEntry(InsteonAddress aAddr) {
+    public ModemDBEntry(InsteonAddress aAddr, boolean isModem) {
         this.address = aAddr;
+        this.isModem = isModem;
+    }
+
+    public boolean isModem() {
+        return isModem;
     }
 
     public ArrayList<Msg> getLinkRecords() {
