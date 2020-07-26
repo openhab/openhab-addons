@@ -25,6 +25,7 @@ import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_TYP;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_CHARGE;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_RSSI;
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_RSSI_SIGNALSTRENGTH;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_SOC;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_ALARM_MAX;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.TRIGGER_ALARM_MIN;
@@ -49,6 +50,11 @@ import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.wlanthermo.internal.WlanThermoNanoHandler;
 import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
 
+/**
+ * This DTO is used to parse the JSON
+ *
+ * @author Christian Schlipp - Initial contribution
+ */
 public class Data {
 
     @SerializedName("system")
@@ -130,8 +136,20 @@ public class Data {
                 case SYSTEM_CHARGE:
                     state = OnOffType.from(system.getCharge());
                     break;
+                case SYSTEM_RSSI_SIGNALSTRENGTH:
+                    int dbm = system.getRssi();
+                    if (dbm >= -80){
+                        state = new DecimalType(4);
+                    } else if (dbm >= -95){
+                        state = new DecimalType(3);
+                    } else if (dbm >= -105){
+                        state = new DecimalType(2);
+                    } else {
+                        state = new DecimalType(1);
+                    }
+                    break;
                 case SYSTEM_RSSI:
-                    state = new DecimalType(Math.floor(system.getRssi() * -1 / 24));
+                    state = new DecimalType(system.getRssi());
                     break;
             }
         } else if (channelUID.getId().startsWith("channel")) {

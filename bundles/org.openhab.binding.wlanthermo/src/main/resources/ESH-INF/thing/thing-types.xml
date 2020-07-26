@@ -94,7 +94,8 @@
 		<channels>
 			<channel id="soc" typeId="system.battery-level" />
 			<channel id="charge" typeId="charging" />
-			<channel id="rssi" typeId="system.signal-strength" />
+			<channel id="rssi" typeId="rssi" />
+			<channel id="rssi_signalstrength" typeId="system.signal-strength" />
 			<channel id="online" typeId="online" />
 		</channels>
 	</channel-group-type>
@@ -110,6 +111,13 @@
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number</item-type>
+		<label>RSSI in dBm</label>
+		<category>Text</category>
 		<state readOnly="true" />
 	</channel-type>
 

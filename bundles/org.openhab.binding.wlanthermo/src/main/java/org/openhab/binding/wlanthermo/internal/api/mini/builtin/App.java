@@ -1,4 +1,15 @@
-
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.wlanthermo.internal.api.mini.builtin;
 
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.CHANNEL_ALARM_DEVICE;
@@ -34,11 +45,13 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.wlanthermo.internal.WlanThermoMiniHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-public class App {
 
-    private transient final Logger logger = LoggerFactory.getLogger(App.class);
+/**
+ * This DTO is used to parse the JSON
+ *
+ * @author Christian Schlipp - Initial contribution
+ */
+public class App {
 
     @SerializedName("temp_unit")
     @Expose

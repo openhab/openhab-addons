@@ -18,7 +18,6 @@ import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +32,7 @@ import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -62,9 +62,8 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
 
     private @Nullable WlanThermoNanoConfiguration config;
     private HttpClient httpClient = new HttpClient();
-    @Nullable
-    private ScheduledFuture<?> pollingScheduler;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private @Nullable ScheduledFuture<?> pollingScheduler;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
     private Gson gson = new Gson();
     private Data data = new Data();
     private Settings settings = new Settings();
@@ -75,7 +74,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Start initializing WlanThermo Nano!");
         config = getConfigAs(WlanThermoNanoConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -92,9 +91,9 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 checkConnection();
             }, config.getPollingInterval(), TimeUnit.SECONDS);
 
-            logger.debug("Finished initializing!");
+            logger.debug("Finished initializing WlanThermo Nano!");
         } catch (Exception e) {
-            logger.error("Failed to initialize!", e);
+            logger.error("Failed to initialize WlanThermo Nano!", e);
         }
     }
 
@@ -137,8 +136,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
-                logger.error("Could not handle command of type " + command.getClass().toGenericString()
-                        + " for channel " + channelUID.getId() + "!");
+                logger.error("Could not handle command of type {} for channel {}!",command.getClass().toGenericString() , channelUID.getId());
             }
         }
     }
@@ -148,10 +146,10 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             //Update objects with data from device
             String json = httpClient.GET(config.getUri("/data")).getContentAsString();
             data = gson.fromJson(json, Data.class);
-            logger.debug("Received at /data: " + json);
+            logger.debug("Received at /data: {}", json);
             json = httpClient.GET(config.getUri("/settings")).getContentAsString();
             settings = gson.fromJson(json, Settings.class);
-            logger.debug("Received at /settings: " + json);
+            logger.debug("Received at /settings: {}", json);
             
             
             //Update channels
@@ -190,7 +188,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
         for (org.openhab.binding.wlanthermo.internal.api.nano.data.Channel c : data.getChannel()) {
             try {
                 String json = gson.toJson(c);
-                logger.debug("Pushing: " + json);
+                logger.debug("Pushing: {}", json);
                 URI uri = config.getUri("/setchannels");
                 int status = httpClient.POST(uri)
                                 .content(new StringContentProvider(json), "application/json")
@@ -201,11 +199,10 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                     logger.error(
                             "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
                 } else if (status != 200) {
-                    logger.error("Failed to update channel " + c.getName() + " on device, Statuscode " + status
-                            + " on URI " + uri.toString());
+                    logger.error("Failed to update channel {} on device, Statuscode {} on URI {}", c.getName(), status, uri.toString());
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
-                logger.error("Failed to update channel " + c.getName() + " on device", e);
+                logger.error("Failed to update channel {} on device", c.getName(), e);
             }
         }
     }
@@ -214,7 +211,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     public void handleRemoval() {
         if (pollingScheduler != null) {
             boolean stopped = pollingScheduler.cancel(true);
-            logger.debug("Stopped polling: " + stopped);
+            logger.debug("Stopped polling: {}", stopped);
         }
         try {
             httpClient.stop();
@@ -229,7 +226,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     public void dispose() {
         if (pollingScheduler != null) {
             boolean stopped = pollingScheduler.cancel(true);
-            logger.debug("Stopped polling: " + stopped);
+            logger.debug("Stopped polling: {}", stopped);
         }
         try {
             httpClient.stop();

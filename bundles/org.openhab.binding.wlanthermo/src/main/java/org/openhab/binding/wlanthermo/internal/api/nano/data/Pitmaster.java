@@ -19,6 +19,11 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * This DTO is used to parse the JSON
+ *
+ * @author Christian Schlipp - Initial contribution
+ */
 public class Pitmaster {
 
     @SerializedName("type")

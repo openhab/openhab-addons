@@ -1,10 +1,12 @@
 # WlanThermo Binding
+
 This binding add support for the WlanThermo BBQ Thermometer.  
 | Nano | Mini |
 |---|---|
 | ![WlanThermo Nano V1+](doc/nano.jpg) | ![WlanThermo Mini V2](doc/mini.jpg)
 
 ## Supported Things
+
 This binding supports the following version of WlanThermo:
  - Nano V1 (untested, but should be working)
  - Nano V1+
@@ -15,20 +17,25 @@ This binding supports the following version of WlanThermo:
  If you have a WlanThermo Nano with Pitmaster, please contact the author of this binding to include the support in future releases.
 
 ## Discovery
+
 There is no auto-discovery of WlanThermo Things. 
 Things must be created manually, e.g. via PaperUI.
 
 ## Thing Configuration
+
 WlanThermo things require you to specify the IP-address of your WlanThermo device (the one you enter into your browser to access the WebUI)
 The configuration of username/password is optional. If ommitted, the binding data will be read-only for all channels. WlanThermo Mini things do not require a username/password and will always be read-only!
 
 ## Channels
+
 Depending on the WlanThermo you're using, the following channels are available.
 
 ### WlanThermo Nano
+
 If username/password is given in the thing, most channels are writeable. 
 
 #### The device itself provides the following channels:  
+
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | online | Switch | Indicates if device is online |
@@ -38,6 +45,7 @@ If username/password is given in the thing, most channels are writeable.
 
 
 #### The following channels apply for all 8 probes of the WlanThermo Nano:  
+
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | name | String | The name of this probe |
@@ -53,8 +61,10 @@ If username/password is given in the thing, most channels are writeable.
 
 
 ### WlanThermo Mini
+
 All channels are read only.
 #### The device itself provides the following channels:
+
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | online | Switch | Indicates if device is online |
@@ -62,6 +72,7 @@ All channels are read only.
 | cpu_temp | Number:Temperature | CPU Temperature | 
 
 #### The following channels apply for all 10 probes of the WlanThermo Mini:
+
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | name | String | The name of this probe |
@@ -75,6 +86,7 @@ All channels are read only.
 | color_name | String | The color name of this probe 
 
 #### The following channels apply for both Pitmaster channels of the WlanThermo Mini:
+
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | enabled | Switch | Indicates if this pitmaster channel is active
@@ -86,6 +98,7 @@ All channels are read only.
 
 
 ## Triggers
+
 The following trigger apply for all channels of Nano and Mini:
 
 | trigger | values | description |
@@ -97,7 +110,9 @@ The following trigger apply for all channels of Nano and Mini:
 ## Full Example
 
 ### Items
+
 Example .items file for WlanThermo Nano and Mini. Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual thing id!
+
 ```
 Group                   gWlanThermoNano         "WlanThermo Nano"
 Number:Dimensionless    nano_soc                "State of Charge"       (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#soc"}
@@ -340,6 +355,7 @@ Number                  mini_pit_channel_2      "Input Channel ID"      (gPitmas
 ### Sitemap
 
 (Example for WlanThermo Nano)
+
 ```
 sitemap wlanthermo label="WlanThermo" {
     Frame label="WlanThermo" {

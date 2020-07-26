@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Christian Schlipp - Initial contribution
  */
+@NonNullByDefault
 public class WlanThermoNanoConfiguration {
 
     /**

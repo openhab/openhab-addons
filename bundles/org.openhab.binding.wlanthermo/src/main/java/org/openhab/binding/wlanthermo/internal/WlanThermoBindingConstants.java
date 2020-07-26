@@ -30,12 +30,16 @@ public class WlanThermoBindingConstants {
     public static final ThingTypeUID THING_TYPE_WLANTHERMO_NANO = new ThingTypeUID(BINDING_ID, "nano");
     public static final ThingTypeUID THING_TYPE_WLANTHERMO_MINI = new ThingTypeUID(BINDING_ID, "mini");
 
+    //ThreadPool
+    public static final String WLANTHERMO_THREAD_POOL       = "wlanthermo";
+
     // List of all Channel ids
     //System Channels
     public static final String SYSTEM                       = "system";
     public static final String SYSTEM_SOC                   = "soc";
     public static final String SYSTEM_CHARGE                = "charge";
     public static final String SYSTEM_RSSI                  = "rssi";
+    public static final String SYSTEM_RSSI_SIGNALSTRENGTH   = "rssi_signalstrength";
     public static final String SYSTEM_ONLINE                = "online";
     public static final String SYSTEM_CPU_LOAD              = "cpu_load";
     public static final String SYSTEM_CPU_TEMP              = "cpu_temp";

@@ -15,7 +15,6 @@ package org.openhab.binding.wlanthermo.internal;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_ONLINE;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +24,7 @@ import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -53,9 +53,8 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
     private @Nullable WlanThermoMiniConfiguration config;
     private HttpClient httpClient = new HttpClient();
-    @Nullable
-    private ScheduledFuture<?> pollingScheduler;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private @Nullable ScheduledFuture<?> pollingScheduler;
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
     private Gson gson = new Gson();
     private App app = new App();
 
@@ -65,7 +64,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
+        logger.debug("Start initializing WlanThermo Mini!");
         config = getConfigAs(WlanThermoMiniConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -76,10 +75,9 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                 checkConnection();
             }, config.getPollingInterval(), TimeUnit.SECONDS);
 
-            logger.debug("Finished initializing!");
+            logger.debug("Finished initializing WlanThermo Mini!");
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Failed to initialize!", e);
+            logger.error("Failed to initialize WlanThermo Mini!", e);
         }
     }
 
@@ -126,7 +124,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
             //Update objects with data from device
             String json = httpClient.GET(config.getUri("/app.php")).getContentAsString();
             app = gson.fromJson(json, App.class);
-            logger.debug("Received at /app.php: " + json);
+            logger.debug("Received at /app.php: {}", json);
             
             
             //Update channels
@@ -166,7 +164,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     public void handleRemoval() {
         if (pollingScheduler != null) {
             boolean stopped = pollingScheduler.cancel(true);
-            logger.debug("Stopped polling: " + stopped);
+            logger.debug("Stopped polling: {}", stopped);
         }
         try {
             httpClient.stop();
@@ -181,7 +179,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     public void dispose() {
         if (pollingScheduler != null) {
             boolean stopped = pollingScheduler.cancel(true);
-            logger.debug("Stopped polling: " + stopped);
+            logger.debug("Stopped polling: {}", stopped);
         }
         try {
             httpClient.stop();
