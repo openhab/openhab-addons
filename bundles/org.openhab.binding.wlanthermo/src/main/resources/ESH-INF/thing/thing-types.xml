@@ -1,0 +1,735 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wlanthermo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="nano">
+		<label>WlanThermo Nano</label>
+		<description>WlanThermo Nano V1/V1+</description>
+
+		<channel-groups>
+			<channel-group id="system" typeId="cg_system_nano" />
+			<channel-group id="channel1" typeId="cg_temperature_nano1" />
+			<channel-group id="channel2" typeId="cg_temperature_nano2" />
+			<channel-group id="channel3" typeId="cg_temperature_nano3" />
+			<channel-group id="channel4" typeId="cg_temperature_nano4" />
+			<channel-group id="channel5" typeId="cg_temperature_nano5" />
+			<channel-group id="channel6" typeId="cg_temperature_nano6" />
+			<channel-group id="channel7" typeId="cg_temperature_nano7" />
+			<channel-group id="channel8" typeId="cg_temperature_nano8" />
+			<channel-group id="pit1" typeId="cg_pitmaster_nano1" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the WlanThermo.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Optional, only required for write access. Default: 'admin'</description>
+				<required>false</required>
+				<default>admin</default>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>Optional, only required for write access. Default: 'admin'</description>
+				<required>false</required>
+				<default>admin</default>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="1" step="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Seconds between fetching values from the WlanThermo.</description>
+				<required>true</required>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="mini">
+		<label>WlanThermo Mini</label>
+		<description>WlanThermo Mini</description>
+
+		<channel-groups>
+			<channel-group id="system" typeId="cg_system_mini" />
+			<channel-group id="channel0" typeId="cg_temperature_mini0" />
+			<channel-group id="channel1" typeId="cg_temperature_mini1" />
+			<channel-group id="channel2" typeId="cg_temperature_mini2" />
+			<channel-group id="channel3" typeId="cg_temperature_mini3" />
+			<channel-group id="channel4" typeId="cg_temperature_mini4" />
+			<channel-group id="channel5" typeId="cg_temperature_mini5" />
+			<channel-group id="channel6" typeId="cg_temperature_mini6" />
+			<channel-group id="channel7" typeId="cg_temperature_mini7" />
+			<channel-group id="channel8" typeId="cg_temperature_mini8" />
+			<channel-group id="channel9" typeId="cg_temperature_mini9" />
+			<channel-group id="pit1" typeId="cg_pitmaster_mini1" />
+			<channel-group id="pit2" typeId="cg_pitmaster_mini2" />
+		</channel-groups>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network address of the WlanThermo.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="1" step="1" unit="s">
+				<label>Polling Interval</label>
+				<description>Seconds between fetching values from the WlanThermo.</description>
+				<required>true</required>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- System Group Nano-->
+	<channel-group-type id="cg_system_nano">
+		<label>System Channel</label>
+		<description>This group contains all system channels</description>
+		<channels>
+			<channel id="soc" typeId="system.battery-level" />
+			<channel id="charge" typeId="charging" />
+			<channel id="rssi" typeId="rssi" />
+			<channel id="rssi_signalstrength" typeId="system.signal-strength" />
+			<channel id="online" typeId="online" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="charging" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<category>Energy</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="online" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number</item-type>
+		<label>RSSI in dBm</label>
+		<category>Text</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- System Group Mini -->
+	<channel-group-type id="cg_system_mini">
+		<label>System Channel</label>
+		<description>This group contains all system channels</description>
+		<channels>
+			<channel id="cpu_load" typeId="cpu_load" />
+			<channel id="cpu_temp" typeId="temperature" />
+			<channel id="online" typeId="online" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="cpu_load" advanced="true">
+		<item-type>Number</item-type>
+		<label>CPU Load</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Temperature Group Nano-->
+	<channel-group-type id="cg_temperature_nano1">
+		<label>Temperature Probe 1</label>
+		<description>This group contains all channels for temperature probe 1</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="typ" typeId="typ" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min" />
+			<channel id="max" typeId="temperature_max" />
+			<channel id="alarm_device" typeId="alarm_device" />
+			<channel id="alarm_push" typeId="alarm_push" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color" />
+			<channel id="color_name" typeId="color_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_nano2">
+		<label>Temperature Probe 2</label>
+		<description>This group contains all channels for temperature probe 2</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="typ" typeId="typ" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min" />
+			<channel id="max" typeId="temperature_max" />
+			<channel id="alarm_device" typeId="alarm_device" />
+			<channel id="alarm_push" typeId="alarm_push" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color" />
+			<channel id="color_name" typeId="color_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_nano3">
+		<label>Temperature Probe 3</label>
+		<description>This group contains all channels for temperature probe 3</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="typ" typeId="typ" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min" />
+			<channel id="max" typeId="temperature_max" />
+			<channel id="alarm_device" typeId="alarm_device" />
+			<channel id="alarm_push" typeId="alarm_push" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color" />
+			<channel id="color_name" typeId="color_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_nano4">
+		<label>Temperature Probe 4</label>
+		<description>This group contains all channels for temperature probe 4</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="typ" typeId="typ" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min" />
+			<channel id="max" typeId="temperature_max" />
+			<channel id="alarm_device" typeId="alarm_device" />
+			<channel id="alarm_push" typeId="alarm_push" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color" />
+			<channel id="color_name" typeId="color_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_nano5">
+		<label>Temperature Probe 5</label>
+		<description>This group contains all channels for temperature probe 5</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="typ" typeId="typ" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min" />
+			<channel id="max" typeId="temperature_max" />
+			<channel id="alarm_device" typeId="alarm_device" />
+			<channel id="alarm_push" typeId="alarm_push" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color" />
+			<channel id="color_name" typeId="color_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_nano6">
+		<label>Temperature Probe 6</label>
+		<description>This group contains all channels for temperature probe 6</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="typ" typeId="typ" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min" />
+			<channel id="max" typeId="temperature_max" />
+			<channel id="alarm_device" typeId="alarm_device" />
+			<channel id="alarm_push" typeId="alarm_push" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color" />
+			<channel id="color_name" typeId="color_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_nano7">
+		<label>Temperature Probe 7</label>
+		<description>This group contains all channels for temperature probe 7</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="typ" typeId="typ" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min" />
+			<channel id="max" typeId="temperature_max" />
+			<channel id="alarm_device" typeId="alarm_device" />
+			<channel id="alarm_push" typeId="alarm_push" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color" />
+			<channel id="color_name" typeId="color_name" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_nano8">
+		<label>Temperature Probe 8</label>
+		<description>This group contains all channels for temperature probe 8</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name" />
+			<channel id="typ" typeId="typ" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min" />
+			<channel id="max" typeId="temperature_max" />
+			<channel id="alarm_device" typeId="alarm_device" />
+			<channel id="alarm_push" typeId="alarm_push" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color" />
+			<channel id="color_name" typeId="color_name" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Group Temperature Mini-->
+	<channel-group-type id="cg_temperature_mini0">
+		<label>Temperature Probe 0</label>
+		<description>This group contains all channels for temperature probe 0</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini1">
+		<label>Temperature Probe 1</label>
+		<description>This group contains all channels for temperature probe 1</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini2">
+		<label>Temperature Probe 2</label>
+		<description>This group contains all channels for temperature probe 2</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini3">
+		<label>Temperature Probe 3</label>
+		<description>This group contains all channels for temperature probe 3</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini4">
+		<label>Temperature Probe 4</label>
+		<description>This group contains all channels for temperature probe 4</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini5">
+		<label>Temperature Probe 5</label>
+		<description>This group contains all channels for temperature probe 5</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini6">
+		<label>Temperature Probe 6</label>
+		<description>This group contains all channels for temperature probe 6</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini7">
+		<label>Temperature Probe 7</label>
+		<description>This group contains all channels for temperature probe 7</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini8">
+		<label>Temperature Probe 8</label>
+		<description>This group contains all channels for temperature probe 8</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_temperature_mini9">
+		<label>Temperature Probe 9</label>
+		<description>This group contains all channels for temperature probe 9</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="name" typeId="name_ro" />
+			<channel id="temp" typeId="temperature" />
+			<channel id="min" typeId="temperature_min_ro" />
+			<channel id="max" typeId="temperature_max_ro" />
+			<channel id="alarm_device" typeId="alarm_device_ro" />
+			<channel id="alarm_openhab" typeId="alarm_openhab" />
+			<channel id="alarm_openhab_low" typeId="alarm_openhab_low" />
+			<channel id="alarm_openhab_high" typeId="alarm_openhab_high" />
+			<channel id="color" typeId="color_ro" />
+			<channel id="color_name" typeId="color_name_ro" />
+		</channels>
+	</channel-group-type>
+
+	<!-- Fundamental channel types -->
+	<channel-type id="name" advanced="false">
+		<item-type>String</item-type>
+		<label>Probe Name</label>
+		<category>Text</category>
+	</channel-type>
+
+	<channel-type id="name_ro" advanced="false">
+		<item-type>String</item-type>
+		<label>Probe Name</label>
+		<category>Text</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="typ" advanced="true">
+		<item-type>String</item-type>
+		<label>Probe Type</label>
+		<category>Text</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="temperature" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<category>Temperature</category>
+		<state min="0" pattern="%.1f" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="temperature_min" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Low Temperature Alarm</label>
+		<category>Temperature</category>
+		<state min="0" step="0.1" pattern="%.1f" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="temperature_max" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>High Temperature Alarm</label>
+		<category>Temperature</category>
+		<state min="0" step="0.1" pattern="%.1f" readOnly="false" />
+	</channel-type>
+
+	<channel-type id="temperature_min_ro" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Low Temperature Alarm</label>
+		<category>Temperature</category>
+		<state min="0" step="0.1" pattern="%.1f" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="temperature_max_ro" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>High Temperature Alarm</label>
+		<category>Temperature</category>
+		<state min="0" step="0.1" pattern="%.1f" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarm_device" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm Buzzer</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="alarm_device_ro" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Alarm Buzzer</label>
+		<category>Switch</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarm_push" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Push-Alarm</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="alarm_openhab" advanced="true">
+		<kind>trigger</kind>
+		<label>Openhab Alarm Trigger</label>
+		<event>
+			<options>
+				<option value="MIN">Low Temperature Alarm</option>
+				<option value="MAX">High Temperature Alarm</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="alarm_openhab_low" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Low Temperature Alarm</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="alarm_openhab_high" advanced="false">
+		<item-type>Switch</item-type>
+		<label>High Temperature Alarm</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="color" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<category>Colorpicker</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="color_name" advanced="true">
+		<item-type>String</item-type>
+		<label>Probe Color</label>
+		<category>Colorpicker</category>
+		<state>
+			<options>
+				<option value="niagara">Niagara</option>
+				<option value="rosa">Rosa</option>
+				<option value="lapis blue">Lapis Blue</option>
+				<option value="orange">Orange</option>
+				<option value="lila">Lila</option>
+				<option value="red">Red</option>
+				<option value="green">Green</option>
+				<option value="gold">Gold</option>
+				<option value="kale">Kale</option>
+				<option value="brown">Brown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="color_ro" advanced="true">
+		<item-type>Color</item-type>
+		<label>Probe Color</label>
+		<category>Colorpicker</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="color_name_ro" advanced="true">
+		<item-type>String</item-type>
+		<label>Probe Color Name</label>
+		<category>Text</category>
+		<state readOnly="true" />
+	</channel-type>
+
+	<!-- Pitmaster Mini -->
+	<channel-group-type id="cg_pitmaster_mini1">
+		<label>Pitmaster 1</label>
+		<description>This group contains all channels for pitmaster channel 1</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="enabled" typeId="enabled" />
+			<channel id="current" typeId="temperature" />
+			<channel id="setpoint" typeId="temperature_setpoint_ro" />
+			<channel id="duty_cycle" typeId="duty_cycle_ro" />
+			<channel id="lid_open" typeId="lid_open" />
+			<channel id="channel_id" typeId="channel_id_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cg_pitmaster_mini2">
+		<label>Pitmaster 2</label>
+		<description>This group contains all channels for pitmaster channel 2</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="enabled" typeId="enabled" />
+			<channel id="current" typeId="temperature" />
+			<channel id="setpoint" typeId="temperature_setpoint_ro" />
+			<channel id="duty_cycle" typeId="duty_cycle_ro" />
+			<channel id="lid_open" typeId="lid_open" />
+			<channel id="channel_id" typeId="channel_id_ro" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="enabled" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Pitmaster Enabled</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="temperature_setpoint_ro" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Pitmaster Setpoint Temperature</label>
+		<category>Temperature</category>
+		<state min="0" pattern="%.1f" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="duty_cycle_ro" advanced="false">
+		<item-type>Number</item-type>
+		<label>Pitmaster Duty Cycle / Control Out</label>
+		<state min="0" max="100" pattern="%d" readOnly="true" />
+	</channel-type>
+
+	<channel-type id="lid_open" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Pitmaster Lid Open</label>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="channel_id_ro" advanced="false">
+		<item-type>Number</item-type>
+		<label>Pitmaster Channel ID</label>
+		<state min="0" max="9" pattern="%d" readOnly="true" />
+	</channel-type>
+
+	<!-- Pitmaster Nano -->
+	<channel-group-type id="cg_pitmaster_nano1">
+		<label>Pitmaster 1</label>
+		<description>This group contains all channels for pitmaster channel 1</description>
+		<category>Sensor</category>
+		<channels>
+			<channel id="state" typeId="pitmaster_type" />
+			<channel id="setpoint" typeId="temperature_setpoint" />
+			<channel id="duty_cycle" typeId="duty_cycle" />
+			<channel id="channel_id" typeId="channel_id" />
+			<channel id="pid_id" typeId="pid_id" />
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="pitmaster_type" advanced="false">
+		<item-type>String</item-type>
+		<label>Pitmaster State</label>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="manual">Manual</option>
+				<option value="auto">Auto</option>
+				<!--<option value="autotune">Autotune</option> Not clear if still supported-->
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="duty_cycle" advanced="false">
+		<item-type>Number</item-type>
+		<label>Pitmaster Duty Cycle / Control Out</label>
+		<state min="0" max="100" pattern="%d" />
+	</channel-type>
+
+	<channel-type id="pid_id" advanced="false">
+		<item-type>Number</item-type>
+		<label>PID Profile ID</label>
+		<state pattern="%d" />
+	</channel-type>
+
+	<channel-type id="temperature_setpoint" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Pitmaster Setpoint Temperature</label>
+		<category>Temperature</category>
+		<state min="0" pattern="%.1f" />
+	</channel-type>
+
+	<channel-type id="channel_id" advanced="false">
+		<item-type>Number</item-type>
+		<label>Pitmaster Channel ID</label>
+		<state min="1" max="8" pattern="%d" />
+	</channel-type>
+
+</thing:thing-descriptions>
