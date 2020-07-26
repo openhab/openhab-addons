@@ -309,6 +309,36 @@ public class NAWelcomeHomeHandlerTest {
         assertEquals("ANIMAL", handler.getLastDetectedObject());
     }
 
+    @Test
+    public void testTriggerChannelIfRequiredUnknownMovement() {
+        NAWelcomeEvent event1 = createEvent(1592661881, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
+
+        NAWelcomeEvent event2 = createEvent(1592661882, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
+        event2.setCategory("alien");
+
+        NAWelcomeHome home = new NAWelcomeHome();
+        home.setId(DUMMY_HOME_ID);
+        home.setEvents(Collections.singletonList(event1));
+
+        NAWelcomeHomeData homeData = new NAWelcomeHomeData();
+        homeData.setHomes(Collections.singletonList(home));
+
+        when(bridgeHandlerMock.getWelcomeDataBody(DUMMY_HOME_ID)).thenReturn(Optional.of(homeData));
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        home.setEvents(Arrays.asList(event1, event2));
+
+        handler.updateReadings();
+        handler.triggerChannelIfRequired(NetatmoBindingConstants.CHANNEL_CAMERA_EVENT);
+
+        assertEquals(1, handler.getTriggerChannelCount());
+        assertEquals(new StringType("movement"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals("MOVEMENT", handler.getLastDetectedObject());
+    }
+
     private static NAWelcomeEvent createPresenceEvent(int eventTime, NAWelcomeSubEvent.TypeEnum detectedObjectType) {
         NAWelcomeSubEvent subEvent = new NAWelcomeSubEvent();
         subEvent.setTime(eventTime);
