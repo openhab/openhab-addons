@@ -78,16 +78,30 @@ public class ModbusSlaveConnectionFactoryImpl
             this.lastConnected = lastConnected;
         }
 
+        /**
+         *
+         * Reset connection if it is too old or fulfills some of the other criteria
+         *
+         * @param activityName ongoing activity calling this method. For logging
+         * @return whether connection was reseted
+         */
         public boolean maybeResetConnection(String activityName) {
+            ModbusSlaveEndpoint localEndpoint = endpoint;
+            if (localEndpoint == null) {
+                // We have not connected yet, abort
+                // Without endpoint we have no age parameters available (endpointPoolConfigs &
+                // disconnectIfConnectedBefore)
+                return false;
+            }
             long localLastConnected = lastConnected;
 
             ModbusSlaveConnection connection = getObject();
 
             @Nullable
-            EndpointPoolConfiguration configuration = endpointPoolConfigs.get(endpoint);
+            EndpointPoolConfiguration configuration = endpointPoolConfigs.get(localEndpoint);
             long reconnectAfterMillis = configuration == null ? 0 : configuration.getReconnectAfterMillis();
             long connectionAgeMillis = System.currentTimeMillis() - localLastConnected;
-            long disconnectIfConnectedBeforeMillis = disconnectIfConnectedBefore.getOrDefault(endpoint, -1L);
+            long disconnectIfConnectedBeforeMillis = disconnectIfConnectedBefore.getOrDefault(localEndpoint, -1L);
             boolean disconnectSinceTooOldConnection = disconnectIfConnectedBeforeMillis < 0L ? false
                     : localLastConnected <= disconnectIfConnectedBeforeMillis;
             boolean shouldBeDisconnected = (reconnectAfterMillis == 0
@@ -96,14 +110,14 @@ public class ModbusSlaveConnectionFactoryImpl
             if (shouldBeDisconnected) {
                 logger.trace(
                         "({}) Connection {} (endpoint {}) age {}ms is over the reconnectAfterMillis={}ms limit or has been connection time ({}) is after the \"disconnectBeforeConnectedMillis\"={} -> disconnecting.",
-                        activityName, connection, endpoint, connectionAgeMillis, reconnectAfterMillis,
+                        activityName, connection, localEndpoint, connectionAgeMillis, reconnectAfterMillis,
                         localLastConnected, disconnectIfConnectedBeforeMillis);
                 connection.resetConnection();
                 return true;
             } else {
                 logger.trace(
                         "({}) Connection {} (endpoint {}) age ({}ms) is below the reconnectAfterMillis ({}ms) limit and connection time ({}) is after the \"disconnectBeforeConnectedMillis\"={}. Keep the connection open.",
-                        activityName, connection, endpoint, connectionAgeMillis, reconnectAfterMillis,
+                        activityName, connection, localEndpoint, connectionAgeMillis, reconnectAfterMillis,
                         localLastConnected, disconnectIfConnectedBeforeMillis);
                 return false;
             }
