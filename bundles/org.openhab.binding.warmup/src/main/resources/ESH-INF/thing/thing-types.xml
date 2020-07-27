@@ -19,7 +19,7 @@
 				<label>Password</label>
 				<description>Password for my.warmup.com</description>
 			</parameter>
-			<parameter name="refreshIntervalSec" type="integer" unit="s" required="true">
+			<parameter name="refreshIntervalSec" type="integer" unit="s" required="true" min="10">
 				<label>Refresh Interval (Seconds)</label>
 				<description>Interval in seconds between automatic refreshes</description>
 				<default>300</default>

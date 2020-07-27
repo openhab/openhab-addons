@@ -131,7 +131,6 @@ public class MyWarmupApi {
      */
     public void setOverride(String locationId, String roomId, int temperature, Integer duration)
             throws MyWarmupApiException {
-
         callWarmupGraphQL(String.format("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}", locationId,
                 roomId, temperature, duration));
     }

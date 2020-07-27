@@ -4,7 +4,7 @@ This binding integrates the Warmup 4iE Thermostat https://www.warmup.co.uk/therm
 
 Any Warmup 4iE device(s) must be registered at https://my.warmup.com/ prior to usage.
 
-This API is not known to be documented publicly. The binding api implementation has been derived from the implementations at https://github.com/alyc100/SmartThingsPublic/blob/master/devicetypes/alyc100/warmup-4ie.src/warmup-4ie.groovy and https://github.com/alex-0103/warmup4IE/blob/master/warmup4ie/warmup4ie.py. 
+This API is not known to be documented publicly. The binding api implementation has been derived from the implementations at https://github.com/alyc100/SmartThingsPublic/blob/master/devicetypes/alyc100/warmup-4ie.src/warmup-4ie.groovy and https://github.com/alex-0103/warmup4IE/blob/master/warmup4ie/warmup4ie.py, and enhanced by inspecting the GraphQL endpoint.
 
 ## Supported Things
 
@@ -25,11 +25,22 @@ Once credentials are successfully added to the bridge, any rooms (devices) detec
 
 ## Thing Configuration
 
-There are two types of thing, "My Warmup Account" and "Room".
+### My Warmup Account
 
-My Warmup Account needs configuration with your username and password for the my.warmup.com site. You can configure the refresh interval in seconds, it defaults to 300s (5 minutes).
+| name  | type   | description                  | required | default |
+| --------- | -------- | ------------------------------ | ----------- | -------- |
+| username | String | Username for my.warmup.com | true | |
+| password | String | Password for my.warmup.com | true | |
+| refreshIntervalSec | Integer | Interval in seconds between automatic refreshes | true | 300 |
+
+### Room
 
 Rooms are configured automatically with a Serial Number on discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. The only supported temperature change is an override, through a default duration configured on the thing. This defaults to 60 minutes.
+
+| name  | type   | description                  | required | default |
+| --------- | -------- | ------------------------------ | ----------- | -------- |
+| serialNumber | String | Device Serial Number, excluding last 3 characters | true | |
+| overrideDurationMin | Integer | Duration of override when target temperature is changed | true | 60 |
 
 ## Channels
 
@@ -37,30 +48,39 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 | --------- | -------- | ------------------------------ | ----------- |
 | currentTemperature | Number:Temperature | Currently reported temperature | true |
 | targetTemperature | Number:Temperature | Target temperature | false |
+| overrideRemaining | Number:Time | Duration remaining of the configured override| true |
+| runMode | String | Current operating mode of the thermostat | true |
+| frostProtectionMode | Switch | Toggles between the "Frost Protection" run mode and the previously configured mode | false |
 
 ## Full Example
 
 ### .things file
 
 ```
-Bridge warmup:my-warmup:MyWarmup [ username="test@example.com", password="test", refresh=300 ]
+Bridge warmup:my-warmup:MyWarmup [ username="test@example.com", password="test", refreshIntervalSec=300 ]
 {
-    room    bathroom    "Home - Bathroom"   [ serialNumber="AABBCCDDEEFF", overrideDuration=60 ]
+    room    bathroom    "Home - Bathroom"   [ serialNumber="AABBCCDDEEFF", overrideDurationMin=60 ]
 }
 ```
 
 ### .items file
 
 ```
-Number:Temperature bathroom_temperature    "Temperature [%.1f °C]" <temperature> (GF_Bathroom, Temperature)    ["Temperature"] {channel="warmup:room:MyWarmup:bathroom:currentTemperature"}
-Number:Temperature bathroom_setpoint    "Set Point [%.1f °C]" <temperature> (GF_Bathroom)    ["Set Point"] {channel="warmup:room:MyWarmup:bathroom:targetTemperature"}
+Number:Temperature bathroom_temperature "Temperature [%.1f °C]" <temperature> (GF_Bathroom, Temperature)    ["Temperature"] {channel="warmup:room:MyWarmup:bathroom:currentTemperature"}
+Number:Temperature bathroom_setpoint    "Set Point [%.1f °C]" <temperature> (GF_Bathroom) ["Set Point"] {channel="warmup:room:MyWarmup:bathroom:targetTemperature"}
+Number:Time bathroom_overrideRemaining  "Override Remaining [%d minutes]" (GF_Bathroom) {channel="warmup:room:MyWarmup:bathroom:overrideRemaining"}
+String bathroom_runMode "Run Mode [%s]" (GF_Bathroom) {channel="warmup:room:MyWarmup:bathroom:runMode"}
+Switch bathroom_frostProtection "Frost Protection Mode" (GF_Bathroom) {channel="warmup:room:MyWarmup:bathroom:frostProtectionMode"}
 ```
 
 ### Sitemap
 
 ```
-Text label="Bathroom" icon="sofa" {
+Text label="Bathroom" {
     Text item=bathroom_temperature
     Setpoint item=bathroom_setpoint step=0.5
+    Text item=bathroom_overrideRemaining
+    Text item=bathroom_runMode
+    Switch item=bathroom_frostProtection
 }
 ```

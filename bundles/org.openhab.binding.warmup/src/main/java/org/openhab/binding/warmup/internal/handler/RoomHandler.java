@@ -128,7 +128,6 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             }
         } catch (MyWarmupApiException e) {
             logger.warn("Toggle Frost Protection failed: {}", e.getMessage());
-
         }
     }
 }
