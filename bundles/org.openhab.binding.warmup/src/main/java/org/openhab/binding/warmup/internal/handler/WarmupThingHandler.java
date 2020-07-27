@@ -32,8 +32,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link WarmupThingHandler} is a super class for Things related to the Bridge consolidating logic.
@@ -43,7 +41,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WarmupThingHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(WarmupThingHandler.class);
     protected @Nullable MyWarmupAccountHandler bridgeHandler;
 
     public WarmupThingHandler(Thing thing) {

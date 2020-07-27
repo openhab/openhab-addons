@@ -13,7 +13,9 @@
 package org.openhab.binding.warmup.internal.api;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Temperature;
 
@@ -53,6 +55,7 @@ public class MyWarmupApi {
 
     private MyWarmupConfigurationDTO configuration;
     private @Nullable String authToken;
+    private int failCount = 0;
 
     /**
      * Construct the API client
@@ -75,24 +78,36 @@ public class MyWarmupApi {
         this.configuration = configuration;
     }
 
-    private Boolean validateSession() {
+    private Boolean validateSession() throws MyWarmupApiException {
         if (authToken == null) {
             return authenticate();
         }
         return true;
     }
 
-    private Boolean authenticate() {
-        String body = GSON.toJson(new AuthRequestDTO(configuration.username, configuration.password,
-                WarmupBindingConstants.AUTH_METHOD, WarmupBindingConstants.AUTH_APP_ID));
+    private Boolean authenticate() throws MyWarmupApiException {
+        try {
+            String body = GSON.toJson(new AuthRequestDTO(configuration.username, configuration.password,
+                    WarmupBindingConstants.AUTH_METHOD, WarmupBindingConstants.AUTH_APP_ID));
 
-        final ContentResponse response = callWarmup(WarmupBindingConstants.APP_ENDPOINT, body, false);
+            ContentResponse response = callWarmup(WarmupBindingConstants.APP_ENDPOINT, body, false);
 
-        AuthResponseDTO ar = GSON.fromJson(response.getContentAsString(), AuthResponseDTO.class);
+            AuthResponseDTO ar = GSON.fromJson(response.getContentAsString(), AuthResponseDTO.class);
 
-        if (ar.getStatus().getResult().equals("success")) {
-            authToken = ar.getResponse().getToken();
-            return true;
+            if (ar.getStatus().getResult().equals("success")) {
+                authToken = ar.getResponse().getToken();
+                failCount = 0;
+                return true;
+            } else {
+                logger.debug("Authentication failure {}", response.getContentAsString());
+                throw new MyWarmupApiException("Authentication Failed");
+            }
+        } catch (MyWarmupApiException e) {
+            failCount++;
+            if (failCount > 2) {
+                logger.error("Multiple authentication failures: {}", e.getMessage());
+                throw new MyWarmupApiException(e.getMessage());
+            }
         }
         return false;
     }
@@ -101,33 +116,44 @@ public class MyWarmupApi {
      * Query the API to get the status of all devices connected to the Bridge.
      *
      * @return The {@link QueryResponseDTO} object if retrieved, else null
+     * @throws MyWarmupApiException API callout error
      */
-    public synchronized @Nullable QueryResponseDTO getStatus() {
+    public synchronized @Nullable QueryResponseDTO getStatus() throws MyWarmupApiException {
         return callWarmupGraphQL("query QUERY { user { locations{ id name "
                 + " rooms { id roomName runMode overrideDur targetTemp currentTemp "
-                + " thermostat4ies{ deviceSN airTemp floor1Temp floor2Temp heatingTarget } } "
-                + " holiday{ holStart holEnd holTemp } address { timezone }  geoLocation{ latitude longitude }}}}");
+                + " thermostat4ies{ deviceSN }}}}}");
     }
 
     /**
-     * Call the API to set a temperature override on a specific room (device)
+     * Call the API to set a temperature override on a specific room
      *
      * @param locationId Id of the location
      * @param roomId Id of the room
      * @param temperature Temperature to set
      * @param duration Duration in minutes of the override
+     * @throws MyWarmupApiException API callout error
      */
-    public void setOverride(String locationId, String roomId, QuantityType<Temperature> temperature, Integer duration) {
+    public void setOverride(String locationId, String roomId, QuantityType<Temperature> temperature, Integer duration)
+            throws MyWarmupApiException {
         callWarmupGraphQL(String.format("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}", locationId,
                 roomId, temperature.multiply(new BigDecimal(10)).intValue(), duration));
     }
 
-    public void toggleFrostProtectionMode(String locationId, String roomId, OnOffType command) {
+    /**
+     * Call the API to toggle frost protection mode on a specific room
+     *
+     * @param locationId Id of the location
+     * @param roomId Id of the room
+     * @param command Temperature to set
+     * @throws MyWarmupApiException API callout error
+     */
+    public void toggleFrostProtectionMode(String locationId, String roomId, OnOffType command)
+            throws MyWarmupApiException {
         callWarmupGraphQL(String.format("mutation{turn%s(lid:%s,rid:%s){id}}", command == OnOffType.ON ? "Off" : "On",
                 locationId, roomId));
     }
 
-    private @Nullable QueryResponseDTO callWarmupGraphQL(String body) {
+    private @Nullable QueryResponseDTO callWarmupGraphQL(String body) throws MyWarmupApiException {
         if (validateSession()) {
             ContentResponse response = callWarmup(WarmupBindingConstants.QUERY_ENDPOINT,
                     "{\"query\": \"" + body + "\"}", true);
@@ -143,7 +169,8 @@ public class MyWarmupApi {
         return null;
     }
 
-    private synchronized @Nullable ContentResponse callWarmup(String endpoint, String body, Boolean authenticated) {
+    private synchronized ContentResponse callWarmup(String endpoint, String body, Boolean authenticated)
+            throws MyWarmupApiException {
         try {
             final Request request = httpClient.newRequest(endpoint);
 
@@ -162,7 +189,7 @@ public class MyWarmupApi {
             request.timeout(10, TimeUnit.SECONDS);
 
             logger.trace("Sending body to My Warmup: Endpoint {}, Body {}", endpoint, body);
-            final ContentResponse response = request.send();
+            ContentResponse response = request.send();
             logger.trace("Response from my warmup: Status {}, Body {}", response.getStatus(),
                     response.getContentAsString());
 
@@ -171,9 +198,9 @@ public class MyWarmupApi {
             } else if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 authToken = null;
             }
-        } catch (Exception e) {
-            authToken = null;
+            throw new MyWarmupApiException("Callout failed");
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new MyWarmupApiException(e.getMessage());
         }
-        return null;
     }
 }

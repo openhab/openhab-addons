@@ -22,9 +22,11 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.warmup.internal.api.MyWarmupApi;
+import org.openhab.binding.warmup.internal.api.MyWarmupApiException;
 import org.openhab.binding.warmup.internal.discovery.WarmupDiscoveryService;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
 
@@ -60,6 +62,11 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        cancelRefresh();
+    }
+
+    public void cancelRefresh() {
+
         if (refreshJob != null) {
             refreshJob.cancel(true);
             refreshJob = null;
@@ -69,11 +76,15 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
     public synchronized void refreshFromServer() {
         try {
             queryResponse = api.getStatus();
-            updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+        } catch (MyWarmupApiException e) {
             queryResponse = null;
-            updateStatus(ThingStatus.OFFLINE);
+            cancelRefresh();
         } finally {
+            if (queryResponse != null) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
             refreshFromCache();
         }
     }
@@ -87,7 +98,7 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
 
     public synchronized void scanDevices() {
         if (discoveryService != null && queryResponse != null) {
-            discoveryService.onRefresh(queryResponse);
+            discoveryService.refresh(queryResponse);
         }
     }
 
@@ -108,10 +119,9 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
 
     private void notifyListeners(@Nullable QueryResponseDTO domain) {
         if (discoveryService != null && queryResponse != null) {
-            discoveryService.onRefresh(queryResponse);
+            discoveryService.refresh(queryResponse);
         }
         getThing().getThings().stream().filter(thing -> thing.getHandler() instanceof WarmupRefreshListener)
-                .map(Thing::getHandler).map(WarmupRefreshListener.class::cast)
-                .forEach(thing -> thing.onRefresh(domain));
+                .map(Thing::getHandler).map(WarmupRefreshListener.class::cast).forEach(thing -> thing.refresh(domain));
     }
 }

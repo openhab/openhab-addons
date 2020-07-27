@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @SuppressWarnings("serial")
 @NonNullByDefault
-public class MyWarmupApiException extends RuntimeException {
+public class MyWarmupApiException extends Exception {
 
     public MyWarmupApiException(final String message) {
         super(message);

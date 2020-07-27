@@ -25,5 +25,5 @@ import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
 @NonNullByDefault
 public interface WarmupRefreshListener {
 
-    void onRefresh(@Nullable QueryResponseDTO domain);
+    void refresh(@Nullable QueryResponseDTO domain);
 }

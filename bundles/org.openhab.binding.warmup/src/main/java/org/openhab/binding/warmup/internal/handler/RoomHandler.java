@@ -26,9 +26,12 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.warmup.internal.api.MyWarmupApiException;
 import org.openhab.binding.warmup.internal.model.query.LocationDTO;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
 import org.openhab.binding.warmup.internal.model.query.RoomDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author James Melville - Initial contribution
@@ -36,6 +39,7 @@ import org.openhab.binding.warmup.internal.model.query.RoomDTO;
 @NonNullByDefault
 public class RoomHandler extends WarmupThingHandler implements WarmupRefreshListener {
 
+    private final Logger logger = LoggerFactory.getLogger(RoomHandler.class);
     private RoomConfigurationDTO config;
 
     public RoomHandler(Thing thing) {
@@ -65,7 +69,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
      * @param domain Data model representing all devices
      */
     @Override
-    public void onRefresh(@Nullable QueryResponseDTO domain) {
+    public void refresh(@Nullable QueryResponseDTO domain) {
         if (domain != null) {
             for (LocationDTO location : domain.getData().getUser().getLocations()) {
                 for (RoomDTO room : location.getRooms()) {
@@ -89,8 +93,9 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                     }
                 }
             }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Room not found");
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Room not found");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No data from bridge");
     }
 
     private void setOverride(final QuantityType<?> command) {
@@ -100,8 +105,12 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         String roomId = getThing().getProperties().get("Id");
         String locationId = getThing().getProperties().get("Location Id");
         if (value != null && bridgeHandler != null) {
-            bridgeHandler.getApi().setOverride(locationId, roomId, value, config.overrideDurationMin);
-            bridgeHandler.refreshFromServer();
+            try {
+                bridgeHandler.getApi().setOverride(locationId, roomId, value, config.overrideDurationMin);
+                bridgeHandler.refreshFromServer();
+            } catch (MyWarmupApiException e) {
+                logger.warn("Set Override failed: {}", e.getMessage());
+            }
         }
     }
 
@@ -109,8 +118,12 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         String roomId = getThing().getProperties().get("Id");
         String locationId = getThing().getProperties().get("Location Id");
         if (bridgeHandler != null) {
-            bridgeHandler.getApi().toggleFrostProtectionMode(locationId, roomId, command);
-            bridgeHandler.refreshFromServer();
+            try {
+                bridgeHandler.getApi().toggleFrostProtectionMode(locationId, roomId, command);
+                bridgeHandler.refreshFromServer();
+            } catch (MyWarmupApiException e) {
+                logger.warn("Toggle Frost Protection failed: {}", e.getMessage());
+            }
         }
     }
 }

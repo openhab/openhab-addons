@@ -57,7 +57,7 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService {
      *
      * @param domain Data model representing all devices
      */
-    public void onRefresh(@Nullable QueryResponseDTO domain) {
+    public void refresh(@Nullable QueryResponseDTO domain) {
         if (domain != null) {
             HashSet<ThingUID> discoveredThings = new HashSet<ThingUID>();
             for (LocationDTO location : domain.getData().getUser().getLocations()) {
