@@ -12,7 +12,7 @@ The binding supports three different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without serial connector on server side, you can use a serial to USB adapter.
+For users without a serial connector on server side, you can use a serial to USB adapter.
 
 You don't need to have your player device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
@@ -42,7 +42,7 @@ The thing has the following configuration parameters:
 | Address          | host         | Host name or IP address of the Oppo player or serial over IP device.                                                             | host name or ip           |
 | Port             | port         | Communication port for using serial over IP. Leave blank if using direct IP connection to the player.                            | ip port number            |
 | Serial Port      | serialPort   | Serial port to use for directly connecting to the Oppo player                                                                    | a comm port name          |
-| Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 30 seconds. | Boolean; default false    |
+| Verbose Mode     | verboseMode  | (Optional) If true, the player will send time updates every second. If set false, the binding polls the player every 15 seconds. | Boolean; default false    |
 
 Some notes:
 

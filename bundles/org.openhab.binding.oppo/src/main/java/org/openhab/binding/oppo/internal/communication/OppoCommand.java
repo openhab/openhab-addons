@@ -68,12 +68,12 @@ public enum OppoCommand {
 
     private String value;
 
-    public static final Set<OppoCommand> INITIAL_COMMANDS = new HashSet<OppoCommand>(
+    public static final Set<OppoCommand> INITIAL_COMMANDS = new HashSet<>(
             Arrays.asList(QUERY_POWER_STATUS, QUERY_FIRMWARE_VERSION, QUERY_VOLUME, QUERY_HDMI_RESOLUTION,
                     QUERY_HDR_SETTING, QUERY_PLAYBACK_STATUS, QUERY_DISC_TYPE, QUERY_AUDIO_TYPE, QUERY_SUBTITLE_SHIFT,
                     QUERY_OSD_POSITION, QUERY_REPEAT_MODE, QUERY_ZOOM_MODE, QUERY_INPUT_SOURCE));
 
-    public static final Set<OppoCommand> QUERY_COMMANDS = new HashSet<OppoCommand>(
+    public static final Set<OppoCommand> QUERY_COMMANDS = new HashSet<>(
             Arrays.asList(QUERY_VOLUME, QUERY_HDMI_RESOLUTION, QUERY_PLAYBACK_STATUS, QUERY_DISC_TYPE, QUERY_AUDIO_TYPE,
                     QUERY_SUBTITLE_SHIFT, QUERY_OSD_POSITION, QUERY_REPEAT_MODE, QUERY_ZOOM_MODE, QUERY_INPUT_SOURCE));
 

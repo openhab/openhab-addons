@@ -64,7 +64,7 @@ public abstract class OppoConnector {
      * Called when using direct IP connection for 83/93/95/103/105
      * overrides the command message preamble and removes the CR at the end
      */
-    public void overrideCmdPreamble(Boolean override) {
+    public void overrideCmdPreamble(boolean override) {
         if (override) {
             this.beginCmd = "REMOTE ";
             this.endCmd = "";

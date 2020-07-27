@@ -162,7 +162,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             connector = new OppoIpConnector(host, port);
             connector.overrideCmdPreamble(override);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "configuration error");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Either Serial port or Host & Port must be specifed");
             return;
         }
 

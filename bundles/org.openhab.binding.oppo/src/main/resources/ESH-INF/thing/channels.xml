@@ -95,7 +95,7 @@
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Transport Controls e.g. Play/Pause/Next/Previous/Fforward/Rewind</description>
+		<description>Transport Controls e.g. Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
 	</channel-type>
 

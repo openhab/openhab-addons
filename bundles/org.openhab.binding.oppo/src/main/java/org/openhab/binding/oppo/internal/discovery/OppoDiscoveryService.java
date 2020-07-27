@@ -85,8 +85,7 @@ public class OppoDiscoveryService extends AbstractDiscoveryService {
     /**
      * The {@link ExecutorService} to run the listening threads on.
      */
-    @Nullable
-    private ExecutorService executorService;
+    private @Nullable ExecutorService executorService;
 
     private static final String DISPLAY_NAME_83 = "OPPO BDP-83/93/95";
     private static final String DISPLAY_NAME_103 = "OPPO BDP-103";
