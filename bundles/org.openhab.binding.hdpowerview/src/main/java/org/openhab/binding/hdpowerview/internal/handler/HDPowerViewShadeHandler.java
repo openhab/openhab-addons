@@ -57,7 +57,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
 
-    private static final int REFRESH_DELAY = 10;
+    private static final int REFRESH_DELAY_SEC = 10;
     private @Nullable ScheduledFuture<?> refreshFuture = null;
 
     public HDPowerViewShadeHandler(Thing thing) {
@@ -224,13 +224,13 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             return;
         }
     }
-    
+
     /**
      * Request that the shade shall undergo a 'hard' refresh
      */
     protected synchronized void requestRefreshShade() {
         if (refreshFuture == null) {
-            refreshFuture = scheduler.schedule(this::doRefreshShade, REFRESH_DELAY, TimeUnit.SECONDS);
+            refreshFuture = scheduler.schedule(this::doRefreshShade, REFRESH_DELAY_SEC, TimeUnit.SECONDS);
         }
     }
 

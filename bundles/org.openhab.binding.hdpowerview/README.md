@@ -23,7 +23,7 @@ By using a scene to control multiple shades at once, the shades will all begin m
 Make sure your shades are visible in the PowerView app before attempting discovery.
 
 The binding can automatically discover the PowerView hub.
-The discovery process can be started by pressing the refresh button in the PaperUI Inbox.
+The discovery process can be started by pressing the refresh button in the Main Configuration UI Inbox.
 However you can also manually create a (bridge) thing for the hub, and enter the required configuration parameters (see Thing Configuration below).
 If the configuration parameters are all valid, the binding will then automatically attempt to connect to the hub.
 If the connection succeeds, the hub will indicate its status as Online, otherwise it will show an error status. 
@@ -129,7 +129,7 @@ So the value of `secondary` may be constrained by the value of `position`.
 The hub maintains a cache of the last known state of its shades, and this binding delivers those values.
 Usually the shades will be moved by this binding, so since the hub is always involved in the moving process, it updates this cache accordingly.
 
-However  shades can also be moved manually without the hub’s knowledge.
+However shades can also be moved manually without the hub’s knowledge.
 A person can manually move a shade by pressing a button on the side of the shade or via a remote control.
 In neither case will the hub be aware of the shade’s new position.
 
@@ -138,22 +138,14 @@ The hub implements the `refresh` Switch type channel _(see above)_ in order to o
 Note: You can also force the hub to refresh itself by sending a `Refresh` command in a rule to an item that is connected to a channel in the hub as follows:
 
 ```
-import org.eclipse.smarthome.core.types.RefreshType
-
 rule "Hub Refresh (every 20 minutes)"
 when
     Time cron "0 1/20 0 ? * * *"
 then
-    sendCommand(HUB_ITEM_NAME, RefreshType.REFRESH) // refresh all shades in HUB
+    sendCommand(HUB_ITEM_NAME, "REFRESH") // refresh all shades in HUB
 
-    sendCommand(SHADE_ITEM_NAME, RefreshType.REFRESH) // refresh single shade that ITEM is bound to
+    sendCommand(SHADE_ITEM_NAME, "REFRESH") // refresh single shade that ITEM is bound to
 end
-```
-
-Alternate syntax (omitting the `org.eclipse.smarthome.core.types.RefreshType` import statement):
-
-```
-sendCommand(ITEM_NAME, "REFRESH")
 ```
 
 ## Full Example

@@ -77,11 +77,11 @@ public class HDPowerViewJUnitTests {
     /**
      * Run a series of ONLINE tests on the communication with a hub
      * 
-     * @param hubIPAddress               must be a valid hub IP address to run the
-     *                                   tests on; or an INVALID IP address to
-     *                                   suppress the tests
+     * @param hubIPAddress must be a valid hub IP address to run the
+     *            tests on; or an INVALID IP address to
+     *            suppress the tests
      * @param allowShadeMovementCommands set to true if you accept that the tests
-     *                                   shall physically move the shades
+     *            shall physically move the shades
      */
     @Test
     public void testOnlineCommunication() {
@@ -260,7 +260,7 @@ public class HDPowerViewJUnitTests {
             }
         }
     }
-    
+
     /**
      * Run a series of OFFLINE tests on the JSON parsing machinery
      */

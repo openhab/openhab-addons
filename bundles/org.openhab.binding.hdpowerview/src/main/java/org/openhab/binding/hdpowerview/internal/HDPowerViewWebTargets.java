@@ -71,11 +71,11 @@ public class HDPowerViewWebTargets {
     private WebTarget scenes;
 
     private final Gson gson = new Gson();
-    
+
     /**
      * Initialize the web targets
      * 
-     * @param client    the Javax RS client (the binding)
+     * @param client the Javax RS client (the binding)
      * @param ipAddress the IP address of the server (the hub)
      */
     public HDPowerViewWebTargets(Client client, String ipAddress) {
@@ -91,8 +91,8 @@ public class HDPowerViewWebTargets {
      * a Shades class instance
      * 
      * @return Shades class instance
-     * @throws JsonParseException      if there is a JSON parsing error
-     * @throws ProcessingException     if there is any processing error
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws ProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
     public @Nullable Shades getShades() throws JsonParseException, ProcessingException, HubMaintenanceException {
@@ -103,9 +103,9 @@ public class HDPowerViewWebTargets {
     /**
      * Instructs the hub to move a specific shade
      * 
-     * @param shadeId  id of the shade to be moved
+     * @param shadeId id of the shade to be moved
      * @param position instance of ShadePosition containing the new position
-     * @throws ProcessingException     if there is any processing error
+     * @throws ProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
     public void moveShade(int shadeId, ShadePosition position) throws ProcessingException, HubMaintenanceException {
@@ -121,8 +121,8 @@ public class HDPowerViewWebTargets {
      * a Scenes class instance
      * 
      * @return Scenes class instance
-     * @throws JsonParseException      if there is a JSON parsing error
-     * @throws ProcessingException     if there is any processing error
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws ProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
     public @Nullable Scenes getScenes() throws JsonParseException, ProcessingException, HubMaintenanceException {
@@ -134,7 +134,7 @@ public class HDPowerViewWebTargets {
      * Instructs the hub to execute a specific scene
      * 
      * @param sceneId id of the scene to be executed
-     * @throws ProcessingException     if there is any processing error
+     * @throws ProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
     public void activateScene(int sceneId) throws ProcessingException, HubMaintenanceException {
@@ -197,9 +197,9 @@ public class HDPowerViewWebTargets {
      * Fetches a JSON package that describes a specific shade in the hub, and wraps it
      * in a Shade class instance
      * 
-     * @param shadeId  id of the shade to be fetched
+     * @param shadeId id of the shade to be fetched
      * @return Shade class instance
-     * @throws ProcessingException     if there is any processing error
+     * @throws ProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
     public @Nullable Shade getShade(int shadeId) throws ProcessingException, HubMaintenanceException {
@@ -215,7 +215,7 @@ public class HDPowerViewWebTargets {
      * 
      * @param shadeId id of the shade to be refreshed
      * @return Shade class instance
-     * @throws ProcessingException     if there is any processing error
+     * @throws ProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
     public @Nullable Shade refreshShade(int shadeId) throws ProcessingException, HubMaintenanceException {
@@ -228,7 +228,7 @@ public class HDPowerViewWebTargets {
      * Tells the hub to stop movement of a specific shade
      * 
      * @param shadeId id of the shade to be stopped
-     * @throws ProcessingException     if there is any processing error
+     * @throws ProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
     public void stopShade(int shadeId) throws ProcessingException, HubMaintenanceException {

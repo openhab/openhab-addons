@@ -48,7 +48,7 @@ public class ShadePosition {
      * position
      * 
      * @param coordSys the Coordinate System to be used
-     * @param percent  the percentage position within that Coordinate System
+     * @param percent the percentage position within that Coordinate System
      * @return the ShadePosition instance
      */
     public static ShadePosition create(CoordinateSystem coordSys, int percent) {
@@ -59,12 +59,12 @@ public class ShadePosition {
      * Create a ShadePosition position instance with both a primary and a secondary
      * actuator position
      * 
-     * @param primaryCoordSys   the Coordinate System to be used for the primary
-     *                          position
-     * @param primaryPercent    the percentage position for primary position
+     * @param primaryCoordSys the Coordinate System to be used for the primary
+     *            position
+     * @param primaryPercent the percentage position for primary position
      * @param secondaryCoordSys the Coordinate System to be used for the secondary
-     *                          position
-     * @param secondaryPercent  the percentage position for secondary position
+     *            position
+     * @param secondaryPercent the percentage position for secondary position
      * @return the ShadePosition instance
      */
     public static ShadePosition create(CoordinateSystem primaryCoordSys, int primaryPercent,
@@ -76,12 +76,12 @@ public class ShadePosition {
      * Constructor for ShadePosition position with both a primary and a secondary
      * actuator position
      * 
-     * @param primaryCoordSys   the Coordinate System to be used for the primary
-     *                          position
-     * @param primaryPercent    the percentage position for primary position
+     * @param primaryCoordSys the Coordinate System to be used for the primary
+     *            position
+     * @param primaryPercent the percentage position for primary position
      * @param secondaryCoordSys the Coordinate System to be used for the secondary
-     *                          position
-     * @param secondaryPercent  the percentage position for secondary position
+     *            position
+     * @param secondaryPercent the percentage position for secondary position
      */
     ShadePosition(CoordinateSystem primaryCoordSys, int primaryPercent, @Nullable CoordinateSystem secondaryCoordSys,
             @Nullable Integer secondaryPercent) {
@@ -94,7 +94,7 @@ public class ShadePosition {
      * state to an OpenHAB State
      * 
      * @param actuatorClass the requested Actuator Class
-     * @param coordSys      the requested Coordinate System
+     * @param coordSys the requested Coordinate System
      * @return the corresponding OpenHAB State
      */
     public State getState(ActuatorClass actuatorClass, CoordinateSystem coordSys) {
@@ -107,7 +107,7 @@ public class ShadePosition {
                 return UnDefType.UNDEF;
         }
     }
-    
+
     /**
      * Determine the Coordinate System used for the given Actuator Class (if any)
      * 
