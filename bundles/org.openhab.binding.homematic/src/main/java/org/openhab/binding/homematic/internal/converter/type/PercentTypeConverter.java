@@ -56,7 +56,7 @@ public class PercentTypeConverter extends AbstractTypeConverter<PercentType> {
 
     private double getCorrectedMaxValue(HmDatapoint dp) {
         double max = dp.getMaxValue().doubleValue();
-        return (max == 1.01 && dp.getChannel().getDevice().getHmInterface().equals(HmInterface.HMIP) ? 1.0d : max);
+        return (max == 1.01 && dp.getChannel().getDevice().getHmInterface() == HmInterface.HMIP ? 1.0d : max);
     }
 
     @Override
