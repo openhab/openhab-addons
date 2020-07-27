@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Giovanni Mirulla - Initial contribution
  */
-@SuppressWarnings("unused")
 @NonNullByDefault
 public class StuderHandler extends BaseThingHandler {
 
@@ -111,11 +110,10 @@ public class StuderHandler extends BaseThingHandler {
      * Get registers to poll
      * Start the periodic polling
      */
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         config = getConfigAs(StuderConfiguration.class);
-        logger.debug("Initializing thing whit configuration: {}", thing.getConfiguration());
+        logger.debug("Initializing thing with configuration: {}", thing.getConfiguration());
 
         startUp();
     }
@@ -126,7 +124,6 @@ public class StuderHandler extends BaseThingHandler {
      * Get registers to poll
      * Start the periodic polling
      */
-    @SuppressWarnings("null")
     private void startUp() {
 
         connectEndpoint();
@@ -249,7 +246,6 @@ public class StuderHandler extends BaseThingHandler {
             return;
         }
         logger.debug("Unregistering polling from ModbusManager");
-        @Nullable
         ModbusCommunicationInterface mycomms = comms;
         if (mycomms != null) {
             for (PollTask t : pollTasks) {
@@ -263,15 +259,12 @@ public class StuderHandler extends BaseThingHandler {
      * Register poll task
      * This is where we set up our regular poller
      */
-    @SuppressWarnings("null")
     private synchronized void registerPollTask(int registerNumber) {
         if (pollTasks.size() >= registers.length) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             throw new IllegalStateException("New pollTask invalid");
         }
-        @Nullable
         ModbusCommunicationInterface mycomms = comms;
-        @Nullable
         StuderConfiguration studerConfig = config;
         if (studerConfig == null || mycomms == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");

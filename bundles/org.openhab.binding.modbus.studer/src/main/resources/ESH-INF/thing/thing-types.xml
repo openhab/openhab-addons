@@ -22,12 +22,13 @@
 				<label>Slave Address</label>
 				<description>Slave address of BSP device</description>
 				<default>60</default>
-				<advanced>true</advanced>
+				<required>true</required>
 			</parameter>
-			<parameter name="refreshSec" type="integer" min="0" unit="s">
+			<parameter name="refreshSec" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
-				<description>Poll interval. Use zero to disable automatic polling.</description>
+				<description>Poll interval</description>
 				<default>5</default>
+				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -56,12 +57,13 @@
 				<label>Slave Address</label>
 				<description>Slave address of Xtender device</description>
 				<default>10</default>
-				<advanced>true</advanced>
+				<required>true</required>
 			</parameter>
-			<parameter name="refreshSec" type="integer" min="0" unit="s">
+			<parameter name="refreshSec" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
-				<description>Poll interval. Use zero to disable automatic polling.</description>
+				<description>Poll interval</description>
 				<default>5</default>
+				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -88,12 +90,13 @@
 				<label>Slave Address</label>
 				<description>Slave address of VarioTrack device</description>
 				<default>20</default>
-				<advanced>true</advanced>
+				<required>true</required>
 			</parameter>
-			<parameter name="refreshSec" type="integer" min="0" unit="s">
+			<parameter name="refreshSec" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
-				<description>Poll interval. Use zero to disable automatic polling.</description>
+				<description>Poll interval</description>
 				<default>5</default>
+				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -130,12 +133,13 @@
 				<label>Slave Address</label>
 				<description>Slave address of VarioString device</description>
 				<default>40</default>
-				<advanced>true</advanced>
+				<required>true</required>
 			</parameter>
-			<parameter name="refreshSec" type="integer" min="0" unit="s">
+			<parameter name="refreshSec" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
-				<description>Poll interval. Use zero to disable automatic polling.</description>
+				<description>Poll interval</description>
 				<default>5</default>
+				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
