@@ -79,6 +79,9 @@ public class XmlRpcClient extends RpcClient<String> {
         for (int rpcRetryCounter = 1; rpcRetryCounter <= MAX_RPC_RETRY; rpcRetryCounter++) {
             try {
                 byte[] response = send(port, request);
+                if (response.length == 0 && "setInstallMode".equals(request.getMethodName())) {
+                    return new Object[] {};
+                }
                 Object[] data = new XmlRpcResponse(new ByteArrayInputStream(response), config.getEncoding())
                         .getResponseData();
                 return new RpcResponseParser(request).parse(data);
