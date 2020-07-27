@@ -20,7 +20,6 @@
 			<channel id="control" typeId="control"/>
 			<channel id="time_mode" typeId="time_mode"/>
 			<channel id="time_display" typeId="time_display"/>
-			<channel id="time_display_raw" typeId="time_display_raw"/>
 			<channel id="current_title" typeId="current_title"/>
 			<channel id="total_title" typeId="total_title"/>
 			<channel id="current_chapter" typeId="current_chapter"/>
@@ -119,13 +118,6 @@
 		<label>Time Display (S)</label>
 		<description>The Playback Time Elapsed/Remaining in Seconds</description>
 		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="time_display_raw">
-		<item-type>String</item-type>
-		<label>Time Display</label>
-		<description>The Playback Time Display (Same as On the Player's LCD Screen)</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current_title">

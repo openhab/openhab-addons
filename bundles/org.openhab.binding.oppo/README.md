@@ -84,7 +84,6 @@ The following channels are available:
 | control           | Player      | Simulate pressing the transport control buttons on the remote control (play/pause/next/previous/rew/ffwd)      |
 | time_mode         | String      | Sets the time information display mode on the player (T, X, C, K)                                              |
 | time_display      | Number:Time | The playback time elapsed/remaining in seconds (ReadOnly)                                                      |
-| time_display_raw  | String      | The playback time display (same as on the player's LCD screen) (ReadOnly)                                      |
 | current_title     | Number      | The current title or track number playing (ReadOnly)                                                           |
 | total_title       | Number      | The total number of titles or tracks on the disc (ReadOnly)                                                    |
 | current_chapter   | Number      | The current chapter number player (ReadOnly)                                                                   |
@@ -129,8 +128,7 @@ Number oppo_source "Source Input [%s]" { channel="oppo:player:myoppo:source" }
 String oppo_play_mode "Play Mode [%s]" { channel="oppo:player:myoppo:play_mode" }
 Player oppo_control "Control" { channel="oppo:player:myoppo:control" }
 String oppo_time_mode "Time Mode [%s]" { channel="oppo:player:myoppo:time_mode" }
-Number:Time oppo_time_display "Time [%s s]" { channel="oppo:player:myoppo:time_display" }
-String oppo_time_display_raw "Time Display [%s]" { channel="oppo:player:myoppo:time_display_raw" }
+Number:Time oppo_time_display "Time [JS(secondsformat.js):%s]" { channel="oppo:player:myoppo:time_display" }
 Number oppo_current_title "Current Title/Track [%s]" { channel="oppo:player:myoppo:current_title" }
 Number oppo_total_title "Total Title/Track [%s]" { channel="oppo:player:myoppo:total_title" }
 Number oppo_current_chapter "Current Chapter [%s]" { channel="oppo:player:myoppo:current_chapter" }
@@ -151,6 +149,31 @@ String oppo_hdr_mode "HDR Mode [%s]" { channel="oppo:player:myoppo:hdr_mode" }
 String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button" }
 ```
 
+secondsformat.js:
+
+```java
+(function(totalSeconds) {
+    if (isNaN(totalSeconds)) {
+        return '-';
+    } else {
+        hours = Math.floor(totalSeconds / 3600);
+        totalSeconds %= 3600;
+        minutes = Math.floor(totalSeconds / 60);
+        seconds = totalSeconds % 60;
+        if ( hours < 10 ) {
+            hours = '0' + hours;
+        }
+        if ( minutes < 10 ) {
+            minutes = '0' + minutes;
+        }
+        if ( seconds < 10 ) {
+            seconds = '0' + seconds;
+        }
+        return hours + ':' + minutes + ':' + seconds;
+    }
+})(input)
+```
+
 oppo.sitemap:
 
 ```perl
@@ -165,7 +188,6 @@ sitemap oppo label="Oppo Blu-ray" {
         Default item=oppo_control visibility=[oppo_power==ON]
         Selection item=oppo_time_mode visibility=[oppo_power==ON] icon="time"
         Text item=oppo_time_display visibility=[oppo_power==ON] icon="time"
-        Text item=oppo_time_display_raw visibility=[oppo_power==ON] icon="time"
         Text item=oppo_current_title visibility=[oppo_power==ON] icon="zoom"
         Text item=oppo_total_title visibility=[oppo_power==ON] icon="zoom"
         Text item=oppo_current_chapter visibility=[oppo_power==ON] icon="zoom"

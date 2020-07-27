@@ -29,8 +29,10 @@ import org.eclipse.smarthome.core.library.types.NextPreviousType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.PlayPauseType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -394,7 +396,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 updateChannelState(CHANNEL_TIME_MODE, currentTimeMode);
                             }
                             updateChannelState(CHANNEL_TIME_DISPLAY, matcher.group(4));
-                            updateChannelState(CHANNEL_TIME_DISPLAY_RAW, matcher.group(4));
                         } else {
                             logger.debug("no match on message: {}", updateData);
                         }
@@ -405,7 +406,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case QCR:
                         // these are used with verbose mode 2
                         updateChannelState(CHANNEL_TIME_DISPLAY, updateData);
-                        updateChannelState(CHANNEL_TIME_DISPLAY_RAW, updateData);
                         break;
                     case QVR:
                         this.versionString = updateData;
@@ -476,7 +476,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             updateChannelState(CHANNEL_CURRENT_CHAPTER, ZERO);
                             updateChannelState(CHANNEL_TOTAL_CHAPTER, ZERO);
                             updateChannelState(CHANNEL_TIME_DISPLAY, UNDEF);
-                            updateChannelState(CHANNEL_TIME_DISPLAY_RAW, UNDEF);
                             updateChannelState(CHANNEL_AUDIO_TYPE, UNDEF);
                             updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
                         }
@@ -733,9 +732,11 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
             case CHANNEL_TIME_DISPLAY:
                 String[] timeArr = value.split(COLON);
                 if (timeArr.length == 3) {
-                    int time = (Integer.parseInt(timeArr[0]) * 3600) + (Integer.parseInt(timeArr[1]) * 60)
+                    int seconds = (Integer.parseInt(timeArr[0]) * 3600) + (Integer.parseInt(timeArr[1]) * 60)
                             + Integer.parseInt(timeArr[2]);
-                    state = new DecimalType(time);
+                    state = new QuantityType<>(seconds, SmartHomeUnits.SECOND);
+                } else {
+                    state = UnDefType.UNDEF;
                 }
                 break;
             case CHANNEL_POWER:
@@ -756,7 +757,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 break;
             case CHANNEL_PLAY_MODE:
             case CHANNEL_TIME_MODE:
-            case CHANNEL_TIME_DISPLAY_RAW:
             case CHANNEL_REPEAT_MODE:
             case CHANNEL_ZOOM_MODE:
             case CHANNEL_DISC_TYPE:

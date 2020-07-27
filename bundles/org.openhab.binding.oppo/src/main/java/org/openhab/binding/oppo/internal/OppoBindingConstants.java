@@ -47,7 +47,6 @@ public class OppoBindingConstants {
     public static final String CHANNEL_CONTROL = "control";
     public static final String CHANNEL_TIME_MODE = "time_mode";
     public static final String CHANNEL_TIME_DISPLAY = "time_display";
-    public static final String CHANNEL_TIME_DISPLAY_RAW = "time_display_raw";
     public static final String CHANNEL_CURRENT_TITLE = "current_title";
     public static final String CHANNEL_TOTAL_TITLE = "total_title";
     public static final String CHANNEL_CURRENT_CHAPTER = "current_chapter";
