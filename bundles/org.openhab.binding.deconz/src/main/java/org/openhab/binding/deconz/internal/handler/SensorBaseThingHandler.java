@@ -190,7 +190,8 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
         // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
         // So to monitor a sensor is still alive, the "last seen" is necessary.
-        if (stateResponse.lastseen != null) {
+        if (stateResponse.lastseen != null && config.lastSeenPolling > 0) {
+            createChannel(CHANNEL_LAST_SEEN, ChannelKind.STATE);
             updateState(CHANNEL_LAST_SEEN,
                     new DateTimeType(ZonedDateTime.ofInstant(
                             LocalDateTime.parse(stateResponse.lastseen, DateTimeFormatter.ISO_LOCAL_DATE_TIME),

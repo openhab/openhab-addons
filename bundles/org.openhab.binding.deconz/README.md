@@ -147,6 +147,8 @@ The sensor devices support some of the following channels:
 The specification of your sensor depends on the deCONZ capabilities.
 Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
 
+The `last_seen` channel is added when it is available AND the `lastSeenPolling` parameter of this sensor is used to enable polling.
+
 Other devices support
 
 | Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                   |
