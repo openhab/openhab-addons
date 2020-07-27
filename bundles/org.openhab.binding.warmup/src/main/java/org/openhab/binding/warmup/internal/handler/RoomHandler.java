@@ -14,7 +14,7 @@ package org.openhab.binding.warmup.internal.handler;
 
 import static org.openhab.binding.warmup.internal.WarmupBindingConstants.*;
 
-import javax.measure.quantity.Temperature;
+import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -99,15 +99,19 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     }
 
     private void setOverride(final QuantityType<?> command) {
-        @SuppressWarnings("unchecked")
-        final QuantityType<Temperature> value = (QuantityType<Temperature>) command.toUnit(SIUnits.CELSIUS);
-
         String roomId = getThing().getProperties().get("Id");
         String locationId = getThing().getProperties().get("Location Id");
-        if (value != null && bridgeHandler != null) {
+
+        QuantityType<?> temp = command.toUnit(SIUnits.CELSIUS);
+
+        if (temp != null) {
+            final int value = temp.multiply(new BigDecimal(10)).intValue();
+
             try {
-                bridgeHandler.getApi().setOverride(locationId, roomId, value, config.overrideDurationMin);
-                bridgeHandler.refreshFromServer();
+                if (bridgeHandler != null) {
+                    bridgeHandler.getApi().setOverride(locationId, roomId, value, config.overrideDurationMin);
+                    refreshFromServer();
+                }
             } catch (MyWarmupApiException e) {
                 logger.warn("Set Override failed: {}", e.getMessage());
             }
@@ -117,13 +121,14 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     private void toggleFrostProtectionMode(OnOffType command) {
         String roomId = getThing().getProperties().get("Id");
         String locationId = getThing().getProperties().get("Location Id");
-        if (bridgeHandler != null) {
-            try {
+        try {
+            if (bridgeHandler != null) {
                 bridgeHandler.getApi().toggleFrostProtectionMode(locationId, roomId, command);
-                bridgeHandler.refreshFromServer();
-            } catch (MyWarmupApiException e) {
-                logger.warn("Toggle Frost Protection failed: {}", e.getMessage());
+                refreshFromServer();
             }
+        } catch (MyWarmupApiException e) {
+            logger.warn("Toggle Frost Protection failed: {}", e.getMessage());
+
         }
     }
 }

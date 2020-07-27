@@ -19,12 +19,12 @@ import java.util.List;
  */
 public class LocationDTO {
 
-    private Integer id;
+    private int id;
     private String name;
     private List<RoomDTO> rooms;
 
     public String getId() {
-        return id.toString();
+        return String.valueOf(id);
     }
 
     public String getName() {

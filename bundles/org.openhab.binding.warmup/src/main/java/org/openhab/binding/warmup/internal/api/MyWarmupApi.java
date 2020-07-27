@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.warmup.internal.api;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,7 +26,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.openhab.binding.warmup.internal.WarmupBindingConstants;
 import org.openhab.binding.warmup.internal.handler.MyWarmupConfigurationDTO;
 import org.openhab.binding.warmup.internal.model.auth.AuthRequestDTO;
@@ -129,14 +125,15 @@ public class MyWarmupApi {
      *
      * @param locationId Id of the location
      * @param roomId Id of the room
-     * @param temperature Temperature to set
+     * @param temperature Temperature to set * 10
      * @param duration Duration in minutes of the override
      * @throws MyWarmupApiException API callout error
      */
-    public void setOverride(String locationId, String roomId, QuantityType<Temperature> temperature, Integer duration)
+    public void setOverride(String locationId, String roomId, int temperature, Integer duration)
             throws MyWarmupApiException {
+
         callWarmupGraphQL(String.format("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}", locationId,
-                roomId, temperature.multiply(new BigDecimal(10)).intValue(), duration));
+                roomId, temperature, duration));
     }
 
     /**

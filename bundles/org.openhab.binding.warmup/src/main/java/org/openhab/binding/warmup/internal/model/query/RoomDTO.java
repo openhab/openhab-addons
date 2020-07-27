@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class RoomDTO {
 
-    private Integer id;
+    private int id;
     private String roomName;
     private Integer currentTemp;
     private Integer targetTemp;
@@ -28,7 +28,7 @@ public class RoomDTO {
     private List<DeviceDTO> thermostat4ies;
 
     public String getId() {
-        return id.toString();
+        return String.valueOf(id);
     }
 
     public String getName() {

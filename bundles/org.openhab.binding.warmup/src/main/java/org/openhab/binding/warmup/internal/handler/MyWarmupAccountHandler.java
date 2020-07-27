@@ -66,7 +66,6 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
     }
 
     public void cancelRefresh() {
-
         if (refreshJob != null) {
             refreshJob.cancel(true);
             refreshJob = null;
@@ -83,7 +82,7 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
             if (queryResponse != null) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to contact MyWarmup");
             }
             refreshFromCache();
         }

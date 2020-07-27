@@ -65,6 +65,12 @@ public class WarmupThingHandler extends BaseThingHandler {
         }
     }
 
+    protected void refreshFromServer() {
+        if (bridgeHandler != null) {
+            bridgeHandler.refreshFromServer();
+        }
+    }
+
     /**
      *
      * @param temperature value returned from the API as an Integer * 10. i.e. 215 = 21.5 degrees C
