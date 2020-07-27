@@ -46,6 +46,14 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -105,14 +113,6 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.SmartHomeBaseDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-
 /**
  * The {@link Connection} is responsible for the connection to the amazon server
  * and handling of the commands
@@ -124,6 +124,7 @@ public class Connection {
     private static final String THING_THREADPOOL_NAME = "thingHandler";
     private static final long EXPIRES_IN = 432000; // five days
     private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+    private static final String DEVICE_ID_POSTFIX = "23413249564c5635564d32573831";
 
     protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THING_THREADPOOL_NAME);
 
@@ -178,11 +179,7 @@ public class Connection {
         if (deviceId != null) {
             this.deviceId = deviceId;
         } else {
-            // generate device id
-            byte[] bytes = new byte[16];
-            rand.nextBytes(bytes);
-            String hexStr = HexUtils.bytesToHex(bytes).toUpperCase();
-            this.deviceId = HexUtils.bytesToHex(hexStr.getBytes()) + "23413249564c5635564d32573831";
+            this.deviceId = generateNewDeviceId();
         }
 
         // build user agent
@@ -191,6 +188,29 @@ public class Connection {
         // setAmazonSite(amazonSite);
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonWithNullSerialization = gsonBuilder.create();
+    }
+
+    String generateNewDeviceId()
+    {
+        // generate device id
+        Random rand = new Random();
+        byte[] bytes = new byte[16];
+        rand.nextBytes(bytes);
+        String hexStr = HexUtils.bytesToHex(bytes).toUpperCase();
+        return HexUtils.bytesToHex(hexStr.getBytes()) + DEVICE_ID_POSTFIX;
+    }
+
+    static boolean isValidDeviceId(@Nullable String deviceId)
+    {
+        if (deviceId == null)
+            return false;
+        if (!deviceId.matches("^[0-9a-fA-F]{64}" + DEVICE_ID_POSTFIX + "$"))
+            return false;
+        byte[] bytes = HexUtils.hexToBytes(deviceId.substring(0, 64));
+        String verifyHexString = new String(bytes);
+        if (!verifyHexString.matches("^[0-9a-fA-F]{32}$"))
+            return false;
+        return true;
     }
 
     private void setAmazonSite(@Nullable String amazonSite) {
@@ -823,9 +843,11 @@ public class Connection {
 
     public String getLoginPage() throws IOException, URISyntaxException {
         // clear session data
-        logout();
-
+        logout();       
         logger.debug("Start Login to {}", alexaServer);
+
+        if (!isValidDeviceId(this.deviceId))
+            this.deviceId = generateNewDeviceId();
 
         String mapMdJson = "{\"device_user_dictionary\":[],\"device_registration_data\":{\"software_version\":\"1\"},\"app_identifier\":{\"app_version\":\"2.2.223830\",\"bundle_id\":\"com.amazon.echo\"}}";
         String mapMdCookie = Base64.getEncoder().encodeToString(mapMdJson.getBytes());
