@@ -50,7 +50,7 @@ public class Ism8HandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
-        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the KNX binding.");
+        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the ISM8 binding.");
     }
 
     @Override

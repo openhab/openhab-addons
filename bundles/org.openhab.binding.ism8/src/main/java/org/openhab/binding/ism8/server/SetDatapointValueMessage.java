@@ -34,14 +34,14 @@ public class SetDatapointValueMessage {
 
     public SetDatapointValueMessage(byte[] data) throws Exception {
         if (data.length < 5) {
-            throw new Error("Data size too small for a SetDatapointValueMessage.");
+            throw new IllegalArgumentException("Data size too small for a SetDatapointValueMessage.");
         }
 
         this.setId(Byte.toUnsignedInt(data[0]) * 256 + Byte.toUnsignedInt(data[1]));
         this.setCommand(data[2]);
         this.setLength(data[3]);
         if (data.length < (this.getLength() + 4)) {
-            throw new Error("Data size incorrect (" + data.length + "/" + this.getLength() + ").");
+            throw new IllegalArgumentException("Data size incorrect (" + data.length + "/" + this.getLength() + ").");
         }
 
         ByteBuffer list = ByteBuffer.allocate(this.getLength() + 4);

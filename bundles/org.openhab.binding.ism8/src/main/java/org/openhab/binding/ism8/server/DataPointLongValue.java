@@ -50,7 +50,7 @@ public class DataPointLongValue extends DataPointBase<Double> {
     @Override
     public void processData(byte[] data) {
         if (this.checkProcessData(data)) {
-            if (data[3] != 4 && data.length < 7) {
+            if (data[3] != 4 && data.length <= 7) {
                 logger.error("DataPoint-ProcessData: Data size wrong for this type({}/4).", data[3]);
                 return;
             }
@@ -64,7 +64,15 @@ public class DataPointLongValue extends DataPointBase<Double> {
     @Override
     protected byte[] convertWriteValue(Object value) throws Exception {
         ByteBuffer data = ByteBuffer.allocate(4);
-        int val = (int) (Double.parseDouble(value.toString()) / this.factor);
+        double dblVal;
+        try {
+            dblVal = Double.parseDouble(value.toString());
+        }
+        catch (NumberFormatException e) {
+            dblVal = 0.0;
+        }
+
+        int val = (int) (dblVal / this.factor);
         data.put((byte) (val & 0xFF));
         val = (val & 0xFF) / 256;
         data.put((byte) (val & 0xFF));

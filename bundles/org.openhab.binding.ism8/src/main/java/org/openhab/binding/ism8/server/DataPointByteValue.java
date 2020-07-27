@@ -35,7 +35,7 @@ public class DataPointByteValue extends DataPointBase<Byte> {
     @Override
     public void processData(byte[] data) {
         if (this.checkProcessData(data)) {
-            if (data[3] != 1 && data.length < 4) {
+            if (data[3] != 1 && data.length <= 4) {
                 logger.error("DataPoint-ProcessData: Data size wrong for this type({}/1).", data[3]);
                 return;
             }

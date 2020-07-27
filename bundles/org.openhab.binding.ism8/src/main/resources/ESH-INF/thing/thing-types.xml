@@ -9,7 +9,7 @@
 		<description>Ism8 Interface</description>
 
 		<config-description>
-			<parameter name="portNumber" type="integer">
+			<parameter name="portNumber" type="integer" required="true">
 				<description>Port number of the object server</description>
 				<label>Port</label>
 				<default>12004</default>

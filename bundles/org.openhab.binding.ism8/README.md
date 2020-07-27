@@ -48,13 +48,13 @@ Name:
 
 Description:
 
-+ Put here any description you'd like. This helps you to identify the channels in the PaperUI
++ Put here any description you'd like or the description for the data point ID from the Wolf manual.
 
 
 Configuration:
 
-+ id=1            - Please enter here the ID of the data point you'd like to map to this channel
-+ type="1.001"    - Please enter here the knx type of the data point. You can find the data type in the Wolf ISM8 document.
++ id=1            - Please enter here the ID of the data point you'd like to map to this channel. A list of the available IDs are available within the Wolf manual. The supported IDs are depending on the firmware version of the ISM8 and the connected systems.
++ type="1.001"    - Please enter here the knx type of the data point. You can find the data type in the Wolf ISM8 document as well.
 + write=true      - This parameter defines if the channel is bidirectional. The parameter is optional and by default false. 
 
 Note:
@@ -159,3 +159,25 @@ _demo.sitemap_
         Text item=ISM_LueftungLuftdurchsatzAbluft       icon="flow"
     }
 
+_HVACContrMode.map_
+
+    0=Auto
+    1=Heizen
+    2=Aufwärmen
+    3=Abkühlen
+    4=Nächtliche Reinigung
+    5=Vorkühlen
+    6=Aus
+    7=Test
+    8=Notfall Heizen
+    9=Nur Lüften
+    10=Freies Kühlen
+    11=Eis
+    12=Maximum Heizen
+    13=Eco Heiz-/Kühlmodus
+    14=Entfeuchten
+    15=Kalibriermodus
+    16=Notfall Kühlmodus
+    17=Emergency Dampfmodus
+    20=Reserviert
+    NULL=Undefiniert

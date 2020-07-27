@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
 public class DataPointFactory {
-    private final static Logger logger = LoggerFactory.getLogger(DataPointFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(DataPointFactory.class);
     private static ArrayList<IDataPoint> dataPoints = new ArrayList<>();
 
     /**
@@ -58,13 +58,13 @@ public class DataPointFactory {
                     break;
             }
         } catch (Exception e) {
-            logger.error("Error creating data point {}. {}", id, e.getMessage(), e);
+            new DataPointFactory().logger.error("Error creating data point {}. {}", id, e.getMessage(), e);
         }
 
         if (dataPoint != null) {
             for (IDataPoint dp : dataPoints) {
                 if (dp.getId() == dataPoint.getId()) {
-                    logger.info("Data point already exists ({}).", id);
+                    new DataPointFactory().logger.info("Data point already exists ({}).", id);
                     return null;
                 }
             }

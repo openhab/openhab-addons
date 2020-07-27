@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +29,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
-public class Server {
+public class Server extends Thread {
     private final Logger logger = LoggerFactory.getLogger(Server.class);
     private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
     private int port;
-    private boolean stopServer;
     private int startRetries;
     private boolean connected;
     private ArrayList<IDataPoint> dataPoints = new ArrayList<>();
@@ -73,15 +73,16 @@ public class Server {
      * Starts the server
      *
      */
-    public void start() {
-        this.stopServer = false;
+    public void run() {
         this.startRetries = 0;
-        while (!this.stopServer) {
+        while (!this.isInterrupted()) {
             try {
                 this.handleCommunication();
                 if (this.startRetries > 10) {
                     Thread.sleep(6000);
                 }
+            } catch (InterruptedException e) {
+                logger.debug("Thread interrupted");
             } catch (Exception e) {
                 logger.error("Error Handle Communication - restart communication. {}", e.getMessage(), e);
                 this.startRetries++;
@@ -93,8 +94,8 @@ public class Server {
      * Stops the server
      *
      */
-    public void stop() {
-        this.stopServer = true;
+    public void stopServerThread() {
+        this.interrupt();
         this.stopServer();
     }
 
@@ -150,10 +151,6 @@ public class Server {
                 this.client.close();
                 this.client = null;
             }
-
-            if (this.changeListener != null) {
-                this.changeListener.connectionStatusChanged(ThingStatus.OFFLINE);
-            }
         } catch (Exception e) {
             logger.error("Error stopping Communication. {}", e.getMessage(), e);
         }
@@ -174,13 +171,12 @@ public class Server {
 
             this.startRetries = 0;
             this.sendUpdateCommand();
-            while (true) {
+            while (!this.isInterrupted()) {
                 byte[] bytes = getBytesFromInputStream(this.client.getInputStream());
                 int amount = bytes.length;
                 ArrayList<byte[]> packages = this.getPackages(bytes, amount);
 
-                for (int i = 0; i < packages.size(); i++) {
-                    byte[] pack = packages.get(i);
+                for (byte[] pack : packages) {
                     logger.debug("Data received: {}", this.printBytes(pack));
                     KnxNetFrame frame = KnxNetFrame.createKnxNetPackage(pack, pack.length);
                     if (frame != null) {
@@ -267,12 +263,6 @@ public class Server {
     }
 
     private String printBytes(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-        return new String(hexChars);
+        return HexUtils.bytesToHex(bytes);
     }
 }
