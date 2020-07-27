@@ -14,25 +14,18 @@ package org.openhab.binding.warmup.internal.handler;
 
 import static org.openhab.binding.warmup.internal.WarmupBindingConstants.*;
 
-import java.math.BigDecimal;
-
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.warmup.internal.model.query.LocationDTO;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
 import org.openhab.binding.warmup.internal.model.query.RoomDTO;
@@ -41,38 +34,28 @@ import org.openhab.binding.warmup.internal.model.query.RoomDTO;
  * @author James Melville - Initial contribution
  */
 @NonNullByDefault
-public class RoomHandler extends BaseThingHandler {
+public class RoomHandler extends WarmupThingHandler implements WarmupRefreshListener {
 
-    private String serialNumber = "";
-    private Integer overrideDuration = 60;
-
-    private @Nullable MyWarmupAccountHandler bridgeHandler;
+    private RoomConfigurationDTO config;
 
     public RoomHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(RoomConfigurationDTO.class);
     }
 
     @Override
     public void initialize() {
-        serialNumber = (String) getConfig().get("serialNumber");
-        overrideDuration = ((BigDecimal) getConfig().get("overrideDuration")).intValue();
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            bridgeHandler = (MyWarmupAccountHandler) bridge.getHandler();
-            if (bridgeHandler != null) {
-                bridgeHandler.refreshFromCache();
-            }
-        }
+        super.initialize();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
         if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId()) && command instanceof QuantityType<?>) {
-            setSetPoint((QuantityType<Temperature>) command);
+            setOverride((QuantityType<?>) command);
         }
-        if (command instanceof RefreshType && bridgeHandler != null) {
-            bridgeHandler.refreshFromCache();
+        if (CHANNEL_FROST_PROTECTION_MODE.equals(channelUID.getId()) && command instanceof OnOffType) {
+            toggleFrostProtectionMode((OnOffType) command);
         }
     }
 
@@ -81,46 +64,55 @@ public class RoomHandler extends BaseThingHandler {
      *
      * @param domain Data model representing all devices
      */
+    @Override
     public void onRefresh(@Nullable QueryResponseDTO domain) {
         if (domain != null) {
             for (LocationDTO location : domain.getData().getUser().getLocations()) {
                 for (RoomDTO room : location.getRooms()) {
-                    if (room.getThermostat4ies().get(0).getDeviceSN().equals(serialNumber)) {
+                    if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()
+                            && room.getThermostat4ies().get(0).getDeviceSN().equals(config.serialNumber)) {
+
                         updateStatus(ThingStatus.ONLINE);
 
-                        updateProperty("Id", room.getId().toString());
-                        updateProperty("Serial Number", serialNumber);
+                        updateProperty("Id", room.getId());
+                        updateProperty("Serial Number", config.serialNumber);
                         updateProperty("Name", room.getName());
+                        updateProperty("Location Id", location.getId());
                         updateProperty("Location", location.getName());
 
-                        updateState(CHANNEL_CURRENT_TEMPERATURE,
-                                room.getCurrentTemperature() != null
-                                        ? new QuantityType<>(room.getCurrentTemperature() / 10.0, SIUnits.CELSIUS)
-                                        : UnDefType.UNDEF);
-                        updateState(CHANNEL_TARGET_TEMPERATURE,
-                                room.getTargetTemperature() != null
-                                        ? new QuantityType<>(room.getTargetTemperature() / 10.0, SIUnits.CELSIUS)
-                                        : UnDefType.UNDEF);
-                        updateState(CHANNEL_OVERRIDE_DURATION,
-                                room.getOverrideDuration() != null
-                                        ? new QuantityType<>(room.getOverrideDuration(), SmartHomeUnits.MINUTE)
-                                        : UnDefType.UNDEF);
-                        updateState(CHANNEL_RUN_MODE,
-                                room.getRunMode() != null ? new StringType(room.getRunMode()) : UnDefType.UNDEF);
+                        updateState(CHANNEL_CURRENT_TEMPERATURE, parseTemperature(room.getCurrentTemperature()));
+                        updateState(CHANNEL_TARGET_TEMPERATURE, parseTemperature(room.getTargetTemperature()));
+                        updateState(CHANNEL_OVERRIDE_DURATION, parseDuration(room.getOverrideDuration()));
+                        updateState(CHANNEL_RUN_MODE, parseString(room.getRunMode()));
+                        updateState(CHANNEL_FROST_PROTECTION_MODE,
+                                OnOffType.from(room.getRunMode().equals(FROST_PROTECTION_MODE)));
                         return;
                     }
                 }
             }
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Room not found");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Room not found");
     }
 
-    private void setSetPoint(final QuantityType<Temperature> command) {
-        final QuantityType<Temperature> value = command.toUnit(SIUnits.CELSIUS);
+    private void setOverride(final QuantityType<?> command) {
+        @SuppressWarnings("unchecked")
+        final QuantityType<Temperature> value = (QuantityType<Temperature>) command.toUnit(SIUnits.CELSIUS);
 
+        String roomId = getThing().getProperties().get("Id");
+        String locationId = getThing().getProperties().get("Location Id");
         if (value != null && bridgeHandler != null) {
-            bridgeHandler.getApi().setTargetTemperature(Integer.valueOf(getThing().getProperties().get("Id")), value,
-                    overrideDuration);
+            bridgeHandler.getApi().setOverride(locationId, roomId, value, config.overrideDurationMin);
+            bridgeHandler.refreshFromServer();
+        }
+    }
+
+    private void toggleFrostProtectionMode(OnOffType command) {
+
+        String roomId = getThing().getProperties().get("Id");
+        String locationId = getThing().getProperties().get("Location Id");
+        if (bridgeHandler != null) {
+            bridgeHandler.getApi().toggleFrostProtectionMode(locationId, roomId, command);
+            bridgeHandler.refreshFromServer();
         }
     }
 }

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.warmup.internal.handler;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,9 +24,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.warmup.internal.api.MyWarmupApi;
-import org.openhab.binding.warmup.internal.api.MyWarmupConfigurationDTO;
 import org.openhab.binding.warmup.internal.discovery.WarmupDiscoveryService;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
 
@@ -51,19 +48,14 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-        api.setConfiguration(getConfigAs(MyWarmupConfigurationDTO.class));
-        discoveryService = new WarmupDiscoveryService(this);
-        BigDecimal refreshInterval = (BigDecimal) getConfig().get("refreshInterval");
-        refreshJob = scheduler.scheduleWithFixedDelay(this::refreshFromServer, 0, refreshInterval.intValue(),
+        MyWarmupConfigurationDTO config = getConfigAs(MyWarmupConfigurationDTO.class);
+        api.setConfiguration(config);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refreshFromServer, 0, config.refreshIntervalSec,
                 TimeUnit.SECONDS);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            refreshFromCache();
-        }
     }
 
     @Override
@@ -74,7 +66,7 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private synchronized void refreshFromServer() {
+    public synchronized void refreshFromServer() {
         try {
             queryResponse = api.getStatus();
             updateStatus(ThingStatus.ONLINE);
@@ -93,19 +85,17 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
         notifyListeners(queryResponse);
     }
 
+    public synchronized void scanDevices() {
+        if (discoveryService != null && queryResponse != null) {
+            discoveryService.onRefresh(queryResponse);
+        }
+    }
+
     /**
      * Initiate discovery
      */
     public void setDiscoveryService(final WarmupDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
-        refreshFromCache();
-    }
-
-    /**
-     * Remove reference to discovery service on conclusion
-     */
-    public void unsetDiscoveryService() {
-        discoveryService = null;
     }
 
     /**
@@ -117,12 +107,11 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
     }
 
     private void notifyListeners(@Nullable QueryResponseDTO domain) {
-
-        if (discoveryService != null && domain != null) {
-            discoveryService.onRefresh(domain);
+        if (discoveryService != null && queryResponse != null) {
+            discoveryService.onRefresh(queryResponse);
         }
-
-        getThing().getThings().stream().filter(thing -> thing.getHandler() instanceof RoomHandler)
-                .map(Thing::getHandler).map(RoomHandler.class::cast).forEach(thing -> thing.onRefresh(domain));
+        getThing().getThings().stream().filter(thing -> thing.getHandler() instanceof WarmupRefreshListener)
+                .map(Thing::getHandler).map(WarmupRefreshListener.class::cast)
+                .forEach(thing -> thing.onRefresh(domain));
     }
 }

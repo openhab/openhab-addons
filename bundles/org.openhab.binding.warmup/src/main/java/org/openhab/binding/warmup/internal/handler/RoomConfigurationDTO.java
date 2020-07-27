@@ -10,28 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.warmup.internal.model.query;
-
-import java.util.List;
+package org.openhab.binding.warmup.internal.handler;
 
 /**
+ * The {@link RoomConfigurationDTO} class contains fields mapping thing configuration parameters for the Warmup Room.
+ *
  * @author James Melville - Initial contribution
  */
-public class LocationDTO {
+public class RoomConfigurationDTO {
 
-    private Integer id;
-    private String name;
-    private List<RoomDTO> rooms;
-
-    public String getId() {
-        return id.toString();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<RoomDTO> getRooms() {
-        return rooms;
-    }
+    public String serialNumber;
+    public int overrideDurationMin;
 }

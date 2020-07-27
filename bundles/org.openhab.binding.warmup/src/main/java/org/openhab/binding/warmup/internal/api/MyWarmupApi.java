@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.warmup.internal.api;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
@@ -27,13 +26,13 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.openhab.binding.warmup.internal.WarmupBindingConstants;
+import org.openhab.binding.warmup.internal.handler.MyWarmupConfigurationDTO;
 import org.openhab.binding.warmup.internal.model.auth.AuthRequestDTO;
 import org.openhab.binding.warmup.internal.model.auth.AuthResponseDTO;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
-import org.openhab.binding.warmup.internal.model.update.AuthenticatedRequestDTO;
-import org.openhab.binding.warmup.internal.model.update.ModeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,15 +66,13 @@ public class MyWarmupApi {
     }
 
     /**
-     * Update the configuration. If it has changed, trigger a refresh of the access token
+     * Update the configuration, trigger a refresh of the access token
      *
      * @param configuration contains username and password
      */
     public void setConfiguration(MyWarmupConfigurationDTO configuration) {
-        if (!this.configuration.equals(configuration)) {
-            authToken = null;
-            this.configuration = configuration;
-        }
+        authToken = null;
+        this.configuration = configuration;
     }
 
     private Boolean validateSession() {
@@ -108,10 +105,38 @@ public class MyWarmupApi {
      */
     public synchronized @Nullable QueryResponseDTO getStatus() {
 
-        if (validateSession()) {
-            String body = "{\"query\": \"query QUERY{ user{ locations{ id name rooms{ id roomName runMode overrideDur targetTemp currentTemp thermostat4ies{deviceSN}}}}}\"}";
+        return callWarmupGraphQL("query QUERY { user { locations{ id name "
+                + " rooms { id roomName runMode overrideDur targetTemp currentTemp "
+                + " thermostat4ies{ deviceSN airTemp floor1Temp floor2Temp heatingTarget } } "
+                + " holiday{ holStart holEnd holTemp } address { timezone }  geoLocation{ latitude longitude }}}}");
+    }
 
-            ContentResponse response = callWarmup(WarmupBindingConstants.QUERY_ENDPOINT, body, true);
+    /**
+     * Call the API to set a temperature override on a specific room (device)
+     *
+     * @param locationId Id of the location
+     * @param roomId Id of the room
+     * @param temperature Temperature to set
+     * @param duration Duration in minutes of the override
+     */
+    public void setOverride(String locationId, String roomId, QuantityType<Temperature> temperature, Integer duration) {
+
+        callWarmupGraphQL(String.format("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}", locationId,
+                roomId, temperature.multiply(new BigDecimal(10)).intValue(), duration));
+    }
+
+    public void toggleFrostProtectionMode(String locationId, String roomId, OnOffType command) {
+
+        callWarmupGraphQL(String.format("mutation{turn%s(lid:%s,rid:%s){id}}", command == OnOffType.ON ? "Off" : "On",
+                locationId, roomId));
+    }
+
+    private @Nullable QueryResponseDTO callWarmupGraphQL(String body) {
+
+        if (validateSession()) {
+
+            ContentResponse response = callWarmup(WarmupBindingConstants.QUERY_ENDPOINT,
+                    "{\"query\": \"" + body + "\"}", true);
 
             QueryResponseDTO qr = GSON.fromJson(response.getContentAsString(), QueryResponseDTO.class);
 
@@ -124,27 +149,7 @@ public class MyWarmupApi {
         return null;
     }
 
-    /**
-     * Call the API to set a temperature override on a specific room (device)
-     *
-     * @param roomId Id of the room
-     * @param temperature Temperature to set
-     * @param duration Duration in minutes of the override
-     */
-    public void setTargetTemperature(Integer roomId, QuantityType<Temperature> temperature, Integer duration) {
-
-        if (validateSession()) {
-
-            String body = GSON.toJson(new AuthenticatedRequestDTO(configuration.username, authToken,
-                    new ModeDTO("setOverride", roomId, 3,
-                            Integer.valueOf((int) Math.round(temperature.doubleValue() * 10)),
-                            LocalDateTime.now().plusMinutes(duration).format(DateTimeFormatter.ofPattern("HH:mm")))));
-
-            callWarmup(WarmupBindingConstants.APP_ENDPOINT, body, true);
-        }
-    }
-
-    private synchronized ContentResponse callWarmup(String endpoint, String body, Boolean authenticated) {
+    private synchronized @Nullable ContentResponse callWarmup(String endpoint, String body, Boolean authenticated) {
 
         try {
             final Request request = httpClient.newRequest(endpoint);
@@ -176,8 +181,7 @@ public class MyWarmupApi {
             }
         } catch (Exception e) {
             authToken = null;
-            throw new MyWarmupApiException(e.getMessage());
         }
-        throw new MyWarmupApiException("Connection failure");
+        return null;
     }
 }

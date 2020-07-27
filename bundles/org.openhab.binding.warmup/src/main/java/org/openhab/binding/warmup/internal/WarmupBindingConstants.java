@@ -37,12 +37,20 @@ public class WarmupBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_ROOM)));
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_ROOM)));
 
-    // List of all Channel ids
+    // Room Channel Ids
     public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String CHANNEL_TARGET_TEMPERATURE = "targetTemperature";
     public static final String CHANNEL_OVERRIDE_DURATION = "overrideRemaining";
     public static final String CHANNEL_RUN_MODE = "runMode";
+    public static final String CHANNEL_FROST_PROTECTION_MODE = "frostProtectionMode";
+    public static final String CHANNEL_HEATING_TARGET = "heatingTarget";
+    public static final String CHANNEL_AIR_TEMPERATURE = "airTemperature";
+    public static final String CHANNEL_FLOOR_TEMPERATURE = "floorTemperature";
+
+    public static final String FROST_PROTECTION_MODE = "anti_frost";
 
     // Web Service Endpoints
     public static final String APP_ENDPOINT = "https://api.warmup.com/apps/app/v1";

@@ -74,8 +74,10 @@ public class WarmupHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerDiscoveryService(MyWarmupAccountHandler bridge) {
-        this.discoveryServiceRegs.put(bridge.getThing().getUID(), bundleContext.registerService(
-                DiscoveryService.class.getName(), new WarmupDiscoveryService(bridge), new Hashtable<>()));
+        WarmupDiscoveryService discoveryService = new WarmupDiscoveryService(bridge);
+        this.discoveryServiceRegs.put(bridge.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
+        bridge.setDiscoveryService(discoveryService);
     }
 
     @Override

@@ -15,9 +15,11 @@ package org.openhab.binding.warmup.internal.discovery;
 import static org.openhab.binding.warmup.internal.WarmupBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -36,23 +38,18 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService {
 
     private MyWarmupAccountHandler bridgeHandler;
     private ThingUID bridgeUID;
+    private HashSet<ThingUID> previousThings;
 
     public WarmupDiscoveryService(MyWarmupAccountHandler handler) {
-        super(SUPPORTED_THING_TYPES_UIDS, 60, true);
+        super(DISCOVERABLE_THING_TYPES_UIDS, 5, false);
         this.bridgeHandler = handler;
         this.bridgeUID = handler.getThing().getUID();
+        this.previousThings = new HashSet<ThingUID>();
     }
 
     @Override
-    protected void startScan() {
-        bridgeHandler.setDiscoveryService(this);
-    }
-
-    @Override
-    public synchronized void stopScan() {
-        bridgeHandler.unsetDiscoveryService();
-        super.stopScan();
-        removeOlderResults(getTimestampOfLastScan());
+    public void startScan() {
+        bridgeHandler.scanDevices();
     }
 
     /**
@@ -60,24 +57,42 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService {
      *
      * @param domain Data model representing all devices
      */
-    public void onRefresh(final QueryResponseDTO domain) {
-        for (LocationDTO location : domain.getData().getUser().getLocations()) {
-            for (RoomDTO room : location.getRooms()) {
-                String deviceSN = room.getThermostat4ies().get(0).getDeviceSN();
+    public void onRefresh(@Nullable QueryResponseDTO domain) {
+        if (domain != null) {
+            HashSet<ThingUID> discoveredThings = new HashSet<ThingUID>();
+            for (LocationDTO location : domain.getData().getUser().getLocations()) {
+                for (RoomDTO room : location.getRooms()) {
+                    discoverRoom(location, room, discoveredThings);
+                }
+            }
+
+            previousThings.removeAll(discoveredThings);
+            for (ThingUID missingThing : previousThings) {
+                thingRemoved(missingThing);
+            }
+            previousThings = discoveredThings;
+        }
+    }
+
+    private void discoverRoom(LocationDTO location, RoomDTO room, HashSet<ThingUID> discoveredThings) {
+        if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()) {
+            final String deviceSN = room.getThermostat4ies().get(0).getDeviceSN();
+            if (deviceSN != null) {
                 final Map<String, Object> roomProperties = new HashMap<>();
-
-                roomProperties.put("Id", room.getId().toString());
-                roomProperties.put("Name", room.getName());
-                roomProperties.put("Location", location.getName());
-                // serial number displayed in UI
-                roomProperties.put("Serial Number", deviceSN);
-                // serial number used on configuration
                 roomProperties.put("serialNumber", deviceSN);
+                roomProperties.put("Serial Number", deviceSN);
 
-                thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ROOM, bridgeUID, deviceSN))
-                        .withBridge(bridgeUID).withProperties(roomProperties)
-                        .withLabel(location.getName() + " - " + room.getName())
-                        .withRepresentationProperty(room.getId().toString()).build());
+                roomProperties.put("Id", room.getId());
+                roomProperties.put("Name", room.getName());
+                roomProperties.put("Location Id", location.getId());
+                roomProperties.put("Location", location.getName());
+
+                ThingUID roomThingUID = new ThingUID(THING_TYPE_ROOM, bridgeUID, deviceSN);
+                thingDiscovered(DiscoveryResultBuilder.create(roomThingUID).withBridge(bridgeUID)
+                        .withProperties(roomProperties).withLabel(location.getName() + " - " + room.getName())
+                        .withRepresentationProperty("serialNumber").build());
+
+                discoveredThings.add(roomThingUID);
             }
         }
     }

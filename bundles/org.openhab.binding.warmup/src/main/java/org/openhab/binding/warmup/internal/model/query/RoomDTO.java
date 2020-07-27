@@ -27,8 +27,8 @@ public class RoomDTO {
     private Integer overrideDur;
     private List<DeviceDTO> thermostat4ies;
 
-    public Integer getId() {
-        return id;
+    public String getId() {
+        return id.toString();
     }
 
     public String getName() {

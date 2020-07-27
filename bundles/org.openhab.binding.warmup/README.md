@@ -9,7 +9,10 @@ This API is not known to be documented publicly. The binding api implementation 
 ## Supported Things
 
 * Bridge - Credentials to my.warmup.com which allow the rest of the system to function
-* Room - An individual Warmup 4iE device which is a WiFi connected device which controls a heating circuit. The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits. The device reports the temperature from one of two thermostats, either a floor temperature probe or the air temperature at the device. The separate temperatures do not appear to be reported through the API. It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
+* Room - A room containing an individual Warmup 4iE device which is a WiFi connected device which controls a heating circuit. 
+The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits.
+The device reports the temperature from one of two thermostats, either a floor temperature probe or the air temperature at the device.
+The separate temperatures do not appear to be reported through the API. It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
 
 ## Discovery
 
@@ -24,7 +27,6 @@ My Warmup Account needs configuration with your username and password for the my
 Rooms are configured automatically with a Serial Number on discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. The only supported temperature change is an override, through a default duration configured on the thing. This defaults to 60 minutes.
 
 ## Channels
-
 
 | channel  | type   | description                  | read only |
 | --------- | -------- | ------------------------------ | ----------- |

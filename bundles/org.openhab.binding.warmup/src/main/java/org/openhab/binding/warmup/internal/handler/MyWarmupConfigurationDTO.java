@@ -10,20 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.warmup.internal.api;
+package org.openhab.binding.warmup.internal.handler;
 
 /**
- * The {@link MyWarmupConfigurationDTO} class contains fields mapping thing configuration parameters.
+ * The {@link MyWarmupConfigurationDTO} class contains fields mapping thing configuration parameters for the MyWarmup.
  *
  * @author James Melville - Initial contribution
  */
-public class MyWarmupConfigurationDTO implements Comparable<MyWarmupConfigurationDTO> {
+public class MyWarmupConfigurationDTO {
 
     public String username;
     public String password;
-
-    @Override
-    public int compareTo(MyWarmupConfigurationDTO o) {
-        return this.username.equals(o.username) && this.password.equals(o.password) ? 0 : -1;
-    }
+    public int refreshIntervalSec;
 }
