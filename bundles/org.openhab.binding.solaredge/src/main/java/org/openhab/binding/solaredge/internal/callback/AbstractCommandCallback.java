@@ -14,7 +14,6 @@ package org.openhab.binding.solaredge.internal.callback;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
-import java.lang.reflect.Type;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.SocketTimeoutException;
@@ -162,9 +161,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
      * @return returns Http Status Code
      */
     public CommunicationStatus getCommunicationStatus() {
-        if (communicationStatus.getHttpCode() == null) {
-            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
-        }
         return communicationStatus;
     }
 
@@ -206,6 +202,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
      * @throws JsonSyntaxException
      */
     protected <T> @Nullable T fromJson(String json, Class<T> classOfT) throws JsonSyntaxException {
-        return gson.fromJson(json, (Type) classOfT);
+        return gson.fromJson(json, classOfT);
     }
 }

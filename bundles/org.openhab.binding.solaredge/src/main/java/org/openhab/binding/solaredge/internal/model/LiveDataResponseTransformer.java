@@ -21,9 +21,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.solaredge.internal.handler.ChannelProvider;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponse.BatteryValue;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponse.Connection;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponse.SiteCurrentPowerFlow;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponse.Value;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless.Energy;
 import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless.Overview;
+import org.openhab.binding.solaredge.internal.model.LiveDataResponseMeterless.Power;
 
 /**
  * transforms the http response into the openhab datamodel (instances of State)
@@ -45,33 +49,37 @@ public class LiveDataResponseTransformer extends AbstractDataResponseTransformer
         Overview overview = response.getOverview();
 
         if (overview != null) {
-            if (overview.currentPower != null) {
+            Power currentPower = overview.currentPower;
+            if (currentPower != null) {
                 putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PRODUCTION),
-                        overview.currentPower.power, UNIT_W);
+                        currentPower.power, UNIT_W);
             } else {
                 putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PRODUCTION), null,
                         UNIT_W);
             }
 
-            if (overview.lastDayData != null) {
+            Energy lastDayData = overview.lastDayData;
+            if (lastDayData != null) {
                 putEnergyType(result, channelProvider.getChannel(CHANNEL_GROUP_AGGREGATE_DAY, CHANNEL_ID_PRODUCTION),
-                        overview.lastDayData.energy, UNIT_WH);
+                        lastDayData.energy, UNIT_WH);
             } else {
                 putEnergyType(result, channelProvider.getChannel(CHANNEL_GROUP_AGGREGATE_DAY, CHANNEL_ID_PRODUCTION),
                         null, UNIT_WH);
             }
 
-            if (overview.lastMonthData != null) {
+            Energy lastMonthData = overview.lastMonthData;
+            if (lastMonthData != null) {
                 putEnergyType(result, channelProvider.getChannel(CHANNEL_GROUP_AGGREGATE_MONTH, CHANNEL_ID_PRODUCTION),
-                        overview.lastMonthData.energy, UNIT_WH);
+                        lastMonthData.energy, UNIT_WH);
             } else {
                 putEnergyType(result, channelProvider.getChannel(CHANNEL_GROUP_AGGREGATE_MONTH, CHANNEL_ID_PRODUCTION),
                         null, UNIT_WH);
             }
 
-            if (overview.lastYearData != null) {
+            Energy lastYearData = overview.lastYearData;
+            if (lastYearData != null) {
                 putEnergyType(result, channelProvider.getChannel(CHANNEL_GROUP_AGGREGATE_YEAR, CHANNEL_ID_PRODUCTION),
-                        overview.lastYearData.energy, UNIT_WH);
+                        lastYearData.energy, UNIT_WH);
             } else {
                 putEnergyType(result, channelProvider.getChannel(CHANNEL_GROUP_AGGREGATE_YEAR, CHANNEL_ID_PRODUCTION),
                         null, UNIT_WH);
@@ -89,32 +97,36 @@ public class LiveDataResponseTransformer extends AbstractDataResponseTransformer
         SiteCurrentPowerFlow siteCurrentPowerFlow = response.getSiteCurrentPowerFlow();
 
         if (siteCurrentPowerFlow != null) {
-            if (siteCurrentPowerFlow.pv != null) {
+            Value pv = siteCurrentPowerFlow.pv;
+            Value load = siteCurrentPowerFlow.load;
+            BatteryValue storage = siteCurrentPowerFlow.storage;
+            Value grid = siteCurrentPowerFlow.grid;
+
+            if (pv != null) {
                 putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PRODUCTION),
-                        siteCurrentPowerFlow.pv.currentPower, siteCurrentPowerFlow.unit);
-                putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PV_STATUS),
-                        siteCurrentPowerFlow.pv.status);
+                        pv.currentPower, siteCurrentPowerFlow.unit);
+                putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_PV_STATUS), pv.status);
             }
 
-            if (siteCurrentPowerFlow.load != null) {
+            if (load != null) {
                 putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_CONSUMPTION),
-                        siteCurrentPowerFlow.load.currentPower, siteCurrentPowerFlow.unit);
+                        load.currentPower, siteCurrentPowerFlow.unit);
                 putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_LOAD_STATUS),
-                        siteCurrentPowerFlow.load.status);
+                        load.status);
             }
 
-            if (siteCurrentPowerFlow.storage != null) {
+            if (storage != null) {
                 putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_STATUS),
-                        siteCurrentPowerFlow.storage.status);
+                        storage.status);
                 putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL),
-                        siteCurrentPowerFlow.storage.critical);
+                        storage.critical);
                 putPercentType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_LEVEL),
-                        siteCurrentPowerFlow.storage.chargeLevel);
+                        storage.chargeLevel);
             }
 
-            if (siteCurrentPowerFlow.grid != null) {
+            if (grid != null) {
                 putStringType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_GRID_STATUS),
-                        siteCurrentPowerFlow.grid.status);
+                        grid.status);
             }
 
             // init fields with zero
@@ -132,26 +144,33 @@ public class LiveDataResponseTransformer extends AbstractDataResponseTransformer
             // determine power flow from connection list
             if (siteCurrentPowerFlow.connections != null) {
                 for (Connection con : siteCurrentPowerFlow.connections) {
-                    if (con.from.equalsIgnoreCase(LiveDataResponse.GRID)) {
-                        putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_IMPORT),
-                                siteCurrentPowerFlow.grid.currentPower, siteCurrentPowerFlow.unit);
-                    } else if (con.to.equalsIgnoreCase(LiveDataResponse.GRID)) {
-                        putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_EXPORT),
-                                siteCurrentPowerFlow.grid.currentPower, siteCurrentPowerFlow.unit);
+                    if (grid != null) {
+                        if (con.from != null && con.from.equalsIgnoreCase(LiveDataResponse.GRID)) {
+                            putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_IMPORT),
+                                    grid.currentPower, siteCurrentPowerFlow.unit);
+                        } else if (con.to != null && con.to.equalsIgnoreCase(LiveDataResponse.GRID)) {
+                            putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_EXPORT),
+                                    grid.currentPower, siteCurrentPowerFlow.unit);
+                        }
                     }
-                    if (con.from.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
-                        putPowerType(result,
-                                channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_DISCHARGE),
-                                siteCurrentPowerFlow.storage.currentPower, siteCurrentPowerFlow.unit);
-                        putPowerType(result,
-                                channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
-                                -1 * siteCurrentPowerFlow.storage.currentPower, siteCurrentPowerFlow.unit);
-                    } else if (con.to.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
-                        putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE),
-                                siteCurrentPowerFlow.storage.currentPower, siteCurrentPowerFlow.unit);
-                        putPowerType(result,
-                                channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
-                                siteCurrentPowerFlow.storage.currentPower, siteCurrentPowerFlow.unit);
+
+                    if (storage != null) {
+                        Double currentPower = storage.currentPower != null ? storage.currentPower : 0;
+                        if (con.from != null && con.from.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
+                            putPowerType(result,
+                                    channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_DISCHARGE),
+                                    currentPower, siteCurrentPowerFlow.unit);
+                            putPowerType(result,
+                                    channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
+                                    -1 * currentPower, siteCurrentPowerFlow.unit);
+                        } else if (con.to != null && con.to.equalsIgnoreCase(LiveDataResponse.STORAGE)) {
+                            putPowerType(result,
+                                    channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE),
+                                    currentPower, siteCurrentPowerFlow.unit);
+                            putPowerType(result,
+                                    channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
+                                    currentPower, siteCurrentPowerFlow.unit);
+                        }
                     }
                 }
             }

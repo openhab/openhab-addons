@@ -31,13 +31,11 @@ public class LiveDataResponse {
     public static final String PV = "PV";
     public static final String STORAGE = "STORAGE";
 
-    @NonNullByDefault
     public static class Value {
         public @Nullable String status;
         public @Nullable Double currentPower;
     }
 
-    @NonNullByDefault
     public static class BatteryValue {
         public @Nullable String status;
         public @Nullable Double currentPower;
@@ -45,13 +43,11 @@ public class LiveDataResponse {
         public @Nullable String critical;
     }
 
-    @NonNullByDefault
     public static class Connection {
         public @Nullable String from;
         public @Nullable String to;
     }
 
-    @NonNullByDefault
     public static class SiteCurrentPowerFlow {
         public @Nullable String unit;
 

@@ -25,18 +25,15 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class AggregateDataResponsePrivateApi {
 
-    @NonNullByDefault
     public static class Value {
         public @Nullable Double value;
         public @Nullable String unit;
     }
 
-    @NonNullByDefault
     public static class ValueAndPercent extends Value {
         public @Nullable Double percentage;
     }
 
-    @NonNullByDefault
     public static class UtilizationMeasures {
         public @Nullable Value production;
         public @Nullable Value consumption;

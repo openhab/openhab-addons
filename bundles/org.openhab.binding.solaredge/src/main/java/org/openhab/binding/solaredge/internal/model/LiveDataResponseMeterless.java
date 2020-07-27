@@ -22,17 +22,14 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class LiveDataResponseMeterless {
-    @NonNullByDefault
     public static class Power {
         public @Nullable Double power;
     }
 
-    @NonNullByDefault
     public static class Energy {
         public @Nullable Double energy;
     }
 
-    @NonNullByDefault
     public static class Overview {
         public @Nullable Power currentPower;
         public @Nullable Energy lastDayData;

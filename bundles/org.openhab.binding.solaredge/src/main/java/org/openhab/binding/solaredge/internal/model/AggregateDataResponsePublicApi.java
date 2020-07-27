@@ -25,19 +25,16 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class AggregateDataResponsePublicApi {
 
-    @NonNullByDefault
     public static class MeterTelemetry {
         public @Nullable String date;
         public @Nullable Double value;
     }
 
-    @NonNullByDefault
     public static class MeterTelemetries {
         public @Nullable String type;
         public @Nullable List<MeterTelemetry> values;
     }
 
-    @NonNullByDefault
     public static class EnergyDetails {
         public @Nullable AggregatePeriod timeUnit;
         public @Nullable String unit;

@@ -91,7 +91,6 @@ public class WebInterface implements AtomicReferenceTrait {
      *
      * @author afriese - initial contribution
      */
-    @NonNullByDefault
     private class WebRequestExecutor implements Runnable {
 
         /**
