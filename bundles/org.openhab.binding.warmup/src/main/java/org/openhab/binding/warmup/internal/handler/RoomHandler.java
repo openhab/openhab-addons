@@ -71,7 +71,6 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                 for (RoomDTO room : location.getRooms()) {
                     if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()
                             && room.getThermostat4ies().get(0).getDeviceSN().equals(config.serialNumber)) {
-
                         updateStatus(ThingStatus.ONLINE);
 
                         updateProperty("Id", room.getId());
@@ -107,7 +106,6 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     }
 
     private void toggleFrostProtectionMode(OnOffType command) {
-
         String roomId = getThing().getProperties().get("Id");
         String locationId = getThing().getProperties().get("Location Id");
         if (bridgeHandler != null) {

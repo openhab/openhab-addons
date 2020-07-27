@@ -83,7 +83,6 @@ public class MyWarmupApi {
     }
 
     private Boolean authenticate() {
-
         String body = GSON.toJson(new AuthRequestDTO(configuration.username, configuration.password,
                 WarmupBindingConstants.AUTH_METHOD, WarmupBindingConstants.AUTH_APP_ID));
 
@@ -104,7 +103,6 @@ public class MyWarmupApi {
      * @return The {@link QueryResponseDTO} object if retrieved, else null
      */
     public synchronized @Nullable QueryResponseDTO getStatus() {
-
         return callWarmupGraphQL("query QUERY { user { locations{ id name "
                 + " rooms { id roomName runMode overrideDur targetTemp currentTemp "
                 + " thermostat4ies{ deviceSN airTemp floor1Temp floor2Temp heatingTarget } } "
@@ -120,21 +118,17 @@ public class MyWarmupApi {
      * @param duration Duration in minutes of the override
      */
     public void setOverride(String locationId, String roomId, QuantityType<Temperature> temperature, Integer duration) {
-
         callWarmupGraphQL(String.format("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}", locationId,
                 roomId, temperature.multiply(new BigDecimal(10)).intValue(), duration));
     }
 
     public void toggleFrostProtectionMode(String locationId, String roomId, OnOffType command) {
-
         callWarmupGraphQL(String.format("mutation{turn%s(lid:%s,rid:%s){id}}", command == OnOffType.ON ? "Off" : "On",
                 locationId, roomId));
     }
 
     private @Nullable QueryResponseDTO callWarmupGraphQL(String body) {
-
         if (validateSession()) {
-
             ContentResponse response = callWarmup(WarmupBindingConstants.QUERY_ENDPOINT,
                     "{\"query\": \"" + body + "\"}", true);
 
@@ -150,7 +144,6 @@ public class MyWarmupApi {
     }
 
     private synchronized @Nullable ContentResponse callWarmup(String endpoint, String body, Boolean authenticated) {
-
         try {
             final Request request = httpClient.newRequest(endpoint);
 
@@ -177,7 +170,6 @@ public class MyWarmupApi {
                 return response;
             } else if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 authToken = null;
-            } else {
             }
         } catch (Exception e) {
             authToken = null;

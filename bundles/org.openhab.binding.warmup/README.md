@@ -8,8 +8,13 @@ This API is not known to be documented publicly. The binding api implementation 
 
 ## Supported Things
 
-* Bridge - Credentials to my.warmup.com which allow the rest of the system to function
-* Room - A room containing an individual Warmup 4iE device which is a WiFi connected device which controls a heating circuit. 
+### Bridge
+
+Credentials to my.warmup.com which allow the rest of the system to function
+
+### Room
+
+A room containing an individual Warmup 4iE device which is a WiFi connected device which controls a heating circuit. 
 The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits.
 The device reports the temperature from one of two thermostats, either a floor temperature probe or the air temperature at the device.
 The separate temperatures do not appear to be reported through the API. It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
@@ -59,12 +64,3 @@ Text label="Bathroom" icon="sofa" {
     Setpoint item=bathroom_setpoint step=0.5
 }
 ```
-
-## Todo
-
-- Add boost duration and status as channels.
-- Support other temperature setting modes (fixed / schedule / holiday).
-- Expose more status channels (roomMode, energy consumption & cost etc.)
-- Expose Location as a Thing, and support channels such as energy consumption, heating on/off / holiday / frost protect modes.
-- Support primary / secondary device configuration
-- Explore GraphQL API for more data.
