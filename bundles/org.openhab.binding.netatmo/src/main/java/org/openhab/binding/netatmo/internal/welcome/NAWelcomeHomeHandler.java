@@ -71,8 +71,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         Optional<NAWelcomeHome> result = getBridgeHandler().flatMap(handler -> handler.getWelcomeDataBody(getId()))
                 .map(dataBody -> dataBody.getHomes().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                         .findFirst().orElse(null));
-        // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this
-        // need
+        // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this need
         dataTimeStamp = (int) (Calendar.getInstance().getTimeInMillis() / 1000);
         result.ifPresent(home -> {
             home.getCameras().forEach(camera -> childs.put(camera.getId(), camera));
@@ -204,12 +203,8 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     private static Optional<NAWelcomeSubEvent.TypeEnum> findDetectedCategory(NAWelcomeEvent event) {
         String category = event.getCategory();
         if (category != null) {
-            switch (category) {
-                case "human":
-                    return Optional.of(NAWelcomeSubEvent.TypeEnum.HUMAN);
-                case "animal":
-                    return Optional.of(NAWelcomeSubEvent.TypeEnum.ANIMAL);
-            }
+            // It is safe to use the type enum - The category can have only the values 'human', 'animal' or 'vehicle'.
+            return Optional.of(NAWelcomeSubEvent.TypeEnum.valueOf(category.toUpperCase()));
         }
         return Optional.empty();
     }

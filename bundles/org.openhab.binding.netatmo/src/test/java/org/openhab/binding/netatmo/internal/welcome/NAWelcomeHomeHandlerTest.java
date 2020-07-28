@@ -263,23 +263,6 @@ public class NAWelcomeHomeHandlerTest {
         assertEquals("ANIMAL", handler.getLastDetectedObject());
     }
 
-    @Test
-    public void testTriggerChannelIfRequiredUnknownMovement() {
-        NAWelcomeHome home = initHome();
-
-        NAWelcomeEvent event = createEvent(1592661882, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
-        event.setCategory("alien");
-
-        home.getEvents().add(event);
-
-        triggerCameraEvents();
-
-        assertEquals(1, handler.getTriggerChannelCount());
-        assertEquals(new StringType("movement"),
-                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
-        assertEquals("MOVEMENT", handler.getLastDetectedObject());
-    }
-
     private NAWelcomeHome initHome() {
         NAWelcomeEvent initLastEvent = createEvent(1592661881, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
 
