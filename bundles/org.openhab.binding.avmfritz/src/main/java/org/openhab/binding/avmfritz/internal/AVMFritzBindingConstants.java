@@ -86,6 +86,10 @@ public class AVMFritzBindingConstants {
     public static final String PROPERTY_MEMBERS = "members";
 
     // List of all Channel ids
+    public static final String CHANNEL_CALL_INCOMING = "incoming_call";
+    public static final String CHANNEL_CALL_OUTGOING = "outgoing_call";
+    public static final String CHANNEL_CALL_ACTIVE = "active_call";
+
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_DEVICE_LOCKED = "device_locked";

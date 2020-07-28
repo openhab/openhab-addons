@@ -5,6 +5,24 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Channel definitions of FRITZ!Box -->
+    <channel-type id="incoming_call">
+        <item-type>Call</item-type>
+        <label>Incoming Call</label>
+        <description>Details about incoming call.</description>
+        <state pattern="%1$s to %2$s" readOnly="true"/>
+    </channel-type>
+    <channel-type id="outgoing_call">
+        <item-type>Call</item-type>
+        <label>Outgoing Call</label>
+        <description>Details about outgoing call.</description>
+        <state pattern="%1$s to %2$s" readOnly="true"/>
+    </channel-type>
+    <channel-type id="active_call">
+        <item-type>Call</item-type>
+        <label>Active Call</label>
+        <description>Details about active call.</description>
+        <state pattern="%1$s to %2$s" readOnly="true"/>
+    </channel-type>
 	<channel-type id="apply_template" advanced="true">
 		<item-type>String</item-type>
 		<label>Apply Template</label>

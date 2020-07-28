@@ -97,7 +97,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     protected final List<FritzAhaStatusListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
-     * keeps track of the {@link ChannelUID} for the 'apply_tamplate' {@link Channel}
+     * keeps track of the {@link ChannelUID} for the 'apply_template' {@link Channel}
      */
     private final ChannelUID applyTemplateChannelUID;
 
@@ -145,6 +145,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             stopPolling();
             startPolling();
         }
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
