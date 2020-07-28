@@ -23,7 +23,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -130,11 +129,13 @@ public class Connection {
     private static final String THING_THREADPOOL_NAME = "thingHandler";
     private static final long EXPIRES_IN = 432000; // five days
     private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+    private static final String DEVICE_TYPE = "A2IVLV5VM2W81";
 
     protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(THING_THREADPOOL_NAME);
 
     private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
+    private final Random rand = new Random();
     private final CookieManager cookieManager = new CookieManager();
     private String amazonSite = "amazon.com";
     private String alexaServer = "https://alexa.amazon.com";
@@ -171,11 +172,10 @@ public class Connection {
         String serial = null;
         String deviceId = null;
         if (oldConnection != null) {
+            deviceId = oldConnection.getDeviceId();
             frc = oldConnection.getFrc();
             serial = oldConnection.getSerial();
-            deviceId = oldConnection.getDeviceId();
         }
-        Random rand = new Random();
         if (frc != null) {
             this.frc = frc;
         } else {
@@ -195,11 +195,7 @@ public class Connection {
         if (deviceId != null) {
             this.deviceId = deviceId;
         } else {
-            // generate device id
-            byte[] bytes = new byte[16];
-            rand.nextBytes(bytes);
-            String hexStr = HexUtils.bytesToHex(bytes).toUpperCase();
-            this.deviceId = HexUtils.bytesToHex(hexStr.getBytes()) + "23413249564c5635564d32573831";
+            this.deviceId = generateDeviceId();
         }
 
         // build user agent
@@ -208,6 +204,36 @@ public class Connection {
         // setAmazonSite(amazonSite);
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonWithNullSerialization = gsonBuilder.create();
+    }
+
+    /**
+     * Generate a new device id
+     *
+     * The device id consists of 16 random bytes in upper-case hex format, a # as separator and a fixed DEVICE_TYPE
+     *
+     * @return a string containing the new device-id
+     */
+    private String generateDeviceId() {
+        byte[] bytes = new byte[16];
+        rand.nextBytes(bytes);
+        String hexStr = HexUtils.bytesToHex(bytes).toUpperCase() + "#" + DEVICE_TYPE;
+        return HexUtils.bytesToHex(hexStr.getBytes());
+    }
+
+    /**
+     * Check if deviceId is valid (consisting of hex(hex(16 random bytes)) + "#" + DEVICE_TYPE)
+     *
+     * @param deviceId the deviceId
+     * @return true if valid, false if invalid
+     */
+    private boolean checkDeviceIdIsValid(@Nullable String deviceId) {
+        if (deviceId != null && deviceId.matches("^[0-9a-fA-F]{92}$")) {
+            String hexString = new String(HexUtils.hexToBytes(deviceId));
+            if (hexString.matches("^[0-9A-F]{32}#" + DEVICE_TYPE + "$")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void setAmazonSite(@Nullable String amazonSite) {
@@ -829,14 +855,14 @@ public class Connection {
         this.renewTime = (long) (System.currentTimeMillis() + Connection.EXPIRES_IN * 1000d / 0.8d); // start renew at
     }
 
-    public boolean checkRenewSession() throws UnknownHostException, URISyntaxException, IOException {
+    public boolean checkRenewSession() throws URISyntaxException, IOException {
         if (System.currentTimeMillis() >= this.renewTime) {
             String renewTokenPostData = "app_name=Amazon%20Alexa&app_version=2.2.223830.0&di.sdk.version=6.10.0&source_token="
                     + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8.name())
                     + "&package_name=com.amazon.echo&di.hw.version=iPhone&platform=iOS&requested_token_type=access_token&source_token_type=refresh_token&di.os.name=iOS&di.os.version=11.4.1&current_version=6.10.0";
-            String renewTokenRepsonseJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/token",
+            String renewTokenResponseJson = makeRequestAndReturnString("POST", "https://api.amazon.com/auth/token",
                     renewTokenPostData, false, null);
-            parseJson(renewTokenRepsonseJson, JsonRenewTokenResponse.class);
+            parseJson(renewTokenResponseJson, JsonRenewTokenResponse.class);
 
             exchangeToken();
             return true;
@@ -854,6 +880,11 @@ public class Connection {
 
         logger.debug("Start Login to {}", alexaServer);
 
+        if (!checkDeviceIdIsValid(deviceId)) {
+            deviceId = generateDeviceId();
+            logger.debug("Generating new device id (old device id had invalid format).");
+        }
+
         String mapMdJson = "{\"device_user_dictionary\":[],\"device_registration_data\":{\"software_version\":\"1\"},\"app_identifier\":{\"app_version\":\"2.2.223830\",\"bundle_id\":\"com.amazon.echo\"}}";
         String mapMdCookie = Base64.getEncoder().encodeToString(mapMdJson.getBytes());
 
@@ -862,8 +893,7 @@ public class Connection {
 
         Map<String, String> customHeaders = new HashMap<>();
         customHeaders.put("authority", "www.amazon.com");
-        String loginFormHtml = makeRequestAndReturnString("GET",
-                "https://www.amazon.com"
+        String loginFormHtml = makeRequestAndReturnString("GET", "https://www.amazon.com"
                 + "/ap/signin?openid.return_to=https://www.amazon.com/ap/maplanding&openid.assoc_handle=amzn_dp_project_dee_ios&openid.identity=http://specs.openid.net/auth/2.0/identifier_select&pageId=amzn_dp_project_dee_ios&accountStatusPolicy=P1&openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select&openid.mode=checkid_setup&openid.ns.oa2=http://www.amazon.com/ap/ext/oauth/2&openid.oa2.client_id=device:"
                 + deviceId
                 + "&openid.ns.pape=http://specs.openid.net/extensions/pape/1.0&openid.oa2.response_type=token&openid.ns=http://specs.openid.net/auth/2.0&openid.pape.max_auth_age=0&openid.oa2.scope=device_auth_access",

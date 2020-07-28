@@ -215,12 +215,12 @@ Getting sunActions variable in scripts
  }
 ```
 
-### getEventTime(sunPhaseName, moment, date)
+### getEventTime(phaseName, date, moment)
 
 Retrieves date and time (ZonedDateTime) of the requested phase name.
 Thing method only applies to Sun thing type.
 
-* `sunPhaseName` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NIGHT`. Mandatory.
+* `phaseName` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NIGHT`. Mandatory.
 
 * `date` (ZonedDateTime), only the date part of this parameter will be considered - defaulted to now() if null.
 
