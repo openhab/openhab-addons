@@ -1298,6 +1298,7 @@ public class Connection {
         }
         if (announcementTimer != null) {
             announcementTimer.cancel(true);
+            announcementTimer = null;
         }
         Announcement announcement = announcements.computeIfAbsent(Objects.hash(speak, bodyText, title),
                 k -> new Announcement(speak, bodyText, title));
@@ -1308,8 +1309,10 @@ public class Connection {
     }
 
     private synchronized void sendAnnouncement() {
+        // NECESSARY TO CANCEL AND NULL TIMER?
         if (announcementTimer != null) {
             announcementTimer.cancel(true);
+            announcementTimer = null;
         }
         Iterator<Announcement> iterator = announcements.values().iterator();
         while (iterator.hasNext()) {
@@ -1360,7 +1363,7 @@ public class Connection {
                                 standardVolumes.toArray(new Integer[0]));
                     }
                 } catch (Exception e) {
-                    logger.warn("send textToSpeech fails with unexpected error", e);
+                    logger.warn("send announcement fails with unexpected error", e);
                 }
             }
             iterator.remove();
@@ -1374,6 +1377,7 @@ public class Connection {
         }
         if (textToSpeechTimer != null) {
             textToSpeechTimer.cancel(true);
+            textToSpeechTimer = null;
         }
         TextToSpeech textToSpeech = textToSpeeches.computeIfAbsent(Objects.hash(text), k -> new TextToSpeech(text));
         textToSpeech.devices.add(device);
@@ -1383,8 +1387,10 @@ public class Connection {
     }
 
     private synchronized void sendTextToSpeech() {
+        // NECESSARY TO CANCEL AND NULL TIMER?
         if (textToSpeechTimer != null) {
             textToSpeechTimer.cancel(true);
+            textToSpeechTimer = null;
         }
         Iterator<TextToSpeech> iterator = textToSpeeches.values().iterator();
         while (iterator.hasNext()) {
@@ -1413,6 +1419,7 @@ public class Connection {
     public synchronized void volume(Device device, int vol) {
         if (volumeTimer != null) {
             volumeTimer.cancel(true);
+            volumeTimer = null;
         }
         Volume volume = volumes.computeIfAbsent(vol, k -> new Volume(vol));
         volume.devices.add(device);
@@ -1421,8 +1428,10 @@ public class Connection {
     }
 
     private synchronized void sendVolume() {
+        // NECESSARY TO CANCEL AND NULL TIMER?
         if (volumeTimer != null) {
             volumeTimer.cancel(true);
+            volumeTimer = null;
         }
         Iterator<Volume> iterator = volumes.values().iterator();
         while (iterator.hasNext()) {
@@ -1520,6 +1529,7 @@ public class Connection {
                         && singles.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get())) {
             if (singleGroupTimer != null) {
                 singleGroupTimer.cancel(true);
+                singleGroupTimer = null;
             }
             singleGroupTimer = scheduler.schedule(() -> executeSequenceNode(devices, nodeToExecute), 500,
                     TimeUnit.MILLISECONDS);
@@ -1588,6 +1598,13 @@ public class Connection {
             }
         } else {
             queueObject.dispose();
+            // NECESSARY TO CANCEL AND NULL TIMER?
+            if (!isSequenceNodeQueueRunning()) {
+                if (singleGroupTimer != null) {
+                    singleGroupTimer.cancel(true);
+                    singleGroupTimer = null;
+                }
+            }
         }
     }
 
