@@ -272,6 +272,26 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="sysvar">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>System State Variable</label>
+		<description>HomeWorks QS system state variable</description>
+
+		<channels>
+			<channel id="varstate" typeId="varstateType"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Integration ID for state variable</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="keypad">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
@@ -1234,6 +1254,14 @@
 		<description>Green mode step number</description>
 		<category>Number</category>
 		<state min="1"/>
+	</channel-type>
+
+	<channel-type id="varstateType">
+		<item-type>Number</item-type>
+		<label>Variable State</label>
+		<description>System variable state</description>
+		<category>Number</category>
+		<state min="0"/>
 	</channel-type>
 
 	<channel-type id="superschedulebutton">

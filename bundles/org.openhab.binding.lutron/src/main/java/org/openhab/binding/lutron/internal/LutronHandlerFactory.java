@@ -54,6 +54,7 @@ import org.openhab.binding.lutron.internal.handler.PulsedCcoHandler;
 import org.openhab.binding.lutron.internal.handler.QSIOHandler;
 import org.openhab.binding.lutron.internal.handler.ShadeHandler;
 import org.openhab.binding.lutron.internal.handler.SwitchHandler;
+import org.openhab.binding.lutron.internal.handler.SysvarHandler;
 import org.openhab.binding.lutron.internal.handler.TabletopKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.TimeclockHandler;
 import org.openhab.binding.lutron.internal.handler.VcrxHandler;
@@ -97,12 +98,12 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             .unmodifiableSet(Collections.singleton(HwConstants.THING_TYPE_HWDIMMER));
 
     // Other types that can be initiated but not discovered
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_IPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE, PrgConstants.THING_TYPE_GRAFIKEYE,
-                    RadioRAConstants.THING_TYPE_RS232, RadioRAConstants.THING_TYPE_DIMMER,
-                    RadioRAConstants.THING_TYPE_SWITCH, RadioRAConstants.THING_TYPE_PHANTOM,
-                    HwConstants.THING_TYPE_HWSERIALBRIDGE, THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED)
-            .collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_IPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE,
+                    PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
+                    RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH,
+                    RadioRAConstants.THING_TYPE_PHANTOM, HwConstants.THING_TYPE_HWSERIALBRIDGE, THING_TYPE_CCO_PULSED,
+                    THING_TYPE_CCO_MAINTAINED, THING_TYPE_SYSVAR).collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(LutronHandlerFactory.class);
 
@@ -186,6 +187,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new QSIOHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_BLIND)) {
             return new BlindHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_SYSVAR)) {
+            return new SysvarHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {
