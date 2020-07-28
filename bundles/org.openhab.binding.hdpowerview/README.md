@@ -43,6 +43,7 @@ If in the future, you add additional shades or scenes to your system, the bindin
 |-------------------------|---------------|
 | host                    | The host name or IP address of the hub on your network. |
 | refresh                 | The number of milli-seconds between fetches of the PowerView hub's shade state (default 60'000 one minute). |
+| hardRefresh             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 60 one hour). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
 
 ### Thing Configuration for PowerView Shades
 
@@ -58,13 +59,7 @@ However, the configuration parameters are described below:
 
 ### Channels for PowerView Hub
 
-The hub always has one fixed channel as below:
-
-| Channel  | Item Type | Description |
-|----------|-----------| ------------|
-| refresh  | Switch    | If you switch on this channel, it will make the hub scan all shades and update its cache state -- _see "**Refreshing the PowerView Hub Cache**" below_. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
-
-In addition, scene channels will be added dynamically to the binding as they are discovered in the hub.
+Scene channels will be added dynamically to the binding as they are discovered in the hub.
 Each scene channel will have an entry in the hub as shown below, whereby different scenes have different `id` values:
 
 | Channel  | Item Type | Description |
@@ -80,9 +75,9 @@ All of these channels appear in the binding, but only those which have a physica
 
 | Channel    | Item Type     | Description |
 |------------|---------------|------------|
-| position   | Rollershutter | The vertical position of the shade's rail -- _(see chapter "**Roller Shutter Up/Down Position vs. Open/Close State**" below)._ Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
-| secondary  | Rollershutter | The vertical position of the secondary rail (if any). Its function is basically identical to the `position` channel above -- _(but see chapter "**Roller Shutter Up/Down Position vs. Open/Close State**" below)._ |
-| vane       | Dimmer        | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- _(see chapter "**Inter-dependency between Position and Vane Channels**" below)._ |
+| position   | Rollershutter | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
+| secondary  | Rollershutter | The vertical position of the secondary rail (if any). Its function is basically identical to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
+| vane       | Dimmer        | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
 | batteryLow | Switch        | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
 
 ### Roller Shutter Up/Down Position vs. Open/Close State
@@ -133,9 +128,11 @@ However shades can also be moved manually without the hub’s knowledge.
 A person can manually move a shade by pressing a button on the side of the shade or via a remote control.
 In neither case will the hub be aware of the shade’s new position.
 
-The hub implements the `refresh` Switch type channel _(see above)_ in order to overcome this issue.
+The hub periodically does a _**"hard refresh"**_ in order to overcome this issue.
+The time interval between hard refreshes is set in the `hardRefresh` configuration parameter.
+To disable periodic hard refreshes, set `hardRefresh` to zero.
 
-Note: You can also force the hub to refresh itself by sending a `Refresh` command in a rule to an item that is connected to a channel in the hub as follows:
+Note: You can also force the hub to refresh itself by sending a `REFRESH` command in a rule to an item that is connected to a channel in the hub as follows:
 
 ```
 rule "Hub Refresh (every 20 minutes)"
