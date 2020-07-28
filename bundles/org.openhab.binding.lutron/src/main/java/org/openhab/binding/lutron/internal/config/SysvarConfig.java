@@ -10,24 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lutron.internal.protocol;
+package org.openhab.binding.lutron.internal.config;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Type of command in the Lutron integration protocol.
+ * Configuration settings for a {@link org.openhab.binding.lutron.internal.handler.SysvarHandler}.
  *
- * @author Allan Tong - Initial contribution
- * @author Bob Adair - Added additional commands
- *
+ * @author Bob Adair - Initial contribution
  */
-public enum LutronCommandType {
-    AREA,
-    DEVICE,
-    GROUP,
-    MODE,
-    MONITORING,
-    OUTPUT,
-    SHADEGRP,
-    SYSTEM,
-    SYSVAR,
-    TIMECLOCK,
+@NonNullByDefault
+public class SysvarConfig {
+    public int integrationId;
 }
