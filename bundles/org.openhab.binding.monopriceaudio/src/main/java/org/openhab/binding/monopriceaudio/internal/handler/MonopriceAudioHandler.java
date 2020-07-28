@@ -124,20 +124,23 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     @Override
     public void initialize() {
         MonopriceAudioThingConfiguration config = getConfigAs(MonopriceAudioThingConfiguration.class);
+        String serialPort = config.serialPort;
+        String host = config.host;
+        Integer port = config.port;
+        String ignoreZonesConfig = config.ignoreZones;
 
         // Check configuration settings
         String configError = null;
-        if ((config.serialPort == null || config.serialPort.isEmpty())
-                && (config.host == null || config.host.isEmpty())) {
+        if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
             configError = "undefined serialPort and host configuration settings; please set one of them";
-        } else if (config.host == null || config.host.isEmpty()) {
-            if (config.serialPort.toLowerCase().startsWith("rfc2217")) {
+        } else if (serialPort != null && (host == null || host.isEmpty())) {
+            if (serialPort.toLowerCase().startsWith("rfc2217")) {
                 configError = "use host and port configuration settings for a serial over IP connection";
             }
         } else {
-            if (config.port == null) {
+            if (port == null) {
                 configError = "undefined port configuration setting";
-            } else if (config.port <= 0) {
+            } else if (port <= 0) {
                 configError = "invalid port configuration setting";
             }
         }
@@ -147,11 +150,14 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
             return;
         }
 
-        if (config.serialPort != null) {
-            String serialPort = config.serialPort;
+        if (serialPort != null) {
             connector = new MonopriceAudioSerialConnector(serialPortManager, serialPort);
+        } else if (port != null) {
+            connector = new MonopriceAudioIpConnector(host, port);
         } else {
-            connector = new MonopriceAudioIpConnector(config.host, config.port);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Either Serial port or Host & Port must be specifed");
+            return;
         }
 
         pollingInterval = config.pollingInterval;
@@ -160,8 +166,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
         // If zones were specified to be ignored by the 'all*' commands, use the specified binding
         // zone ids to get the controller's internal zone ids and save those to a list
-        if (config.ignoreZones != null) {
-            for (String zone : config.ignoreZones.split(",")) {
+        if (ignoreZonesConfig != null) {
+            for (String zone : ignoreZonesConfig.split(",")) {
                 try {
                     int zoneInt = Integer.parseInt(zone);
                     if (zoneInt >= ONE && zoneInt <= MAX_ZONES) {
