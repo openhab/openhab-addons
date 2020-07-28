@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
@@ -78,6 +79,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
      * Prevent a dispose/init cycle while this flag is set. Use for property updates
      */
     private boolean ignoreConfigurationUpdate;
+    private @Nullable ScheduledFuture<?> lastSeenPollingJob;
 
     public SensorBaseThingHandler(Thing thing, Gson gson) {
         super(thing, gson);
@@ -102,6 +104,17 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         if (conn != null) {
             conn.unregisterSensorListener(config.id);
         }
+    }
+
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> lastSeenPollingJob = this.lastSeenPollingJob;
+        if (lastSeenPollingJob != null) {
+            lastSeenPollingJob.cancel(true);
+            this.lastSeenPollingJob = null;
+        }
+
+        super.dispose();
     }
 
     @Override
@@ -131,6 +144,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
 
     @Override
     protected void processStateResponse(@Nullable SensorMessage stateResponse) {
+        logger.trace("{} received {}", thing.getUID(), stateResponse);
         if (stateResponse == null) {
             return;
         }
@@ -176,14 +190,20 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
         // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
         // So to monitor a sensor is still alive, the "last seen" is necessary.
-        if (stateResponse.lastseen != null) {
+        if (stateResponse.lastseen != null && config.lastSeenPolling > 0) {
+            createChannel(CHANNEL_LAST_SEEN, ChannelKind.STATE);
             updateState(CHANNEL_LAST_SEEN,
                     new DateTimeType(ZonedDateTime.ofInstant(
                             LocalDateTime.parse(stateResponse.lastseen, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                             ZoneOffset.UTC, ZoneId.systemDefault())));
             // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
-            // manually poll it time to time (every 5 minutes by default)
-            super.scheduledFuture = scheduler.schedule((Runnable) this::requestState, 5, TimeUnit.MINUTES);
+            // manually poll it after the defined time (default is off)
+            if (config.lastSeenPolling > 0) {
+                lastSeenPollingJob = scheduler.schedule((Runnable) this::requestState, config.lastSeenPolling,
+                        TimeUnit.MINUTES);
+                logger.trace("lastSeen polling enabled for thing {} with interval of {} minutes", thing.getUID(),
+                        config.lastSeenPolling);
+            }
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -259,6 +279,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
 
     @Override
     public void messageReceived(String sensorID, DeconzBaseMessage message) {
+        logger.trace("{} received {}", thing.getUID(), message);
         if (message instanceof SensorMessage) {
             SensorMessage sensorMessage = (SensorMessage) message;
             SensorConfig sensorConfig = sensorMessage.config;
@@ -281,7 +302,6 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
     }
 
     protected void updateChannels(SensorState newState, boolean initializing) {
-        logger.trace("{} received {}", thing.getUID(), newState);
         sensorState = newState;
         thing.getChannels().forEach(channel -> valueUpdated(channel.getUID().getId(), newState, initializing));
     }
