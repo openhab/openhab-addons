@@ -130,9 +130,11 @@ public interface ILcnModuleSubHandler {
      * @param command the command to handle
      * @param channelGroup the addressed Channel group
      * @param number the Channel's number within the Channel group
+     * @param invertUpDown true, if Up/Down is inverted
      * @throws LcnException when the command could not processed
      */
-    void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number) throws LcnException;
+    void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number, boolean invertUpDown)
+            throws LcnException;
 
     /**
      * Handles a Command from openHAB.

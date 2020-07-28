@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="oppo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Oppo Blu-ray disc player Thing -->
+	<thing-type id="player">
+		<label>Oppo</label>
+		<description>
+			An Oppo Blu-ray Disc Player
+		</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="source" typeId="source"/>
+			<channel id="play_mode" typeId="play_mode"/>
+			<channel id="control" typeId="control"/>
+			<channel id="time_mode" typeId="time_mode"/>
+			<channel id="time_display" typeId="time_display"/>
+			<channel id="current_title" typeId="current_title"/>
+			<channel id="total_title" typeId="total_title"/>
+			<channel id="current_chapter" typeId="current_chapter"/>
+			<channel id="total_chapter" typeId="total_chapter"/>
+			<channel id="repeat_mode" typeId="repeat_mode"/>
+			<channel id="zoom_mode" typeId="zoom_mode"/>
+			<channel id="disc_type" typeId="disc_type"/>
+			<channel id="audio_type" typeId="audio_type"/>
+			<channel id="subtitle_type" typeId="subtitle_type"/>
+			<channel id="aspect_ratio" typeId="aspect_ratio"/>
+			<channel id="source_resolution" typeId="source_resolution"/>
+			<channel id="output_resolution" typeId="output_resolution"/>
+			<channel id="3d_indicator" typeId="3d_indicator"/>
+			<channel id="sub_shift" typeId="sub_shift"/>
+			<channel id="osd_position" typeId="osd_position"/>
+			<channel id="hdmi_mode" typeId="hdmi_mode"/>
+			<channel id="hdr_mode" typeId="hdr_mode"/>
+			<channel id="remote_button" typeId="remote_button"/>
+		</channels>
+
+		<config-description>
+			<parameter name="model" type="integer" required="true">
+				<label>Player Model</label>
+				<description>Choose Model of Oppo Player</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="83">Oppo BDP-83 or BDP-93/95</option>
+					<option value="103">Oppo BDP-103/103D</option>
+					<option value="105">Oppo BDP-105/105D</option>
+					<option value="203">Oppo UDP-203</option>
+					<option value="205">Oppo UDP-205</option>
+				</options>
+			</parameter>
+			<parameter name="serialPort" type="text" required="false">
+				<context>serial-port</context>
+				<label>Serial Port</label>
+				<description>Serial Port to Use for Connecting to the Oppo Player.</description>
+			</parameter>
+			<parameter name="host" type="text" required="false">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>Host Name or IP Address of the Oppo Player or Machine Used for Serial Over IP.</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
+				<label>Port</label>
+				<description>(Optional) Communication Port for Serial Over IP Connection. Leave blank If Connecting Directly to the
+					Player.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="verboseMode" type="boolean" required="false">
+				<label>Verbose Mode</label>
+				<description>If true, the player will send time updates every second. If false, the binding polls the player evey 30
+					seconds</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="source">
+		<item-type>Number</item-type>
+		<label>Source Input</label>
+		<description>Select the Source Input for the Player</description>
+	</channel-type>
+
+	<channel-type id="play_mode">
+		<item-type>String</item-type>
+		<label>Play Mode</label>
+		<description>The Current Playback Mode of the Source</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Transport Controls e.g. Play/Pause/Next/Previous/Fast Forward/Rewind</description>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="time_mode">
+		<item-type>String</item-type>
+		<label>Time Display Mode</label>
+		<description>Sets the Time Information Display</description>
+		<state>
+			<options>
+				<option value="T">Title Elapsed Time</option>
+				<option value="X">Title Remaining Time</option>
+				<option value="C">Chapter/Track Elapsed Time</option>
+				<option value="K">Chapter/Track Remaining Time</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="time_display">
+		<item-type>Number:Time</item-type>
+		<label>Time Display (S)</label>
+		<description>The Playback Time Elapsed/Remaining in Seconds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="current_title">
+		<item-type>Number</item-type>
+		<label>Current Title/Track</label>
+		<description>Current Title or Track Number Playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="total_title">
+		<item-type>Number</item-type>
+		<label>Total Number of Titles/Tracks</label>
+		<description>The Total Number of Titles or Tracks on the Disc</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current_chapter">
+		<item-type>Number</item-type>
+		<label>Current Chapter</label>
+		<description>Current Chapter Number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="total_chapter">
+		<item-type>Number</item-type>
+		<label>Total Number of Chapters</label>
+		<description>The Total Number of Chapters in the Current Title</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="repeat_mode">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>The Current Repeat Mode</description>
+		<state>
+			<options>
+				<option value="00">Off</option>
+				<option value="02">Repeat Chapter</option>
+				<option value="03">Repeat All</option>
+				<option value="04">Repeat Title</option>
+				<option value="05">Shuffle</option>
+				<option value="06">Random</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="zoom_mode">
+		<item-type>String</item-type>
+		<label>Zoom Mode</label>
+		<description>The Current Zoom Mode</description>
+		<state>
+			<options>
+				<option value="00">Off</option>
+				<option value="01">Stretch</option>
+				<option value="02">Full Screen</option>
+				<option value="03">Underscan</option>
+				<option value="04">1.2x</option>
+				<option value="05">1.3x</option>
+				<option value="06">1.5x</option>
+				<option value="07">2x</option>
+				<option value="08">3x</option>
+				<option value="09">4x</option>
+				<option value="10">1/2</option>
+				<option value="11">1/3</option>
+				<option value="12">1/4</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="disc_type">
+		<item-type>String</item-type>
+		<label>Disc Type</label>
+		<description>The Current Type of Disc in the Player</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="audio_type">
+		<item-type>String</item-type>
+		<label>Audio Type</label>
+		<description>The Current Audio Track Type</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="subtitle_type">
+		<item-type>String</item-type>
+		<label>Subtitle Type</label>
+		<description>The Current Subtitle Selected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="aspect_ratio">
+		<item-type>String</item-type>
+		<label>Aspect Ratio</label>
+		<description>The Aspect Ratio of the Current Video Output</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="source_resolution">
+		<item-type>String</item-type>
+		<label>Source Video Resolution</label>
+		<description>The Video Resolution of the Content Being Played</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output_resolution">
+		<item-type>String</item-type>
+		<label>Output Video Resolution</label>
+		<description>The Video Resolution of the Player Output</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="3d_indicator">
+		<item-type>String</item-type>
+		<label>2D/3D Indicator</label>
+		<description>Indicates If the Content Playing is 2D or 3D</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="osd_position">
+		<item-type>Number</item-type>
+		<label>OSD Position</label>
+		<description>Set the OSD Position 0 to 5</description>
+		<state min="0" max="5" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="sub_shift">
+		<item-type>Number</item-type>
+		<label>Subtitle Shift</label>
+		<description>Set the Subtitle Shift -10 to 10</description>
+		<state min="-10" max="10" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="hdmi_mode">
+		<item-type>String</item-type>
+		<label>HDMI Mode</label>
+		<description>The Current HDMI Output Mode</description>
+	</channel-type>
+
+	<channel-type id="hdr_mode">
+		<item-type>String</item-type>
+		<label>HDR Mode</label>
+		<description>The Current HDR Output Mode</description>
+		<state>
+			<options>
+				<option value="Auto">Auto</option>
+				<option value="On">On</option>
+				<option value="Off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="remote_button">
+		<item-type>String</item-type>
+		<label>Remote Button</label>
+		<description>Simulate Pressing a Button on the Remote Control</description>
+		<state>
+			<options>
+				<option value="EJT">Eject</option>
+				<option value="DIM">Dimmer</option>
+				<option value="PUR">Pure Audio</option>
+				<option value="VUP">Vol +</option>
+				<option value="VDN">Vol -</option>
+				<option value="MUT">Mute</option>
+				<option value="NU1">1</option>
+				<option value="NU2">2</option>
+				<option value="NU3">3</option>
+				<option value="NU4">4</option>
+				<option value="NU5">5</option>
+				<option value="NU6">6</option>
+				<option value="NU7">7</option>
+				<option value="NU8">8</option>
+				<option value="NU9">9</option>
+				<option value="NU0">0</option>
+				<option value="CLR">Clear</option>
+				<option value="GOT">Goto</option>
+				<option value="HOM">Home</option>
+				<option value="PUP">Page Up</option>
+				<option value="PDN">Page Down</option>
+				<option value="OSD">Info/Display</option>
+				<option value="TTL">Top Menu</option>
+				<option value="MNU">Pop-Up Menu</option>
+				<option value="NUP">Up</option>
+				<option value="NLT">Left</option>
+				<option value="NRT">Right</option>
+				<option value="NDN">Down</option>
+				<option value="SEL">Select</option>
+				<option value="SET">Setup</option>
+				<option value="RET">Return</option>
+				<option value="RED">Red</option>
+				<option value="GRN">Green</option>
+				<option value="BLU">Blue</option>
+				<option value="YLW">Yellow</option>
+				<option value="STP">Stop</option>
+				<option value="PLA">Play</option>
+				<option value="PAU">Pause</option>
+				<option value="PRE">Previous</option>
+				<option value="REV">Fast Reverse</option>
+				<option value="FWD">Fast Forward</option>
+				<option value="NXT">Next</option>
+				<option value="AUD">Audio</option>
+				<option value="SUB">Subtitle</option>
+				<option value="ANG">Angle</option>
+				<option value="ZOM">Zoom</option>
+				<option value="SAP">SAP</option>
+				<option value="ATB">AB Replay</option>
+				<option value="RPT">Repeat</option>
+				<option value="PIP">Picture in Picture</option>
+				<option value="HDM">HDMI Mode</option>
+				<option value="NFX">Netflix</option>
+				<option value="INH">Extended OSD</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

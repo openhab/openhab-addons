@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -92,6 +93,8 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
 
     private PresetContainer presetContainer;
     private BoseStateDescriptionOptionProvider stateOptionProvider;
+
+    private Future<?> sessionFuture;
 
     /**
      * Creates a new instance of this class for the {@link Thing}.
@@ -423,7 +426,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
             request.setSubProtocols("gabbo");
             client.setStopTimeout(1000);
             client.start();
-            client.connect(this, new URI(wsUrl), request);
+            sessionFuture = client.connect(this, new URI(wsUrl), request);
         } catch (Exception e) {
             onWebSocketError(e);
         }
@@ -438,6 +441,9 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                         e.getClass().getName(), e.getMessage());
             }
             session = null;
+        }
+        if (sessionFuture != null && !sessionFuture.isDone()) {
+            sessionFuture.cancel(true);
         }
         if (client != null) {
             try {

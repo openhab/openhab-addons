@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonActivity} encapsulate the GSON data of the sequence command AlexaAnnouncement for announcement target
+ * The {@link JsonAnnouncementTarget} encapsulate the GSON data of the sequence command AlexaAnnouncement for
+ * announcement target
  *
  * @author Michael Geramb - Initial contribution
  */

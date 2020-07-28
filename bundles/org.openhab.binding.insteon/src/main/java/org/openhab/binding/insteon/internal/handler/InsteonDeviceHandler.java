@@ -55,11 +55,12 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     private static final Set<String> ALL_CHANNEL_IDS = Collections.unmodifiableSet(Stream.of(
             InsteonBindingConstants.AC_DELAY, InsteonBindingConstants.BACKLIGHT_DURATION,
-            InsteonBindingConstants.BATTERY_LEVEL, InsteonBindingConstants.BATTERY_WATERMARK_LEVEL,
-            InsteonBindingConstants.BEEP, InsteonBindingConstants.BOTTOM_OUTLET, InsteonBindingConstants.BUTTON_A,
-            InsteonBindingConstants.BUTTON_B, InsteonBindingConstants.BUTTON_C, InsteonBindingConstants.BUTTON_D,
-            InsteonBindingConstants.BUTTON_E, InsteonBindingConstants.BUTTON_F, InsteonBindingConstants.BUTTON_G,
-            InsteonBindingConstants.BUTTON_H, InsteonBindingConstants.BROADCAST_ON_OFF, InsteonBindingConstants.CONTACT,
+            InsteonBindingConstants.BATTERY_LEVEL, InsteonBindingConstants.BATTERY_PERCENT,
+            InsteonBindingConstants.BATTERY_WATERMARK_LEVEL, InsteonBindingConstants.BEEP,
+            InsteonBindingConstants.BOTTOM_OUTLET, InsteonBindingConstants.BUTTON_A, InsteonBindingConstants.BUTTON_B,
+            InsteonBindingConstants.BUTTON_C, InsteonBindingConstants.BUTTON_D, InsteonBindingConstants.BUTTON_E,
+            InsteonBindingConstants.BUTTON_F, InsteonBindingConstants.BUTTON_G, InsteonBindingConstants.BUTTON_H,
+            InsteonBindingConstants.BROADCAST_ON_OFF, InsteonBindingConstants.CONTACT,
             InsteonBindingConstants.COOL_SET_POINT, InsteonBindingConstants.DIMMER, InsteonBindingConstants.FAN,
             InsteonBindingConstants.FAN_MODE, InsteonBindingConstants.FAST_ON_OFF,
             InsteonBindingConstants.FAST_ON_OFF_BUTTON_A, InsteonBindingConstants.FAST_ON_OFF_BUTTON_B,
@@ -86,28 +87,32 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonBindingConstants.MANUAL_CHANGE_BUTTON_H, InsteonBindingConstants.NOTIFICATION,
             InsteonBindingConstants.ON_LEVEL, InsteonBindingConstants.RAMP_DIMMER, InsteonBindingConstants.RAMP_RATE,
             InsteonBindingConstants.RESET, InsteonBindingConstants.STAGE1_DURATION, InsteonBindingConstants.SWITCH,
-            InsteonBindingConstants.SYSTEM_MODE, InsteonBindingConstants.TEMPERATURE,
+            InsteonBindingConstants.SYSTEM_MODE, InsteonBindingConstants.TAMPER_SWITCH,
+            InsteonBindingConstants.TEMPERATURE, InsteonBindingConstants.TEMPERATURE_LEVEL,
             InsteonBindingConstants.TOP_OUTLET, InsteonBindingConstants.UPDATE, InsteonBindingConstants.WATTS)
             .collect(Collectors.toSet()));
 
-    private static final String BROADCAST_ON_OFF = "broadcastonoff";
-    private static final String CMD = "cmd";
-    private static final String CMD_RESET = "reset";
-    private static final String CMD_UPDATE = "update";
-    private static final String DATA = "data";
-    private static final String FIELD = "field";
-    private static final String FIELD_BATTERY_LEVEL = "battery_level";
-    private static final String FIELD_BATTERY_WATERMARK_LEVEL = "battery_watermark_level";
-    private static final String FIELD_KWH = "kwh";
-    private static final String FIELD_LIGHT_LEVEL = "light_level";
-    private static final String FIELD_WATTS = "watts";
-    private static final String GROUP = "group";
-    private static final String METER = "meter";
+    public static final String BROADCAST_ON_OFF = "broadcastonoff";
+    public static final String CMD = "cmd";
+    public static final String CMD_RESET = "reset";
+    public static final String CMD_UPDATE = "update";
+    public static final String DATA = "data";
+    public static final String FIELD = "field";
+    public static final String FIELD_BATTERY_LEVEL = "battery_level";
+    public static final String FIELD_BATTERY_PERCENTAGE = "battery_percentage";
+    public static final String FIELD_BATTERY_WATERMARK_LEVEL = "battery_watermark_level";
+    public static final String FIELD_KWH = "kwh";
+    public static final String FIELD_LIGHT_LEVEL = "light_level";
+    public static final String FIELD_TEMPERATURE_LEVEL = "temperature_level";
+    public static final String FIELD_WATTS = "watts";
+    public static final String GROUP = "group";
+    public static final String METER = "meter";
 
-    private static final String HIDDEN_DOOR_SENSOR_PRODUCT_KEY = "F00.00.03";
-    private static final String MOTION_SENSOR_PRODUCT_KEY = "0x00004A";
-    private static final String PLM_PRODUCT_KEY = "0x000045";
-    private static final String POWER_METER_PRODUCT_KEY = "F00.00.17";
+    public static final String HIDDEN_DOOR_SENSOR_PRODUCT_KEY = "F00.00.03";
+    public static final String MOTION_SENSOR_II_PRODUCT_KEY = "F00.00.24";
+    public static final String MOTION_SENSOR_PRODUCT_KEY = "0x00004A";
+    public static final String PLM_PRODUCT_KEY = "0x000045";
+    public static final String POWER_METER_PRODUCT_KEY = "F00.00.17";
 
     private final Logger logger = LoggerFactory.getLogger(InsteonDeviceHandler.class);
 
@@ -175,6 +180,13 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                             || feature.equalsIgnoreCase(InsteonBindingConstants.LIGHT_LEVEL)) {
                         feature = DATA;
                     }
+                } else if (productKey.equals(MOTION_SENSOR_II_PRODUCT_KEY)) {
+                    if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_LEVEL)
+                            || feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_PERCENT)
+                            || feature.equalsIgnoreCase(InsteonBindingConstants.LIGHT_LEVEL)
+                            || feature.equalsIgnoreCase(InsteonBindingConstants.TEMPERATURE_LEVEL)) {
+                        feature = DATA;
+                    }
                 } else if (productKey.equals(PLM_PRODUCT_KEY)) {
                     String parts[] = feature.split("#");
                     if (parts.length == 2 && parts[0].equalsIgnoreCase(InsteonBindingConstants.BROADCAST_ON_OFF)
@@ -218,8 +230,10 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 }
             }
 
-            if (!channels.isEmpty()) {
-                updateThing(editThing().withChannels(channels).build());
+            if (!channels.isEmpty() || device.isModem()) {
+                if (!channels.isEmpty()) {
+                    updateThing(editThing().withChannels(channels).build());
+                }
 
                 StringBuilder builder = new StringBuilder(thingId);
                 builder.append(" address = ");
@@ -310,6 +324,20 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 feature = DATA;
             } else if (feature.equalsIgnoreCase(InsteonBindingConstants.LIGHT_LEVEL)) {
                 params.put(FIELD, FIELD_LIGHT_LEVEL);
+                feature = DATA;
+            }
+        } else if (productKey.equals(MOTION_SENSOR_II_PRODUCT_KEY)) {
+            if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_LEVEL)) {
+                params.put(FIELD, FIELD_BATTERY_LEVEL);
+                feature = DATA;
+            } else if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_PERCENT)) {
+                params.put(FIELD, FIELD_BATTERY_PERCENTAGE);
+                feature = DATA;
+            } else if (feature.equalsIgnoreCase(InsteonBindingConstants.LIGHT_LEVEL)) {
+                params.put(FIELD, FIELD_LIGHT_LEVEL);
+                feature = DATA;
+            } else if (feature.equalsIgnoreCase(InsteonBindingConstants.TEMPERATURE_LEVEL)) {
+                params.put(FIELD, FIELD_TEMPERATURE_LEVEL);
                 feature = DATA;
             }
         } else if (productKey.equals(PLM_PRODUCT_KEY)) {

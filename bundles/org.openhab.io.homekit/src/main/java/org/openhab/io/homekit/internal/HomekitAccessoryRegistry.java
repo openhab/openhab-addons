@@ -30,7 +30,6 @@ import io.github.hapjava.server.impl.HomekitRoot;
  * @author Andy Lintner - Initial contribution
  */
 class HomekitAccessoryRegistry {
-
     private @Nullable HomekitRoot bridge;
     private final Map<String, HomekitAccessory> createdAccessories = new HashMap<>();
     private int configurationRevision = 1;
@@ -98,7 +97,6 @@ class HomekitAccessoryRegistry {
         if (bridge != null) {
             bridge.addAccessory(accessory);
         }
-        logger.trace("Added accessory {}", accessory.getId());
     }
 
     public Map<String, HomekitAccessory> getAllAccessories() {
