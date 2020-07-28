@@ -33,11 +33,13 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.deconz.internal.StateDescriptionProvider;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
@@ -68,8 +70,8 @@ import com.google.gson.Gson;
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
             .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
-                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING)
-            .collect(Collectors.toSet());
+                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING,
+                    THING_TYPE_WARNING_DEVICE).collect(Collectors.toSet());
 
     private static final double HUE_FACTOR = 65535 / 360.0;
     private static final double BRIGHTNESS_FACTOR = 2.54;
@@ -157,6 +159,12 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         Integer currentBri = lightStateCache.bri;
 
         switch (channelUID.getId()) {
+            case CHANNEL_ALERT:
+                if (command instanceof OnOffType) {
+                    newLightState.alert = command == OnOffType.ON ? "alert" : "none";
+                } else {
+                    return;
+                }
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
                     newLightState.on = (command == OnOffType.ON);
@@ -288,8 +296,6 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                             Integer.toString(Util.constrainToRange(lightMessage.ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
                     properties.put(PROPERTY_CT_MIN,
                             Integer.toString(Util.constrainToRange(lightMessage.ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
-
-                    logger.warn("properties new {}", properties);
                     updateProperties(properties);
                 }
             }
@@ -304,9 +310,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         if (stateResponse == null) {
             return;
         }
-        messageReceived(config.id, stateResponse);
 
-        updateStatus(ThingStatus.ONLINE);
+        messageReceived(config.id, stateResponse);
     }
 
     private void valueUpdated(String channelId, LightState newState) {
@@ -314,6 +319,9 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         Boolean on = newState.on;
 
         switch (channelId) {
+            case CHANNEL_ALERT:
+                updateState(channelId, "alert".equals(newState.alert) ? OnOffType.ON : OnOffType.OFF);
+                break;
             case CHANNEL_SWITCH:
                 if (on != null) {
                     updateState(channelId, OnOffType.from(on));
@@ -370,7 +378,13 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                     return;
                 }
                 lightStateCache = lightState;
-                thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
+                if (lightState.reachable != null && lightState.reachable) {
+                    updateStatus(ThingStatus.ONLINE);
+                    thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
+                    thing.getChannels().stream().map(c -> c.getUID()).forEach(c -> updateState(c, UnDefType.UNDEF));
+                }
             }
         }
     }
