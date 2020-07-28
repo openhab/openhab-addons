@@ -39,6 +39,12 @@
 			<label>Device ID</label>
 			<description>The deCONZ bridge assigns an integer number ID to each device.</description>
 		</parameter>
+		<parameter name="lastSeenPolling" type="integer" min="0" unit="min">
+			<label>LastSeen Poll Interval</label>
+			<description>Interval to poll the deCONZ Gateway for this sensor's "lastSeen" channel. Polling is disabled when set
+				to 0.</description>
+			<default>0</default>
+		</parameter>
 	</config-description>
 
 
