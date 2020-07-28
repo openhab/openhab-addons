@@ -80,9 +80,9 @@ public class LutronBindingConstants {
     public static final String INTEGRATION_ID = "integrationId";
 
     // CCO config properties
-    public static final String OUTPUT_TYPE = "outputType";
-    public static final String OUTPUT_TYPE_PULSED = "Pulsed";
-    public static final String OUTPUT_TYPE_MAINTAINED = "Maintained";
+    public static final String CCO_TYPE = "outputType";
+    public static final String CCO_TYPE_PULSED = "Pulsed";
+    public static final String CCO_TYPE_MAINTAINED = "Maintained";
     public static final String DEFAULT_PULSE = "pulseLength";
 
     // GreenMode config properties
