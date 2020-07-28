@@ -375,7 +375,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Boost Remaining</label>
 		<description>How long until the boost deactivates</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="windowStateDetection-channel" advanced="true">

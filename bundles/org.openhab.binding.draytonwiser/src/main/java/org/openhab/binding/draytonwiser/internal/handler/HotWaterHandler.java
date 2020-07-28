@@ -132,14 +132,10 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
             final Integer overrideTimeout = firstChannel.getOverrideTimeoutUnixTime();
 
             if (overrideTimeout != null && !"NONE".equalsIgnoreCase(firstChannel.getOverrideType())) {
-                final QuantityType<Time> duration = new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), SmartHomeUnits.SECOND).toUnit(SmartHomeUnits.MINUTE);
-                if (duration != null)
-                {
-                    return duration;
-                } 
+                return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), SmartHomeUnits.SECOND);
             }
         }
-        return new QuantityType<Time>(0, SmartHomeUnits.MINUTE);
+        return new QuantityType<Time>(0, SmartHomeUnits.SECOND);
     }
 
     static class HotWaterData {
