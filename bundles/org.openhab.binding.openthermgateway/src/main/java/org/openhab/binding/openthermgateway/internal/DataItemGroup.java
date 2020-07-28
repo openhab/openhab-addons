@@ -20,7 +20,7 @@ import org.openhab.core.library.unit.SIUnits;
 
 /**
  * The {@link DataItemGroup} represents a list of all possible DataItem messages within the OpenTherm specification.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
@@ -31,24 +31,32 @@ public class DataItemGroup {
     private static Map<Integer, DataItem[]> createDataItemGroups() {
         HashMap<Integer, DataItem[]> g = new HashMap<>();
 
-        g.put(0, new DataItem[] { new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enable"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 1, "dhw_enable"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 2, "cooling_enabled"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 3, "otc_active"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enable"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "0x00:5"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "0x00:6"),
-                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "0x00:7"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 0, "fault"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 1, "ch_mode"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 2, "dhw_mode"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 3, "flame"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 4, "cooling"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 5, "ch2E"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 6, "diag"),
-                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 7, "0x00:7") });
+        g.put(0, new DataItem[] {
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enable", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enablerequested", CodeType.T),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 0, "ch_enableoverride", CodeType.R),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 1, "dhw_enable", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 2, "cooling_enabled", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 3, "otc_active", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 4, "ch2_enable", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 5, "0x00:5", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 6, "0x00:6", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.HIGHBYTE, DataType.FLAGS, 7, "0x00:7", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 0, "fault", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 1, "ch_mode", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 2, "dhw_mode", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 3, "flame", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 4, "cooling", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 5, "ch2E", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 6, "diag", CodeType.B),
+                new DataItem(0, Msg.READ, ByteType.LOWBYTE, DataType.FLAGS, 7, "0x00:7", CodeType.B) });
         g.put(1, new DataItem[] {
-                new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint", SIUnits.CELSIUS) });
+                new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpoint", SIUnits.CELSIUS,
+                        CodeType.B),
+                new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpointrequested",
+                        SIUnits.CELSIUS, CodeType.T),
+                new DataItem(1, Msg.WRITE, ByteType.BOTH, DataType.FLOAT, 0, "controlsetpointoverride", SIUnits.CELSIUS,
+                        CodeType.R) });
         g.put(2, new DataItem[] { new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 0, "0x02:0"),
                 new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 1, "0x02:1"),
                 new DataItem(2, Msg.WRITE, ByteType.HIGHBYTE, DataType.FLAGS, 2, "0x02:2"),

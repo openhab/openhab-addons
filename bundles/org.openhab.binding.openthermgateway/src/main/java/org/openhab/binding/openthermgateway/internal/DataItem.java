@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link DataItem} holds the internal OpenTherm message and meta data.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
@@ -31,6 +31,7 @@ public class DataItem {
     private int bitpos;
     private String subject;
     private @Nullable Unit<?> unit;
+    private @Nullable CodeType filteredCode;
 
     public int getID() {
         return id;
@@ -60,17 +61,31 @@ public class DataItem {
         return unit;
     }
 
+    public @Nullable CodeType getFilteredCode() {
+        return filteredCode;
+    }
+
     public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject) {
+        this(id, msg, byteType, dataType, bit, subject, null, null);
+    }
+
+    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject, Unit<?> unit) {
+        this(id, msg, byteType, dataType, bit, subject, unit, null);
+    }
+
+    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject, CodeType filteredCode) {
+        this(id, msg, byteType, dataType, bit, subject, null, filteredCode);
+    }
+
+    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject,
+            @Nullable Unit<?> unit, @Nullable CodeType filteredCode) {
         this.id = id;
         this.msg = msg;
         this.byteType = byteType;
         this.dataType = dataType;
         this.bitpos = bit;
         this.subject = subject;
-    }
-
-    public DataItem(int id, Msg msg, ByteType byteType, DataType dataType, int bit, String subject, Unit<?> unit) {
-        this(id, msg, byteType, dataType, bit, subject);
         this.unit = unit;
+        this.filteredCode = filteredCode;
     }
 }

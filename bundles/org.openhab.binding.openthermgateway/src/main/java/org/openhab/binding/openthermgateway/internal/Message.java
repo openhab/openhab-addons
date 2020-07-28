@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link Message} represent a single message received from the OpenTherm Gateway.
- * 
+ *
  * @author Arjen Korevaar - Initial contribution
  */
 @NonNullByDefault
@@ -27,22 +27,12 @@ public class Message {
 
     private static final Pattern messagePattern = Pattern.compile("[TBRA]{1}[A-F0-9]{8}");
 
-    /*
-     * The code field is not part of OpenTherm specification, but added by OpenTherm Gateway.
-     * It can be any of the following:
-     *
-     * T: Message received from the thermostat
-     * B: Message received from the boiler
-     * R: Request sent to the boiler
-     * A: Response returned to the thermostat
-     * E: Parity or stop bit error
-     */
-    private String code;
+    private CodeType code;
     private MessageType messageType;
     private int id;
     private String data;
 
-    public String getCode() {
+    public CodeType getCode() {
         return this.code;
     }
 
@@ -149,7 +139,7 @@ public class Message {
     }
 
     public Message(String code, MessageType messageType, int id, String data) {
-        this.code = code;
+        this.code = CodeType.valueOf(code);
         this.messageType = messageType;
         this.id = id;
         this.data = data;
