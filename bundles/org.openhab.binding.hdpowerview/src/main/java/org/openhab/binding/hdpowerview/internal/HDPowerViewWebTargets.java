@@ -185,7 +185,6 @@ public class HDPowerViewWebTargets {
             response.close();
             throw new ProcessingException("Missing response entity");
         }
-        @SuppressWarnings("null")
         String jsonResponse = response.readEntity(String.class);
         if (logger.isTraceEnabled()) {
             logger.trace("JSON response = {}", jsonResponse);

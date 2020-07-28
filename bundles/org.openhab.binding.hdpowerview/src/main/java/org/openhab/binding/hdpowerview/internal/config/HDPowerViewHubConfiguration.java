@@ -28,4 +28,5 @@ public class HDPowerViewHubConfiguration {
     public @Nullable String host;
 
     public long refresh;
+    public long hardRefresh;
 }

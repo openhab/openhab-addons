@@ -8,10 +8,6 @@
 		<label>PowerView Hub</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Hub</description>
 
-		<channels>
-			<channel id="refresh" typeId="refresh"/>
-		</channels>
-
 		<properties>
 			<property name="vendor">Hunter Douglas (Luxaflex)</property>
 			<property name="modelId">PowerView Hub</property>
@@ -28,6 +24,11 @@
 				<label>Refresh Interval</label>
 				<description>The number of milliseconds between fetches of the PowerView Hub shade state</description>
 				<default>60000</default>
+			</parameter>
+			<parameter name="hardRefresh" type="integer" required="false">
+				<label>Hard Refresh Interval</label>
+				<description>The number of minutes between hard refreshes of the PowerView Hub (or 0 to disable)</description>
+				<default>60</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
