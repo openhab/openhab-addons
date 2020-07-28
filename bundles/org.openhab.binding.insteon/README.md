@@ -100,7 +100,7 @@ These have been tested and should work out of the box:
 | 2450 | IO Link | 0x00001A | Bernd Pfrommer |
 | 2486D | KeypadLinc Dimmer | 0x000037 | Patrick Giasson, Joe Barnum |
 | 2484DWH8 | KeypadLinc Countdown Timer | 0x000041 | Rob Nielsen |
-| 2413U | PowerLinc 2413U USB modem | 0x000045 | Bernd Pfrommer |
+| Various | PLM or hub | 0x000045 | Bernd Pfrommer |
 | 2843-222 | Wireless Open/Close Sensor | 0x000049 | Josenivaldo Benito |
 | 2842-222 | Motion Sensor | 0x00004A | Bernd Pfrommer |
 | 2844-222 | Motion Sensor II | F00.00.24 | Rob Nielsen |
