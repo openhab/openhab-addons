@@ -19,7 +19,7 @@
     <dependency>
       <groupId>com.github.openwebnet4j</groupId>
       <artifactId>openwebnet4j</artifactId>
-      <version>0.1.0</version>
+      <version>0.2.0</version>
       <scope>provided</scope>
     </dependency>
 

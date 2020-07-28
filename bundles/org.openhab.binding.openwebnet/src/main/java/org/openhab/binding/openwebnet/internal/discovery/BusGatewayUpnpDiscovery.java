@@ -96,7 +96,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
         private boolean isBTicino = false;
 
         private DeviceInfo(RemoteDevice device) {
-            String deviceLog = "Discovererd device:\n+=== UPnP =========================================";
+            String deviceLog = "Discovered device:\n+=== UPnP =========================================";
             RemoteDeviceIdentity identity = device.getIdentity();
             if (identity != null) {
                 this.udn = identity.getUdn();

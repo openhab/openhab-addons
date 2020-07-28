@@ -126,7 +126,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                         }
                     }, GATEWAY_ONLINE_TIMEOUT_SEC, TimeUnit.SECONDS);
                 } catch (OWNException e) {
-                    logger.debug("gw.connect() returned: {}", e.getMessage());
+                    logger.debug("gw.connect() returned OWNException: {}", e.getMessage());
                     // status is updated by callback onConnectionError()
                 }
             }
