@@ -382,10 +382,8 @@ The `pulseLength` parameter sets the pulse length in seconds for a pulsed output
 It can range from 0.25 to 99.0 seconds and defaults to 0.5. It is ignored if `outputType="Maintained"`.
 Be aware that the Lutron controller may round the pulse length down to the nearest 0.25 seconds.
 
-The **ccopulsed** and **ccomaintained** things are just **cco** things with the `outputType` fixed.
-They are used by autodiscovery to automatically set the correct output type.
-You can also use them in manual configurations, if you prefer.
-This may be a good idea if you are interfacing to sensitive equipment where accidentally setting the wrong output type might cause equipment damage.
+**Note:** The **ccopulsed** and **ccomaintained** things are now deprecated.
+You should use the **cco** thing with the appropriate `outputType` setting instead.
 
 Each **cco** thing creates one switch channel called *switchstatus*.
 For pulsed CCOs, sending an ON command will close the output for the configured pulse time.
@@ -399,8 +397,7 @@ Thing configuration file example:
 
 ```
 Thing cco garage [ integrationId=5, outputType="Pulsed", pulseLength=0.5 ]
-Thing ccopulsed gate [ integrationId=6, pulseLength=0.25 ]
-Thing ccomaintained relay1 [ integrationId=7 ]
+Thing cco relay1 [ integrationId=7, outputType="Maintained"]
 ```
 
 ### Shades
