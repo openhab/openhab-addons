@@ -10,25 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solaredge.internal.model;
+package org.openhab.binding.solaredge.internal.handler;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Channel;
 
 /**
- * interface to be implemented by all Channel Enumerations
+ * this interface provides all methods which deal with channels
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface Channel {
+public interface ChannelProvider {
 
-    String getName();
+    /**
+     * returns a list containing all channels
+     *
+     * @return
+     */
+    List<Channel> getChannels();
 
-    String getId();
-
-    ChannelType getChannelType();
-
-    ChannelGroup getChannelGroup();
-
-    String getFQName();
+    @Nullable
+    Channel getChannel(String groupId, String channelId);
 }
