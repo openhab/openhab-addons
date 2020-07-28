@@ -61,6 +61,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
@@ -163,7 +164,12 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         tcpBridge.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
         tcpBridge.setHandler(tcpThingHandler);
         doReturn(comms).when(tcpThingHandler).getCommunicationInterface();
-        doReturn(0).when(tcpThingHandler).getSlaveId();
+        try {
+            doReturn(0).when(tcpThingHandler).getSlaveId();
+        } catch (EndpointNotInitializedException e) {
+            // not raised -- we are mocking return value only, not actually calling the method
+            throw new IllegalStateException();
+        }
         tcpThingHandler.initialize();
         assertThat(tcpBridge.getStatus(), is(equalTo(ThingStatus.ONLINE)));
         return tcpBridge;
