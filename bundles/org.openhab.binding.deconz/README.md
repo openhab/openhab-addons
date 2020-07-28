@@ -38,6 +38,7 @@ Additionally lights, window coverings (blinds) and thermostats are supported:
 | Extended Color Light (w/temperature) | Extended color light                   | `extendedcolorlight` |
 | Blind / Window Covering              | Window covering device                 | `windowcovering`     |
 | Thermostat                           | ZHAThermostat                          | `thermostat`         |
+| Warning Device (Siren)               | Warning device                         | `warningdevice`      |
 
 ## Discovery
 
@@ -154,6 +155,7 @@ Other devices support
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                  |
 | mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                  |
 | offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                  |
+| alert             | Switch                   |     R/W     | Turn alerts on/off                    | `warningdevice`                               |
 
 ### Trigger Channels
 
