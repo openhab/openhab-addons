@@ -153,7 +153,11 @@ public class Port {
     public void clearModemDB() {
         logger.debug("clearing modem db!");
         Map<InsteonAddress, @Nullable ModemDBEntry> dbes = getDriver().lockModemDBEntries();
-        dbes.clear();
+        for (InsteonAddress addr : dbes.keySet()) {
+            if (!dbes.get(addr).isModem()) {
+                dbes.remove(addr);
+            }
+        }
         getDriver().unlockModemDBEntries();
     }
 
@@ -521,7 +525,7 @@ public class Port {
                         device.setDriver(driver);
                         device.setIsModem(true);
                         logger.debug("found modem {} in device_types: {}", a, device.toString());
-                        mdbb.updateModemDB(a, Port.this, null);
+                        mdbb.updateModemDB(a, Port.this, null, true);
                     }
                     // can unsubscribe now
                     removeListener(this);

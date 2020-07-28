@@ -127,7 +127,7 @@ public class ModemDBBuilder implements MsgListener {
                 }
             } else if (msg.getByte("Cmd") == 0x57) {
                 // we got the link record response
-                updateModemDB(msg.getAddress("LinkAddr"), port, msg);
+                updateModemDB(msg.getAddress("LinkAddr"), port, msg, false);
                 port.writeMessage(Msg.makeMessage("GetNextALLLinkRecord"));
             }
         } catch (FieldException e) {
@@ -175,12 +175,12 @@ public class ModemDBBuilder implements MsgListener {
         return Utils.getHexString(b);
     }
 
-    public void updateModemDB(InsteonAddress linkAddr, Port port, @Nullable Msg m) {
+    public void updateModemDB(InsteonAddress linkAddr, Port port, @Nullable Msg m, boolean isModem) {
         try {
             Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             ModemDBEntry dbe = dbes.get(linkAddr);
             if (dbe == null) {
-                dbe = new ModemDBEntry(linkAddr);
+                dbe = new ModemDBEntry(linkAddr, isModem);
                 dbes.put(linkAddr, dbe);
             }
             dbe.setPort(port);
