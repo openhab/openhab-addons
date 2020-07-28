@@ -62,8 +62,8 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 7.
 
 The FRITZ!OS supports two different types of groups.
 On the one hand there are groups for heating thermostats on the other hand there are groups for switchable outlets and power meters.
-The first one provides the same channels like the [FRITZ!DECT 301 / FRITZ!DECT 300 / Comet DECT](https://www.openhab.org/addons/bindings/avmfritz/#fritz-dect-301-fritz-dect-300-comet-dect) devices.
-The later one provides the same channels like the [FRITZ!DECT 200 / FRITZ!DECT 210](https://www.openhab.org/addons/bindings/avmfritz/#fritz-dect-200-fritz-dect-210) / [FRITZ!Powerline 546E](https://www.openhab.org/addons/bindings/avmfritz/#fritz-powerline-546e) devices.
+The first one provides the same channels and actions like the [FRITZ!DECT 301 / FRITZ!DECT 300 / Comet DECT](https://www.openhab.org/addons/bindings/avmfritz/#fritz-dect-301-fritz-dect-300-comet-dect) devices.
+The latter provides the same channels like the [FRITZ!DECT 200 / FRITZ!DECT 210](https://www.openhab.org/addons/bindings/avmfritz/#fritz-dect-200-fritz-dect-210) / [FRITZ!Powerline 546E](https://www.openhab.org/addons/bindings/avmfritz/#fritz-powerline-546e) devices.
 The FRITZ!Box has to run at least on firmware FRITZ!OS 6.69.
 
 ## Discovery
@@ -189,6 +189,19 @@ when
 then
     ApplyTemplate.sendCommand("tmpFC0F2C-3960B7EE6")
 end
+```
+
+### Actions
+
+For heating devices and heating groups there are two actions available to set Boost or Window Open mode for a given duration: `setBoostMode(long)` and `setWindowOpenMode(long)`.
+The duration has to be given in seconds, min. 1, max. 86400, 0 for deactivation.
+
+
+```
+val actions = getActions("avmfritz","avmfritz:Comet_DECT:1:aaaaaabbbbbb")
+
+// set Boost mode for 5 min
+actions.setBoostMode(300)
 ```
 
 ## Full Example

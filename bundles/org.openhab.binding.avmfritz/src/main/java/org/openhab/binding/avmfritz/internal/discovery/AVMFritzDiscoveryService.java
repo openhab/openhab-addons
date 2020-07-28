@@ -56,8 +56,8 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
 
     public AVMFritzDiscoveryService() {
         super(Collections.unmodifiableSet(Stream
-                .of(SUPPORTED_BUTTON_THING_TYPES_UIDS.stream(), SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(),
-                        SUPPORTED_GROUP_THING_TYPES_UIDS.stream())
+                .of(SUPPORTED_BUTTON_THING_TYPES_UIDS.stream(), SUPPORTED_HEATING_THING_TYPES.stream(),
+                        SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), SUPPORTED_GROUP_THING_TYPES_UIDS.stream())
                 .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet())), 30);
     }
 
