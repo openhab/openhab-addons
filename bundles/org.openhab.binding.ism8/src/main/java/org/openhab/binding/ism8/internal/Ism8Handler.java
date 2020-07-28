@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ism8.internal;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -76,8 +78,8 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                 if (dataPoint != null) {
                     try {
                         svr.sendData(dataPoint.createWriteData(command));
-                    } catch (Exception e) {
-                        logger.error("Writting to ISM DataPoint '{}' failed. '{}'", dataPoint.getId(),
+                    } catch (IOException e) {
+                        logger.warn("Writting to ISM DataPoint '{}' failed. '{}'", dataPoint.getId(),
                                 e.getMessage(), e);
                     }
                 }
@@ -107,7 +109,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                         String description = channel.getLabel();
                         svr.addDataPoint(id, type, description);
                     } else {
-                        logger.error("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
+                        logger.warn("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
                                 channel.getConfiguration());
                     }
                     logger.debug("Ism8: Channel={}", channel.getConfiguration().toString());
@@ -120,7 +122,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            logger.error("Ism8 Initialize: {}", e.getMessage(), e);
+            logger.warn("Ism8 Initialize: {}", e.getMessage(), e);
         }
     }
 
@@ -147,7 +149,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                     updateState(channel.getUID(), new QuantityType<>(dataPoint.getValueObject().toString()));
                 }
             } catch (Exception e) {
-                logger.error("Ism8 updateDataPoint: {}", e.getMessage(), e);
+                logger.warn("Ism8 updateDataPoint: {}", e.getMessage(), e);
             }
         }
     }

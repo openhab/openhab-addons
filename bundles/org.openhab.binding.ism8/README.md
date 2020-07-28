@@ -181,3 +181,6 @@ _HVACContrMode.map_
     17=Emergency Dampfmodus
     20=Reserviert
     NULL=Undefiniert
+
+_Result_
+<img src="./Sitemap-Example.png" width="800" height="600">

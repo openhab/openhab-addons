@@ -58,7 +58,7 @@ public class DataPointFactory {
                     break;
             }
         } catch (Exception e) {
-            new DataPointFactory().logger.error("Error creating data point {}. {}", id, e.getMessage(), e);
+            new DataPointFactory().logger.warn("Error creating data point {}. {}", id, e.getMessage(), e);
         }
 
         if (dataPoint != null) {

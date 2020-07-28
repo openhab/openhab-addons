@@ -117,7 +117,7 @@ public abstract class DataPointBase<T> implements IDataPoint {
             list.put(5, length);
             return list.array();
         } catch (Exception e) {
-            logger.error("DataPoint-CreateWriteData: Error converting value ({}) of ID {}. {}", value, this.getId(),
+            logger.warn("DataPoint-CreateWriteData: Error converting value ({}) of ID {}. {}", value, this.getId(),
                     e.getMessage(), e);
         }
 
@@ -141,20 +141,20 @@ public abstract class DataPointBase<T> implements IDataPoint {
      */
     protected boolean checkProcessData(byte[] data) {
         if (data.length < 4) {
-            logger.error("DataPoint-ProcessData: Data size too small ({}).", data.length);
+            logger.warn("DataPoint-ProcessData: Data size too small ({}).", data.length);
             return false;
         }
 
         int dataPointId = Byte.toUnsignedInt(data[0]) * 256 + Byte.toUnsignedInt(data[1]);
         if (dataPointId != this.getId()) {
-            logger.error("DataPoint-ProcessData: Data contains the wrong ID ({}/{}).", dataPointId, this.getId());
+            logger.warn("DataPoint-ProcessData: Data contains the wrong ID ({}/{}).", dataPointId, this.getId());
             return false;
         }
 
         int length = data[3];
         int expectedLength = length + 4;
         if (length <= 0 && expectedLength != data.length) {
-            logger.error("DataPoint-ProcessData: Data size wrong ({}/{}).", data.length, expectedLength);
+            logger.warn("DataPoint-ProcessData: Data size wrong ({}/{}).", data.length, expectedLength);
             return false;
         }
         return true;

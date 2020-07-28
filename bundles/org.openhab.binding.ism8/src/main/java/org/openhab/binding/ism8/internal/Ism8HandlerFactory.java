@@ -45,15 +45,6 @@ public class Ism8HandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
-            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
-        }
-        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the ISM8 binding.");
-    }
-
-    @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {

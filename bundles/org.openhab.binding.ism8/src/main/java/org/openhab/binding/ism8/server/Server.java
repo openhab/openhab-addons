@@ -84,7 +84,7 @@ public class Server extends Thread {
             } catch (InterruptedException e) {
                 logger.debug("Thread interrupted");
             } catch (Exception e) {
-                logger.error("Error Handle Communication - restart communication. {}", e.getMessage(), e);
+                logger.warn("Error Handle Communication - restart communication. {}", e.getMessage(), e);
                 this.startRetries++;
             }
         }
@@ -129,7 +129,7 @@ public class Server extends Thread {
      * Sends the data to the ISM8 partner
      *
      */
-    public void sendData(byte[] data) throws Exception {
+    public void sendData(byte[] data) throws IOException {
         if (this.client != null && this.client.isConnected() && data.length > 0) {
             OutputStream stream = this.client.getOutputStream();
             stream.write(data);
@@ -152,7 +152,7 @@ public class Server extends Thread {
                 this.client = null;
             }
         } catch (Exception e) {
-            logger.error("Error stopping Communication. {}", e.getMessage(), e);
+            logger.warn("Error stopping Communication. {}", e.getMessage(), e);
         }
     }
 
@@ -210,7 +210,7 @@ public class Server extends Thread {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error handle client data stream. {}", e.getMessage(), e);
+            logger.warn("Error handle client data stream. {}", e.getMessage(), e);
             this.stopServer();
         }
     }
