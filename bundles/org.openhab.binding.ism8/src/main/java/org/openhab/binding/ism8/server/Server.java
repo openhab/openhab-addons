@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Server extends Thread {
     private final Logger logger = LoggerFactory.getLogger(Server.class);
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
     private int port;
     private int startRetries;
