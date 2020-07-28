@@ -163,7 +163,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             future.cancel(true);
         }
         this.pollFuture = null;
-        
+
         future = this.hardRefreshFuture;
         if (future != null && !future.isCancelled()) {
             future.cancel(true);
