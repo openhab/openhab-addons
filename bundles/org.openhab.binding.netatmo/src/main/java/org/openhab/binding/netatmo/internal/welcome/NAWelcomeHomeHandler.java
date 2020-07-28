@@ -201,10 +201,10 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
     }
 
     private static Optional<NAWelcomeSubEvent.TypeEnum> findDetectedCategory(NAWelcomeEvent event) {
-        String category = event.getCategory();
+        NAWelcomeEvent.CategoryEnum category = event.getCategory();
         if (category != null) {
-            // It is safe to use the type enum - The category can have only the values 'human', 'animal' or 'vehicle'.
-            return Optional.of(NAWelcomeSubEvent.TypeEnum.valueOf(category.toUpperCase()));
+            // It is safe to convert the enum, both enums have the same values.
+            return Optional.of(NAWelcomeSubEvent.TypeEnum.valueOf(category.name()));
         }
         return Optional.empty();
     }

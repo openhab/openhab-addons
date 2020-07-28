@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -234,7 +235,7 @@ public class NAWelcomeHomeHandlerTest {
         NAWelcomeHome home = initHome();
 
         NAWelcomeEvent event = createEvent(1592661882, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
-        event.setCategory("human");
+        event.setCategory(NAWelcomeEvent.CategoryEnum.HUMAN);
 
         home.getEvents().add(event);
 
@@ -251,7 +252,7 @@ public class NAWelcomeHomeHandlerTest {
         NAWelcomeHome home = initHome();
 
         NAWelcomeEvent event = createEvent(1592661882, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
-        event.setCategory("animal");
+        event.setCategory(NAWelcomeEvent.CategoryEnum.ANIMAL);
 
         home.getEvents().add(event);
 
@@ -261,6 +262,31 @@ public class NAWelcomeHomeHandlerTest {
         assertEquals(new StringType("movement"),
                 handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
         assertEquals("ANIMAL", handler.getLastDetectedObject());
+    }
+
+    @Test
+    public void testTriggerChannelIfRequiredVehicleMovement() {
+        NAWelcomeHome home = initHome();
+
+        NAWelcomeEvent event = createEvent(1592661882, NAWebhookCameraEvent.EventTypeEnum.MOVEMENT);
+        event.setCategory(NAWelcomeEvent.CategoryEnum.VEHICLE);
+
+        home.getEvents().add(event);
+
+        triggerCameraEvents();
+
+        assertEquals(1, handler.getTriggerChannelCount());
+        assertEquals(new StringType("movement"),
+                handler.getNAThingProperty(NetatmoBindingConstants.CHANNEL_WELCOME_EVENT_TYPE));
+        assertEquals("VEHICLE", handler.getLastDetectedObject());
+    }
+
+    @Test
+    public void testMatchDetectedObjectEnums() {
+        assertArrayEquals(
+                "The detected object enums aren't equal anymore, that could lead to a bug! Please check the usages!",
+                Arrays.stream(NAWelcomeEvent.CategoryEnum.values()).map(Enum::name).toArray(),
+                Arrays.stream(NAWelcomeSubEvent.TypeEnum.values()).map(Enum::name).toArray());
     }
 
     private NAWelcomeHome initHome() {
