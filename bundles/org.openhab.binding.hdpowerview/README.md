@@ -43,7 +43,7 @@ If in the future, you add additional shades or scenes to your system, the bindin
 |-------------------------|---------------|
 | host                    | The host name or IP address of the hub on your network. |
 | refresh                 | The number of milli-seconds between fetches of the PowerView hub's shade state (default 60'000 one minute). |
-| hardRefresh             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 60 one hour). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
+| hardRefresh             | The number of minutes between hard refreshes of the PowerView hub's shade state (default 120 three hours). See [Refreshing the PowerView Hub Cache](#Refreshing-the-PowerView-Hub-Cache). |
 
 ### Thing Configuration for PowerView Shades
 
