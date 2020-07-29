@@ -46,6 +46,8 @@ import org.slf4j.LoggerFactory;
  * @author Jürgen Baginski - Initial contribution
  */
 public class StationHandler extends BaseThingHandler {
+    private static final Pattern IS_NUMERIC_PATTERN = Pattern.compile("\\d+(\\.\\d+)?");
+
     private final Logger logger = LoggerFactory.getLogger(StationHandler.class);
 
     private String apiKey;
@@ -126,20 +128,19 @@ public class StationHandler extends BaseThingHandler {
      */
     public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
-        final Pattern pattern = Pattern.compile("\\d+(\\.\\d+)?");
-        if (pattern.matcher(station.getDiesel()).matches()) {
+        if (IS_NUMERIC_PATTERN.matcher(station.getDiesel()).matches()) {
             DecimalType diesel = new DecimalType(station.getDiesel());
             updateState(CHANNEL_DIESEL, diesel);
         } else {
             updateState(CHANNEL_DIESEL, UnDefType.UNDEF);
         }
-        if (pattern.matcher(station.getE10()).matches()) {
+        if (IS_NUMERIC_PATTERN.matcher(station.getE10()).matches()) {
             DecimalType e10 = new DecimalType(station.getE10());
             updateState(CHANNEL_E10, e10);
         } else {
             updateState(CHANNEL_E10, UnDefType.UNDEF);
         }
-        if (pattern.matcher(station.getE5()).matches()) {
+        if (IS_NUMERIC_PATTERN.matcher(station.getE5()).matches()) {
             DecimalType e5 = new DecimalType(station.getE5());
             updateState(CHANNEL_E5, e5);
         } else {
