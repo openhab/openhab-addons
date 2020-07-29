@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -70,6 +71,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     private @Nullable ScheduledFuture<?> updateChannelsJob;
     private @Nullable ExpiringCache<@Nullable JsonElement> cache;
+    private @Nullable PublicTransportSwitzerlandStationboardConfiguration configuration;
 
     public PublicTransportSwitzerlandStationboardHandler(Thing thing) {
         super(thing);
@@ -86,13 +88,12 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     public void initialize() {
         // Together with the 10 second timeout, this should be less than a minute
         cache = new ExpiringCache<>(45_000, this::updateData);
+        configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
 
-        PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
-
-        @Nullable String station = config.station;
-
-        if (station == null || station.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "The station is not set");
+        @Nullable String configurationError = findConfigurationError(configuration);
+        if (configurationError != null) {
+            stopChannelUpdate();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             startChannelUpdate();
@@ -102,6 +103,30 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     @Override
     public void dispose() {
         stopChannelUpdate();
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+
+        configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
+
+        @Nullable String configurationError = findConfigurationError(configuration);
+        if (configurationError != null) {
+            stopChannelUpdate();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
+        } else if (updateChannelsJob == null || updateChannelsJob.isCancelled()) {
+            startChannelUpdate();
+        }
+    }
+
+    private @Nullable String findConfigurationError(PublicTransportSwitzerlandStationboardConfiguration configuration) {
+        @Nullable String station = configuration.station;
+        if (station == null || station.isEmpty()) {
+            return "The station is not set";
+        }
+
+        return null;
     }
 
     private void startChannelUpdate() {
@@ -115,10 +140,20 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     public @Nullable JsonElement updateData() {
-        PublicTransportSwitzerlandStationboardConfiguration config = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
+        @Nullable PublicTransportSwitzerlandStationboardConfiguration config = configuration;
+        if (config == null) {
+            logger.warn("Unable to access configuration");
+            return null;
+        }
+
+        @Nullable String station = config.station;
+        if (station == null) {
+            logger.warn("Station is null");
+            return null;
+        }
 
         try {
-            String escapedStation = URLEncoder.encode(config.station, StandardCharsets.UTF_8.name());
+            String escapedStation = URLEncoder.encode(station, StandardCharsets.UTF_8.name());
             String requestUrl = BASE_URL + "stationboard?station=" + escapedStation + FIELD_FILTERS;
 
             String response = HttpUtil.executeUrl("GET", requestUrl, 10_000);
