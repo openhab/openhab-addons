@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.insteon.internal.handler;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +44,10 @@ import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link InsteonDeviceHandler} is responsible for handling commands, which are
@@ -92,6 +98,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonBindingConstants.TOP_OUTLET, InsteonBindingConstants.UPDATE, InsteonBindingConstants.WATTS)
             .collect(Collectors.toSet()));
 
+    public static final String BROADCAST_GROUPS = "broadcastGroups";
     public static final String BROADCAST_ON_OFF = "broadcastonoff";
     public static final String CMD = "cmd";
     public static final String CMD_RESET = "reset";
@@ -129,6 +136,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             if (getBridge() == null) {
                 String msg = "An Insteon network bridge has not been selected for this device.";
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
@@ -137,7 +146,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             if (!InsteonAddress.isValid(address)) {
                 String msg = "Unable to start Insteon device, the insteon or X10 address '" + address
                         + "' is invalid. It must be in the format 'AB.CD.EF' or 'H.U' (X10).";
-                logger.warn("{}", msg);
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
@@ -146,23 +155,41 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             String productKey = config.getProductKey();
             if (DeviceTypeLoader.instance().getDeviceType(productKey) == null) {
                 String msg = "Unable to start Insteon device, invalid product key '" + productKey + "'.";
-                logger.warn("{}", msg);
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
+            }
+
+            String deviceConfig = config.getDeviceConfig();
+            Map<String, @Nullable Object> deviceConfigMap;
+            if (deviceConfig != null) {
+                Type mapType = new TypeToken<Map<String, Object>>() {
+                }.getType();
+                try {
+                    deviceConfigMap = new Gson().fromJson(deviceConfig, mapType);
+                } catch (JsonParseException e) {
+                    String msg = "The device configuration parameter is not valid JSON.";
+                    logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    return;
+                }
+            } else {
+                deviceConfigMap = Collections.emptyMap();
             }
 
             InsteonBinding insteonBinding = getInsteonBinding();
             InsteonAddress insteonAddress = new InsteonAddress(address);
             if (insteonBinding.getDevice(insteonAddress) != null) {
-                String msg = "a device already exists with the address '" + address + "'.";
-                logger.warn("{}", msg);
+                String msg = "A device already exists with the address '" + address + "'.";
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
-            InsteonDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey);
+            InsteonDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey, deviceConfigMap);
 
             StringBuilder channelList = new StringBuilder();
             List<Channel> channels = new ArrayList<>();
@@ -206,10 +233,50 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 if (f != null) {
                     if (!f.isFeatureGroup()) {
                         if (channelId.equals(InsteonBindingConstants.BROADCAST_ON_OFF)) {
+                            Set<String> broadcastChannels = new HashSet<>();
                             for (Channel channel : thing.getChannels()) {
                                 String id = channel.getUID().getId();
                                 if (id.startsWith(InsteonBindingConstants.BROADCAST_ON_OFF)) {
                                     addChannel(channel, id, channels, channelList);
+                                    broadcastChannels.add(id);
+                                }
+                            }
+
+                            Object groups = deviceConfigMap.get(BROADCAST_GROUPS);
+                            if (groups != null) {
+                                boolean valid = false;
+                                if (groups instanceof List<?>) {
+                                    valid = true;
+                                    for (Object o : (List<?>) groups) {
+                                        if (o instanceof Double && (Double) o % 1 == 0) {
+                                            String id = InsteonBindingConstants.BROADCAST_ON_OFF + "#"
+                                                    + ((Double) o).intValue();
+                                            if (!broadcastChannels.contains(id)) {
+                                                ChannelUID channelUID = new ChannelUID(thing.getUID(), id);
+                                                ChannelTypeUID channelTypeUID = new ChannelTypeUID(
+                                                        InsteonBindingConstants.BINDING_ID,
+                                                        InsteonBindingConstants.SWITCH);
+                                                Channel channel = getCallback()
+                                                        .createChannelBuilder(channelUID, channelTypeUID).withLabel(id)
+                                                        .build();
+
+                                                addChannel(channel, id, channels, channelList);
+                                                broadcastChannels.add(id);
+                                            }
+                                        } else {
+                                            valid = false;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (!valid) {
+                                    String msg = "The value for key " + BROADCAST_GROUPS
+                                            + " must be an array of integers in the device configuration parameter.";
+                                    logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
+                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                                    return;
                                 }
                             }
                         } else {
@@ -252,7 +319,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 String msg = "Product key '" + productKey
                         + "' does not have any features that match existing channels.";
 
-                logger.warn("{}", msg);
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
@@ -291,9 +358,15 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        Map<String, @Nullable String> params = new HashMap<>();
-        Channel channel = getThing().getChannel(channelUID.getId());
+        InsteonDevice device = getInsteonBinding().getDevice(new InsteonAddress(config.getAddress()));
+        if (device == null) {
+            logger.warn("{} Unable to find the Insteon device {}", channelUID.getAsString(), config.getAddress());
+            return;
+        }
 
+        Map<String, @Nullable String> params = new HashMap<>();
+        String channelId = channelUID.getId();
+        Channel channel = getThing().getChannel(channelId);
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();
         for (String key : channelProperties.keySet()) {
             Object value = channelProperties.get(key);
@@ -303,12 +376,41 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 String s = ((BigDecimal) value).toPlainString();
                 params.put(key, s);
             } else {
-                logger.warn("not a string or big decimal value key '{}' value '{}' {}", key, value,
-                        value.getClass().getName());
+                logger.warn("{} The value for key '{}' must be an integer or string in the channel parameters",
+                        channelUID.getAsString(), key);
             }
         }
 
-        String feature = channelUID.getId().toLowerCase();
+        Object o = device.getDeviceConfigMap().get(channelId);
+        if (o != null) {
+            if (o instanceof Map<?, ?>) {
+                @SuppressWarnings("unchecked")
+                Map<String, @Nullable Object> channelConfigMap = (Map<String, @Nullable Object>) o;
+                for (String key : channelConfigMap.keySet()) {
+                    if (!params.containsKey(key)) {
+                        Object value = channelConfigMap.get(key);
+                        if (value instanceof String) {
+                            params.put(key, (String) value);
+                        } else if (value instanceof Double && (Double) value % 1 == 0) {
+                            params.put(key, Integer.toString(((Double) value).intValue()));
+                        } else {
+                            logger.warn(
+                                    "{} The value for key '{}' must be an integer or string in the device configuration parameter",
+                                    channelUID.getAsString(), key);
+                        }
+                    } else {
+                        logger.warn(
+                                "{} The key '{}' is defined in the channel parameters, ignoring in the device configuration parameter",
+                                channelUID.getAsString(), key);
+                    }
+                }
+            } else {
+                logger.warn("{} The value for the key '{}' is not a JSON object in the device configuration parameter",
+                        channelUID.getThingUID().getAsString(), channelId);
+            }
+        }
+
+        String feature = channelId.toLowerCase();
         String productKey = config.getProductKey();
         if (productKey.equals(HIDDEN_DOOR_SENSOR_PRODUCT_KEY)) {
             if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_LEVEL)) {
