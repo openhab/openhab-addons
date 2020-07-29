@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tankerkoenig.internal.config;
+package org.openhab.binding.tankerkoenig.internal.dto;
 
 /**
  * The {@link LittleStation} class is the representing java model for the station specific json result of the prices
