@@ -27,8 +27,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
-import org.eclipse.smarthome.core.thing.binding.ThingTypeProvider;
-import org.eclipse.smarthome.core.thing.xml.internal.ThingTypeXmlProvider;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserRefreshListener;
 import org.openhab.binding.draytonwiser.internal.handler.DraytonWiserPropertyHelper;
 import org.openhab.binding.draytonwiser.internal.handler.HeatHubHandler;
