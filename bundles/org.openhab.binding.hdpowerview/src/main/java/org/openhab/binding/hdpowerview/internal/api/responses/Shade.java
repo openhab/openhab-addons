@@ -10,23 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.config;
+package org.openhab.binding.hdpowerview.internal.api.responses;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 
 /**
- * Basic configuration for the HD PowerView hub
+ * State of a single Shade, as returned by an HD PowerView hub
  *
- * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewHubConfiguration {
+public class Shade {
 
-    public static final String HOST = "host";
-
-    public @Nullable String host;
-
-    public long refresh;
-    public long hardRefresh;
+    public @Nullable ShadeData shade;
 }

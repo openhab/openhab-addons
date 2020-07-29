@@ -10,23 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.config;
+package org.openhab.binding.hdpowerview.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Basic configuration for the HD PowerView hub
+ * The {@link HubMaintenanceException} is a custom exception for the HD PowerView hub
  *
- * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewHubConfiguration {
+public class HubMaintenanceException extends Exception {
 
-    public static final String HOST = "host";
+    private static final long serialVersionUID = -708582495003057343L;
 
-    public @Nullable String host;
-
-    public long refresh;
-    public long hardRefresh;
+    public HubMaintenanceException(String message) {
+        super(message);
+    }
 }

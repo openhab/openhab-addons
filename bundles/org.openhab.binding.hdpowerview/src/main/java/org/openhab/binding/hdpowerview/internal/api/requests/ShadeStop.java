@@ -10,23 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.config;
+package org.openhab.binding.hdpowerview.internal.api.requests;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Basic configuration for the HD PowerView hub
+ * A request to stop the movement of a shade
  *
- * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewHubConfiguration {
+public class ShadeStop {
 
-    public static final String HOST = "host";
+    public @Nullable ShadeIdStop shade;
 
-    public @Nullable String host;
-
-    public long refresh;
-    public long hardRefresh;
+    public ShadeStop(int id) {
+        this.shade = new ShadeIdStop(id);
+    }
 }
