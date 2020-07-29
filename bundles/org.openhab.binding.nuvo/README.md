@@ -8,7 +8,7 @@ The binding supports two different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without serial connector on server side, you can use a serial to USB adapter.
+For users without a serial connector on server side, you can use a serial to USB adapter.
 
 You don't need to have your Grand Concerto or Essentia G whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
@@ -45,6 +45,7 @@ Some notes:
 * If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
 * Source display_line1 thru 4 can only be updated on non NuvoNet sources.
 * The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.
+
 * On Linux, you may get an error stating the serial port cannot be opened when the Nuvo binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. Nuvo and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.

@@ -333,8 +333,6 @@ public abstract class NuvoConnector {
             // pull out the source id and the remainder of the message
             dispatchKeyValue(TYPE_SOURCE_UPDATE, matcher.group(1), matcher.group(2));
             return;
-        } else {
-            logger.debug("no match on message: {}", message);
         }
 
         // Amp controller send a zone update ie: #Z11,ON,SRC3,VOL63,DND0,LOCK0
@@ -343,8 +341,6 @@ public abstract class NuvoConnector {
             // pull out the zone id and the remainder of the message
             dispatchKeyValue(TYPE_ZONE_UPDATE, matcher.group(1), matcher.group(2));
             return;
-        } else {
-            logger.debug("no match on message: {}", message);
         }
 
         // Amp controller send a zone button press event ie: #Z11S3PLAYPAUSE
@@ -353,8 +349,6 @@ public abstract class NuvoConnector {
             // pull out the source id and the remainder of the message, ignore the zone id
             dispatchKeyValue(TYPE_ZONE_BUTTON, matcher.group(2), matcher.group(3));
             return;
-        } else {
-            logger.debug("no match on message: {}", message);
         }
 
         // Amp controller send a zone configuration response ie: #ZCFG1,BASS1,TREB-2,BALR2,LOUDCMP1

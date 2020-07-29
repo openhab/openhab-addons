@@ -125,7 +125,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private boolean isGConcerto = false;
     private Object sequenceLock = new Object();
 
-    Set<Integer> activeZones = new HashSet<Integer>(1);
+    Set<Integer> activeZones = new HashSet<>(1);
 
     // A state option list for the source labels
     List<StateOption> sourceLabels = new ArrayList<>();
@@ -174,7 +174,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         } else if (port != null) {
             connector = new NuvoIpConnector(host, port);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "configuration error");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Either Serial port or Host & Port must be specifed");
             return;
         }
 
@@ -246,7 +247,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         String channelType = channelSplit[1];
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.warn("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
+            logger.debug("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
             return;
         }
 
