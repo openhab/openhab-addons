@@ -90,7 +90,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         @Nullable String station = config.station;
 
         if (station == null || station.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "The station is not set");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             startChannelUpdate();
