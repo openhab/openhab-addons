@@ -16,6 +16,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.codehaus.jackson.JsonParseException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -31,6 +32,8 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -160,7 +163,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             logger.debug("Got response from API: {}", response);
 
             return new JsonParser().parse(response);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Unable to fetch stationboard data: {}", e.getMessage());
             return null;
         }
@@ -171,7 +174,14 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     private void updateChannels() {
-        @Nullable JsonElement jsonObject = cache.getValue();
+        @Nullable ExpiringCache<@Nullable JsonElement> expiringCache = cache;
+
+        if (expiringCache == null) {
+            logger.warn("Cache is null");
+            return;
+        }
+
+        @Nullable JsonElement jsonObject = expiringCache.getValue();
 
         if (jsonObject == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -198,20 +208,39 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             JsonElement jsonElement = stationboard.get(i);
 
             JsonObject departureObject = jsonElement.getAsJsonObject();
-            JsonObject stopObject = departureObject.get("stop").getAsJsonObject();
+            JsonElement stopElement = departureObject.get("stop");
 
-            String category = departureObject.get("category").getAsString();
-            String number = departureObject.get("number").getAsString();
-            String destination = departureObject.get("to").getAsString();
-            Long departureTime = stopObject.get("departureTimestamp").getAsLong();
+            if (stopElement == null) {
+                logger.warn("Skipping stationboard item. Stop element is missing from departure object");
+                continue;
+            }
+
+            JsonObject stopObject = stopElement.getAsJsonObject();
+
+            @Nullable JsonElement categoryElement = departureObject.get("category");
+            @Nullable JsonElement numberElement = departureObject.get("number");
+            @Nullable JsonElement destinationElement = departureObject.get("to");
+            @Nullable JsonElement departureTimeElement = stopObject.get("departureTimestamp");
+
+            if (categoryElement == null || numberElement == null || destinationElement == null || departureTimeElement == null) {
+                logger.warn("Skipping stationboard item." +
+                            "One of the following is null: category: {}, number: {}, destination: {}, departureTime: {}",
+                            categoryElement, numberElement, destinationElement, departureTimeElement);
+                continue;
+            }
+
+            String category = categoryElement.getAsString();
+            String number = numberElement.getAsString();
+            String destination = destinationElement.getAsString();
+            Long departureTime = departureTimeElement.getAsLong();
+
+            String identifier = createIdentifier(category, number);
 
             @Nullable String delay = getStringValueOrNull(departureObject.get("delay"));
             @Nullable String track = getStringValueOrNull(stopObject.get("platform"));
 
-            String identifier = createIdentifier(category, number);
-
             updateState(getChannelUIDForPosition(i), new StringType(formatDeparture(identifier, departureTime, destination, track, delay)));
-            tsvRows.add(String.join("\t", identifier, departureTime.toString(), destination, track, delay));
+            tsvRows.add(String.join("\t", identifier, departureTimeElement.toString(), destination, track, delay));
         }
 
         updateState(CHANNEL_TSV, new StringType(String.join("\n", tsvRows)));
