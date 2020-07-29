@@ -16,9 +16,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigDetailResult;
-import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
+import org.openhab.binding.tankerkoenig.internal.dto.TankerkoenigDetailResult;
+import org.openhab.binding.tankerkoenig.internal.dto.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigDetailResultDeserializer;
 import org.openhab.binding.tankerkoenig.internal.serializer.CustomTankerkoenigListResultDeserializer;
 import org.slf4j.Logger;
@@ -33,25 +35,26 @@ import com.google.gson.GsonBuilder;
  * @author Dennis Dollinger - Initial contribution
  * @author Juergen Baginski - Initial contribution
  */
+@NonNullByDefault
 public class TankerkoenigService {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(TankerkoenigListResult.class,
-            new CustomTankerkoenigListResultDeserializer());
-    private final Gson gson = gsonBuilder.create();
-    private final GsonBuilder gsonBuilderDetail = new GsonBuilder().registerTypeAdapter(TankerkoenigDetailResult.class,
-            new CustomTankerkoenigDetailResultDeserializer());
-    private final Gson gsonDetail = gsonBuilderDetail.create();
+    private final Logger logger = LoggerFactory.getLogger(TankerkoenigService.class);
+
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(TankerkoenigListResult.class, new CustomTankerkoenigListResultDeserializer()).create();
+    private final Gson gsonDetail = new GsonBuilder()
+            .registerTypeAdapter(TankerkoenigDetailResult.class, new CustomTankerkoenigDetailResultDeserializer())
+            .create();
     private static final int REQUEST_TIMEOUT = 5000;
 
-    public TankerkoenigListResult getStationListData(String apikey, String locationIDs, String userAgent) {
-        return this.getTankerkoenigListResult(apikey, locationIDs, userAgent);
+    public @Nullable TankerkoenigListResult getStationListData(String apikey, String locationIDs, String userAgent) {
+        return getTankerkoenigListResult(apikey, locationIDs, userAgent);
     }
 
-    public TankerkoenigDetailResult getStationDetailData(String apikey, String locationID, String userAgent) {
-        return this.getTankerkoenigDetailResult(apikey, locationID, userAgent);
+    public @Nullable TankerkoenigDetailResult getStationDetailData(String apikey, String locationID, String userAgent) {
+        return getTankerkoenigDetailResult(apikey, locationID, userAgent);
     }
 
-    private String getResponseString(String apiKey, String locationIDs, String userAgent, boolean detail)
+    private @Nullable String getResponseString(String apiKey, String locationIDs, String userAgent, boolean detail)
             throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("https://creativecommons.tankerkoenig.de/json/");
@@ -74,10 +77,10 @@ public class TankerkoenigService {
         }
     }
 
-    private TankerkoenigListResult getTankerkoenigListResult(String apikey, String locationIDs, String userAgent) {
-        String jsonData = "";
+    private @Nullable TankerkoenigListResult getTankerkoenigListResult(String apikey, String locationIDs,
+            String userAgent) {
         try {
-            jsonData = getResponseString(apikey, locationIDs, userAgent, false);
+            String jsonData = getResponseString(apikey, locationIDs, userAgent, false);
             logger.debug("json-String: {}", jsonData);
             return gson.fromJson(jsonData, TankerkoenigListResult.class);
         } catch (IOException e) {
@@ -87,10 +90,10 @@ public class TankerkoenigService {
         }
     }
 
-    private TankerkoenigDetailResult getTankerkoenigDetailResult(String apiKey, String locationID, String userAgent) {
-        String jsonData = "";
+    private @Nullable TankerkoenigDetailResult getTankerkoenigDetailResult(String apiKey, String locationID,
+            String userAgent) {
         try {
-            jsonData = getResponseString(apiKey, locationID, userAgent, true);
+            String jsonData = getResponseString(apiKey, locationID, userAgent, true);
             logger.debug("getTankerkoenigDetailResult jsonData : {}", jsonData);
             return gsonDetail.fromJson(jsonData, TankerkoenigDetailResult.class);
         } catch (IOException e) {
