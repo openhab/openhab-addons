@@ -66,6 +66,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
     private @Nullable ScheduledFuture<?> updateChannelsJob;
     private @Nullable ExpiringCache<@Nullable JsonElement> cache;
 
@@ -196,8 +198,6 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     private String formatDeparture(String identifier, Long departureTimestamp, String destination, @Nullable String track, @Nullable String delay) {
         Date departureDate = new Date(departureTimestamp * 1000);
-
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         String formattedDate = timeFormat.format(departureDate);
 
         String result = String.format("%s - %s %s", formattedDate, identifier, destination);
