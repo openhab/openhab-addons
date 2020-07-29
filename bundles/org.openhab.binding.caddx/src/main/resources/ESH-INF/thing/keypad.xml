@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="keypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Caddx Alarm Keypad</label>
+		<description>Represents any of the keypads of the Caddx Alarm System.</description>
+
+		<representation-property>keypadAddress</representation-property>
+
+		<config-description>
+			<parameter name="keypadAddress" type="text" required="true">
+				<label>Keypad Address</label>
+				<description>The Keypad Address.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

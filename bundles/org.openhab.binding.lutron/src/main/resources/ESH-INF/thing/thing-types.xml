@@ -11,6 +11,8 @@
 			<property name="vendor">Lutron</property>
 		</properties>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -67,6 +69,8 @@
 			<channel id="lightlevel" typeId="lightDimmer"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -95,6 +99,8 @@
 			<channel id="shadelevel" typeId="shadeControl"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -116,6 +122,8 @@
 			<channel id="blindliftlevel" typeId="blindLift"/>
 			<channel id="blindtiltlevel" typeId="blindTilt"/>
 		</channels>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -146,6 +154,8 @@
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -165,6 +175,8 @@
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -189,17 +201,19 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="ccopulsed">
+	<thing-type id="ccopulsed" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Pulsed CCO</label>
-		<description>Pulsed Contact Closure Output</description>
+		<label>Pulsed CCO (Deprecated)</label>
+		<description>Pulsed Contact Closure Output (Deprecated)</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -214,17 +228,19 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="ccomaintained">
+	<thing-type id="ccomaintained" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Maintained CCO</label>
-		<description>Maintained Contact Closure Output</description>
+		<label>Maintained CCO (Deprecated)</label>
+		<description>Maintained Contact Closure Output (Deprecated)</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -246,10 +262,32 @@
 			<channel id="occupancystatus" typeId="occupiedState"/>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Address of sensor in the Lutron lighting system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="sysvar">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>System State Variable</label>
+		<description>HomeWorks QS system state variable</description>
+
+		<channels>
+			<channel id="varstate" typeId="varstateType"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Integration ID for state variable</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -261,6 +299,8 @@
 
 		<label>seeTouch Keypad</label>
 		<description>Lutron seeTouch/Hybrid seeTouch wall keypad</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -316,6 +356,8 @@
 		<label>Tabletop seeTouch Keypad</label>
 		<description>Lutron wireless tabletop keypad</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -350,6 +392,8 @@
 
 		<label>International seeTouch Keypad</label>
 		<description>Lutron International seeTouch keypad (HomeWorks QS Only)</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -387,6 +431,8 @@
 
 		<label>Palladiom Keypad</label>
 		<description>Lutron Palladiom keypad (HomeWorks QS Only)</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -428,6 +474,8 @@
 		<label>Pico Keypad</label>
 		<description>Lutron wireless Pico keypad</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -462,6 +510,8 @@
 		<label>GRAFIK Eye QS</label>
 		<description>Lutron GRAFIK Eye QS for RadioRA 2/HomeWorks QS</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -494,6 +544,8 @@
 		<label>VCRX</label>
 		<description>Lutron visor control receiver</description>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -514,6 +566,8 @@
 
 		<label>WCI</label>
 		<description>QS Wallbox Closure Interface</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -536,6 +590,8 @@
 
 		<label>Virtual Keypad</label>
 		<description>Virtual integration keypad on repeater</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -566,6 +622,8 @@
 
 		<label>QS IO Interface</label>
 		<description>Lutron QS IO Interface</description>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -604,6 +662,8 @@
 			</channel>
 		</channels>
 
+		<representation-property>integrationId</representation-property>
+
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
@@ -623,6 +683,8 @@
 		<channels>
 			<channel id="step" typeId="greenstep"/>
 		</channels>
+
+		<representation-property>integrationId</representation-property>
 
 		<config-description>
 			<parameter name="integrationId" type="integer" required="true">
@@ -1192,6 +1254,14 @@
 		<description>Green mode step number</description>
 		<category>Number</category>
 		<state min="1"/>
+	</channel-type>
+
+	<channel-type id="varstateType">
+		<item-type>Number</item-type>
+		<label>Variable State</label>
+		<description>System variable state</description>
+		<category>Number</category>
+		<state min="0"/>
 	</channel-type>
 
 	<channel-type id="superschedulebutton">

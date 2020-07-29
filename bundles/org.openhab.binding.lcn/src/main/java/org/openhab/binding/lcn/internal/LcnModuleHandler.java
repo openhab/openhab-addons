@@ -176,7 +176,12 @@ public class LcnModuleHandler extends BaseThingHandler {
                 DecimalType nativeValue = getConverter(channelUid).onCommandFromItem(quantityType);
                 subHandler.handleCommandDecimal(nativeValue, channelGroup, number.get());
             } else if (command instanceof UpDownType) {
-                subHandler.handleCommandUpDown((UpDownType) command, channelGroup, number.get());
+                Channel channel = thing.getChannel(channelUid);
+                if (channel != null) {
+                    Object invertConfig = channel.getConfiguration().get("invertUpDown");
+                    boolean invertUpDown = invertConfig instanceof Boolean && (boolean) invertConfig;
+                    subHandler.handleCommandUpDown((UpDownType) command, channelGroup, number.get(), invertUpDown);
+                }
             } else if (command instanceof StopMoveType) {
                 subHandler.handleCommandStopMove((StopMoveType) command, channelGroup, number.get());
             } else {

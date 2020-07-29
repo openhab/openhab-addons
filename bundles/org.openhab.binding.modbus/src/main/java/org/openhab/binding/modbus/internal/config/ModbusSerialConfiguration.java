@@ -23,23 +23,17 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ModbusSerialConfiguration {
-    @Nullable
-    private String port;
+    private @Nullable String port;
     private int id;
     private int baud;
-    @Nullable
-    private String stopBits;
-    @Nullable
-    private String parity;
+    private @Nullable String stopBits;
+    private @Nullable String parity;
     private int dataBits;
-    @Nullable
-    private String encoding;
+    private @Nullable String encoding;
     private boolean echo;
     private int receiveTimeoutMillis;
-    @Nullable
-    private String flowControlIn;
-    @Nullable
-    private String flowControlOut;
+    private @Nullable String flowControlIn;
+    private @Nullable String flowControlOut;
     private int timeBetweenTransactionsMillis;
     private int connectMaxTries;
     private int connectTimeoutMillis;

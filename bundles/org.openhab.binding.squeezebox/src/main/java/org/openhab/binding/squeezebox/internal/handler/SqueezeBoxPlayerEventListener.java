@@ -80,4 +80,6 @@ public interface SqueezeBoxPlayerEventListener {
     void updateFavoritesListEvent(List<Favorite> favorites);
 
     void sourceChangeEvent(String mac, String source);
+
+    void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand);
 }

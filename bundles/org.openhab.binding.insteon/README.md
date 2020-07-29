@@ -15,7 +15,8 @@ The binding also supports sending and receiving of legacy X10 messages.
 
 The binding does not support linking new devices on the fly, i.e. all devices must be linked with the modem *before* starting the Insteon binding.
 
-openHAB is not a configuration tool! To configure and set up your devices, link the devices manually via the set buttons, or use the free [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) software.
+The openHAB binding supports minimal configuration of devices, currently only monitoring and sending messages.
+For all other configuration and set up of devices, link the devices manually via the set buttons, or use the free [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) software.
 The free HouseLinc software from Insteon can also be used for configuration, but it wipes the modem link database clean on its initial use, requiring to re-link the modem to all devices.
 
 ## Supported Things
@@ -99,9 +100,10 @@ These have been tested and should work out of the box:
 | 2450 | IO Link | 0x00001A | Bernd Pfrommer |
 | 2486D | KeypadLinc Dimmer | 0x000037 | Patrick Giasson, Joe Barnum |
 | 2484DWH8 | KeypadLinc Countdown Timer | 0x000041 | Rob Nielsen |
-| 2413U | PowerLinc 2413U USB modem | 0x000045 | Bernd Pfrommer |
+| Various | PLM or hub | 0x000045 | Bernd Pfrommer |
 | 2843-222 | Wireless Open/Close Sensor | 0x000049 | Josenivaldo Benito |
 | 2842-222 | Motion Sensor | 0x00004A | Bernd Pfrommer |
+| 2844-222 | Motion Sensor II | F00.00.24 | Rob Nielsen |
 | 2486DWH8 | KeypadLinc Dimmer | 0x000051 | Chris Graham |
 | 2472D | OutletLincDimmer | 0x000068 | Chris Graham |
 | X10 switch | generic X10 switch | X00.00.01 | Bernd Pfrommer |
@@ -118,6 +120,7 @@ In order to determine which channels a device supports, you can look at the devi
 | acDelay | Number | AC Delay |
 | backlightDuration | Number | Back Light Duration |
 | batteryLevel | Number | Battery Level |
+| batteryPercent | Number:Dimensionless | Battery Percent |
 | batteryWatermarkLevel | Number | Battery Watermark Level |
 | beep | Switch | Beep |
 | bottomOutlet | Switch | Bottom Outlet |
@@ -179,7 +182,9 @@ In order to determine which channels a device supports, you can look at the devi
 | stage1Duration | Number | Stage 1 Duration |
 | switch | Switch | Switch |
 | systemMode | Number | System Mode |
+| tamperSwitch | Contact | Tamper Switch |
 | temperature | Number:Temperature | Temperature |
+| temperatureLevel | Number | Temperature Level |
 | topOutlet | Switch | Top Outlet |
 | update | Switch | Update |
 | watts | Number:Power | Watts |
@@ -243,9 +248,20 @@ openhab> smarthome:insteon
 Usage: smarthome:insteon display_devices - display devices that are online, along with available channels
 Usage: smarthome:insteon display_channels - display channels that are linked, along with configuration information
 Usage: smarthome:insteon display_local_database - display Insteon PLM or hub database details
+Usage: smarthome:insteon display_monitored - display monitored device(s)
+Usage: smarthome:insteon start_monitoring all|address - start displaying messages received from device(s)
+Usage: smarthome:insteon stop_monitoring all|address - stop displaying messages received from device(s)
+Usage: smarthome:insteon send_standard_message address flags cmd1 cmd2 - send standard message to a device
+Usage: smarthome:insteon send_extended_message address flags cmd1 cmd2 [up to 13 bytes] - send extended message to a device
+Usage: smarthome:insteon send_extended_message_2 address flags cmd1 cmd2 [up to 12 bytes] - send extended message with a two byte crc to a device
 ```
 
 Here is an example of command: `smarthome:insteon display_local_database`.
+
+When monitoring devices, the output will be displayed where openHAB was started.
+You may need to redirect the output to a log file to see the messages.
+The send message commands do not display any results.
+If you want to see the response from the device, you will need to monitor the device.
 
 ## Insteon Groups and Scenes
 
@@ -388,12 +404,29 @@ Then create entries in the .items file like this:
 
 ```
     Contact motionSensor             "motion sensor [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact"}
-    Number  motionSensorBatteryLevel "motion sensor battery level [%.1f]"  { channel="insteon:device:home:AABBCC:batteryLevel" }
-    Number  motionSensorLightLevel   "motion sensor light level [%.1f]"    { channel="insteon:device:home:AABBCC:lightLevel" }
+    Number  motionSensorBatteryLevel "motion sensor battery level"         { channel="insteon:device:home:AABBCC:batteryLevel" }
+    Number  motionSensorLightLevel   "motion sensor light level"           { channel="insteon:device:home:AABBCC:lightLevel" }
 ```
 
 This will give you a contact, the battery level, and the light level.
-Note that battery and light level are only updated when either there is motion, or the sensor battery runs low.
+Note that battery and light level are only updated when either there is motion, light level above/below threshold, tamper switch activated, or the sensor battery runs low.
+
+The motion sensor II includes three additional channels:
+
+**Items**
+
+```
+    Number  motionSensorBatteryPercent     "motion sensor battery percent"                     { channel="insteon:device:home:AABBCC:batteryPercent" }
+    Contact motionSensorTamperSwitch       "motion sensor tamper switch [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:tamperSwitch"}
+    Number  motionSensorTemperatureLevel   "motion sensor temperature level"                   { channel="insteon:device:home:AABBCC:temperatureLevel" }
+```
+
+The temperature can be calculated in Fahrenheit using the following formulas:
+
+* If the device is battery powered: `temperature = 0.73 * motionSensorTemperatureLevel - 20.53`
+* If the device is USB powered: `temperature = 0.72 * motionSensorTemperatureLevel - 24.61`
+
+Since the motion sensor II might not be calibrated correctly, the values `20.53` and `24.61` can be adjusted as necessary to produce the correct temperature.
 
 ### Hidden Door Sensors
 

@@ -156,6 +156,24 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
         }
     }
 
+    /**
+     * Start an lcn relay timer with the given duration [ms]
+     *
+     * @param relaynumber 1-based number of the relay to use
+     * @param duration duration of the relay timer in milliseconds
+     */
+    @Override
+    @RuleAction(label = "LCN Relay Timer", description = "Start an LCN relay timer")
+    public void startRelayTimer(
+            @ActionInput(name = "relaynumber", required = true, type = "java.lang.Integer", label = "Relay Number", description = "The relay number (1-8)") int relayNumber,
+            @ActionInput(name = "duration", required = true, type = "java.lang.Double", label = "Duration [ms]", description = "The timer duration in milliseconds") double duration) {
+        try {
+            getHandler().sendPck(PckGenerator.startRelayTimer(relayNumber, duration));
+        } catch (LcnException e) {
+            logger.warn("Could not send start relay timer command: {}", e.getMessage());
+        }
+    }
+
     private static ILcnModuleActions invokeMethodOf(@Nullable ThingActions actions) {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
@@ -172,7 +190,7 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
                         });
             }
         }
-        throw new IllegalArgumentException("Actions is not an instance of EcobeeActions");
+        throw new IllegalArgumentException("Actions is not an instance of LcnModuleActions");
     }
 
     /** Static alias to support the old DSL rules engine and make the action available there. */
@@ -189,6 +207,11 @@ public class LcnModuleActions implements ThingActions, ILcnModuleActions {
     /** Static alias to support the old DSL rules engine and make the action available there. */
     public static void sendDynamicText(@Nullable ThingActions actions, int row, @Nullable String text) {
         invokeMethodOf(actions).sendDynamicText(row, text);
+    }
+
+    /** Static alias to support the old DSL rules engine and make the action available there. */
+    public static void startRelayTimer(@Nullable ThingActions actions, int relaynumber, double duration) {
+        invokeMethodOf(actions).startRelayTimer(relaynumber, duration);
     }
 
     private LcnModuleHandler getHandler() throws LcnException {

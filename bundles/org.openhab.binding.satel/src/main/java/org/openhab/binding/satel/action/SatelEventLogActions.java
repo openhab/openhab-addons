@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.satel.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "satel")
 @NonNullByDefault
-public class SatelEventLogActions implements ThingActions {
+public class SatelEventLogActions implements ThingActions, ISatelEventLogActions {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -53,6 +55,7 @@ public class SatelEventLogActions implements ThingActions {
         return handler;
     }
 
+    @Override
     @RuleAction(label = "@text/actionReadEventLabel", description = "@text/actionReadEventDesc")
     public @ActionOutput(name = "index", type = "java.lang.Integer", label = "@text/actionOutputIndexLabel", description = "@text/actionOutputIndexDesc") @ActionOutput(name = "prev_index", type = "java.lang.Integer", label = "@text/actionOutputPrevIndexLabel", description = "@text/actionOutputPrevIndexDesc") @ActionOutput(name = "timestamp", type = "java.time.ZonedDateTime", label = "@text/actionOutputTimestampLabel", description = "@text/actionOutputTimestampDesc") @ActionOutput(name = "description", type = "java.lang.String", label = "@text/actionOutputDescriptionLabel", description = "@text/actionOutputDescriptionDesc") @ActionOutput(name = "details", type = "java.lang.String", label = "@text/actionOutputDetailsLabel", description = "@text/actionOutputDetailsDesc") Map<String, Object> readEvent(
             @ActionInput(name = "index", label = "@text/actionInputIndexLabel", description = "@text/actionInputIndexDesc") @Nullable Number index) {
@@ -72,10 +75,21 @@ public class SatelEventLogActions implements ThingActions {
     }
 
     public static Map<String, Object> readEvent(@Nullable ThingActions actions, @Nullable Number index) {
-        if (actions instanceof SatelEventLogActions) {
-            return ((SatelEventLogActions) actions).readEvent(index);
-        } else {
-            throw new IllegalArgumentException("Instance is not a SatelEventLogActions class.");
+        return invokeMethodOf(actions).readEvent(index);
+    }
+
+    private static ISatelEventLogActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        } else if (actions instanceof ISatelEventLogActions) {
+            return (ISatelEventLogActions) actions;
+        } else if (actions.getClass().getName().equals(SatelEventLogActions.class.getName())) {
+            return (ISatelEventLogActions) Proxy.newProxyInstance(ISatelEventLogActions.class.getClassLoader(),
+                    new Class[] { ISatelEventLogActions.class }, (Object proxy, Method method, Object[] args) -> {
+                        Method m = actions.getClass().getDeclaredMethod(method.getName(), method.getParameterTypes());
+                        return m.invoke(actions, args);
+                    });
         }
+        throw new IllegalArgumentException("actions is not an instance of ISatelEventLogActions");
     }
 }

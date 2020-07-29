@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonActivity} encapsulate the GSON data of the /api/device-notification-state response
+ * The {@link JsonDeviceNotificationState} encapsulate the GSON data of the /api/device-notification-state response
  *
  * @author Michael Geramb - Initial contribution
  */

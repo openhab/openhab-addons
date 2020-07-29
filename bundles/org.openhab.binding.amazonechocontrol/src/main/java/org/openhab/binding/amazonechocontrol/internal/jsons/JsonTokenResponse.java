@@ -15,18 +15,19 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link JsonActivity} encapsulate the GSON data of the token response
+ * The {@link JsonTokenResponse} encapsulate the GSON data of the token response
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
 public class JsonTokenResponse {
-
-    @Nullable
-    public String access_token;
-    @Nullable
-    public String token_type;
-    @Nullable
-    public Integer expires_in;
+    @SerializedName("access_token")
+    public @Nullable String accessToken;
+    @SerializedName("token_type")
+    public @Nullable String tokenType;
+    @SerializedName("expires_in")
+    public @Nullable Integer expiresIn;
 }

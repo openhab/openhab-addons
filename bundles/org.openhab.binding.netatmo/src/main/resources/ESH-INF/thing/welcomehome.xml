@@ -32,7 +32,7 @@
 			<channel id="welcomeEventMessage" typeId="message"></channel>
 			<channel id="welcomeEventSubType" typeId="sub_type"></channel>
 			<channel id="welcomeHomeEvent" typeId="homeEvent"></channel>
-			
+
 			<channel id="cameraEvent" typeId="cameraEvent"/>
 		</channels>
 

@@ -14,6 +14,7 @@ package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal.*;
@@ -27,7 +28,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -61,16 +61,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
-import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandler;
-import org.openhab.binding.modbus.internal.handler.ModbusPollerThingHandlerImpl;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegister;
@@ -81,7 +80,6 @@ import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.WriteTask;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.osgi.framework.BundleContext;
@@ -114,17 +112,17 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         CHANNEL_TO_ACCEPTED_TYPE.put(CHANNEL_LAST_WRITE_ERROR, "DateTime");
         CHANNEL_TO_ACCEPTED_TYPE.put(CHANNEL_LAST_READ_ERROR, "DateTime");
     }
-    private List<WriteTask> writeTasks = new ArrayList<>();
+    private List<ModbusWriteRequestBlueprint> writeRequests = new ArrayList<>();
 
     @After
     public void tearDown() {
-        writeTasks.clear();
+        writeRequests.clear();
     }
 
     private void captureModbusWrites() {
-        Mockito.when(mockedModbusManager.submitOneTimeWrite(any())).then(invocation -> {
-            WriteTask task = (WriteTask) invocation.getArgument(0);
-            writeTasks.add(task);
+        Mockito.when(comms.submitOneTimeWrite(any(), any(), any())).then(invocation -> {
+            ModbusWriteRequestBlueprint task = (ModbusWriteRequestBlueprint) invocation.getArgument(0);
+            writeRequests.add(task);
             return Mockito.mock(ScheduledFuture.class);
         });
     }
@@ -143,13 +141,16 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         poller = builder.build();
         poller.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
 
-        ModbusPollerThingHandlerImpl mockHandler = Mockito.mock(ModbusPollerThingHandlerImpl.class);
-        doReturn(task).when(mockHandler).getPollTask();
-        Supplier<ModbusManager> managerRef = () -> mockedModbusManager;
-        doReturn(managerRef).when(mockHandler).getManagerRef();
+        ModbusPollerThingHandler mockHandler = Mockito.mock(ModbusPollerThingHandler.class);
+        doReturn(task.getRequest()).when(mockHandler).getRequest();
+        assert comms != null;
+        doReturn(comms).when(mockHandler).getCommunicationInterface();
+        doReturn(task.getEndpoint()).when(comms).getEndpoint();
         poller.setHandler(mockHandler);
         assertSame(poller.getHandler(), mockHandler);
-        assertSame(((ModbusPollerThingHandlerImpl) poller.getHandler()).getPollTask(), task);
+        assertSame(((ModbusPollerThingHandler) poller.getHandler()).getCommunicationInterface().getEndpoint(),
+                task.getEndpoint());
+        assertSame(((ModbusPollerThingHandler) poller.getHandler()).getRequest(), task.getRequest());
 
         addThing(poller);
         return poller;
@@ -161,10 +162,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         ModbusTcpThingHandler tcpThingHandler = Mockito.mock(ModbusTcpThingHandler.class);
         tcpBridge.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
         tcpBridge.setHandler(tcpThingHandler);
-        Supplier<ModbusManager> managerRef = () -> mockedModbusManager;
-        doReturn(managerRef).when(tcpThingHandler).getManagerRef();
+        doReturn(comms).when(tcpThingHandler).getCommunicationInterface();
         doReturn(0).when(tcpThingHandler).getSlaveId();
-        doReturn(endpoint).when(tcpThingHandler).asSlaveEndpoint();
         tcpThingHandler.initialize();
         assertThat(tcpBridge.getStatus(), is(equalTo(ThingStatus.ONLINE)));
         return tcpBridge;
@@ -424,16 +423,20 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         if (bits != null) {
             assertNull(registers);
             assertNull(error);
-            dataHandler.onBits(request, bits);
+            AsyncModbusReadResult result = new AsyncModbusReadResult(request, bits);
+            dataHandler.onReadResult(result);
         } else if (registers != null) {
             assertNull(bits);
             assertNull(error);
-            dataHandler.onRegisters(request, registers);
+            AsyncModbusReadResult result = new AsyncModbusReadResult(request, registers);
+            dataHandler.onReadResult(result);
         } else {
             assertNull(bits);
             assertNull(registers);
             assertNotNull(error);
-            dataHandler.onError(request, error);
+            AsyncModbusFailure<ModbusReadRequestBlueprint> result = new AsyncModbusFailure<ModbusReadRequestBlueprint>(
+                    request, error);
+            dataHandler.handleReadError(result);
         }
         return dataHandler;
     }
@@ -470,7 +473,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataHandler.handleCommand(new ChannelUID(dataHandler.getThing().getUID(), channel), command);
 
         if (error != null) {
-            dataHandler.onError(request, error);
+            dataHandler.handleReadError(new AsyncModbusFailure<ModbusReadRequestBlueprint>(request, error));
         } else {
             ModbusResponse resp = new ModbusResponse() {
 
@@ -479,7 +482,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                     return successFC.getFunctionCode();
                 }
             };
-            dataHandler.onWriteResponse(Mockito.mock(ModbusWriteRequestBlueprint.class), resp);
+            dataHandler
+                    .onWriteResponse(new AsyncModbusWriteResult(Mockito.mock(ModbusWriteRequestBlueprint.class), resp));
         }
         return dataHandler;
     }
@@ -495,9 +499,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     @Test
     public void testOnRegistersInt16StaticTransformation() {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
-                "0", "-3", ModbusConstants.ValueType.INT16, null, new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
-                null);
+                "0", "-3", ModbusConstants.ValueType.INT16, null,
+                new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }), null);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
@@ -518,9 +521,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         mockTransformation("MULTIPLY", new MultiplyTransformation());
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "MULTIPLY(10)", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
-                null, bundleContext);
+                new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }), null,
+                bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
@@ -540,10 +542,10 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     @Test
     public void testOnRegistersNaNFloatInRegisters() throws InvalidSyntaxException {
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
-                "0", "default", ModbusConstants.ValueType.FLOAT32, null, new BasicModbusRegisterArray(
+                "0", "default", ModbusConstants.ValueType.FLOAT32, null, new ModbusRegisterArray(
                         // equivalent of floating point NaN
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0x7f, (byte) 0xc0),
-                                new BasicModbusRegister((byte) 0x00, (byte) 0x00) }),
+                        new ModbusRegister[] { new ModbusRegister((byte) 0x7f, (byte) 0xc0),
+                                new ModbusRegister((byte) 0x00, (byte) 0x00) }),
                 null, bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
@@ -569,9 +571,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         });
         ModbusDataThingHandler dataHandler = testReadHandlingGeneric(ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 "0", "ONOFF(10)", ModbusConstants.ValueType.INT16, null,
-                new BasicModbusRegisterArray(
-                        new ModbusRegister[] { new BasicModbusRegister((byte) 0xff, (byte) 0xfd) }),
-                null, bundleContext);
+                new ModbusRegisterArray(new ModbusRegister[] { new ModbusRegister((byte) 0xff, (byte) 0xfd) }), null,
+                bundleContext);
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_READ_ERROR, is(nullValue(State.class)));
@@ -594,13 +595,13 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_ERROR, is(nullValue(State.class)));
-        assertThat(writeTasks.size(), is(equalTo(1)));
-        WriteTask writeTask = writeTasks.get(0);
-        assertThat(writeTask.getRequest().getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_COIL)));
-        assertThat(writeTask.getRequest().getReference(), is(equalTo(50)));
-        assertThat(((ModbusWriteCoilRequestBlueprint) writeTask.getRequest()).getCoils().size(), is(equalTo(1)));
+        assertThat(writeRequests.size(), is(equalTo(1)));
+        ModbusWriteRequestBlueprint writeRequest = writeRequests.get(0);
+        assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_COIL)));
+        assertThat(writeRequest.getReference(), is(equalTo(50)));
+        assertThat(((ModbusWriteCoilRequestBlueprint) writeRequest).getCoils().size(), is(equalTo(1)));
         // Since transform output is non-zero, it is mapped as "true"
-        assertThat(((ModbusWriteCoilRequestBlueprint) writeTask.getRequest()).getCoils().getBit(0), is(equalTo(true)));
+        assertThat(((ModbusWriteCoilRequestBlueprint) writeRequest).getCoils().getBit(0), is(equalTo(true)));
     }
 
     @Test
@@ -619,13 +620,13 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_ERROR, is(nullValue(State.class)));
-        assertThat(writeTasks.size(), is(equalTo(1)));
-        WriteTask writeTask = writeTasks.get(0);
-        assertThat(writeTask.getRequest().getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_COIL)));
-        assertThat(writeTask.getRequest().getReference(), is(equalTo(50)));
-        assertThat(((ModbusWriteCoilRequestBlueprint) writeTask.getRequest()).getCoils().size(), is(equalTo(1)));
+        assertThat(writeRequests.size(), is(equalTo(1)));
+        ModbusWriteRequestBlueprint writeRequest = writeRequests.get(0);
+        assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_COIL)));
+        assertThat(writeRequest.getReference(), is(equalTo(50)));
+        assertThat(((ModbusWriteCoilRequestBlueprint) writeRequest).getCoils().size(), is(equalTo(1)));
         // Since transform output is zero, it is mapped as "false"
-        assertThat(((ModbusWriteCoilRequestBlueprint) writeTask.getRequest()).getCoils().getBit(0), is(equalTo(false)));
+        assertThat(((ModbusWriteCoilRequestBlueprint) writeRequest).getCoils().getBit(0), is(equalTo(false)));
     }
 
     @Test
@@ -644,15 +645,12 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_ERROR, is(nullValue(State.class)));
-        assertThat(writeTasks.size(), is(equalTo(1)));
-        WriteTask writeTask = writeTasks.get(0);
-        assertThat(writeTask.getRequest().getFunctionCode(),
-                is(equalTo(ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER)));
-        assertThat(writeTask.getRequest().getReference(), is(equalTo(50)));
-        assertThat(((ModbusWriteRegisterRequestBlueprint) writeTask.getRequest()).getRegisters().size(),
-                is(equalTo(1)));
-        assertThat(
-                ((ModbusWriteRegisterRequestBlueprint) writeTask.getRequest()).getRegisters().getRegister(0).getValue(),
+        assertThat(writeRequests.size(), is(equalTo(1)));
+        ModbusWriteRequestBlueprint writeRequest = writeRequests.get(0);
+        assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER)));
+        assertThat(writeRequest.getReference(), is(equalTo(50)));
+        assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), is(equalTo(1)));
+        assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0).getValue(),
                 is(equalTo(5)));
     }
 
@@ -681,30 +679,26 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_SUCCESS, is(notNullValue(State.class)));
         assertSingleStateUpdate(dataHandler, CHANNEL_LAST_WRITE_ERROR, is(nullValue(State.class)));
-        assertThat(writeTasks.size(), is(equalTo(2)));
+        assertThat(writeRequests.size(), is(equalTo(2)));
         {
-            WriteTask writeTask = writeTasks.get(0);
-            assertThat(writeTask.getRequest().getFunctionCode(),
-                    is(equalTo(ModbusWriteFunctionCode.WRITE_MULTIPLE_REGISTERS)));
-            assertThat(writeTask.getRequest().getReference(), is(equalTo(5412)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeTask.getRequest()).getRegisters().size(),
-                    is(equalTo(3)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeTask.getRequest()).getRegisters().getRegister(0)
-                    .getValue(), is(equalTo(1)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeTask.getRequest()).getRegisters().getRegister(1)
-                    .getValue(), is(equalTo(0)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeTask.getRequest()).getRegisters().getRegister(2)
-                    .getValue(), is(equalTo(5)));
+            ModbusWriteRequestBlueprint writeRequest = writeRequests.get(0);
+            assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_MULTIPLE_REGISTERS)));
+            assertThat(writeRequest.getReference(), is(equalTo(5412)));
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), is(equalTo(3)));
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0).getValue(),
+                    is(equalTo(1)));
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(1).getValue(),
+                    is(equalTo(0)));
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(2).getValue(),
+                    is(equalTo(5)));
         }
         {
-            WriteTask writeTask = writeTasks.get(1);
-            assertThat(writeTask.getRequest().getFunctionCode(),
-                    is(equalTo(ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER)));
-            assertThat(writeTask.getRequest().getReference(), is(equalTo(555)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeTask.getRequest()).getRegisters().size(),
-                    is(equalTo(1)));
-            assertThat(((ModbusWriteRegisterRequestBlueprint) writeTask.getRequest()).getRegisters().getRegister(0)
-                    .getValue(), is(equalTo(3)));
+            ModbusWriteRequestBlueprint writeRequest = writeRequests.get(1);
+            assertThat(writeRequest.getFunctionCode(), is(equalTo(ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER)));
+            assertThat(writeRequest.getReference(), is(equalTo(555)));
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().size(), is(equalTo(1)));
+            assertThat(((ModbusWriteRegisterRequestBlueprint) writeRequest).getRegisters().getRegister(0).getValue(),
+                    is(equalTo(3)));
         }
     }
 
@@ -784,7 +778,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
                 builder -> builder.withConfiguration(dataConfig), bundleContext);
         assertThat(dataHandler.getThing().getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        verify(mockedModbusManager, never()).submitOneTimePoll(task);
+        verify(comms, never()).submitOneTimePoll(eq(request), notNull(), notNull());
         // Reset initial REFRESH commands to data thing channels from the Core
         reset(poller.getHandler());
         dataHandler.handleCommand(Mockito.mock(ChannelUID.class), RefreshType.REFRESH);

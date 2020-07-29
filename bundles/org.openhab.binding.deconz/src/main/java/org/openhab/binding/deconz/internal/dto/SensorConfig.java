@@ -35,4 +35,10 @@ public class SensorConfig {
     public @Nullable Integer heatsetpoint;
     public @Nullable ThermostatMode mode;
     public @Nullable Integer offset;
+
+    @Override
+    public String toString() {
+        return "SensorConfig{" + "on=" + on + ", reachable=" + reachable + ", battery=" + battery + ", temperature="
+                + temperature + ", heatsetpoint=" + heatsetpoint + ", mode=" + mode + ", offset=" + offset + '}';
+    }
 }

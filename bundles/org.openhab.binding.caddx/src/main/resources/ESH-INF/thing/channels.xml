@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- bridge -->
+	<channel-type id="reset">
+		<item-type>Switch</item-type>
+		<label>Reset</label>
+		<description>Reset Switch</description>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Send Command</label>
+		<description>Sends a Command</description>
+	</channel-type>
+
+	<!-- panel -->
+	<channel-type id="panel_text">
+		<item-type>String</item-type>
+		<label>Panel Text</label>
+		<description>Panel text</description>
+		<state pattern="%s" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="panel_flag">
+		<item-type>Switch</item-type>
+		<label>Panel Flag</label>
+		<description>Panel flag</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- partition -->
+	<channel-type id="partition_condition">
+		<item-type>Switch</item-type>
+		<label>Partition Condition</label>
+		<description>Partition Condition</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="partition_secondary">
+		<item-type>Number</item-type>
+		<label>Partition Secondary Command</label>
+		<description>Partition secondary command</description>
+		<state>
+			<options>
+				<option value="-1">None</option>
+				<option value="0">Stay (1 button arm / toggle interiors)</option>
+				<option value="1">Chime (toggle chime mode)</option>
+				<option value="2">Exit (1 button arm / toggle instant)</option>
+				<option value="3">Bypass interiors</option>
+				<option value="4">Fire Panic</option>
+				<option value="5">Medical Panic</option>
+				<option value="6">Police Panic</option>
+				<option value="7">Smoke detector reset</option>
+				<option value="8">Auto callback download</option>
+				<option value="9">Manual pickup download</option>
+				<option value="10">Enable silent exit (for this arm cycle)</option>
+				<option value="11">Perform test</option>
+				<option value="12">Group Bypass</option>
+				<option value="13">Auxiliary function 1</option>
+				<option value="14">Auxiliary function 2</option>
+				<option value="15">Start keypad sounder</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- zone -->
+	<channel-type id="zone_text">
+		<item-type>String</item-type>
+		<label>Zone Text</label>
+		<description>Zone text</description>
+		<state pattern="%s" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="zone_partition">
+		<item-type>Switch</item-type>
+		<label>Zone Partition</label>
+		<description>Zone Partition</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="zone_type">
+		<item-type>Switch</item-type>
+		<label>Zone Type</label>
+		<description>Zone Type</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="zone_condition">
+		<item-type>Switch</item-type>
+		<label>Zone Condition</label>
+		<description>Zone Condition</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="zone_status">
+		<item-type>Contact</item-type>
+		<label>Zone Status</label>
+		<description>Zone Status (Open/Closed)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="zone_bypass">
+		<item-type>Switch</item-type>
+		<label>Bypass Mode</label>
+		<description>Bypass Mode (OFF=Armed, ON=Bypassed)</description>
+	</channel-type>
+
+	<!-- keypad -->
+	<channel-type id="led">
+		<item-type>Number</item-type>
+		<label>Keypad Led</label>
+		<description>Keypad Led (0=Off, 1=On, 2=Flashing)</description>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+				<option value="2">Flashing</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

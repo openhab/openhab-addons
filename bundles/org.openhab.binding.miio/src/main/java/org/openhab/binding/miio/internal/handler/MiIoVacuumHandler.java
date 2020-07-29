@@ -168,9 +168,15 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             if (command instanceof OnOffType) {
                 if (command.equals(OnOffType.ON)) {
                     sendCommand(MiIoCommand.START_VACUUM);
+                    forceStatusUpdate();
+                    return;
                 } else {
                     sendCommand(MiIoCommand.STOP_VACUUM);
-                    sendCommand(MiIoCommand.CHARGE);
+                    scheduler.schedule(() -> {
+                        sendCommand(MiIoCommand.CHARGE);
+                        forceStatusUpdate();
+                    }, 2000, TimeUnit.MILLISECONDS);
+                    return;
                 }
             }
         }
@@ -183,7 +189,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 sendCommand(MiIoCommand.PAUSE);
             } else if (command.toString().equals("dock")) {
                 sendCommand(MiIoCommand.STOP_VACUUM);
-                sendCommand(MiIoCommand.CHARGE);
+                scheduler.schedule(() -> {
+                    sendCommand(MiIoCommand.CHARGE);
+                    forceStatusUpdate();
+                }, 2000, TimeUnit.MILLISECONDS);
+                return;
             } else {
                 logger.info("Command {} not recognised", command.toString());
             }

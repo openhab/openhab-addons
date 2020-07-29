@@ -17,7 +17,7 @@ This Binding integrated Shelly devices.
 | shellyplug         | Shelly Plug                                            | SHPLG2-1  |
 | shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
-| shellyem3          | Shelly EM3 with 3 integrated Power Meter               | SHEM-3    |
+| shellyem3          | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
 | shellyrgbw2        | Shelly RGB Controller                                  | SHRGBW2   |
 | shellybulb         | Shelly Bulb in Color or White Mode                     | SHBLB-1   |
 | shellybulbduo      | Shelly Duo (White Mode)                                | SHBDUO-1  |
@@ -147,7 +147,7 @@ Every device has a channel group `device` with the following channels:
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kw/h of the device (including all meters)          |
 |          |updateAvailable    |Switch  |yes      |ON: A firmwareupdate is available (use Shelly App to perform update)             |
 
-The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and EM3.
+The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and 3EM.
 
 
 ### Events / Alarms
@@ -238,7 +238,7 @@ end
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 
-### Shelly EM3 (thing-type: shellyem3)
+### Shelly 3EM (thing-type: shellyem3)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|

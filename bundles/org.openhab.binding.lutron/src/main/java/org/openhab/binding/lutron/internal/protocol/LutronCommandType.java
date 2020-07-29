@@ -16,6 +16,7 @@ package org.openhab.binding.lutron.internal.protocol;
  * Type of command in the Lutron integration protocol.
  *
  * @author Allan Tong - Initial contribution
+ * @author Bob Adair - Added additional commands
  *
  */
 public enum LutronCommandType {
@@ -25,6 +26,8 @@ public enum LutronCommandType {
     MODE,
     MONITORING,
     OUTPUT,
+    SHADEGRP,
     SYSTEM,
+    SYSVAR,
     TIMECLOCK,
 }

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="ojelectronics"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Bridge -->
+	<bridge-type id="ojcloud">
+		<label>OJ Electronics Cloud</label>
+		<description>Access to all OJ Electronic devices.</description>
+		<config-description>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>User Name for access cloud service.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for access cloud service.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="apiKey" type="text" required="true" min="36" max="36">
+				<label>API Key</label>
+				<description>API-Key from your local distributor</description>
+			</parameter>
+			<parameter name="apiUrl" type="text" required="true">
+				<label>API-URL</label>
+				<description>URL to cloud API-service.</description>
+				<context>url</context>
+				<advanced>true</advanced>
+				<default>https://OWD5-OJ001-App.ojelectronics.com/api</default>
+			</parameter>
+			<parameter name="refreshDelayInSeconds" type="integer" required="true" min="15" unit="s">
+				<label>Refresh Delay</label>
+				<description>Refresh delay in seconds.</description>
+				<advanced>true</advanced>
+				<default>30</default>
+			</parameter>
+			<parameter name="customerId" type="integer" required="true">
+				<label>Customer ID</label>
+				<description>Customer ID</description>
+				<advanced>true</advanced>
+				<default>1</default>
+			</parameter>
+			<parameter name="softwareVersion" type="integer" required="true">
+				<label>Software Version</label>
+				<description>Software Version</description>
+				<advanced>true</advanced>
+				<default>1060</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+	<thing-type id="owd5">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ojcloud"/>
+		</supported-bridge-type-refs>
+		<label>OWD5/MWD5 Thermostat</label>
+		<description>OWD5/MWD5 Thermostat</description>
+		<category>RadiatorControl</category>
+		<channels>
+			<channel id="floorTemperature" typeId="floorTemperature"/>
+			<channel id="roomTemperature" typeId="roomTemperature"/>
+			<channel id="groupName" typeId="groupName"/>
+			<channel id="groupId" typeId="groupId"/>
+			<channel id="online" typeId="online"/>
+			<channel id="heating" typeId="heating"/>
+			<channel id="thermostatName" typeId="thermostatName"/>
+			<channel id="regulationMode" typeId="regulationMode"/>
+			<channel id="comfortSetpoint" typeId="comfortSetpoint"/>
+			<channel id="comfortEndTime" typeId="comfortEndTime"/>
+			<channel id="boostEndTime" typeId="boostEndTime"/>
+			<channel id="manualSetpoint" typeId="manualSetpoint"/>
+			<channel id="vacationEnabled" typeId="vacationEnabled"/>
+		</channels>
+		<properties>
+			<property name="vendor">OJ Electronics</property>
+		</properties>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>Serial number of the thermostat. You can find the serial number in the app or on the thermostat itself.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="floorTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Floor Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="groupName">
+		<item-type>String</item-type>
+		<label>Group Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="groupId">
+		<item-type>Number</item-type>
+		<label>Group ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="online">
+		<item-type>Contact</item-type>
+		<label>Online</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="heating">
+		<item-type>Contact</item-type>
+		<label>Heating</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="roomTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="thermostatName">
+		<item-type>String</item-type>
+		<label>Thermostat Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="regulationMode">
+		<item-type>String</item-type>
+		<label>Regulation Mode</label>
+		<state readOnly="true">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="comfort">Comfort</option>
+				<option value="manual">Manual</option>
+				<option value="vacation">Vacation</option>
+				<option value="frostProtection">Frost Protection</option>
+				<option value="boost">Boost</option>
+				<option value="eco">Eco</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="comfortSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort Set Point Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="comfortEndTime">
+		<item-type>DateTime</item-type>
+		<label>End Time of Comfort Mode</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="boostEndTime">
+		<item-type>DateTime</item-type>
+		<label>End Time of Boost Mode</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="manualSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Manual Set Point Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="vacationEnabled">
+		<item-type>Switch</item-type>
+		<label>Vacation Mode Enabled</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

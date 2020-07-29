@@ -58,5 +58,5 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.eclipse.californium.element-connector;version='[2.0.0,2.0.1)',\
 	org.eclipse.californium.scandium;version='[2.0.0,2.0.1)',\
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
-	org.openhab.binding.tradfri;version='[2.5.7,2.5.8)',\
-	org.openhab.binding.tradfri.tests;version='[2.5.7,2.5.8)'
+	org.openhab.binding.tradfri;version='[2.5.8,2.5.9)',\
+	org.openhab.binding.tradfri.tests;version='[2.5.8,2.5.9)'

@@ -15,6 +15,8 @@ package org.openhab.binding.amazonechocontrol.internal.jsons;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link JsonWebSiteCookie} encapsulate the GSON data of register cookie array
  *
@@ -23,12 +25,12 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class JsonWebSiteCookie {
     public JsonWebSiteCookie(String name, String value) {
-        Name = name;
-        Value = value;
+        this.name = name;
+        this.value = value;
     }
 
-    @Nullable
-    public String Value;
-    @Nullable
-    public String Name;
+    @SerializedName("Value")
+    public @Nullable String value;
+    @SerializedName("Name")
+    public @Nullable String name;
 }

@@ -70,82 +70,115 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
 
         ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
         assertNotNull(thingHandler);
-        ModbusSlaveEndpoint slaveEndpoint = thingHandler.asSlaveEndpoint();
+        ModbusSlaveEndpoint slaveEndpoint = thingHandler.getEndpoint();
         assertThat(slaveEndpoint, is(equalTo(new ModbusTCPSlaveEndpoint("thisishost", 44))));
         assertThat(thingHandler.getSlaveId(), is(9));
 
         InOrder orderedVerify = Mockito.inOrder(mockedModbusManager);
-        orderedVerify.verify(mockedModbusManager).addListener(thingHandler);
-        ModbusSlaveEndpoint endpoint = thingHandler.asSlaveEndpoint();
+        ModbusSlaveEndpoint endpoint = thingHandler.getEndpoint();
         Objects.requireNonNull(endpoint);
-        orderedVerify.verify(mockedModbusManager).setEndpointPoolConfiguration(endpoint, expectedPoolConfiguration);
+        orderedVerify.verify(mockedModbusManager).newModbusCommunicationInterface(endpoint, expectedPoolConfiguration);
     }
 
     @Test
     public void testTwoDifferentEndpointWithDifferentParameters() {
         // thing1
-        Configuration thingConfig = new Configuration();
-        thingConfig.put("host", "thisishost");
-        thingConfig.put("port", 44);
-        thingConfig.put("connectMaxTries", 1);
-        thingConfig.put("timeBetweenTransactionsMillis", 1);
+        {
+            Configuration thingConfig = new Configuration();
+            thingConfig.put("host", "thisishost");
+            thingConfig.put("port", 44);
+            thingConfig.put("connectMaxTries", 1);
+            thingConfig.put("timeBetweenTransactionsMillis", 1);
 
-        final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
-        addThing(thing);
-        assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+            final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
+            addThing(thing);
+            assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
-        assertNotNull(thingHandler);
-        EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
-        poolConfiguration.setInterTransactionDelayMillis(2);
-        // Different endpoint (port 45), so should not affect this thing
-        thingHandler.onEndpointPoolConfigurationSet(new ModbusTCPSlaveEndpoint("thisishost", 45), poolConfiguration);
-        assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+            ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
+            assertNotNull(thingHandler);
+        }
+        {
+            Configuration thingConfig = new Configuration();
+            thingConfig.put("host", "thisishost");
+            thingConfig.put("port", 45);
+            thingConfig.put("connectMaxTries", 1);
+            thingConfig.put("timeBetweenTransactionsMillis", 100);
+
+            final Bridge thing = createTcpThingBuilder("tcpendpoint2").withConfiguration(thingConfig).build();
+            addThing(thing);
+            // Different endpoint (port 45), so should be OK even though timeBetweenTransactionsMillis is different
+            assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
+            ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
+            assertNotNull(thingHandler);
+        }
     }
 
     @Test
     public void testTwoIdenticalEndpointWithDifferentParameters() {
+        // Real implementation needed to validate this behaviour
+        swapModbusManagerToReal();
         // thing1
-        Configuration thingConfig = new Configuration();
-        thingConfig.put("host", "thisishost");
-        thingConfig.put("port", 44);
-        thingConfig.put("connectMaxTries", 1);
-        thingConfig.put("timeBetweenTransactionsMillis", 1);
+        {
+            Configuration thingConfig = new Configuration();
+            thingConfig.put("host", "thisishost");
+            thingConfig.put("port", 44);
+            thingConfig.put("connectMaxTries", 1);
+            thingConfig.put("timeBetweenTransactionsMillis", 1);
 
-        final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
-        addThing(thing);
-        assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+            final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
+            addThing(thing);
+            assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
-        assertNotNull(thingHandler);
-        EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
-        poolConfiguration.setInterTransactionDelayMillis(2);
-        // Same endpoint and different parameters -> OFFLINE
-        thingHandler.onEndpointPoolConfigurationSet(new ModbusTCPSlaveEndpoint("thisishost", 44), poolConfiguration);
-        assertThat(thing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-        assertThat(thing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+            ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
+            assertNotNull(thingHandler);
+        }
+        {
+
+            Configuration thingConfig = new Configuration();
+            thingConfig.put("host", "thisishost");
+            thingConfig.put("port", 44);
+            thingConfig.put("connectMaxTries", 1);
+            thingConfig.put("timeBetweenTransactionsMillis", 100);
+
+            final Bridge thing = createTcpThingBuilder("tcpendpoint2").withConfiguration(thingConfig).build();
+            addThing(thing);
+            assertThat(thing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+            assertThat(thing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        }
     }
 
     @Test
     public void testTwoIdenticalEndpointWithSameParameters() {
+        // Real implementation needed to validate this behaviour
+        swapModbusManagerToReal();
         // thing1
-        Configuration thingConfig = new Configuration();
-        thingConfig.put("host", "thisishost");
-        thingConfig.put("port", 44);
-        thingConfig.put("connectMaxTries", 1);
-        thingConfig.put("timeBetweenTransactionsMillis", 1);
+        {
+            Configuration thingConfig = new Configuration();
+            thingConfig.put("host", "thisishost");
+            thingConfig.put("port", 44);
+            thingConfig.put("connectMaxTries", 1);
+            thingConfig.put("timeBetweenTransactionsMillis", 1);
 
-        final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
-        addThing(thing);
-        assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+            final Bridge thing = createTcpThingBuilder("tcpendpoint").withConfiguration(thingConfig).build();
+            addThing(thing);
+            assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
-        ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
-        assertNotNull(thingHandler);
-        EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
-        poolConfiguration.setInterTransactionDelayMillis(1);
-        poolConfiguration.setConnectTimeoutMillis(10000); // default timeout
-        // Same endpoint and same parameters -> should not affect this thing
-        thingHandler.onEndpointPoolConfigurationSet(new ModbusTCPSlaveEndpoint("thisishost", 44), poolConfiguration);
-        assertThat(thing.getStatusInfo().getDescription(), thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+            ModbusTcpThingHandler thingHandler = (ModbusTcpThingHandler) thing.getHandler();
+            assertNotNull(thingHandler);
+        }
+        {
+            Configuration thingConfig = new Configuration();
+            thingConfig.put("host", "thisishost");
+            thingConfig.put("port", 44);
+            thingConfig.put("connectMaxTries", 1);
+            thingConfig.put("timeBetweenTransactionsMillis", 1);
+            thingConfig.put("connectTimeoutMillis", 10000); // default
+
+            final Bridge thing = createTcpThingBuilder("tcpendpoint2").withConfiguration(thingConfig).build();
+            addThing(thing);
+            // Same endpoint and same parameters -> should not affect this thing
+            assertThat(thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+        }
     }
 }

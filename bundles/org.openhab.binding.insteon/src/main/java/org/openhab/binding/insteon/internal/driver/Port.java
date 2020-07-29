@@ -28,6 +28,7 @@ import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.openhab.binding.insteon.internal.device.ModemDBBuilder;
+import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -152,7 +153,11 @@ public class Port {
     public void clearModemDB() {
         logger.debug("clearing modem db!");
         Map<InsteonAddress, @Nullable ModemDBEntry> dbes = getDriver().lockModemDBEntries();
-        dbes.clear();
+        for (InsteonAddress addr : dbes.keySet()) {
+            if (!dbes.get(addr).isModem()) {
+                dbes.remove(addr);
+            }
+        }
         getDriver().unlockModemDBEntries();
     }
 
@@ -509,18 +514,18 @@ public class Port {
                 if (msg.getByte("Cmd") == 0x60) {
                     // add the modem to the device list
                     InsteonAddress a = new InsteonAddress(msg.getAddress("IMAddress"));
-                    String prodKey = "0x000045";
-                    DeviceType dt = DeviceTypeLoader.instance().getDeviceType(prodKey);
+                    DeviceType dt = DeviceTypeLoader.instance().getDeviceType(InsteonDeviceHandler.PLM_PRODUCT_KEY);
                     if (dt == null) {
-                        logger.warn("unknown modem product key: {} for modem: {}.", prodKey, a);
+                        logger.warn("unknown modem product key: {} for modem: {}.",
+                                InsteonDeviceHandler.PLM_PRODUCT_KEY, a);
                     } else {
                         device = InsteonDevice.makeDevice(dt);
                         device.setAddress(a);
-                        device.setProductKey(prodKey);
+                        device.setProductKey(InsteonDeviceHandler.PLM_PRODUCT_KEY);
                         device.setDriver(driver);
                         device.setIsModem(true);
                         logger.debug("found modem {} in device_types: {}", a, device.toString());
-                        mdbb.updateModemDB(a, Port.this, null);
+                        mdbb.updateModemDB(a, Port.this, null, true);
                     }
                     // can unsubscribe now
                     removeListener(this);
