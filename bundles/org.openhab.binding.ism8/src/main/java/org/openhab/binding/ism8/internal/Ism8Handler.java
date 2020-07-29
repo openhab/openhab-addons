@@ -51,14 +51,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Ism8: Handle command = {} {}", channelUID.getId(), command);
-        Channel channel = null;
-        for (Channel ch : getThing().getChannels()) {
-            if (ch.getUID().getId().equals(channelUID.getId())) {
-                channel = ch;
-                break;
-            }
-        }
-
+        Channel channel = getThing().getChannel(channelUID);
         if (channel != null && this.server != null) {
             Server svr = this.server;
             if (channel.getConfiguration().containsKey("id") && channel.getConfiguration().containsKey("write")
