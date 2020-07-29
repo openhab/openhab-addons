@@ -124,7 +124,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
             return new JsonParser().parse(response);
         } catch (Exception e) {
-            logger.warn("Unable to fetch stationboard data", e);
+            logger.warn("Unable to fetch stationboard data: {}", e.getMessage());
             return null;
         }
     }
