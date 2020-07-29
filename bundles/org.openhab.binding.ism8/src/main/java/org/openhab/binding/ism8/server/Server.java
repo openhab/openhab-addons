@@ -16,9 +16,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket; 
+import java.net.Socket; 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -30,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
+@NonNullByDefault
 public class Server extends Thread {
     private final Logger logger = LoggerFactory.getLogger(Server.class);
 
@@ -37,9 +41,9 @@ public class Server extends Thread {
     private int startRetries;
     private boolean connected;
     private ArrayList<IDataPoint> dataPoints = new ArrayList<>();
-    private java.net.ServerSocket serverSocket = null;
-    private java.net.Socket client;
-    @Nullable private IDataPointChangeListener changeListener;
+    private @Nullable ServerSocket serverSocket = null;
+    private @Nullable Socket client;
+    private @Nullable IDataPointChangeListener changeListener;
 
     public Server(int port) {
         this.port = port;
@@ -130,8 +134,9 @@ public class Server extends Thread {
      *
      */
     public void sendData(byte[] data) throws IOException {
-        if (this.client != null && this.client.isConnected() && data.length > 0) {
-            OutputStream stream = this.client.getOutputStream();
+        Socket clientSocket = this.client;
+        if (clientSocket != null && clientSocket.isConnected() && data.length > 0) {
+            OutputStream stream = clientSocket.getOutputStream();
             stream.write(data);
             logger.debug("Data sent: {}", this.printBytes(data));
         }
@@ -140,15 +145,18 @@ public class Server extends Thread {
     private void stopServer() {
         logger.info("Stop Ism8 server.");
         try {
-            if (serverSocket != null) {
-                serverSocket.close();
+            ServerSocket serverSock = this.serverSocket;
+            if (serverSock != null) {
+                serverSock.close();
             }
 
-            if (this.client != null) {
-                if (this.client.isConnected()) {
-                    this.client.getInputStream().close();
+            Socket clientSocket = this.client;
+            if (clientSocket != null) {
+                if (clientSocket.isConnected()) {
+                    clientSocket.getInputStream().close();
                 }
-                this.client.close();
+
+                clientSocket.close();
                 this.client = null;
             }
         } catch (Exception e) {
@@ -163,9 +171,12 @@ public class Server extends Thread {
             if (listener != null) {
                 listener.connectionStatusChanged(ThingStatus.OFFLINE);
             }
-            serverSocket = new java.net.ServerSocket(this.getPort());
-            this.client = serverSocket.accept();
-            logger.info("Connection from Partner established {}", this.client.getRemoteSocketAddress());
+            
+            ServerSocket serverSock =new java.net.ServerSocket(this.getPort());
+            this.serverSocket = serverSock;
+            Socket clientSocket = serverSock.accept();
+            this.client = clientSocket;
+            logger.info("Connection from Partner established {}", clientSocket.getRemoteSocketAddress());
             if (listener != null) {
                 listener.connectionStatusChanged(ThingStatus.ONLINE);
             }
@@ -173,7 +184,7 @@ public class Server extends Thread {
             this.startRetries = 0;
             this.sendUpdateCommand();
             while (!this.isInterrupted()) {
-                byte[] bytes = getBytesFromInputStream(this.client.getInputStream());
+                byte[] bytes = getBytesFromInputStream(clientSocket.getInputStream());
                 int amount = bytes.length;
                 ArrayList<byte[]> packages = this.getPackages(bytes, amount);
 
@@ -192,8 +203,9 @@ public class Server extends Thread {
 
                             IDataPoint dataPoint = null;
                             for (int k = 0; k < this.dataPoints.size(); k++) {
-                                if (this.dataPoints.get(k).getId() == messages[j].getId()) {
-                                    dataPoint = this.dataPoints.get(k);
+                                IDataPoint dp = this.dataPoints.get(k); 
+                                if (dp.getId() == messages[j].getId()) {
+                                    dataPoint = dp;
                                     break;
                                 }
                             }

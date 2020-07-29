@@ -15,6 +15,7 @@ package org.openhab.binding.ism8.server;
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
 @NonNullByDefault
-public abstract class DataPointBase<T> implements IDataPoint {
+public abstract class DataPointBase<@Nullable T> implements IDataPoint {
     private final Logger logger = LoggerFactory.getLogger(DataPointBase.class);
 
     private int id;
@@ -71,6 +72,7 @@ public abstract class DataPointBase<T> implements IDataPoint {
     }
 
     @Override
+    @Nullable
     public Object getValueObject() {
         return this.value;
     }
@@ -128,7 +130,7 @@ public abstract class DataPointBase<T> implements IDataPoint {
 
     @Override
     public String toString() {
-        return String.format("DataPoint {}={}", this.getId(), this.getValue());
+        return String.format("DataPoint %d=%s", this.getId(), this.getValueText());
     }
 
     /**

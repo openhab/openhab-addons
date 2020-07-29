@@ -13,6 +13,7 @@
 package org.openhab.binding.ism8.server;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
 @NonNullByDefault
-public class DataPointScaling extends DataPointBase<Double> {
+public class DataPointScaling extends DataPointBase<@Nullable Double> {
     private final Logger logger = LoggerFactory.getLogger(DataPointScaling.class);
     private String outputFormat = "";
 
@@ -52,7 +53,9 @@ public class DataPointScaling extends DataPointBase<Double> {
     @Override
     protected byte[] convertWriteValue(Object value) throws Exception {
         this.setValue(Math.max(Math.min(Double.parseDouble(value.toString()), 100), 0));
-        byte val = (byte) (this.getValue() / 100.0 * 255.0);
+        Object rawVal = this.getValue();
+        double rawValResult = rawVal!= null ? (Double)rawVal : 0.0;
+        byte val = (byte) (rawValResult  / 100.0 * 255.0);
         return new byte[] { val };
     }
 }

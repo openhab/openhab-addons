@@ -13,6 +13,7 @@
 package org.openhab.binding.ism8.server;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link IDataPoint} is the interface for all data points
@@ -51,7 +52,7 @@ public interface IDataPoint {
      * Gets the value object.
      *
      */
-    Object getValueObject();
+    @Nullable Object getValueObject();
 
     /**
      * Processes the data received

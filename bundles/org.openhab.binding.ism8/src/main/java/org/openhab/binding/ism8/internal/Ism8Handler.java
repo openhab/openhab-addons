@@ -101,7 +101,9 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                         int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
                         String type = channel.getConfiguration().get("type").toString();
                         String description = channel.getLabel();
-                        svr.addDataPoint(id, type, description);
+                        if (type != null && description != null) {
+                            svr.addDataPoint(id, type, description);
+                        }
                     } else {
                         this.logger.warn("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
                                 channel.getConfiguration());
@@ -143,7 +145,10 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                 if (channel.getConfiguration().containsKey("id")
                         && Integer.parseInt(channel.getConfiguration().get("id").toString()) == dataPoint.getId()) {
                     logger.debug("Ism8 updateDataPoint ID:{} {}", dataPoint.getId(), dataPoint.getValueText());
-                    updateState(channel.getUID(), new QuantityType<>(dataPoint.getValueObject().toString()));
+                    Object val = dataPoint.getValueObject();
+                    if (val != null) {
+                        updateState(channel.getUID(), new QuantityType<>(val.toString()));
+                    }
                 }
             } catch (Exception e) {
                 logger.warn("Ism8 updateDataPoint: {}", e.getMessage(), e);

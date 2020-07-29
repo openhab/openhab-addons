@@ -15,6 +15,7 @@ package org.openhab.binding.ism8.server;
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
 @NonNullByDefault
-public class DataPointValue extends DataPointBase<Double> {
+public class DataPointValue extends DataPointBase<@Nullable Double> {
     private final Logger logger = LoggerFactory.getLogger(DataPointValue.class);
     private float factor;
     private String outputFormat = "";
@@ -79,7 +80,9 @@ public class DataPointValue extends DataPointBase<Double> {
     protected byte[] convertWriteValue(Object value) throws Exception {
         ByteBuffer data = ByteBuffer.allocate(2);
         this.setValue(Double.parseDouble(value.toString()));
-        double dblValue = this.getValue() / this.factor;
+        Object rawVal = this.getValue();
+        double rawValResult = rawVal!= null ? (Double)rawVal : 0.0;
+        double dblValue = rawValResult / this.factor;
         boolean inverted = dblValue < 0.0;
         int exp = 0;
         dblValue = Math.abs(dblValue);

@@ -13,6 +13,7 @@
 package org.openhab.binding.ism8.server;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
 @NonNullByDefault
-public class DataPointBool extends DataPointBase<Boolean> {
+public class DataPointBool extends DataPointBase<@Nullable Boolean> {
     private final Logger logger = LoggerFactory.getLogger(DataPointBool.class);
 
     public DataPointBool(int id, String knxDataType, String description) {
@@ -35,6 +36,7 @@ public class DataPointBool extends DataPointBase<Boolean> {
     }
 
     @Override
+    @Nullable
     public Object getValueObject() {
         return this.getValue() ? "1" : "0";
     }
