@@ -20,8 +20,9 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -37,11 +38,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
-    private Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
-    private ScheduledFuture<?> refreshJob;
-    @Nullable
-    protected MODULE module;
+    private final Logger logger = LoggerFactory.getLogger(NetatmoModuleHandler.class);
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable MODULE module;
     private boolean refreshRequired;
 
     protected NetatmoModuleHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
@@ -57,15 +58,20 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
 
     @Override
     public void dispose() {
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
             refreshJob = null;
         }
     }
 
-    protected String getParentId() {
-        String parentId = (String) config.get(PARENT_ID);
-        return parentId.toLowerCase();
+    protected @Nullable String getParentId() {
+        Configuration conf = config;
+        Object parentId = conf != null ? conf.get(PARENT_ID) : null;
+        if (parentId instanceof String) {
+            return ((String) parentId).toLowerCase();
+        }
+        return null;
     }
 
     public boolean childOf(AbstractNetatmoThingHandler naThingHandler) {
@@ -73,11 +79,12 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
+    protected State getNAThingProperty(String channelId) {
         try {
-            if (channelId.equalsIgnoreCase(CHANNEL_LAST_MESSAGE) && module != null) {
-                Method getLastMessage = module.getClass().getMethod("getLastMessage");
-                Integer lastMessage = (Integer) getLastMessage.invoke(module);
+            Optional<MODULE> mod = getModule();
+            if (channelId.equalsIgnoreCase(CHANNEL_LAST_MESSAGE) && mod.isPresent()) {
+                Method getLastMessage = mod.get().getClass().getMethod("getLastMessage");
+                Integer lastMessage = (Integer) getLastMessage.invoke(mod.get());
                 return ChannelTypeUtils.toDateTimeType(lastMessage, timeZoneProvider.getTimeZone());
             }
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
@@ -89,16 +96,14 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
         return super.getNAThingProperty(channelId);
     }
 
-    @SuppressWarnings("unchecked")
     protected void updateChannels(Object module) {
-        if (module != null) {
-            this.module = (MODULE) module;
-            updateStatus(ThingStatus.ONLINE);
-            radioHelper.ifPresent(helper -> helper.setModule(module));
-            batteryHelper.ifPresent(helper -> helper.setModule(module));
-            updateProperties(this.module);
-            super.updateChannels();
-        }
+        MODULE theModule = (MODULE) module;
+        setModule(theModule);
+        updateStatus(ThingStatus.ONLINE);
+        getRadioHelper().ifPresent(helper -> helper.setModule(module));
+        getBatteryHelper().ifPresent(helper -> helper.setModule(module));
+        updateProperties(theModule);
+        super.updateChannels();
     }
 
     protected void invalidateParentCacheAndRefresh() {
@@ -112,13 +117,11 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
 
     protected void requestParentRefresh() {
         setRefreshRequired(true);
-        Optional<AbstractNetatmoThingHandler> parent = getBridgeHandler().findNAThing(getParentId());
-        parent.ifPresent(AbstractNetatmoThingHandler::updateChannels);
+        findNAThing(getParentId()).ifPresent(AbstractNetatmoThingHandler::updateChannels);
     }
 
     private void invalidateParentCache() {
-        Optional<AbstractNetatmoThingHandler> parent = getBridgeHandler().findNAThing(getParentId());
-        parent.map(NetatmoDeviceHandler.class::cast).ifPresent(NetatmoDeviceHandler::expireData);
+        findNAThing(getParentId()).map(NetatmoDeviceHandler.class::cast).ifPresent(NetatmoDeviceHandler::expireData);
     }
 
     protected void updateProperties(MODULE moduleData) {
@@ -130,5 +133,13 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
 
     protected void setRefreshRequired(boolean refreshRequired) {
         this.refreshRequired = refreshRequired;
+    }
+
+    protected Optional<MODULE> getModule() {
+        return Optional.ofNullable(module);
+    }
+
+    public void setModule(MODULE module) {
+        this.module = module;
     }
 }

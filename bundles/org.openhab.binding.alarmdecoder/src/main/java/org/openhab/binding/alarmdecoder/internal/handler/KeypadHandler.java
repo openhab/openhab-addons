@@ -155,7 +155,9 @@ public class KeypadHandler extends ADThingHandler {
             return;
         }
         KeypadMessage kpMsg = (KeypadMessage) msg;
+
         int addressMask = kpMsg.getIntAddressMask();
+
         if (!(((config.addressMask & addressMask) != 0) || config.addressMask == 0 || addressMask == 0)) {
             return;
         }
@@ -167,7 +169,8 @@ public class KeypadHandler extends ADThingHandler {
 
         if (config.sendStar) {
             if (kpMsg.alphaMessage.contains("Hit * for faults") || kpMsg.alphaMessage.contains("Press * to show faults")
-                    || kpMsg.alphaMessage.contains("Press * Key")) {
+                    || kpMsg.alphaMessage.contains("Press * Key")
+                    || kpMsg.alphaMessage.contains("Press *  to show faults")) {
                 logger.debug("Sending * command to show faults.");
                 if (singleAddress) {
                     sendCommand(ADCommand.addressedMessage(config.addressMask, "*")); // send from keypad address

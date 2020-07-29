@@ -32,6 +32,8 @@ public class TopicSubscribe implements MqttMessageSubscriber {
     final String topic;
     final MQTTTopicDiscoveryParticipant topicDiscoveredListener;
 
+    private boolean isStarted = false;
+
     /**
      * Creates a {@link TopicSubscribe} object.
      *
@@ -66,7 +68,10 @@ public class TopicSubscribe implements MqttMessageSubscriber {
      * @return Completes with true if successful. Completes with false if not connected yet. Exceptionally otherwise.
      */
     public CompletableFuture<Boolean> start() {
-        return connection == null ? CompletableFuture.completedFuture(true) : connection.subscribe(topic, this);
+        CompletableFuture<Boolean> startFuture = connection == null ? CompletableFuture.completedFuture(true)
+                : connection.subscribe(topic, this);
+        isStarted = true;
+        return startFuture;
     }
 
     /**
@@ -75,6 +80,18 @@ public class TopicSubscribe implements MqttMessageSubscriber {
      * @return Completes with true if successful. Exceptionally otherwise.
      */
     public CompletableFuture<Boolean> stop() {
-        return connection == null ? CompletableFuture.completedFuture(true) : connection.unsubscribe(topic, this);
+        CompletableFuture<Boolean> stopFuture = connection == null ? CompletableFuture.completedFuture(true)
+                : connection.unsubscribe(topic, this);
+        isStarted = false;
+        return stopFuture;
+    }
+
+    /**
+     * status of this topic subscription
+     *
+     * @return true if started
+     */
+    public boolean isStarted() {
+        return isStarted;
     }
 }

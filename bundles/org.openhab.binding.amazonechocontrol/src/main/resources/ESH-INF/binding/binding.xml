@@ -6,6 +6,6 @@
 	<name>Amazon Echo Control Binding</name>
 	<description>Binding to control Amazon Echo devices (Alexa). This binding enables openHAB to control the volume,
 		playing state, bluetooth connection of your amazon echo devices or allow to use it as TTS device.</description>
-	<author>Michael Geramb</author>
+	<author>Michael Geramb, Lukas Knoeller</author>
 
 </binding:binding>

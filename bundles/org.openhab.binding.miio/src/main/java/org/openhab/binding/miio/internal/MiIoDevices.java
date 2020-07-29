@@ -86,6 +86,7 @@ public enum MiIoDevices {
     PHILIPS_C("philips.light.ceiling", "Xiaomi Philips LED Ceiling Lamp", THING_TYPE_BASIC),
     PHILIPS_C2("philips.light.zyceiling", "Xiaomi Philips LED Ceiling Lamp", THING_TYPE_BASIC),
     PHILIPS_BULB("philips.light.bulb", "Xiaomi Philips Bulb", THING_TYPE_BASIC),
+    PHILIPS_HBULB("philips.light.hbulb", "Xiaomi Philips Wi-Fi Bulb E27 White", THING_TYPE_BASIC),
     PHILIPS_CANDLE("philips.light.candle", "PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp", THING_TYPE_BASIC),
     PHILIPS_DOWN("philips.light.downlight", "Xiaomi Philips Downlight", THING_TYPE_BASIC),
     PHILIPS_MOON("philips.light.moonlight", "Xiaomi Philips ZhiRui bedside lamp", THING_TYPE_BASIC),

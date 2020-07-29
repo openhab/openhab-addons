@@ -15,7 +15,7 @@ package org.openhab.binding.netatmo.internal.station;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -30,6 +30,7 @@ import io.swagger.client.model.NAStationModule;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
 
     public NAModule2Handler(Thing thing, final TimeZoneProvider timeZoneProvider) {
@@ -42,26 +43,24 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
-        if (module != null) {
-            NADashboardData dashboardData = module.getDashboardData();
-            if (dashboardData != null) {
-                switch (channelId) {
-                    case CHANNEL_WIND_ANGLE:
-                        return toQuantityType(dashboardData.getWindAngle(), API_WIND_DIRECTION_UNIT);
-                    case CHANNEL_WIND_STRENGTH:
-                        return toQuantityType(dashboardData.getWindStrength(), API_WIND_SPEED_UNIT);
-                    case CHANNEL_GUST_ANGLE:
-                        return toQuantityType(dashboardData.getGustAngle(), API_WIND_DIRECTION_UNIT);
-                    case CHANNEL_GUST_STRENGTH:
-                        return toQuantityType(dashboardData.getGustStrength(), API_WIND_SPEED_UNIT);
-                    case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
-                    case CHANNEL_MAX_WIND_STRENGTH:
-                        return toQuantityType(dashboardData.getMaxWindStr(), API_WIND_SPEED_UNIT);
-                    case CHANNEL_DATE_MAX_WIND_STRENGTH:
-                        return toDateTimeType(dashboardData.getDateMaxWindStr(), timeZoneProvider.getTimeZone());
-                }
+    protected State getNAThingProperty(String channelId) {
+        NADashboardData dashboardData = getModule().map(m -> m.getDashboardData()).orElse(null);
+        if (dashboardData != null) {
+            switch (channelId) {
+                case CHANNEL_WIND_ANGLE:
+                    return toQuantityType(dashboardData.getWindAngle(), API_WIND_DIRECTION_UNIT);
+                case CHANNEL_WIND_STRENGTH:
+                    return toQuantityType(dashboardData.getWindStrength(), API_WIND_SPEED_UNIT);
+                case CHANNEL_GUST_ANGLE:
+                    return toQuantityType(dashboardData.getGustAngle(), API_WIND_DIRECTION_UNIT);
+                case CHANNEL_GUST_STRENGTH:
+                    return toQuantityType(dashboardData.getGustStrength(), API_WIND_SPEED_UNIT);
+                case CHANNEL_TIMEUTC:
+                    return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
+                case CHANNEL_MAX_WIND_STRENGTH:
+                    return toQuantityType(dashboardData.getMaxWindStr(), API_WIND_SPEED_UNIT);
+                case CHANNEL_DATE_MAX_WIND_STRENGTH:
+                    return toDateTimeType(dashboardData.getDateMaxWindStr(), timeZoneProvider.getTimeZone());
             }
         }
         return super.getNAThingProperty(channelId);

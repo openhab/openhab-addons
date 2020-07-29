@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Andy Lintner - Initial contribution
  */
 @Component(service = ConsoleCommandExtension.class)
+@NonNullByDefault
 public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String SUBCMD_CLEAR_PAIRINGS = "clearPairings";
     private static final String SUBCMD_LIST_ACCESSORIES = "list";
@@ -42,7 +44,8 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String LEGACY_SUBCMD_PRINT_ACCESSORY = "printAccessory";
 
     private final Logger logger = LoggerFactory.getLogger(HomekitCommandExtension.class);
-    private Homekit homekit;
+
+    private @NonNullByDefault({}) Homekit homekit;
 
     public HomekitCommandExtension() {
         super("homekit", "Interact with the HomeKit integration.");
@@ -59,7 +62,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
 
                 case SUBCMD_ALLOW_UNAUTHENTICATED:
                     if (args.length > 1) {
-                        boolean allow = Boolean.valueOf(args[1]);
+                        boolean allow = Boolean.parseBoolean(args[1]);
                         allowUnauthenticatedHomekitRequests(allow, console);
                     } else {
                         console.println("true/false is required as an argument");
@@ -110,10 +113,6 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
         this.homekit = homekit;
     }
 
-    public void unsetHomekit(Homekit homekit) {
-        this.homekit = null;
-    }
-
     private void clearHomekitPairings(Console console) {
         homekit.clearHomekitPairings();
         console.println("Cleared HomeKit pairings");
@@ -125,7 +124,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     }
 
     private void listAccessories(Console console) {
-        homekit.getAccessories().stream().forEach(v -> {
+        homekit.getAccessories().forEach(v -> {
             try {
                 console.println(v.getId() + " " + v.getName().get());
             } catch (InterruptedException | ExecutionException e) {
@@ -144,9 +143,7 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
                     v.getServices().forEach(s -> {
                         console.println("    Service Type: " + s.getType());
                         console.println("    Characteristics: ");
-                        s.getCharacteristics().forEach(c -> {
-                            console.println("      : " + c.getClass());
-                        });
+                        s.getCharacteristics().forEach(c -> console.println("      : " + c.getClass()));
                     });
                     console.println("");
                 }

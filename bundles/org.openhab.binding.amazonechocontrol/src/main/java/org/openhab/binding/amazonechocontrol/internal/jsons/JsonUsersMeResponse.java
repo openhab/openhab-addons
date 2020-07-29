@@ -16,32 +16,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonActivity} encapsulate the GSON data of the users me response
+ * The {@link JsonUsersMeResponse} encapsulate the GSON data of the users me response
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
 public class JsonUsersMeResponse {
-    @Nullable
-    public String countryOfResidence;
-    @Nullable
-    public String effectiveMarketPlaceId;
-    @Nullable
-    public String email;
-    @Nullable
-    public Boolean eulaAcceptance;
-    @Nullable
-    public String @Nullable [] features;
-    @Nullable
-    public String fullName;
-    @Nullable
-    public Boolean hasActiveDopplers;
-    @Nullable
-    public String id;
-    @Nullable
-    public String marketPlaceDomainName;
-    @Nullable
-    public String marketPlaceId;
-    @Nullable
-    public String marketPlaceLocale;
+    public @Nullable String countryOfResidence;
+    public @Nullable String effectiveMarketPlaceId;
+    public @Nullable String email;
+    public @Nullable Boolean eulaAcceptance;
+    public @Nullable String @Nullable [] features;
+    public @Nullable String fullName;
+    public @Nullable Boolean hasActiveDopplers;
+    public @Nullable String id;
+    public @Nullable String marketPlaceDomainName;
+    public @Nullable String marketPlaceId;
+    public @Nullable String marketPlaceLocale;
 }

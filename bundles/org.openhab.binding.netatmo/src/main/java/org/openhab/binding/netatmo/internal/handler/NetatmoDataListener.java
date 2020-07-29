@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NetatmoDataListener} allows receiving notification when any netatmo device thing handler
  * is getting refreshed data from the netatmo server.
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public interface NetatmoDataListener {
 
     /**

@@ -28,4 +28,6 @@ public interface ILcnModuleActions {
     void flickerOutput(int output, int depth, int ramp, int count);
 
     void sendDynamicText(int row, @Nullable String textInput);
+
+    void startRelayTimer(int relaynumber, double duration);
 }

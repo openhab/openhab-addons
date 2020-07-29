@@ -15,6 +15,8 @@ package org.openhab.binding.telegram.bot;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -56,13 +58,18 @@ import com.pengrad.telegrambot.response.SendResponse;
 
 /**
  * Provides the actions for the Telegram API.
+ * <p>
+ * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
+ * the test <i>actions instanceof TelegramActions</i> fails. This test can fail
+ * due to an issue in openHAB core v2.5.0 where the {@link TelegramActions} class
+ * can be loaded by a different classloader than the <i>actions</i> instance.
  *
  * @author Alexander Krasnogolowy - Initial contribution
  *
  */
 @ThingActionsScope(name = "telegram")
 @NonNullByDefault
-public class TelegramActions implements ThingActions {
+public class TelegramActions implements ThingActions, ITelegramActions {
     private final Logger logger = LoggerFactory.getLogger(TelegramActions.class);
     private @Nullable TelegramHandler handler;
 
@@ -99,11 +106,13 @@ public class TelegramActions implements ThingActions {
             }
         }
 
+        @Override
         public String toString() {
             return String.format("Basic authentication result for %s", this.uri);
         }
     }
 
+    @Override
     @RuleAction(label = "Telegram answer", description = "Sends a Telegram answer via Telegram API")
     public boolean sendTelegramAnswer(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "replyId") @Nullable String replyId,
@@ -146,6 +155,7 @@ public class TelegramActions implements ThingActions {
         return false;
     }
 
+    @Override
     @RuleAction(label = "Telegram answer", description = "Sends a Telegram answer via Telegram API")
     public boolean sendTelegramAnswer(@ActionInput(name = "replyId") @Nullable String replyId,
             @ActionInput(name = "message") @Nullable String message) {
@@ -160,12 +170,14 @@ public class TelegramActions implements ThingActions {
         return true;
     }
 
+    @Override
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "message") @Nullable String message) {
         return sendTelegramGeneral(chatId, message, (String) null);
     }
 
+    @Override
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message) {
         TelegramHandler localHandler = handler;
@@ -179,6 +191,7 @@ public class TelegramActions implements ThingActions {
         return true;
     }
 
+    @Override
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegramQuery(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "message") @Nullable String message,
@@ -187,6 +200,7 @@ public class TelegramActions implements ThingActions {
         return sendTelegramGeneral(chatId, message, replyId, buttons);
     }
 
+    @Override
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegramQuery(@ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "replyId") @Nullable String replyId,
@@ -252,6 +266,7 @@ public class TelegramActions implements ThingActions {
         return false;
     }
 
+    @Override
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "message") @Nullable String message,
@@ -259,6 +274,7 @@ public class TelegramActions implements ThingActions {
         return sendTelegram(chatId, String.format(message, args));
     }
 
+    @Override
     @RuleAction(label = "Telegram message", description = "Sends a Telegram via Telegram API")
     public boolean sendTelegram(@ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "args") @Nullable Object... args) {
@@ -280,6 +296,7 @@ public class TelegramActions implements ThingActions {
         return sendTelegramPhoto(chatId, photoURL, caption, null, null);
     }
 
+    @Override
     @RuleAction(label = "Telegram photo", description = "Sends a Picture via Telegram API")
     public boolean sendTelegramPhoto(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "photoURL") @Nullable String photoURL,
@@ -370,6 +387,7 @@ public class TelegramActions implements ThingActions {
         return false;
     }
 
+    @Override
     @RuleAction(label = "Telegram photo", description = "Sends a Picture via Telegram API")
     public boolean sendTelegramPhoto(@ActionInput(name = "photoURL") @Nullable String photoURL,
             @ActionInput(name = "caption") @Nullable String caption,
@@ -396,103 +414,78 @@ public class TelegramActions implements ThingActions {
     /* APIs without chatId parameter */
     public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable String format,
             @Nullable Object... args) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(format, args);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegram(format, args);
     }
 
     public static boolean sendTelegramQuery(@Nullable ThingActions actions, @Nullable String message,
             @Nullable String replyId, @Nullable String... buttons) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramQuery(message, replyId, buttons);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegramQuery(message, replyId, buttons);
     }
 
     public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable String photoURL,
             @Nullable String caption) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegramPhoto(photoURL, caption, null, null);
     }
 
     public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable String photoURL,
             @Nullable String caption, @Nullable String username, @Nullable String password) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(photoURL, caption, username, password);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegramPhoto(photoURL, caption, username, password);
     }
 
     public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable String replyId,
             @Nullable String message) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramAnswer(replyId, message);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegramAnswer(replyId, message);
     }
 
     /* APIs with chatId parameter */
 
     public static boolean sendTelegram(@Nullable ThingActions actions, @Nullable Long chatId, @Nullable String format,
             @Nullable Object... args) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegram(chatId, format, args);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegram(chatId, format, args);
     }
 
     public static boolean sendTelegramQuery(@Nullable ThingActions actions, @Nullable Long chatId,
             @Nullable String message, @Nullable String replyId, @Nullable String... buttons) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramQuery(chatId, message, replyId, buttons);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegramQuery(chatId, message, replyId, buttons);
     }
 
     public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable Long chatId,
             @Nullable String photoURL, @Nullable String caption) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegramPhoto(chatId, photoURL, caption, null, null);
     }
 
     public static boolean sendTelegramPhoto(@Nullable ThingActions actions, @Nullable Long chatId,
             @Nullable String photoURL, @Nullable String caption, @Nullable String username, @Nullable String password) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramPhoto(chatId, photoURL, caption, username, password);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegramPhoto(chatId, photoURL, caption, username, password);
     }
 
     public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable Long chatId,
             @Nullable String replyId, @Nullable String message) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramAnswer(chatId, replyId, message);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
-        }
+        return invokeMethodOf(actions).sendTelegramAnswer(chatId, replyId, message);
     }
 
     public static boolean sendTelegramAnswer(@Nullable ThingActions actions, @Nullable String chatId,
             @Nullable String replyId, @Nullable String message) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
-        } else {
-            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
+        return invokeMethodOf(actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
+    }
+
+    private static ITelegramActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(TelegramActions.class.getName())) {
+            if (actions instanceof ITelegramActions) {
+                return (ITelegramActions) actions;
+            } else {
+                return (ITelegramActions) Proxy.newProxyInstance(ITelegramActions.class.getClassLoader(),
+                        new Class[] { ITelegramActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
     }
 
     @Override

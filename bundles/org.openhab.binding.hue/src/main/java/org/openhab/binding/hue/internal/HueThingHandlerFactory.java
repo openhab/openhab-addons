@@ -37,6 +37,7 @@ import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
+import org.openhab.binding.hue.internal.handler.HueStateDescriptionOptionProvider;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
@@ -44,7 +45,9 @@ import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * {@link HueThingHandlerFactory} is a factory for {@link HueBridgeHandler}s.
@@ -59,6 +62,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.hue")
 public class HueThingHandlerFactory extends BaseThingHandlerFactory {
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
             Stream.of(HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
                     DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
@@ -66,7 +70,14 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                     LightLevelHandler.SUPPORTED_THING_TYPES.stream(), ClipHandler.SUPPORTED_THING_TYPES.stream(),
                     HueGroupHandler.SUPPORTED_THING_TYPES.stream()).flatMap(i -> i).collect(Collectors.toSet()));
 
+    private final HueStateDescriptionOptionProvider stateOptionProvider;
+
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    @Activate
+    public HueThingHandlerFactory(final @Reference HueStateDescriptionOptionProvider stateOptionProvider) {
+        this.stateOptionProvider = stateOptionProvider;
+    }
 
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
@@ -135,7 +146,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            HueBridgeHandler handler = new HueBridgeHandler((Bridge) thing);
+            HueBridgeHandler handler = new HueBridgeHandler((Bridge) thing, stateOptionProvider);
             registerLightDiscoveryService(handler);
             return handler;
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
@@ -153,7 +164,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new ClipHandler(thing);
         } else if (HueGroupHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueGroupHandler(thing);
+            return new HueGroupHandler(thing, stateOptionProvider);
         } else {
             return null;
         }

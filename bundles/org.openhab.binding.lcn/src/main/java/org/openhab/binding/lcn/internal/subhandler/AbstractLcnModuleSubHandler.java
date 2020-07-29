@@ -93,7 +93,8 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
     }
 
     @Override
-    public void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number) throws LcnException {
+    public void handleCommandUpDown(UpDownType command, LcnChannelGroup channelGroup, int number, boolean invertUpDown)
+            throws LcnException {
         unsupportedCommand(command);
     }
 
