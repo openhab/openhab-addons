@@ -107,7 +107,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     private void stopChannelUpdate() {
-        if (updateChannelsJob != null && !updateChannelsJob.isCancelled()) {
+        if (updateChannelsJob != null) {
             updateChannelsJob.cancel(true);
         }
     }
