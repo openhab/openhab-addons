@@ -71,8 +71,7 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
         Optional<NAWelcomeHome> result = getBridgeHandler().flatMap(handler -> handler.getWelcomeDataBody(getId()))
                 .map(dataBody -> dataBody.getHomes().stream().filter(device -> device.getId().equalsIgnoreCase(getId()))
                         .findFirst().orElse(null));
-        // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this
-        // need
+        // data time stamp is updated to now as WelcomeDataBody does not provide any information according to this need
         dataTimeStamp = (int) (Calendar.getInstance().getTimeInMillis() / 1000);
         result.ifPresent(home -> {
             home.getCameras().forEach(camera -> childs.put(camera.getId(), camera));
@@ -181,12 +180,17 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
 
         NAWelcomeEvent event = eventOptional.get();
 
-        if (event.getPersonId() != null) {
-            detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
-        }
-
         if (NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.toString().equals(event.getType())) {
-            detectedObjectTypes.add(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.name());
+            if (event.getPersonId() != null) {
+                detectedObjectTypes.add(NAWelcomeSubEvent.TypeEnum.HUMAN.name());
+            } else {
+                Optional<NAWelcomeSubEvent.TypeEnum> detectedCategory = findDetectedCategory(event);
+                if (detectedCategory.isPresent()) {
+                    detectedObjectTypes.add(detectedCategory.get().name());
+                } else {
+                    detectedObjectTypes.add(NAWebhookCameraEvent.EventTypeEnum.MOVEMENT.name());
+                }
+            }
         }
 
         event.getEventList().forEach(subEvent -> {
@@ -194,6 +198,15 @@ public class NAWelcomeHomeHandler extends NetatmoDeviceHandler<NAWelcomeHome> {
             detectedObjectTypes.add(detectedObjectType);
         });
         return detectedObjectTypes;
+    }
+
+    private static Optional<NAWelcomeSubEvent.TypeEnum> findDetectedCategory(NAWelcomeEvent event) {
+        NAWelcomeEvent.CategoryEnum category = event.getCategory();
+        if (category != null) {
+            // It is safe to convert the enum, both enums have the same values.
+            return Optional.of(NAWelcomeSubEvent.TypeEnum.valueOf(category.name()));
+        }
+        return Optional.empty();
     }
 
     private Optional<String> findEventMessage() {
