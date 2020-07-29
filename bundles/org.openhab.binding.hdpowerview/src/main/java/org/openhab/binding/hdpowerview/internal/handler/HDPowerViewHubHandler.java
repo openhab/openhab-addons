@@ -140,14 +140,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private void schedulePoll() {
         ScheduledFuture<?> future = this.pollFuture;
-        if (future != null && !future.isCancelled()) {
+        if (future != null) {
             future.cancel(false);
         }
         logger.debug("Scheduling poll for 5000ms out, then every {}ms", refreshInterval);
         this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 5000, refreshInterval, TimeUnit.MILLISECONDS);
 
         future = this.hardRefreshFuture;
-        if (future != null && !future.isCancelled()) {
+        if (future != null) {
             future.cancel(false);
         }
         if (hardRefreshInterval > 0) {
@@ -159,13 +159,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private synchronized void stopPoll() {
         ScheduledFuture<?> future = this.pollFuture;
-        if (future != null && !future.isCancelled()) {
+        if (future != null) {
             future.cancel(true);
         }
         this.pollFuture = null;
 
         future = this.hardRefreshFuture;
-        if (future != null && !future.isCancelled()) {
+        if (future != null) {
             future.cancel(true);
         }
         this.hardRefreshFuture = null;
