@@ -10,23 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.config;
+package org.openhab.binding.hdpowerview.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Basic configuration for the HD PowerView hub
+ * Actuator class; all shades have a PRIMARY class actuator, plus double action
+ * shades also have a SECONDARY class actuator
  *
- * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewHubConfiguration {
-
-    public static final String HOST = "host";
-
-    public @Nullable String host;
-
-    public long refresh;
-    public long hardRefresh;
+public enum ActuatorClass {
+    PRIMARY_ACTUATOR,
+    SECONDARY_ACTUATOR;
 }
