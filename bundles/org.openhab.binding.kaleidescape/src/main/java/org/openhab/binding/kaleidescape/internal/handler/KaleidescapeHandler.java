@@ -191,7 +191,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         } else if (port != null) {
             connector = new KaleidescapeIpConnector(host, port);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "configuration error");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Either Serial port or Host & Port must be specifed");
             return;
         }
 
@@ -355,7 +356,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     String error = EMPTY;
                     if (openConnection()) {
                         try {
-                            Set<String> initialCommands = new HashSet<String>(Arrays.asList(GET_DEVICE_TYPE_NAME,
+                            Set<String> initialCommands = new HashSet<>(Arrays.asList(GET_DEVICE_TYPE_NAME,
                                     GET_FRIENDLY_NAME, GET_DEVICE_INFO, GET_SYSTEM_VERSION, GET_DEVICE_POWER_STATE,
                                     GET_CINEMASCAPE_MASK, GET_CINEMASCAPE_MODE, GET_SCALE_MODE, GET_SCREEN_MASK,
                                     GET_SCREEN_MASK2, GET_VIDEO_MODE, GET_UI_STATE, GET_HIGHLIGHTED_SELECTION,

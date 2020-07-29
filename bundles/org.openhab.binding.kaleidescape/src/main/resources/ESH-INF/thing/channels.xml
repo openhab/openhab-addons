@@ -182,7 +182,7 @@
 	<channel-type id="movie_control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control movie playback e.g. Play/Pause/Next/Previous/Fforward/Rewind</description>
+		<description>Control movie playback e.g. Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
 	</channel-type>
 
