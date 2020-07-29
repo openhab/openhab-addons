@@ -28,7 +28,7 @@
 			<parameter name="hardRefresh" type="integer" required="false">
 				<label>Hard Refresh Interval</label>
 				<description>The number of minutes between hard refreshes of the PowerView Hub (or 0 to disable)</description>
-				<default>60</default>
+				<default>180</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -80,12 +80,6 @@
 		<item-type>Switch</item-type>
 		<label>Activate</label>
 		<description>Activates the scene</description>
-	</channel-type>
-
-	<channel-type id="refresh">
-		<item-type>Switch</item-type>
-		<label>Refresh Cache</label>
-		<description>Instructs the Hub to refresh its Shade data cache</description>
 	</channel-type>
 
 </thing:thing-descriptions>
