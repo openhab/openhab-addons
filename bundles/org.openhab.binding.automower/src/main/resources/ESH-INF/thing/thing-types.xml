@@ -35,6 +35,10 @@
 
 	<!-- Automower Thing Type -->
 	<thing-type id="automower">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
 		<label>Automower</label>
 		<description>An automatic lawn mower</description>
 

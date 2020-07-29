@@ -26,16 +26,16 @@ public final class AutomowerBridgeConfiguration {
     private @Nullable String userName;
     private @Nullable String password;
 
-    private int pollingInterval;
+    private @Nullable Integer pollingInterval;
 
     /**
      * @return The polling interval for the automower state in s
      */
-    public int getPollingInterval() {
+    public @Nullable Integer getPollingInterval() {
         return pollingInterval;
     }
 
-    public void setPollingInterval(int pollingInterval) {
+    public void setPollingInterval(Integer pollingInterval) {
         this.pollingInterval = pollingInterval;
     }
 

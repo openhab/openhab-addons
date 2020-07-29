@@ -46,13 +46,11 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(AutomowerBridgeHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.HOURS.toSeconds(1);
 
     private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
-    private long automowerPollingIntervalS = TimeUnit.HOURS.toSeconds(1);
 
-    private @NonNullByDefault({}) AutomowerBridge bridge;
-    private @NonNullByDefault({}) AutomowerBridgeConfiguration bridgeConfiguration;
-
+    private @Nullable AutomowerBridge bridge;
     private final HttpClient httpClient;
 
     private static class AutomowerBridgePollingRunnable implements Runnable {
@@ -96,36 +94,37 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        bridgeConfiguration = getConfigAs(AutomowerBridgeConfiguration.class);
+        AutomowerBridgeConfiguration bridgeConfiguration = getConfigAs(AutomowerBridgeConfiguration.class);
 
         final String appKey = bridgeConfiguration.getAppKey();
         final String userName = bridgeConfiguration.getUserName();
         final String password = bridgeConfiguration.getPassword();
+        final Integer pollingIntervalS = bridgeConfiguration.getPollingInterval();
+
         if (appKey == null || appKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-key");
         } else if (userName == null || userName.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
         } else if (password == null || password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-password");
+        } else if (pollingIntervalS != null && pollingIntervalS < 1) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error-invalid-polling-interval");
         } else {
             if (bridge == null) {
                 bridge = new AutomowerBridge(appKey, userName, password, httpClient, scheduler);
-                startAutomowerBridgePolling(bridge);
+                startAutomowerBridgePolling(bridge, pollingIntervalS);
             }
             updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
-    private void startAutomowerBridgePolling(AutomowerBridge bridge) {
+    private void startAutomowerBridgePolling(AutomowerBridge bridge, @Nullable Integer pollingIntervalS) {
         ScheduledFuture<?> currentPollingJob = automowerBridgePollingJob;
         if (currentPollingJob == null) {
-            if (bridgeConfiguration.getPollingInterval() < 1) {
-                logger.info("No valid polling interval specified. Using default value: {}s", automowerPollingIntervalS);
-            } else {
-                automowerPollingIntervalS = bridgeConfiguration.getPollingInterval();
-            }
+            final long pollingIntervalToUse = pollingIntervalS == null ? DEFAULT_POLLING_INTERVAL_S : pollingIntervalS;
             automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(
-                    new AutomowerBridgePollingRunnable(this, bridge), 1, automowerPollingIntervalS, TimeUnit.SECONDS);
+                    new AutomowerBridgePollingRunnable(this, bridge), 1, pollingIntervalToUse, TimeUnit.SECONDS);
         }
     }
 
@@ -141,15 +140,20 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public AutomowerBridge getAutomowerBridge() {
+    public @Nullable AutomowerBridge getAutomowerBridge() {
         return bridge;
     }
 
     public Optional<MowerListResult> getAutomowers() {
+        AutomowerBridge currentBridge = bridge;
+        if (currentBridge == null) {
+            return Optional.empty();
+        }
+
         try {
-            return Optional.of(bridge.getAutomowers());
+            return Optional.of(currentBridge.getAutomowers());
         } catch (AutomowerCommunicationException e) {
-            logger.debug("Bridge cannot get list of available automowers", e);
+            logger.debug("Bridge cannot get list of available automowers {}", e.getMessage());
             return Optional.empty();
         }
     }

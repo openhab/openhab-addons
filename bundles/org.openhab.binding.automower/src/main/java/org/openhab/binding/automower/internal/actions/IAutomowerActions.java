@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.automower.internal.actions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Actions that can be executed for an automower
  *
  * @author Markus Pfleger - Initial contribution
  */
+@NonNullByDefault
 public interface IAutomowerActions {
 
     void resumeSchedule();
@@ -30,5 +33,4 @@ public interface IAutomowerActions {
     void pause();
 
     void start(int durationMin);
-
 }

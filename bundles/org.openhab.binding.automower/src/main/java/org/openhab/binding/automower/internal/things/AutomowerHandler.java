@@ -59,16 +59,13 @@ public class AutomowerHandler extends BaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AUTOMOWER);
     private static final String NO_ID = "NO_ID";
     private static final long DEFAULT_COMMAND_DURATION_MIN = 60;
+    private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.MINUTES.toSeconds(10);
 
     private final Logger logger = LoggerFactory.getLogger(AutomowerHandler.class);
-
-    private @Nullable AutomowerConfiguration config;
-
     private AtomicReference<String> automowerId = new AtomicReference<String>(NO_ID);
-    private long lastQueryTime = 0L;
+    private long lastQueryTimeMs = 0L;
 
     private @Nullable ScheduledFuture<?> automowerPollingJob;
-    private long automowerPollingIntervalS = TimeUnit.MINUTES.toSeconds(10);
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
 
     public AutomowerHandler(Thing thing) {
@@ -109,14 +106,18 @@ public class AutomowerHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
-            config = currentConfig;
             final String configMowerId = currentConfig.getMowerId();
-            if (configMowerId != null) {
-                automowerId.set(configMowerId);
-                startAutomowerPolling(currentConfig);
-            } else {
+            final Integer pollingIntervalS = currentConfig.getPollingInterval();
+
+            if (configMowerId == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/conf-error-no-mower-id");
+            } else if (pollingIntervalS != null && pollingIntervalS < 1) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/conf-error-invalid-polling-interval");
+            } else {
+                automowerId.set(configMowerId);
+                startAutomowerPolling(pollingIntervalS);
             }
 
         } else {
@@ -145,15 +146,11 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     }
 
-    private void startAutomowerPolling(AutomowerConfiguration config) {
+    private void startAutomowerPolling(@Nullable Integer pollingIntervalS) {
         if (automowerPollingJob == null) {
-            if (config.getPollingInterval() < 1) {
-                logger.info("No valid polling interval specified. Using default value: {}s", automowerPollingIntervalS);
-            } else {
-                automowerPollingIntervalS = config.getPollingInterval();
-            }
+            final long pollingIntervalToUse = pollingIntervalS == null ? DEFAULT_POLLING_INTERVAL_S : pollingIntervalS;
             automowerPollingJob = scheduler.scheduleWithFixedDelay(new AutomowerPollingRunnable(), 1,
-                    automowerPollingIntervalS, TimeUnit.SECONDS);
+                    pollingIntervalToUse, TimeUnit.SECONDS);
         }
     }
 
@@ -175,8 +172,8 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private synchronized void updateAutomowerState() {
-        if (System.nanoTime() - lastQueryTime > maxQueryFrequencyNanos) {
-            lastQueryTime = System.nanoTime();
+        if (System.nanoTime() - lastQueryTimeMs > maxQueryFrequencyNanos) {
+            lastQueryTimeMs = System.nanoTime();
             String id = automowerId.get();
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();

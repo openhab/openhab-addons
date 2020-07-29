@@ -25,7 +25,9 @@ public class AutomowerConfiguration {
 
     @Nullable
     public String mowerId;
-    public int pollingInterval;
+
+    @Nullable
+    public Integer pollingInterval;
 
     @Nullable
     public String getMowerId() {
@@ -36,11 +38,11 @@ public class AutomowerConfiguration {
         this.mowerId = mowerId;
     }
 
-    public int getPollingInterval() {
+    public @Nullable Integer getPollingInterval() {
         return pollingInterval;
     }
 
-    public void setPollingInterval(int pollingInterval) {
+    public void setPollingInterval(Integer pollingInterval) {
         this.pollingInterval = pollingInterval;
     }
 }

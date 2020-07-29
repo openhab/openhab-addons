@@ -40,13 +40,6 @@ public abstract class HusqvarnaApi {
     protected abstract String getBaseUrl();
 
     protected HttpClient getHttpClient() throws AutomowerCommunicationException {
-        if (!httpClient.isRunning()) {
-            try {
-                httpClient.start();
-            } catch (Exception e) {
-                throw new AutomowerCommunicationException("Exception while trying to start http client", e);
-            }
-        }
         return httpClient;
     }
 }
