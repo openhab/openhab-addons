@@ -149,6 +149,9 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case WINDOW_COVERING_DEVICE:
                 thingTypeUID = THING_TYPE_WINDOW_COVERING;
                 break;
+            case WARNING_DEVICE:
+                thingTypeUID = THING_TYPE_WARNING_DEVICE;
+                break;
             case CONFIGURATION_TOOL:
                 // ignore configuration tool device
                 return;

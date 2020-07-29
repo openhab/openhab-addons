@@ -201,13 +201,13 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="ccopulsed">
+	<thing-type id="ccopulsed" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Pulsed CCO</label>
-		<description>Pulsed Contact Closure Output</description>
+		<label>Pulsed CCO (Deprecated)</label>
+		<description>Pulsed Contact Closure Output (Deprecated)</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -228,13 +228,13 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="ccomaintained">
+	<thing-type id="ccomaintained" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Maintained CCO</label>
-		<description>Maintained Contact Closure Output</description>
+		<label>Maintained CCO (Deprecated)</label>
+		<description>Maintained Contact Closure Output (Deprecated)</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -268,6 +268,26 @@
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Address of sensor in the Lutron lighting system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="sysvar">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>System State Variable</label>
+		<description>HomeWorks QS system state variable</description>
+
+		<channels>
+			<channel id="varstate" typeId="varstateType"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Integration ID for state variable</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -1234,6 +1254,14 @@
 		<description>Green mode step number</description>
 		<category>Number</category>
 		<state min="1"/>
+	</channel-type>
+
+	<channel-type id="varstateType">
+		<item-type>Number</item-type>
+		<label>Variable State</label>
+		<description>System variable state</description>
+		<category>Number</category>
+		<state min="0"/>
 	</channel-type>
 
 	<channel-type id="superschedulebutton">

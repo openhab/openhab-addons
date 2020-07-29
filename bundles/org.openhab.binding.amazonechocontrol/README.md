@@ -688,6 +688,11 @@ E.g. to read out the history call from an installation on openhab:8080 with an a
 
 http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
 
+To resolve login problems the connection settings of an `account` thing can be reset via the karaf console.
+The command `amazonechocontrol listAccounts` shows a list of all available `account` things.
+The command `amazonechocontrol resetAccount <id>` resets the device id and all other connection settings.
+After resetting a connection, a new login as described above is necessary.
+
 ## Note
 
 This binding uses the same API as the Web-Browser-Based Alexa site (alexa.amazon.de).

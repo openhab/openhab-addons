@@ -43,6 +43,7 @@ This binding currently supports the following thing types:
 * **blind** - Lutron venetian blind or horizontal sheer blind [**Experimental**]
 * **greenmode** - Green Mode subsystem
 * **timeclock** - Scheduling subsystem
+* **sysvar** - System state variable (HomeWorks QS only) [**Experimental**]
 
 ## Discovery
 
@@ -103,7 +104,10 @@ Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", passwo
 
 ### Dimmers
 
-Dimmers can optionally be configured to specify a fade in and fade out time in seconds using the `fadeInTime` and `fadeOutTime` parameters.
+Dimmers can optionally be configured to specify a default fade in and fade out time in seconds using the `fadeInTime` and `fadeOutTime` parameters.
+These are used for ON and OFF commands, respectively, and default to 1 second if not set.
+Commands using a specific percent value will use a default fade time of 0.25 seconds.
+
 A **dimmer** thing has a single channel *lightlevel* with type Dimmer and category DimmableLight.
 
 Thing configuration file example:
@@ -111,6 +115,19 @@ Thing configuration file example:
 ```
 Thing dimmer livingroom [ integrationId=8, fadeInTime=0.5, fadeOutTime=5 ]
 ```
+
+The **dimmer** thing supports the thing action `setLevel(Double level, Double fadeTime, Double delayTime)` for automation rules.
+
+The parameters are:
+
+* `level` The new light level to set (0-100)
+* `fadeTime` The time in seconds over which the dimmer should fade to the new level
+* `delayTime` The time in seconds to delay before starting to fade to the new level
+
+The fadeTime and delayTime parameters are significant to 2 digits after the decimal point (i.e. to hundredths of a second), but some Lutron systems may round the time to the nearest 0.25 seconds when processing the command.
+Times of 100 seconds or more will be rounded to the nearest integer value.
+
+See below for an example rule using thing actions.
 
 ### Switches
 
@@ -382,10 +399,8 @@ The `pulseLength` parameter sets the pulse length in seconds for a pulsed output
 It can range from 0.25 to 99.0 seconds and defaults to 0.5. It is ignored if `outputType="Maintained"`.
 Be aware that the Lutron controller may round the pulse length down to the nearest 0.25 seconds.
 
-The **ccopulsed** and **ccomaintained** things are just **cco** things with the `outputType` fixed.
-They are used by autodiscovery to automatically set the correct output type.
-You can also use them in manual configurations, if you prefer.
-This may be a good idea if you are interfacing to sensitive equipment where accidentally setting the wrong output type might cause equipment damage.
+**Note:** The **ccopulsed** and **ccomaintained** things are now deprecated.
+You should use the **cco** thing with the appropriate `outputType` setting instead.
 
 Each **cco** thing creates one switch channel called *switchstatus*.
 For pulsed CCOs, sending an ON command will close the output for the configured pulse time.
@@ -399,8 +414,7 @@ Thing configuration file example:
 
 ```
 Thing cco garage [ integrationId=5, outputType="Pulsed", pulseLength=0.5 ]
-Thing ccopulsed gate [ integrationId=6, pulseLength=0.25 ]
-Thing ccomaintained relay1 [ integrationId=7 ]
+Thing cco relay1 [ integrationId=7, outputType="Maintained"]
 ```
 
 ### Shades
@@ -524,6 +538,22 @@ then
 end
 ```
 
+### System State Variables (HomeWorks QS only) [**Experimental**]
+
+HomeWorks QS systems allow for conditional programming logic based on state variables.
+The **sysvar** thing allows state variable values to be read and set from openHAB.
+This makes sophisticated integration schemes possible.
+Each **sysvar** thing represents one system state variable.
+It has a single channel *varstate* with type Number and category Number.
+Automatic discovery of state variables is not yet supported.
+They must be manually configured.
+
+Thing configuration file example:
+
+```
+Thing sysvar qsstate [ integrationId=80 ]
+```
+
 ## Channels
 
 The following is a summary of channels for all RadioRA 2 binding things:
@@ -547,6 +577,7 @@ The following is a summary of channels for all RadioRA 2 binding things:
 | timeclock           | execevent         | Number        | Execute event or monitor events executed     |
 | timeclock           | enableevent       | Number        | Enable event or monitor events enabled       |
 | timeclock           | disableevent      | Number        | Disable event or monitor events disabled     |
+| sysvar              | varstate          | Number        | Get/set system state variable value          |
 
 The channels available on each keypad device (i.e. keypad, ttkeypad, intlkeypad, grafikeyekeypad, pico, vcrx, and virtualkeypad) will vary with keypad type and model.
 Appropriate channels will be created automatically by the keypad, ttkeypad, intlkeypad, grafikeyekeypad, and pico thing handlers based on the setting of the `model` parameter for those thing types.
@@ -555,7 +586,7 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 
 | Thing     | Channel       | Native Type  | Accepts                                               |
 |-----------|---------------|--------------|-------------------------------------------------------|
-|dimmer     |lightlevel     |PercentType   |OnOffType, PercentType                                 |
+|dimmer     |lightlevel     |PercentType   |OnOffType, PercentType (rounded/truncated to integer)  |
 |switch     |switchstatus   |OnOffType     |OnOffType                                              |
 |occ. sensor|occupancystatus|OnOffType     |(*readonly*)                                           |
 |cco        |switchstatus   |OnOffType     |OnOffType, RefreshType                                 |
@@ -572,13 +603,14 @@ Appropriate channels will be created automatically by the keypad, ttkeypad, intl
 |           |execevent      |DecimalType   |DecimalType                                            |
 |           |enableevent    |DecimalType   |DecimalType                                            |
 |           |disableevent   |DecimalType   |DecimalType                                            |
+|sysvar     |varstate       |DecimalType   |DecimalType (rounded/truncated to integer)             |
 
 Most channels receive immediate notifications of device state changes from the Lutron control system.
 The only exceptions are **greenmode** *step*, which is periodically polled and accepts REFRESH commands to initiate immediate polling, and **timeclock** *sunrise* and *sunset*, which must be polled daily using REFRESH commands to retrieve current values.
 Many other channels accept REFRESH commands to initiate a poll, but sending one should not normally be necessary.
 
 
-## RadioRA 2 Configuration File Example
+## RadioRA 2/HomeWorks QS Configuration File Examples:
 
 demo.things:
 
@@ -617,6 +649,19 @@ Number   Greenmode_Step      "Green Step"      { channel="lutron:greenmode:radio
 Rollershutter Lib_Shade1     "Shade 1"         { channel="lutron:shade:radiora2:libraryshade1:shadelevel" }
 
 ```
+
+dimmerAction.rules:
+
+```
+rule "Test dimmer action"
+when
+    Item TestSwitch received command ON
+then
+    val actions = getActions("lutron","lutron:dimmer:radiora2:lrtable")
+    actions.setLevel(100, 5.5, 0)
+end
+```
+
 
 # Lutron RadioRA (Classic) Binding
 

@@ -23,5 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ThingConfig {
     public String id = "";
+    public int lastSeenPolling = 0;
     public @Nullable Double transitiontime;
 }
