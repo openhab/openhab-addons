@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="intesis"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="mhacwifi1">
+		<label>MH-AC-WIFI-1</label>
+		<description>IntesisHome WiFi Adapter</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="windspeed" typeId="windspeed"/>
+			<channel id="swingUpDown" typeId="swingUpDown"/>
+			<channel id="swingLeftRight" typeId="swingLeftRight"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="returnTemp" typeId="returnTemp"/>
+			<channel id="outdoorTemp" typeId="outdoorTemp"/>
+		</channels>
+
+		<config-description>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for API access.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP Address</label>
+				<description>IP Address of the IntesisHome device.</description>
+				<context>network-address</context>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="mode">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.intesis.mode.label</label>
+		<description>@text/channel-type.intesis.mode.description</description>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">Heat</option>
+				<option value="2">Dry</option>
+				<option value="3">Fan</option>
+				<option value="4">Cool</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="windspeed">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.intesis.windspeed.label</label>
+		<description>@text/channel-type.intesis.windspeed.description</description>
+		<state>
+			<options>
+				<option value="0">Auto</option>
+				<option value="1">UltraLow</option>
+				<option value="2">Low</option>
+				<option value="3">Medium</option>
+				<option value="4">High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="swingUpDown">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.intesis.swingupdown.label</label>
+		<description>@text/channel-type.intesis.swingupdown.description</description>
+		<state>
+			<options>
+				<option value="0">Auto/STOP</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="10">Swing</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="swingLeftRight" advanced="true">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.intesis.swingleftright.label</label>
+		<description>@text/channel-type.intesis.swingleftright.description</description>
+		<state>
+			<options>
+				<option value="0">Auto/STOP</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="10">Swing</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.intesis.temperature.label</label>
+		<description>@text/channel-type.intesis.temperature.description</description>
+		<state min="16" max="86" step="1" pattern="%d %unit%"></state>
+	</channel-type>
+	<channel-type id="returnTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature</label>
+		<description>@text/channel-type.intesis.temperature.description</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="outdoorTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>@Outdoor Temperature</label>
+		<description>@text/channel-type.intesis.temperature.description</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>
