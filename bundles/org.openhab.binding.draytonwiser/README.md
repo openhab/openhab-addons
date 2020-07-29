@@ -74,7 +74,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `heatRequest`        | Switch               | Is the room actively requesting heat from the controller                     |
 | `roomBoosted`        | Switch               | Is the room currently being boosted                                          |
 | `roomBoostRemaining` | Number:Time          | How long until the boost deactivates in minutes                              |
-| `windowState`        | Switch               | Is the window open or closed?                                                |
+| `windowState`        | Contact              | Is the window open or closed?                                                |
 
 #### Room Stat
 
