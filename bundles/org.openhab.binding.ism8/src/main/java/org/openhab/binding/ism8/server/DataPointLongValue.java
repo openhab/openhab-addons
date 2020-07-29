@@ -14,6 +14,7 @@ package org.openhab.binding.ism8.server;
 
 import java.nio.ByteBuffer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
+@NonNullByDefault
 public class DataPointLongValue extends DataPointBase<Double> {
     private final Logger logger = LoggerFactory.getLogger(DataPointLongValue.class);
     private float factor;

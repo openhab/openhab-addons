@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.ism8.server;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link DataPointChangedEvent} is an event container for data point changes
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
+@NonNullByDefault
 public class DataPointChangedEvent {
     protected IDataPoint dataPoint;
 
@@ -28,6 +32,7 @@ public class DataPointChangedEvent {
      * Gets the data-point of the event.
      *
      */
+    @Nullable
     public IDataPoint getDataPoint() {
         return this.dataPoint;
     }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ism8.server;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
+@NonNullByDefault
 public class DataPointByteValue extends DataPointBase<Byte> {
     private final Logger logger = LoggerFactory.getLogger(DataPointByteValue.class);
 

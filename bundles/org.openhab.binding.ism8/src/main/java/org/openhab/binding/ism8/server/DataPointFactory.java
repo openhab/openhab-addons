@@ -14,6 +14,8 @@ package org.openhab.binding.ism8.server;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
+@NonNullByDefault
 public class DataPointFactory {
     private final Logger logger = LoggerFactory.getLogger(DataPointFactory.class);
     private static ArrayList<IDataPoint> dataPoints = new ArrayList<>();
@@ -30,6 +33,7 @@ public class DataPointFactory {
      * Creates the concrete data-point based on the type.
      *
      */
+    @Nullable
     public static IDataPoint createDataPoint(int id, String knxType, String description) {
         IDataPoint dataPoint = null;
         try {

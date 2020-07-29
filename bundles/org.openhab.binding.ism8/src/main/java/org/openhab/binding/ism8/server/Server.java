@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class Server extends Thread {
     private ArrayList<IDataPoint> dataPoints = new ArrayList<>();
     private java.net.ServerSocket serverSocket = null;
     private java.net.Socket client;
-    private IDataPointChangeListener changeListener;
+    @Nullable private IDataPointChangeListener changeListener;
 
     public Server(int port) {
         this.port = port;
@@ -158,14 +159,15 @@ public class Server extends Thread {
     private void handleCommunication() {
         try {
             logger.info("Waiting for connection in port {}.", this.getPort());
-            if (this.changeListener != null) {
-                this.changeListener.connectionStatusChanged(ThingStatus.OFFLINE);
+            IDataPointChangeListener listener = this.changeListener;
+            if (listener != null) {
+                listener.connectionStatusChanged(ThingStatus.OFFLINE);
             }
             serverSocket = new java.net.ServerSocket(this.getPort());
             this.client = serverSocket.accept();
             logger.info("Connection from Partner established {}", this.client.getRemoteSocketAddress());
-            if (this.changeListener != null) {
-                this.changeListener.connectionStatusChanged(ThingStatus.ONLINE);
+            if (listener != null) {
+                listener.connectionStatusChanged(ThingStatus.ONLINE);
             }
 
             this.startRetries = 0;
@@ -199,8 +201,8 @@ public class Server extends Thread {
                             if (dataPoint != null) {
                                 dataPoint.processData(messages[j].getData());
                                 logger.debug("{} {}", dataPoint.getDescription(), dataPoint.getValueText());
-                                if (this.changeListener != null) {
-                                    this.changeListener.dataPointChanged(new DataPointChangedEvent(this, dataPoint));
+                                if (listener != null) {
+                                    listener.dataPointChanged(new DataPointChangedEvent(this, dataPoint));
                                 }
                                 break;
                             }

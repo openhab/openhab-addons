@@ -15,6 +15,8 @@ package org.openhab.binding.ism8.server;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
  */
+@NonNullByDefault
 public class KnxNetFrame {
     public static byte[] knxHeader = new byte[6];
     public static byte[] connectionHeader = new byte[4];
@@ -113,6 +116,7 @@ public class KnxNetFrame {
      * Creates a KNX frame based on the data-array
      *
      */
+    @Nullable
     public static KnxNetFrame createKnxNetPackage(byte[] data, int amount) throws Exception {
         KnxNetFrame frame = new KnxNetFrame();
         if (data.length < 16 || amount < 16 || data.length < amount) {
