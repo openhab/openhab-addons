@@ -12,21 +12,19 @@ For example, here is a station board in HABPanel. (Download [here](https://githu
 
 Upcoming departures for a single station.
 
-## Discovery
+#### Configuration 
 
-This binding does not support auto-discovery.
+`Station` is the station name for which to display departures.  
+The name has to be one that is used by the swiss federal railways.  
+Please consult their [website](https://sbb.ch/en).
 
-## Thing Configuration
-
-### Stationboard
-
-`Station` is the station name for which to display departures.
-
-## Channels
-
-### Stationboard
+#### Channels 
 
 | channel | type   | description |
 |---------|--------|-------------|
 | departures#n   | String | A dynamic channel for each upcoming departure |
 | tsv (advanced) | String | A tsv which contains the fields:<br />`identifier, departureTime, destination, track, delay` |
+
+## Discovery
+
+This binding does not support auto-discovery.
