@@ -151,7 +151,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
         } else {
             // this is only relevant when using public API
             request.param(PUBLIC_DATA_API_KEY_FIELD, config.getTokenOrApiKey());
-
         }
 
         prepareRequest(request).send(this);

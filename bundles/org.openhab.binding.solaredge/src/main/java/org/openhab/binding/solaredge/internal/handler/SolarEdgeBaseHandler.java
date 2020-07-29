@@ -45,8 +45,8 @@ import org.slf4j.LoggerFactory;
 public abstract class SolarEdgeBaseHandler extends BaseThingHandler implements SolarEdgeHandler, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeBaseHandler.class);
 
-    private final long LIVE_POLLING_INITIAL_DELAY = 1;
-    private final long AGGREGATE_POLLING_INITIAL_DELAY = 2;
+    private static final long LIVE_POLLING_INITIAL_DELAY = 1;
+    private static final long AGGREGATE_POLLING_INITIAL_DELAY = 2;
 
     /**
      * Interface object for querying the Solaredge web interface

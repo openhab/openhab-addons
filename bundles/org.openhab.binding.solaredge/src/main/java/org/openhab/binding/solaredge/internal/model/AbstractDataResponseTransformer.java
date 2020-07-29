@@ -54,7 +54,7 @@ abstract class AbstractDataResponseTransformer {
     /**
      * logger
      */
-    private static final Logger logger = LoggerFactory.getLogger(AbstractDataResponseTransformer.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractDataResponseTransformer.class);
 
     /**
      * determines the unit, also handles wrong spelling of kWh (which is spelled with capital K by API)
