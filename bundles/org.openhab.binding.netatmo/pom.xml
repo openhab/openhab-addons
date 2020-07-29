@@ -69,7 +69,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/69b4f8829895b72a979c99b9b6199b511bd05d4d/spec/swagger.yaml</inputSpec>
+              <inputSpec>https://raw.githubusercontent.com/cbornet/netatmo-swagger-decl/35e27745fb0d432bc6c8b5ec7a83ed2a09944cea/spec/swagger.yaml</inputSpec>
               <language>java</language>
               <library>retrofit</library>
               <configOptions>
