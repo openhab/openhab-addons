@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tankerkoenig.internal.config;
+package org.openhab.binding.tankerkoenig.internal.dto;
 
 /**
  * The {@link OpeningTimes} class is representing all OpeningTimes entries for a station from the api request (i.e array
