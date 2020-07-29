@@ -157,7 +157,8 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
         return assignedRoom == null ? "" : assignedRoom.getName();
     }
 
-    private void onThingWithSerialNumber(final ThingTypeUID deviceType, final String deviceTypeName, final DeviceDTO device, final String name) {
+    private void onThingWithSerialNumber(final ThingTypeUID deviceType, final String deviceTypeName,
+            final DeviceDTO device, final String name) {
         final String serialNumber = device.getSerialNumber();
         logger.debug("{} discovered, serialnumber: {}", deviceTypeName, serialNumber);
         final Map<String, Object> properties = new HashMap<>();
