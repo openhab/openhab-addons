@@ -97,8 +97,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
-    private static final long WEBSOCKET_TIMEOUT_RETRY_SECONDS = 5;
-
     private final Logger logger = LoggerFactory.getLogger(InnogyBridgeHandler.class);
     private final Gson gson = new Gson();
     private final Object lock = new Object();
@@ -508,7 +506,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
                     case BaseEvent.TYPE_DISCONNECT:
                         logger.debug("Websocket disconnected.");
-                        scheduleRestartClient(0);
+                        scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
                         break;
 
                     case BaseEvent.TYPE_CONFIGURATION_CHANGED:
@@ -903,7 +901,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             // Remote access not allowed (usually by IP address change)
             logger.debug("Remote access not allowed. Dropping access token and reinitializing binding...");
             refreshAccessToken();
-            reinitialize = 0;
         } else if (e instanceof ControllerOfflineException) {
             logger.debug("innogy SmartHome Controller is offline.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
@@ -919,7 +916,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());
-            reinitialize = WEBSOCKET_TIMEOUT_RETRY_SECONDS;
+            reinitialize = REINITIALIZE_DELAY_SECONDS;
         } else if (e instanceof SocketTimeoutException) {
             logger.debug("Socket timeout: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
