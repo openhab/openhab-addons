@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="e3dc">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+		<label>E3DC Home Power Plant</label>
+		<description>Provides Power values, String Details, Emergency Power Status and general Information of your E3DC Home Power Plant</description>
+		<channel-groups>
+			<channel-group id="info" typeId="info-values"/>
+			<channel-group id="power" typeId="power-values"/>
+			<channel-group id="strings" typeId="string-values"/>
+			<channel-group id="emergency" typeId="emergency-values"/>
+		</channel-groups>
+	</bridge-type>
+</thing:thing-descriptions>

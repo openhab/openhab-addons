@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="emergency-power-status-channel">
+		<item-type>String</item-type>
+		<label>Emergency Power Status</label>
+		<description>Indicates if Emergency Power Supply is possible or not, active or inactive</description>
+	</channel-type>
+	<channel-type id="battery-loading-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Battery Loading Locked</label>
+		<description>Indictes if Battery Loading is locked</description>
+	</channel-type>
+	<channel-type id="battery-unloading-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Battery Unloading Locked</label>
+		<description>Indictes if Battery Unloading is locked</description>
+	</channel-type>
+	<channel-type id="emergency-power-possible-channel">
+		<item-type>Switch</item-type>
+		<label>Emergency Power Possible</label>
+		<description>Indicates if Emergency Power Supply is possible</description>
+	</channel-type>
+	<channel-type id="weather-predicted-loading-channel">
+		<item-type>Switch</item-type>
+		<label>Loading Based On Weather Prediction Active</label>
+		<description>Indicates if Weather Predicted Battery Loading is actived</description>
+	</channel-type>
+	<channel-type id="regulation-status-channel">
+		<item-type>Switch</item-type>
+		<label>Regultation Status Of Max Grid Power Supply</label>
+		<description>Indicates if Grid Power Supply is regulated or not</description>
+	</channel-type>
+	<channel-type id="loading-lock-time-channel">
+		<item-type>Switch</item-type>
+		<label>Loading Locktime Active</label>
+		<description>Indicates if Loading Lock Times are set or not</description>
+	</channel-type>
+	<channel-type id="unloading-lock-time-channel">
+		<item-type>Switch</item-type>
+		<label>Unloading Locktime Active</label>
+		<description>Indicates if Unloading Lock Times are set or not</description>
+	</channel-type>
+</thing:thing-descriptions>
