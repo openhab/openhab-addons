@@ -280,3 +280,12 @@ then
     logInfo("demo", "Button pressed")
 end
 ```
+
+## Troubleshooting
+
+Check Thing status for errors in configuration or communication.
+
+Enable `DEBUG` logging (or even more verbose `TRACE` logging) for the logger named 
+`org.openhab.binding.avmfritz`
+
+Consult [openHAB logging documentation]({{base}}/administration/logging.html#defining-what-to-log) for more information.
