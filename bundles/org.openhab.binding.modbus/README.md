@@ -16,6 +16,14 @@ The binding has the following extensions:
 
 <!--list-subs-->
 
+The rest of this page contains details for configuring this binding:
+
+{::options toc_levels="2..4"/}
+
+- TOC
+{:toc}
+
+
 
 ## Main Features
 
