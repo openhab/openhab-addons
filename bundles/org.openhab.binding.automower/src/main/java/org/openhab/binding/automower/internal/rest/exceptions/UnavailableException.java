@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class UnavailableException extends AutomowerCommunicationException {
+    private static final long serialVersionUID = 1L;
 
     public UnavailableException(int statusCode, Exception e) {
         super(statusCode, e);

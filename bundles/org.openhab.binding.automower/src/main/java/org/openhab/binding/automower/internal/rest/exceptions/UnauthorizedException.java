@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class UnauthorizedException extends AutomowerCommunicationException {
+    private static final long serialVersionUID = 1L;
 
     public UnauthorizedException(int statusCode, Exception e) {
         super(statusCode, e);

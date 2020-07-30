@@ -142,7 +142,7 @@ public class AutomowerActions implements ThingActions, IAutomowerActions {
         if (actions == null) {
             throw new IllegalArgumentException("actions cannot be null");
         }
-        if (actions.getClass().getName().equals(IAutomowerActions.class.getName())) {
+        if (actions.getClass().getName().equals(AutomowerActions.class.getName())) {
             if (actions instanceof AutomowerActions) {
                 return (IAutomowerActions) actions;
             } else {

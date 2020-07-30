@@ -86,9 +86,10 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (bridge != null) {
-            stopAutomowerBridgePolling(bridge);
-            bridge = null;
+        AutomowerBridge currentBridge = bridge;
+        if (currentBridge != null) {
+            stopAutomowerBridgePolling(currentBridge);
+            currentBridge = null;
         }
     }
 

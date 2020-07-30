@@ -14,7 +14,6 @@ package org.openhab.binding.automower.internal.rest.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,7 +38,7 @@ public abstract class HusqvarnaApi {
 
     protected abstract String getBaseUrl();
 
-    protected HttpClient getHttpClient() throws AutomowerCommunicationException {
+    protected HttpClient getHttpClient() {
         return httpClient;
     }
 }
