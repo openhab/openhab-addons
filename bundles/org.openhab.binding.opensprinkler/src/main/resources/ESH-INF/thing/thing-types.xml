@@ -74,7 +74,8 @@
 
 		<channels>
 			<channel id="rainsensor" typeId="rainsensor"></channel>
-		</channels>
+			<channel id="waterlevel" typeId="waterlevel"></channel>
+		</channels>		
 	</thing-type>
 
 	<channel-type id="rainsensor">
@@ -84,6 +85,14 @@
 		<category>Sensor</category>
 		<state readOnly="true"/>
 	</channel-type>
+
+
+	<channel-type id="waterlevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Water level</label>
+		<description>The current water level</description>
+		<state readOnly="true"/>
+	</channel-type>	
 
 	<channel-type id="stationState">
 		<item-type>Switch</item-type>

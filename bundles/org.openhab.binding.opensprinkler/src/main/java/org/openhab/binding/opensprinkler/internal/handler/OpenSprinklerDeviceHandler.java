@@ -13,6 +13,7 @@
 package org.openhab.binding.opensprinkler.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.PERCENT;
 import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.*;
 
 import javax.measure.quantity.ElectricCurrent;
@@ -55,6 +56,9 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                         updateState(channel, OnOffType.OFF);
                     }
                     break;
+                case SENSOR_WATERLEVEL:
+                    updateState(channel, QuantityType.valueOf(getApi().waterLevel(), PERCENT));
+                    break;                
                 case SENSOR_CURRENT_DRAW:
                     updateState(channel,
                             new QuantityType<ElectricCurrent>(getApi().currentDraw(), MILLI(SmartHomeUnits.AMPERE)));
