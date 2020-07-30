@@ -19,16 +19,10 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.intesis.internal.IntesisConfiguration;
-import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.AuthenticateData;
+import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * {@link IntesisHomeHttpApi} wraps the IntesisHome REST API and provides various low level function to access the
@@ -46,13 +40,17 @@ public class IntesisHomeHttpApi {
     public IntesisHomeHttpApi(IntesisConfiguration config, HttpClient httpClient) {
     }
 
-    public static @Nullable JsonElement getInfo(String deviceIp, HttpClient httpClient) {
+    public static @Nullable String getInfo(String deviceIp, HttpClient httpClient) {
         String response = "";
         String url = "http://" + deviceIp + "/api.cgi";
         try {
             Request request = httpClient.POST(url);
             request.header(HttpHeader.CONTENT_TYPE, "application/json");
-            request.content(new StringContentProvider("{\"command\":\"getinfo\",\"data\":\"\"}"), "application/json");
+            String c1 = "{\"command\":\"getinfo\",\"data\":\"\"}";
+            request.content(new StringContentProvider(c1), "application/json");
+
+            // request.content(new StringContentProvider("{\"command\":\"getinfo\",\"data\":\"\"}"),
+            // "application/json");
 
             // Do request and get response
             ContentResponse contentResponse = request.send();
@@ -60,26 +58,17 @@ public class IntesisHomeHttpApi {
             response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("HTTP Response for getInfo {}: {}", contentResponse.getStatus(), response);
 
-            // validate response, API errors are reported as Json
-            if (contentResponse.getStatus() != HttpStatus.OK_200) {
-                // toDo
-            }
-            if (response == null || response.isEmpty() || !response.startsWith("{") && !response.startsWith("[")) {
-
-            }
             if (response != null && !response.isEmpty()) {
-                JsonElement infoNode = getData(response).get("info");
-                return infoNode;
+                return response;
             }
         } catch (Exception e) {
         }
         return null;
     }
 
-    public static String getSessionId(String deviceIp, String password, HttpClient httpClient) {
+    public static @Nullable String getSessionId(String deviceIp, String password, HttpClient httpClient) {
         logger.trace("getSessionId for {}", deviceIp);
         String response = "";
-        String sessionId = "";
         String url = "http://" + deviceIp + "/api.cgi";
         try {
             // httpClient.start();
@@ -95,31 +84,15 @@ public class IntesisHomeHttpApi {
             response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("HTTP Response {}: {}", contentResponse.getStatus(), response);
 
-            // validate response, API errors are reported as Json
-            if (contentResponse.getStatus() != HttpStatus.OK_200) {
-                // toDo
-            }
-            if (response == null || response.isEmpty() || !response.startsWith("{") && !response.startsWith("[")) {
-
-            }
             if (response != null && !response.isEmpty()) {
-                JsonElement idNode = getData(response).get("id");
-                Gson gson = new Gson();
-                AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
-                sessionId = auth.sessionID;
-                logger.trace("sessionID : {}", sessionId);
-
-                return sessionId;
-
+                return response;
             }
-
         } catch (Exception e) {
         }
-        return sessionId;
+        return null;
     }
 
-    public static @Nullable JsonElement getRestrictedRequestAll(String deviceIp, String sessionId,
-            HttpClient httpClient) {
+    public static @Nullable String getRestrictedRequestAll(String deviceIp, String sessionId, HttpClient httpClient) {
         String response = "";
         String url = "http://" + deviceIp + "/api.cgi";
         try {
@@ -134,26 +107,15 @@ public class IntesisHomeHttpApi {
             response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("HTTP Response for all uid's {}: {}", contentResponse.getStatus(), response);
 
-            // validate response, API errors are reported as Json
-            if (contentResponse.getStatus() != HttpStatus.OK_200) {
-                // toDo
-            }
-            if (response == null || response.isEmpty() || !response.startsWith("{") && !response.startsWith("[")) {
-
-            }
             if (response != null && !response.isEmpty()) {
-                JsonElement dpvalNode = getData(response).get("dpval");
-                return dpvalNode;
+                return response;
             }
-
         } catch (Exception e) {
-
         }
         return null;
     }
 
-    public static @Nullable JsonElement getRestrictedRequestUID6(String deviceIp, String sessionId,
-            HttpClient httpClient) {
+    public static @Nullable String getRestrictedRequestUID6(String deviceIp, String sessionId, HttpClient httpClient) {
         String response = "";
         String url = "http://" + deviceIp + "/api.cgi";
         try {
@@ -169,25 +131,16 @@ public class IntesisHomeHttpApi {
             response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("HTTP Response for uid 6 {}: {}", contentResponse.getStatus(), response);
 
-            // validate response, API errors are reported as Json
-            if (contentResponse.getStatus() != HttpStatus.OK_200) {
-                // toDo
-            }
-            if (response == null || response.isEmpty() || !response.startsWith("{") && !response.startsWith("[")) {
-
-            }
             if (response != null && !response.isEmpty()) {
-                JsonElement dpvalNode = getData(response).get("dpval");
-                return dpvalNode;
+                return response;
             }
-
         } catch (Exception e) {
 
         }
         return null;
     }
 
-    public static void setRestricted(String deviceIp, String sessionId, HttpClient httpClient, int uid, int value) {
+    public static boolean setRestricted(String deviceIp, String sessionId, HttpClient httpClient, int uid, int value) {
         String response = "";
         String url = "http://" + deviceIp + "/api.cgi";
         logger.trace("Sending value {} to uid {}", value, uid);
@@ -197,32 +150,44 @@ public class IntesisHomeHttpApi {
             request.content(new StringContentProvider("{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\""
                     + sessionId + "\", \"uid\":" + uid + ",\"value\":" + value + "}}"), "application/json");
 
-            logger.trace("HTTP Content to send : {}", request.getContent());
-
             // Do request and get response
             ContentResponse contentResponse = request.send();
 
             response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("HTTP Response for setRestricted {}: {}", contentResponse.getStatus(), response);
 
-            // validate response, API errors are reported as Json
-            if (contentResponse.getStatus() != HttpStatus.OK_200) {
-                // toDo
-            }
-            if (response == null || response.isEmpty() || !response.startsWith("{") && !response.startsWith("[")) {
-
+            if (response != null && !response.isEmpty()) {
+                boolean success = IntesisHomeJSonDTO.getSuccess(response);
+                return success;
             }
         } catch (Exception e) {
         }
+        return false;
     }
 
-    public static JsonObject getData(String response) {
-        JsonParser parser = new JsonParser();
-        JsonElement rootNode = parser.parse(response);
-        JsonObject details = rootNode.getAsJsonObject();
-        // JsonElement successNode = details.get("success");
-        JsonElement dataNode = details.get("data");
-        JsonObject data = dataNode.getAsJsonObject();
-        return data;
+    public static boolean setLogout(String deviceIp, String sessionId, HttpClient httpClient) {
+        String response = "";
+        String url = "http://" + deviceIp + "/api.cgi";
+        try {
+            Request request = httpClient.POST(url);
+            request.header(HttpHeader.CONTENT_TYPE, "application/json");
+            request.content(
+                    new StringContentProvider(
+                            "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}"),
+                    "application/json");
+
+            // Do request and get response
+            ContentResponse contentResponse = request.send();
+
+            response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
+            logger.trace("HTTP Response for getInfo {}: {}", contentResponse.getStatus(), response);
+
+            if (response != null && !response.isEmpty()) {
+                boolean success = IntesisHomeJSonDTO.getSuccess(response);
+                return success;
+            }
+        } catch (Exception e) {
+        }
+        return false;
     }
 }

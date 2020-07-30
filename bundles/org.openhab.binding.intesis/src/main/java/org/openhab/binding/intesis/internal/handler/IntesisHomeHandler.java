@@ -30,12 +30,15 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.intesis.internal.IntesisConfiguration;
 import org.openhab.binding.intesis.internal.api.IntesisHomeHttpApi;
+import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO;
+import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.AuthenticateData;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.dpval;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.info;
 import org.slf4j.Logger;
@@ -54,21 +57,83 @@ import com.google.gson.JsonElement;
 public class IntesisHomeHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IntesisHomeHandler.class);
+
     private static HttpClient httpClient = new HttpClient();
 
+    private @Nullable ScheduledFuture<?> refreshJob;
+
+    private int refreshInterval = 30;
     private String deviceIp = "";
     private String password = "";
-
     private String sessionId = "";
-    private @Nullable JsonElement uidValueArray;
-    @SuppressWarnings("unused")
-    private @Nullable ScheduledFuture<?> refreshJob;
-    private int refreshInterval = 30;
 
     Gson gson = new Gson();
 
     public IntesisHomeHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        logger.trace("Start initializing!");
+        final IntesisConfiguration config = getConfigAs(IntesisConfiguration.class);
+
+        deviceIp = config.ipAddress;
+        password = config.password;
+        try {
+            httpClient.start();
+            String response = IntesisHomeHttpApi.getInfo(deviceIp, httpClient);
+            boolean success = IntesisHomeJSonDTO.getSuccess(response);
+            if (success) {
+                JsonElement devInfoNode = IntesisHomeJSonDTO.getData(response).get("id");
+                info devInfo = gson.fromJson(devInfoNode, info.class);
+                Map<String, String> properties = new HashMap<>(5);
+                properties.put(PROPERTY_VENDOR, "Intesis");
+                properties.put(PROPERTY_MODEL_ID, devInfo.deviceModel);
+                properties.put(PROPERTY_SERIAL_NUMBER, devInfo.sn);
+                properties.put(PROPERTY_FIRMWARE_VERSION, devInfo.fwVersion);
+                properties.put(PROPERTY_MAC_ADDRESS, devInfo.wlanSTAMAC);
+                updateProperties(properties);
+
+                response = IntesisHomeHttpApi.getSessionId(deviceIp, password, httpClient);
+                success = IntesisHomeJSonDTO.getSuccess(response);
+                if (success) {
+                    JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
+                    AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
+                    sessionId = auth.sessionID;
+                    logger.trace("sessionID : {}", sessionId);
+
+                    refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, refreshInterval,
+                            TimeUnit.SECONDS);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
+            }
+        } catch (Exception e) {
+        }
+        if (!sessionId.isEmpty()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("IntesisHomeHandler disposed.");
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
+
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
+        }
+        try {
+            IntesisHomeHttpApi.setLogout(deviceIp, sessionId, httpClient);
+            httpClient.stop();
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -107,71 +172,41 @@ public class IntesisHomeHandler extends BaseThingHandler {
             }
         }
         if (uid != 0) {
-            IntesisHomeHttpApi.setRestricted(deviceIp, sessionId, httpClient, uid, value);
-        }
-    }
-
-    @Override
-    public void initialize() {
-        logger.trace("Start initializing!");
-        final IntesisConfiguration config = getConfigAs(IntesisConfiguration.class);
-
-        deviceIp = config.ipAddress;
-        password = config.password;
-        try {
-            httpClient.start();
-            JsonElement deviceInfo = IntesisHomeHttpApi.getInfo(deviceIp, httpClient);
-            logger.trace("deviceInfo = {}", deviceInfo);
-
-            info devInfo = gson.fromJson(deviceInfo, info.class);
-            Map<String, String> properties = new HashMap<>(5);
-            properties.put(PROPERTY_VENDOR, "Intesis");
-            properties.put(PROPERTY_MODEL_ID, devInfo.deviceModel);
-            properties.put(PROPERTY_SERIAL_NUMBER, devInfo.sn);
-            properties.put(PROPERTY_FIRMWARE_VERSION, devInfo.fwVersion);
-            properties.put(PROPERTY_MAC_ADDRESS, devInfo.wlanSTAMAC);
-            updateProperties(properties);
-
-            sessionId = IntesisHomeHttpApi.getSessionId(deviceIp, password, httpClient);
-            logger.trace("SessionId = {}", sessionId);
-            refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, refreshInterval, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-        }
-
-        if (!sessionId.isEmpty()) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE);
+            boolean success = IntesisHomeHttpApi.setRestricted(deviceIp, sessionId, httpClient, uid, value);
+            if (!success) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
     }
 
     public void getAllUidValues() {
-        uidValueArray = IntesisHomeHttpApi.getRestrictedRequestAll(deviceIp, sessionId, httpClient);
+        String response = IntesisHomeHttpApi.getRestrictedRequestAll(deviceIp, sessionId, httpClient);
+        boolean success = IntesisHomeJSonDTO.getSuccess(response);
+        if (!success) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        } else {
+            JsonElement dpvalNode = IntesisHomeJSonDTO.getData(response).get("dpval");
+            dpval[] uid = gson.fromJson(dpvalNode, dpval[].class);
+            int value = uid[0].value;
 
-        dpval[] uid = gson.fromJson(uidValueArray, dpval[].class);
-        int value = uid[0].value;
-
-        updateState(POWER_CHANNEL, String.valueOf(value).equals("0") ? OnOffType.OFF : OnOffType.ON);
-        State stateValue = new DecimalType(uid[1].value);
-        updateState(MODE_CHANNEL, stateValue);
-        stateValue = new DecimalType(uid[2].value);
-        updateState(WINDSPEED_CHANNEL, stateValue);
-        stateValue = new DecimalType(uid[3].value);
-        updateState(SWINGUD_CHANNEL, stateValue);
-        int unit = (uid[4].value) / 10;
-        stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-        updateState(TEMP_CHANNEL, stateValue);
-        unit = (uid[5].value) / 10;
-        stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-        updateState(RETURNTEMP_CHANNEL, stateValue);
-        unit = (uid[12].value) / 10;
-        stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-        updateState(OUTDOORTEMP_CHANNEL, stateValue);
-
-        JsonElement dpvalJson = IntesisHomeHttpApi.getRestrictedRequestUID6(deviceIp, sessionId, httpClient);
-        dpval dpval = gson.fromJson(dpvalJson, dpval.class);
-        stateValue = new DecimalType(dpval.value);
-        updateState(SWINGLR_CHANNEL, stateValue);
+            updateState(POWER_CHANNEL, String.valueOf(value).equals("0") ? OnOffType.OFF : OnOffType.ON);
+            State stateValue = new DecimalType(uid[1].value);
+            updateState(MODE_CHANNEL, stateValue);
+            stateValue = new DecimalType(uid[2].value);
+            updateState(WINDSPEED_CHANNEL, stateValue);
+            stateValue = new DecimalType(uid[3].value);
+            updateState(SWINGUD_CHANNEL, stateValue);
+            int unit = (uid[4].value) / 10;
+            stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+            updateState(TEMP_CHANNEL, stateValue);
+            unit = (uid[5].value) / 10;
+            stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+            updateState(RETURNTEMP_CHANNEL, stateValue);
+            unit = (uid[12].value) / 10;
+            stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+            updateState(OUTDOORTEMP_CHANNEL, stateValue);
+        }
     }
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.intesis.internal;
 
-import static org.openhab.binding.intesis.internal.IntesisBindingConstants.THING_TYPE_MHACWIFI;
+import static org.openhab.binding.intesis.internal.IntesisBindingConstants.THING_TYPE_INTESISHOME;
 
 import java.util.Collections;
 import java.util.Set;
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.intesis", service = ThingHandlerFactory.class)
 public class IntesisHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MHACWIFI);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INTESISHOME);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +48,7 @@ public class IntesisHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_MHACWIFI.equals(thingTypeUID)) {
+        if (THING_TYPE_INTESISHOME.equals(thingTypeUID)) {
             return new IntesisHomeHandler(thing);
         }
 

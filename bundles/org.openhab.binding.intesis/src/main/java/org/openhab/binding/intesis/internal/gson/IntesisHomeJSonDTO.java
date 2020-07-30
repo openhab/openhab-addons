@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.intesis.internal.gson;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -68,5 +71,23 @@ public class IntesisHomeJSonDTO {
         public int value;
         @SerializedName("status")
         public int status;
+    }
+
+    public static JsonObject getData(String response) {
+        JsonParser parser = new JsonParser();
+        JsonElement rootNode = parser.parse(response);
+        JsonObject details = rootNode.getAsJsonObject();
+        // JsonElement successNode = details.get("success");
+        JsonElement dataNode = details.get("data");
+        JsonObject data = dataNode.getAsJsonObject();
+        return data;
+    }
+
+    public static boolean getSuccess(String response) {
+        JsonParser parser = new JsonParser();
+        JsonElement rootNode = parser.parse(response);
+        JsonObject details = rootNode.getAsJsonObject();
+        boolean success = details.get("success") != null;
+        return success;
     }
 }

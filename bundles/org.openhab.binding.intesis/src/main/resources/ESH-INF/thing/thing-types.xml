@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="mhacwifi1">
-		<label>MH-AC-WIFI-1</label>
+	<thing-type id="intesisHome">
+		<label>IntesisHome WiFi Adapter</label>
 		<description>IntesisHome WiFi Adapter</description>
 
 		<channels>
@@ -14,7 +14,6 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="windspeed" typeId="windspeed"/>
 			<channel id="swingUpDown" typeId="swingUpDown"/>
-			<channel id="swingLeftRight" typeId="swingLeftRight"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="returnTemp" typeId="returnTemp"/>
 			<channel id="outdoorTemp" typeId="outdoorTemp"/>
@@ -79,22 +78,6 @@
 				<option value="7">7</option>
 				<option value="8">8</option>
 				<option value="9">9</option>
-				<option value="10">Swing</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="swingLeftRight" advanced="true">
-		<item-type>Number</item-type>
-		<label>@text/channel-type.intesis.swingleftright.label</label>
-		<description>@text/channel-type.intesis.swingleftright.description</description>
-		<state>
-			<options>
-				<option value="0">Auto/STOP</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="4">4</option>
-				<option value="5">5</option>
 				<option value="10">Swing</option>
 			</options>
 		</state>

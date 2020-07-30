@@ -27,7 +27,7 @@ public class IntesisBindingConstants {
     private static final String BINDING_ID = "intesis";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_MHACWIFI = new ThingTypeUID(BINDING_ID, "mhacwifi1");
+    public static final ThingTypeUID THING_TYPE_INTESISHOME = new ThingTypeUID(BINDING_ID, "intesisHome");
 
     // Thing configuration items
     public static final String PROPERTY_IP = "ipAddress";
