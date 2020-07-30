@@ -65,8 +65,8 @@ None
 
 Channel Type ID                 Item Type                   Description
 -   gridOutputPower             Number:Power                WATT
--   yieldDay                    Number:Power                WATT
--   yieldTotal                  Number:Energy               KILOWATT_HOUR
+-   yieldDay                    Number:Energy               WATT_HOUR
+-   yieldTotal                  Number:Energy               WATT_HOUR
 -   operatingStatus             Number:Dimensionless        
 -   gridVoltageL1               Number:ElectricPotential    VOLT
 -   gridCurrentL1               Number:ElectricCurrent      AMPERE
@@ -90,18 +90,18 @@ Channel Type ID                 Item Type                   Description
 
 -   aktHomeConsumptionSolar     Number:Power                WATT
 -   aktHomeConsumptionBat       Number:Power                WATT
--   aktHomeConsumptionGrid      Number:Power                KILOWATT_HOUR
+-   aktHomeConsumptionGrid      Number:Power                WATT_HOUR
 -   phaseSelHomeConsumpL1       Number:Power                WATT
 -   phaseSelHomeConsumpL2       Number:Power                WATT
 -   phaseSelHomeConsumpL3       Number:Power                WATT
 -   gridFreq                    Number:Frequency            HERTZ
 -   gridCosPhi                  Number:Angle                DEGREE_ANGLE
--   homeConsumptionDay          Number:Energy               KILOWATT_HOUR
--   ownConsumptionDay           Number:Energy               KILOWATT_HOUR
+-   homeConsumptionDay          Number:Energy               WATT_HOUR
+-   ownConsumptionDay           Number:Energy               WATT_HOUR
 -   ownConsRateDay              Number:Dimensionless        PERCENT
 -   autonomyDegreeDay           Number:Dimensionless        PERCENT
--   homeConsumptionTotal        Number:Energy               KILOWATT_HOUR
--   ownConsumptionTotal         Number:Energy               KILOWATT_HOUR
+-   homeConsumptionTotal        Number:Energy               WATT_HOUR
+-   ownConsumptionTotal         Number:Energy               WATT_HOUR
 -   totalOperatingTime          Number:Time                 HOUR
 -   current                     Number:ElectricCurrent      AMPERE
 -   currentDir                  Number:ElectricCurrent      AMPERE

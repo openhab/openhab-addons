@@ -59,10 +59,9 @@ public class SecondGenerationChannelConfiguration {
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_GRIDOUTPUTPOWER, "td", 4, SmartHomeUnits.WATT, "67109120"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
-                SecondGenerationBindingConstants.CHANNEL_YIELD_DAY, "td", 7, SmartHomeUnits.WATT, "251658754"));
-        channelConfiguration
-                .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_YIELD_TOTAL,
-                        "td", 10, SmartHomeUnits.KILOWATT_HOUR, "251658753"));
+                SecondGenerationBindingConstants.CHANNEL_YIELD_DAY, "td", 7, SmartHomeUnits.WATT_HOUR, "251658754"));
+        channelConfiguration.add(new SecondGenerationChannelConfiguration(
+                SecondGenerationBindingConstants.CHANNEL_YIELD_TOTAL, "td", 10, SmartHomeUnits.WATT_HOUR, "251658753"));
         channelConfiguration
                 .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OPERATING_STATUS,
                         "td", 13, SmartHomeUnits.PERCENT, "16780032"));
@@ -119,7 +118,7 @@ public class SecondGenerationChannelConfiguration {
                         "td", 76, SmartHomeUnits.WATT, "83886592"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_AKTHOMECONSUMPTIONBAT,
-                        "td", 79, SmartHomeUnits.KILOWATT_HOUR, "83886848"));
+                        "td", 79, SmartHomeUnits.WATT_HOUR, "83886848"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_PHASESELHOMECONSUMPL1,
                         "td", 82, SmartHomeUnits.WATT, "83887106"));
@@ -136,10 +135,10 @@ public class SecondGenerationChannelConfiguration {
                         94, SmartHomeUnits.DEGREE_ANGLE, "67110656"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_HOMECONSUMPTION_DAY,
-                        "td", 97, SmartHomeUnits.KILOWATT_HOUR, "251659010"));
+                        "td", 97, SmartHomeUnits.WATT_HOUR, "251659010"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OWNCONSUMPTION_DAY,
-                        "td", 100, SmartHomeUnits.KILOWATT_HOUR, "251659266"));
+                        "td", 100, SmartHomeUnits.WATT_HOUR, "251659266"));
         channelConfigurationExt
                 .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OWNCONSRATE_DAY,
                         "td", 103, SmartHomeUnits.PERCENT, "251659278"));
@@ -148,10 +147,10 @@ public class SecondGenerationChannelConfiguration {
                         "td", 106, SmartHomeUnits.PERCENT, "251659279"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_HOMECONSUMPTION_TOTAL,
-                        "td", 109, SmartHomeUnits.KILOWATT_HOUR, "251659009"));
+                        "td", 109, SmartHomeUnits.WATT_HOUR, "251659009"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OWNCONSUMPTION_TOTAL,
-                        "td", 112, SmartHomeUnits.KILOWATT_HOUR, "251659265"));
+                        "td", 112, SmartHomeUnits.WATT_HOUR, "251659265"));
         channelConfigurationExt.add(
                 new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_TOTALOPERATINGTIME,
                         "td", 115, SmartHomeUnits.HOUR, "251658496"));
@@ -187,7 +186,7 @@ public class SecondGenerationChannelConfiguration {
                         "td", 145, SmartHomeUnits.PERCENT, "33556229"));
         channelConfigurationExtExt
                 .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_SELFCONSUMPTION,
-                        "td", 148, SmartHomeUnits.KILOWATT_HOUR, "83888128"));
+                        "td", 148, SmartHomeUnits.WATT_HOUR, "83888128"));
 
         return channelConfigurationExtExt;
     }

@@ -492,7 +492,7 @@
         <state readOnly="true" pattern="%.2f %unit%" />
     </channel-type>
     <channel-type id="statistic-yield-day">
-        <item-type>Number:Power</item-type>
+        <item-type>Number:Energy</item-type>
         <label>Yield Day</label>
         <description>Total energy output today from inverter</description>
         <category>Energy</category>
