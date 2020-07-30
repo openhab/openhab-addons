@@ -91,6 +91,7 @@
 /bundles/org.openhab.binding.ihc/ @paulianttila
 /bundles/org.openhab.binding.innogysmarthome/ @ollie-dev
 /bundles/org.openhab.binding.insteon/ @robnielsen
+/bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irtrans/ @kgoderis
 /bundles/org.openhab.binding.jeelink/ @vbier

@@ -1,56 +1,83 @@
 # Intesis Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding connects to WiFi [IntesisHome](http://www.intesishome.com/) devices using their local REST Api.
+It does actually not support [IntesisBox](http://www.intesisbox.com/) devices but support is planned in upcoming version.
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+This binding only supports one thing type:
+
+| Thing      | Thing Type | Description                                                            |
+|------------|------------|------------------------------------------------------------------------|
+| intesisHome | Thing      | Represents a single WiFi device                                         |
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Intesis devices do not support auto discovery.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+The binding needs two configuration parameters, passwort and IP-Address.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+| Channel ID | Item Type          | Description                                                           | Possible Values |
+|------------|--------------------|-----------------------------------------------------------------------|-|
+| power      | Switch             | Turns power on/off for your climate system.                           | ON, OFF |
+| mode       | String             | The heating/cooling mode.                                             | AUTO, HEAT, COOL, DRY, FAN |
+| windspeed  | String             | Fan speed (if applicable)                                             | AUTO, 1-4 |
+| temperature | Number:Temperature | The currently set target temperature.                                 | |
+| returnTemp | Number:Temperature | (Readonly) The ambient air temperature.                               | |
+| outdoorTemp | Number:Temperature | (Readonly) The outdoor air temperature.                               | |
+| swingUpDown     | String             | Control of up/down vanes (if applicable)                              | AUTO, 1-9, SWING, PULSE |
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+
+Note that individual A/C units may not support all channels, or all possible values for those channels.
+For example, not all A/C units have controllable vanes. Or fan speed may be limited to 1-4, instead of all of 1-9.
+The set point temperature is also limited to a device specific range. For set point temperature, sending an invalid value
+will cause it to choose the minimum/maximum allowable value as appropriate. The device will also round it to
+whatever step size it supports. For all other channels, invalid values
+are ignored.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+The binding can be fully setup from the Paper UI but if you decide to use files here is a full example:
 
-## Any custom content here!
+**Things**
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+```intesisHome.things
+Thing intesis:intesisHome:70c70687 "AC Unit Adapter" @ "AC" [password="xxxxx", ipAddress="192.168.1.100"]
+```
+
+**Items**
+
+```intesishome.items
+Switch              ac              "Power"                                 { channel="intesis:intesisHome:70c70687:power" }
+Number              acMode          "Mode"                                  { channel="intesis:intesisHome:70c70687:mode" }
+Number              acFanSpeed      "Fan Speed"             <fan>           { channel="intesis:intesisHome:70c70687:windspeed" }
+Number              acVanesUpDown   "Vanes U/D Position"                    { channel="intesis:intesisHome:70c70687:swingUpDown" }
+Number:Temperature  acSetPoint      "Set Temperature"       <heating>       { channel="intesis:intesisHome:70c70687:temperature" }
+Number:Temperature  acAmbientTemp   "Current Temperature"   <temperature>   { channel="intesis:intesisHome:70c70687:returnTemp" }
+Number:Temperature  acOutdoorTemp   "Current Temperature"   <temperature>   { channel="intesis:intesisHome:70c70687:outdoorTemp" }
+```
+
+**Sitemap**
+
+```intesisHome.sitemap
+sitemap intesisbox label="My Home Automation Testing" {
+
+    Frame label="Climate" {
+          Switch item=ac
+          Switch item=acMode        icon="heating"          mappings=[0="Auto", 1="Heat", 2="Dry", 3="Fan", 4="Cool"]
+          Switch item=acFanSpeed    icon="qualityofservice" mappings=[0="Auto", 1="Low", 2="Med", 3="MedHigh", 4="High"]
+          Switch item=acVanesUpDown icon="movecontrol"      mappings=[0="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", 10="Swing"]
+          Setpoint item=acSetPoint  icon="temperature"      minValue=16 maxValue=28 step=1
+          Text item=acAmbientTemp   icon="temperature" 
+          Text item=acOutdoorTemp   icon="temperature" 
+    }
+}
+```
+
