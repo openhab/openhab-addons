@@ -181,7 +181,7 @@ public class LxControlJalousieTest extends LxControlTest {
         changeLoxoneState("position", 0.80);
         testAction(null);
         changeLoxoneState("position", 1.00);
-        testAction("Stop");
+        testAction(null);
         changeLoxoneState("down", 0.0);
 
         executeCommand(ROLLERSHUTTER_CHANNEL, PercentType.ZERO);
@@ -191,7 +191,7 @@ public class LxControlJalousieTest extends LxControlTest {
         changeLoxoneState("position", 0.20);
         testAction(null);
         changeLoxoneState("position", 0.00);
-        testAction("Stop");
+        testAction(null);
         changeLoxoneState("up", 0.0);
     }
 }
