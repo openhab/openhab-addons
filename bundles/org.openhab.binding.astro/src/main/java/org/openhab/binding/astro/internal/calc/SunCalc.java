@@ -16,11 +16,12 @@ import java.util.Calendar;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.openhab.binding.astro.internal.model.Eclipse;
+import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunEclipse;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
@@ -236,15 +237,13 @@ public class SunCalc {
         }
 
         // eclipse
-        SunEclipse eclipse = sun.getEclipse();
+        Eclipse eclipse = sun.getEclipse();
         MoonCalc mc = new MoonCalc();
 
-        double partial = mc.getEclipse(calendar, MoonCalc.ECLIPSE_TYPE_SUN, j, MoonCalc.ECLIPSE_MODE_PARTIAL);
-        eclipse.setPartial(DateTimeUtils.toCalendar(partial));
-        double ring = mc.getEclipse(calendar, MoonCalc.ECLIPSE_TYPE_SUN, j, MoonCalc.ECLIPSE_MODE_RING);
-        eclipse.setRing(DateTimeUtils.toCalendar(ring));
-        double total = mc.getEclipse(calendar, MoonCalc.ECLIPSE_TYPE_SUN, j, MoonCalc.ECLIPSE_MODE_TOTAL);
-        eclipse.setTotal(DateTimeUtils.toCalendar(total));
+        eclipse.getKinds().forEach(eclipseKind -> {
+            double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
+            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate), new Position());
+        });
 
         SunZodiacCalc zodiacCalc = new SunZodiacCalc();
         sun.setZodiac(zodiacCalc.getZodiac(calendar));

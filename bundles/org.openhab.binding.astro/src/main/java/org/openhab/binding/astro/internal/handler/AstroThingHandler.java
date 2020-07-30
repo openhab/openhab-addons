@@ -76,7 +76,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /** Scheduler to schedule jobs */
     private final CronScheduler cronScheduler;
 
-    private final TimeZoneProvider timeZoneProvider;
+    protected final TimeZoneProvider timeZoneProvider;
 
     private final Lock monitor = new ReentrantLock();
 

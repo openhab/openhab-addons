@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -26,7 +28,7 @@ public class Moon extends RiseSet implements Planet {
     private MoonDistance apogee = new MoonDistance();
     private MoonDistance perigee = new MoonDistance();
     private MoonDistance distance = new MoonDistance();
-    private Eclipse eclipse = new Eclipse();
+    private Eclipse eclipse = new Eclipse(Arrays.asList(EclipseKind.PARTIAL, EclipseKind.TOTAL));
     private Position position = new Position();
     private Zodiac zodiac = new Zodiac(null);
 

@@ -15,6 +15,8 @@ package org.openhab.binding.astro.internal.job;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 
+import java.util.Calendar;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Eclipse;
@@ -69,8 +71,10 @@ public final class DailyJobMoon extends AbstractJob {
         scheduleEvent(thingUID, handler, moonPhase.getNew(), EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false);
 
         Eclipse eclipse = moon.getEclipse();
-        scheduleEvent(thingUID, handler, eclipse.getPartial(), EVENT_ECLIPSE_PARTIAL, EVENT_CHANNEL_ID_ECLIPSE, false);
-        scheduleEvent(thingUID, handler, eclipse.getTotal(), EVENT_ECLIPSE_TOTAL, EVENT_CHANNEL_ID_ECLIPSE, false);
+        eclipse.getKinds().forEach(eclipseKind -> {
+            Calendar eclipseDate = eclipse.getDate(eclipseKind);
+            scheduleEvent(thingUID, handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false);
+        });
 
         scheduleEvent(thingUID, handler, moon.getPerigee().getDate(), EVENT_PERIGEE, EVENT_CHANNEL_ID_PERIGEE, false);
         scheduleEvent(thingUID, handler, moon.getApogee().getDate(), EVENT_APOGEE, EVENT_CHANNEL_ID_APOGEE, false);

@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.astro.internal.calc.MoonCalc;
 import org.openhab.binding.astro.internal.job.DailyJobMoon;
 import org.openhab.binding.astro.internal.job.Job;
+import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
@@ -48,7 +49,7 @@ public class MoonHandler extends AstroThingHandler {
     private final String[] positionalChannelIds = new String[] { "phase#name", "phase#age", "phase#agePercent",
             "phase#ageDegree", "phase#illumination", "position#azimuth", "position#elevation", "zodiac#sign" };
     private final MoonCalc moonCalc = new MoonCalc();
-    private @Nullable Moon moon;
+    private @NonNullByDefault({}) Moon moon;
 
     /**
      * Constructor
@@ -64,6 +65,16 @@ public class MoonHandler extends AstroThingHandler {
         Double longitude = thingConfig.longitude;
         moonCalc.setPositionalInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
                 longitude != null ? longitude : 0, moon);
+
+        Eclipse eclipses = moon.getEclipse();
+        eclipses.getKinds().forEach(eclipseKind -> {
+            Calendar eclipseDate = eclipses.getDate(eclipseKind);
+            Position position = getPositionAt(eclipseDate.toInstant().atZone(timeZoneProvider.getTimeZone()));
+            if (position != null) {
+                eclipses.set(eclipseKind, eclipseDate, position);
+            }
+        });
+
         publishPlanet();
     }
 

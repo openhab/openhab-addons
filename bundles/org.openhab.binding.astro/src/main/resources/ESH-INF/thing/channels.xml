@@ -227,8 +227,11 @@
 		<description>The DateTime of the next sun eclipses</description>
 		<channels>
 			<channel id="total" typeId="total"/>
+			<channel id="totalElevation" typeId="elevation"/>
 			<channel id="partial" typeId="partial"/>
+			<channel id="partialElevation" typeId="elevation"/>
 			<channel id="ring" typeId="ring"/>
+			<channel id="ringElevation" typeId="elevation"/>
 			<channel id="event" typeId="sunEclipseEvent"/>
 		</channels>
 	</channel-group-type>
@@ -411,8 +414,10 @@
 		<label>Eclipses</label>
 		<description>The DateTime of the next moon eclipses</description>
 		<channels>
-			<channel id="total" typeId="total"/>
-			<channel id="partial" typeId="partial"/>
+            <channel id="total" typeId="total"/>
+            <channel id="totalElevation" typeId="elevation"/>
+            <channel id="partial" typeId="partial"/>
+            <channel id="partialElevation" typeId="elevation"/>
 			<channel id="event" typeId="moonEclipseEvent"/>
 		</channels>
 	</channel-group-type>

@@ -12,52 +12,73 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Holds eclipse informations.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class Eclipse {
-    private Calendar total;
-    private Calendar partial;
+    private final Map<EclipseKind, Entry<Calendar, @Nullable Double>> entries = new HashMap<>();
+
+    public Eclipse(List<EclipseKind> eclipses) {
+        eclipses.forEach(eclipseKind -> {
+            entries.put(eclipseKind, new SimpleEntry<>(Calendar.getInstance(), null));
+        });
+    }
+
+    public Set<EclipseKind> getKinds() {
+        return entries.keySet();
+    }
 
     /**
      * Returns the date of the next total eclipse.
      */
-    public Calendar getTotal() {
-        return total;
-    }
-
-    /**
-     * Sets the date of the next total eclipse.
-     */
-    public void setTotal(Calendar total) {
-        this.total = total;
+    public @Nullable Calendar getTotal() {
+        return entries.get(EclipseKind.TOTAL).getKey();
     }
 
     /**
      * Returns the date of the next partial eclipse.
      */
-    public Calendar getPartial() {
-        return partial;
+    public @Nullable Calendar getPartial() {
+        return entries.get(EclipseKind.PARTIAL).getKey();
     }
 
-    /**
-     * Sets the date of the next partial eclipse.
-     */
-    public void setPartial(Calendar partial) {
-        this.partial = partial;
+    public @Nullable Calendar getRing() {
+        return entries.get(EclipseKind.RING).getKey();
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("total", total == null ? null : total.getTime())
-                .append("partial", partial == null ? null : partial.getTime()).toString();
+    public @Nullable Double getTotalElevation() {
+        return entries.get(EclipseKind.TOTAL).getValue();
     }
+
+    public @Nullable Double getPartialElevation() {
+        return entries.get(EclipseKind.PARTIAL).getValue();
+    }
+
+    public @Nullable Double getRingElevation() {
+        return entries.get(EclipseKind.RING).getValue();
+    }
+
+    public Calendar getDate(EclipseKind eclipseKind) {
+        return entries.get(eclipseKind).getKey();
+    }
+
+    public void set(EclipseKind eclipseKind, Calendar eclipseDate, @Nullable Position position) {
+        entries.put(eclipseKind,
+                new SimpleEntry<>(eclipseDate, position != null ? position.getElevationAsDouble() : null));
+    }
+
 }
