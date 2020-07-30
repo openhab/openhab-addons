@@ -89,8 +89,8 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(MqttBindingConstants.HOMIE300_MQTT_THING)) {
-            return new HomieThingHandler(thing, typeProvider, MqttBindingConstants.HOMIE_DEVICE_TIMEOUT,
-                    MqttBindingConstants.HOMIE_SUBSCRIBE_TIMEOUT, MqttBindingConstants.HOMIE_ATTRIBUTE_TIMEOUT);
+            return new HomieThingHandler(thing, typeProvider, MqttBindingConstants.HOMIE_DEVICE_TIMEOUT_MS,
+                    MqttBindingConstants.HOMIE_SUBSCRIBE_TIMEOUT_MS, MqttBindingConstants.HOMIE_ATTRIBUTE_TIMEOUT_MS);
         }
         return null;
     }
