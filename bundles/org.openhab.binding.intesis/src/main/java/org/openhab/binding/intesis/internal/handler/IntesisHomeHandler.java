@@ -85,7 +85,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
             String response = IntesisHomeHttpApi.getInfo(deviceIp, httpClient);
             boolean success = IntesisHomeJSonDTO.getSuccess(response);
             if (success) {
-                JsonElement devInfoNode = IntesisHomeJSonDTO.getData(response).get("id");
+                JsonElement devInfoNode = IntesisHomeJSonDTO.getData(response).get("info");
                 info devInfo = gson.fromJson(devInfoNode, info.class);
                 Map<String, String> properties = new HashMap<>(5);
                 properties.put(PROPERTY_VENDOR, "Intesis");
