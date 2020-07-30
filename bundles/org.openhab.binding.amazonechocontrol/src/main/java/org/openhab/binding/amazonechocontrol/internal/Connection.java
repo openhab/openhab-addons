@@ -1612,14 +1612,14 @@ public class Connection {
 
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Routines-Version", "1.1.218665");
-
-                makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
-
+                
                 String text = executionNodeObject.text;
                 if (text != null && !text.isEmpty()) {
                     text = text.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
                     delay += text.length() * 100;
                 }
+
+                makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
             } catch (IOException | URISyntaxException e) {
                 logger.warn("execute sequence node fails with unexpected error", e);
             } finally {
