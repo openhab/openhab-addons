@@ -29,6 +29,31 @@
 		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
 	</thing-type>
 
+	<thing-type id="FRITZ_DECT_440">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="fritzbox" />
+			<bridge-type-ref id="FRITZ_Powerline_546E_Solo" />
+		</supported-bridge-type-refs>
+
+		<label>FRITZ!DECT 440</label>
+		<description>FRITZ!DECT440 switch.</description>
+
+		<channels>
+			<channel id="press" typeId="system.button">
+				<label>Button press</label>
+				<description>Triggered SHORT_PRESSED or LONG_PRESSED when a button was pressed.</description>
+			</channel>
+			<channel id="last_change" typeId="last_change" />
+			<channel id="battery_level" typeId="system.battery-level" />
+			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="temperature" typeId="temperature" />
+		</channels>
+
+		<representation-property>ain</representation-property>
+
+		<config-description-ref uri="thing-type:avmfritz:fritzdevice" />
+	</thing-type>
+
 	<thing-type id="Comet_DECT">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="fritzbox" />

@@ -41,6 +41,7 @@ public class AVMFritzBindingConstants {
 
     // List of main device types
     public static final String DEVICE_DECT400 = "FRITZ_DECT_400";
+    public static final String DEVICE_DECT440 = "FRITZ_DECT_440";
     public static final String DEVICE_DECT301 = "FRITZ_DECT_301";
     public static final String DEVICE_DECT300 = "FRITZ_DECT_300";
     public static final String DEVICE_DECT210 = "FRITZ_DECT_210";
@@ -59,6 +60,7 @@ public class AVMFritzBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE_FRITZBOX);
     public static final ThingTypeUID DECT400_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT400);
+    public static final ThingTypeUID DECT440_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT440);
     public static final ThingTypeUID DECT301_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT301);
     public static final ThingTypeUID DECT300_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT300);
     public static final ThingTypeUID DECT210_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_DECT210);
@@ -145,8 +147,8 @@ public class AVMFritzBindingConstants {
     public static final String MODE_WINDOW_OPEN = "WINDOW_OPEN";
     public static final String MODE_UNKNOWN = "UNKNOWN";
 
-    public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(DECT400_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(DECT400_THING_TYPE, DECT440_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Collections.unmodifiableSet(
             Stream.of(DECT300_THING_TYPE, DECT301_THING_TYPE, COMETDECT_THING_TYPE).collect(Collectors.toSet()));
