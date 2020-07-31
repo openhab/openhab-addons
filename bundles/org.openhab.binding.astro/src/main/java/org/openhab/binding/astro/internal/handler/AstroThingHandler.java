@@ -18,6 +18,7 @@ import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 
 import java.lang.invoke.MethodHandles;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,8 +33,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.quantity.Angle;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -99,10 +98,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         logger.debug("Initializing thing {}", getThing().getUID());
         String thingUid = getThing().getUID().toString();
         thingConfig = getConfigAs(AstroThingConfig.class);
-        thingConfig.setThingUid(thingUid);
         boolean validConfig = true;
 
-        if (StringUtils.trimToNull(thingConfig.geolocation) == null) {
+        if (thingConfig.geolocation == null || thingConfig.geolocation.trim().isEmpty()) {
             logger.error("Astro parameter geolocation is mandatory and must be configured, disabling thing '{}'",
                     thingUid);
             validConfig = false;
@@ -258,7 +256,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Counts positional channels and restarts Astro jobs.
      */
     private void linkedChannelChange(ChannelUID channelUID, int step) {
-        if (ArrayUtils.contains(getPositionalChannelIds(), channelUID.getId())) {
+        if (Arrays.asList(getPositionalChannelIds()).contains(channelUID.getId())) {
             int oldValue = linkedPositionalChannels;
             linkedPositionalChannels += step;
             if (oldValue == 0 && linkedPositionalChannels > 0 || oldValue > 0 && linkedPositionalChannels == 0) {
@@ -272,10 +270,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     private boolean isPositionalChannelLinked() {
         for (Channel channel : getThing().getChannels()) {
-            if (ArrayUtils.contains(getPositionalChannelIds(), channel.getUID().getId())
-                    && isLinked(channel.getUID().getId())) {
-                return true;
-            }
+            String id = channel.getUID().getId();
+            return (Arrays.asList(getPositionalChannelIds()).contains(id) && isLinked(id));
         }
         return false;
     }

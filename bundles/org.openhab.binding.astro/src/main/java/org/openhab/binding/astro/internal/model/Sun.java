@@ -16,9 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Holds the calculated sun data.
  *
@@ -296,15 +293,4 @@ public class Sun extends RiseSet implements Planet {
         return ranges;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("sunrise", getRise())
-                .append("noon", getNoon()).append("sunset", getSet()).append("night", getNight())
-                .append("morningNight", getMorningNight()).append("astroDawn", getAstroDawn())
-                .append("nauticDawn", getNauticDawn()).append("civilDawn", getCivilDawn())
-                .append("civilDusk", getCivilDusk()).append("nauticDusk", getNauticDawn())
-                .append("astroDusk", getAstroDusk()).append("daylight", getDaylight())
-                .append("eveningNight", getEveningNight()).append("eclipse", eclipse).append("phase", phase)
-                .append("radiation", radiation).toString();
-    }
 }

@@ -14,10 +14,6 @@ package org.openhab.binding.astro.internal.model;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
-
 /**
  * Holds the calculated moon data.
  *
@@ -128,14 +124,5 @@ public class Moon extends RiseSet implements Planet {
      */
     public void setZodiac(Zodiac zodiac) {
         this.zodiac = zodiac;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("rise", DateTimeUtils.getDate(getRise().getStart()))
-                .append("set", DateTimeUtils.getDate(getSet().getEnd())).append("phase", phase).append("apogee", apogee)
-                .append("perigee", perigee).append("distance", distance).append("eclipse", eclipse)
-                .append("position", position).append("zodiac", zodiac).toString();
     }
 }

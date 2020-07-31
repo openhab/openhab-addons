@@ -19,10 +19,7 @@ import java.util.Calendar;
 
 import javax.measure.quantity.Length;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Holds a distance informations.
@@ -63,9 +60,4 @@ public class MoonDistance {
         this.distance = kilometer;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("date", DateTimeUtils.getDate(date))
-                .append("distance", distance).toString();
-    }
 }

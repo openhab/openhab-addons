@@ -14,8 +14,6 @@ package org.openhab.binding.astro.internal.model;
 
 import javax.measure.quantity.Angle;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 
@@ -87,9 +85,4 @@ public class Position {
         this.shadeLength = shadeLength;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("azimuth", azimuth)
-                .append("elevation", elevation).append("shadeLength", shadeLength).toString();
-    }
 }

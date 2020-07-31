@@ -15,7 +15,6 @@ package org.openhab.binding.astro.internal.calc;
 import java.util.Calendar;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
@@ -208,7 +207,7 @@ public class SunCalc {
                 useMeteorologicalSeason);
         Range morningNightRange = null;
         if (sunYesterday.getAstroDusk().getEnd() != null
-                && DateUtils.isSameDay(sunYesterday.getAstroDusk().getEnd(), calendar)) {
+                && DateTimeUtils.isSameDay(sunYesterday.getAstroDusk().getEnd(), calendar)) {
             morningNightRange = new Range(sunYesterday.getAstroDusk().getEnd(), sun.getAstroDawn().getStart());
         } else if (isSunUpAllDay || sun.getAstroDawn().getStart() == null) {
             morningNightRange = new Range();
@@ -219,7 +218,7 @@ public class SunCalc {
 
         // evening night
         Range eveningNightRange = null;
-        if (sun.getAstroDusk().getEnd() != null && DateUtils.isSameDay(sun.getAstroDusk().getEnd(), calendar)) {
+        if (sun.getAstroDusk().getEnd() != null && DateTimeUtils.isSameDay(sun.getAstroDusk().getEnd(), calendar)) {
             eveningNightRange = new Range(sun.getAstroDusk().getEnd(),
                     DateTimeUtils.truncateToMidnight(addDays(calendar, 1)));
         } else {
@@ -246,7 +245,7 @@ public class SunCalc {
         });
 
         SunZodiacCalc zodiacCalc = new SunZodiacCalc();
-        sun.setZodiac(zodiacCalc.getZodiac(calendar));
+        zodiacCalc.getZodiac(calendar).ifPresent(z -> sun.setZodiac(z));
 
         SeasonCalc seasonCalc = new SeasonCalc();
         sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason));
