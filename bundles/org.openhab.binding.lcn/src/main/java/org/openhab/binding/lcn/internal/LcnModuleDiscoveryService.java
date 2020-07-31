@@ -154,7 +154,7 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                             ThingUID bridgeUid = localBridgeHandler.getThing().getUID();
                             String serialNumber = matcher.group("sn");
 
-                            String thingID = String.format("S%dM%d", addr.getSegmentId(), addr.getModuleId());
+                            String thingID = String.format("S%03dM%03d", addr.getSegmentId(), addr.getModuleId());
 
                             ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_MODULE, bridgeUid, thingID);
 
