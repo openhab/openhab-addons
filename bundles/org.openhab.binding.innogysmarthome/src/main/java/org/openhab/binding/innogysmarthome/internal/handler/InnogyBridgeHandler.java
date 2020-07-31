@@ -890,13 +890,13 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      * @return boolean true, if binding should continue.
      */
     private boolean handleClientException(final Exception e) {
-        long reinitialize = REINITIALIZE_DELAY_SECONDS;
+        boolean isReinitialize = true;
         if (e instanceof SessionExistsException) {
             logger.debug("Session already exists. Continuing...");
-            reinitialize = -1;
+            isReinitialize = false;
         } else if (e instanceof InvalidActionTriggeredException) {
             logger.debug("Error triggering action: {}", e.getMessage());
-            reinitialize = -1;
+            isReinitialize = false;
         } else if (e instanceof RemoteAccessNotAllowedException) {
             // Remote access not allowed (usually by IP address change)
             logger.debug("Remote access not allowed. Dropping access token and reinitializing binding...");
@@ -916,12 +916,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());
-            reinitialize = REINITIALIZE_DELAY_SECONDS;
         } else if (e instanceof SocketTimeoutException) {
             logger.debug("Socket timeout: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof InterruptedException) {
-            reinitialize = -1;
+            isReinitialize = false;
             Thread.currentThread().interrupt();
         } else if (e instanceof ExecutionException) {
             logger.debug("ExecutionException: {}", ExceptionUtils.getRootCauseMessage(e));
@@ -930,8 +929,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.debug("Unknown exception", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
-        if (reinitialize >= 0) {
-            scheduleRestartClient(reinitialize);
+        if (isReinitialize) {
+            scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
             return true;
         }
         return false;
