@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,7 +66,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<HaID>> componentsPerThingID = new TreeMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new TreeMap<>();
-    protected final Map<String, Integer> configHashPerTopic = new ConcurrentHashMap<>();
+    protected final Map<String, Integer> payloadHashPerTopic = new ConcurrentHashMap<>();
     protected final Map<String, DiscoveryResult> results = new ConcurrentHashMap<>();
 
     private @Nullable ScheduledFuture<?> future;
@@ -140,11 +141,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             return;
         }
 
-        BaseChannelConfiguration config = BaseChannelConfiguration
-                .fromString(new String(payload, StandardCharsets.UTF_8), gson);
-
-        Integer newHash = config.hashCode();
-        Integer oldHash = configHashPerTopic.putIfAbsent(topic, newHash);
+        Integer newHash = Arrays.hashCode(payload);
+        Integer oldHash = payloadHashPerTopic.putIfAbsent(topic, newHash);
         if (newHash.equals(oldHash)) {
             return;
         }
@@ -156,6 +154,9 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             future.cancel(false);
         }
         this.future = scheduler.schedule(this::publishResults, 2, TimeUnit.SECONDS);
+
+        BaseChannelConfiguration config = BaseChannelConfiguration
+                .fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
         // We will of course find multiple of the same unique Thing IDs, for each different component another one.
         // Therefore the components are assembled into a list and given to the DiscoveryResult label for the user to
