@@ -41,7 +41,7 @@
 			<channel-group typeId="codes" id="code"/>
 		</channel-groups>
 		<properties>
-			<property name="serialNumber" />
+			<property name="serialNumber"/>
 		</properties>
 		<representation-property>serialNumber</representation-property>
 
