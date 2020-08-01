@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.shuttercontrol;
 
-/** 
+/**
  * Operation State.
  * 
  * @author Christian Oeing - Initial contribution

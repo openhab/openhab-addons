@@ -36,7 +36,7 @@ import com.google.gson.JsonElement;
 /**
  * Service State for a Bosch device.
  *
- * @author Christian Oeing - refactorings of e.g. server registration  
+ * @author Christian Oeing - refactorings of e.g. server registration
  */
 @NonNullByDefault
 class DeviceService<TState extends BoschSHCServiceState> {

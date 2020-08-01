@@ -15,7 +15,7 @@ package org.openhab.binding.boschshc.internal.services.valvetappet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 
-/** 
+/**
  * Valve Tappet service.
  * 
  * @author Christian Oeing - Initial contribution

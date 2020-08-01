@@ -15,7 +15,7 @@ package org.openhab.binding.boschshc.internal.services.temperaturelevel;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 
-/** 
+/**
  * TemperatureLevel service.
  * 
  * @author Christian Oeing - Initial contribution
