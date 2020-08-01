@@ -242,6 +242,4 @@ public class RFXComBindingConstants {
                     put(PacketType.WIND, RFXComBindingConstants.THING_TYPE_WIND);
                 }
             });
-
-    public static final String THREAD_NAME_PREFIX = "OH-" + BINDING_ID + "-";
 }
