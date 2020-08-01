@@ -60,6 +60,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_EXTENDED_COLOR_LIGHT = new ThingTypeUID(BINDING_ID,
             "extendedcolorlight");
     public static final ThingTypeUID THING_TYPE_WINDOW_COVERING = new ThingTypeUID(BINDING_ID, "windowcovering");
+    public static final ThingTypeUID THING_TYPE_WARNING_DEVICE = new ThingTypeUID(BINDING_ID, "warningdevice");
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
@@ -101,6 +102,7 @@ public class BindingConstants {
     public static final String CHANNEL_COLOR_TEMPERATURE = "color_temperature";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_POSITION = "position";
+    public static final String CHANNEL_ALERT = "alert";
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";

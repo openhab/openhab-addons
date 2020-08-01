@@ -40,6 +40,10 @@
 			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
 			<channel-group typeId="codes" id="code"/>
 		</channel-groups>
+		<properties>
+			<property name="serialNumber"/>
+		</properties>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description-ref uri="thing-type:lcn:module"/>
 	</thing-type>
