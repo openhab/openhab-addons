@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -32,12 +33,13 @@ import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxArray;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxBlock;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
-import org.openhab.binding.modbus.e3dc.internal.modbus.DataListener;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
-import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +49,21 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class E3DCWallboxThingHandler extends BaseThingHandler implements DataListener {
+public class E3DCWallboxThingHandler extends BaseThingHandler {
+    public enum ReadWriteSuccess {
+        NOT_RECEIVED,
+        SUCCESS,
+        FAILED
+    }
+
+    private static final String READ_WRITE_ERROR = "Modbus Data Read/Write Error";
+    private static final String READ_ERROR = "Modbus Read Error";
+    private static final String WRITE_ERROR = "Modbus Write Error";
+
     private final Logger logger = LoggerFactory.getLogger(E3DCWallboxThingHandler.class);
     private final Parser dataParser = new Parser(DataType.DATA);
-    private ThingStatus myStatus = ThingStatus.UNKNOWN;
+    private ReadWriteSuccess dataRead = ReadWriteSuccess.NOT_RECEIVED;
+    private ReadWriteSuccess dataWrite = ReadWriteSuccess.NOT_RECEIVED;
     private BitSet currentBitSet = new BitSet(16);
     private @Nullable E3DCWallboxConfiguration config;
     private @Nullable E3DCThingHandler bridgeHandler;
@@ -60,11 +73,31 @@ public class E3DCWallboxThingHandler extends BaseThingHandler implements DataLis
     }
 
     @Override
+    public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> {
+            config = getConfigAs(E3DCWallboxConfiguration.class);
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                ThingHandler handler = bridge.getHandler();
+                if (handler != null) {
+                    bridgeHandler = ((E3DCThingHandler) handler);
+                } else {
+                    logger.warn("Thing Handler null");
+                }
+            } else {
+                logger.warn("Bridge null");
+            }
+        });
+    }
+
+    @Override
+    public void dispose() {
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType) {
-            logger.info("Command {} CUID {}", command, channelUID);
-            logger.info("getId {}", channelUID.getId());
-            logger.info("getIdWithoutGroup {}", channelUID.getIdWithoutGroup());
             int writeValue = 0;
             synchronized (this) {
                 if (channelUID.getIdWithoutGroup().equals(WB_SUNMODE_CHANNEL)) {
@@ -77,102 +110,44 @@ public class E3DCWallboxThingHandler extends BaseThingHandler implements DataLis
                     currentBitSet.set(WB_1PHASE_BIT, command.equals(OnOffType.ON));
                 }
                 writeValue = DataConverter.toInt(currentBitSet);
-                logger.info("Send {}", writeValue);
+                logger.debug("Wallbox write {}", writeValue);
             }
-            E3DCThingHandler localBridgeHandler = bridgeHandler;
-            if (localBridgeHandler == null) {
-                Bridge b = getBridge();
-                if (b != null) {
-                    localBridgeHandler = (E3DCThingHandler) b.getHandler();
-                    bridgeHandler = localBridgeHandler;
-                }
+            int wallboxId = getWallboxId(config);
+            if (wallboxId != -1) {
+                wallboxSet(wallboxId, writeValue);
             }
-            if (localBridgeHandler != null) {
-                int wallboxId = getWallboxId(config);
-                if (wallboxId != -1) {
-                    localBridgeHandler.wallboxSet(wallboxId, writeValue);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void initialize() {
-        setStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
-            config = getConfigAs(E3DCWallboxConfiguration.class);
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                ThingHandler handler = bridge.getHandler();
-                if (handler != null) {
-                    logger.info("Bridge Handler: {}", handler.toString());
-                    bridgeHandler = ((E3DCThingHandler) handler);
-                    bridgeHandler.addDataListener(this);
-                } else {
-                    logger.info("Thing Handler null");
-                }
-            } else {
-                logger.info("Bridge null");
-            }
-        });
-    }
-
-    private void turnOnline() {
-        if (myStatus != ThingStatus.ONLINE) {
-            setStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    @Override
-    public void dispose() {
-    }
-
-    private void setStatus(ThingStatus status) {
-        myStatus = status;
-        updateStatus(myStatus);
-    }
-
-    /**
-     * Get the endpoint handler from the bridge this handler is connected to
-     * Checks that we're connected to the right type of bridge
-     *
-     * @return the endpoint handler or null if the bridge does not exist
-     */
-    private @Nullable ModbusEndpointThingHandler getEndpointThingHandler() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            logger.debug("Bridge is null");
-            return null;
-        }
-        if (bridge.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Bridge is not online");
-            return null;
-        }
-
-        ThingHandler handler = bridge.getHandler();
-        if (handler == null) {
-            logger.debug("Bridge handler is null");
-            return null;
-        }
-
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
-        } else {
-            logger.debug("Unexpected bridge handler: {}", handler);
-            return null;
         }
     }
 
     /**
-     * Returns the channel UID for the specified group and channel id
+     * Wallbox Settings can be changed with one Integer
      *
-     * @param string the channel group
-     * @param string the channel id in that group
-     * @return the globally unique channel uid
+     * @param wallboxId needed to calculate right register
+     * @param writeValue integer to be written
      */
-    private ChannelUID channelUID(String group, String id) {
-        return new ChannelUID(getThing().getUID(), group, id);
+    public void wallboxSet(int wallboxId, int writeValue) {
+        E3DCThingHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            ModbusCommunicationInterface comms = localBridgeHandler.getComms();
+            if (comms != null) {
+                ModbusRegisterArray regArray = new ModbusRegisterArray(writeValue);
+                ModbusWriteRegisterRequestBlueprint writeBluePrint = new ModbusWriteRegisterRequestBlueprint(
+                        localBridgeHandler.getSlaveId(), WALLBOX_REG_START + wallboxId, regArray, false, 3);
+                comms.submitOneTimeWrite(writeBluePrint, result -> {
+                    if (dataWrite != ReadWriteSuccess.SUCCESS) {
+                        dataWrite = ReadWriteSuccess.SUCCESS;
+                        updateStatus();
+                    }
+                    logger.debug("E3DC Modbus write response! {}", result.getResponse().toString());
+                }, failure -> {
+                    if (dataWrite != ReadWriteSuccess.FAILED) {
+                        dataWrite = ReadWriteSuccess.FAILED;
+                        updateStatus();
+                    }
+                    logger.warn("E3DC Modbus write error! {}", failure.getRequest().toString());
+                });
+            }
+        }
     }
 
     private int getWallboxId(@Nullable E3DCWallboxConfiguration c) {
@@ -183,9 +158,11 @@ public class E3DCWallboxThingHandler extends BaseThingHandler implements DataLis
         }
     }
 
-    @Override
     public void handle(AsyncModbusReadResult result) {
-        turnOnline();
+        if (dataRead != ReadWriteSuccess.SUCCESS) {
+            dataRead = ReadWriteSuccess.SUCCESS;
+            updateStatus();
+        }
         dataParser.handle(result);
         WallboxArray wbArray = (WallboxArray) dataParser.parse(DataType.WALLBOX);
         if (wbArray != null) {
@@ -220,8 +197,38 @@ public class E3DCWallboxThingHandler extends BaseThingHandler implements DataLis
         }
     }
 
-    @Override
     public void handleError(AsyncModbusFailure<ModbusReadRequestBlueprint> result) {
-        // TODO Auto-generated method stub
+        if (dataRead != ReadWriteSuccess.FAILED) {
+            dataRead = ReadWriteSuccess.FAILED;
+            updateStatus();
+        }
     }
+
+    private void updateStatus() {
+        if (dataWrite == ReadWriteSuccess.NOT_RECEIVED) {
+            // read success / write not happened yet => go online / offline
+            if (dataRead == ReadWriteSuccess.SUCCESS) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, READ_ERROR);
+            }
+        } else {
+            if (dataRead == dataWrite) {
+                // read and write same status - either go online or offline
+                if (dataRead == ReadWriteSuccess.SUCCESS) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, READ_WRITE_ERROR);
+                }
+            } else {
+                // either read or write failed - go offline with detailed status
+                if (dataRead == ReadWriteSuccess.SUCCESS) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, WRITE_ERROR);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, READ_ERROR);
+                }
+            }
+        }
+    }
+
 }

@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
@@ -32,7 +33,6 @@ import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.PowerBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.StringBlock;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
-import org.openhab.binding.modbus.e3dc.internal.modbus.DataListener;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
@@ -41,8 +41,6 @@ import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.PollTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,12 +52,22 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class E3DCThingHandler extends BaseBridgeHandler {
-    private final ArrayList<DataListener> listeners = new ArrayList<DataListener>();
+    public enum ReadStatus {
+        NOT_RECEIVED,
+        READ_SUCCESS,
+        READ_FAILED
+    }
 
+    private static final String INFO_DATA_READ_ERROR = "Information And Data Modbus Read Errors";
+    private static final String INFO_READ_ERROR = "Information Modbus Read Error";
+    private static final String DATA_READ_ERROR = "Data Modbus Read Error";
+
+    private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<E3DCWallboxThingHandler>();
     private final Logger logger = LoggerFactory.getLogger(E3DCThingHandler.class);
     private final Parser dataParser = new Parser(DataType.DATA);
+    private ReadStatus dataRead = ReadStatus.NOT_RECEIVED;
     private final Parser infoParser = new Parser(DataType.INFO);
-    private ThingStatus myStatus = ThingStatus.UNKNOWN;
+    private ReadStatus infoRead = ReadStatus.NOT_RECEIVED;
     private @Nullable PollTask infoPoller;
     private @Nullable PollTask dataPoller;
 
@@ -73,6 +81,14 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         super(thing);
     }
 
+    public @Nullable ModbusCommunicationInterface getComms() {
+        return comms;
+    }
+
+    public int getSlaveId() {
+        return slaveId;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // no control of E3DC device possible yet
@@ -80,11 +96,10 @@ public class E3DCThingHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        setStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.UNKNOWN);
         // Example for background initialization:
         scheduler.execute(() -> {
-            connectEndpoint();
-            ModbusCommunicationInterface localComms = comms;
+            ModbusCommunicationInterface localComms = connectEndpoint();
             if (localComms != null) {
                 // register low speed info poller
                 ModbusReadRequestBlueprint infoRequest = new ModbusReadRequestBlueprint(slaveId,
@@ -97,14 +112,94 @@ public class E3DCThingHandler extends BaseBridgeHandler {
                         REGISTER_LENGTH - INFO_REG_SIZE, 3);
                 dataPoller = localComms.registerRegularPoll(dataRequest, DATA_POLL_REFRESH_TIME_MS_NOW_HARDCODED, 0,
                         this::handleDataResult, this::handleDataFailure);
-            } else {
-                // comms not available, status has been set
-            }
+            } // else state handling performed in connectEndPoint function
         });
     }
 
+    /**
+     * Get a reference to the modbus endpoint
+     */
+    private @Nullable ModbusCommunicationInterface connectEndpoint() {
+        if (comms != null) {
+            return comms;
+        }
+
+        ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
+        if (slaveEndpointThingHandler == null) {
+            @SuppressWarnings("null")
+            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    String.format("Bridge '%s' is offline", label));
+            logger.debug("No bridge handler available -- aborting init for {}", label);
+            return null;
+        }
+        try {
+            slaveId = slaveEndpointThingHandler.getSlaveId();
+            comms = slaveEndpointThingHandler.getCommunicationInterface();
+        } catch (EndpointNotInitializedException e) {
+            // this cannot be raised anymore, throws was left accidentally in the API
+        }
+        if (comms == null) {
+            @SuppressWarnings("null")
+            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    String.format("Bridge '%s' not completely initialized", label));
+            logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
+            return null;
+        } else {
+            return comms;
+        }
+    }
+
+    /**
+     * Get the endpoint handler from the bridge this handler is connected to
+     * Checks that we're connected to the right type of bridge
+     *
+     * @return the endpoint handler or null if the bridge does not exist
+     */
+    private @Nullable ModbusEndpointThingHandler getEndpointThingHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.debug("Bridge is null");
+            return null;
+        }
+        if (bridge.getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Bridge is not online");
+            return null;
+        }
+
+        ThingHandler handler = bridge.getHandler();
+        if (handler == null) {
+            logger.debug("Bridge handler is null");
+            return null;
+        }
+
+        if (handler instanceof ModbusEndpointThingHandler) {
+            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
+            return slaveEndpoint;
+        } else {
+            logger.debug("Unexpected bridge handler: {}", handler);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the channel UID for the specified group and channel id
+     *
+     * @param string the channel group
+     * @param string the channel id in that group
+     * @return the globally unique channel uid
+     */
+    private ChannelUID channelUID(String group, String id) {
+        return new ChannelUID(getThing().getUID(), group, id);
+    }
+
     private void handleInfoResult(AsyncModbusReadResult result) {
-        turnOnline();
+        if (infoRead != ReadStatus.READ_SUCCESS) {
+            // update status only if bit switches
+            infoRead = ReadStatus.READ_SUCCESS;
+            updateStatus();
+        }
         infoParser.handle(result);
         InfoBlock block = (InfoBlock) infoParser.parse(DataType.INFO);
         String group = "info";
@@ -122,11 +217,19 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     }
 
     private void handleInfoFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> result) {
-        // TODO: error handling
+        if (infoRead != ReadStatus.READ_FAILED) {
+            // update status only if bit switches
+            infoRead = ReadStatus.READ_FAILED;
+            updateStatus();
+        }
     }
 
     void handleDataResult(AsyncModbusReadResult result) {
-        turnOnline();
+        if (dataRead != ReadStatus.READ_SUCCESS) {
+            // update status only if bit switches
+            dataRead = ReadStatus.READ_SUCCESS;
+            updateStatus();
+        }
         dataParser.handle(result);
         // Update channels in emergency group
         {
@@ -193,16 +296,14 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     }
 
     void handleDataFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> result) {
-        // TODO: error handling
+        if (dataRead != ReadStatus.READ_FAILED) {
+            // update status only if bit switches
+            dataRead = ReadStatus.READ_FAILED;
+            updateStatus();
+        }
         listeners.forEach(l -> {
             l.handleError(result);
         });
-    }
-
-    private void turnOnline() {
-        if (myStatus != ThingStatus.ONLINE) {
-            setStatus(ThingStatus.ONLINE);
-        }
     }
 
     @Override
@@ -222,114 +323,33 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         comms = null;
     }
 
-    private void setStatus(ThingStatus status) {
-        myStatus = status;
-        updateStatus(myStatus);
+    private void updateStatus() {
+        if (infoRead != ReadStatus.NOT_RECEIVED && dataRead != ReadStatus.NOT_RECEIVED) {
+            if (infoRead == dataRead) {
+                // both reads are ok or else both failed
+                if (infoRead == ReadStatus.READ_SUCCESS) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, INFO_DATA_READ_ERROR);
+                }
+            } else {
+                // either info or data read failed - update status with details
+                if (infoRead == ReadStatus.READ_FAILED) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, INFO_READ_ERROR);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, DATA_READ_ERROR);
+                }
+            }
+        } // else - one status isn't received yet - wait until both Modbus polls returns either success or error
     }
 
-    /**
-     * Wallbox Settings can be changed with one Integer
-     *
-     * @param wallboxId needed to calculate right register
-     * @param writeValue integer to be written
-     */
-    public void wallboxSet(int wallboxId, int writeValue) {
-        ModbusCommunicationInterface localComms = comms;
-        if (localComms != null) {
-            ModbusRegisterArray regArray = new ModbusRegisterArray(writeValue);
-            ModbusWriteRegisterRequestBlueprint writeBluePrint = new ModbusWriteRegisterRequestBlueprint(slaveId,
-                    WALLBOX_REG_START + wallboxId, regArray, false, 3);
-            localComms.submitOneTimeWrite(writeBluePrint, result -> {
-                // TODO: update thing status?
-                logger.debug("E3DC Modbus write response! {}", result.getResponse().toString());
-            }, failure -> {
-                // TODO: update thing status?
-                logger.warn("E3DC Modbus write error! {}", failure.getRequest().toString());
-            });
-        }
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        listeners.add((E3DCWallboxThingHandler) childHandler);
     }
 
-    /**
-     * Get a reference to the modbus endpoint
-     */
-    private void connectEndpoint() {
-        if (comms != null) {
-            return;
-        }
-
-        ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
-        if (slaveEndpointThingHandler == null) {
-            @SuppressWarnings("null")
-            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' is offline", label));
-            logger.debug("No bridge handler available -- aborting init for {}", label);
-            return;
-        }
-        try {
-            slaveId = slaveEndpointThingHandler.getSlaveId();
-            comms = slaveEndpointThingHandler.getCommunicationInterface();
-        } catch (EndpointNotInitializedException e) {
-            // FIXME: this cannot be raised anymore, throws was left accidentally in the API
-        }
-        if (comms == null) {
-            @SuppressWarnings("null")
-            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' not completely initialized", label));
-            logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
-            return;
-        }
-    }
-
-    /**
-     * Get the endpoint handler from the bridge this handler is connected to
-     * Checks that we're connected to the right type of bridge
-     *
-     * @return the endpoint handler or null if the bridge does not exist
-     */
-    private @Nullable ModbusEndpointThingHandler getEndpointThingHandler() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            logger.debug("Bridge is null");
-            return null;
-        }
-        if (bridge.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Bridge is not online");
-            return null;
-        }
-
-        ThingHandler handler = bridge.getHandler();
-        if (handler == null) {
-            logger.debug("Bridge handler is null");
-            return null;
-        }
-
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
-        } else {
-            logger.debug("Unexpected bridge handler: {}", handler);
-            return null;
-        }
-    }
-
-    /**
-     * Returns the channel UID for the specified group and channel id
-     *
-     * @param string the channel group
-     * @param string the channel id in that group
-     * @return the globally unique channel uid
-     */
-    private ChannelUID channelUID(String group, String id) {
-        return new ChannelUID(getThing().getUID(), group, id);
-    }
-
-    public synchronized void addDataListener(DataListener l) {
-        listeners.add(l);
-    }
-
-    public synchronized void removeDataListener(DataListener l) {
-        listeners.remove(l);
+    @Override
+    public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
+        listeners.remove(childHandler);
     }
 }
