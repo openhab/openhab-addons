@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.regex.Matcher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,6 +69,7 @@ import org.slf4j.LoggerFactory;
 public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
     private static final Map<String, Converter> CONVERTERS = new HashMap<>();
+    private static final String SERIAL_NUMBER = "serialNumber";
     private @Nullable LcnAddrMod moduleAddress;
     private final Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
     private final List<AbstractLcnModuleSubHandler> metadataSubHandlers = new ArrayList<>();
@@ -93,6 +95,30 @@ public class LcnModuleHandler extends BaseThingHandler {
         LcnAddrMod localModuleAddress = moduleAddress = new LcnAddrMod(localConfig.segmentId, localConfig.moduleId);
 
         try {
+
+            // Determine serial number of manually added modules
+            if (getThing().getThingTypeUID().equals(LcnBindingConstants.THING_TYPE_MODULE)
+                    && getThing().getProperties().get(SERIAL_NUMBER).isEmpty()) {
+                PckGatewayHandler localBridgeHandler = getPckGatewayHandler();
+                localBridgeHandler.registerPckListener(data -> {
+                    Matcher matcher;
+
+                    if ((matcher = LcnModuleMetaFirmwareSubHandler.PATTERN.matcher(data)).matches()) {
+                        if (isMyAddress(matcher.group("segId"), matcher.group("modId"))
+                                && matcher.pattern() == LcnModuleMetaFirmwareSubHandler.PATTERN) {
+                            String serialNumber = matcher.group("sn");
+                            updateProperty(SERIAL_NUMBER, serialNumber);
+                        }
+                    }
+                });
+                synchronized (LcnModuleHandler.this) {
+                    Connection connection = localBridgeHandler.getConnection();
+                    if (connection != null) {
+                        connection.sendSerialNumberRequest(localModuleAddress);
+                    }
+                }
+            }
+
             // create sub handlers
             ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
             for (LcnChannelGroup type : LcnChannelGroup.values()) {
