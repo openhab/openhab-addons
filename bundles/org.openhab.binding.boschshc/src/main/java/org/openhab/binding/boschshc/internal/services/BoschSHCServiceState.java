@@ -14,7 +14,7 @@ package org.openhab.binding.boschshc.internal.services;
 
 import com.google.gson.annotations.SerializedName;
 
-/** 
+/**
  * Base Bosch Smart Home Controller service state.
  * 
  * @author Christian Oeing - Initial contribution

@@ -51,12 +51,12 @@ import com.google.gson.reflect.TypeToken;
  * Representation of a connection with a Bosch Smart Home Controller bridge.
  *
  * @author Stefan Kästle - Initial contribution
- * @author Gerd Zanker - added HttpClient with pairing support  
- * @author Christian Oeing - refactorings of e.g. server registration  
+ * @author Gerd Zanker - added HttpClient with pairing support
+ * @author Christian Oeing - refactorings of e.g. server registration
  */
 @NonNullByDefault
 public class BoschSHCBridgeHandler extends BaseBridgeHandler {
-	
+
     public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
     }
@@ -70,7 +70,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     @NonNullByDefault({})
     private BoschSHCBridgeConfiguration config;
-
 
     @Override
     public void initialize() {

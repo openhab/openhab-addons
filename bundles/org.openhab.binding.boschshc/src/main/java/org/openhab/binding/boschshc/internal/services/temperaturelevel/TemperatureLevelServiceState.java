@@ -21,7 +21,7 @@ import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 
 import tec.uom.se.unit.Units;
 
-/** 
+/**
  * TemperatureLevel service state.
  * 
  * @author Christian Oeing - Initial contribution

@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
  * Controller.
  *
  * @author Stefan Kästle - Initial contribution
- * @author Christian Oeing - refactorings of e.g. server registration 
+ * @author Christian Oeing - refactorings of e.g. server registration
  */
 public class DeviceStatusUpdate {
     /**
