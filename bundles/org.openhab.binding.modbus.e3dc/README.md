@@ -1,9 +1,9 @@
 # E3DC Binding
 
 <img align="right" src="./doc/E3DC_logo.png" />
-Integrates the Home Power Plants from E3/DC GmbH into openHAB. See [E3DC Website](https://www.e3dc.com/) to find more infos about the device.
+Integrates the Home Power Plants from E3/DC GmbH into openHAB. See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
 The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
-E3DC devices are integrated into the Modbus Binding. If you want to install an E3DC device via PaperUI perform the follwoing steps
+E3DC devices are integrated into the Modbus Binding. If you want to install an E3DC device via PaperUI perform the following steps
 
 1. Go to "Configuration - Things" and press the blue "+" sign in the main window
 2. Choose entry "Modbus Binding". There's no discovery so choose "MANUALLY ADD THING"
@@ -12,7 +12,7 @@ E3DC devices are integrated into the Modbus Binding. If you want to install an E
 * the "E3DC Home Power Plant" as central device 
 * the "E3DC Wallbox" attached to a certain Power Plant
 
-See chapter [Configuration](#thing-configuration) how to set them up in Paper UI or check the [full example Things](#things) for manual setup. 
+See chapter [Configuration](#thing-configuration) how to set them up in PaperUI or check the [full example Things](#things) for manual setup. 
 
 
 ## Supported Things
@@ -32,7 +32,7 @@ There's no discovery. Modbus registers are available for all devices. Just insta
 
 ## Thing Configuration
 
-As metioned earlier in the [Binding Description](#e3dc-binding) the needed Things can be found in the **Modbus Binding** and have to be added manually without Discovery
+As mentioned earlier in the [Binding Description](#e3dc-binding) the needed Things can be found in the **Modbus Binding** and have to be added manually without Discovery
 
 1. Add a "Modbux TCP Slave". IP-Address, Modbus Port and Device ID are mandatory configuration parameters and have to match your E3DC Settings
 2. Now add an "E3DC Home Power Plant". Bridge is the previously created Modbus TCP Slave. The Power Plant provides 4 different Channel with all available information of your E3DC device.  
@@ -45,13 +45,13 @@ Check the [full example Things](#things) for manual setup.
 | Parameter       | Type    | Description                                                             |           
 |-----------------|---------|-------------------------------------------------------------------------|
 | host            | text    | IP Address of your device                                               |
-| port            | integer | Modbus Port of your E3DC device device Modbus Settings.. Default is 502 |
+| port            | integer | Modbus Port of your E3DC device Modbus Settings.. Default is 502 |
 | deviceid        | integer | Modbus Port of your E3DC device Modbus Settings. Default is 1           |
 
 ### E3DC Home Power Plant 
 
 Select as Bridge your previously created Modbus TCP Slave.
-No addtional configuration parameters needed.
+No additional configuration parameters needed.
 
 ### E3DC Wallbox
 
@@ -151,9 +151,9 @@ Following example provides the full configuration. If you enter the correct Conn
 ### Things
 
 ```
-Bridge modbus:tcp:device "AAA E3DC Modbus TCP" [ host="192.168.178.56", port=502, id=1 ] {
-        Bridge e3dc powerplant "AAA E3DC Power Plant" [ ] {
-         Thing e3dc-wallbox wallbox                     "AAA E3DC Wallbox"                              [ wallboxId=0]
+Bridge modbus:tcp:device "E3DC Modbus TCP" [ host="192.168.178.56", port=502, id=1 ] {
+        Bridge e3dc powerplant "E3DC Power Plant" [ ] {
+         Thing e3dc-wallbox wallbox                     "E3DC Wallbox"                              [ wallboxId=0]
     }
 }
 ```

@@ -55,25 +55,6 @@ public class InfoTest {
         assertNull(b);
     }
 
-    /**
-     * @Test
-     *       public void testNotifications() {
-     *       DataListenerMock listener = new DataListenerMock(DataType.INFO);
-     *       mc.addDataListener(listener);
-     *       assertEquals("Callback 1", 1, listener.getCallCounter());
-     * 
-     *       Data d = listener.getCurrentData();
-     *       assertNotNull(d);
-     *       assertTrue("Info Data", d instanceof InfoBlock);
-     *       InfoBlock b = (InfoBlock) d;
-     *       assertEquals("MagicByte", "E3DC", b.modbusId.toString());
-     *       assertEquals("Model", "S10 E AIO", b.modelName.toString());
-     *       assertEquals("Firmware", "S10_2020_04", b.firmware.toString());
-     *       assertEquals("Manufacturer", "E3/DC GmbH", b.manufacturer.toString());
-     *       mc.setArray(new byte[] {});
-     *       assertEquals("Callback 2", 2, listener.getCallCounter());
-     *       }
-     **/
     @Test
     public void testInvalidBlockSize() {
         byte[] infoBlock = new byte[] { -29, -36, 1, 2, 0, -120, 69, 51, 47, 68, 67, 32, 71, 109, 98, 72, 0, 0, 0, 0, 0,
