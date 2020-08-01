@@ -31,7 +31,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
-import org.openhab.binding.rfxcom.internal.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.connector.RFXComConnectorInterface;
 import org.openhab.binding.rfxcom.internal.connector.RFXComEventListener;
@@ -170,7 +169,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         logger.debug("Connecting to RFXCOM transceiver");
 
         try {
-            String readerThreadName = RFXComBindingConstants.THREAD_NAME_PREFIX + getThing().getUID().getAsString();
+            String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
             if (configuration.serialPort != null) {
                 if (connector == null) {
                     connector = new RFXComSerialConnector(serialPortManager, readerThreadName);
