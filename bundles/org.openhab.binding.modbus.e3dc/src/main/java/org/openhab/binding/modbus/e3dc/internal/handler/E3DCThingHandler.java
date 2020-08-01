@@ -97,7 +97,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        // Example for background initialization:
         scheduler.execute(() -> {
             ModbusCommunicationInterface localComms = connectEndpoint();
             if (localComms != null) {

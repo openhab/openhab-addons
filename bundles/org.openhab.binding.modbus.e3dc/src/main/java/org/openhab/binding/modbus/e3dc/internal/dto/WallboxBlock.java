@@ -49,7 +49,6 @@ public class WallboxBlock implements Data {
      */
     public WallboxBlock(byte[] bArray) {
         bitSet = BitSet.valueOf(bArray);
-        // logger.info("BitSet String {}", bs.toString());
         wbAvailable = bitSet.get(WB_AVAILABLE_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbSunmode = bitSet.get(WB_SUNMODE_BIT) ? OnOffType.ON : OnOffType.OFF;
         wbChargingAborted = bitSet.get(WB_CHARGING_ABORTED_BIT) ? OnOffType.ON : OnOffType.OFF;

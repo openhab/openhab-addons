@@ -15,13 +15,15 @@ package org.openhab.binding.modbus.e3dc.internal.dto;
 import java.util.Arrays;
 import java.util.BitSet;
 
+import org.eclipse.californium.elements.util.StandardCharsets;
+
 /**
  * The {@link DataConverter} Helper class to convert bytes from modbus into desired data format
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class DataConverter {
-    private static final long MAX_INT32 = new Long("4294967296");
+    private static final long MAX_INT32 = (long) Math.pow(2, Integer.SIZE);
 
     public static int getIntValue(byte[] bytes, int start) {
         return ((bytes[start] & 0xff) << 8) | (bytes[start + 1] & 0xff);
@@ -43,7 +45,6 @@ public class DataConverter {
      * @return decoded long value, Long.MIN_VALUE otherwise
      */
     public static long getInt32Swap(byte[] bytes, int startIndex) {
-        // LOGGER.info("Convert {} {} {} {}", bytes[start], bytes[start + 1], bytes[start + 2], bytes[start + 3]);
         if (bytes.length - startIndex < 4) {
             return Long.MIN_VALUE;
         }
@@ -58,7 +59,7 @@ public class DataConverter {
 
     public static String getString(byte[] bArray, int i) {
         byte[] slice = Arrays.copyOfRange(bArray, i, i + 32);
-        return new String(slice).trim();
+        return new String(slice, StandardCharsets.US_ASCII).trim();
     }
 
     public static void logArray(byte[] bArray) {

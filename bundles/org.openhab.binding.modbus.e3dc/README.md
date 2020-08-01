@@ -22,7 +22,7 @@ First you need a Bridge which establishes the basic connection towards your E3DC
 | Name                  | Thing Type ID | Description                                                                                          |
 |-----------------------|---------------|------------------------------------------------------------------------------------------------------|
 | E3DC Home Power Plant | e3dc          | Provides Power values, String Details, Emergency Power Status and general Information of your E3DC Home Power Plant    |
-| E3DC Home Power Plant | e3dc-wallbox  | Provides your Wallbox Settings. Switches like "Sunmode" or "1-Phase Charging" can be changed!     |
+| E3DC Home Power Plant | e3dc-wallbox  | Provides your Wallbox Settings. Switches like "Sunmode" or "1-Phase Charging" can be changed     |
 
 
 ## Discovery
@@ -80,35 +80,35 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 
 ### Channel Group _Power Block_
 
-| Channel Label                 |  Channel Group ID | Channel ID                   | Type             | Description                  |
-|-------------------------------|-------------------|------------------------------|------------------|------------------------------|
-| PV Output                     | power             | pv-power-supply              |  Number:Power    | Photovoltaic Power Production    |
-| Battery Discharge             | power             | battery-power-supply         |  Number:Power    | Battery discharges and provides Power    |
-| Battery Charge                | power             | battery-power-consumption    |  Number:Power    | Battery charges and consumes Power    |
-| Household Consumption         | power             | household-power-consumption  |  Number:Power    | Household consuming Power    |
-| Grid Power Consumption        | power             | grid-power-consumption       |  Number:Power    | Grid Power is needed in order to satisfy your overall Power consumption    |
-| Grid Power Supply             | power             | grid-power-supply            |  Number:Power    | More Photovoltaic Power is produced than needed. Additional Power is provided towards the Grid    |
-| External Power Supply         | power             | external-power-supply        |  Number:Power    | Power produced by an external device which is attached to your E3DC device    |
-| Wallbox Power Consumption     | power             | wallbox-power-consumption    |  Number:Power    | Power consumption of attached Wallboxes    |
-| Wallbox PV Power Consumption  | power             | wallbox-pv-power-consumption |  Number:Power    | Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes    |
-| Autarky                       | power             | autarky-channel              |  Number:Percent  | Your current Autarky Level    |
-| Self Consumption              | power             | self-consumption             |  Number:Percent  | Your current Photovoltaic Self Consumption Level    |
-| Battery State Of Charge       | power             | battery-soc                  |  Number:Percent  | Charge Level of your attached Battery    |
+| Channel Label                 |  Channel Group ID | Channel ID                   | Type                   | Description                  |
+|-------------------------------|-------------------|------------------------------|------------------------|------------------------------|
+| PV Output                     | power             | pv-power-supply              |  Number:Power          | Photovoltaic Power Production    |
+| Battery Discharge             | power             | battery-power-supply         |  Number:Power          | Battery discharges and provides Power    |
+| Battery Charge                | power             | battery-power-consumption    |  Number:Power          | Battery charges and consumes Power    |
+| Household Consumption         | power             | household-power-consumption  |  Number:Power          | Household consuming Power    |
+| Grid Power Consumption        | power             | grid-power-consumption       |  Number:Power          | Grid Power is needed in order to satisfy your overall Power consumption    |
+| Grid Power Supply             | power             | grid-power-supply            |  Number:Power          | More Photovoltaic Power is produced than needed. Additional Power is provided towards the Grid    |
+| External Power Supply         | power             | external-power-supply        |  Number:Power          | Power produced by an external device which is attached to your E3DC device    |
+| Wallbox Power Consumption     | power             | wallbox-power-consumption    |  Number:Power          | Power consumption of attached Wallboxes    |
+| Wallbox PV Power Consumption  | power             | wallbox-pv-power-consumption |  Number:Power          | Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes    |
+| Autarky                       | power             | autarky-channel              |  Number:Dimensionless  | Your current Autarky Level    |
+| Self Consumption              | power             | self-consumption             |  Number:Dimensionless  | Your current Photovoltaic Self Consumption Level    |
+| Battery State Of Charge       | power             | battery-soc                  |  Number:Dimensionless  | Charge Level of your attached Battery    |
 
 
 ### Channel Group _String Details Block_
 
 | Channel Label         | Channel Group ID | Channel ID         | Type            | Description                  |
 |-----------------------|------------------|--------------------|-----------------|------------------------------|
-| String 1 Potential    | strings          | string1-dc-voltage |  Number:Volt    | Volt on String 1           |
-| String 2 Potential    | strings          | string2-dc-voltage |  Number:Volt    | Volt on String 2           |
-| String 3 Potential    | strings          | string3-dc-voltage |  Number:Volt    | Volt on String 3           |
-| String 1 Current      | strings          | string1-dc-current |  Number:Ampere  | Ampere on String 1       |
-| String 2 Current      | strings          | string2-dc-current |  Number:Ampere  | Ampere on String 2       |
-| String 3 Current      | strings          | string3-dc-current |  Number:Ampere  | Ampere on String 3       |
-| String 1 Power        | strings          | string1-dc-output  |  Number:Power   | Watt produced by String 1 |
-| String 2 Power        | strings          | string2-dc-output  |  Number:Power   | Watt produced by String 2 |
-| String 3 Power        | strings          | string3-dc-output  |  Number:Power   | Watt produced by String 3 |
+| String 1 Potential    | strings          | string1-dc-voltage |  Number:Volt    | Voltage on String 1           |
+| String 2 Potential    | strings          | string2-dc-voltage |  Number:Volt    | Voltage on String 2           |
+| String 3 Potential    | strings          | string3-dc-voltage |  Number:Volt    | Voltage on String 3           |
+| String 1 Current      | strings          | string1-dc-current |  Number:Ampere  | Current on String 1       |
+| String 2 Current      | strings          | string2-dc-current |  Number:Ampere  | Current on String 2       |
+| String 3 Current      | strings          | string3-dc-current |  Number:Ampere  | Current on String 3       |
+| String 1 Power        | strings          | string1-dc-output  |  Number:Power   | Power produced by String 1 |
+| String 2 Power        | strings          | string2-dc-output  |  Number:Power   | Power produced by String 2 |
+| String 3 Power        | strings          | string3-dc-output  |  Number:Power   | Power produced by String 3 |
 
 
 ### Channel _EMS Block_
@@ -292,7 +292,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
 
 ## Going further
 
-Setup and configured everything the right way? Congratulations, you've now the actual E3DC values on your table. Don't stop and go ahead!
+Setup and configured everything the right way? Congratulations, you've now the recent E3DC values on your table. Don't stop and go ahead!
 
 ### Persistence
 

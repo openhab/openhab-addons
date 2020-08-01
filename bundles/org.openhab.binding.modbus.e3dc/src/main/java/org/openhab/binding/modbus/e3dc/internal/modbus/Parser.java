@@ -15,7 +15,6 @@ package org.openhab.binding.modbus.e3dc.internal.modbus;
 import static org.openhab.binding.modbus.e3dc.internal.modbus.E3DCModbusConstans.*;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,10 +63,8 @@ public class Parser {
         long startTime = System.currentTimeMillis();
         Optional<ModbusRegisterArray> opt = result.getRegisters();
         ModbusRegisterArray registers = opt.get();
-        Iterator<ModbusRegister> iter = registers.iterator();
         int i = 0;
-        while (iter.hasNext()) {
-            ModbusRegister reg = iter.next();
+        for (ModbusRegister reg : registers) {
             System.arraycopy(reg.getBytes(), 0, newArray, i, 2);
             i += 2;
         }
@@ -84,7 +81,6 @@ public class Parser {
             minDuration = Long.MAX_VALUE;
             maxDuration = Long.MIN_VALUE;
         }
-        // DataConverter.logArray(newArray);
     }
 
     public synchronized void setArray(byte[] b) {
