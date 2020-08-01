@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Fabian Wolter - Initial Contribution
  */
 @NonNullByDefault
-public class S0Converter extends Converter {
+public class S0Converter extends ValueConverter {
     private final Logger logger = LoggerFactory.getLogger(S0Converter.class);
     protected double pulsesPerKwh;
 

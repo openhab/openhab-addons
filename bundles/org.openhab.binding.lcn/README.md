@@ -280,6 +280,8 @@ S0 counter Channels need to be the pulses per kWh configured. If the value is le
 
 The Rollershutter Channels provide the boolean parameter `invertUpDown`, which can be set to 'true' if the Up/Down wires are interchanged.
 
+The Binarysensor Channels provide the boolean parameter `invertState`, which can be set to 'true' if the binary sensor connected uses reverse logic for signaling open/closed.
+
 ### Transponder
 
 LCN transponder readers can be integrated in openHAB e.g. for access control.
