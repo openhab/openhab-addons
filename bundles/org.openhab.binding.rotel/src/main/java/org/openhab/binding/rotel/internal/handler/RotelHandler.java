@@ -86,7 +86,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private RotelStateDescriptionOptionProvider stateDescriptionProvider;
     private SerialPortManager serialPortManager;
 
-    private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX, new HashMap<>());
+    private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX, new HashMap<>(),
+            THREAD_NAME_PREFIX);
 
     private int minVolume;
     private int maxVolume;
@@ -291,7 +292,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
         Map<RotelSource, String> sourcesLabels = new HashMap<>();
 
-        connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels);
+        String readerThreadName = THREAD_NAME_PREFIX + getThing().getUID().getAsString();
+
+        connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels, readerThreadName);
 
         if (rotelModel.hasVolumeControl()) {
             maxVolume = rotelModel.getVolumeMax();
@@ -376,12 +379,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             }
 
             if (USE_SIMULATED_DEVICE) {
-                connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels);
+                connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels, readerThreadName);
             } else if (config.serialPort != null) {
                 connector = new RotelSerialConnector(serialPortManager, config.serialPort, rotelModel, rotelProtocol,
-                        sourcesLabels);
+                        sourcesLabels, readerThreadName);
             } else {
-                connector = new RotelIpConnector(config.host, config.port, rotelModel, rotelProtocol, sourcesLabels);
+                connector = new RotelIpConnector(config.host, config.port, rotelModel, rotelProtocol, sourcesLabels,
+                        readerThreadName);
             }
 
             if (rotelModel.hasSourceControl()) {
