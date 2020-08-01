@@ -34,7 +34,13 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
     private OutputStream out;
     private Socket socket;
 
+    private final String readerThreadName;
     private Thread readerThread;
+
+    public RFXComTcpConnector(String readerThreadName) {
+        super();
+        this.readerThreadName = readerThreadName;
+    }
 
     @Override
     public void connect(RFXComBridgeConfiguration device) throws IOException {
@@ -49,7 +55,7 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
             in.reset();
         }
 
-        readerThread = new RFXComStreamReader(this);
+        readerThread = new RFXComStreamReader(this, readerThreadName);
         readerThread.start();
     }
 
