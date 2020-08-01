@@ -128,9 +128,8 @@ public class InnogyWebSocket {
     public void onClose(int statusCode, String reason) {
         if (statusCode == StatusCode.NORMAL) {
             logger.info("Connection to innogy Webservice was closed normally.");
-        } else if (statusCode == StatusCode.NO_CLOSE && "Disconnected".equals(reason)) { //TODO remove, it's just a workaround regarding #8080!!!
-            logger.info("Connection not closed because it is already closed. It will get restarted automatically.");
-        } else {
+        } else if(!closing) {
+            //An additional reconnect attempt is only required when the close/stop wasn't executed by the binding.
             logger.info("Connection to innogy Webservice was closed abnormally (code: {}). Reason: {}", statusCode,
                     reason);
             eventListener.connectionClosed();
