@@ -191,7 +191,7 @@ To do so, simply start openHAB's discovery.
 
 If not all LCN modules get listed on the first run, click on the refresh button to start another scan.
 
-When adding a module by discovery, the new *Thing*'s UID will be the module's serial number.
+When adding a module by discovery, the new *Thing*'s UID will be a combination of segment and module id using the following format: *S<segment_id>M<module_id>* where *segment_id* and *module_id* are formatted as three-digit numbers with leading zeros.
 
 ### Discover PCK Gateways
 
@@ -285,12 +285,12 @@ The Rollershutter Channels provide the boolean parameter `invertUpDown`, which c
 LCN transponder readers can be integrated in openHAB e.g. for access control.
 The transponder function must be enabled in the module's I-port properties within *LCN-PRO*.
  
-Example: When the transponder card with the ID "12ABCD" is seen by the reader connected to LCN module "17B308349E", the item "M10_Relay7" is switched on:
+Example: When the transponder card with the ID "12ABCD" is seen by the reader connected to LCN module "S000M011", the item "M10_Relay7" is switched on:
 
 ```
 rule "My Transponder"
 when
-    Channel "lcn:module:b827ebfea4bb:17B308349E:code#transponder" triggered "12ABCD"
+    Channel "lcn:module:b827ebfea4bb:S000M011:code#transponder" triggered "12ABCD"
 then
     M10_Relay7.sendCommand(ON)
 end
@@ -309,7 +309,7 @@ The trigger *Channel* `lcn:module:<pckThing>:<moduleThing>:code#remotecontrolkey
 ```
 rule "Remote Control Key 3 on Layer 1 hit"
 when
-    Channel "lcn:module:b827ebfea4bb:17B3073D6A:code#remotecontrolkey" triggered "A3:HIT"
+    Channel "lcn:module:b827ebfea4bb:S000M012:code#remotecontrolkey" triggered "A3:HIT"
 then
     M10_Relay7.sendCommand(ON)
 end
@@ -324,8 +324,8 @@ The serial number of a remote control can be used for access control via the cha
 ```
 rule "Remote Control Key 3 on Layer 1 hit (only executed for serial number AB1234)"
 when
-    Channel "lcn:module:b827ebfea4bb:17B3073D6A:code#remotecontrolcode" triggered "AB1234:A3:HIT" or
-    Channel "lcn:module:b827ebfea4bb:17B3073D6A:code#remotecontrolcode" triggered "AB1234:A3:MAKE"
+    Channel "lcn:module:b827ebfea4bb:S000M012:code#remotecontrolcode" triggered "AB1234:A3:HIT" or
+    Channel "lcn:module:b827ebfea4bb:S000M012:code#remotecontrolcode" triggered "AB1234:A3:MAKE"
 then
     M10_Relay7.sendCommand(ON)
 end
@@ -344,9 +344,9 @@ The ramp parameter is not available for Color *Item*s.
 
 ```
 // Dim output 2 in 0.25s 
-Switch M10_Output2 {channel="lcn:module:b827ebfea4bb:17B4196847:output#2"[profile="lcn:output", ramp=0.25]} // with ramp of 0.25s (smallest value)
+Switch M10_Output2 {channel="lcn:module:b827ebfea4bb:S000M010:output#2"[profile="lcn:output", ramp=0.25]} // with ramp of 0.25s (smallest value)
 // Dim output 3 in 486s
-Dimmer M10_Output3 {channel="lcn:module:b827ebfea4bb:17B4196847:output#3"[profile="lcn:output", ramp=486]}  // with ramp of 486s (biggest value)
+Dimmer M10_Output3 {channel="lcn:module:b827ebfea4bb:S000M010:output#3"[profile="lcn:output", ramp=486]}  // with ramp of 486s (biggest value)
 ```
 
 The optional parameters *controlAllOutputs* and *controlOutputs12* can be used to control multiple outputs simultaneously.
@@ -354,12 +354,12 @@ Please note that the combination of these parameters with the *ramp* parameter i
 
 ```
 // Control outputs 1+2 simultaneously. Status of Output 1 is visualized. Only ramps of 0s or 0.25s are supported.
-Dimmer M10_Outputs12a {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlOutputs12=true]}
-Dimmer M10_Outputs12b {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlOutputs12=true, ramp=0.25]}
+Dimmer M10_Outputs12a {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlOutputs12=true]}
+Dimmer M10_Outputs12b {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlOutputs12=true, ramp=0.25]}
 // Control all outputs simultaneously. Status of Output 1 is visualized.
-Dimmer M10_OutputAll1 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0]} // ramp only since firmware 180501
-Dimmer M10_OutputAll2 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.25]} // ramp compatibility: all
-Dimmer M10_OutputAll3 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.5]} // ramp only since firmware 180501
+Dimmer M10_OutputAll1 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0]} // ramp only since firmware 180501
+Dimmer M10_OutputAll2 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.25]} // ramp compatibility: all
+Dimmer M10_OutputAll3 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.5]} // ramp only since firmware 180501
 ```
 
 ## Actions
@@ -386,7 +386,7 @@ rule "Hit key C4 hourly"
 when
     Time cron "0 0 * * * ?"
 then
-    val actions = getActions("lcn","lcn:module:b827ebfea4bb:17B4196847")
+    val actions = getActions("lcn","lcn:module:b827ebfea4bb:S000M010")
     actions.hitKey("C", 4, "HIT")
 end
 ```
@@ -411,7 +411,7 @@ rule "Send dynamic Text to GT10D hourly"
 when
     Time cron "0 0 * * * ?"
 then
-    val actions = getActions("lcn","lcn:module:b827ebfea4bb:17B3073D6A")
+    val actions = getActions("lcn","lcn:module:b827ebfea4bb:S000M012")
     actions.sendDynamicText(1, "Test 123 CO₂ öäüß€") // row 1
 end
 ```
@@ -435,7 +435,7 @@ rule "Flicker output 1 when window opens"
 when
     Item M10_BinarySensor5 changed to OPEN 
 then
-    val actions = getActions("lcn","lcn:module:b827ebfea4bb:17B4196847")
+    val actions = getActions("lcn","lcn:module:b827ebfea4bb:S000M010")
     // output=1, depth=2=100%, ramp=0=2s, count=3
     actions.flickerOutput(1, 2, 0, 3)
 end
@@ -475,73 +475,73 @@ Config .items
 
 ```
 // Dimmer Outputs
-Dimmer M10_Output1 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"}
-Switch M10_Output2 {channel="lcn:module:b827ebfea4bb:17B4196847:output#2"[profile="lcn:output", ramp=0.25]} // with ramp of 0.25s (smallest value)
-Dimmer M10_Output3 {channel="lcn:module:b827ebfea4bb:17B4196847:output#3"[profile="lcn:output", ramp=486]}  // with ramp of 486s (biggest value)
+Dimmer M10_Output1 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"}
+Switch M10_Output2 {channel="lcn:module:b827ebfea4bb:S000M010:output#2"[profile="lcn:output", ramp=0.25]} // with ramp of 0.25s (smallest value)
+Dimmer M10_Output3 {channel="lcn:module:b827ebfea4bb:S000M010:output#3"[profile="lcn:output", ramp=486]}  // with ramp of 486s (biggest value)
 
 // Dimmer Outputs: Control all simultaneously. Status of Output 1 is visualized.
-Dimmer M10_OutputAll1 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0]}    // ramp=0: only since firmware 180501
-Dimmer M10_OutputAll2 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.25]} // ramp=0.25: compatibility: all firmwares
-Dimmer M10_OutputAll3 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.5]}  // ramp>=0.5: only since firmware 180501
+Dimmer M10_OutputAll1 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0]}    // ramp=0: only since firmware 180501
+Dimmer M10_OutputAll2 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.25]} // ramp=0.25: compatibility: all firmwares
+Dimmer M10_OutputAll3 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.5]}  // ramp>=0.5: only since firmware 180501
 
 // Dimmer Outputs: Control outputs 1+2 simultaneously. Status of Output 1 is visualized. Only ramps of 0s or 0.25s are supported.
-Dimmer M10_Outputs12b {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlOutputs12=true, ramp=0.25]}
+Dimmer M10_Outputs12b {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlOutputs12=true, ramp=0.25]}
 
 // Dimmer Outputs: RGB Control
-Color M10_Color {channel="lcn:module:b827ebfea4bb:17B4196847:output#color"[profile="lcn:output"]} 
+Color M10_Color {channel="lcn:module:b827ebfea4bb:S000M010:output#color"[profile="lcn:output"]} 
 
 // Roller Shutter on Output 1+2
-Rollershutter M10_RollershutterOutput1 {channel="lcn:module:b827ebfea4bb:17B4196847:rollershutteroutput#1"}
+Rollershutter M10_RollershutterOutput1 {channel="lcn:module:b827ebfea4bb:S000M010:rollershutteroutput#1"}
 
 // Relays
-Switch M10_Relay1 {channel="lcn:module:b827ebfea4bb:17B4196847:relay#1"}
+Switch M10_Relay1 {channel="lcn:module:b827ebfea4bb:S000M010:relay#1"}
 
 // Roller Shutter on Relays 1+2
-Rollershutter M10_RollershutterRelay1 {channel="lcn:module:b827ebfea4bb:17B4196847:rollershutterrelay#1"}
+Rollershutter M10_RollershutterRelay1 {channel="lcn:module:b827ebfea4bb:S000M010:rollershutterrelay#1"}
 
 // LEDs
-String M10_LED1 {channel="lcn:module:b827ebfea4bb:17B4196847:led#1"}
-String M10_LED2 {channel="lcn:module:b827ebfea4bb:17B4196847:led#2"}
+String M10_LED1 {channel="lcn:module:b827ebfea4bb:S000M010:led#1"}
+String M10_LED2 {channel="lcn:module:b827ebfea4bb:S000M010:led#2"}
 
 // Logic Operations (legacy name: "Sums")
-String M10_Logic1 {channel="lcn:module:b827ebfea4bb:17B4196847:logic#1"}
-String M10_Logic2 {channel="lcn:module:b827ebfea4bb:17B4196847:logic#2"[profile="transform:MAP", function="alertSystem.map"]}
+String M10_Logic1 {channel="lcn:module:b827ebfea4bb:S000M010:logic#1"}
+String M10_Logic2 {channel="lcn:module:b827ebfea4bb:S000M010:logic#2"[profile="transform:MAP", function="alertSystem.map"]}
 // conf/transform/alertSystem.map:
 // NOT=All windows are closed
 // OR=Some windows are open
 // AND=All windows are open
 
 // Binary Sensors
-Contact M10_BinarySensor1 {channel="lcn:module:b827ebfea4bb:17B4196847:binarysensor#1"}
+Contact M10_BinarySensor1 {channel="lcn:module:b827ebfea4bb:S000M010:binarysensor#1"}
 
 // Variables
 // The units of the variables must also be set in the Channels configuration, to be visualized correctly.
-Number:Temperature M10_Variable1 "[%.1f %unit%]" <temperature> {channel="lcn:module:b827ebfea4bb:17B4196847:variable#1"} // Temperature in °C
-Number:Temperature M10_Variable2 "[%.1f °F]" <temperature> {channel="lcn:module:b827ebfea4bb:17B4196847:variable#2"} // Temperature in °F
-Number M10_Variable3 "[%d ppm]" <temperature> {channel="lcn:module:b827ebfea4bb:17B4196847:variable#3"}              // Indoor air quality in ppm
-Number M10_Variable4 "[%d lx]"    {channel="lcn:module:b827ebfea4bb:17B4196847:variable#4"}                          // Illuminance in Lux
-Number:Illuminance M10_Variable5 "[%.1f klx]" {channel="lcn:module:b827ebfea4bb:17B4196847:variable#5"}              // Illuminance in kLux
-Number M10_Variable6 "[%.1f mA]"  {channel="lcn:module:b827ebfea4bb:17B4196847:variable#6"}                          // Electrical current in mA
-Number M10_Variable7 "[%.1f V]"   {channel="lcn:module:b827ebfea4bb:17B4196847:variable#7"}                          // Voltage in V
-Number M10_Variable8 "[%.1f m/s]" {channel="lcn:module:b827ebfea4bb:17B4196847:variable#8"}                          // Wind speed in m/s
-Number M10_Variable9 "[%.1f °]"  {channel="lcn:module:b827ebfea4bb:17B4196847:variable#9"}                           // position of the sun (azimuth or elevation) in °
-Number M10_Variable10 "[%d W]"    {channel="lcn:module:b827ebfea4bb:17B4196847:variable#10"}                         // Current power of an S0 input in W
-Number:Power M10_Variable11 "[%.1f kW]" {channel="lcn:module:b827ebfea4bb:17B4196847:variable#11"}                   // Current power of an S0 input in kW
+Number:Temperature M10_Variable1 "[%.1f %unit%]" <temperature> {channel="lcn:module:b827ebfea4bb:S000M010:variable#1"} // Temperature in °C
+Number:Temperature M10_Variable2 "[%.1f °F]" <temperature> {channel="lcn:module:b827ebfea4bb:S000M010:variable#2"} // Temperature in °F
+Number M10_Variable3 "[%d ppm]" <temperature> {channel="lcn:module:b827ebfea4bb:S000M010:variable#3"}              // Indoor air quality in ppm
+Number M10_Variable4 "[%d lx]"    {channel="lcn:module:b827ebfea4bb:S000M010:variable#4"}                          // Illuminance in Lux
+Number:Illuminance M10_Variable5 "[%.1f klx]" {channel="lcn:module:b827ebfea4bb:S000M010:variable#5"}              // Illuminance in kLux
+Number M10_Variable6 "[%.1f mA]"  {channel="lcn:module:b827ebfea4bb:S000M010:variable#6"}                          // Electrical current in mA
+Number M10_Variable7 "[%.1f V]"   {channel="lcn:module:b827ebfea4bb:S000M010:variable#7"}                          // Voltage in V
+Number M10_Variable8 "[%.1f m/s]" {channel="lcn:module:b827ebfea4bb:S000M010:variable#8"}                          // Wind speed in m/s
+Number M10_Variable9 "[%.1f °]"  {channel="lcn:module:b827ebfea4bb:S000M010:variable#9"}                           // position of the sun (azimuth or elevation) in °
+Number M10_Variable10 "[%d W]"    {channel="lcn:module:b827ebfea4bb:S000M010:variable#10"}                         // Current power of an S0 input in W
+Number:Power M10_Variable11 "[%.1f kW]" {channel="lcn:module:b827ebfea4bb:S000M010:variable#11"}                   // Current power of an S0 input in kW
 
 // Regulators
-Number:Temperature M10_R1VarSetpoint "[%.1f %unit%]" <temperature> {channel="lcn:module:b827ebfea4bb:17B4196847:rvarsetpoint#1"} // Temperature in °C
-Switch M10_R1VarLock {channel="lcn:module:b827ebfea4bb:17B4196847:rvarlock#1"} // Lock state of R1Var
+Number:Temperature M10_R1VarSetpoint "[%.1f %unit%]" <temperature> {channel="lcn:module:b827ebfea4bb:S000M010:rvarsetpoint#1"} // Temperature in °C
+Switch M10_R1VarLock {channel="lcn:module:b827ebfea4bb:S000M010:rvarlock#1"} // Lock state of R1Var
 
 // Thresholds
-Number:Temperature M10_ThresholdRegister1_Threshold1 "[%.1f %unit%]" {channel="lcn:module:b827ebfea4bb:17B4196847:thresholdregister1#1"} // Temperature in °C
-Number:Temperature M10_ThresholdRegister4_Threshold2 "[%.1f %unit%]" {channel="lcn:module:b827ebfea4bb:17B4196847:thresholdregister4#2"} // Temperature in °C
+Number:Temperature M10_ThresholdRegister1_Threshold1 "[%.1f %unit%]" {channel="lcn:module:b827ebfea4bb:S000M010:thresholdregister1#1"} // Temperature in °C
+Number:Temperature M10_ThresholdRegister4_Threshold2 "[%.1f %unit%]" {channel="lcn:module:b827ebfea4bb:S000M010:thresholdregister4#2"} // Temperature in °C
 
 // S0 Counters
-Number:Energy M10_S0Counter1 "[%.1f kWh]" {channel="lcn:module:b827ebfea4bb:17B4196847:s0input#1"}
+Number:Energy M10_S0Counter1 "[%.1f kWh]" {channel="lcn:module:b827ebfea4bb:S000M010:s0input#1"}
 
 // Key Locks
-Switch M10_KeyLockA1 {channel="lcn:module:b827ebfea4bb:17B4196847:keylocktablea#1"}
-Switch M10_KeyLockD5 {channel="lcn:module:b827ebfea4bb:17B4196847:keylocktabled#5"}
+Switch M10_KeyLockA1 {channel="lcn:module:b827ebfea4bb:S000M010:keylocktablea#1"}
+Switch M10_KeyLockD5 {channel="lcn:module:b827ebfea4bb:S000M010:keylocktabled#5"}
 ```
 
 Config .sitemap
