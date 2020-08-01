@@ -281,6 +281,14 @@
 		<item-type>Contact</item-type>
 		<label>Binary Sensor</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="invertState" type="boolean">
+				<label>Invert State</label>
+				<description>Per default a binary sensor state 0 corresponds to "closed" while 1 corresponds to "open". Use this
+					parameter to invert that logic.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-group-type id="binarysensors">
