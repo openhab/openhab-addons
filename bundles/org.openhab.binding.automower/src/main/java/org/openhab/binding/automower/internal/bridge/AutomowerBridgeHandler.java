@@ -89,7 +89,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         AutomowerBridge currentBridge = bridge;
         if (currentBridge != null) {
             stopAutomowerBridgePolling(currentBridge);
-            currentBridge = null;
+            bridge = null;
         }
     }
 
@@ -113,8 +113,9 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                     "@text/conf-error-invalid-polling-interval");
         } else {
             if (bridge == null) {
-                bridge = new AutomowerBridge(appKey, userName, password, httpClient, scheduler);
-                startAutomowerBridgePolling(bridge, pollingIntervalS);
+                AutomowerBridge currentBridge = new AutomowerBridge(appKey, userName, password, httpClient, scheduler);
+                bridge = currentBridge;
+                startAutomowerBridgePolling(currentBridge, pollingIntervalS);
             }
             updateStatus(ThingStatus.UNKNOWN);
         }
