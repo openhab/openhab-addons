@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(ApiPageParser.class);
+    private final Logger logger = LoggerFactory.getLogger(ChangerX2Parser.class);
 
     static enum ParserState {
         Init,
