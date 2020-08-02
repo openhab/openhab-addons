@@ -158,13 +158,11 @@ public class WebSocketConnection {
         }
         logger.trace("Connect future = {}", sessionFuture);
         final Future<?> sessionFuture = this.sessionFuture;
-        if (!sessionFuture.isDone()) {
+        if (sessionFuture != null && !sessionFuture.isDone()) {
             sessionFuture.cancel(true);
         }
         try {
-            if (webSocketClient.isStarted()) {
-                webSocketClient.stop();
-            }
+            webSocketClient.stop();
         } catch (InterruptedException e) {
             // Just ignore
         } catch (Exception e) {
@@ -587,9 +585,7 @@ public class WebSocketConnection {
             byte[] payload = "Regular".getBytes(StandardCharsets.US_ASCII); // g = h.length
             byte[] bufferPing = new byte[header.length + 4 + 8 + 4 + 2 * payload.length];
             int idx = 0;
-            for (int q = 0; q < header.length; q++) {
-                bufferPing[q] = header[q];
-            }
+            System.arraycopy(header, 0, bufferPing, 0, header.length);
             idx += header.length;
             encode(bufferPing, 0, idx, 4);
             idx += 4;

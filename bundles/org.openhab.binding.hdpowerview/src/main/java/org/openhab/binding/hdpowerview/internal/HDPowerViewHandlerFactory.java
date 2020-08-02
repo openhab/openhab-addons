@@ -14,6 +14,8 @@ package org.openhab.binding.hdpowerview.internal;
 
 import java.util.Hashtable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -32,6 +34,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.hdpowerview")
 public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
 
@@ -41,7 +44,7 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_HUB)) {

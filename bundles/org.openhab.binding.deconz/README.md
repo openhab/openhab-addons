@@ -38,6 +38,7 @@ Additionally lights, window coverings (blinds) and thermostats are supported:
 | Extended Color Light (w/temperature) | Extended color light                   | `extendedcolorlight` |
 | Blind / Window Covering              | Window covering device                 | `windowcovering`     |
 | Thermostat                           | ZHAThermostat                          | `thermostat`         |
+| Warning Device (Siren)               | Warning device                         | `warningdevice`      |
 
 ## Discovery
 
@@ -72,6 +73,12 @@ For this process the deCONZ bridge must be unlocked in the deCONZ software so th
 
 All non-bridge things share the mandatory `id` parameter, an integer assigned to the device while pairing to deconz.
 Auto-discovered things do not need to be configured. 
+
+All sensor-things have an additional `lastSeenPolling` parameter.
+Due to limitations in the API of deCONZ, the `lastSeen` channel (available some sensors) is only available when using polling.
+Allowed values are all positive integers, the unit is minutes.
+The default-value is `0`, which means "no polling at all".
+
 
 `dimmablelight`, `extendedcolorlight`, `colorlight` and `colortemperaturelight` have an additional optional parameter `transitiontime`.
 The transition time is the time to move between two states and is configured in seconds.
@@ -110,6 +117,7 @@ The sensor devices support some of the following channels:
 |-----------------|--------------------------|:-----------:|-------------------------------------------------------------------------------------------|----------------------------------------------|
 | presence        | Switch                   |      R      | Status of presence: `ON` = presence; `OFF` = no-presence                                  | presencesensor                               |
 | last_updated    | DateTime                 |      R      | Timestamp when the sensor was last updated                                                | all, except daylightsensor                   |
+| last_seen       | DateTime                 |      R      | Timestamp when the sensor was last seen                                                   | all, except daylightsensor                   |
 | power           | Number:Power             |      R      | Current power usage in Watts                                                              | powersensor, sometimes for consumptionsensor |
 | consumption     | Number:Energy            |      R      | Current power usage in Watts/Hour                                                         | consumptionsensor                            |
 | voltage         | Number:ElectricPotential |      R      | Current voltage in V                                                                      | some powersensors                            |
@@ -140,6 +148,8 @@ The sensor devices support some of the following channels:
 The specification of your sensor depends on the deCONZ capabilities.
 Have a detailed look for [supported devices](https://github.com/dresden-elektronik/deconz-rest-plugin/wiki/Supported-Devices).
 
+The `last_seen` channel is added when it is available AND the `lastSeenPolling` parameter of this sensor is used to enable polling.
+
 Other devices support
 
 | Channel Type ID   | Item Type                | Access Mode | Description                           | Thing types                                   |
@@ -153,6 +163,7 @@ Other devices support
 | valve             | Number:Dimensionless     |     R       | Valve position in %                   | `thermostat`                                  |
 | mode              | String                   |     R/W     | Mode: "auto", "heat" and "off"        | `thermostat`                                  |
 | offset            | Number                   |     R       | Temperature offset for sensor         | `thermostat`                                  |
+| alert             | Switch                   |     R/W     | Turn alerts on/off                    | `warningdevice`                               |
 
 ### Trigger Channels
 
@@ -192,7 +203,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
     waterleakagesensor  basement-water-leakage  "Basement Water Leakage"    [ id="7" ]
-    alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8" ]
+    alarmsensor         basement-alarm          "Basement Alarm Sensor"     [ id="8", lastSeenPolling=5 ]
     dimmablelight       livingroom-ceiling      "Livingroom Ceiling"        [ id="1" ]
 }
 ```

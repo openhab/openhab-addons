@@ -31,9 +31,9 @@ public interface Homekit {
      * Refreshes the saved authentication info from the underlying storage service. If you
      * make changes to the saved authentication info, call this.
      *
-     * @throws IOException
+     * @throws IOException exception in case new auth info could not be published via mDNS
      */
-    public void refreshAuthInfo() throws IOException;
+    void refreshAuthInfo() throws IOException;
 
     /**
      * HomeKit requests normally require authentication via the pairing mechanism. Use this
@@ -48,4 +48,9 @@ public interface Homekit {
      * returns list of HomeKit accessories registered at bridge.
      */
     List<HomekitAccessory> getAccessories();
+
+    /**
+     * clear all pairings with HomeKit clients
+     */
+    void clearHomekitPairings();
 }

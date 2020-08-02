@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.alarmdecoder.internal.actions;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -30,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "alarmdecoder")
 @NonNullByDefault
-public class BridgeActions implements ThingActions {
+public class BridgeActions implements ThingActions, IBridgeActions {
 
     private final Logger logger = LoggerFactory.getLogger(BridgeActions.class);
 
@@ -55,6 +58,7 @@ public class BridgeActions implements ThingActions {
     /**
      * Reboot thing action
      */
+    @Override
     @RuleAction(label = "Reboot", description = "Reboot the Alarm Decoder device")
     public void reboot() {
         ADBridgeHandler bridge = this.bridge;
@@ -68,10 +72,34 @@ public class BridgeActions implements ThingActions {
 
     // Static method for Rules DSL backward compatibility
     public static void reboot(@Nullable ThingActions actions) {
-        if (actions instanceof BridgeActions) {
-            ((BridgeActions) actions).reboot();
-        } else {
-            throw new IllegalArgumentException("Instance is not a BridgeActions class.");
+        // if (actions instanceof BridgeActions) {
+        // ((BridgeActions) actions).reboot();
+        // } else {
+        // throw new IllegalArgumentException("Instance is not a BridgeActions class.");
+        // }
+        invokeMethodOf(actions).reboot(); // Remove and uncomment above when core issue #1536 is fixed
+    }
+
+    /**
+     * This is only necessary to work around a bug in openhab-core (issue #1536). It should be removed once that is
+     * resolved.
+     */
+    private static IBridgeActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(BridgeActions.class.getName())) {
+            if (actions instanceof IBridgeActions) {
+                return (IBridgeActions) actions;
+            } else {
+                return (IBridgeActions) Proxy.newProxyInstance(IBridgeActions.class.getClassLoader(),
+                        new Class[] { IBridgeActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of BridgeActions");
     }
 }

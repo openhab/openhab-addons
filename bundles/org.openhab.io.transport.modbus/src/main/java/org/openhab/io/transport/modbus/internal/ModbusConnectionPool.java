@@ -34,8 +34,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
 public class ModbusConnectionPool extends GenericKeyedObjectPool<ModbusSlaveEndpoint, ModbusSlaveConnection> {
 
     // policy is set in super constructor via setConfig
-    @NonNullByDefault({})
-    private volatile EvictionPolicy<ModbusSlaveConnection> policy;
+    private volatile @NonNullByDefault({}) EvictionPolicy<ModbusSlaveConnection> policy;
 
     public ModbusConnectionPool(KeyedPooledObjectFactory<ModbusSlaveEndpoint, ModbusSlaveConnection> factory) {
         super(factory, new ModbusPoolConfig());

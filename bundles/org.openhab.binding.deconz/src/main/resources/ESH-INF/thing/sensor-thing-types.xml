@@ -35,6 +35,14 @@
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
+	<channel-type id="last_seen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>The date and time when the sensor was last seen.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
 	<thing-type id="powersensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>

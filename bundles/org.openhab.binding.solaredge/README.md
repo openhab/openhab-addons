@@ -13,6 +13,7 @@ Inverters which have a meter attached allow more detailed measuring.
 Either a SolarEdge modbus meter or a S0 meter (export or consumption meter) can be used.
 While on the one hand the S0 meter is the cheaper solution the solaredge meter on the other hand can be used as combined import+export meter and therefore allows even more detailed measurements.
 For more details please see here:
+
 - [SolarEdge meter](https://www.solaredge.com/products/pv-monitoring/accessories/css-wattnode-modbus-meter)
 - [Avoiding Feed-In limitations with consumption meters](https://www.solaredge.com/solutions/feed-in-limitation-and-metering-solution#)
 - [Detailed description of meter setup](https://solaredge.com/sites/default/files/feed-in_limitation_application_note.pdf)
@@ -29,7 +30,6 @@ The following configuration parameters are available for this thing:
 Either the [official API Key](https://www.youtube.com/watch?v=iR26nmL5bXg) for using the public API or when using the inofficial private API: a token which can be retrieved from browser's cookie store when logged into the SolarEdge website.
 It is called "SPRING_SECURITY_REMEMBER_ME_COOKIE".
 When using this token, see also `usePrivateApi` and `meterInstalled`.
-
 E.g. for Firefox, use the built-in [Storage Inspector](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector) to retrieve the token.
 
 - **solarId** (required)  
@@ -50,10 +50,12 @@ This must be set to true when using token retrieved from browser in `tokenOrApiK
 This can be set either to true or false when using the API key. (default = false)
 
 - **liveDataPollingInterval** (optional)  
-interval (minutes) in which live data values are retrieved from Solaredge. Setting less than 10 minutes is only allowed when using private API. (default = 10). 
+interval (minutes) in which live data values are retrieved from Solaredge.
+Setting less than 10 minutes is only allowed when using private API. (default = 10) 
 
-- **"aggregateDataPollingInterval"** (optional)  
-interval (minutes) in which aggregate data values are retrieved from Solaredge. Setting less than 60 is only allowed when using private API. (default = 60). 
+- **aggregateDataPollingInterval** (optional)  
+interval (minutes) in which aggregate data values are retrieved from Solaredge.
+Setting less than 60 is only allowed when using private API. (default = 60) 
 
 ## Channels
 

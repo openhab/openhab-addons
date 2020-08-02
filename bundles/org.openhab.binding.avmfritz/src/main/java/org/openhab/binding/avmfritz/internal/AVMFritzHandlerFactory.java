@@ -47,13 +47,13 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(AVMFritzHandlerFactory.class);
 
     private final HttpClient httpClient;
-    private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @Activate
     public AVMFritzHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+            final @Reference AVMFritzDynamicCommandDescriptionProvider stateDescriptionProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = stateDescriptionProvider;
     }
 
     /**
@@ -71,9 +71,9 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (BRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            return new BoxHandler((Bridge) thing, httpClient, stateDescriptionProvider);
+            return new BoxHandler((Bridge) thing, httpClient, commandDescriptionProvider);
         } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
-            return new Powerline546EHandler((Bridge) thing, httpClient, stateDescriptionProvider);
+            return new Powerline546EHandler((Bridge) thing, httpClient, commandDescriptionProvider);
         } else if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new AVMFritzButtonHandler(thing);
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
