@@ -26,12 +26,12 @@
 	<channel-type id="wb-jack-locked-channel">
 		<item-type>Switch</item-type>
 		<label>Jack Locked</label>
-		<description>Indicates your Jack is locked*</description>
+		<description>Indicates wheter your Jack is locked</description>
 	</channel-type>
 	<channel-type id="wb-jack-plugged-channel">
 		<item-type>Switch</item-type>
 		<label>Jack Plugged</label>
-		<description>Indicates your Jack is plugged</description>
+		<description>Indicates wheter your Jack is plugged</description>
 	</channel-type>
 	<channel-type id="wb-schuko-on-channel">
 		<item-type>Switch</item-type>

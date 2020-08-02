@@ -14,6 +14,7 @@ package org.openhab.binding.modbus.e3dc.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.ByteBuffer;
 import java.util.BitSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,21 +34,7 @@ public class DataConverterTest {
         // Reg 69 value 65098 bytes [-2, 74]
         // Reg 70 value 65535 bytes [-1, -1]
         byte[] b = new byte[] { -2, -74, -1, -1 };
-        assertEquals("Negative Value", -330, DataConverter.getInt32Swap(b, 0));
-    }
-
-    @Test
-    public void testInt() {
-        byte[] b = new byte[] { 0, -128 };
-        int i = DataConverter.getIntValue(b, 0);
-        assertEquals("Int value", 128, i);
-    }
-
-    @Test
-    public void testLong() {
-        byte[] b = new byte[] { 0, 1, 0, 0 };
-        long l = DataConverter.getLongValue(b, 0);
-        assertEquals("Long value", 65536, l);
+        assertEquals("Negative Value", -330, DataConverter.getInt32Swap(ByteBuffer.wrap(b)));
     }
 
     @Test

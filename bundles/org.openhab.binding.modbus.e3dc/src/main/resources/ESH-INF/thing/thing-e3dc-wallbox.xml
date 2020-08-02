@@ -8,7 +8,7 @@
 			<bridge-type-ref id="e3dc"/>
 		</supported-bridge-type-refs>
 		<label>E3DC Wallbox</label>
-		<description>Provides your Wallbox Settings. Switches like "Sunmode" or "1-Phase Charging" can be changed!</description>
+		<description>Provide your Wallbox Settings. Switches like "Sunmode" or "1-Phase Charging" can be changed</description>
 		<channels>
 			<channel id="wb-available" typeId="wb-available-channel"/>
 			<channel id="wb-sunmode" typeId="wb-sunmode-channel"/>
@@ -27,7 +27,7 @@
 		<config-description>
 			<parameter name="wallboxId" type="integer" required="true">
 				<label>Wallbox ID</label>
-				<description>E3DC supports up to 8 Wallboxes - selected value from 0 to 7</description>
+				<description>E3DC supports up to 8 Wallboxes - select a value from 0 to 7</description>
 				<default>0</default>
 			</parameter>
 		</config-description>

@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.modbus.e3dc.internal.E3DCConfiguration;
 import org.openhab.binding.modbus.e3dc.internal.dto.EmergencyBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.PowerBlock;
@@ -70,6 +71,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     private ReadStatus infoRead = ReadStatus.NOT_RECEIVED;
     private @Nullable PollTask infoPoller;
     private @Nullable PollTask dataPoller;
+    private @Nullable E3DCConfiguration config;
 
     /**
      * Communication interface to the slave endpoint we're connecting to
@@ -98,6 +100,8 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
+            E3DCConfiguration localConfig = getConfigAs(E3DCConfiguration.class);
+            config = localConfig;
             ModbusCommunicationInterface localComms = connectEndpoint();
             if (localComms != null) {
                 // register low speed info poller
@@ -109,8 +113,13 @@ public class E3DCThingHandler extends BaseBridgeHandler {
                 ModbusReadRequestBlueprint dataRequest = new ModbusReadRequestBlueprint(slaveId,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START,
                         REGISTER_LENGTH - INFO_REG_SIZE, 3);
-                dataPoller = localComms.registerRegularPoll(dataRequest, DATA_POLL_REFRESH_TIME_MS_NOW_HARDCODED, 0,
-                        this::handleDataResult, this::handleDataFailure);
+                if (config != null) {
+                    dataPoller = localComms.registerRegularPoll(dataRequest, localConfig.refresh, 0,
+                            this::handleDataResult, this::handleDataFailure);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "E3DC Configuration missing");
+                }
             } // else state handling performed in connectEndPoint function
         });
     }

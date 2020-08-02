@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.modbus.e3dc.internal.dto;
 
+import java.nio.ByteBuffer;
+
 import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Power;
@@ -42,15 +44,16 @@ public class StringBlock implements Data {
      * @param bArray - Modbus Registers as bytes from 40096 to 40104
      */
     public StringBlock(byte[] bArray) {
+        ByteBuffer wrap = ByteBuffer.wrap(bArray);
         // straight forward - for each String the values Volt, Ampere and then Watt. All unt16 = 2 bytes values
-        string1Volt = new QuantityType<ElectricPotential>(DataConverter.getIntValue(bArray, 0), SmartHomeUnits.VOLT);
-        string2Volt = new QuantityType<ElectricPotential>(DataConverter.getIntValue(bArray, 2), SmartHomeUnits.VOLT);
-        string3Volt = new QuantityType<ElectricPotential>(DataConverter.getIntValue(bArray, 4), SmartHomeUnits.VOLT);
-        string1Ampere = new QuantityType<ElectricCurrent>(DataConverter.getIntValue(bArray, 6), SmartHomeUnits.AMPERE);
-        string2Ampere = new QuantityType<ElectricCurrent>(DataConverter.getIntValue(bArray, 8), SmartHomeUnits.AMPERE);
-        string3Ampere = new QuantityType<ElectricCurrent>(DataConverter.getIntValue(bArray, 10), SmartHomeUnits.AMPERE);
-        string1Watt = new QuantityType<Power>(DataConverter.getIntValue(bArray, 12), SmartHomeUnits.WATT);
-        string2Watt = new QuantityType<Power>(DataConverter.getIntValue(bArray, 14), SmartHomeUnits.WATT);
-        string3Watt = new QuantityType<Power>(DataConverter.getIntValue(bArray, 16), SmartHomeUnits.WATT);
+        string1Volt = new QuantityType<ElectricPotential>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.VOLT);
+        string2Volt = new QuantityType<ElectricPotential>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.VOLT);
+        string3Volt = new QuantityType<ElectricPotential>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.VOLT);
+        string1Ampere = new QuantityType<ElectricCurrent>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.AMPERE);
+        string2Ampere = new QuantityType<ElectricCurrent>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.AMPERE);
+        string3Ampere = new QuantityType<ElectricCurrent>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.AMPERE);
+        string1Watt = new QuantityType<Power>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.WATT);
+        string2Watt = new QuantityType<Power>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.WATT);
+        string3Watt = new QuantityType<Power>(DataConverter.getUIntt16Value(wrap), SmartHomeUnits.WATT);
     }
 }

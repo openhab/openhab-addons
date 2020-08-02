@@ -8,12 +8,20 @@
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
 		<label>E3DC Home Power Plant</label>
-		<description>Provides Power values, String Details, Emergency Power Status and general Information of your E3DC Home Power Plant</description>
+		<description>Provide Power values, String Details, Emergency Power Status and general Information of your E3DC Home
+			Power Plant</description>
 		<channel-groups>
 			<channel-group id="info" typeId="info-values"/>
 			<channel-group id="power" typeId="power-values"/>
 			<channel-group id="strings" typeId="string-values"/>
 			<channel-group id="emergency" typeId="emergency-values"/>
 		</channel-groups>
+		<config-description>
+			<parameter name="refresh" type="integer" min="1000" unit="ms">
+				<label>Refresh Interval</label>
+				<description>Refresh Rate of E3DC values in Milliseconds</description>
+				<default>2000</default>
+			</parameter>
+		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

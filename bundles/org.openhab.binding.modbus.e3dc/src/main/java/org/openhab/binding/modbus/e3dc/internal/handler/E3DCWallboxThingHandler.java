@@ -64,7 +64,7 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
     private final Parser dataParser = new Parser(DataType.DATA);
     private ReadWriteSuccess dataRead = ReadWriteSuccess.NOT_RECEIVED;
     private ReadWriteSuccess dataWrite = ReadWriteSuccess.NOT_RECEIVED;
-    private BitSet currentBitSet = new BitSet(16);
+    private volatile BitSet currentBitSet = new BitSet(16);
     private @Nullable E3DCWallboxConfiguration config;
     private @Nullable E3DCThingHandler bridgeHandler;
 
@@ -230,5 +230,4 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
             }
         }
     }
-
 }

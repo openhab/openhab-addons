@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class E3DCModbusConstans {
     // "String" registers at the beginning shall be read with very low frequency - 1 hour
     public static final int INFO_POLL_REFRESH_TIME_MS = 60 * 60 * 1000;
-    public static final int DATA_POLL_REFRESH_TIME_MS_NOW_HARDCODED = 2000;
 
     // Constants where a certain Block starts and block size. Note: General offset is -1 so INFO_REG from E3DC Modbus
     // Spec starts at 1 but it's Register 0!

@@ -50,7 +50,6 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.info("Return {}", thingTypeUID);
         if (E3DCBindingConstants.THING_TYPE_E3DC.equals(thingTypeUID)) {
             return new E3DCThingHandler((Bridge) thing);
         } else if (E3DCBindingConstants.THING_TYPE_E3DC_WALLBOX.equals(thingTypeUID)) {

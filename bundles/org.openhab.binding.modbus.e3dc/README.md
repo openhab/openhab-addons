@@ -115,7 +115,7 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 
 | Channel Label                               | Channel Group ID | Channel ID                | Type           | Description                  |
 |---------------------------------------------|------------------|---------------------------|----------------|------------------------------|
-| Emergency Power Status                      | emergency        | emergency-power-status    |  String  | Indicates if Emergency Power Supply is possible or not, active or inactive |
+| Emergency Power Status                      | emergency        | emergency-power-status    |  String  | Possible values: EP not supported, EP active, EP not active, EP not available, EP Switch in wrong position, EP Status unknown |
 | Battery Loading Locked                      | emergency        | battery-loading-lock      |  Switch  | Indicates if Battery Loading is locked           |
 | Battery Unloading Locked                    | emergency        | battery-unloading-lock    |  Switch  | Indicates if Battery Unloading is locked |
 | Emergency Power Possible                    | emergency        | emergency-power-possible  |  Switch  | Indicates if Emergency Power Supply is possible          |

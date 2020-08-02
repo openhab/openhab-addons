@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.modbus.e3dc.internal.dto;
 
+import java.nio.ByteBuffer;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
@@ -38,44 +40,42 @@ public class InfoBlock implements Data {
      */
     public InfoBlock(byte[] bArray) {
         // index handling to calculate the correct start index
-        int byteIndex = 0;
+        ByteBuffer wrapper = ByteBuffer.wrap(bArray);
 
         // first uint16 = 2 bytes - decode magic byte
         StringBuilder magicByte = new StringBuilder();
-        magicByte.append(String.format("%02X", bArray[byteIndex]));
-        magicByte.append(String.format("%02X", bArray[byteIndex + 1]));
+        magicByte.append(String.format("%02X", wrapper.get()));
+        magicByte.append(String.format("%02X", wrapper.get()));
         this.modbusId = new StringType(magicByte.toString());
         // first uint16 = 2 bytes - decode magic byte
-        byteIndex += 2;
 
         // unit8 (Modbus Major Version) + uint8 Modbus minor Version
-        String modbusVersion = bArray[byteIndex] + "." + bArray[byteIndex + 1];
+        String modbusVersion = wrapper.get() + "." + wrapper.get();
         this.modbusVersion = new StringType(modbusVersion);
-        byteIndex += 2;
 
         // unit16 - supported registers
-        int supportedRegisters = DataConverter.getIntValue(bArray, byteIndex);
+        short supportedRegisters = wrapper.getShort();
         this.supportedRegisters = new DecimalType(supportedRegisters);
-        byteIndex += 2;
 
+        byte[] buffer = new byte[32];
         // 16 registers with uint16 = 32 bytes to decode a proper String
-        String manufacturer = DataConverter.getString(bArray, byteIndex);
+        wrapper.get(buffer);
+        String manufacturer = DataConverter.getString(buffer);
         this.manufacturer = new StringType(manufacturer);
-        byteIndex += 32;
 
         // 16 registers with uint16 = 32 bytes to decode a proper String
-        String model = DataConverter.getString(bArray, byteIndex);
+        wrapper.get(buffer);
+        String model = DataConverter.getString(buffer);
         this.modelName = new StringType(model);
-        byteIndex += 32;
 
         // 16 registers with uint16 = 32 bytes to decode a proper String
-        String serialNumber = DataConverter.getString(bArray, byteIndex);
+        wrapper.get(buffer);
+        String serialNumber = DataConverter.getString(buffer);
         this.serialNumber = new StringType(serialNumber);
-        byteIndex += 32;
 
         // 16 registers with uint16 = 32 bytes to decode a proper String
-        String firmware = DataConverter.getString(bArray, byteIndex);
+        wrapper.get(buffer);
+        String firmware = DataConverter.getString(buffer);
         this.firmware = new StringType(firmware);
-        byteIndex += 32;
     }
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.e3dc.internal.dto;
 
-import java.util.Arrays;
+import java.nio.ByteBuffer;
 import java.util.BitSet;
 
 import org.eclipse.californium.elements.util.StandardCharsets;
@@ -25,14 +25,21 @@ import org.eclipse.californium.elements.util.StandardCharsets;
 public class DataConverter {
     private static final long MAX_INT32 = (long) Math.pow(2, Integer.SIZE);
 
-    public static int getIntValue(byte[] bytes, int start) {
-        return ((bytes[start] & 0xff) << 8) | (bytes[start + 1] & 0xff);
+    /**
+     * Get unit16 value from 2 bytes
+     *
+     * @param bytes
+     * @param start
+     * @return
+     */
+    public static int getUIntt16Value(ByteBuffer wrap) {
+        return ((wrap.get() & 0xff) << 8) | wrap.get() & 0xff;
     }
 
-    public static long getLongValue(byte[] bytes, int start) {
+    public static long getLongValue(ByteBuffer wrap) {
         long value = 0;
         for (int i = 0; i < 4; i++) {
-            value = (value << 8) + (bytes[i] & 0xff);
+            value = (value << 8) + (wrap.get() & 0xff);
         }
         return value;
     }
@@ -44,12 +51,9 @@ public class DataConverter {
      * @param startIndex - start index for decoding
      * @return decoded long value, Long.MIN_VALUE otherwise
      */
-    public static long getInt32Swap(byte[] bytes, int startIndex) {
-        if (bytes.length - startIndex < 4) {
-            return Long.MIN_VALUE;
-        }
-        long a = getIntValue(bytes, startIndex);
-        long b = getIntValue(bytes, startIndex + 2);
+    public static long getInt32Swap(ByteBuffer wrap) {
+        long a = getUIntt16Value(wrap);
+        long b = getUIntt16Value(wrap);
         if (b < 32768) {
             return b * 65536 + a;
         } else {
@@ -57,22 +61,8 @@ public class DataConverter {
         }
     }
 
-    public static String getString(byte[] bArray, int i) {
-        byte[] slice = Arrays.copyOfRange(bArray, i, i + 32);
-        return new String(slice, StandardCharsets.US_ASCII).trim();
-    }
-
-    public static void logArray(byte[] bArray) {
-        StringBuilder s = new StringBuilder();
-        s.append("[");
-        for (int i = 0; i < bArray.length; i++) {
-            if (i != 0) {
-                s.append(",");
-            }
-            // logger.info("Byte {} is {}", i, bArray[i]);
-            s.append(bArray[i]);
-        }
-        s.append("]");
+    public static String getString(byte[] bArray) {
+        return new String(bArray, StandardCharsets.US_ASCII).trim();
     }
 
     public static int toInt(BitSet bitSet) {

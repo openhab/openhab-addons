@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="string-values">
-		<label>String Details Block</label>
-		<description>Provides detailed values of your attached Photovoltaics Strings. Evaluate how much Power each String
-			provide</description>
+		<label>String Details</label>
+		<description>Provide detailed values of your attached Photovoltaic Strings. Evaluate how much Power each String
+			provides</description>
 		<channels>
 			<channel id="string1-dc-voltage" typeId="string1-dc-voltage-channel"/>
 			<channel id="string2-dc-voltage" typeId="string2-dc-voltage-channel"/>
