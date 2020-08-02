@@ -175,6 +175,20 @@ public class IntesisHomeHandler extends BaseThingHandler {
             boolean success = IntesisHomeHttpApi.setRestricted(deviceIp, sessionId, httpClient, uid, value);
             if (!success) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                String response = IntesisHomeHttpApi.getSessionId(deviceIp, password, httpClient);
+                success = IntesisHomeJSonDTO.getSuccess(response);
+                if (success) {
+                    JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
+                    AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
+                    sessionId = auth.sessionID;
+                    updateStatus(ThingStatus.ONLINE);
+                    success = IntesisHomeHttpApi.setRestricted(deviceIp, sessionId, httpClient, uid, value);
+                    if (!success) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -182,31 +196,42 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     public void getAllUidValues() {
-        String response = IntesisHomeHttpApi.getRestrictedRequestAll(deviceIp, sessionId, httpClient);
-        boolean success = IntesisHomeJSonDTO.getSuccess(response);
-        if (!success) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            String response = IntesisHomeHttpApi.getSessionId(deviceIp, password, httpClient);
+            boolean success = IntesisHomeJSonDTO.getSuccess(response);
+            if (success) {
+                JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
+                AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
+                sessionId = auth.sessionID;
+                updateStatus(ThingStatus.ONLINE);
+            }
         } else {
-            JsonElement dpvalNode = IntesisHomeJSonDTO.getData(response).get("dpval");
-            dpval[] uid = gson.fromJson(dpvalNode, dpval[].class);
-            int value = uid[0].value;
+            String response = IntesisHomeHttpApi.getRestrictedRequestAll(deviceIp, sessionId, httpClient);
+            boolean success = IntesisHomeJSonDTO.getSuccess(response);
+            if (!success) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            } else {
+                JsonElement dpvalNode = IntesisHomeJSonDTO.getData(response).get("dpval");
+                dpval[] uid = gson.fromJson(dpvalNode, dpval[].class);
+                int value = uid[0].value;
 
-            updateState(POWER_CHANNEL, String.valueOf(value).equals("0") ? OnOffType.OFF : OnOffType.ON);
-            State stateValue = new DecimalType(uid[1].value);
-            updateState(MODE_CHANNEL, stateValue);
-            stateValue = new DecimalType(uid[2].value);
-            updateState(WINDSPEED_CHANNEL, stateValue);
-            stateValue = new DecimalType(uid[3].value);
-            updateState(SWINGUD_CHANNEL, stateValue);
-            int unit = (uid[4].value) / 10;
-            stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-            updateState(TEMP_CHANNEL, stateValue);
-            unit = (uid[5].value) / 10;
-            stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-            updateState(RETURNTEMP_CHANNEL, stateValue);
-            unit = (uid[12].value) / 10;
-            stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-            updateState(OUTDOORTEMP_CHANNEL, stateValue);
+                updateState(POWER_CHANNEL, String.valueOf(value).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                State stateValue = new DecimalType(uid[1].value);
+                updateState(MODE_CHANNEL, stateValue);
+                stateValue = new DecimalType(uid[2].value);
+                updateState(WINDSPEED_CHANNEL, stateValue);
+                stateValue = new DecimalType(uid[3].value);
+                updateState(SWINGUD_CHANNEL, stateValue);
+                int unit = (uid[4].value) / 10;
+                stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+                updateState(TEMP_CHANNEL, stateValue);
+                unit = (uid[5].value) / 10;
+                stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+                updateState(RETURNTEMP_CHANNEL, stateValue);
+                unit = (uid[12].value) / 10;
+                stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+                updateState(OUTDOORTEMP_CHANNEL, stateValue);
+            }
         }
     }
 }
