@@ -104,7 +104,7 @@ public class MQTTTopicDiscoveryServiceTest {
     }
 
     @Test
-    public void firstHandlerThanSubscribe() {
+    public void firstHandlerThenSubscribe() {
         handler.initialize();
         BrokerHandlerEx.verifyCreateBrokerConnection(handler, 1);
 

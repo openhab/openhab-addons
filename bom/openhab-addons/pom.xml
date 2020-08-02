@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.bom</groupId>
     <artifactId>org.openhab.addons.reactor.bom</artifactId>
-    <version>2.5.7-SNAPSHOT</version>
+    <version>2.5.8-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.addons.bom.openhab-addons</artifactId>
@@ -142,6 +142,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.buienradar</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.caddx</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -342,6 +347,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.gpstracker</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.gree</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -716,6 +726,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.ojelectronics</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.omnikinverter</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -762,6 +777,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.openweathermap</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.oppo</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -1082,6 +1102,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.velux</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.verisure</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

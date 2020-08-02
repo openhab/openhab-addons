@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.eclipse.smarthome.core.types.CommandOption;
+
 /**
  * See {@link TemplateListModel}.
  *
@@ -66,6 +68,10 @@ public class TemplateModel {
 
     public ApplyMaskListModel getApplyMaskList() {
         return applyMaskList;
+    }
+
+    public CommandOption toCommandOption() {
+        return new CommandOption(getIdentifier(), getName());
     }
 
     @Override

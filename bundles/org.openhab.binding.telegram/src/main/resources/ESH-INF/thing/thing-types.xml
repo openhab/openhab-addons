@@ -25,7 +25,8 @@
 			</parameter>
 			<parameter name="chatIds" type="text" required="true" multiple="true">
 				<label>Chat Id(s)</label>
-				<description>One or more chat id(s). Access modifiers ("&lt;" for inbound only, "&gt;" for outbound only) can be used as prefix (optional).</description>
+				<description>One or more chat id(s). Access modifiers ("&lt;" for inbound only, "&gt;" for outbound only) can be
+					used as prefix (optional).</description>
 			</parameter>
 			<parameter name="parseMode" type="text" required="false">
 				<label>Parse Mode</label>
@@ -54,6 +55,11 @@
 				</options>
 				<default>SOCKS5</default>
 				<description>Enter your proxy type. Default: SOCKS5</description>
+			</parameter>
+			<parameter name="longPollingTime" type="integer" min="0" max="50" unit="s">
+				<label>Long Polling Time</label>
+				<description>Enter the long polling time in seconds.</description>
+				<default>25</default>
 			</parameter>
 		</config-description>
 	</thing-type>

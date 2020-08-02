@@ -239,9 +239,10 @@
 		</channels>
 
 		<config-description>
-			<parameter name="addressMask" type="text" required="true">
+			<parameter name="addressMask" type="text">
 				<label>Address Mask</label>
-				<description>Keypad address mask</description>
+				<description>Receive and send messages from a specific keypad (0=any)</description>
+				<default>0</default>
 			</parameter>
 			<parameter name="sendCommands" type="boolean">
 				<label>Send Commands</label>

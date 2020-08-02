@@ -12,14 +12,14 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.LEAK_DETECTED_STATE;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -38,27 +38,23 @@ public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl implemen
     public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.leakDetectedReader = new BooleanItemReader(
-                getItem(HomekitCharacteristicType.LEAK_DETECTED_STATE, GenericItem.class), OnOffType.ON,
-                OpenClosedType.OPEN);
+        leakDetectedReader = createBooleanReader(LEAK_DETECTED_STATE, OnOffType.ON, OpenClosedType.OPEN);
         getServices().add(new LeakSensorService(this));
     }
 
     @Override
     public CompletableFuture<LeakDetectedStateEnum> getLeakDetected() {
-        return CompletableFuture
-                .completedFuture((this.leakDetectedReader.getValue() != null && this.leakDetectedReader.getValue())
-                        ? LeakDetectedStateEnum.LEAK_DETECTED
-                        : LeakDetectedStateEnum.LEAK_NOT_DETECTED);
+        return CompletableFuture.completedFuture(leakDetectedReader.getValue() ? LeakDetectedStateEnum.LEAK_DETECTED
+                : LeakDetectedStateEnum.LEAK_NOT_DETECTED);
     }
 
     @Override
     public void subscribeLeakDetected(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.LEAK_DETECTED_STATE, callback);
+        subscribe(LEAK_DETECTED_STATE, callback);
     }
 
     @Override
     public void unsubscribeLeakDetected() {
-        unsubscribe(HomekitCharacteristicType.LEAK_DETECTED_STATE);
+        unsubscribe(LEAK_DETECTED_STATE);
     }
 }

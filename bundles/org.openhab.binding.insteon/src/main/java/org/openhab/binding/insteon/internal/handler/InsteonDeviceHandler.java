@@ -230,8 +230,10 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 }
             }
 
-            if (!channels.isEmpty()) {
-                updateThing(editThing().withChannels(channels).build());
+            if (!channels.isEmpty() || device.isModem()) {
+                if (!channels.isEmpty()) {
+                    updateThing(editThing().withChannels(channels).build());
+                }
 
                 StringBuilder builder = new StringBuilder(thingId);
                 builder.append(" address = ");

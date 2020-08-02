@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Caddx</label>
+		<description>This bridge represents the Caddx Serial interface.</description>
+
+		<channels>
+			<channel id="send_command" typeId="command">
+				<label>Send Command</label>
+				<description>Sends an Alarm Panel Command</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<context>serial-port</context>
+				<label>Caddx Bridge Serial Port</label>
+				<description>The serial port name for the communication. Valid values
+					are e.g. COM1 for Windows and /dev/ttyS0 or
+					/dev/ttyUSB0 for Linux.</description>
+			</parameter>
+
+			<parameter name="baudrate" type="integer" required="true">
+				<label>Baud Rate</label>
+				<description>The baud rate of the serial port. Valid values for the NX-584E are 600, 1200, 2400, 4800, 9600
+					(default), 19200, 38400, and 76800. Valid values for the NX-8E are 2400, 4800, 9600
+					(default), 19200 and 38400.</description>
+				<default>9600</default>
+				<options>
+					<option value="600">600</option>
+					<option value="1200">1200</option>
+					<option value="2400">2400</option>
+					<option value="4800">4800</option>
+					<option value="9600">9600</option>
+					<option value="19200">19200</option>
+					<option value="38400">38400</option>
+					<option value="76800">76800</option>
+				</options>
+			</parameter>
+
+			<parameter name="protocol" type="text" required="true">
+				<context>protocol</context>
+				<label>Caddx Bridge Protocol</label>
+				<description>The configured panel protocol. Valid values
+					are Binary and Ascii.</description>
+				<default>Binary</default>
+				<options>
+					<option value="Ascii">Ascii</option>
+					<option value="Binary">Binary</option>
+				</options>
+			</parameter>
+
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

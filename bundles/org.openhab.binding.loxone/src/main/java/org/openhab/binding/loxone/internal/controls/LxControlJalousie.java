@@ -131,8 +131,15 @@ class LxControlJalousie extends LxControl {
     }
 
     private void handleOperateCommands(Command command) throws IOException {
+        logger.debug("Command input {}", command);
         if (command instanceof PercentType) {
-            moveToPosition(((PercentType) command).doubleValue() / 100);
+            if (PercentType.ZERO.equals(command)) {
+                sendAction(CMD_FULL_UP);
+            } else if (PercentType.HUNDRED.equals(command)) {
+                sendAction(CMD_FULL_DOWN);
+            } else {
+                moveToPosition(((PercentType) command).doubleValue() / 100);
+            }
         } else if (command instanceof UpDownType) {
             if ((UpDownType) command == UpDownType.UP) {
                 sendAction(CMD_FULL_UP);

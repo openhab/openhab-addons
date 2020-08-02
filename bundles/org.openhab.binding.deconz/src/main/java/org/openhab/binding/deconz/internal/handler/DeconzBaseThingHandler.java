@@ -55,8 +55,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     protected ThingConfig config = new ThingConfig();
     protected DeconzBridgeConfig bridgeConfig = new DeconzBridgeConfig();
     protected final Gson gson;
-    @Nullable
-    protected ScheduledFuture<?> scheduledFuture;
+    private @Nullable ScheduledFuture<?> initializationJob;
     protected @Nullable WebSocketConnection connection;
     protected @Nullable AsyncHttpClient http;
 
@@ -68,11 +67,11 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
     /**
      * Stops the API request
      */
-    private void stopTimer() {
-        ScheduledFuture<?> future = scheduledFuture;
+    private void stopInitializationJob() {
+        ScheduledFuture<?> future = initializationJob;
         if (future != null) {
             future.cancel(true);
-            scheduledFuture = null;
+            initializationJob = null;
         }
     }
 
@@ -113,7 +112,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
         this.http = bridgeHandler.getHttp();
         this.bridgeConfig = bridgeHandler.getBridgeConfig();
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
 
         // Real-time data
         registerListener();
@@ -159,8 +158,8 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
 
-            stopTimer();
-            scheduledFuture = scheduler.schedule((Runnable) this::requestState, 10, TimeUnit.SECONDS);
+            stopInitializationJob();
+            initializationJob = scheduler.schedule((Runnable) this::requestState, 10, TimeUnit.SECONDS);
 
             return null;
         }).thenAccept(this::processStateResponse);
@@ -168,7 +167,7 @@ public abstract class DeconzBaseThingHandler<T extends DeconzBaseMessage> extend
 
     @Override
     public void dispose() {
-        stopTimer();
+        stopInitializationJob();
         WebSocketConnection webSocketConnection = connection;
         if (webSocketConnection != null) {
             webSocketConnection.unregisterLightListener(config.id);

@@ -32,18 +32,14 @@ import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.dto.CommonModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.CommonModelParser;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
-import org.openhab.io.transport.modbus.BitArray;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
-import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
-import org.openhab.io.transport.modbus.ModbusSlaveErrorResponseException;
-import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
+import org.openhab.io.transport.modbus.exception.ModbusSlaveErrorResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,11 +63,6 @@ public class SunspecDiscoveryProcess {
      * The handler instance for this device
      */
     private final ModbusEndpointThingHandler handler;
-
-    /**
-     * The endpoint where we can reach the device
-     */
-    private final ModbusSlaveEndpoint endpoint;
 
     /**
      * Listener for the discovered devices. We get this
@@ -117,6 +108,11 @@ public class SunspecDiscoveryProcess {
     private @Nullable CommonModelBlock lastCommonBlock = null;
 
     /**
+     * Communication interface to the endpoint
+     */
+    private ModbusCommunicationInterface comms;
+
+    /**
      * New instances of this class should get a reference to the handler
      *
      * @throws EndpointNotInitializedException
@@ -125,9 +121,9 @@ public class SunspecDiscoveryProcess {
             throws EndpointNotInitializedException {
         this.handler = handler;
 
-        ModbusSlaveEndpoint endpoint = this.handler.asSlaveEndpoint();
-        if (endpoint != null) {
-            this.endpoint = endpoint;
+        ModbusCommunicationInterface localComms = handler.getCommunicationInterface();
+        if (localComms != null) {
+            this.comms = localComms;
         } else {
             throw new EndpointNotInitializedException();
         }
@@ -158,30 +154,13 @@ public class SunspecDiscoveryProcess {
         baseAddress = possibleAddresses.poll();
         logger.trace("Beginning scan for SunSpec device at address {}", baseAddress);
 
-        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(slaveId,
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, baseAddress, // Start address
                 SUNSPEC_ID_SIZE, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
-
-            @Override
-            public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-                headerReceived(registers);
-            }
-
-            @Override
-            public void onError(ModbusReadRequestBlueprint request, Exception error) {
-                handleError(error);
-            }
-
-            @Override
-            public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                // don't care, we don't expect this result
-            }
-        });
-
-        handler.getManagerRef().get().submitOneTimePoll(task);
+        comms.submitOneTimePoll(request, result -> result.getRegisters().ifPresent(this::headerReceived),
+                this::handleError);
     }
 
     /**
@@ -210,30 +189,13 @@ public class SunspecDiscoveryProcess {
      */
     private void lookForModelBlock() {
 
-        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(slaveId,
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, baseAddress, // Start address
                 MODEL_HEADER_SIZE, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
-
-            @Override
-            public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-                modelBlockReceived(registers);
-            }
-
-            @Override
-            public void onError(ModbusReadRequestBlueprint request, Exception error) {
-                handleError(error);
-            }
-
-            @Override
-            public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                // don't care, we don't expect this result
-            }
-        });
-
-        handler.getManagerRef().get().submitOneTimePoll(task);
+        comms.submitOneTimePoll(request, result -> result.getRegisters().ifPresent(this::modelBlockReceived),
+                this::handleError);
     }
 
     /**
@@ -280,30 +242,13 @@ public class SunspecDiscoveryProcess {
      * @param block
      */
     private void readCommonBlock(ModelBlock block) {
-        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(slaveId,
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, block.address, // Start address
                 block.length, // number or words to return
                 maxTries);
 
-        PollTask task = new BasicPollTaskImpl(endpoint, request, new ModbusReadCallback() {
-
-            @Override
-            public void onRegisters(ModbusReadRequestBlueprint request, ModbusRegisterArray registers) {
-                parseCommonBlock(registers);
-            }
-
-            @Override
-            public void onError(ModbusReadRequestBlueprint request, Exception error) {
-                handleError(error);
-            }
-
-            @Override
-            public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                // don't care, we don't expect this result
-            }
-        });
-
-        handler.getManagerRef().get().submitOneTimePoll(task);
+        comms.submitOneTimePoll(request, result -> result.getRegisters().ifPresent(this::parseCommonBlock),
+                this::handleError);
     }
 
     /**
@@ -367,25 +312,22 @@ public class SunspecDiscoveryProcess {
     /**
      * Handle errors received during communication
      */
-    private void handleError(Exception error) {
-        String msg = "";
-        String cls = "";
-
-        if (blocksFound > 1 && error instanceof ModbusSlaveErrorResponseException) {
-            int code = ((ModbusSlaveErrorResponseException) error).getExceptionCode();
+    private void handleError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+        if (blocksFound > 1 && failure.getCause() instanceof ModbusSlaveErrorResponseException) {
+            int code = ((ModbusSlaveErrorResponseException) failure.getCause()).getExceptionCode();
             if (code == ModbusSlaveErrorResponseException.ILLEGAL_DATA_ACCESS
                     || code == ModbusSlaveErrorResponseException.ILLEGAL_DATA_VALUE) {
                 // It is very likely that the slave does not report an end block (0xffff) after the main blocks
                 // so we treat this situation as normal.
                 logger.debug(
-                        "Seems like slave device does not report an end block. Continouing with the dectected blocks");
+                        "Seems like slave device does not report an end block. Continuing with the dectected blocks");
                 parsingFinished();
                 return;
             }
         }
 
-        cls = error.getClass().getName();
-        msg = error.getMessage();
+        String cls = failure.getCause().getClass().getName();
+        String msg = failure.getCause().getMessage();
 
         logger.warn("Error with read at address {}: {} {}", baseAddress, cls, msg);
 
