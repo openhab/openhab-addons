@@ -87,7 +87,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private SerialPortManager serialPortManager;
 
     private RotelConnector connector = new RotelSimuConnector(DEFAULT_MODEL, RotelProtocol.HEX, new HashMap<>(),
-            THREAD_NAME_PREFIX);
+            "OH-binding-rotel");
 
     private int minVolume;
     private int maxVolume;
@@ -292,7 +292,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
         Map<RotelSource, String> sourcesLabels = new HashMap<>();
 
-        String readerThreadName = THREAD_NAME_PREFIX + getThing().getUID().getAsString();
+        String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
         connector = new RotelSimuConnector(rotelModel, rotelProtocol, sourcesLabels, readerThreadName);
 

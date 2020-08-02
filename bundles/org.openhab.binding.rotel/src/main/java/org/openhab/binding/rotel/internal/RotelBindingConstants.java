@@ -151,6 +151,4 @@ public class RotelBindingConstants {
 
     // List of all properties
     public static final String PROPERTY_PROTOCOL = "protocol";
-
-    public static final String THREAD_NAME_PREFIX = "OH-" + BINDING_ID + "-";
 }
