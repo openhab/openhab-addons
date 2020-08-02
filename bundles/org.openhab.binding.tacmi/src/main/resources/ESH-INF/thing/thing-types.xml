@@ -103,4 +103,61 @@
 			</parameter>
 		</config-description>
 	</channel-type>
+
+	<thing-type id="cmiSchema" extensible="schema-switch-ro,schema-switch-rw,schema-numeric-ro,schema-state-ro">
+		<label>TA C.M.I. schema API connection</label>
+		<description>Communication to a special "API" schema page on a "Technische Alternative C.M.I. Control and Monitoring Interface"</description>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>C.M.I. IP Address</label>
+				<description>Hostname or IP address of the C.M.I.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username for C.M.I. authentication</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password for C.M.I. authentication</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="schemaId" type="integer" min="0" max="256" required="true">
+				<label>API schema id</label>
+				<description>ID of the schema API page</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="1" max="900" required="true">
+				<label>Poll intervall</label>
+				<description>Poll intervall (in seconds) how often to poll the API Page</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- some default schema channel types -->
+	<channel-type id="schema-switch-ro">
+		<item-type>Switch</item-type>
+		<label>Switch state (re)</label>
+		<description>An On/Off state read from C.M.I.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schema-switch-rw">
+		<item-type>Switch</item-type>
+		<label>Switch state (changeable)</label>
+		<description>A modifiable On/Off state read from C.M.I.</description>
+	</channel-type>
+	<channel-type id="schema-numeric-ro">
+		<item-type>Number</item-type>
+		<label>Value</label>
+		<description>A numeric value read from C.M.I.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schema-state-ro">
+		<item-type>String</item-type>
+		<label>Value</label>
+		<description>A state value read from C.M.I.</description>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

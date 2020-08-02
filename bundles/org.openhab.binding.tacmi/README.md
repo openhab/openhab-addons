@@ -104,7 +104,7 @@ Sample _.sitemap_ snipplet
 sitemap heatingTA label="heatingTA"
 {
     Text item=TACMI_Analog_In_1
-	Setpoint item=TACMI_Analog_Out_1 step=5 minValue=15 maxValue=45
+    Setpoint item=TACMI_Analog_Out_1 step=5 minValue=15 maxValue=45
     Switch item=TACMI_Digital_In_1
     Switch item=TACMI_Digital_Out_1
 }

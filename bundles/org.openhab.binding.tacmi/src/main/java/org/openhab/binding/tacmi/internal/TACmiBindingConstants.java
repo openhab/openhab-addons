@@ -30,6 +30,7 @@ public class TACmiBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CMI = new ThingTypeUID(BINDING_ID, "cmi");
     public static final ThingTypeUID THING_TYPE_COE_BRIDGE = new ThingTypeUID(BINDING_ID, "coe-bridge");
+    public static final ThingTypeUID THING_TYPE_CMI_SCHEMA = new ThingTypeUID(BINDING_ID, "cmiSchema");
 
     public static final ChannelTypeUID CHANNEL_TYPE_COE_DIGITAL_IN_UID = new ChannelTypeUID(BINDING_ID,
             "coe-digital-in");
@@ -39,6 +40,15 @@ public class TACmiBindingConstants {
             "coe-digital-out");
     public static final ChannelTypeUID CHANNEL_TYPE_COE_ANALOG_OUT_UID = new ChannelTypeUID(BINDING_ID,
             "coe-analog-out");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_SWITCH_RO_UID = new ChannelTypeUID(BINDING_ID,
+            "schema-switch-ro");
+    public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_SWITCH_RW_UID = new ChannelTypeUID(BINDING_ID,
+            "schema-switch-rw");
+    public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_NUMERIC_RO_UID = new ChannelTypeUID(BINDING_ID,
+            "schema-numeric-ro");
+    public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_STATE_RO_UID = new ChannelTypeUID(BINDING_ID,
+            "schema-state-ro");
 
     // Channel specific configuration items
     public final static String CHANNEL_CONFIG_OUTPUT = "output";
