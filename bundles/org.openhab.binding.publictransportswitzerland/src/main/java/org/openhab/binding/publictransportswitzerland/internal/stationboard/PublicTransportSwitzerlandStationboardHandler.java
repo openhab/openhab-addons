@@ -16,7 +16,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.codehaus.jackson.JsonParseException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -33,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -91,7 +89,9 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     public void initialize() {
         // Together with the 10 second timeout, this should be less than a minute
         cache = new ExpiringCache<>(45_000, this::updateData);
-        configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
+
+        PublicTransportSwitzerlandStationboardConfiguration configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
+        this.configuration = configuration;
 
         @Nullable String configurationError = findConfigurationError(configuration);
         if (configurationError != null) {
@@ -112,7 +112,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
 
-        configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
+        PublicTransportSwitzerlandStationboardConfiguration configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
+        this.configuration = configuration;
 
         @Nullable String configurationError = findConfigurationError(configuration);
         if (configurationError != null) {
