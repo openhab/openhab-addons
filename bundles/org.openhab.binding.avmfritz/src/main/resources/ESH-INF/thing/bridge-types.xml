@@ -13,6 +13,7 @@
 			<channel id="incoming_call" typeId="incoming_call"/>
 			<channel id="outgoing_call" typeId="outgoing_call"/>
 			<channel id="active_call" typeId="active_call"/>
+			<channel id="call_state" typeId="call_state"/>
 			<channel id="apply_template" typeId="apply_template"/>
 		</channels>
 

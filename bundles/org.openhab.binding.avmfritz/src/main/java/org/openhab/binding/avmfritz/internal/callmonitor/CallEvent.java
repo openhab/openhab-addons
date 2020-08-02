@@ -30,10 +30,10 @@ public class CallEvent {
     private final String timestamp;
     private final String callType;
     private final String id;
-    private final String externalNo;
-    private final @Nullable String internalNo;
-    private final @Nullable String connectionType;
-    private final @Nullable String line;
+    private @Nullable String externalNo;
+    private @Nullable String internalNo;
+    private @Nullable String connectionType;
+    private @Nullable String line;
 
     public CallEvent(String rawEvent) {
         this.rawEvent = rawEvent;
@@ -51,11 +51,8 @@ public class CallEvent {
             externalNo = fields[3];
             internalNo = fields[4];
             connectionType = fields[5];
-            line = null;
         } else if (callType.equals("CONNECT")) {
             line = fields[3];
-            internalNo = null;
-            connectionType = null;
             if (fields.length > 4) {
                 externalNo = fields[4];
             } else {
@@ -66,6 +63,8 @@ public class CallEvent {
             internalNo = fields[4];
             externalNo = fields[5];
             connectionType = fields[6];
+        } else if (callType.equals("DISCONNECT")) {
+            // no fields to set
         } else {
             throw new IllegalArgumentException("Invalid call type: " + callType);
         }
@@ -87,7 +86,7 @@ public class CallEvent {
         return id;
     }
 
-    public String getExternalNo() {
+    public @Nullable String getExternalNo() {
         return externalNo;
     }
 

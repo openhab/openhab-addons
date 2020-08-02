@@ -1,14 +1,16 @@
 # AVM FRITZ! Binding
 
-The binding integrates the AHA ( [AVM Home Automation](https://avm.de/ratgeber/smart-home/) ) system.  
+The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ( [AVM Home Automation](https://avm.de/ratgeber/smart-home/) ) features.  
 
 ## Supported Things
 
 ### FRITZ!Box
 
-The well known FRITZ!Boxes are supported as bridge for accessing other AHA devices.
-It is planned to support some channels directly at the bridge like call monitoring and others - but these things are under current development by now.
-The Box has to run at least on firmware FRITZ!OS 6.00 and has to support the "Smart Home" service.
+FRITZ!Boxes (thing type `fritzbox`) are supported as bridges and they offer channels for call monitoring.
+To activate the call monitor interface on a FRITZ!Box, you need to dial once `#96*5*` on a connected telephone.
+
+Additionally, they serve as a bridge for accessing other AHA devices.
+For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 and it has to support the "Smart Home" service.
 
 ### FRITZ!DECT 200 / FRITZ!DECT 210
 
@@ -41,7 +43,7 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 6.35.
 
 The [FRITZ!DECT 400](https://avm.de/produkte/fritzdect/fritzdect-400/) is a button for convenient operation of FRITZ! Smart Home devices (FRITZ!OS 7.08 or higher).
 
-### DECT-ULE / HAN-FUN devices
+### DECT-ULE / HAN-FUN Devices
 
 The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!Box 7490 / 7590:
 
@@ -55,7 +57,7 @@ The use of other Sensors should be possible, if these are compatible with DECT-U
 
 The FRITZ!Box has to run at least on firmware FRITZ!OS 7.
 
-### FRITZ! groups 
+### FRITZ! Groups 
 
 The FRITZ!OS supports two different types of groups.
 On the one hand there are groups for heating thermostats on the other hand there are groups for switchable outlets and power meters.
@@ -95,7 +97,7 @@ If correct credentials are set in the bridge configuration, connected AHA device
 - `ipAddress` (mandatory), default "fritz.box"
 - `protocol` (optional, "http" or "https"), default "http"
 - `port` (optional, 1 to 65535), no default (derived from protocol: 80 or 443)
-- `password` (optional), no default (depends on FRITZ!Box security configuration)
+- `password` (optional for call monitoring, but mandatory for AHA features), no default (depends on FRITZ!Box security configuration)
 - `user` (optional), no default (depends on FRITZ!Box security configuration)
 - `pollingInterval` (optional, 5 to 60), default 15 (in seconds)
 - `asyncTimeout` (optional, 1000 to 60000), default 10000 (in milliseconds)
@@ -124,12 +126,16 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 
 ## Supported Channels
 
-| Channel Type ID | Item Type                | Description                                                                                                                                         | Available on thing                                                                                  |
+| Channel Type ID | Item Type                | Description                                                                                                                                        | Available on thing                                                                                  |
 |-----------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| incoming_call   | Call                     | Details about incoming call.                                                                                                                       | FRITZ!Box                                                                                           |
+| outgoing_call   | Call                     | Details about outgoing call.                                                                                                                       | FRITZ!Box                                                                                           |
+| active_call     | Call                     | Details about active call.                                                                                                                         | FRITZ!Box                                                                                           |
+| call_state      | String                   | Details about current call state, either IDLE, RINGING, DIALING or ACTIVE.                                                                         | FRITZ!Box                                                                                           |
+| apply_template  | String                   | Apply template for device(s) (channel's state options contains available templates, for an alternative way see the description below) - FRITZ!OS 7 | FRITZ!Box, FRITZ!Powerline 546E                                                                     |
 | mode            | String                   | States the mode of the device (MANUAL/AUTOMATIC/VACATION)                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
 | locked          | Contact                  | Device is locked for switching over external sources (OPEN/CLOSE)                                                                                  | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
 | device_locked   | Contact                  | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                                                               | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT    |
-| apply_template  | String                   | Apply template for device(s) (channel's state options contains available templates, for an alternative way see the description below) - FRITZ!OS 7 | FRITZ!Box, FRITZ!Powerline 546E                                                                     |
 | temperature     | Number:Temperature       | Current measured temperature                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT |
 | energy          | Number:Energy            | Accumulated energy consumption                                                                                                                     | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
 | power           | Number:Power             | Current power consumption                                                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                |
@@ -204,6 +210,7 @@ Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx"
 demo.items:
 
 ```java
+String CallState "Call State [%s]" { channel="avmfritz:fritzbox:1:call_state" }
 String ApplyTemplate "Apply template" { channel="avmfritz:fritzbox:1:apply_template" }
 
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
@@ -237,6 +244,7 @@ demo.sitemap:
 sitemap demo label="Main Menu" {
 
     Frame label="FRITZ!Box" {
+        Text item=CallState
         Selection item=ApplyTemplate
     }
 

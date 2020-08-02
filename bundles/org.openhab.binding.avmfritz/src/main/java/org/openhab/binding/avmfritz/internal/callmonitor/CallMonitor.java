@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringListType;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
@@ -61,7 +63,6 @@ public class CallMonitor {
             }
 
             // create a new thread for listening to the FritzBox
-            logger.debug("Reconnecting to Fritzbox call monitor port.");
             monitorThread = new CallMonitorThread();
             monitorThread.start();
         }, 0, 2, TimeUnit.HOURS);
@@ -100,7 +101,9 @@ public class CallMonitor {
                     // reset the retry interval
                     reconnectTime = 60000L;
                 } catch (Exception e) {
-                    logger.warn("Error attempting to connect to FritzBox. Retrying in {} seconds",
+                    handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Cannot connect to Fritz!Box call monitor - make sure to enable it!");
+                    logger.debug("Error attempting to connect to FritzBox. Retrying in {} seconds",
                             reconnectTime / 1000L, e);
                     try {
                         Thread.sleep(reconnectTime);
@@ -111,7 +114,8 @@ public class CallMonitor {
                     reconnectTime += 60000L;
                 }
                 if (reader != null) {
-                    logger.info("Connected to FritzBox call monitor at {}:{}.", ip, MONITOR_PORT);
+                    logger.debug("Connected to FritzBox call monitor at {}:{}.", ip, MONITOR_PORT);
+                    handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                     while (!interrupted) {
                         try {
                             String line = reader.readLine();
@@ -124,12 +128,13 @@ public class CallMonitor {
                             if (interrupted) {
                                 logger.debug("Lost connection to Fritzbox because of an interrupt.");
                             } else {
-                                logger.warn("Lost connection to FritzBox: {}", e.getMessage());
+                                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "Lost connection to Fritz!Box: " + e.getMessage());
                             }
                             break;
                         } finally {
                             try {
-                                sleep(5000L);
+                                sleep(1000L);
                             } catch (InterruptedException e) {
                             }
                         }
@@ -167,15 +172,23 @@ public class CallMonitor {
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.NULL);
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.NULL);
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.NULL);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
+                        AVMFritzBindingConstants.CALL_STATE_IDLE);
             } else if (ce.getCallType().equals("RING")) { // first event when call is incoming
                 StringListType state = new StringListType(ce.getInternalNo(), ce.getExternalNo());
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, state);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
+                        AVMFritzBindingConstants.CALL_STATE_RINGING);
             } else if (ce.getCallType().equals("CONNECT")) { // when call is answered/running
-                StringListType state = new StringListType(ce.getExternalNo(), ce.getInternalNo());
+                StringListType state = new StringListType(ce.getExternalNo(), "");
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, state);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
+                        AVMFritzBindingConstants.CALL_STATE_ACTIVE);
             } else if (ce.getCallType().equals("CALL")) { // outgoing call
                 StringListType state = new StringListType(ce.getExternalNo(), ce.getInternalNo());
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, state);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
+                        AVMFritzBindingConstants.CALL_STATE_DIALING);
             }
         }
     }

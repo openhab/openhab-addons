@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -89,6 +90,7 @@ public class AVMFritzBindingConstants {
     public static final String CHANNEL_CALL_INCOMING = "incoming_call";
     public static final String CHANNEL_CALL_OUTGOING = "outgoing_call";
     public static final String CHANNEL_CALL_ACTIVE = "active_call";
+    public static final String CHANNEL_CALL_STATE = "call_state";
 
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_LOCKED = "locked";
@@ -124,6 +126,12 @@ public class AVMFritzBindingConstants {
     public static final String INPUT_NEXTCHANGE = "endperiod";
     public static final String INPUT_NEXTTEMP = "tchange";
     public static final String INPUT_BATTERY = "batterylow";
+
+    // List of all call states
+    public static final StringType CALL_STATE_IDLE = new StringType("IDLE");
+    public static final StringType CALL_STATE_RINGING = new StringType("RINGING");
+    public static final StringType CALL_STATE_DIALING = new StringType("DIALING");
+    public static final StringType CALL_STATE_ACTIVE = new StringType("ACTIVE");
 
     // List of all Mode types
     public static final String MODE_AUTO = "AUTOMATIC";

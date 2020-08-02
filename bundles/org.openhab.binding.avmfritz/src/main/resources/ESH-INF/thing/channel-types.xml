@@ -21,8 +21,21 @@
 		<item-type>Call</item-type>
 		<label>Active Call</label>
 		<description>Details about active call.</description>
-		<state pattern="%1$s to %2$s" readOnly="true"/>
+		<state pattern="%1$s" readOnly="true"/>
 	</channel-type>
+    <channel-type id="call_state">
+        <item-type>String</item-type>
+        <label>Call State</label>
+        <description>Details about current call state.</description>
+        <state readOnly="true">
+            <options>
+                <option value="IDLE">Idle</option>
+                <option value="RINGING">Ringing</option>
+                <option value="DIALING">Dialing</option>
+                <option value="ACTIVE">Active</option>
+            </options>
+        </state>
+    </channel-type>
 	<channel-type id="apply_template" advanced="true">
 		<item-type>String</item-type>
 		<label>Apply Template</label>

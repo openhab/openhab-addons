@@ -12,14 +12,21 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
 import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.callmonitor.CallMonitor;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
+import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 
 /**
  * Handler for a FRITZ!Box device. Handles polling of values from AHA devices.
@@ -30,6 +37,15 @@ import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
  */
 @NonNullByDefault
 public class BoxHandler extends AVMFritzBaseBridgeHandler {
+
+    protected static final Set<String> CALL_CHANNELS = new HashSet<>();
+    static {
+        // TODO: We are still on Java 8 and cannot use Set.of
+        CALL_CHANNELS.add(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE);
+        CALL_CHANNELS.add(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING);
+        CALL_CHANNELS.add(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING);
+        CALL_CHANNELS.add(AVMFritzBindingConstants.CHANNEL_CALL_STATE);
+    }
 
     private @Nullable CallMonitor callMonitor;
 
@@ -44,10 +60,31 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        String ip = getConfigAs(AVMFritzBoxConfiguration.class).ipAddress;
-        callMonitor = new CallMonitor(ip, this, scheduler);
+    protected void initConnections() {
+        AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
+        if (this.callMonitor == null && (isLinked(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE)
+                || isLinked(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING)
+                || isLinked(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING)
+                || isLinked(AVMFritzBindingConstants.CHANNEL_CALL_STATE))) {
+            this.callMonitor = new CallMonitor(config.ipAddress, this, scheduler);
+        }
+        if (this.connection == null) {
+            if (config.password != null) {
+                this.connection = new FritzAhaWebInterface(config, this, httpClient);
+                stopPolling();
+                startPolling();
+            } else {
+                if (!callChannelsLinked()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "The 'password' parameter must be configured to use the AHA features.");
+                }
+            }
+        }
+    }
+
+    private boolean callChannelsLinked() {
+        return getThing().getChannels().stream()
+                .filter(c -> isLinked(c.getUID()) && CALL_CHANNELS.contains(c.getUID().getId())).count() > 0;
     }
 
     @Override
