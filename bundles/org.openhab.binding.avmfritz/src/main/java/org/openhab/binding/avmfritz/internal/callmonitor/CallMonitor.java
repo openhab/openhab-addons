@@ -63,8 +63,10 @@ public class CallMonitor {
             }
 
             // create a new thread for listening to the FritzBox
-            monitorThread = new CallMonitorThread();
-            monitorThread.start();
+            CallMonitorThread thread = new CallMonitorThread();
+            thread.setName("OH-binding-" + handler.getThing().getUID().getAsString());
+            thread.start();
+            this.monitorThread = thread;
         }, 0, 2, TimeUnit.HOURS);
     }
 
