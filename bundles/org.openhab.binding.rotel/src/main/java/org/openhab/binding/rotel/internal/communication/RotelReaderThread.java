@@ -38,6 +38,7 @@ public class RotelReaderThread extends Thread {
      * Constructor
      *
      * @param connector the object that should handle the received message
+     * @param threadName the name of the thread
      */
     public RotelReaderThread(RotelConnector connector, String threadName) {
         super(threadName);
