@@ -92,11 +92,7 @@ public class OpenWebNetBindingConstants {
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";
     // BUS gw config properties
-    public static final String CONFIG_PROPERTY_SERIAL_PORT = "serialPort";
     public static final String CONFIG_PROPERTY_HOST = "host";
-    public static final String CONFIG_PROPERTY_PORT = "port";
-    public static final String CONFIG_PROPERTY_PASSWD = "passwd";
-    public static final String CONFIG_PROPERTY_DISCOVERY_ACTIVATION = "discoveryByActivation";
     // properties
     public static final String PROPERTY_OWNID = "ownId";
     public static final String PROPERTY_ZIGBEEID = "zigbeeid";

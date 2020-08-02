@@ -14,7 +14,6 @@ package org.openhab.binding.openwebnet.handler;
 
 import static org.openhab.binding.openwebnet.OpenWebNetBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -27,13 +26,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.handler.config.OpenWebNetBusBridgeConfig;
+import org.openhab.binding.openwebnet.handler.config.OpenWebNetZigBeeBridgeConfig;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
 import org.openwebnet4j.BUSGateway;
 import org.openwebnet4j.GatewayListener;
@@ -63,9 +63,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeHandler.class);
 
     private static final int GATEWAY_ONLINE_TIMEOUT_SEC = 20; // Time to wait for the gateway to become connected
-    private static final int CONFIG_GATEWAY_DEFAULT_PORT = 20000;
-    private static final String CONFIG_GATEWAY_DEFAULT_PASSWD = "12345";
-    private static final boolean CONFIG_GATEWAY_DEFAULT_DISCVERY_ACTIVATION = false;
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
@@ -81,7 +78,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public @Nullable OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
     private boolean reconnecting = false; // we are trying to reconnect to gateway
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
-    private boolean discoveryByActivation = CONFIG_GATEWAY_DEFAULT_DISCVERY_ACTIVATION;
+    private boolean discoveryByActivation;
 
     public OpenWebNetBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -134,13 +131,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Init a ZigBee gateway based on config properties
+     * Init a ZigBee gateway based on config
      */
     private @Nullable OpenGateway initZigBeeGateway() {
-        String serialPort = (String) (getConfig().get(CONFIG_PROPERTY_SERIAL_PORT));
-        if (serialPort == null) {
+        logger.debug("Initializing ZigBee USB gateway");
+        OpenWebNetZigBeeBridgeConfig zbBridgeConfig = getConfigAs(OpenWebNetZigBeeBridgeConfig.class);
+        String serialPort = zbBridgeConfig.getSerialPort();
+        if (serialPort == null || serialPort.isEmpty()) {
             logger.warn("Cannot connect to gateway. No serial port has been provided in Bridge configuration.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-serial-port");
             return null;
         } else {
@@ -149,44 +148,30 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Init a BUS/SCS gateway based on config properties
+     * Init a BUS gateway based on config
      */
     private @Nullable OpenGateway initBusGateway() {
-        if (getConfig().get(CONFIG_PROPERTY_HOST) != null) {
-            String host = (String) (getConfig().get(CONFIG_PROPERTY_HOST));
-            int port = CONFIG_GATEWAY_DEFAULT_PORT;
-            Object portConfig = getConfig().get(CONFIG_PROPERTY_PORT);
-            if (portConfig != null) {
-                port = ((BigDecimal) portConfig).intValue();
-            }
-            String passwd = (String) (getConfig().get(CONFIG_PROPERTY_PASSWD));
-            if (passwd == null) {
-                passwd = CONFIG_GATEWAY_DEFAULT_PASSWD;
-            }
+        logger.debug("Initializing BUS gateway");
+        OpenWebNetBusBridgeConfig busBridgeConfig = getConfigAs(OpenWebNetBusBridgeConfig.class);
+        String host = busBridgeConfig.getHost();
+        if (host == null || host.isEmpty()) {
+            logger.warn("Cannot connect to gateway. No host/IP has been provided in Bridge configuration.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-no-ip-address");
+            return null;
+        } else {
+            int port = busBridgeConfig.getPort().intValue();
+            String passwd = busBridgeConfig.getPasswd();
             String passwdMasked;
             if (passwd.length() >= 4) {
                 passwdMasked = "******" + passwd.substring(passwd.length() - 3, passwd.length());
             } else {
                 passwdMasked = "******";
             }
-            Object discoveryConfig = getConfig().get(CONFIG_PROPERTY_DISCOVERY_ACTIVATION);
-            if (discoveryConfig != null) {
-                if (discoveryConfig instanceof java.lang.Boolean) {
-                    discoveryByActivation = (boolean) getConfig().get(CONFIG_PROPERTY_DISCOVERY_ACTIVATION);
-                    logger.debug("discoveryByActivation={}", discoveryByActivation);
-                } else {
-                    logger.warn(
-                            "invalid discoveryByActivation parameter value (should be true/false). Keeping current value={}.",
-                            discoveryByActivation);
-                }
-            }
-            logger.debug("Creating new BUS gateway with config properties: {}:{}, pwd={}", host, port, passwdMasked);
+            discoveryByActivation = busBridgeConfig.getDiscoveryByActivation();
+            logger.debug("Creating new BUS gateway with config properties: {}:{}, pwd={}, discoveryByActivation={}",
+                    host, port, passwdMasked, discoveryByActivation);
             return new BUSGateway(host, port, passwd);
-        } else {
-            logger.warn("Cannot connect to gateway. No host/IP has been provided in Bridge configuration.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-ip-address");
-            return null;
         }
     }
 
@@ -204,21 +189,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
-        Collection<ConfigStatusMessage> configStatusMessages;
-        configStatusMessages = Collections.emptyList();
-        return configStatusMessages;
-    }
-
-    @Override
-    public void thingUpdated(Thing thing) {
-        super.thingUpdated(thing);
-        logger.info("Bridge configuration updated.");
-        // for (Thing t : getThing().getThings()) {
-        // final ThingHandler thingHandler = t.getHandler();
-        // if (thingHandler != null) {
-        // thingHandler.thingUpdated(t);
-        // }
-        // }
+        return Collections.emptyList();
     }
 
     @Override
@@ -284,7 +255,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             } else {
                 logger.warn("onNewDevice with null where/deviceType msg={}", message);
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.warn("Exception while discovering new device WHERE={}, deviceType={}: {}", w, deviceType,
                     e.getMessage());
         }
@@ -431,7 +402,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.info("------------------- ON CONNECTION ERROR: {}", errMsg);
         isGatewayConnected = false;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errMsg);
-        tryRecconectGateway();
+        tryReconnectGateway();
     }
 
     @Override
@@ -453,10 +424,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.info("------------------- DISCONNECTED from gateway. OWNException={}", errMsg);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                 "Disconnected from gateway (onDisconnected - " + errMsg + ")");
-        tryRecconectGateway();
+        tryReconnectGateway();
     }
 
-    private void tryRecconectGateway() {
+    private void tryReconnectGateway() {
         OpenGateway gw = gateway;
         if (gw != null) {
             if (!reconnecting) {
@@ -465,7 +436,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 try {
                     gw.reconnect();
                 } catch (OWNAuthException e) {
-                    logger.info("------------------- AUTH error from gateway. Stopping recconnect");
+                    logger.info("------------------- AUTH error from gateway. Stopping reconnect");
                     reconnecting = false;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "Authentication error. Check gateway password in Thing Configuration Parameters (" + e

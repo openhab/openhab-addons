@@ -144,7 +144,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      */
     private void dimLightTo(int whatInt, Command command) {
         final String channel = CHANNEL_BRIGHTNESS;
-        // final String where = toWhere(WhereZigBee.UNIT_01);
         int newWhatInt = whatInt;
         logger.debug("-DIM- dimLightTo() latestBriWhat={} latestBriBeforeOff={} briLevelRequested={}",
                 latestBrightnessWhat, latestBrightnessWhatBeforeOff, brightnessLevelRequested);

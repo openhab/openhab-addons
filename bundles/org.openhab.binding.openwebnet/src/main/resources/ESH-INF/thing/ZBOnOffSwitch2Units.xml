@@ -27,11 +27,10 @@
 		<representation-property>ownId</representation-property>
 
 		<config-description>
-			<parameter name="where" type="text">
+			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Device Address</label>
 				<description>It identifies one ZigBee device. Use decimal format address without the UNIT part and network: ZigBee
 					WHERE=414122201#9 -> OpenWebNet Device Address = 4141222</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

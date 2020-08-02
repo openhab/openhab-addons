@@ -23,10 +23,9 @@
 		<representation-property>ownId</representation-property>
 
 		<config-description>
-			<parameter name="where" type="text">
+			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Device Address (WHERE)</label>
 				<description>It identifies one OpenWebNet device</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

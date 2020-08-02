@@ -26,10 +26,9 @@
 		<representation-property>ownId</representation-property>
 
 		<config-description>
-			<parameter name="where" type="text">
+			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Device Address (WHERE)</label>
 				<description>Example: A/PL address: A=1 PL=3 --> WHERE=13. On local bus: WHERE=13#4#01</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 
