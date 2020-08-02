@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Parser {
+    private static final int MEASURE_COUNT = 100;
     private final Logger logger = LoggerFactory.getLogger(Parser.class);
     private DataType callbackType;
     private byte[] bArray;
@@ -75,8 +76,8 @@ public class Parser {
         minDuration = Math.min(minDuration, duration);
         maxDuration = Math.max(maxDuration, duration);
         counter++;
-        if (counter % 100 == 0) {
-            logger.debug("Min {} Max {} Avg {}", minDuration, maxDuration, avgDuration / 30);
+        if (counter % MEASURE_COUNT == 0) {
+            logger.debug("Min {} Max {} Avg {}", minDuration, maxDuration, avgDuration / MEASURE_COUNT);
             avgDuration = 0;
             minDuration = Long.MAX_VALUE;
             maxDuration = Long.MIN_VALUE;
