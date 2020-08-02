@@ -11,7 +11,7 @@
 	<channel-type id="battery-loading-lock-channel">
 		<item-type>Switch</item-type>
 		<label>Battery Loading Locked</label>
-		<description>Indictes if Battery Loading is locked</description>
+		<description>Indicates if Battery Loading is locked</description>
 	</channel-type>
 	<channel-type id="battery-unloading-lock-channel">
 		<item-type>Switch</item-type>

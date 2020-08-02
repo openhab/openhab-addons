@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="wb-available-channel">
 		<item-type>Switch</item-type>
-		<label>Wallbox Available</label>
+		<label>Available</label>
 		<description>Indicates if the Wallbox is attached. Check your Wallbox ID in offline case</description>
 	</channel-type>
 	<channel-type id="wb-sunmode-channel">
@@ -15,12 +15,12 @@
 	</channel-type>
 	<channel-type id="wb-charging-aborted-channel">
 		<item-type>Switch</item-type>
-		<label>Wallbox Charging Aborted</label>
+		<label>Charging Aborted</label>
 		<description>Indicates if Wallbox charging was aborted</description>
 	</channel-type>
 	<channel-type id="wb-charging-channel">
 		<item-type>Switch</item-type>
-		<label>Wallbox Charging</label>
+		<label>Charging</label>
 		<description>Indicates your Wallbox is charging</description>
 	</channel-type>
 	<channel-type id="wb-jack-locked-channel">

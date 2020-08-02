@@ -145,7 +145,10 @@ public class E3DCThingHandler extends BaseBridgeHandler {
             slaveId = slaveEndpointThingHandler.getSlaveId();
             comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
-            // this cannot be raised anymore, throws was left accidentally in the API
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Slave Endpoint not initialized"));
+            logger.debug("Slave Endpoint not initialized");
+            return null;
         }
         if (comms == null) {
             @SuppressWarnings("null")
@@ -332,6 +335,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     }
 
     private void updateStatus() {
+        logger.info("Status update: Info {} Data {} ", infoRead, dataRead);
         if (infoRead != ReadStatus.NOT_RECEIVED && dataRead != ReadStatus.NOT_RECEIVED) {
             if (infoRead == dataRead) {
                 // both reads are ok or else both failed
