@@ -29,9 +29,6 @@ public class IntesisBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INTESISHOME = new ThingTypeUID(BINDING_ID, "intesisHome");
 
-    // Thing configuration items
-    public static final String PROPERTY_IP = "ipAddress";
-
     // List of all Channel ids
     public static final String POWER_CHANNEL = "power";
     public static final String MODE_CHANNEL = "mode";

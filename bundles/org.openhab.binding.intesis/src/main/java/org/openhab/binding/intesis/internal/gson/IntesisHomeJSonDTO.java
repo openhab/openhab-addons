@@ -18,12 +18,13 @@ import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * {@link IntesisHomeJSonDTO} translates Json into Java objects
+ * {@link IntesisHomeJSonDTO} is used for the JSon/GSon mapping
  *
  * @author Hans-Jörg Merk - Initial contribution
  */
 public class IntesisHomeJSonDTO {
 
+    // Device Information used for thing properties
     public static class info {
         @SerializedName("wlanSTAMAC")
         public String wlanSTAMAC; // Device Client MAC Address
@@ -57,6 +58,7 @@ public class IntesisHomeJSonDTO {
         public String lastError;
     }
 
+    // Session ID for authentication
     public static class AuthenticateData {
         @SerializedName("id")
         public String id; // ID
@@ -64,6 +66,7 @@ public class IntesisHomeJSonDTO {
         public String sessionID; // Session ID
     }
 
+    // Array of UIDs with corresponding values, mapped into channel
     public static class dpval {
         @SerializedName("uid")
         public String uid; // ID
@@ -73,16 +76,22 @@ public class IntesisHomeJSonDTO {
         public int status;
     }
 
+    // Due to a malformed JSon response, we need to extract the DATA JSonElement for serialization
     public static JsonObject getData(String response) {
         JsonParser parser = new JsonParser();
         JsonElement rootNode = parser.parse(response);
         JsonObject details = rootNode.getAsJsonObject();
-        // JsonElement successNode = details.get("success");
         JsonElement dataNode = details.get("data");
         JsonObject data = dataNode.getAsJsonObject();
         return data;
     }
 
+    /**
+     * Used to determine if a post request was successful
+     *
+     * @param JSON response string
+     * @return boolean success
+     */
     public static boolean getSuccess(String response) {
         JsonParser parser = new JsonParser();
         JsonElement rootNode = parser.parse(response);

@@ -19,13 +19,20 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.intesis.internal.handler.IntesisHomeHandler;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link IntesisHandlerFactory} is responsible for creating things and thing
@@ -37,7 +44,18 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.intesis", service = ThingHandlerFactory.class)
 public class IntesisHandlerFactory extends BaseThingHandlerFactory {
 
+    private final Logger logger = LoggerFactory.getLogger(IntesisHandlerFactory.class);
+    private final HttpClient httpClient;
+
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INTESISHOME);
+
+    @Activate
+    public IntesisHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
+        logger.debug("Activate Shelly HandlerFactory");
+        super.activate(componentContext);
+
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,7 +67,7 @@ public class IntesisHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_INTESISHOME.equals(thingTypeUID)) {
-            return new IntesisHomeHandler(thing);
+            return new IntesisHomeHandler(thing, httpClient);
         }
 
         return null;

@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class IntesisConfiguration {
-
     public String ipAddress = "";
     public String password = "";
 }
