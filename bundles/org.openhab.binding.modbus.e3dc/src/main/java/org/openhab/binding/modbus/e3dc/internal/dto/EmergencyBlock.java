@@ -28,13 +28,13 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
  */
 public class EmergencyBlock implements Data {
     public StringType epStatus = EP_UNKOWN;
-    public OnOffType batteryLoadingLocked = OnOffType.OFF;
-    public OnOffType batterUnLoadingLocked = OnOffType.OFF;
+    public OnOffType batteryChargingLocked = OnOffType.OFF;
+    public OnOffType batteryDischargingLocked = OnOffType.OFF;
     public OnOffType epPossible = OnOffType.OFF;
-    public OnOffType weatherPredictedLoading = OnOffType.OFF;
+    public OnOffType weatherPredictedCharging = OnOffType.OFF;
     public OnOffType regulationStatus = OnOffType.OFF;
-    public OnOffType loadingLockTime = OnOffType.OFF;
-    public OnOffType unloadingLockTime = OnOffType.OFF;
+    public OnOffType chargeLockTime = OnOffType.OFF;
+    public OnOffType dischargeLockTime = OnOffType.OFF;
 
     // Possible Status definitions according to chapter 3.1.2, Register 40084, page 14 & 15
     public static final StringType EP_NOT_SUPPORTED = new StringType("EP not supported");
@@ -63,12 +63,12 @@ public class EmergencyBlock implements Data {
         // uint16 status register 40085 shall be handled as Bits - check cahpter 3.1.3 page 17
         byte[] emsStatusBytes = new byte[] { bArray[3], bArray[2] };
         BitSet bs = BitSet.valueOf(emsStatusBytes);
-        batteryLoadingLocked = bs.get(EMS_LOADING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
-        batterUnLoadingLocked = bs.get(EMS_UNLOADING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
-        epPossible = bs.get(EMS_UNLOADING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
-        weatherPredictedLoading = bs.get(EMS_WEATHER_LOADING_BIT) ? OnOffType.ON : OnOffType.OFF;
+        batteryChargingLocked = bs.get(EMS_CHARGING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
+        batteryDischargingLocked = bs.get(EMS_DISCHARGING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
+        epPossible = bs.get(EMS_DISCHARGING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
+        weatherPredictedCharging = bs.get(EMS_WEATHER_CHARGING_BIT) ? OnOffType.ON : OnOffType.OFF;
         regulationStatus = bs.get(EMS_REGULATION_BIT) ? OnOffType.ON : OnOffType.OFF;
-        loadingLockTime = bs.get(EMS_LOADING_LOCKTIME_BIT) ? OnOffType.ON : OnOffType.OFF;
-        unloadingLockTime = bs.get(EMS_UNLOADING_LOCKTIME_BIT) ? OnOffType.ON : OnOffType.OFF;
+        chargeLockTime = bs.get(EMS_CHARGE_LOCKTIME_BIT) ? OnOffType.ON : OnOffType.OFF;
+        dischargeLockTime = bs.get(EMS_DISCHARGE_LOCKTIME_BIT) ? OnOffType.ON : OnOffType.OFF;
     }
 }

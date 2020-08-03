@@ -116,16 +116,16 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 
 ### Channel _EMS Block_
 
-| Channel Label                               | Channel Group ID | Channel ID                | Type           | Description                  |
-|---------------------------------------------|------------------|---------------------------|----------------|------------------------------|
-| Emergency Power Status                      | emergency        | emergency-power-status    |  String  | Possible values: EP not supported, EP active, EP not active, EP not available, EP Switch in wrong position, EP Status unknown |
-| Battery Loading Locked                      | emergency        | battery-loading-lock      |  Switch  | Battery charging is locked          |
-| Battery Unloading Locked                    | emergency        | battery-unloading-lock    |  Switch  | Battery discharging is locked |
-| Emergency Power Possible                    | emergency        | emergency-power-possible  |  Switch  | Emergency Power Supply is possible          |
-| Loading Based On Weather Prediction Active  | emergency        | weather-predicted-loading |  Switch  | Weather Predicted Battery Charging is activated |
-| Regulation Status Of Max Grid Power Supply  | emergency        | regulation-status         |  Switch  | Grid Power Supply is currently regulated |
-| Loading Lock time Active                    | emergency        | loading-lock-time         |  Switch  | Charge Lock Time is currently active |
-| Unloading Lock time Active                  | emergency        | unloading-lock-time       |  Switch  | Discharge Lock Time is currently active |
+| Channel Label                               | Channel Group ID | Channel ID                 | Type           | Description                  |
+|---------------------------------------------|------------------|----------------------------|----------------|------------------------------|
+| Emergency Power Status                      | emergency        | emergency-power-status     |  String  | Possible values: EP not supported, EP active, EP not active, EP not available, EP Switch in wrong position, EP Status unknown |
+| Battery Charging Locked                     | emergency        | battery-charging-lock      |  Switch  | Battery charging is locked          |
+| Battery Discharging Locked                  | emergency        | battery-discharging-lock   |  Switch  | Battery discharging is locked |
+| Emergency Power Possible                    | emergency        | emergency-power-possible   |  Switch  | Emergency Power Supply is possible          |
+| Weather Predicted Battery Charging          | emergency        | weather-predicted-charging |  Switch  | Weather Predicted Battery Charging is activated |
+| Regulation Status Of Max Grid Power Supply  | emergency        | regulation-status          |  Switch  | Grid Power Supply is currently regulated |
+| Charge Lock time Active                     | emergency        | charge-lock-time           |  Switch  | Charge Lock Time is currently active |
+| Discharge Lock time Active                  | emergency        | discharge-lock-time        |  Switch  | Discharge Lock Time is currently active |
 
 ### E3DC Wallbox Channels
 
@@ -164,6 +164,11 @@ Bridge modbus:tcp:device "E3DC Modbus TCP" [ host="192.168.178.56", port=502, id
 ### Items
 
 ```
+String    E3DC_ModbusId                 "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#modbus-id" }
+String    E3DC_ModbusFirmware           "E3DC Modbus Firmware"      (e3dc)      { channel="modbus:e3dc:device:powerplant:info#modbus-firmware" }
+Number    E3DC_SupportedRegisters       "E3DC Supported Registers"  (e3dc)      { channel="modbus:e3dc:device:powerplant:info#supported-registers" }
+String    E3DC_Manufacturer             "E3DC Manufacturer"         (e3dc)      { channel="modbus:e3dc:device:powerplant:info#manufacturer-name" }
+String    E3DC_ModelName                "E3DC Model"                (e3dc)      { channel="modbus:e3dc:device:powerplant:info#model-name" }
 String    E3DC_Firmware                 "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#firmware-release" }
 String    E3DC_SerialNumber             "E3DC Modbus ID"            (e3dc)      { channel="modbus:e3dc:device:powerplant:info#serial-number" }
 
@@ -180,19 +185,19 @@ Number    E3DC_AutarkyLevel             "E3DC Autarky Level"        (e3dc)  { ch
 Number    E3DC_SelfConsumptionLevel     "E3DC Self Consumption Level"   (e3dc)  { channel="modbus:e3dc:device:powerplant:power#self-consumption" }
 Number    E3DC_BatterySOC               "E3DC Battery SOC"          (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:power#battery-soc" }
 
-Switch    E3DC_WB_Available             "E3DC WB available"     (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-available" }
-Switch    E3DC_WB_Sunmode               "E3DC WB Sunmode"       (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-sunmode" }
-Switch    E3DC_WB_ChargingAborted       "E3DC WB Charging Aborted"  (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-charging-aborted" }
-Switch    E3DC_WB_Charging              "E3DC WB Charging"      (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-charging" }
-Switch    E3DC_WB_JackLocked            "E3DC WB Jack Locked"   (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-jack-locked" }
-Switch    E3DC_WB_JackPlugged           "E3DC WB Jack Plugged"  (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-jack-plugged" }
-Switch    E3DC_WB_SchukoOn              "E3DC WB Schuko On"     (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-schuko-on" }
-Switch    E3DC_WB_SchukoPlugged         "E3DC WB Schuko Plugged"    (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-schuko-plugged" }
-Switch    E3DC_WB_SchukoLocked          "E3DC WB Schuko Locked" (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-schuko-locked" }
-Switch    E3DC_WB_Schuko_Relay16A       "E3DC WB Schuko 16A Relay"  (e3dc) { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-schuko-relay-16a" }
-Switch    E3DC_WB_Relay16A              "E3DC WB 16A Relay"      (e3dc) { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-relay-16a" }
-Switch    E3DC_WB_Relay32A              "E3DC WB 32A Relay"      (e3dc) { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-relay-32a" }
-Switch    E3DC_WB_1PhaseLoading         "E3DC WB 1-Phase Loading"   (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox:wb-1phase" }
+Switch    E3DC_WB_Available             "E3DC WB available"          (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-available" }
+Switch    E3DC_WB_Sunmode               "E3DC WB Sunmode"            (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-sunmode" }
+Switch    E3DC_WB_ChargingAborted       "E3DC WB Charging Aborted"   (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-charging-aborted" }
+Switch    E3DC_WB_Charging              "E3DC WB Charging"           (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-charging" }
+Switch    E3DC_WB_JackLocked            "E3DC WB Jack Locked"        (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-jack-locked" }
+Switch    E3DC_WB_JackPlugged           "E3DC WB Jack Plugged"       (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-jack-plugged" }
+Switch    E3DC_WB_SchukoOn              "E3DC WB Schuko On"          (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-schuko-on" }
+Switch    E3DC_WB_SchukoPlugged         "E3DC WB Schuko Plugged"     (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-schuko-plugged" }
+Switch    E3DC_WB_SchukoLocked          "E3DC WB Schuko Locked"      (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-schuko-locked" }
+Switch    E3DC_WB_Schuko_Relay16A       "E3DC WB Schuko 16A Relay"   (e3dc) { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-schuko-relay-16a" }
+Switch    E3DC_WB_Relay16A              "E3DC WB 16A Relay"          (e3dc) { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-relay-16a" }
+Switch    E3DC_WB_Relay32A              "E3DC WB 32A Relay"          (e3dc) { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-relay-32a" }
+Switch    E3DC_WB_1PhaseCharging        "E3DC WB 1-Phase Charging"   (e3dc)  { channel="modbus:e3dc-wallbox:device:powerplant:wallbox0:wb-1phase" }
 
 Number    E3DC_String1V                 "E3DC String 1 Volt"    (e3dc)  { channel="modbus:e3dc:device:powerplant:strings#string1-dc-voltage" }
 Number    E3DC_String2V                 "E3DC String 2 Volt"    (e3dc)  { channel="modbus:e3dc:device:powerplant:strings#string2-dc-voltage" }
@@ -204,14 +209,14 @@ Number    E3DC_String1W                 "E3DC String 1 Watt"    (e3dc,persist)  
 Number    E3DC_String2W                 "E3DC String 2 Watt"    (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:strings#string2-dc-output" }
 Number    E3DC_String3W                 "E3DC String 3 Watt"    (e3dc,persist)  { channel="modbus:e3dc:device:powerplant:strings#string3-dc-output" }
 
-String    E3DC_EMS_Status                       "E3DC EMS Status"                   (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#emergency-power-status" }
-Switch    E3DC_EMS_BatteryLoadingLock           "E3DC EMS Battery Loading Lock"     (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#battery-loading-lock" }
-Switch    E3DC_EMS_BatteryUnloadingLock         "E3DC EMS Battery Unloading Lock"   (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#battery-unloading-lock" }
-Switch    E3DC_EMS_EmergencyPowerPossible       "E3DC EMS Emergency Power possible" (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#emergency-power-possible" }
-Switch    E3DC_EMS_WeatherPredictedLoading      "E3DC EMS Weather Predicted Loading" (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#weather-predicted-loading" }
-Switch    E3DC_EMS_RegulationStatus             "E3DC EMS Regulation Status"        (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#regulation-status" }
-Switch    E3DC_EMS_LoadingLockTime              "E3DC EMS Loading Lock Time"        (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#loading-lock-time" }
-Switch    E3DC_EMS_UnloadingLockTime            "E3DC EMS Unloading Lock TIme"      (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#unloading-lock-time" }
+String    E3DC_EMS_Status                       "E3DC EMS Status"                      (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#emergency-power-status" }
+Switch    E3DC_EMS_BatteryChargingLock          "E3DC EMS Battery Charging Locked"     (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#battery-charging-lock" }
+Switch    E3DC_EMS_BatteryDischargingLock       "E3DC EMS Battery Discharging Locked"  (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#battery-discharging-lock" }
+Switch    E3DC_EMS_EmergencyPowerPossible       "E3DC EMS Emergency Power possible"    (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#emergency-power-possible" }
+Switch    E3DC_EMS_WeatherPredictedCharging     "E3DC EMS Weather Predicted Charging"  (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#weather-predicted-charging" }
+Switch    E3DC_EMS_RegulationStatus             "E3DC EMS Regulation Status"           (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#regulation-status" }
+Switch    E3DC_EMS_ChargeLockTime               "E3DC EMS Charge Lock Time"            (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#charge-lock-time" }
+Switch    E3DC_EMS_DischargeLockTime            "E3DC EMS Discharge Lock TIme"         (e3dc)  { channel="modbus:e3dc:device:powerplant:emergency#discharge-lock-time" }
 ```
 
 ### Sitemap
@@ -227,7 +232,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
     Text    item=E3DC_Firmware                  label="Firmware [%s]"
     Text    item=E3DC_SerialNumber              label="Serial Number[%s]"
   }
-
+  
     Frame label="Power Producer" {
       Text    item=E3DC_PVPower                 label="PV Power[%s]"
       Text    item=E3DC_BatteryDischarge        label="Battery Discharge [%s]"
@@ -239,14 +244,14 @@ sitemap E3DC label="E3DC Binding Sitemap" {
       Text    item=E3DC_BatteryCharge           label="Battery Charge [%s]"
       Text    item=E3DC_GridConsumption         label="Power to Grid [%s]"
       Text    item=E3DC_WallboxConsumption      label="Wallbox [%s]"
-      Text    item=E3DC_WallboxPVConsumption    label="Wallbox PV [%s]"
+      Text    item=E3DC_WallboxPVConsumption    label="Wallbox PV[%s]"
     }
     Frame label="Power Measures" {
       Text    item=E3DC_AutarkyLevel            label="Autarky [%s %%]"
       Text    item=E3DC_SelfConsumptionLevel    label="Self Consumption [%s %%]"
       Text    item=E3DC_BatterySOC              label="SOC [%s %%]"
     }
-
+  
   Frame label="Wallbox" {
     Switch    item=E3DC_WB_Available            label="Available [%s]"
     Switch    item=E3DC_WB_Sunmode              label="Sunmode [%s]"
@@ -260,9 +265,9 @@ sitemap E3DC label="E3DC Binding Sitemap" {
     Switch    item=E3DC_WB_Schuko_Relay16A      label="Schuko Relay 16A [%s]"
     Switch    item=E3DC_WB_Relay16A             label="Relay 16A [%s]"
     Switch    item=E3DC_WB_Relay32A             label="Relay 32A [%s]"
-    Switch    item=E3DC_WB_1PhaseLoading        label="1-Phase loading [%s]"
+    Switch    item=E3DC_WB_1PhaseCharging       label="1-Phase charging [%s]"
   }
-
+  
     Frame label="String 1 Details" {
       Text    item=E3DC_String1V                label="Volt [%s]"
       Text    item=E3DC_String1A                label="Ampere [%s]"
@@ -278,16 +283,16 @@ sitemap E3DC label="E3DC Binding Sitemap" {
       Text    item=E3DC_String3A                label="Ampere [%s]"
       Text    item=E3DC_String3W                label="Watt [%s]"
     }
-
+  
   Frame label="EMS" {
-    Text      item=E3DC_EMS_Status                  label="Status [%s]"
-    Switch    item=E3DC_EMS_BatteryLoadingLock      label="Batter Loading Lock [%s]"
-    Switch    item=E3DC_EMS_BatteryUnloadingLock    label="Batter Unloading Lock [%s]"
-    Switch    item=E3DC_EMS_EmergencyPowerPossible  label="Emergency Power Possible [%s]"
-    Switch    item=E3DC_EMS_WeatherPredictedLoading label="Weather Predicted Loading [%s]"
-    Switch    item=E3DC_EMS_RegulationStatus        label="Regulation [%s]"
-    Switch    item=E3DC_EMS_LoadingLockTime         label="Loading Lock Times [%s]"
-    Switch    item=E3DC_EMS_UnloadingLockTime       label="Unloading Lock Times [%s]"
+    Text      item=E3DC_EMS_Status                      label="Status [%s]"
+    Switch    item=E3DC_EMS_BatteryChargingLock         label="Battery Charging Lock [%s]"
+    Switch    item=E3DC_EMS_BatteryDischargingLock      label="Battery Discharging Lock [%s]"
+    Switch    item=E3DC_EMS_EmergencyPowerPossible      label="Emergency Power Possible [%s]"
+    Switch    item=E3DC_EMS_WeatherPredictedCharging    label="Weather Predicted Charging [%s]"
+    Switch    item=E3DC_EMS_RegulationStatus            label="Regulation [%s]"
+    Switch    item=E3DC_EMS_ChargeLockTime              label="Charge Lock Times [%s]"
+    Switch    item=E3DC_EMS_DischargeLockTime           label="Discharge Lock Times [%s]"
   }
 }
 ```

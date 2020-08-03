@@ -70,13 +70,13 @@ public class DataBlockTest {
         EmergencyBlock b = (EmergencyBlock) mc.parse(DataType.EMERGENCY);
         assertNotNull(b);
         assertEquals("EMS Status", EmergencyBlock.EP_NOT_SUPPORTED, b.epStatus.toFullString());
-        assertEquals("Battery loading locked", OnOffType.OFF, b.batteryLoadingLocked);
-        assertEquals("Battery unloading locked", OnOffType.OFF, b.batterUnLoadingLocked);
+        assertEquals("Battery charging locked", OnOffType.OFF, b.batteryChargingLocked);
+        assertEquals("Battery discharging locked", OnOffType.OFF, b.batteryDischargingLocked);
         assertEquals("EP possible", OnOffType.OFF, b.epPossible);
-        assertEquals("Weather Predicted loading", OnOffType.OFF, b.weatherPredictedLoading);
+        assertEquals("Weather Predicted charging", OnOffType.OFF, b.weatherPredictedCharging);
         assertEquals("Regulation Status", OnOffType.OFF, b.regulationStatus);
-        assertEquals("Loading Lock Time", OnOffType.OFF, b.loadingLockTime);
-        assertEquals("Unloading Lock Time", OnOffType.OFF, b.unloadingLockTime);
+        assertEquals("Charge Lock Time", OnOffType.OFF, b.chargeLockTime);
+        assertEquals("Discharge Lock Time", OnOffType.OFF, b.dischargeLockTime);
     }
 
     @Test

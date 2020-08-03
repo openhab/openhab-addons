@@ -8,12 +8,12 @@
 		<label>Emergency Power Status</label>
 		<description>Indicates if Emergency Power Supply is possible or not, active or inactive</description>
 	</channel-type>
-	<channel-type id="battery-loading-lock-channel">
+	<channel-type id="battery-charging-lock-channel">
 		<item-type>Switch</item-type>
 		<label>Battery Charge Locked</label>
 		<description>Battery charging is locked</description>
 	</channel-type>
-	<channel-type id="battery-unloading-lock-channel">
+	<channel-type id="battery-discharging-lock-channel">
 		<item-type>Switch</item-type>
 		<label>Battery Discharge Locked</label>
 		<description>Battery discharging is locked</description>
@@ -23,7 +23,7 @@
 		<label>Emergency Power Possible</label>
 		<description>Emergency Power Supply is possible</description>
 	</channel-type>
-	<channel-type id="weather-predicted-loading-channel">
+	<channel-type id="weather-predicted-charging-channel">
 		<item-type>Switch</item-type>
 		<label>Weather Predicted Battery Charging</label>
 		<description>Weather Predicted Battery Charging is activated</description>
@@ -33,12 +33,12 @@
 		<label>Grid Power Supply Regulation</label>
 		<description>Grid Power Supply is currently regulated</description>
 	</channel-type>
-	<channel-type id="loading-lock-time-channel">
+	<channel-type id="charge-lock-time-channel">
 		<item-type>Switch</item-type>
 		<label>Charge Lock Time Active</label>
 		<description>Charge Lock Time is currently active</description>
 	</channel-type>
-	<channel-type id="unloading-lock-time-channel">
+	<channel-type id="discharge-lock-time-channel">
 		<item-type>Switch</item-type>
 		<label>Discharge Lock Time Active</label>
 		<description>Discharge Lock Time is currently active</description>

@@ -60,11 +60,11 @@ public class E3DCModbusConstans {
     public static final int WB_1PHASE_BIT = 12;
 
     // EMS Bit Definitions according to chapter 3.1.3 page 17
-    public static final int EMS_LOADING_LOCK_BIT = 0;
-    public static final int EMS_UNLOADING_LOCK_BIT = 1;
+    public static final int EMS_CHARGING_LOCK_BIT = 0;
+    public static final int EMS_DISCHARGING_LOCK_BIT = 1;
     public static final int EMS_AVAILABLE_BIT = 2;
-    public static final int EMS_WEATHER_LOADING_BIT = 3;
+    public static final int EMS_WEATHER_CHARGING_BIT = 3;
     public static final int EMS_REGULATION_BIT = 4;
-    public static final int EMS_LOADING_LOCKTIME_BIT = 5;
-    public static final int EMS_UNLOADING_LOCKTIME_BIT = 6;
+    public static final int EMS_CHARGE_LOCKTIME_BIT = 5;
+    public static final int EMS_DISCHARGE_LOCKTIME_BIT = 6;
 }

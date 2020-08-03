@@ -248,13 +248,13 @@ public class E3DCThingHandler extends BaseBridgeHandler {
             String group = "emergency";
             if (block != null) {
                 updateState(channelUID(group, EMERGENCY_POWER_STATUS), block.epStatus);
-                updateState(channelUID(group, BATTERY_LOADING_LOCKED), block.batteryLoadingLocked);
-                updateState(channelUID(group, BATTERY_UNLOADING_LOCKED), block.batterUnLoadingLocked);
+                updateState(channelUID(group, BATTERY_CHARGING_LOCKED), block.batteryChargingLocked);
+                updateState(channelUID(group, BATTERY_DISCHARGING_LOCKED), block.batteryDischargingLocked);
                 updateState(channelUID(group, EMERGENCY_POWER_POSSIBLE), block.epPossible);
-                updateState(channelUID(group, WEATHER_PREDICTION_LOADING), block.weatherPredictedLoading);
+                updateState(channelUID(group, WEATHER_PREDICTED_CHARGING), block.weatherPredictedCharging);
                 updateState(channelUID(group, REGULATION_STATUS), block.regulationStatus);
-                updateState(channelUID(group, LOADING_LOCK_TIME), block.loadingLockTime);
-                updateState(channelUID(group, UNLOADING_LOCKTIME), block.unloadingLockTime);
+                updateState(channelUID(group, CHARGE_LOCK_TIME), block.chargeLockTime);
+                updateState(channelUID(group, DISCHARGE_LOCK_TIME), block.dischargeLockTime);
             } else {
                 logger.debug("Unable to get {} from provider {}", DataType.EMERGENCY, dataParser.toString());
             }
