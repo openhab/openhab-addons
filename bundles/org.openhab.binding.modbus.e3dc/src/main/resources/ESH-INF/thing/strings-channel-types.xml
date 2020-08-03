@@ -36,16 +36,16 @@
 	<channel-type id="string1-dc-output-channel">
 		<item-type>Number:Power</item-type>
 		<label>String 1 Power</label>
-		<description>Power on String 1</description>
+		<description>Power produced by String 1</description>
 	</channel-type>
 	<channel-type id="string2-dc-output-channel">
 		<item-type>Number:Power</item-type>
 		<label>String 2 Power</label>
-		<description>Power on String 2</description>
+		<description>Power produced by String 2</description>
 	</channel-type>
 	<channel-type id="string3-dc-output-channel">
 		<item-type>Number:Power</item-type>
 		<label>String 3 Power</label>
-		<description>Power on String 3</description>
+		<description>Power produced by String 3</description>
 	</channel-type>
 </thing:thing-descriptions>

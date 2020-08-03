@@ -6,7 +6,7 @@
 	<channel-type id="pv-power-supply-channel">
 		<item-type>Number:Power</item-type>
 		<label>PV Output</label>
-		<description>Photovoltaics Power Production</description>
+		<description>Photovoltaic Power Production</description>
 	</channel-type>
 	<channel-type id="battery-power-supply-channel">
 		<item-type>Number:Power</item-type>

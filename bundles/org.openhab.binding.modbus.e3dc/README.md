@@ -51,7 +51,10 @@ Check the [full example Things](#things) for manual setup.
 ### E3DC Home Power Plant 
 
 Select as Bridge your previously created Modbus TCP Slave.
-No additional configuration parameters needed.
+| Parameter       | Type    | Description                                                             |           
+|-----------------|---------|-------------------------------------------------------------------------|
+| refresh         | integer | Refresh Rate of E3DC values in Milliseconds                             |
+
 
 ### E3DC Wallbox
 
@@ -59,7 +62,7 @@ Select as Bridge your previously created E3DC Home Power Plant.
 
 | Parameter       | Type    | Description                                                                 |           
 |-----------------|---------|-----------------------------------------------------------------------------|
-| wallboxId       | integer | The E3DC device can handle up to 8 Wallboxes so select a value from 0 to 7  |
+| wallboxId       | integer | E3DC supports up to 8 Wallboxes - select a value from 0 to 7                |
 
 ## Channels
 
@@ -74,8 +77,8 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 | Supported Registers   | info             | supported-registers | Number | Number of registers supported by Modbus           |
 | Manufacturer Name     | info             | manufacturer-name   | String | Name of the Device Manufacturer                   |
 | E3DC Model Name       | info             | model-name          | String | Name of the E3DC Model                            |
-| E3DC Firmware Release | info             | firmware-release    | String | Firmware installed on this particular E3DC Model  |
-| E3DC Serial Number    | info             | serial-number       | String | Serial Number of this particular E3DC Model       |
+| E3DC Firmware Release | info             | firmware-release    | String | Firmware installed on this particular E3DC Device |
+| E3DC Serial Number    | info             | serial-number       | String | Serial Number of this particular E3DC Device      |
 
 
 ### Channel Group _Power Block_
@@ -116,13 +119,13 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 | Channel Label                               | Channel Group ID | Channel ID                | Type           | Description                  |
 |---------------------------------------------|------------------|---------------------------|----------------|------------------------------|
 | Emergency Power Status                      | emergency        | emergency-power-status    |  String  | Possible values: EP not supported, EP active, EP not active, EP not available, EP Switch in wrong position, EP Status unknown |
-| Battery Loading Locked                      | emergency        | battery-loading-lock      |  Switch  | Indicates if Battery Loading is locked           |
-| Battery Unloading Locked                    | emergency        | battery-unloading-lock    |  Switch  | Indicates if Battery Unloading is locked |
-| Emergency Power Possible                    | emergency        | emergency-power-possible  |  Switch  | Indicates if Emergency Power Supply is possible          |
-| Loading Based On Weather Prediction Active  | emergency        | weather-predicted-loading |  Switch  | Indicates if Weather Predicted Battery Loading is activated |
-| Regulation Status Of Max Grid Power Supply  | emergency        | regulation-status         |  Switch  | Indicates if Grid Power Supply is regulated or not |
-| Loading Lock time Active                    | emergency        | loading-lock-time         |  Switch  | Indicates if Loading Lock Times are set or not |
-| Unloading Lock time Active                  | emergency        | unloading-lock-time       |  Switch  | Indicates if Unloading Lock Times are set or not |
+| Battery Loading Locked                      | emergency        | battery-loading-lock      |  Switch  | Battery charging is locked          |
+| Battery Unloading Locked                    | emergency        | battery-unloading-lock    |  Switch  | Battery discharging is locked |
+| Emergency Power Possible                    | emergency        | emergency-power-possible  |  Switch  | Emergency Power Supply is possible          |
+| Loading Based On Weather Prediction Active  | emergency        | weather-predicted-loading |  Switch  | Weather Predicted Battery Charging is activated |
+| Regulation Status Of Max Grid Power Supply  | emergency        | regulation-status         |  Switch  | Grid Power Supply is currently regulated |
+| Loading Lock time Active                    | emergency        | loading-lock-time         |  Switch  | Charge Lock Time is currently active |
+| Unloading Lock time Active                  | emergency        | unloading-lock-time       |  Switch  | Discharge Lock Time is currently active |
 
 ### E3DC Wallbox Channels
 
@@ -132,17 +135,17 @@ Some of the Wallbox Settings can be changed. See the Access column if the actual
 |--------------------------|---------------------|---------|--------|------------------------------|
 | Wallbox Available        | wb-available        |  Switch | RO     | Indicates if the Wallbox is attached. Check your Wallbox ID in offline case  |
 | Sun Mode                 | wb-sunmode          |  Switch | RW     | Activate / Deactivate Sun Mode. Off case takes Grid Power to ensure highest possible charging.   |
-| Wallbox Charging Aborted | wb-charging-aborted |  Switch | RW     | Indicates if Wallbox charging is aborted  |
-| Wallbox Charging         | wb-charging         |  Switch | RO     | Indicates your Wallbox is charging   |
-| Jack Locked              | wb-jack-locked      |  Switch | RO     | Indicates your Jack is locked   |
-| Jack Plugged             | wb-jack-plugged     |  Switch | RO     | Indicates your Jack is plugged    |
+| Wallbox Charging Aborted | wb-charging-aborted |  Switch | RW     | Wallbox charging is aborted  |
+| Wallbox Charging         | wb-charging         |  Switch | RO     | Wallbox is charging   |
+| Jack Locked              | wb-jack-locked      |  Switch | RO     | Jack is locked   |
+| Jack Plugged             | wb-jack-plugged     |  Switch | RO     | Jack is plugged    |
 | Schuko Socket On         | wb-schuko-on        |  Switch | RW     | If your Wallbox has an additional Schuko Socket it provides state ON or OFF    |
 | Schuko Socket Plugged    | wb-schuko-plugged   |  Switch | RO     | If your Wallbox has an additional Schuko Socket it provides plugged state ON or OFF    |
 | Schuko Socket Locked     | wb-schuko-locked    |  Switch | RO     | If your Wallbox has an additional Schuko Socket it provides locked state ON or OFF |
-| Schuko 16A Relay On      | wb-schuko-relay-16a |  Switch | RO     | Indicates if Schuko 16A Relay is ON     |
-| 16A Relay On             | wb-relay-16a        |  Switch | RO     | Indicates if 16A Relay is ON     |
-| 32A Relay On             | wb-relay-32a        |  Switch | RO     | Indicates if 32A Relay is ON    |
-| 1-Phase Charging         | 1-Phase Active      |  Switch | RW     | Indicates if 1-phase charging is activated. If OFF 3-phase charging is activated    |
+| Schuko 16A Relay On      | wb-schuko-relay-16a |  Switch | RO     | Schuko 16A Relay is ON     |
+| 16A Relay On             | wb-relay-16a        |  Switch | RO     | Wallbox 16A Relay is ON     |
+| 32A Relay On             | wb-relay-32a        |  Switch | RO     | Wallbox 32A Relay is ON    |
+| 1-Phase Charging         | 1-Phase Active      |  Switch | RW     | 1-phase charging is activated. If OFF 3-phase charging is activated    |
 
 ## Full Example
 
@@ -152,8 +155,8 @@ Following example provides the full configuration. If you enter the correct Conn
 
 ```
 Bridge modbus:tcp:device "E3DC Modbus TCP" [ host="192.168.178.56", port=502, id=1 ] {
-        Bridge e3dc powerplant "E3DC Power Plant" [ ] {
-         Thing e3dc-wallbox wallbox                     "E3DC Wallbox"                              [ wallboxId=0]
+	Bridge e3dc powerplant "E3DC Power Plant" [ refresh=2500 ] {
+    	 Thing e3dc-wallbox wallbox0		"E3DC Wallbox"				[ wallboxId=0]
     }
 }
 ```

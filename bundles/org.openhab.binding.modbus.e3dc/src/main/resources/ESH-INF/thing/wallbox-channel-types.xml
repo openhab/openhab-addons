@@ -16,22 +16,22 @@
 	<channel-type id="wb-charging-aborted-channel">
 		<item-type>Switch</item-type>
 		<label>Charging Aborted</label>
-		<description>Indicates if Wallbox charging was aborted</description>
+		<description>Wallbox charging is aborted</description>
 	</channel-type>
 	<channel-type id="wb-charging-channel">
 		<item-type>Switch</item-type>
 		<label>Charging</label>
-		<description>Indicates your Wallbox is charging</description>
+		<description>Wallbox is charging</description>
 	</channel-type>
 	<channel-type id="wb-jack-locked-channel">
 		<item-type>Switch</item-type>
 		<label>Jack Locked</label>
-		<description>Indicates wheter your Jack is locked</description>
+		<description>Jack is locked</description>
 	</channel-type>
 	<channel-type id="wb-jack-plugged-channel">
 		<item-type>Switch</item-type>
 		<label>Jack Plugged</label>
-		<description>Indicates wheter your Jack is plugged</description>
+		<description>Jack is plugged</description>
 	</channel-type>
 	<channel-type id="wb-schuko-on-channel">
 		<item-type>Switch</item-type>
@@ -51,21 +51,21 @@
 	<channel-type id="wb-schuko-relay-16a-channel">
 		<item-type>Switch</item-type>
 		<label>Schuko 16A Relay On</label>
-		<description>Indicates if Schuko 16A Relay is ON</description>
+		<description>Schuko 16A Relay is ON</description>
 	</channel-type>
 	<channel-type id="wb-relay-16a-channel">
 		<item-type>Switch</item-type>
 		<label>16A Relay On</label>
-		<description>Indicates if 16A Relay is ON</description>
+		<description>Wallbox 16A Relay is ON</description>
 	</channel-type>
 	<channel-type id="wb-relay-32a-channel">
 		<item-type>Switch</item-type>
 		<label>32A Relay On</label>
-		<description>Indicates if 32A Relay is ON</description>
+		<description>Wallbox 32A Relay is ON</description>
 	</channel-type>
 	<channel-type id="wb-1phase-channel">
 		<item-type>Switch</item-type>
 		<label>1-Phase Charging</label>
-		<description>Indicates if 1-phase charging is activated. If OFF 3-phase charging is activated</description>
+		<description>1-phase charging is activated. If OFF 3-phase charging is activated</description>
 	</channel-type>
 </thing:thing-descriptions>

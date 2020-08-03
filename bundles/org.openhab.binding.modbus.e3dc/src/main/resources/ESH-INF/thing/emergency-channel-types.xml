@@ -26,21 +26,21 @@
 	<channel-type id="weather-predicted-loading-channel">
 		<item-type>Switch</item-type>
 		<label>Weather Predicted Battery Charging</label>
-		<description>Weather Predicted Battery Loading is activated</description>
+		<description>Weather Predicted Battery Charging is activated</description>
 	</channel-type>
 	<channel-type id="regulation-status-channel">
 		<item-type>Switch</item-type>
 		<label>Grid Power Supply Regulation</label>
-		<description>Indicates if Grid Power Supply is regulated or not</description>
+		<description>Grid Power Supply is currently regulated</description>
 	</channel-type>
 	<channel-type id="loading-lock-time-channel">
 		<item-type>Switch</item-type>
 		<label>Charge Lock Time Active</label>
-		<description>Indicates if Charge Lock Time is currently active</description>
+		<description>Charge Lock Time is currently active</description>
 	</channel-type>
 	<channel-type id="unloading-lock-time-channel">
 		<item-type>Switch</item-type>
 		<label>Discharge Lock Time Active</label>
-		<description>Indicates if Discharge Lock Time is currently active</description>
+		<description>Discharge Lock Time is currently active</description>
 	</channel-type>
 </thing:thing-descriptions>
