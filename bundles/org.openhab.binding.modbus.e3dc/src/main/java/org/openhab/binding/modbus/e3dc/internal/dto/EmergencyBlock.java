@@ -53,7 +53,7 @@ public class EmergencyBlock implements Data {
      */
     public EmergencyBlock(byte[] bArray) {
         // uint16 status register 40084 - possible Status Strings are defined in Constants above
-        int status = DataConverter.getUIntt16Value(ByteBuffer.wrap(bArray));
+        int status = DataConverter.getUInt16Value(ByteBuffer.wrap(bArray));
         if (status >= 0 && status < 5) {
             epStatus = EP_STATUS_ARRAY[status];
         } else {

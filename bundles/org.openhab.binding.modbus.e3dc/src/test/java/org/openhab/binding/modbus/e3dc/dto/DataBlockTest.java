@@ -90,11 +90,11 @@ public class DataBlockTest {
         assertEquals("String 3 V", 0, b.string3Volt.intValue());
         assertEquals("String 1 V", "V", b.string3Volt.getUnit().toString());
 
-        assertEquals("String 1 A", 27, b.string1Ampere.intValue());
+        assertEquals("String 1 A", 0.27, b.string1Ampere.doubleValue(), 0.01);
         assertEquals("String 1 A", "A", b.string1Ampere.getUnit().toString());
-        assertEquals("String 2 A", 26, b.string2Ampere.intValue());
+        assertEquals("String 2 A", 0.26, b.string2Ampere.doubleValue(), 0.01);
         assertEquals("String 2 A", "A", b.string2Ampere.getUnit().toString());
-        assertEquals("String 3 A", 0, b.string3Ampere.intValue());
+        assertEquals("String 3 A", 0, b.string3Ampere.doubleValue(), 0.01);
         assertEquals("String 3 A", "A", b.string3Ampere.getUnit().toString());
 
         assertEquals("String 1 W", 103, b.string1Watt.intValue());

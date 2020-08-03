@@ -28,11 +28,10 @@ public class DataConverter {
     /**
      * Get unit16 value from 2 bytes
      *
-     * @param bytes
-     * @param start
+     * @param wrap
      * @return
      */
-    public static int getUIntt16Value(ByteBuffer wrap) {
+    public static int getUInt16Value(ByteBuffer wrap) {
         return ((wrap.get() & 0xff) << 8) | wrap.get() & 0xff;
     }
 
@@ -45,15 +44,26 @@ public class DataConverter {
     }
 
     /**
+     * Get double value from 2 bytes with correction factor
+     *
+     * @param wrap
+     * @return
+     */
+    public static double getUDoubleValue(ByteBuffer wrap, double factor) {
+        Integer d = getUInt16Value(wrap);
+        double df = d.doubleValue() * factor;
+        return df;
+    }
+
+    /**
      * Conversion done according to E3DC Modbus Specification V1.7
      *
-     * @param bytes - byte array with at least 4 bytes available from start
-     * @param startIndex - start index for decoding
+     * @param wrap
      * @return decoded long value, Long.MIN_VALUE otherwise
      */
     public static long getInt32Swap(ByteBuffer wrap) {
-        long a = getUIntt16Value(wrap);
-        long b = getUIntt16Value(wrap);
+        long a = getUInt16Value(wrap);
+        long b = getUInt16Value(wrap);
         if (b < 32768) {
             return b * 65536 + a;
         } else {
