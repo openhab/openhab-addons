@@ -53,7 +53,7 @@ public class E3DCHandlerStateTest {
         E3DCThingHandler handler = new E3DCThingHandler(bridge);
         handler.setCallback(callback);
 
-        HashMap<String, Object> map = new HashMap();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("refresh", 2000);
         Configuration config = new Configuration(map);
         when(bridge.getConfiguration()).thenReturn(config);
@@ -114,8 +114,8 @@ public class E3DCHandlerStateTest {
         return new AsyncModbusReadResult(readRequest, new ModbusRegisterArray(dataBlock));
     }
 
-    private AsyncModbusFailure getFailResult() {
+    private AsyncModbusFailure<ModbusReadRequestBlueprint> getFailResult() {
         ModbusReadRequestBlueprint readRequest = mock(ModbusReadRequestBlueprint.class);
-        return new AsyncModbusFailure(readRequest, new Exception("Something failed!"));
+        return new AsyncModbusFailure<ModbusReadRequestBlueprint>(readRequest, new Exception("Something failed!"));
     }
 }
