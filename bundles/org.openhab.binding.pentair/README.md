@@ -186,7 +186,7 @@ Number Pump_Error              "Pump Error [%d]"                              (g
 Number Pump_PPC                "Pump PPC [%d]"                                (gPool) { channel = "pentair:intelliflo:1:pump1:ppc" }
 ```
 
-Here is an example of a complete sitemap, saved as pentair.sitemap.  Adjust the temperature values for metric is so desired.
+Here is an example of a complete sitemap, saved as `pentair.sitemap`.  Adjust the temperature values for metric if so desired.
 ```
 sitemap pool label="Pool stuff" {
   Frame label="Pool" {
