@@ -34,7 +34,7 @@ Thing mqtt:topic:WorkBroker:WorkSonoff "Work Sonoff" (mqtt:broker:WorkBroker) @ 
 ```
 tasmota.things: Example of a Tasmota Device with Availablity-Topic state and standard Online/Offline message-payload
 ```xtend
-Bridge mqtt:broker:mybroker [ host="mybroker", secure=false ]
+Bridge mqtt:broker:mybroker [ host="192.168.0.42", secure=false ]
 {
     Thing mqtt:topic:SP111 "SP111" [availabilityTopic="tele/tasmota/LWT", payloadAvailable="Online", payloadNotAvailable="Offline"]{
     Channels:
