@@ -10,6 +10,10 @@
     <version>2.5.8-SNAPSHOT</version>
   </parent>
 
+  <artifactId>org.openhab.binding.modbus.e3dc</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: E3DC Modbus Binding</name>
+
   <dependencies>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
@@ -24,8 +28,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <artifactId>org.openhab.binding.modbus.e3dc</artifactId>
-
-  <name>openHAB Add-ons :: Bundles :: E3DC Binding</name>
-
 </project>
