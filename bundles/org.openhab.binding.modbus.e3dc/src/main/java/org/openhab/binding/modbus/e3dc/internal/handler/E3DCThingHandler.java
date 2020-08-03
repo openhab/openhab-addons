@@ -59,9 +59,9 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         READ_FAILED
     }
 
-    private static final String INFO_DATA_READ_ERROR = "Information And Data Modbus Read Errors";
-    private static final String INFO_READ_ERROR = "Information Modbus Read Error";
-    private static final String DATA_READ_ERROR = "Data Modbus Read Error";
+    static final String INFO_DATA_READ_ERROR = "Information And Data Modbus Read Errors";
+    static final String INFO_READ_ERROR = "Information Modbus Read Error";
+    static final String DATA_READ_ERROR = "Data Modbus Read Error";
 
     private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<E3DCWallboxThingHandler>();
     private final Logger logger = LoggerFactory.getLogger(E3DCThingHandler.class);
@@ -205,7 +205,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         return new ChannelUID(getThing().getUID(), group, id);
     }
 
-    private void handleInfoResult(AsyncModbusReadResult result) {
+    void handleInfoResult(AsyncModbusReadResult result) {
         if (infoRead != ReadStatus.READ_SUCCESS) {
             // update status only if bit switches
             infoRead = ReadStatus.READ_SUCCESS;
@@ -227,7 +227,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         }
     }
 
-    private void handleInfoFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> result) {
+    void handleInfoFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> result) {
         if (infoRead != ReadStatus.READ_FAILED) {
             // update status only if bit switches
             infoRead = ReadStatus.READ_FAILED;
@@ -335,7 +335,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     }
 
     private void updateStatus() {
-        logger.info("Status update: Info {} Data {} ", infoRead, dataRead);
+        logger.debug("Status update: Info {} Data {} ", infoRead, dataRead);
         if (infoRead != ReadStatus.NOT_RECEIVED && dataRead != ReadStatus.NOT_RECEIVED) {
             if (infoRead == dataRead) {
                 // both reads are ok or else both failed

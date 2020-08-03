@@ -23,8 +23,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.modbus.e3dc.internal.handler.E3DCThingHandler;
 import org.openhab.binding.modbus.e3dc.internal.handler.E3DCWallboxThingHandler;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link E3DCHandlerFactory} is responsible for creating things and thing
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.e3dc", service = ThingHandlerFactory.class)
 public class E3DCHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(E3DCHandlerFactory.class);
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         if (thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC)

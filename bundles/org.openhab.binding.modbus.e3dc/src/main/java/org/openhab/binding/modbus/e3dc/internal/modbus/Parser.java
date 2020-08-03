@@ -63,24 +63,28 @@ public class Parser {
         byte[] newArray = new byte[size];
         long startTime = System.currentTimeMillis();
         Optional<ModbusRegisterArray> opt = result.getRegisters();
-        ModbusRegisterArray registers = opt.get();
-        int i = 0;
-        for (ModbusRegister reg : registers) {
-            System.arraycopy(reg.getBytes(), 0, newArray, i, 2);
-            i += 2;
-        }
-        setArray(newArray);
+        if (opt.isPresent()) {
+            ModbusRegisterArray registers = opt.get();
+            int i = 0;
+            for (ModbusRegister reg : registers) {
+                System.arraycopy(reg.getBytes(), 0, newArray, i, 2);
+                i += 2;
+            }
+            setArray(newArray);
 
-        long duration = System.currentTimeMillis() - startTime;
-        avgDuration += duration;
-        minDuration = Math.min(minDuration, duration);
-        maxDuration = Math.max(maxDuration, duration);
-        counter++;
-        if (counter % MEASURE_COUNT == 0) {
-            logger.debug("Min {} Max {} Avg {}", minDuration, maxDuration, avgDuration / MEASURE_COUNT);
-            avgDuration = 0;
-            minDuration = Long.MAX_VALUE;
-            maxDuration = Long.MIN_VALUE;
+            long duration = System.currentTimeMillis() - startTime;
+            avgDuration += duration;
+            minDuration = Math.min(minDuration, duration);
+            maxDuration = Math.max(maxDuration, duration);
+            counter++;
+            if (counter % MEASURE_COUNT == 0) {
+                logger.debug("Min {} Max {} Avg {}", minDuration, maxDuration, avgDuration / MEASURE_COUNT);
+                avgDuration = 0;
+                minDuration = Long.MAX_VALUE;
+                maxDuration = Long.MIN_VALUE;
+            }
+        } else {
+            logger.warn("Modbus read result doesn't return expected registers");
         }
     }
 

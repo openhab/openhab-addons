@@ -20,12 +20,12 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 
 /**
- * The {@link ModbusCallbackTest} Tests for ModbusCallbacks
+ * The {@link ParserNameTest} Tests for ModbusCallbacks
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ModbusCallbackTest {
+public class ParserNameTest {
 
     @Test
     public void testDebugNames() {
