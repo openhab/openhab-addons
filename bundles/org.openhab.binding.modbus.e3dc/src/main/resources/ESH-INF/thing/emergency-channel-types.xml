@@ -10,37 +10,37 @@
 	</channel-type>
 	<channel-type id="battery-loading-lock-channel">
 		<item-type>Switch</item-type>
-		<label>Battery Loading Locked</label>
-		<description>Indicates if Battery Loading is locked</description>
+		<label>Battery Charge Locked</label>
+		<description>Battery charging is locked</description>
 	</channel-type>
 	<channel-type id="battery-unloading-lock-channel">
 		<item-type>Switch</item-type>
-		<label>Battery Unloading Locked</label>
-		<description>Indictes if Battery Unloading is locked</description>
+		<label>Battery Discharge Locked</label>
+		<description>Battery discharging is locked</description>
 	</channel-type>
 	<channel-type id="emergency-power-possible-channel">
 		<item-type>Switch</item-type>
 		<label>Emergency Power Possible</label>
-		<description>Indicates if Emergency Power Supply is possible</description>
+		<description>Emergency Power Supply is possible</description>
 	</channel-type>
 	<channel-type id="weather-predicted-loading-channel">
 		<item-type>Switch</item-type>
-		<label>Loading Based On Weather Prediction Active</label>
-		<description>Indicates if Weather Predicted Battery Loading is actived</description>
+		<label>Weather Predicted Battery Charging</label>
+		<description>Weather Predicted Battery Loading is activated</description>
 	</channel-type>
 	<channel-type id="regulation-status-channel">
 		<item-type>Switch</item-type>
-		<label>Regultation Status Of Max Grid Power Supply</label>
+		<label>Grid Power Supply Regulation</label>
 		<description>Indicates if Grid Power Supply is regulated or not</description>
 	</channel-type>
 	<channel-type id="loading-lock-time-channel">
 		<item-type>Switch</item-type>
-		<label>Loading Locktime Active</label>
-		<description>Indicates if Loading Lock Times are set or not</description>
+		<label>Charge Lock Time Active</label>
+		<description>Indicates if Charge Lock Time is currently active</description>
 	</channel-type>
 	<channel-type id="unloading-lock-time-channel">
 		<item-type>Switch</item-type>
-		<label>Unloading Locktime Active</label>
-		<description>Indicates if Unloading Lock Times are set or not</description>
+		<label>Discharge Lock Time Active</label>
+		<description>Indicates if Discharge Lock Time is currently active</description>
 	</channel-type>
 </thing:thing-descriptions>

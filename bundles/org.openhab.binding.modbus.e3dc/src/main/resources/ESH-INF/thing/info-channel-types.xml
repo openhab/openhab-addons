@@ -31,11 +31,11 @@
 	<channel-type id="firmware-release-channel">
 		<item-type>String</item-type>
 		<label>Firmware Release</label>
-		<description>Firmware installed on this particular E3DC Model</description>
+		<description>Firmware installed on this particular E3DC Device</description>
 	</channel-type>
 	<channel-type id="serial-number-channel">
 		<item-type>String</item-type>
 		<label>Serial Number</label>
-		<description>Serial Number</description>
+		<description>Serial Number of this particular E3DC Device</description>
 	</channel-type>
 </thing:thing-descriptions>
