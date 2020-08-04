@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCoIoTInterface {
     private final Logger logger = LoggerFactory.getLogger(ShellyCoIoTVersion2.class);
+    private int lastCfgCount = -1;
 
     public ShellyCoIoTVersion2(String thingName, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {

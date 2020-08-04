@@ -116,10 +116,9 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                 // 3EM uses 1-based meter IDs, other 0-based
                 String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER
                         : CHANNEL_GROUP_METER + (profile.isEMeter ? sen.links : rIndex);
-                if (updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT))) {
+                updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
+                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
                 updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
-                }
                 break;
             case "s" /* CatchAll */:
                 switch (sen.desc.toLowerCase()) {
