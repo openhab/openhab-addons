@@ -52,7 +52,7 @@ public class InnogyWebSocket {
     /**
      * Constructs the {@link InnogyWebSocket}.
      *
-     * @param bridgeHandler the responsible {@link InnogyBridgeHandler}
+     * @param eventListener the responsible {@link InnogyBridgeHandler}
      * @param webSocketURI the {@link URI} of the websocket endpoint
      * @param maxIdleTimeout
      */
