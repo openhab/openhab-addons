@@ -43,8 +43,10 @@ public class PowermaxTcpConnector extends PowermaxConnector {
      * @param ip the IP address
      * @param port the TCP port number
      * @param timeout the timeout for socket communications
+     * @param readerThreadName the name of thread to be created
      */
-    public PowermaxTcpConnector(String ip, int port, int timeout) {
+    public PowermaxTcpConnector(String ip, int port, int timeout, String readerThreadName) {
+        super(readerThreadName);
         ipAddress = ip;
         tcpPort = port;
         connectTimeout = timeout;
@@ -63,7 +65,7 @@ public class PowermaxTcpConnector extends PowermaxConnector {
             setInput(tcpSocket.getInputStream());
             setOutput(tcpSocket.getOutputStream());
 
-            setReaderThread(new PowermaxReaderThread(this));
+            setReaderThread(new PowermaxReaderThread(this, readerThreadName));
             getReaderThread().start();
 
             setConnected(true);
