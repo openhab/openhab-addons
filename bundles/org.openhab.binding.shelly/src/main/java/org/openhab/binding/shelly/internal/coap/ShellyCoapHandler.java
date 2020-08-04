@@ -72,7 +72,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private boolean coiotBound = false;
     private ShellyCoIoTInterface coiot;
     private int coiotVers = -1;
-    private boolean dropMessages = false;
 
     private final ShellyCoapServer coapServer;
     private @Nullable CoapClient statusClient;
@@ -81,19 +80,17 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private boolean discovering = false;
 
     private int lastSerial = -1;
-    private String lastPayload = "";
     private Map<String, CoIotDescrBlk> blkMap = new LinkedHashMap<>();
     private Map<String, CoIotDescrSen> sensorMap = new LinkedHashMap<>();
 
     public ShellyCoapHandler(ShellyBaseHandler thingHandler, ShellyCoapServer coapServer) {
         this.thingHandler = thingHandler;
-        this.coapServer = coapServer;
         this.thingName = thingHandler.thingName;
+        this.coapServer = coapServer;
         this.coiot = new ShellyCoIoTVersion1(thingName, thingHandler, blkMap, sensorMap); // Default
 
         gsonBuilder.registerTypeAdapter(CoIotDevDescription.class, new CoIotDevDescrTypeAdapter());
         gsonBuilder.registerTypeAdapter(CoIotGenericSensorList.class, new CoIotSensorTypeAdapter());
-        gsonBuilder.setPrettyPrinting();
         gson = gsonBuilder.create();
     }
 
@@ -113,8 +110,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             this.thingName = thingName;
             this.config = config;
             lastSerial = -1;
-            lastPayload = "";
-
             reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
 
             if (!isStarted()) {
@@ -148,11 +143,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         }
         String ip = response.getSourceContext().getPeerAddress().toString();
         if (!ip.contains(config.deviceIp)) {
-            return;
-        }
-
-        if (dropMessages) {
-            logger.debug("{}: Incompatible CoAP message received, check binding and firmware version", thingName);
             return;
         }
 
@@ -194,7 +184,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                     coiot = new ShellyCoIoTVersion2(thingName, thingHandler, blkMap, sensorMap);
                                 } else {
                                     logger.warn("{}: Unsupported CoAP version detected: {}", thingName, version);
-                                    dropMessages = true;
                                     return;
                                 }
                                 coiotBound = true;
@@ -205,22 +194,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             break;
                         case COIOT_OPTION_STATUS_SERIAL:
                             serial = opt.getIntegerValue();
-                            if (serial == lastSerial) {
-                                // As per specification the serial changes when any sensor data has changed. The App
-                                // should ignore any updates with the same serial. However, as we have seen with the
-                                // Shelly HT and Shelly 4 Pro this is not always the case. The device comes up with an
-                                // status packet having the same serial, but new payload information.
-                                // Work Around: Packet will only be ignored when Serial AND Payload are the same as last
-                                // time
-                                if (!lastPayload.isEmpty() && !lastPayload.equals(payload)) {
-                                    logger.debug(
-                                            "{}: Duplicate serial {} will be processed, because payload is different: {} vs. {}",
-                                            thingName, serial, payload, lastPayload);
-                                    break;
-                                }
-                                logger.trace("{}: Serial {} was already processed, ignore update", thingName, serial);
-                                return;
-                            }
                             break;
                         default:
                             logger.debug("{} ({}): COAP option {} with value {} skipped", thingName, devId,
@@ -231,6 +204,12 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
                 // If we received a CoAP message successful the thing must be online
                 thingHandler.setThingOnline();
+                if (serial == lastSerial) {
+                    // As per specification the serial changes when any sensor data has changed. The App
+                    // should ignore any updates with the same serial.
+                    logger.trace("{}: Serial {} was already processed, ignore update", thingName, serial);
+                    return;
+                }
 
                 // fixed malformed JSON :-(
                 payload = fixJSON(payload);
@@ -306,7 +285,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
         } catch (JsonSyntaxException e) {
             logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload);
-            dropMessages = true;
         } catch (RuntimeException e) {// incl JsonSyntaxException
             logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload, e);
         }
@@ -397,7 +375,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                         i, s.id, s.value, sen.desc, sen.type, sen.range, sen.links, element.desc);
 
                 if (!coiot.handleStatusUpdate(sensorUpdates, sen, s, updates)) {
-                    logger.debug("{}: Sensor data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
+                    logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
                             sen.id, sen.type, sen.desc, s.value, payload);
                 }
             } catch (RuntimeException e) {
@@ -415,20 +393,15 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
             if (updated > 0) {
                 logger.debug("{}: {} channels updated from CoIoT status", thingName, updated);
-                if (profile.isSensor) {
+                if (profile.isSensor || profile.isRoller) {
                     // CoAP is currently lacking the lastUpdate info, so we use host timestamp
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
-                } else {
-                    if (profile.isRoller) {
-                        updateChannel(updates, CHANNEL_GROUP_METER, CHANNEL_LAST_UPDATE, getTimestamp());
-                    }
+                    thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
                 }
             }
 
             // Old firmware release are lacking various status values, which are not updated using CoIoT.
             // In this case we keep a refresh so it gets polled using REST. Beginning with Firmware 1.6 most
             // of the values are available
-
             if ((!thingHandler.autoCoIoT && (thingHandler.scheduledUpdates <= 1))
                     || (thingHandler.autoCoIoT && !profile.isLight && !profile.hasBattery)) {
                 thingHandler.requestUpdates(1, false);
@@ -437,7 +410,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
         // Remember serial, new packets with same serial will be ignored
         lastSerial = serial;
-        lastPayload = payload;
     }
 
     private boolean updateChannel(Map<String, State> updates, String group, String channel, State value) {
@@ -453,9 +425,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      */
     private static String fixJSON(String payload) {
         String json = payload;
-        if (json.contains("}{")) {
-            json = json.replace("}{", "},{");
-        }
         json = json.replace("}{", "},{");
         json = json.replace("][", "],[");
         json = json.replace("],,[", "],[");
@@ -525,7 +494,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      */
     private void resetSerial() {
         lastSerial = -1;
-        lastPayload = "";
     }
 
     public int getVersion() {

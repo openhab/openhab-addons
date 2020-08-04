@@ -36,6 +36,7 @@ The binding focus on reporting the device status and device control. Initial set
 | shellysmoke        | Shelly Smoke Sensor                                    |           |
 | shellygas          | Shelly Gas Sensor                                      | SHGS-1    |
 | shellydw           | Shelly Door/Window                                     | SHDW-1    |
+| shellydw2          | Shelly Door/Window 2                                   | SHDW-2    |
 | shellybutton1      | Shelly Button 1                                        | SHBTN-1   |
 | shellysense        | Shelly Motion and IR Controller                        | SHSEN-1   |
 | shellydevice       | A password protected Shelly device or an unknown type  |           |
@@ -185,7 +186,7 @@ In this case channel linkage gets lost and you need to re-link the channels/item
 
 Every device has a channel group `device` with the following channels:
 
-|Group     |Channel            |Type    |read-only|Desciption                                                                       |
+|Group     |Channel            |Type    |read-only|Description                                                                      |
 |----------|-------------------|--------|---------|---------------------------------------------------------------------------------|
 |device    |uptime             |Number  |yes      |Number of seconds since the device was powered up                                |
 |          |wifiSignal         |Number  |yes      |WiFi signal strength (4=excellent, 3=good, 2=not string, 1=unreliable, 0=none)   |
@@ -243,7 +244,7 @@ end
 
 ### Shelly 1 (thing-type: shelly1)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
@@ -254,7 +255,7 @@ end
 
 ### Shelly 1PM (thing-type: shelly1pm)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
@@ -264,7 +265,7 @@ end
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 |sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
 |          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
 |          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
@@ -272,7 +273,7 @@ end
 
 ### Shelly EM (thing-type: shellyem)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
@@ -282,20 +283,20 @@ end
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly 3EM (thing-type: shellyem3)
 
 Please note: The product is called Shelly 3EM whereas the device propagates the service under shellyem3. 
 The thing id is derived from the service name, so that's the reason why the thing is named shelly**em3** and not shelly3em.
 
-|Group     |Channel      |Type     |read-only|Desciption                                                                       |
+|Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
@@ -307,7 +308,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
 |          |powerFactor  |Number   |yes      |Power Factor                                                                     |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -315,7 +316,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
 |          |powerFactor  |Number   |yes      |Power Factor                                                                     |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 |meter3    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -323,7 +324,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
 |          |powerFactor  |Number   |yes      |Power Factor                                                                     |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 
 
 ### Shelly 2 - relay mode thing-type: shelly2-relay)
@@ -347,7 +348,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly 2 - roller mode thing-type: shelly2-roller)
 
@@ -364,7 +365,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                         |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                         |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                     |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 
 The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent. 
 
@@ -439,7 +440,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly Dimmer2 (thing-type: shellydimmer2)
 
@@ -459,7 +460,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
 
 The Dimmer should be calibrated using the Shelly App.
 
@@ -514,7 +515,7 @@ The Dimmer should be calibrated using the Shelly App.
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
  
 #### Shelly Vintage (thing-type: shellyvintage)
 
@@ -530,12 +531,12 @@ The Dimmer should be calibrated using the Shelly App.
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
  
 
  ## Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                             |
+|Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |control   |power        |Switch   |r/w      |Switch light ON/OFF                                                    |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
@@ -552,12 +553,12 @@ The Dimmer should be calibrated using the Shelly App.
 |          |white        |Dimmer   |r/w      |White brightness: 0..100% or 0..255 (control only the red channel)     |
 |          |gain         |Dimmer   |r/w      |Gain setting: 0..100%     or 0..100                                    |
 |          |effect       |Number   |r/w      |Puts the light into effect mode: 0..3)                                 |
-|          |             |         |         |  0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash              |
+|          |             |         |         |0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                     |
 
 ### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
 
-|Group     |Channel      |Type     |read-only|Desciption                                                             |
+|Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
 |control   |input        |Switch   |yes      |State of Input                                                         |
 |channel1  |brightness   |Dimmer   |r/w      |Channel 1: Brightness: 0..100, control power state with ON/OFF         |

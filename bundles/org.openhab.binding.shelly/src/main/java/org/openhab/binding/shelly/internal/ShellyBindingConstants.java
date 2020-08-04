@@ -168,7 +168,6 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_NUM_METER = "numberMeters";
     public static final String PROPERTY_LAST_ACTIVE = "lastActive";
     public static final String PROPERTY_WIFI_NETW = "wifiNetwork";
-    public static final String PROPERTY_WIFI_IP = "networkIP";
     public static final String PROPERTY_UPDATE_STATUS = "updateStatus";
     public static final String PROPERTY_UPDATE_AVAILABLE = "updateAvailable";
     public static final String PROPERTY_UPDATE_CURR_VERS = "updateCurrentVersion";
@@ -197,6 +196,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_ROL_CONTROL_CONTROL = "control";
     public static final String CHANNEL_ROL_CONTROL_POS = "rollerpos";
     public static final String CHANNEL_ROL_CONTROL_TIMER = "timer";
+    public static final String CHANNEL_ROL_CONTROL_STATE = "state";
     public static final String CHANNEL_ROL_CONTROL_STOPR = "stopReason";
     public static final String CHANNEL_ROL_CONTROL_DIR = "lastDirection";
 
@@ -232,6 +232,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_FLOOD = "flood";
     public static final String CHANNEL_SENSOR_SMOKE = "smoke";
     public static final String CHANNEL_SENSOR_CONTACT = "state";
+    public static final String CHANNEL_SENSOR_VALVE = "valve";
     public static final String CHANNEL_SENSOR_SSTATE = "status"; // Shelly Gas
     public static final String CHANNEL_SENSOR_ALARM_STATE = "alarmState";
     public static final String CHANNEL_SENSOR_MOTION = "motion";
@@ -275,6 +276,7 @@ public class ShellyBindingConstants {
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
     public static final String CHANNEL_DEVST_UPTIME = "uptime";
+    public static final String CHANNEL_DEVST_HEARTBEAT = "heartBeat";
     public static final String CHANNEL_DEVST_RSSI = "wifiSignal";
     public static final String CHANNEL_DEVST_ITEMP = "internalTemp";
     public static final String CHANNEL_DEVST_WAKEUP = "wakeupReason";

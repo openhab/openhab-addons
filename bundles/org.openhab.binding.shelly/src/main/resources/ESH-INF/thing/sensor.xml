@@ -304,18 +304,35 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="sensorError">
-		<item-type>String</item-type>
-		<label>Last Error</label>
-		<description>Only valid in case of error</description>
-		<state readOnly="true">
-		</state>
-	</channel-type>
 	<channel-type id="sensorPPM">
 		<item-type>Number</item-type>
 		<label>Concentration</label>
 		<description>Gas concentration in ppm</description>
 		<state readOnly="true" pattern="%d %unit%">
+		</state>
+	</channel-type>
+	<channel-type id="sensorValve">
+		<item-type>String</item-type>
+		<label>Vavle</label>
+		<description>Current valve status: closed/opened/not_connected/failure/closing/opening/checking</description>
+		<state readOnly="true">
+			<options>
+				<option value="closed">closed</option>
+				<option value="opened">opened</option>
+				<option value="not_connected">not connected</option>
+				<option value="failure">failure</option>
+				<option value="closing">closing</option>
+				<option value="opening">opening</option>
+				<option value="checking">checking</option>
+				<option value="unknown">UNKNOWN</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="sensorError">
+		<item-type>String</item-type>
+		<label>Last Error</label>
+		<description>Only valid in case of error</description>
+		<state readOnly="true">
 		</state>
 	</channel-type>
 

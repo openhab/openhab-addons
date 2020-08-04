@@ -19,7 +19,6 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -368,33 +367,9 @@ public class ShellyComponents {
             updated |= thingHandler.updateInputs(status);
 
             if (updated) {
-                thingHandler.updateChannel(getControlGroup(profile, status, 0), CHANNEL_LAST_UPDATE, getTimestamp());
+                thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
             }
         }
         return updated;
-    }
-
-    public static String getControlGroup(ShellyDeviceProfile profile, @Nullable ShellySettingsStatus status, int idx) {
-        if (profile.isDimmer) {
-            return CHANNEL_GROUP_DIMMER_CONTROL;
-        }
-
-        if (status != null) {
-            if (profile.isRoller && (status.rollers != null)) {
-                return profile.numRollers == 1 ? CHANNEL_GROUP_ROL_CONTROL : CHANNEL_GROUP_ROL_CONTROL + idx;
-            } else if (profile.hasBattery && (status.relays != null)) {
-                return profile.numRelays == 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
-            } else if (profile.isLight && (status.lights != null)) {
-                return profile.numRelays == 1 ? CHANNEL_GROUP_LIGHT_CONTROL : CHANNEL_GROUP_LIGHT_CONTROL + idx;
-            }
-        }
-        if (profile.isButton) {
-            return CHANNEL_GROUP_STATUS;
-        } else if (profile.isSensor) {
-            return CHANNEL_GROUP_SENSOR;
-        }
-
-        // e.g. ix3
-        return profile.numRelays == 1 ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
     }
 }

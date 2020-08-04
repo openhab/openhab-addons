@@ -106,14 +106,18 @@ public class ShellyApiJsonDTO {
     //
     public static final String SHELLY_BTNT_MOMENTARY = "momentary";
     public static final String SHELLY_BTNT_MOM_ON_RELEASE = "momentary_on_release";
+    public static final String SHELLY_BTNT_ONE_BUTTON = "one_button";
     public static final String SHELLY_BTNT_TOGGLE = "toggle";
     public static final String SHELLY_BTNT_EDGE = "edge";
     public static final String SHELLY_BTNT_DETACHED = "detached";
+
     public static final String SHELLY_STATE_LAST = "last";
     public static final String SHELLY_STATE_STOP = "stop";
+
     public static final String SHELLY_INP_MODE_OPENCLOSE = "openclose";
     public static final String SHELLY_OBSTMODE_DISABLED = "disabled";
     public static final String SHELLY_SAFETYM_WHILEOPENING = "while_opening";
+
     public static final String SHELLY_ALWD_TRIGGER_NONE = "none";
     public static final String SHELLY_ALWD_ROLLER_TURN_OPEN = "open";
     public static final String SHELLY_ALWD_ROLLER_TURN_CLOSE = "close";
@@ -524,7 +528,7 @@ public class ShellyApiJsonDTO {
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellySettingsDimmer> dimmers;
         public ArrayList<ShellySettingsEMeter> emeters;
-        public ArrayList<ShellyInputState> inputs; // Firmware 1.5.6+
+        public ArrayList<ShellySettingsInput> inputs; // ix3
 
         @SerializedName("temperature_units")
         public String temperatureUnits; // Either'C'or'F'
@@ -600,6 +604,9 @@ public class ShellyApiJsonDTO {
         public Boolean hasUpdate;
         public String mac;
         public Boolean discoverable; // FW 1.6+
+        @SerializedName("cfg_changed_cnt")
+        public Integer cfg_changed_count; // FW 1.8
+
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellySettingsRoller> rollers;
         public Integer input; // RGBW2 has no JSON array
@@ -632,6 +639,32 @@ public class ShellyApiJsonDTO {
         public Long uptime;
 
         public String json;
+    }
+
+    public static class ShellySettingsInput {
+        @SerializedName("btn_type")
+        public String btnType;
+
+        // included attributes not yet processed
+        // public String name;
+        // @SerializedName("btn_reverse")
+        // public Integer btnReverse;
+        // @SerializedName("btn_on_url")
+        // public String btnOnUrl;
+        // @SerializedName("btn_off_url")
+        // public String btnOffUrl;
+        // @SerializedName("shortpush_url")
+        // public String shortpushUrl;
+        // @SerializedName("longpush_url")
+        // public String longpushUrl;
+        // @SerializedName("double_shortpush_url")
+        // public String doubleShortpushUrl;
+        // @SerializedName("triple_shortpush_url")
+        // public String tripleShortpushUrl;
+        // @SerializedName("shortpush_longpush_url")
+        // public String shortpushLongpushUrl;
+        // @SerializedName("longpush_shortpush_url")
+        // public String longpushShortpushUrl;
     }
 
     public static class ShellyControlRelay {
@@ -864,6 +897,7 @@ public class ShellyApiJsonDTO {
         public ShellyStatusGasSensor gasSensor;
         @SerializedName("concentration")
         public ShellyStatusGasConcentration concentration;
+        public ArrayList<ShellyStatusValve> valves;
 
         // FW 1.7 Button
         @SerializedName("connect_retries")
@@ -896,6 +930,10 @@ public class ShellyApiJsonDTO {
         public Integer ppm;
         @SerializedName("is_valid")
         public Boolean isValid;
+    }
+
+    public static class ShellyStatusValve {
+        public String state; // closed/opened/not_connected/failure/closing/opening/checking
     }
 
     public static class ShellySettingsLight {

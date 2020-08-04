@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
@@ -43,15 +43,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShellyCoIoTProtocol {
     private final Logger logger = LoggerFactory.getLogger(ShellyCoIoTProtocol.class);
-    protected final String thingId;
+    protected final String thingName;
     protected final ShellyBaseHandler thingHandler;
     protected final ShellyDeviceProfile profile;
     protected final Map<String, CoIotDescrBlk> blkMap;
     protected final Map<String, CoIotDescrSen> sensorMap;
 
-    public ShellyCoIoTProtocol(String thingId, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
+    protected int inputState = -1;
+    protected String inputType = "";
+
+    public ShellyCoIoTProtocol(String thingName, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {
-        this.thingId = thingId;
+        this.thingName = thingName;
         this.thingHandler = thingHandler;
         this.blkMap = blkMap;
         this.sensorMap = sensorMap;
@@ -61,7 +64,10 @@ public class ShellyCoIoTProtocol {
     protected boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
             Map<String, State> updates) {
         // Process status information and convert into channel updates
-        Integer rIndex = Integer.parseInt(sen.links) + 1;
+        // Integer rIndex = Integer.parseInt(sen.links) + 1;
+        // String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
+        // : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
+        int rIndex = getIdFromBlk(sen);
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                 : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
         switch (sen.type.toLowerCase()) {
@@ -142,9 +148,6 @@ public class ShellyCoIoTProtocol {
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
                                 ShellyColorUtils.toPercent((int) s.value, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
                         break;
-                    case "concentration":// Shelly Gas
-                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, getDecimal(s.value));
-                        break;
                     case "sensorerror": // +
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR, getStringType(s.valueStr));
                         break;
@@ -167,59 +170,39 @@ public class ShellyCoIoTProtocol {
         return true;
     }
 
-    protected void handleInputEvent(CoIotDescrSen sen, String type, Integer count, Map<String, State> updates) {
-        int idx = getSensorNumber(sen.desc, sen.id);
-        if (idx <= 0) {
-            return;
-        }
-        if (!type.isEmpty()) {
-            // event type
-            String group = thingHandler.getProfile().isButton ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
-            updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, getStringType(type));
-            thingHandler.triggerButton(group, type);
-        } else {
-            // event count
-            String group = thingHandler.getProfile().isButton ? CHANNEL_GROUP_STATUS : CHANNEL_GROUP_STATUS + idx;
-            updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
-        }
+    protected void handleInput(CoIotDescrSen sen, CoIotSensor s, String rGroup, Map<String, State> updates) {
+        int idx = getSensorNumber(sen.desc, sen.id) - 1;
+        String iGroup = profile.getInputGroup(idx);
+        String iChannel = profile.getInputChannel(idx);
+        inputState = (int) s.value;
+        updateChannel(updates, iGroup, iChannel, inputState == 0 ? OnOffType.OFF : OnOffType.ON);
     }
 
-    protected void handleInput(CoIotDescrSen sen, CoIotSensor s, String rGroup, Map<String, State> updates) {
-        final ShellyDeviceProfile profile = thingHandler.getProfile();
-        int idx = getSensorNumber(sen.desc, sen.id);
-        if (idx <= 0) {
-            logger.debug("{}: Unable to find input index for sensor ID {}", thingId, sen.id);
-            return;
-        }
-
-        int r = idx - 1;
-        String iGroup = rGroup;
-        String iChannel = CHANNEL_INPUT;
-        if (profile.isRGBW2) {
-            // RGBW2 has only one input, not one per channel
-            iGroup = CHANNEL_GROUP_LIGHT_CONTROL;
-        } else if (profile.isDimmer || profile.isRoller) {
-            // Dimmer and Roller things have 2 inputs
-            iChannel = CHANNEL_INPUT + String.valueOf(idx);
-        } else if (profile.isIX3) {
-            iGroup = CHANNEL_GROUP_STATUS + idx;
-        } else if (profile.isButton) {
-            iGroup = CHANNEL_GROUP_STATUS;
-        } else {
-            // Device has 1 input per relay: 0=off, 1+2 depend on switch mode
-            iGroup = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
-        }
-
-        if ((profile.settings.relays != null) && (r >= 0) && (r < profile.settings.relays.size())) {
-            ShellySettingsRelay relay = profile.settings.relays.get(r);
-            logger.trace("{}: Coap update for button (type {})", thingId, relay.btnType);
-            if ((s.value != 0) && (relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY)
-                    || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
-                    || relay.btnType.equalsIgnoreCase(SHELLY_BTNT_DETACHED))) {
-                thingHandler.triggerButton(iGroup, String.valueOf((int) s.value));
+    protected void handleInputEvent(CoIotDescrSen sen, String type, Integer count, Map<String, State> updates) {
+        int idx = getSensorNumber(sen.desc, sen.id) - 1;
+        String group = profile.getInputGroup(idx);
+        if (!type.isEmpty()) {
+            // event type
+            inputType = getString(type);
+            if (profile.inButtonMode(idx)) {
+                String channel = profile.getInputChannel(idx);
+                State lastState = thingHandler.getChannelValue(group, channel);
+                State st = thingHandler.getChannelValue(group, CHANNEL_STATUS_EVENTTYPE);
+                String lastEvent = st.equals(UnDefType.NULL) ? st.toString() : "";
+                if (profile.isButton) {
+                    thingHandler.triggerButton(group, type);
+                } else if ((inputState == -1) || lastState.equals(UnDefType.NULL)
+                        || ((OnOffType) lastState != (inputState == 0 ? OnOffType.OFF : OnOffType.ON))
+                        || lastEvent.isEmpty() || !lastEvent.equals(type)) {
+                    thingHandler.triggerButton(group, type);
+                }
             }
+
+            updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, getStringType(type));
+        } else {
+            // event count
+            updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
         }
-        updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
     }
 
     /**
@@ -251,7 +234,7 @@ public class ShellyCoIoTProtocol {
             } else if (profile.isRGBW2) {
                 group = CHANNEL_GROUP_LIGHT_CHANNEL + id;
                 checkL = String.valueOf(id.intValue() - 1); // id is 1-based, L is 0-based
-                logger.trace("{}: updatePower() for L={}", thingId, checkL);
+                logger.trace("{}: updatePower() for L={}", thingName, checkL);
             }
 
             // We need to update brigthtess and on/off state at the same time to avoid "flipping brightness slider" in
@@ -307,15 +290,36 @@ public class ShellyCoIoTProtocol {
                 idx++; // iterate from input1..2..n
             }
             if (sen.id.equalsIgnoreCase(sensorId) && blkMap.containsKey(sen.links)) {
-                CoIotDescrBlk blk = blkMap.get(sen.links);
-                if (StringUtils.substring(blk.desc, 5).equalsIgnoreCase("Relay")) {
-                    idx = Integer.parseInt(StringUtils.substringAfter(blk.desc, "Relay"));
-                }
+                return getIdFromBlk(sen);
+            }
+            if (sen.id.equalsIgnoreCase(sensorId)) {
                 return idx;
             }
         }
-        logger.debug("{}: sensorId {} not found in sensorMap!", thingId, sensorId);
+        logger.debug("{}: sensorId {} not found in sensorMap!", thingName, sensorId);
         return -1;
+    }
+
+    protected int getIdFromBlk(CoIotDescrSen sen) {
+        int idx = -1;
+        if (blkMap.containsKey(sen.links)) {
+            CoIotDescrBlk blk = blkMap.get(sen.links);
+            String desc = blk.desc.toLowerCase();
+            if (desc.startsWith(SHELLY_CLASS_RELAY) || desc.startsWith(SHELLY_CLASS_ROLLER)) {
+                if (desc.contains("_")) { // CoAP v2
+                    idx = Integer.parseInt(StringUtils.substringAfter(desc, "_"));
+                } else { // CoAP v1
+                    if (desc.substring(0, 5).equalsIgnoreCase(SHELLY_CLASS_RELAY)) {
+                        idx = Integer.parseInt(StringUtils.substringAfter(desc, SHELLY_CLASS_RELAY));
+                    }
+                    if (desc.substring(0, 6).equalsIgnoreCase(SHELLY_CLASS_ROLLER)) {
+                        idx = Integer.parseInt(StringUtils.substringAfter(desc, SHELLY_CLASS_ROLLER));
+                    }
+                }
+                idx = idx + 1; // make it 1-based (sen.L is 0-based)
+            }
+        }
+        return idx;
     }
 
     /**
@@ -337,7 +341,7 @@ public class ShellyCoIoTProtocol {
                 return idx;
             }
         }
-        logger.debug("{}: sensorId {} not found in sensorMap!", thingId, sensorId);
+        logger.debug("{}: sensorId {} not found in sensorMap!", thingName, sensorId);
         return -1;
     }
 

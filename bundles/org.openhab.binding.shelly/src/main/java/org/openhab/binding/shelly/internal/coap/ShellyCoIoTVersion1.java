@@ -45,9 +45,9 @@ import tec.uom.se.unit.Units;
 public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCoIoTInterface {
     private final Logger logger = LoggerFactory.getLogger(ShellyCoIoTVersion1.class);
 
-    public ShellyCoIoTVersion1(String thingId, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
+    public ShellyCoIoTVersion1(String thingName, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {
-        super(thingId, thingHandler, blkMap, sensorMap);
+        super(thingName, thingHandler, blkMap, sensorMap);
     }
 
     /**
@@ -104,21 +104,22 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                             updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP + idx,
                                     toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
                         } else {
-                            logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingId, sen.id, sen.type,
+                            logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingName, sen.id, sen.type,
                                     sen.desc);
                         }
                         break;
                     default:
-                        logger.debug("{}: Unknown temperatur type: {}", thingId, sen.desc);
+                        logger.debug("{}: Unknown temperatur type: {}", thingName, sen.desc);
                 }
                 break;
             case "p": // Power/Watt
                 // 3EM uses 1-based meter IDs, other 0-based
                 String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER
                         : CHANNEL_GROUP_METER + (profile.isEMeter ? sen.links : rIndex);
-                updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
-                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                if (updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
+                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT))) {
                 updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
+                }
                 break;
             case "s" /* CatchAll */:
                 switch (sen.desc.toLowerCase()) {

@@ -281,8 +281,9 @@
 		<channels>
 			<channel id="control" typeId="rollerShutter" />
 			<channel id="rollerpos" typeId="rollerPosition" />
-			<channel id="lastDirection" typeId="rollerDirection" />
+			<channel id="state" typeId="rollerState" />
 			<channel id="stopReason" typeId="rollerStop" />
+			<channel id="lastDirection" typeId="rollerDirection" />
 			<channel id="input1" typeId="inputState1" />
 			<channel id="input2" typeId="inputState2" />
 			<channel id="event" typeId="eventTrigger" />
@@ -334,6 +335,18 @@
 		<label>Roller Position (100=open, 0=closed)</label>
 		<description>Position the roller (100..0 in %, where 100%=open, 0%=closed)</description>
 		<state readOnly="false" min="0" max="100" />
+	</channel-type>
+	<channel-type id="rollerState">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>State of the roller (open/close/stop)</description>
+		<state readOnly="true">
+			<options>
+				<option value="open">open</option>
+				<option value="close">closed</option>
+				<option value="stop">stopped</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="rollerStop">
 		<item-type>String</item-type>

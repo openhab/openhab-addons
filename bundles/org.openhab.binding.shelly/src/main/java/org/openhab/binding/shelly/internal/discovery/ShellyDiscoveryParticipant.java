@@ -202,6 +202,14 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
         if (service == null) {
             throw new IllegalArgumentException("service must not be null!");
         }
-        return ShellyThingCreator.getThingUID(service.getName().toLowerCase(), "", "", false);
+        String serviceName = service.getName();
+        if (serviceName == null) {
+            throw new IllegalArgumentException("serviceName must not be null!");
+        }
+        serviceName = serviceName.toLowerCase();
+        if (!serviceName.contains(VENDOR.toLowerCase())) {
+            throw new IllegalArgumentException("Not a " + VENDOR + " device!");
+        }
+        return ShellyThingCreator.getThingUID(serviceName, "", "", false);
     }
 }
