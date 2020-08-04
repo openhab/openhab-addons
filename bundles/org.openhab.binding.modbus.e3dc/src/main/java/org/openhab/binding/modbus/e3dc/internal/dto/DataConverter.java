@@ -13,9 +13,8 @@
 package org.openhab.binding.modbus.e3dc.internal.dto;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
-
-import org.eclipse.californium.elements.util.StandardCharsets;
 
 /**
  * The {@link DataConverter} Helper class to convert bytes from modbus into desired data format
