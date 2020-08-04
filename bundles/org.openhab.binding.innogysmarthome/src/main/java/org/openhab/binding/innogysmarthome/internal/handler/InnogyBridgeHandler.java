@@ -240,8 +240,10 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                 return;
             }
         }
-        setBridgeProperties(deviceStructMan.getBridgeDevice());
-        bridgeId = deviceStructMan.getBridgeDevice().getId();
+
+        Device bridgeDevice = deviceStructMan.getBridgeDevice();
+        setBridgeProperties(bridgeDevice);
+        bridgeId = bridgeDevice.getId();
         startWebsocket();
         cancelReinitJob();
     }
