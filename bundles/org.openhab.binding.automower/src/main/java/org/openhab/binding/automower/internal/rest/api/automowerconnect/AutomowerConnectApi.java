@@ -15,13 +15,13 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.httpclient.HttpStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.automower.internal.rest.api.HusqvarnaApi;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
@@ -126,12 +126,12 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         }
 
         switch (statusCode) {
-            case HttpStatus.SC_NOT_FOUND:
+            case HttpStatus.NOT_FOUND_404:
                 throw new AutomowerCommunicationException(statusCode, "Target '" + response.getRequest().getURI()
                         + "' seems to be not available: " + response.getContentAsString());
 
-            case HttpStatus.SC_FORBIDDEN:
-            case HttpStatus.SC_UNAUTHORIZED:
+            case HttpStatus.FORBIDDEN_403:
+            case HttpStatus.UNAUTHORIZED_401:
                 throw new UnauthorizedException(statusCode, response.getContentAsString());
 
             default:

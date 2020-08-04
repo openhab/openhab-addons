@@ -14,6 +14,9 @@ package org.openhab.binding.automower.internal.things;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -38,7 +41,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.joda.time.DateTime;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.binding.automower.internal.actions.AutomowerActions;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
@@ -251,14 +253,17 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_ACTIVITY, new StringType(mower.getAttributes().getMower().getActivity().name()));
             updateState(CHANNEL_STATUS_STATE, new StringType(mower.getAttributes().getMower().getState().name()));
 
-            updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
-                    new DateTime(mower.getAttributes().getMetadata().getStatusTimestamp()).toString()));
+            Instant statusTimestamp = Instant.ofEpochMilli(mower.getAttributes().getMetadata().getStatusTimestamp());
+            updateState(CHANNEL_STATUS_LAST_UPDATE,
+                    new DateTimeType(ZonedDateTime.ofInstant(statusTimestamp, ZoneId.systemDefault())));
             updateState(CHANNEL_STATUS_BATTERY,
                     new DecimalType(mower.getAttributes().getBattery().getBatteryPercent()));
 
             updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(mower.getAttributes().getMower().getErrorCode()));
-            updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, new DateTimeType(
-                    new DateTime(mower.getAttributes().getMower().getErrorCodeTimestamp()).toString()));
+
+            Instant errorCodeTimestamp = Instant.ofEpochMilli(mower.getAttributes().getMower().getErrorCodeTimestamp());
+            updateState(CHANNEL_STATUS_ERROR_TIMESTAMP,
+                    new DateTimeType(ZonedDateTime.ofInstant(errorCodeTimestamp, ZoneId.systemDefault())));
 
         }
     }

@@ -15,13 +15,13 @@ package org.openhab.binding.automower.internal.rest.api.authentication;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.httpclient.HttpStatus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.automower.internal.rest.api.HusqvarnaApi;
 import org.openhab.binding.automower.internal.rest.api.authentication.dto.PostOAuth2Response;
@@ -96,21 +96,21 @@ public class AuthenticationApi extends HusqvarnaApi {
     private PostOAuth2Response parseResponse(ContentResponse response) throws AutomowerCommunicationException {
         int statusCode = response.getStatus();
         switch (statusCode) {
-            case HttpStatus.SC_OK:
-            case HttpStatus.SC_CREATED:
+            case HttpStatus.OK_200:
+            case HttpStatus.CREATED_201:
                 try {
                     return gson.fromJson(response.getContentAsString(), PostOAuth2Response.class);
                 } catch (JsonSyntaxException e) {
                     throw new AutomowerCommunicationException(e);
                 }
 
-            case HttpStatus.SC_BAD_REQUEST:
+            case HttpStatus.BAD_REQUEST_400:
                 throw new AutomowerCommunicationException(statusCode,
                         "Unable to authenticate. Maybe the given credentials are wrong or the Authentication Api is not connected to the given application key: "
                                 + response.getContentAsString());
 
-            case HttpStatus.SC_FORBIDDEN:
-            case HttpStatus.SC_UNAUTHORIZED:
+            case HttpStatus.FORBIDDEN_403:
+            case HttpStatus.UNAUTHORIZED_401:
                 throw new UnauthorizedException(statusCode, response.getContentAsString());
 
             default:
