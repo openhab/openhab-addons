@@ -31,7 +31,7 @@
 	<channel-type id="coe-digital-in">
 		<item-type>Switch</item-type>
 		<label>Digital Input (C.M.I. -> OH)</label>
-		<description>A digital channel sent from C.M.I. to OpenHAB</description>
+		<description>A digital channel sent from C.M.I. to openHAB</description>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
@@ -87,9 +87,9 @@
 					<option value="7">Unknown 7</option>
 					<option value="8">Unknown 8</option>
 					<option value="9">Unknown 9</option>
-					<option value="10">kw (Kilowatt) </option>
-					<option value="11">kwh (Kilowatt hours)</option>
-					<option value="12">mwh (Megawatt hours)</option>
+					<option value="10">kW (Kilowatt) </option>
+					<option value="11">kWh (Kilowatt hours)</option>
+					<option value="12">MWh (Megawatt hours)</option>
 					<option value="13">Unknown 13</option>
 					<option value="14">Unknown 14</option>
 					<option value="15">Unknown 15</option>

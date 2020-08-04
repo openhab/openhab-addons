@@ -6,6 +6,6 @@
 
 	<bridge-type id="coe-bridge">
 		<label>TA C.M.I. CoE Bridge</label>
-		<description>This bridge opens the CoE-UDP Port 5441 on OpenHAB for communikation with "Technsche Alternative C.M.I."</description>
+		<description>This bridge opens the CoE-UDP Port 5441 on OpenHAB for communication with "Technische Alternative C.M.I."</description>
 	</bridge-type>
 </thing:thing-descriptions>

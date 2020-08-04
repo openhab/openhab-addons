@@ -7,7 +7,7 @@ The binding supports two ways to interact with the C.M.I. and all devices connec
 
 Via a "Schema API Page"
   * Read values from output nodes
-  * Change values for controlable nodes
+  * Change values for controllable nodes
 
 CoE (CAN over Ethernet) Connection
   * Receive data from analog CAN-outputs defined in TAPPS2
@@ -16,7 +16,7 @@ CoE (CAN over Ethernet) Connection
   * Send numeric values to analog CAN-inputs defined in TAPPS2
 
 
-Depending on what you want to archive either the "Schema API Page" or the CoE way might be better. As rough guidance: Anything you want to provide to the TA equipment it has to work / operate with the CoE might be better. If you plan things mainly for user interaction the "Schema API Page" might be better. 
+Depending on what you want to achieve, either the "Schema API Page" or the CoE way might be better. As rough guidance: Anything you want to provide to the TA equipment it has to work / operate with the CoE might be better. If you plan things mainly for user interaction the "Schema API Page" might be better. 
 
 
 ## Prerequisites
@@ -48,7 +48,7 @@ You need to configure CAN outputs in your Functional data on the UVR16x2. This c
 
 #### Configure your CMI for COE
 
-Now follow the User Guide of the CMI on how to setup CAN over Ethernet (COE). Here you will map your outputs that you configured in the previous step. This can be accomplished via the GUI on the CMI or via the coe.csv file. As the target device you need to put the IP of your OpenHAB server. Don’t forget to reboot the CMI after you uploaded the coe.csv file.
+Now follow the User Guide of the CMI on how to setup CAN over Ethernet (COE). Here you will map your outputs that you configured in the previous step. This can be accomplished via the GUI on the CMI or via the coe.csv file. As the target device you need to put the IP of your openHAB server. Don’t forget to reboot the CMI after you uploaded the coe.csv file.
 
 ## Supported Bridge and Things
 
@@ -82,7 +82,7 @@ The _TA C.M.I. CoE Connection_ has to be manually configured, either through the
 
 This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define an CAN-Input.
 
-It takes the C.M.I.'s IP-Address and the CAN Node-ID from the defice behind the C.M.I. where the data is sent to / received for. The thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
+It takes the C.M.I.'s IP-Address and the CAN Node-ID from the device behind the C.M.I. where the data is sent to / received for. The thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
 
 ## Channels
 
