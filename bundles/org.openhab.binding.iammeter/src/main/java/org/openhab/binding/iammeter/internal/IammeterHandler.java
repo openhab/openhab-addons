@@ -56,8 +56,6 @@ public class IammeterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IammeterHandler.class);
 
-    private @Nullable ScheduledFuture<?> pollingJob;
-
     public IammeterHandler(Thing thing) {
         super(thing);
     }
@@ -91,7 +89,7 @@ public class IammeterHandler extends BaseThingHandler {
                 }
             }
         };
-        pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
+        ScheduledFuture<?> pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
