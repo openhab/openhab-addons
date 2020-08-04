@@ -45,7 +45,6 @@
 				<default>80</default>
 			</parameter>
 			<parameter name="refreshInterval" type="text" required="false" unit="s">
-				<required>false</required>
 				<label>Refresh Interval</label>
 				<default>60</default>
 			</parameter>
