@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.handler.config.OpenWebNetBusBridgeConfig;
@@ -67,7 +68,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
     // ConcurrentHashMap of devices registered to this BridgeHandler
-    // Association is: ownId (String) -> OpenWebNetThingHandler, with ownId = WHO.WHERE
+    // association is: ownId (String) -> OpenWebNetThingHandler, with ownId = WHO.WHERE
     private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
 
     protected @Nullable OpenGateway gateway;
@@ -82,11 +83,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     public OpenWebNetBridgeHandler(Bridge bridge) {
         super(bridge);
-    }
-
-    @Nullable
-    public OpenGateway getGateway() {
-        return gateway;
     }
 
     public boolean isBusGateway() {
@@ -215,6 +211,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         reconnecting = false;
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(OpenWebNetDeviceDiscoveryService.class);
+    }
+
     /**
      * Search for devices connected to this bridge handler's gateway
      *
@@ -248,16 +249,15 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public void onNewDevice(@Nullable Where w, @Nullable OpenDeviceType deviceType, @Nullable BaseOpenMessage message) {
-        try {
-            OpenWebNetDeviceDiscoveryService service = deviceDiscoveryService;
-            if (w != null && deviceType != null && service != null) {
-                service.newDiscoveryResult(w, deviceType, message);
+        OpenWebNetDeviceDiscoveryService discService = deviceDiscoveryService;
+        if (discService != null) {
+            if (w != null && deviceType != null) {
+                discService.newDiscoveryResult(w, deviceType, message);
             } else {
-                logger.warn("onNewDevice with null where/deviceType msg={}", message);
+                logger.warn("onNewDevice with null where/deviceType, msg={}", message);
             }
-        } catch (RuntimeException e) {
-            logger.warn("Exception while discovering new device WHERE={}, deviceType={}: {}", w, deviceType,
-                    e.getMessage());
+        } else {
+            logger.warn("onNewDevice but null deviceDiscoveryService");
         }
     }
 
@@ -276,6 +276,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private void discoverByActivation(BaseOpenMessage baseMsg) {
         logger.debug("BridgeHandler.discoverByActivation() msg={}", baseMsg);
+        OpenWebNetDeviceDiscoveryService discService = deviceDiscoveryService;
+        if (discService == null) {
+            logger.warn("discoverByActivation: null OpenWebNetDeviceDiscoveryService, ignoring msg={}", baseMsg);
+            return;
+        }
         if (baseMsg instanceof Lighting) {
             OpenDeviceType type = null;
             try {
@@ -283,9 +288,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             } catch (FrameException e) {
                 logger.warn("Exception while detecting device type: {}", e.getMessage());
             }
-            OpenWebNetDeviceDiscoveryService service = deviceDiscoveryService;
-            if (type != null && service != null) {
-                service.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
+            if (type != null) {
+                discService.newDiscoveryResult(baseMsg.getWhere(), type, baseMsg);
+            } else {
+                logger.debug("discoverByActivation: no device type detected from msg: {}", baseMsg);
             }
         }
     }
@@ -321,7 +327,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public void onEventMessage(@Nullable OpenMessage msg) {
         logger.trace("RECEIVED <<<<< {}", msg);
         if (msg == null) {
-            logger.debug("received msg is null");
+            logger.warn("received event msg is null");
             return;
         }
         if (msg.isACK() || msg.isNACK()) {

@@ -21,8 +21,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.handler.OpenWebNetBridgeHandler;
 import org.openwebnet4j.OpenDeviceType;
@@ -40,20 +43,19 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  */
 @NonNullByDefault
-public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
+public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetDeviceDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.DEVICE_SUPPORTED_THING_TYPES;
     private static final int SEARCH_TIME_SEC = 60;
 
-    private final OpenWebNetBridgeHandler bridgeHandler;
-    private final ThingUID bridgeUID;
+    private @NonNullByDefault({}) OpenWebNetBridgeHandler bridgeHandler;
+    private @NonNullByDefault({}) ThingUID bridgeUID;
 
-    public OpenWebNetDeviceDiscoveryService(OpenWebNetBridgeHandler handler) {
-        super(SEARCH_TIME_SEC);
-        bridgeHandler = handler;
-        bridgeUID = handler.getThing().getUID();
+    public OpenWebNetDeviceDiscoveryService() {
+        super(SUPPORTED_THING_TYPES, SEARCH_TIME_SEC);
     }
 
     @Override
@@ -145,7 +147,6 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
         properties.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_WHERE, bridgeHandler.normalizeWhere(where));
         properties.put(OpenWebNetBindingConstants.PROPERTY_OWNID, bridgeHandler.ownIdFromWhoWhere(where, deviceWho));
         if (thingTypeUID == OpenWebNetBindingConstants.THING_TYPE_GENERIC_DEVICE) {
-            // generic thing
             thingLabel = thingLabel + " (WHO=" + deviceWho + ", WHERE=" + whereLabel + ")";
         } else {
             thingLabel = thingLabel + " (WHERE=" + whereLabel + ")";
@@ -154,5 +155,25 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService {
                 .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID).withBridge(bridgeUID)
                 .withLabel(thingLabel).build();
         thingDiscovered(discoveryResult);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof OpenWebNetBridgeHandler) {
+            logger.debug("attaching {} to handler {} ", this, handler);
+            bridgeHandler = (OpenWebNetBridgeHandler) handler;
+            bridgeHandler.deviceDiscoveryService = this;
+            bridgeUID = bridgeHandler.getThing().getUID();
+        }
+    }
+
+    @Override
+    public ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 }
