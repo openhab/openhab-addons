@@ -49,7 +49,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link IammeterHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author yangbo - Initial contribution
+ * @author yang bo - Initial contribution
  */
 @NonNullByDefault
 public class IammeterHandler extends BaseThingHandler {
@@ -197,7 +197,9 @@ public class IammeterHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        pollingJob.cancel(true);
+        if(pollingJob != null){
+            pollingJob.cancel(true);
+        }
     }
     
     public IammeterConfiguration getConfiguration() {
