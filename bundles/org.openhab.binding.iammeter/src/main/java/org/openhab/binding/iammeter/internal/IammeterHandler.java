@@ -197,8 +197,10 @@ public class IammeterHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if(pollingJob != null){
+        try{
             pollingJob.cancel(true);
+        }catch(Exception e){
+            logger.warn("pollingJob not exist");
         }
     }
     
