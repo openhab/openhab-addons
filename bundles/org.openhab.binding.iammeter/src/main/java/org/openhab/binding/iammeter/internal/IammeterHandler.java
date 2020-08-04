@@ -23,7 +23,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -89,7 +88,7 @@ public class IammeterHandler extends BaseThingHandler {
                 }
             }
         };
-        ScheduledFuture<?> pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
+        scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
