@@ -70,7 +70,7 @@ public class IammeterHandler extends BaseThingHandler {
             try{
                 refresh();
             } catch (Exception ex) {
-                logger.warn("refresh error" + ex.getMessage());
+                logger.warn("refresh error {}" , ex.getMessage());
             }
         }
     }
@@ -87,7 +87,7 @@ public class IammeterHandler extends BaseThingHandler {
                 try{
                     refresh();
                 } catch (Exception ex) {
-                    logger.warn("refresh error" + ex.getMessage());
+                    logger.warn("refresh error {}" , ex.getMessage());
                 }
             }
         };
@@ -98,7 +98,7 @@ public class IammeterHandler extends BaseThingHandler {
             try{
                 refresh();
             } catch (Exception ex) {
-                logger.warn("refresh error" + ex.getMessage());
+                logger.warn("refresh error {}" , ex.getMessage());
             }
         });
     }
