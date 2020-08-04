@@ -344,6 +344,9 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                             } else if ("A".equals(valParts[1])) {
                                 channelType = "Number:Current";
                                 state = new QuantityType<>(bd, SmartHomeUnits.AMPERE);
+                            } else if ("Hz".equals(valParts[1])) {
+                                channelType = "Number:Frequency";
+                                state = new QuantityType<>(bd, SmartHomeUnits.HERTZ);
                             } else if ("kW".equals(valParts[1])) {
                                 channelType = "Number:Power";
                                 bd = bd.multiply(new BigDecimal(1000));
