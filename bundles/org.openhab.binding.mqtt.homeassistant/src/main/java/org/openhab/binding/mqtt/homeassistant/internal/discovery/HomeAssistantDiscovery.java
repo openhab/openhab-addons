@@ -65,7 +65,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantDiscovery.class);
     protected final Map<String, Set<HaID>> componentsPerThingID = new TreeMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new TreeMap<>();
-    protected final ConcurrentHashMap<String, DiscoveryResult> results = new ConcurrentHashMap<>();
+    protected final Map<String, DiscoveryResult> results = new ConcurrentHashMap<>();
 
     private @Nullable ScheduledFuture<?> future;
     private final Gson gson;
