@@ -67,7 +67,11 @@ public class IammeterHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            refresh();
+            try{
+                refresh();
+            } catch (Exception ex) {
+                logger.warn("refresh error" + ex.getMessage());
+            }
         }
     }
 
@@ -80,14 +84,22 @@ public class IammeterHandler extends BaseThingHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                refresh();
+                try{
+                    refresh();
+                } catch (Exception ex) {
+                    logger.warn("refresh error" + ex.getMessage());
+                }
             }
         };
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
-            refresh();
+            try{
+                refresh();
+            } catch (Exception ex) {
+                logger.warn("refresh error" + ex.getMessage());
+            }
         });
     }
 
