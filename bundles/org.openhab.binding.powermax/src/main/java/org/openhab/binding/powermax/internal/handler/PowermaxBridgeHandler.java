@@ -109,11 +109,13 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
         commManager = null;
 
+        String threadName = "OH-binding-" + getThing().getUID().getAsString();
+
         String errorMsg = null;
         if (getThing().getThingTypeUID().equals(BRIDGE_TYPE_SERIAL)) {
-            errorMsg = initializeBridgeSerial(getConfigAs(PowermaxSerialConfiguration.class));
+            errorMsg = initializeBridgeSerial(getConfigAs(PowermaxSerialConfiguration.class), threadName);
         } else if (getThing().getThingTypeUID().equals(BRIDGE_TYPE_IP)) {
-            errorMsg = initializeBridgeIp(getConfigAs(PowermaxIpConfiguration.class));
+            errorMsg = initializeBridgeIp(getConfigAs(PowermaxIpConfiguration.class), threadName);
         } else {
             errorMsg = "Unexpected thing type " + getThing().getThingTypeUID();
         }
@@ -141,7 +143,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
     }
 
-    private String initializeBridgeSerial(PowermaxSerialConfiguration config) {
+    private String initializeBridgeSerial(PowermaxSerialConfiguration config, String threadName) {
         String errorMsg = null;
         if (config.serialPort != null && !config.serialPort.trim().isEmpty()
                 && !config.serialPort.trim().startsWith("rfc2217")) {
@@ -162,7 +164,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             PowermaxArmMode.ARMED_NIGHT_INSTANT.setAllowedCommand(allowArming);
 
             commManager = new PowermaxCommManager(config.serialPort, panelType, forceStandardMode, autoSyncTime,
-                    serialPortManager);
+                    serialPortManager, threadName);
         } else {
             if (config.serialPort != null && config.serialPort.trim().startsWith("rfc2217")) {
                 errorMsg = "Please use the IP Connection thing type for a serial over IP connection.";
@@ -173,7 +175,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         return errorMsg;
     }
 
-    private String initializeBridgeIp(PowermaxIpConfiguration config) {
+    private String initializeBridgeIp(PowermaxIpConfiguration config, String threadName) {
         String errorMsg = null;
         if (config.ip != null && !config.ip.trim().isEmpty() && config.tcpPort != null) {
             motionOffDelay = getMotionOffDelaySetting(config.motionOffDelay, DEFAULT_MOTION_OFF_DELAY);
@@ -192,8 +194,8 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             PowermaxArmMode.ARMED_NIGHT.setAllowedCommand(allowArming);
             PowermaxArmMode.ARMED_NIGHT_INSTANT.setAllowedCommand(allowArming);
 
-            commManager = new PowermaxCommManager(config.ip, config.tcpPort, panelType, forceStandardMode,
-                    autoSyncTime);
+            commManager = new PowermaxCommManager(config.ip, config.tcpPort, panelType, forceStandardMode, autoSyncTime,
+                    threadName);
         } else {
             errorMsg = "ip and port settings must be defined in thing configuration";
         }
