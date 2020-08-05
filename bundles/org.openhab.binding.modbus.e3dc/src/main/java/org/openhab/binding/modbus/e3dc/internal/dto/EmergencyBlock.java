@@ -17,6 +17,7 @@ import static org.openhab.binding.modbus.e3dc.internal.modbus.E3DCModbusConstans
 import java.nio.ByteBuffer;
 import java.util.BitSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
@@ -26,6 +27,7 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class EmergencyBlock implements Data {
     public StringType epStatus = EP_UNKOWN;
     public OnOffType batteryChargingLocked = OnOffType.OFF;

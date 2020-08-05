@@ -17,6 +17,7 @@ import java.nio.ByteBuffer;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Power;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
@@ -26,6 +27,7 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class PowerBlock implements Data {
     public QuantityType<Power> pvPowerSupply;
     public QuantityType<Power> batteryPowerSupply;

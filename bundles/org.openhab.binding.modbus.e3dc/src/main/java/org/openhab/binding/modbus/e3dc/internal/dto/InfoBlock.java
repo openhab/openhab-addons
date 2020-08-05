@@ -14,6 +14,7 @@ package org.openhab.binding.modbus.e3dc.internal.dto;
 
 import java.nio.ByteBuffer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
@@ -23,6 +24,7 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class InfoBlock implements Data {
     private static final StringType EMPTY = new StringType("NULL");
     public StringType modbusId = EMPTY;

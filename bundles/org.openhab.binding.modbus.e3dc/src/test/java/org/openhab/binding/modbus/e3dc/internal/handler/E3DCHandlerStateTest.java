@@ -49,6 +49,8 @@ public class E3DCHandlerStateTest {
     @Test
     public void testStatusChain() {
         Bridge bridge = mock(Bridge.class);
+        ThingUID uid = new ThingUID("modbus", "e3dc", "powerplant");
+        when(bridge.getUID()).thenReturn(uid);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         E3DCThingHandler handler = new E3DCThingHandler(bridge);
         handler.setCallback(callback);
@@ -57,8 +59,6 @@ public class E3DCHandlerStateTest {
         map.put("refresh", 2000);
         Configuration config = new Configuration(map);
         when(bridge.getConfiguration()).thenReturn(config);
-        ThingUID uid = new ThingUID("modbus", "e3dc", "powerplant");
-        when(bridge.getUID()).thenReturn(uid);
         handler.initialize();
         verify(callback).statusUpdated(ArgumentMatchers.eq((Thing) bridge), ArgumentMatchers.eq(unknownStatus));
         // Initializing is ongoing - now simulate info and data callback

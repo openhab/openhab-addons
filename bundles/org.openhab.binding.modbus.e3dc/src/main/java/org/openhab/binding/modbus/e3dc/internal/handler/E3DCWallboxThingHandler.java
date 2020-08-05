@@ -16,6 +16,8 @@ import static org.openhab.binding.modbus.e3dc.internal.E3DCBindingConstants.*;
 import static org.openhab.binding.modbus.e3dc.internal.modbus.E3DCModbusConstans.*;
 
 import java.util.BitSet;
+import java.util.Optional;
+import java.util.OptionalInt;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +34,7 @@ import org.openhab.binding.modbus.e3dc.internal.E3DCWallboxConfiguration;
 import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxArray;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxBlock;
+import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
@@ -112,9 +115,9 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
                 writeValue = DataConverter.toInt(currentBitSet);
                 logger.debug("Wallbox write {}", writeValue);
             }
-            int wallboxId = getWallboxId(config);
-            if (wallboxId != -1) {
-                wallboxSet(wallboxId, writeValue);
+            OptionalInt wallboxId = getWallboxId(config);
+            if (wallboxId.isPresent()) {
+                wallboxSet(wallboxId.getAsInt(), writeValue);
             }
         }
     }
@@ -150,11 +153,11 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
         }
     }
 
-    private int getWallboxId(@Nullable E3DCWallboxConfiguration c) {
+    private OptionalInt getWallboxId(@Nullable E3DCWallboxConfiguration c) {
         if (c != null) {
-            return c.wallboxId;
+            return OptionalInt.of(c.wallboxId);
         } else {
-            return -1;
+            return OptionalInt.empty();
         }
     }
 
@@ -164,12 +167,14 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
             updateStatus();
         }
         dataParser.handle(result);
-        WallboxArray wbArray = (WallboxArray) dataParser.parse(DataType.WALLBOX);
-        if (wbArray != null) {
-            int wallboxId = getWallboxId(config);
-            if (wallboxId != -1) {
-                WallboxBlock block = wbArray.getWallboxBlock(wallboxId);
-                if (block != null) {
+        Optional<Data> wbArrayOpt = dataParser.parse(DataType.WALLBOX);
+        if (wbArrayOpt.isPresent()) {
+            WallboxArray wbArray = (WallboxArray) wbArrayOpt.get();
+            OptionalInt wallboxId = getWallboxId(config);
+            if (wallboxId.isPresent()) {
+                Optional<WallboxBlock> blockOpt = wbArray.getWallboxBlock(wallboxId.getAsInt());
+                if (blockOpt.isPresent()) {
+                    WallboxBlock block = blockOpt.get();
                     synchronized (this) {
                         currentBitSet = block.getBitSet();
                     }
@@ -182,8 +187,8 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
                     updateState(WB_SCHUKO_ON_CHANNEL, block.wbSchukoOn);
                     updateState(WB_SCHUKO_PLUGGED_CHANNEL, block.wbSchukoPlugged);
                     updateState(WB_SCHUKO_LOCKED_CHANNEL, block.wbSchukoLocked);
-                    updateState(WB_SCHUKO_REALY_16A_CHANNEL, block.wbSchukoRelay16);
-                    updateState(WB_REALY_16A_CHANNEL, block.wbRelay16);
+                    updateState(WB_SCHUKO_RELAY_16A_CHANNEL, block.wbSchukoRelay16);
+                    updateState(WB_RELAY_16A_CHANNEL, block.wbRelay16);
                     updateState(WB_RELAY_32A_CHANNEL, block.wbRelay32);
                     updateState(WB_1PHASE_CHANNEL, block.wb1phase);
                 } else {

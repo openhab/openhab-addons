@@ -16,11 +16,14 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DataConverter} Helper class to convert bytes from modbus into desired data format
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class DataConverter {
     private static final long MAX_INT32 = (long) Math.pow(2, Integer.SIZE);
 

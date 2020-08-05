@@ -14,9 +14,12 @@ package org.openhab.binding.modbus.e3dc.dto;
 
 import static org.junit.Assert.*;
 
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
+import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 
@@ -41,7 +44,9 @@ public class InfoTest {
 
     @Test
     public void testvalidInformationBlock() {
-        InfoBlock b = (InfoBlock) mc.parse(DataType.INFO);
+        Optional<Data> infoOpt = mc.parse(DataType.INFO);
+        assertTrue(infoOpt.isPresent());
+        InfoBlock b = (InfoBlock) infoOpt.get();
         assertNotNull(b);
         assertEquals("MagicByte", "E3DC", b.modbusId.toString());
         assertEquals("Model", "S10 E AIO", b.modelName.toString());
@@ -51,8 +56,8 @@ public class InfoTest {
 
     @Test
     public void testWrongQuery() {
-        InfoBlock b = (InfoBlock) mc.parse(DataType.POWER);
-        assertNull(b);
+        Optional<Data> dataOpt = mc.parse(DataType.POWER);
+        assertFalse(dataOpt.isPresent());
     }
 
     @Test
@@ -63,8 +68,10 @@ public class InfoTest {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 83, 49, 48, 95, 50, 48, 50, 48, 95, 48 };
         Parser mc = new Parser(DataType.INFO);
         mc.setArray(infoBlock);
-        InfoBlock b = (InfoBlock) mc.parse(DataType.INFO);
+        Optional<Data> infoOpt = mc.parse(DataType.INFO);
+        InfoBlock b = (InfoBlock) infoOpt.get();
         // block still valid but data maybe corrupted => logged in warnings
+        assertTrue(infoOpt.isPresent());
         assertNotNull(b);
     }
 }

@@ -33,6 +33,7 @@ import org.openhab.binding.modbus.e3dc.internal.dto.EmergencyBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.PowerBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.StringBlock;
+import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
@@ -63,6 +64,51 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     static final String INFO_READ_ERROR = "Information Modbus Read Error";
     static final String DATA_READ_ERROR = "Data Modbus Read Error";
 
+    static final String INFO_GROUP = "info";
+    static final String EMERGENCY_GROUP = "emergency";
+    static final String POWER_GROUP = "power";
+    static final String STRINGS_GROUP = "strings";
+
+    private ChannelUID modbusIdChannel;
+    private ChannelUID modbusVersionChannel;
+    private ChannelUID supportedRegistersChannel;
+    private ChannelUID manufacturerChannel;
+    private ChannelUID modelNameChannel;
+    private ChannelUID serialNumberChannel;
+    private ChannelUID firmwareChannel;
+
+    private ChannelUID epStatusChannel;
+    private ChannelUID batteryChargingLockedChannel;
+    private ChannelUID batteryDischargingLockedChannel;
+    private ChannelUID epPossibleChannel;
+    private ChannelUID weatherPredictedChargingChannel;
+    private ChannelUID regulationStatusChannel;
+    private ChannelUID chargeLockTimeChannel;
+    private ChannelUID dischargeLockTimeChannel;
+
+    private ChannelUID pvPowerSupplyChannel;
+    private ChannelUID batteryPowerSupplyChannel;
+    private ChannelUID batteryPowerConsumptionChannel;
+    private ChannelUID householdPowerConsumptionChannel;
+    private ChannelUID gridPowerConsumpitionChannel;
+    private ChannelUID gridPowerSupplyChannel;
+    private ChannelUID externalPowerSupplyChannel;
+    private ChannelUID wallboxPowerConsumptionChannel;
+    private ChannelUID wallboxPVPowerConsumptionChannel;
+    private ChannelUID autarkyChannel;
+    private ChannelUID selfConsumptionChannel;
+    private ChannelUID batterySOCChannel;
+
+    private ChannelUID string1AmpereChannel;
+    private ChannelUID string1VoltChannel;
+    private ChannelUID string1WattChannel;
+    private ChannelUID string2AmpereChannel;
+    private ChannelUID string2VoltChannel;
+    private ChannelUID string2WattChannel;
+    private ChannelUID string3AmpereChannel;
+    private ChannelUID string3VoltChannel;
+    private ChannelUID string3WattChannel;
+
     private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<E3DCWallboxThingHandler>();
     private final Logger logger = LoggerFactory.getLogger(E3DCThingHandler.class);
     private final Parser dataParser = new Parser(DataType.DATA);
@@ -81,6 +127,46 @@ public class E3DCThingHandler extends BaseBridgeHandler {
 
     public E3DCThingHandler(Bridge thing) {
         super(thing);
+
+        modbusIdChannel = channelUID(thing, INFO_GROUP, MODBUS_ID_CHANNEL);
+        modbusVersionChannel = channelUID(thing, INFO_GROUP, MODBUS_FIRMWARE_CHANNEL);
+        supportedRegistersChannel = channelUID(thing, INFO_GROUP, SUPPORTED_REGISTERS_CHANNEL);
+        manufacturerChannel = channelUID(thing, INFO_GROUP, MANUFACTURER_NAME_CHANNEL);
+        modelNameChannel = channelUID(thing, INFO_GROUP, MODEL_NAME_CHANNEL);
+        serialNumberChannel = channelUID(thing, INFO_GROUP, SERIAL_NUMBER_CHANNEL);
+        firmwareChannel = channelUID(thing, INFO_GROUP, FIRMWARE_RELEASE_CHANNEL);
+
+        epStatusChannel = channelUID(thing, EMERGENCY_GROUP, EMERGENCY_POWER_STATUS);
+        batteryChargingLockedChannel = channelUID(thing, EMERGENCY_GROUP, BATTERY_CHARGING_LOCKED);
+        batteryDischargingLockedChannel = channelUID(thing, EMERGENCY_GROUP, BATTERY_DISCHARGING_LOCKED);
+        epPossibleChannel = channelUID(thing, EMERGENCY_GROUP, EMERGENCY_POWER_POSSIBLE);
+        weatherPredictedChargingChannel = channelUID(thing, EMERGENCY_GROUP, WEATHER_PREDICTED_CHARGING);
+        regulationStatusChannel = channelUID(thing, EMERGENCY_GROUP, REGULATION_STATUS);
+        chargeLockTimeChannel = channelUID(thing, EMERGENCY_GROUP, CHARGE_LOCK_TIME);
+        dischargeLockTimeChannel = channelUID(thing, EMERGENCY_GROUP, DISCHARGE_LOCK_TIME);
+
+        pvPowerSupplyChannel = channelUID(thing, POWER_GROUP, PV_POWER_SUPPLY_CHANNEL);
+        batteryPowerSupplyChannel = channelUID(thing, POWER_GROUP, BATTERY_POWER_SUPPLY_CHANNEL);
+        batteryPowerConsumptionChannel = channelUID(thing, POWER_GROUP, BATTERY_POWER_CONSUMPTION);
+        householdPowerConsumptionChannel = channelUID(thing, POWER_GROUP, HOUSEHOLD_POWER_CONSUMPTION_CHANNEL);
+        gridPowerConsumpitionChannel = channelUID(thing, POWER_GROUP, GRID_POWER_CONSUMPTION_CHANNEL);
+        gridPowerSupplyChannel = channelUID(thing, POWER_GROUP, GRID_POWER_SUPPLY_CHANNEL);
+        externalPowerSupplyChannel = channelUID(thing, POWER_GROUP, EXTERNAL_POWER_SUPPLY_CHANNEL);
+        wallboxPowerConsumptionChannel = channelUID(thing, POWER_GROUP, WALLBOX_POWER_CONSUMPTION_CHANNEL);
+        wallboxPVPowerConsumptionChannel = channelUID(thing, POWER_GROUP, WALLBOX_PV_POWER_CONSUMPTION_CHANNEL);
+        autarkyChannel = channelUID(thing, POWER_GROUP, AUTARKY_CHANNEL);
+        selfConsumptionChannel = channelUID(thing, POWER_GROUP, SELF_CONSUMPTION_CHANNEL);
+        batterySOCChannel = channelUID(thing, POWER_GROUP, BATTERY_STATE_OF_CHARGE_CHANNEL);
+
+        string1AmpereChannel = channelUID(thing, STRINGS_GROUP, STRING1_DC_CURRENT_CHANNEL);
+        string1VoltChannel = channelUID(thing, STRINGS_GROUP, STRING1_DC_VOLTAGE_CHANNEL);
+        string1WattChannel = channelUID(thing, STRINGS_GROUP, STRING1_DC_OUTPUT_CHANNEL);
+        string2AmpereChannel = channelUID(thing, STRINGS_GROUP, STRING2_DC_CURRENT_CHANNEL);
+        string2VoltChannel = channelUID(thing, STRINGS_GROUP, STRING2_DC_VOLTAGE_CHANNEL);
+        string2WattChannel = channelUID(thing, STRINGS_GROUP, STRING2_DC_OUTPUT_CHANNEL);
+        string3AmpereChannel = channelUID(thing, STRINGS_GROUP, STRING3_DC_CURRENT_CHANNEL);
+        string3VoltChannel = channelUID(thing, STRINGS_GROUP, STRING3_DC_VOLTAGE_CHANNEL);
+        string3WattChannel = channelUID(thing, STRINGS_GROUP, STRING3_DC_OUTPUT_CHANNEL);
     }
 
     public @Nullable ModbusCommunicationInterface getComms() {
@@ -201,8 +287,8 @@ public class E3DCThingHandler extends BaseBridgeHandler {
      * @param string the channel id in that group
      * @return the globally unique channel uid
      */
-    private ChannelUID channelUID(String group, String id) {
-        return new ChannelUID(getThing().getUID(), group, id);
+    private ChannelUID channelUID(Thing t, String group, String id) {
+        return new ChannelUID(t.getUID(), group, id);
     }
 
     void handleInfoResult(AsyncModbusReadResult result) {
@@ -212,16 +298,16 @@ public class E3DCThingHandler extends BaseBridgeHandler {
             updateStatus();
         }
         infoParser.handle(result);
-        InfoBlock block = (InfoBlock) infoParser.parse(DataType.INFO);
-        String group = "info";
-        if (block != null) {
-            updateState(channelUID(group, MODBUS_ID_CHANNEL), block.modbusId);
-            updateState(channelUID(group, MODBUS_FIRMWARE_CHANNEL), block.modbusVersion);
-            updateState(channelUID(group, SUPPORTED_REGSITERS_CHANNEL), block.supportedRegisters);
-            updateState(channelUID(group, MANUFACTURER_NAME_CHANNEL), block.manufacturer);
-            updateState(channelUID(group, MODEL_NAME_CHANNEL), block.modelName);
-            updateState(channelUID(group, SERIAL_NUMBER_CHANNEL), block.serialNumber);
-            updateState(channelUID(group, FIRMWARE_RELEASE_CHANNEL), block.firmware);
+        Optional<Data> blockOpt = infoParser.parse(DataType.INFO);
+        if (blockOpt.isPresent()) {
+            InfoBlock block = (InfoBlock) blockOpt.get();
+            updateState(modbusIdChannel, block.modbusId);
+            updateState(modbusVersionChannel, block.modbusVersion);
+            updateState(supportedRegistersChannel, block.supportedRegisters);
+            updateState(manufacturerChannel, block.manufacturer);
+            updateState(modelNameChannel, block.modelName);
+            updateState(serialNumberChannel, block.serialNumber);
+            updateState(firmwareChannel, block.firmware);
         } else {
             logger.debug("Unable to get {} from provider {}", DataType.INFO, dataParser.toString());
         }
@@ -244,17 +330,17 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         dataParser.handle(result);
         // Update channels in emergency group
         {
-            EmergencyBlock block = (EmergencyBlock) dataParser.parse(DataType.EMERGENCY);
-            String group = "emergency";
-            if (block != null) {
-                updateState(channelUID(group, EMERGENCY_POWER_STATUS), block.epStatus);
-                updateState(channelUID(group, BATTERY_CHARGING_LOCKED), block.batteryChargingLocked);
-                updateState(channelUID(group, BATTERY_DISCHARGING_LOCKED), block.batteryDischargingLocked);
-                updateState(channelUID(group, EMERGENCY_POWER_POSSIBLE), block.epPossible);
-                updateState(channelUID(group, WEATHER_PREDICTED_CHARGING), block.weatherPredictedCharging);
-                updateState(channelUID(group, REGULATION_STATUS), block.regulationStatus);
-                updateState(channelUID(group, CHARGE_LOCK_TIME), block.chargeLockTime);
-                updateState(channelUID(group, DISCHARGE_LOCK_TIME), block.dischargeLockTime);
+            Optional<Data> blockOpt = dataParser.parse(DataType.EMERGENCY);
+            if (blockOpt.isPresent()) {
+                EmergencyBlock block = (EmergencyBlock) blockOpt.get();
+                updateState(epStatusChannel, block.epStatus);
+                updateState(batteryChargingLockedChannel, block.batteryChargingLocked);
+                updateState(batteryDischargingLockedChannel, block.batteryDischargingLocked);
+                updateState(epPossibleChannel, block.epPossible);
+                updateState(weatherPredictedChargingChannel, block.weatherPredictedCharging);
+                updateState(regulationStatusChannel, block.regulationStatus);
+                updateState(chargeLockTimeChannel, block.chargeLockTime);
+                updateState(dischargeLockTimeChannel, block.dischargeLockTime);
             } else {
                 logger.debug("Unable to get {} from provider {}", DataType.EMERGENCY, dataParser.toString());
             }
@@ -262,21 +348,21 @@ public class E3DCThingHandler extends BaseBridgeHandler {
 
         // Update channels in power group
         {
-            PowerBlock block = (PowerBlock) dataParser.parse(DataType.POWER);
-            String group = "power";
-            if (block != null) {
-                updateState(channelUID(group, PV_POWER_SUPPLY_CHANNEL), block.pvPowerSupply);
-                updateState(channelUID(group, BATTERY_POWER_SUPPLY_CHANNEL), block.batteryPowerSupply);
-                updateState(channelUID(group, BATTERY_POWER_CONSUMPTION), block.batteryPowerConsumption);
-                updateState(channelUID(group, HOUSEHOLD_POWER_CONSUMPTION_CHANNEL), block.householdPowerConsumption);
-                updateState(channelUID(group, GRID_POWER_CONSUMPTION_CHANNEL), block.gridPowerConsumpition);
-                updateState(channelUID(group, GRID_POWER_SUPPLY_CHANNEL), block.gridPowerSupply);
-                updateState(channelUID(group, EXTERNAL_POWER_SUPPLY_CHANNEL), block.externalPowerSupply);
-                updateState(channelUID(group, WALLBOX_POWER_CONSUMPTION_CHANNEL), block.wallboxPowerConsumption);
-                updateState(channelUID(group, WALLBOX_PV_POWER_CONSUMPTION_CHANNEL), block.wallboxPVPowerConsumption);
-                updateState(channelUID(group, AUTARKY), block.autarky);
-                updateState(channelUID(group, SELF_CONSUMPTION), block.selfConsumption);
-                updateState(channelUID(group, BATTERY_STATE_OF_CHARGE_CHANNEL), block.batterySOC);
+            Optional<Data> blockOpt = dataParser.parse(DataType.POWER);
+            if (blockOpt.isPresent()) {
+                PowerBlock block = (PowerBlock) blockOpt.get();
+                updateState(pvPowerSupplyChannel, block.pvPowerSupply);
+                updateState(batteryPowerSupplyChannel, block.batteryPowerSupply);
+                updateState(batteryPowerConsumptionChannel, block.batteryPowerConsumption);
+                updateState(householdPowerConsumptionChannel, block.householdPowerConsumption);
+                updateState(gridPowerConsumpitionChannel, block.gridPowerConsumpition);
+                updateState(gridPowerSupplyChannel, block.gridPowerSupply);
+                updateState(externalPowerSupplyChannel, block.externalPowerSupply);
+                updateState(wallboxPowerConsumptionChannel, block.wallboxPowerConsumption);
+                updateState(wallboxPVPowerConsumptionChannel, block.wallboxPVPowerConsumption);
+                updateState(autarkyChannel, block.autarky);
+                updateState(selfConsumptionChannel, block.selfConsumption);
+                updateState(batterySOCChannel, block.batterySOC);
             } else {
                 logger.debug("Unable to get {} from provider {}", DataType.POWER, dataParser.toString());
             }
@@ -284,18 +370,18 @@ public class E3DCThingHandler extends BaseBridgeHandler {
 
         // Update channels in strings group
         {
-            StringBlock block = (StringBlock) dataParser.parse(DataType.STRINGS);
-            String group = "strings";
-            if (block != null) {
-                updateState(channelUID(group, STRING1_DC_CURRENT_CHANNEL), block.string1Ampere);
-                updateState(channelUID(group, STRING1_DC_VOLTAGE_CHANNEL), block.string1Volt);
-                updateState(channelUID(group, STRING1_DC_OUTPUT_CHANNEL), block.string1Watt);
-                updateState(channelUID(group, STRING2_DC_CURRENT_CHANNEL), block.string2Ampere);
-                updateState(channelUID(group, STRING2_DC_VOLTAGE_CHANNEL), block.string2Volt);
-                updateState(channelUID(group, STRING2_DC_OUTPUT_CHANNEL), block.string2Watt);
-                updateState(channelUID(group, STRING3_DC_CURRENT_CHANNEL), block.string3Ampere);
-                updateState(channelUID(group, STRING3_DC_VOLTAGE_CHANNEL), block.string3Volt);
-                updateState(channelUID(group, STRING3_DC_OUTPUT_CHANNEL), block.string3Watt);
+            Optional<Data> blockOpt = dataParser.parse(DataType.STRINGS);
+            if (blockOpt.isPresent()) {
+                StringBlock block = (StringBlock) blockOpt.get();
+                updateState(string1AmpereChannel, block.string1Ampere);
+                updateState(string1VoltChannel, block.string1Volt);
+                updateState(string1WattChannel, block.string1Watt);
+                updateState(string2AmpereChannel, block.string2Ampere);
+                updateState(string2VoltChannel, block.string2Volt);
+                updateState(string2WattChannel, block.string2Watt);
+                updateState(string3AmpereChannel, block.string3Ampere);
+                updateState(string3VoltChannel, block.string3Volt);
+                updateState(string3WattChannel, block.string3Watt);
             } else {
                 logger.debug("Unable to get {} from provider {}", DataType.STRINGS, dataParser.toString());
             }

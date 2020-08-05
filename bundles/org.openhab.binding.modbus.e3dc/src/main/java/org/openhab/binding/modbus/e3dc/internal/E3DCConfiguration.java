@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class E3DCConfiguration {
 
     /**
-     * Data refresh intervall
+     * Data refresh interval
      */
     public int refresh = 2000;
 }

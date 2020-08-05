@@ -27,14 +27,14 @@ public class E3DCBindingConstants {
 
     private static final String BINDING_ID = ModbusBindingConstants.BINDING_ID;
 
-    // Suppoerted Thing Types
+    // Supported Thing Types
     public static final ThingTypeUID THING_TYPE_E3DC = new ThingTypeUID(BINDING_ID, "e3dc");
     public static final ThingTypeUID THING_TYPE_E3DC_WALLBOX = new ThingTypeUID(BINDING_ID, "e3dc-wallbox");
 
     // Channels for Info Block
     public static final String MODBUS_ID_CHANNEL = "modbus-id";
     public static final String MODBUS_FIRMWARE_CHANNEL = "modbus-firmware";
-    public static final String SUPPORTED_REGSITERS_CHANNEL = "supported-registers";
+    public static final String SUPPORTED_REGISTERS_CHANNEL = "supported-registers";
     public static final String MANUFACTURER_NAME_CHANNEL = "manufacturer-name";
     public static final String MODEL_NAME_CHANNEL = "model-name";
     public static final String SERIAL_NUMBER_CHANNEL = "serial-number";
@@ -50,8 +50,8 @@ public class E3DCBindingConstants {
     public static final String EXTERNAL_POWER_SUPPLY_CHANNEL = "external-power-supply";
     public static final String WALLBOX_POWER_CONSUMPTION_CHANNEL = "wallbox-power-consumption";
     public static final String WALLBOX_PV_POWER_CONSUMPTION_CHANNEL = "wallbox-pv-power-consumption";
-    public static final String AUTARKY = "autarky";
-    public static final String SELF_CONSUMPTION = "self-consumption";
+    public static final String AUTARKY_CHANNEL = "autarky";
+    public static final String SELF_CONSUMPTION_CHANNEL = "self-consumption";
     public static final String BATTERY_STATE_OF_CHARGE_CHANNEL = "battery-soc";
 
     // Channels for Wallbox Block
@@ -64,8 +64,8 @@ public class E3DCBindingConstants {
     public static final String WB_SCHUKO_ON_CHANNEL = "wb-schuko-on";
     public static final String WB_SCHUKO_PLUGGED_CHANNEL = "wb-schuko-plugged";
     public static final String WB_SCHUKO_LOCKED_CHANNEL = "wb-schuko-locked";
-    public static final String WB_SCHUKO_REALY_16A_CHANNEL = "wb-schuko-relay-16a";
-    public static final String WB_REALY_16A_CHANNEL = "wb-relay-16a";
+    public static final String WB_SCHUKO_RELAY_16A_CHANNEL = "wb-schuko-relay-16a";
+    public static final String WB_RELAY_16A_CHANNEL = "wb-relay-16a";
     public static final String WB_RELAY_32A_CHANNEL = "wb-relay-32a";
     public static final String WB_1PHASE_CHANNEL = "wb-1phase";
 

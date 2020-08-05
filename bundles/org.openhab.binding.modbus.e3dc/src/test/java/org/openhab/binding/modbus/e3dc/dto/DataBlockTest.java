@@ -14,15 +14,17 @@ package org.openhab.binding.modbus.e3dc.dto;
 
 import static org.junit.Assert.*;
 
+import java.util.Optional;
+
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.modbus.e3dc.internal.dto.EmergencyBlock;
-import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.PowerBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.StringBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxArray;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxBlock;
+import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 
@@ -45,8 +47,9 @@ public class DataBlockTest {
 
     @Test
     public void testValidPowerBlock() {
-        PowerBlock b = (PowerBlock) mc.parse(DataType.POWER);
-        assertNotNull(b);
+        Optional<Data> dataOpt = mc.parse(DataType.POWER);
+        assertTrue(dataOpt.isPresent());
+        PowerBlock b = (PowerBlock) dataOpt.get();
         assertEquals("PV Supply", "242 W", b.pvPowerSupply.toString());
         assertEquals("Grid Supply", "14 W", b.gridPowerSupply.toString());
         assertEquals("Grid Consumption", "0 W", b.gridPowerConsumpition.toString());
@@ -55,9 +58,12 @@ public class DataBlockTest {
 
     @Test
     public void testValidWallboxBlock() {
-        WallboxArray a = (WallboxArray) mc.parse(DataType.WALLBOX);
+        Optional<Data> wba = mc.parse(DataType.WALLBOX);
+        assertTrue(wba.isPresent());
+        WallboxArray a = (WallboxArray) wba.get();
         assertNotNull(a);
-        WallboxBlock b = a.getWallboxBlock(0);
+        Optional<WallboxBlock> o = a.getWallboxBlock(0);
+        WallboxBlock b = o.get();
         assertNotNull(b);
         assertEquals("Wallbox available", OnOffType.ON, b.wbAvailable);
         assertEquals("Wallbox Sunmode", OnOffType.ON, b.wbSunmode);
@@ -67,8 +73,9 @@ public class DataBlockTest {
 
     @Test
     public void testValidEmergency() {
-        EmergencyBlock b = (EmergencyBlock) mc.parse(DataType.EMERGENCY);
-        assertNotNull(b);
+        Optional<Data> dataOpt = mc.parse(DataType.EMERGENCY);
+        assertTrue(dataOpt.isPresent());
+        EmergencyBlock b = (EmergencyBlock) dataOpt.get();
         assertEquals("EMS Status", EmergencyBlock.EP_NOT_SUPPORTED, b.epStatus.toFullString());
         assertEquals("Battery charging locked", OnOffType.OFF, b.batteryChargingLocked);
         assertEquals("Battery discharging locked", OnOffType.OFF, b.batteryDischargingLocked);
@@ -81,8 +88,9 @@ public class DataBlockTest {
 
     @Test
     public void testValidStringDetailsStringBlock() {
-        StringBlock b = (StringBlock) mc.parse(DataType.STRINGS);
-        assertNotNull(b);
+        Optional<Data> dataOpt = mc.parse(DataType.STRINGS);
+        assertTrue(dataOpt.isPresent());
+        StringBlock b = (StringBlock) dataOpt.get();
         assertEquals("String 1 V", 381, b.string1Volt.intValue());
         assertEquals("String 1 V", "V", b.string1Volt.getUnit().toString());
         assertEquals("String 2 V", 533, b.string2Volt.intValue());
@@ -107,7 +115,7 @@ public class DataBlockTest {
 
     @Test
     public void testInvalidInfoblock() {
-        InfoBlock b = (InfoBlock) mc.parse(DataType.INFO);
-        assertNull(b);
+        Optional<Data> infoOpt = mc.parse(DataType.INFO);
+        assertFalse(infoOpt.isPresent());
     }
 }

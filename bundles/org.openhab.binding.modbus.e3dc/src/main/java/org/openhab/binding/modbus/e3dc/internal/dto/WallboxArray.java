@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.modbus.e3dc.internal.dto;
 
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 
 /**
@@ -19,6 +22,7 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class WallboxArray implements Data {
     private byte[] wbArray;
 
@@ -39,12 +43,12 @@ public class WallboxArray implements Data {
      * @param id Wallbox ID valid from 0 - 7
      * @return WallboxBlock initialized with the Modbus registers from the given ID
      */
-    public WallboxBlock getWallboxBlock(int id) {
+    public Optional<WallboxBlock> getWallboxBlock(int id) {
         if (id >= 0 && id < 8) {
             int byteIndex = id * 2;
-            return new WallboxBlock(new byte[] { wbArray[byteIndex + 1], wbArray[byteIndex * 2] });
+            return Optional.of(new WallboxBlock(new byte[] { wbArray[byteIndex + 1], wbArray[byteIndex * 2] }));
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 }

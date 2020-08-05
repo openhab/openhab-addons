@@ -16,6 +16,7 @@ import static org.openhab.binding.modbus.e3dc.internal.modbus.E3DCModbusConstans
 
 import java.util.BitSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 
@@ -24,6 +25,7 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class WallboxBlock implements Data {
     private BitSet bitSet;
     public OnOffType wbAvailable = OnOffType.OFF;

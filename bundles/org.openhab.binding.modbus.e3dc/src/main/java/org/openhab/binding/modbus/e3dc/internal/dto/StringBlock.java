@@ -18,6 +18,7 @@ import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Power;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
@@ -27,6 +28,7 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class StringBlock implements Data {
     public QuantityType<ElectricPotential> string1Volt;
     public QuantityType<ElectricPotential> string2Volt;

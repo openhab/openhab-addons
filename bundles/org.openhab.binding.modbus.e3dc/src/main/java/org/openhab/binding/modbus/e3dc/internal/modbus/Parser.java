@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.e3dc.internal.dto.EmergencyBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.modbus.e3dc.internal.dto.PowerBlock;
@@ -95,30 +94,30 @@ public class Parser {
         bArray = b.clone();
     }
 
-    public @Nullable Data parse(DataType type) {
+    public Optional<Data> parse(DataType type) {
         synchronized (bArray) {
             if (type.equals(DataType.INFO) && callbackType.equals(DataType.INFO)) {
-                return new InfoBlock(Arrays.copyOfRange(bArray, INFO_REG_START, INFO_REG_SIZE * 2));
+                return Optional.of(new InfoBlock(Arrays.copyOfRange(bArray, INFO_REG_START, INFO_REG_SIZE * 2)));
             } else if (type.equals(DataType.POWER) && callbackType.equals(DataType.DATA)) {
                 int start = (POWER_REG_START - INFO_REG_SIZE) * 2;
                 int end = start + POWER_REG_SIZE * 2;
-                return new PowerBlock(Arrays.copyOfRange(bArray, start, end));
+                return Optional.of(new PowerBlock(Arrays.copyOfRange(bArray, start, end)));
             } else if (type.equals(DataType.EMERGENCY) && callbackType.equals(DataType.DATA)) {
                 int start = (EMS_REG_START - INFO_REG_SIZE) * 2;
                 int end = start + EMS_REG_SIZE * 2;
-                return new EmergencyBlock(Arrays.copyOfRange(bArray, start, end));
+                return Optional.of(new EmergencyBlock(Arrays.copyOfRange(bArray, start, end)));
             } else if (type.equals(DataType.WALLBOX) && callbackType.equals(DataType.DATA)) {
                 int start = (WALLBOX_REG_START - INFO_REG_SIZE) * 2;
                 int end = start + WALLBOX_REG_SIZE * 2;
-                return new WallboxArray(Arrays.copyOfRange(bArray, start, end));
+                return Optional.of(new WallboxArray(Arrays.copyOfRange(bArray, start, end)));
             } else if (type.equals(DataType.STRINGS) && callbackType.equals(DataType.DATA)) {
                 int start = (STRINGS_REG_START - INFO_REG_SIZE) * 2;
                 int end = start + STRINGS_REG_SIZE * 2;
-                return new StringBlock(Arrays.copyOfRange(bArray, start, end));
+                return Optional.of(new StringBlock(Arrays.copyOfRange(bArray, start, end)));
             }
         }
         logger.warn("Wrong Block requested. Request is {} but type is {}", type, callbackType);
-        return null;
+        return Optional.empty();
     }
 
     @Override
