@@ -259,6 +259,9 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                 case CHANNEL_WIND_SPEED:
                     state = getQuantityTypeState(localWeatherData.getCurrent().getWindSpeed(), METRE_PER_SECOND);
                     break;
+                case CHANNEL_GUST_SPEED:
+                    state = getQuantityTypeState(localWeatherData.getCurrent().getWindGust(), METRE_PER_SECOND);
+                    break;
                 case CHANNEL_WIND_DIRECTION:
                     state = getQuantityTypeState(localWeatherData.getCurrent().getWindDeg(), DEGREE_ANGLE);
                     break;
@@ -281,6 +284,9 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                         logger.debug("State conversion failed, cannot update state.");
                         return;
                     }
+                    break;
+                case CHANNEL_UVINDEX:
+                    state = getDecimalTypeState(localWeatherData.getCurrent().getUvi());
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -360,6 +366,18 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                 case CHANNEL_SNOW:
                     Snow snow = forecastData.getSnow();
                     state = getQuantityTypeState(snow == null ? 0 : snow.getVolume(), MILLI(METRE));
+                    break;
+                case CHANNEL_VISIBILITY:
+                    Integer localVisibility = forecastData.getVisibility();
+                    state = localVisibility == null ? UnDefType.UNDEF
+                            : new QuantityType<>(localVisibility, METRE).toUnit(KILO(METRE));
+                    if (state == null) {
+                        logger.debug("State conversion failed, cannot update state.");
+                        return;
+                    }
+                    break;
+                case CHANNEL_POP:
+                    state = getQuantityTypeState(forecastData.getPop() * 100, PERCENT);
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -441,6 +459,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                 case CHANNEL_SNOW:
                     double snow = forecastData.getSnow();
                     state = getQuantityTypeState(snow, MILLI(METRE));
+                    break;
+                case CHANNEL_POP:
+                    state = getQuantityTypeState(forecastData.getPop() * 100, PERCENT);
+                    break;
+                case CHANNEL_UVINDEX:
+                    state = getDecimalTypeState(forecastData.getUvi());
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);

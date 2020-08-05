@@ -8,6 +8,13 @@ import org.openhab.binding.openweathermap.internal.dto.base.Weather;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * POJO for the current weather block in the JSON response on the OneCallAPI
+ *
+ *
+ * @author Michael Hazelden - Initial contribution
+ *
+ */
 public class Current {
 
     private Integer dt;
@@ -27,6 +34,8 @@ public class Current {
     private double windspeed;
     @SerializedName("wind_deg")
     private Integer winddeg;
+    @SerializedName("wind_gust")
+    private double windgust;
     private List<Weather> weather;
     private Rain rain;
     private Snow snow;
@@ -158,6 +167,14 @@ public class Current {
     public void setSnow(Snow snow) {
         this.snow = snow;
 
+    }
+
+    public double getWindGust() {
+        return windgust;
+    }
+
+    public void setWindGust(double windgust) {
+        this.windgust = windgust;
     }
 
 }

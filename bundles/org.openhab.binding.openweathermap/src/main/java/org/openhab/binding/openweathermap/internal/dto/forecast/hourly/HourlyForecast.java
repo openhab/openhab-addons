@@ -8,6 +8,12 @@ import org.openhab.binding.openweathermap.internal.dto.base.Weather;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * POJO for the Hourly Forecast object in the JSON response on the OneCallAPI
+ * 
+ * * @author Michael Hazelden - Initial contribution
+ *
+ */
 public class HourlyForecast {
 
     private Integer dt;
@@ -27,6 +33,8 @@ public class HourlyForecast {
     private Rain rain;
     private Snow snow;
     private double gust;
+    private Integer visibility;
+    private double pop;
 
     public Integer getDt() {
         return dt;
@@ -130,6 +138,22 @@ public class HourlyForecast {
 
     public void setSnow(Snow snow) {
         this.snow = snow;
+    }
+
+    public Integer getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(Integer visibility) {
+        this.visibility = visibility;
+    }
+
+    public double getPop() {
+        return pop;
+    }
+
+    public void setPop(double pop) {
+        this.pop = pop;
     }
 
 }

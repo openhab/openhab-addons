@@ -80,6 +80,7 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_SNOW = "snow";
     public static final String CHANNEL_VISIBILITY = "visibility";
     public static final String CHANNEL_UVINDEX = "uvindex";
+    public static final String CHANNEL_POP = "pop";
 
     // List of all configuration
     public static final String CONFIG_FORECAST_DAYS = "forecastDays";

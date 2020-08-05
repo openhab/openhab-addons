@@ -20,10 +20,12 @@
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
 			<channel id="wind-speed" typeId="system.wind-speed"/>
 			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
 			<channel id="cloudiness" typeId="cloudiness"/>
 			<channel id="rain" typeId="rain"/>
 			<channel id="snow" typeId="snow"/>
 			<channel id="visibility" typeId="visibility"/>
+			<channel id="uvindex" typeId="uvindex"/>
 		</channels>
 	</channel-group-type>
 
@@ -47,6 +49,9 @@
 			<channel id="cloudiness" typeId="forecasted-cloudiness"/>
 			<channel id="rain" typeId="forecasted-rain"/>
 			<channel id="snow" typeId="forecasted-snow"/>
+			<channel id="pop" typeId="forecasted-pop"/>
+			<channel id="visibility" typeId="forecasted-visibility"/>
+			
 		</channels>
 	</channel-group-type>
 
@@ -69,6 +74,9 @@
 			<channel id="cloudiness" typeId="forecasted-cloudiness"/>
 			<channel id="rain" typeId="forecasted-rain"/>
 			<channel id="snow" typeId="forecasted-snow"/>
+			<channel id="pop" typeId="forecasted-pop"/>
+			<channel id="uvindex" typeId="forecasted-uvindex"/>
+			<channel id="visibility" typeId="forecasted-visibility"/>
 		</channels>
 	</channel-group-type>
 
@@ -288,6 +296,14 @@
 		<category>Snow</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
+	
+	<channel-type id="forecasted-pop">
+	   <item-type>Number:Dimensionless</item-type>
+	   <label>Probability of Precipitation.</label>
+	   <description>Chance of rain or snow</description>
+	   <category>Rain</category>
+	   <state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
 
 	<channel-type id="uvindex">
 		<item-type>Number</item-type>
@@ -309,5 +325,12 @@
 		<description>Current visibility.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
+	
+	<channel-type id="forecasted-visibility">
+        <item-type>Number:Length</item-type>
+        <label>Forecasted Visibility</label>
+        <description>Forecasted visibility.</description>
+        <state readOnly="true" pattern="%.1f %unit%"/>
+    </channel-type>
 
 </thing:thing-descriptions>

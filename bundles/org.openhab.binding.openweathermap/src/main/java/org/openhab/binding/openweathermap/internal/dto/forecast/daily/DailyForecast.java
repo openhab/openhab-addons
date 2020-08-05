@@ -6,6 +6,12 @@ import org.openhab.binding.openweathermap.internal.dto.base.Weather;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * POJO for the DailyForecast JSON return in the OneCallAPI
+ *
+ * @author Michael Hazelden - Initial contribution
+ *
+ */
 public class DailyForecast {
 
     private Integer dt;
@@ -27,6 +33,7 @@ public class DailyForecast {
     private double rain;
     private double snow;
     private double uvi;
+    private double pop;
 
     public Integer getDt() {
         return dt;
@@ -146,6 +153,14 @@ public class DailyForecast {
 
     public void setSnow(double snow) {
         this.snow = snow;
+    }
+
+    public double getPop() {
+        return pop;
+    }
+
+    public void setPop(double pop) {
+        this.pop = pop;
     }
 
 }
