@@ -87,7 +87,7 @@ public class KVVStationHandler extends BaseThingHandler {
         }
         this.updateThing(this.editThing().withChannels(channels).build());
         this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(handler, config), 0,
-                config.updateInterval, TimeUnit.MILLISECONDS);
+                config.updateInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
 

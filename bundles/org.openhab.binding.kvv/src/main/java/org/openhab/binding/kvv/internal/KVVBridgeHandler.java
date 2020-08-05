@@ -66,6 +66,11 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        return new Gson().fromJson(new String(data.getBytes(), StandardCharsets.UTF_8), DepartureResult.class);
+        final DepartureResult result = new Gson().fromJson(new String(data.getBytes(), StandardCharsets.UTF_8), DepartureResult.class);
+        if (result.getDepartures().size() != config.maxTrains) {
+            logger.warn("Result size (={}) differs from maxTrain setting (={})", result.getDepartures().size(), config.maxTrains);
+            return null;
+        }
+        return result;
     }
 }

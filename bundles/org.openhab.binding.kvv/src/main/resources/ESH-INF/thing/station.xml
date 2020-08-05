@@ -18,9 +18,9 @@
 				<label>Maximum Trains Listed</label>
 				<description>Maximum number of trains listed.</description>
 			</parameter>
-			<parameter name="updateInterval" type="integer" required="true" min="0">
+			<parameter name="updateInterval" type="integer" required="true" min="1">
 				<label>Update Interval</label>
-				<description>Update interval in milliseconds.</description>
+				<description>Update interval in seconds.</description>
 			</parameter>
 			<parameter name="apiKey" type="text" required="true">
 				<label>API key</label>
